@@ -1,0 +1,144 @@
+/sqweak 2002
+
+////////////////////mining/////////
+
+
+[ITEMDEF i_Fossel]
+ID=0fc7
+Name=Fossel
+VALUE=1
+WEIGHT=.1
+
+on=@create
+color=002e1
+
+ON=@DCLICK 
+SRC.SAYU You nearly damage the Fossil.
+
+CATEGORY=Imperial uo
+SUBSECTION=Resourses
+DESCRIPTION=Fossil
+
+[ITEMDEF i_Dinosauregg]
+ID=0e73
+Name=Dinosaur Egg
+VALUE=1
+WEIGHT=.1
+on=@create
+color=002e1
+type=t_normal
+
+ON=@DCLICK 
+EMOTE You hear a growl from inside.
+SOUND 0171
+
+CATEGORY=Imperial uo
+SUBSECTION=Resourses
+DESCRIPTION=Dinosaur Egg
+
+[itemdef i_horseshoes] 
+NAME=Mystical Horse shoes 
+ID=i_horse_shoes 
+TYPE=t_horse_shoes
+RESOURCES=4 i_ingot_iron, 1 i_coal, 1 i_luck_stone
+SKILLMAKE = BLACKSMITHING 550, ALCHEMY 35.0
+VALUE=30
+
+ON=@CREATE 
+COLOR=00 
+
+[typedef t_horse_shoes] 
+ON=@DCLICK 
+TARGET Which pack animal do you want to shoe? 
+RETURN 1 
+
+ON=@TARGON_CHAR 
+IF (<SRC.TARG.DEX>>=150)
+SRC.SAYU That creature doesn't need horse shoes! 
+RETURN 1 
+ELSEIF ((<SRC.TARG.BODY> == c_horse_pack) || (<SRC.TARG.BODY> == c_llama_pack)) 
+SRC.SAYU You have shoed the pack animal! Now the creature is faster! 
+SRC.TARG.DEX=(<SRC.TARG.DEX>+100) 
+SRC.TARG.KARMA=3000
+REMOVE
+RETURN 1 
+ELSE 
+SRC.SAYU This is only for pack animals!
+ENDIF 
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Resourses
+DESCRIPTION=Horse Shoes 
+
+[REGIONRESOURCE mr_fossel]
+SKILL=30.0 80.0
+AMOUNT=4 20
+REAP		= i_fossel
+REGEN		= 60*60*10
+
+
+[REGIONRESOURCE mr_Dinosauregg]
+SKILL=30.0 80.0
+AMOUNT=4 20
+REAP		= i_Dinosauregg
+REGEN		= 60*60*10
+
+
+[REGIONRESOURCE mr_horseshoes]
+SKILL=30.0 80.0
+AMOUNT=4 20
+REAP		= i_horseshoes
+REGEN		= 60*60*10
+
+
+
+
+/////////// LUMBERJACKING ///////////
+[ITEMDEF i_Rocegg]
+ID=0e73
+Name=Roc Egg
+VALUE=1
+WEIGHT=.1
+on=@create
+color=002e1
+
+ON=@DCLICK 
+EMOTE You hear a Screech from inside.
+SOUND 0196
+
+CATEGORY=Imperial uo
+SUBSECTION=Resourses
+DESCRIPTION=Roc Egg
+
+
+[ITEMDEF i_nestrare]
+NAME=Nest of extinct Bird
+ID=i_nest
+VALUE=1
+WEIGHT=.1
+
+
+ON=@DCLICK 
+SRC.SAYU You nearly damage the Nest.
+
+CATEGORY=Imperial uo
+SUBSECTION=Resourses
+DESCRIPTION=Nest of extinct Bird
+
+
+[REGIONRESOURCE mr_Rocegg]
+SKILL=30.0 80.0
+AMOUNT=4 20
+REAP		= i_Rocegg
+REGEN		= 60*60*10
+
+
+[REGIONRESOURCE mr_nestrare]
+SKILL=30.0 80.0
+AMOUNT=4 20
+REAP		= i_nestrare
+REGEN		= 60*60*10
+
+
+[EOF]

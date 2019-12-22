@@ -1,0 +1,657 @@
+// #-----------#
+// # CHANGELOG #
+// #-----------#
+//
+// 18/08/18 - Wigifer - Reviewed, no data to edit at this time... May need to add TAG.NOLOOT=1 to @CREATE though
+
+[FUNCTION khaldun_region ]
+   if ( 0 )
+   elseif ( !strcmpi( "<REGION.NAME>", "Khaldun" ) )
+      return 1
+   else
+      return 0
+   endif
+
+
+[ITEMDEF m_khaldun_recall]
+  ID		= i_memory
+  TYPE	= t_eq_script
+  LAYER	= layer_special
+  NAME	= Recalling
+ON=@Create
+    ATTR = 02
+    TIMER = 8
+ON=@TIMER
+    CONT.GO <MOREp>
+    REMOVE
+
+[ITEMDEF m_khaldun_recall_die]
+  ID		= i_memory
+  TYPE	= t_eq_script
+  LAYER	= layer_special
+  NAME	= Recalling
+ON=@Create
+    ATTR = 02
+    TIMER = 8
+ON=@TIMER
+    cont.KILL
+    REMOVE
+
+[FUNCTION f_khaldun_recall12555]
+   IF ( <SRC.RESTEST m_khaldun_recall> )
+       RETURN 1
+   ENDIF
+   SRC.NEWITEM m_khaldun_recall
+   SRC.ACT.EQUIP
+   SRC.ACT.TIMER = 5
+   SRC.ACT.ATTR = 02
+   SRC.ACT.MORE1 = <UID>
+   SRC.ACT.MOREP	= <MOREp>
+   SRC.NEWITEM m_khaldun_recall_effect
+   SRC.ACT.EQUIP
+   SRC.ACT.TIMER = 7
+   SRC.ACT.ATTR = 02
+   SRC.NEWITEM m_khaldun_recall_effect
+   SRC.ACT.EQUIP
+   SRC.ACT.TIMER = 6
+   SRC.ACT.ATTR = 02
+   SRC.NEWITEM m_khaldun_recall_effect
+   SRC.ACT.EQUIP
+   SRC.ACT.TIMER = 5
+   SRC.ACT.ATTR = 02
+   SRC.NEWITEM m_khaldun_recall_effect
+   SRC.ACT.EQUIP
+   SRC.ACT.TIMER = 3
+   SRC.ACT.ATTR = 02
+   SRC.NEWITEM m_khaldun_recall_effect
+   SRC.ACT.EQUIP
+   SRC.ACT.TIMER = 2
+   SRC.ACT.ATTR = 02
+   SRC.SYSMESSAGE You Feel your Spirit Leaving Khaldun
+   RETURN 1
+
+[FUNCTION f_khaldun_recall_die12555]
+   IF ( <SRC.RESTEST m_khaldun_recall_die> )
+       RETURN 1
+   ENDIF
+   SRC.NEWITEM m_khaldun_recall_die
+   SRC.ACT.EQUIP
+   SRC.ACT.TIMER = 5
+   SRC.ACT.ATTR = 02
+   SRC.ACT.MORE1 = <UID>
+   SRC.ACT.MOREP	= <MOREp>
+   SRC.NEWITEM m_khaldun_recall_effect
+   SRC.ACT.EQUIP
+   SRC.ACT.TIMER = 7
+   SRC.ACT.ATTR = 02
+   SRC.NEWITEM m_khaldun_recall_effect
+   SRC.ACT.EQUIP
+   SRC.ACT.TIMER = 6
+   SRC.ACT.ATTR = 02
+   SRC.NEWITEM m_khaldun_recall_effect
+   SRC.ACT.EQUIP
+   SRC.ACT.TIMER = 5
+   SRC.ACT.ATTR = 02
+   SRC.NEWITEM m_khaldun_recall_effect
+   SRC.ACT.EQUIP
+   SRC.ACT.TIMER = 3
+   SRC.ACT.ATTR = 02
+   SRC.NEWITEM m_khaldun_recall_effect
+   SRC.ACT.EQUIP
+   SRC.ACT.TIMER = 2
+   SRC.ACT.ATTR = 02
+   SRC.SYSMESSAGE You Feel The Terror of Khaldun Coming Back..
+   RETURN 1
+
+
+[ITEMDEF m_khaldun_recall_effect]
+  ID		= i_memory
+  TYPE	= t_eq_script
+  LAYER	= layer_special
+  NAME	= Recall Effect
+
+ON=@Create
+    ATTR = 02
+    TIMER = 5
+
+ON=@TIMER
+    CONT.SOUND 01dc
+    CONT.EFFECT		= 1, i_fx_explosion_3, 6, 15, 1
+    CONT.EFFECT		= 1, i_fx_explosion_3, 6, 15, 1
+    CONT.EFFECT		= 1, i_fx_explosion_3, 6, 15, 1
+    CONT.EFFECT		= 1, i_fx_explosion_3, 6, 15, 1
+    REMOVE
+
+[ITEMDEF i_rune_khaldun]
+  NAME=WHats this?
+  DEFNAME=i_rune_khaldun
+  ID=01f17
+  TYPE=T_NORMAL
+  WEIGHT=1
+ON=@CREATE
+remove
+ON=@DCLICK
+   remove
+on=@click
+ remove
+
+[ITEMDEF i_rune_khaldun_exit]
+  NAME=Khaldun Exit Stone
+  DEFNAME=i_rune_khaldun_exit
+  ID=01f17
+  TYPE=T_NORMAL
+  WEIGHT=1
+ON=@CREATE
+   COLOR=079d
+   MOREX = 0
+ON=@DCLICK
+   bounce
+   if ( !<cont.khaldun_region> )
+        remove
+        return <f_khaldun_recall_Die12555>
+   endif
+      REMOVE
+   MOREp	= 1832, 2417, 0 
+   return <f_khaldun_recall12555>
+
+[CHARDEF khaldun_daemon_green]
+ID=c_daemon_w_sword
+DEFNAME=khaldun_daemon_green
+NAME=#NAMES_DAEMON the Daemon Knight
+//Title=the Daemon Knight
+SOUND=snd_MONSTER_DAEMON1
+ICON=i_pet_DAEMON
+ANIM=03fbc7f
+CAN=MT_WALK|MT_FLY|MT_USEHANDS
+TEVENTS=e_npc_daemon
+
+DAM=30, 45
+ARMOR=75
+RESOURCES=9 i_ribs_raw, 8 i_reag_daemon_bone
+FOODTYPE=
+DESIRES=i_gold
+AVERSIONS=r_civilization
+CATEGORY=Memory UO
+SUBSECTION=khaldun
+DESCRIPTION=Daemon Knight green
+
+ON=@Create
+NPC=brain_monster
+FAME={4000 8000}
+KARMA={-5000 -5999}
+COLOR=0593
+STR={500 655}
+DEX={96 105}
+INT={300 325}
+
+SWORDSMANSHIP={85.0 95.0}
+PARRYING={85.0 95.0}
+MAGERY={70.0 85.0}
+MAGICRESISTANCE={80.0 90.0}
+TACTICS={80.0 90.0}
+WRESTLING={80.0 90.0}
+
+
+[CHARDEF khaldun_daemon_ooze]
+DEFNAME=khaldun_daemon_ooze
+ID=c_daemon_w_sword
+NAME=Shreet
+//Title=the Daemon Knight
+SOUND=snd_MONSTER_DAEMON1
+ICON=i_pet_DAEMON
+ANIM=03fbc7f
+CAN=MT_WALK|MT_FLY|MT_USEHANDS
+TEVENTS=e_npc_daemon
+
+DAM=30, 45
+ARMOR=75
+RESOURCES=9 i_ribs_raw, 8 i_reag_daemon_bone
+FOODTYPE=
+DESIRES=i_gold
+AVERSIONS=r_civilization
+CATEGORY=Memory UO
+SUBSECTION=khaldun
+DESCRIPTION=Daemon Knight ooze
+
+ON=@Create
+NPC=brain_monster
+FAME={4000 8000}
+KARMA={-5000 -5999}
+COLOR=096c
+STR={600 855}
+DEX={96 105}
+INT={300 325}
+
+SWORDSMANSHIP={85.0 95.0}
+PARRYING={85.0 95.0}
+MAGERY={70.0 85.0}
+MAGICRESISTANCE={80.0 90.0}
+TACTICS={80.0 90.0}
+WRESTLING={80.0 90.0}
+
+
+[CHARDEF khaldun_daemon_blue]
+DEFNAME=khaldun_daemon_blue
+ID=c_daemon_w_sword
+NAME=Shreet
+//Title=the Daemon Knight
+SOUND=snd_MONSTER_DAEMON1
+ICON=i_pet_DAEMON
+ANIM=03fbc7f
+CAN=MT_WALK|MT_FLY|MT_USEHANDS
+TEVENTS=e_npc_daemon
+
+DAM=30, 45
+ARMOR=75
+RESOURCES=9 i_ribs_raw, 8 i_reag_daemon_bone
+FOODTYPE=
+DESIRES=i_gold
+AVERSIONS=r_civilization
+CATEGORY=Memory UO
+SUBSECTION=khaldun
+DESCRIPTION=Daemon Knight blue
+
+ON=@Create
+NPC=brain_monster
+FAME={4000 8000}
+KARMA={-5000 -5999}
+COLOR=08ad
+STR={800 955}
+DEX={96 105}
+INT={300 325}
+
+SWORDSMANSHIP={85.0 95.0}
+PARRYING={85.0 95.0}
+MAGERY={70.0 85.0}
+MAGICRESISTANCE={80.0 90.0}
+TACTICS={80.0 90.0}
+WRESTLING={80.0 90.0}
+
+
+[Chardef C_shade_ooze]
+ID	=C_Elem_Water
+NAME	=Shade
+SOUND	=snd_ELEMENTL_WATREL1
+ICON	=i_pet_elem_water
+DAM	=4,12
+ARMOR	=20
+RESOURCES=8 t_MAGIC
+CAN	=MT_WALK|MT_SWIM|MT_USEHANDS
+BLOODCOLOR=colors_blue
+
+CATEGORY	=Monsters
+SUBSECTION	=Khaldun
+DESCRIPTION	=ooze shade
+
+ON=@Create
+NPC=brain_monster
+COLOR=096c
+FAME={1000 6000}
+KARMA={-3000 -3999}
+
+STR={200 250}
+DEX={136 185}
+INT={71 95}
+
+DETECTION=1000.0
+PARRYING={120.0 140.0}
+MAGERY={60.0 75.0}
+MAGICRESISTANCE={120.0 140.0}
+TACTICS={55.0 65.0}
+WRESTLING={70.0 90.0}
+
+[ITEMDEF I_Khaldun_C_Trigger_fake]
+ID	= 0108c
+NAME	= A hidden Lever
+TYPE	= T_Script
+
+ON=@Create
+	Attr = 08010
+	
+ON=@Dclick
+
+	if <eval rand(5)> = 3
+		src.spelleffect 51,1800
+		src.effect 2,03709,6,10,0
+		return 1
+	endif
+
+
+	if <morex> = 0 //Closed
+		src.message "You hear a grinding noise echoing in the distance"
+		return 1
+	endif
+	
+
+[ITEMDEF i_diggable_grave] 
+DEFNAME=i_diggable_grave 
+NAME=Diggable Grave 
+ID=0ee0 
+TYPE=T_DIGABLE_GRAVE 
+CATEGORY=Memory UO
+SUBSECTION=khaldun Special Items 
+DESCRIPTION=Diggable Grave 
+
+[ITEMDEF i_diggable_grave_2] 
+DEFNAME=i_diggable_grave_2 
+NAME=Diggable Grave 
+ID=0edf 
+TYPE=T_DIGABLE_GRAVE 
+CATEGORY=Memory UO
+SUBSECTION=khaldun Special Items 
+DESCRIPTION=Diggable Grave 2 
+
+[TYPEDEF T_DIGABLE_GRAVE] 
+
+ON=@DCLICK 
+IF <SRC.RESTEST 1 I_GRAVE_DELAY> 
+      SRC.SYSMESSAGE You must wait to dig here again. 
+      RETURN 1 
+ELSEIF <DISTANCE>>1 
+SRC.MESSAGE You have to be close to dig here. 
+RETURN 1 
+ELSEIF <SRC.RESTEST 1 i_pickaxe> 
+SRC.ANIM=0B 
+SOUND=0126 
+   IF RAND(4) 
+      SRC.NEWITEM I_GRAVE_DELAY 
+      SRC.ACT.EQUIP 
+      SRC.NEWNPC {C_SKELETON 1 C_ZOMBIE 1} 
+      SRC.ACT.FLAGS=024000000 
+      SRC.ACT.P=<SRC.P> 
+      SRC.KARMA=<SRC.KARMA> - 50 
+      SRC.SYSMESSAGE You lost a little Karma. 
+      SRC.MESSAGE You disturbed the dead! 
+   ELSEIF RAND(2) 
+      SRC.NEWITEM I_GRAVE_DELAY 
+      SRC.ACT.EQUIP 
+      SRC.NEWITEM backpack_meager 
+      SRC.ACT.BOUNCE 
+      SRC.KARMA=<SRC.KARMA> - 50 
+      SRC.SYSMESSAGE You lost a little Karma. 
+      SRC.MESSAGE You found some treasure! 
+   ELSEIF RAND(3) 
+      SRC.NEWITEM I_GRAVE_DELAY 
+      SRC.ACT.EQUIP 
+      SRC.NEWNPC {C_LICHE 1 C_M_MUMMY 1} 
+      SRC.ACT.FLAGS=024000000 
+      SRC.ACT.P=<SRC.P> 
+      SRC.KARMA=<SRC.KARMA> - 50 
+      SRC.SYSMESSAGE You lost a little Karma. 
+      SRC.MESSAGE You greatly disturbed the dead! 
+   ELSEIF RAND(1) 
+      SRC.NEWITEM I_GRAVE_DELAY 
+      SRC.ACT.EQUIP 
+      SRC.DAMAGE={20 30} 
+      SRC.KARMA=<SRC.KARMA> - 50 
+      SRC.SYSMESSAGE You lost a little Karma. 
+      SRC.MESSAGE You almost got dragged into the grave by the dead! 
+   ELSEIF RAND(5) 
+      SRC.NEWITEM I_GRAVE_DELAY 
+      SRC.ACT.EQUIP 
+      SRC.DAMAGE={50 60} 
+      SRC.KARMA=<SRC.KARMA> - 50 
+      SRC.SYSMESSAGE You lost a little Karma. 
+      SRC.MESSAGE You got dragged into the grave by the dead! 
+ENDIF 
+ENDIF 
+ENDIF 
+ENDIF 
+ENDIF 
+RETURN 0 
+
+[ITEMDEF I_GRAVE_DELAY] 
+NAME=Grave Delay (dont remove) 
+ID=i_handr_1 
+TYPE=T_EQ_SCRIPT 
+WEIGHT=0 
+LAYER=layer_special 
+
+ON=@Create 
+ATTR=attr_invis|attr_decay 
+MORE1=120 
+COLOR=0480 
+
+ON=@Equip 
+TIMER=1 
+ON=@Timer 
+if ( <cont> ) 
+if ( <more1> ) 
+more1=<more1>-1 
+TIMER=1 
+return 1 
+endif 
+endif 
+Remove 
+RETURN 1 
+
+[ITEMDEF i_khaldun_lever_fake]
+ID	= i_lever
+NAME	= A lever
+TYPE	= T_Script
+
+ON=@Dclick
+DORAND 4
+src.message "You Hear A Grinding Noise In The Distance"
+src.message "This Lever Seems Jammed"
+src.message "Nothing Happens"
+src.message "You Hear A Grinding Noise In The Distance"
+ENDDO
+return 1
+
+[ITEMDEF i_khaldun_door]
+ID	= i_door_wood_3
+NAME	= Wooden Door
+TYPE	= T_Script
+
+ON=@Dclick
+      src.message "The door seems jammed"
+
+[ITEMDEF I_Khaldun_face_1]
+ID	= i_door_magical
+NAME	= Ghostly Face
+TYPE	= T_Script
+
+ON=@Dclick
+	
+	if <morex> = 0 //Closed
+		MOREX = 1 //Open
+		TIMER = 20 //Have to run to Trigger B in 20 seconds
+		LINK.MOVE s //Show the hidden level
+		update
+		src.message "You Hear A Grinding Noise In The Distance"
+		return 1
+	else
+		MOREX = 0 //Closed
+		Timer = -1 //Always close
+		LINK.MOVE N //Hide the trigger
+		update
+		return 1
+	endif
+	
+ON=@Timer
+	if <morex> = 0 //Closed
+		return 1  //Do nothing
+	else
+		MOREX = 0 //Closed
+		Timer = -1 //Always close
+		LINK.MOVE N //Hide the trigger
+		update
+		return 1
+	endif
+
+[ITEMDEF I_Khaldun_face_2]
+ID	= i_door_magical
+NAME	= Ghostly Face
+TYPE	= T_Script
+
+ON=@Dclick
+	
+	if <morex> = 0 //Closed
+		MOREX = 1 //Open
+		TIMER = 20 //Have to run to Trigger B in 20 seconds
+		LINK.MOVE W //Show the hidden level
+		update
+		src.message "You Hear A Grinding Noise In The Distance"
+		return 1
+	else
+		MOREX = 0 //Closed
+		Timer = -1 //Always close
+		LINK.MOVE E //Hide the trigger
+		update
+		return 1
+	endif
+	
+ON=@Timer
+	if <morex> = 0 //Closed
+		return 1  //Do nothing
+	else
+		MOREX = 0 //Closed
+		Timer = -1 //Always close
+		LINK.MOVE E //Hide the trigger
+		update
+		return 1
+	endif
+
+[ITEMDEF I_Khaldun_Torch_link_1] //Up down trigger
+ID	= 0a07
+NAME	= A Torch
+TYPE	= T_script
+
+ON=@Dclick
+
+	if <eval rand(5)> = 3
+		src.spelleffect 51,1800
+		src.effect 2,03709,6,10,0
+		return 1
+	endif
+
+	if <morex> = 0 //Closed
+		MOREX = 1 //Open
+		TIMER = 3 //Have to click 2nd torch in 3 seconds
+		LINK.more1 1 
+		update
+		src.message "You hear a click"
+		return 1
+	else
+		MOREX = 0 //Closed
+		Timer = -1 //Always close
+		LINK.more1 0
+		update
+		return 1
+	endif
+
+	
+ON=@Timer
+	if <morex> = 0 //Closed
+		return 1  //Do nothing
+	else
+		MOREX = 0 //Closed
+		Timer = -1 //Always close
+		LINK.more1 0
+		update
+		return 1
+	endif
+
+[ITEMDEF I_Khaldun_Torch_link_2] //Up down trigger
+ID	= 0a07
+NAME	= A Torch
+TYPE	= T_script
+
+ON=@Dclick
+
+	if <eval rand(5)> = 3
+		src.spelleffect 51,1800
+		src.effect 2,03709,6,10,0
+		return 1
+	endif
+
+	if <morex> = 0 //Closed
+	    if <more1> == 1
+                MOREX = 1 //Open
+		TIMER = 3 //Have to click 3rd torch in 3 seconds
+		LINK.more1 1 
+		update
+		src.message "You hear a click"
+		return 1
+             ENDif
+	else
+		MOREX = 0 //Closed
+		Timer = -1 //Always close
+		LINK.more1 0
+		update
+		return 1
+	endif
+
+	
+ON=@Timer
+	if <morex> = 0 //Closed
+		return 1  //Do nothing
+	else
+		MOREX = 0 //Closed
+		Timer = -1 //Always close
+		LINK.more1 0
+		update
+		return 1
+	endif
+
+[ITEMDEF I_Khaldun_Torch_link_3] //Up down trigger
+ID	= 0a07
+NAME	= A Torch
+TYPE	= T_script
+
+ON=@Dclick
+
+	if <eval rand(5)> = 3
+		src.spelleffect 51,1800
+		src.effect 2,03709,6,10,0
+		return 1
+	endif
+
+	if <morex> = 0 //Closed
+	    if <more1> == 1
+                MOREX = 1 //Open
+		TIMER = 60 //Have to run to Trigger B in 60 seconds
+		LINK.z 20 //open the door
+		update
+		src.message "You hear a grinding noise echoing in the distance"
+		return 1
+             Else 
+                return 0
+             ENDIF
+	else
+		MOREX = 0 //Closed
+		Timer = -1 //Always close
+		LINK.Z 0 //Close the door
+		update
+		return 1
+	endif
+
+	
+ON=@Timer
+	if <morex> = 0 //Closed
+		return 1  //Do nothing
+	else
+		MOREX = 0 //Closed
+		Timer = -1 //Always close
+		LINK.Z 0 //Hide the trigger
+		update
+		return 1
+	endif
+
+[TYPEDEF T_scaretile]
+
+ON=@Step
+if ( <SRC.NPC> )
+     return 0
+else
+DORAND 5
+src.emote "You Feel The Ground Trembling"
+src.message "You Hear Horrific screams in the distance"
+src.message "You Hear A click"
+src.message "You suddenly feel terribly cold"
+src.message "You Feel You should Run, Fast"
+ENDDO
+return 1
+endif
+[EOF]

@@ -1,0 +1,350 @@
+//******************************************************************************************************************************//
+//                                  Gamble Stone Created by Pink Panther                                                        //
+//                                                                                                                              //
+// Amount of jackpot is 100 times the amount of gold to play.                                                                   //
+// For each time someone plays, 1/5 of the amount goes to the jackpot.                                                          //
+//*****************************************************************************************************************************//
+
+[ITEMDEF i_gamble_stone]
+ID=i_grave_stone
+NAME = Gamble Stone [Double Click to Play]
+
+
+ON=@CREATE
+COLOR=07a1
+ATTR=08010
+TAG.TIMESPLAYED=1 // Amount of times played so far
+TAG.GOLDTOPLAY=1000 // Amount of gold required to play
+TAG.ACCUMULATEDGOLDTOPLAY=0 // Total amount of gold ever spent in this stone
+TAG.ACCUMULATEDTIMESPLAYED=0 // Total amount of times ever played in this stone
+TAG.ACCUMULATEDGOLDGIVEN=0 // Total amount of gold ever given in this stone
+TAG.JACKPOTRECORD=0 // Biggest jackpot ever given by this stone
+TAG.JACKPOT=<EVAL <EVAL <TAG.GOLDTOPLAY>*100>+<EVAL <EVAL <TAG.TIMESPLAYED>-1>*<EVAL <TAG.GOLDTOPLAY>/5>>> // Amount of starting jackpot
+
+TAG.NUMBER1=1
+TAG.NUMBER2=3
+TAG.NUMBER3=3
+TAG.NUMBER4=7
+
+ON=@CLICK
+IF (<SRC.ISGM>)
+	SRC.SYSMESSAGE @07a1 Current Jackpot Chance: 1 in <EVAL <TAG.JACKPOT>/<EVAL (<EVAL <TAG.TIMESPLAYED>-1>*<EVAL <TAG.GOLDTOPLAY>/200>)>>
+	SRC.SYSMESSAGE @07a1 Total Gold Spent: <EVAL <TAG.ACCUMULATEDGOLDTOPLAY>> gold
+	SRC.SYSMESSAGE @07a1 Total Gold Given: <EVAL <TAG.ACCUMULATEDGOLDGIVEN>> gold
+	SRC.SYSMESSAGE @07a1 Total Times Played : <EVAL <TAG.ACCUMULATEDTIMESPLAYED>> times
+ENDIF
+
+
+
+ON=@DCLICK
+TAG.JACKPOT=<EVAL <EVAL <TAG.GOLDTOPLAY>*100>+<EVAL <EVAL <TAG.TIMESPLAYED>-1>*<EVAL <TAG.GOLDTOPLAY>/5>>>
+DIALOG d_gamblestone
+RETURN 1
+
+[DIALOG d_gamblestone]
+0,0
+page 0
+resizepic 92 56 3600 325 340
+
+dtext 210 80 137 Jackpot Machine
+
+dtext 135 110 2300 Current Jackpot:        
+
+dtext 300 110 2300 <EVAL <TAG.JACKPOT>> gold
+
+dtext 135 140 2300 Jackpot Record:
+
+dtext 300 140 2300 <EVAL <TAG.JACKPOTRECORD>> gold
+
+dtext 135 170 2300 Required to Play: 
+
+dtext 300 170 2300 <EVAL <TAG.GOLDTOPLAY>> gold
+
+dtext 170 210 2300 Winner Key: 
+
+dtext 280 210 52 <EVAL <TAG.NUMBER1>> <EVAL <TAG.NUMBER2>> <EVAL <TAG.NUMBER3>> <EVAL <TAG.NUMBER4>>
+
+
+IF (<EVAL <SRC.TAG0.WON>>==1) || (<EVAL <SRC.TAG0.LOST>>==1)
+	dtext 170 240 2300 Your Key: 
+	dtext 280 240 <EVAL <SRC.TAG.COLOR1>> <EVAL <SRC.TAG.NUMBER11>> 
+	dtext 293 240 <EVAL <SRC.TAG.COLOR2>> <EVAL <SRC.TAG.NUMBER12>>
+	dtext 309 240 <EVAL <SRC.TAG.COLOR3>> <EVAL <SRC.TAG.NUMBER13>>
+	dtext 324 240 <EVAL <SRC.TAG.COLOR4>> <EVAL <SRC.TAG.NUMBER14>>
+ELSEIF !(<EVAL <SRC.TAG0.WON>>==1) && !(<EVAL <SRC.TAG0.LOST>>==1)
+	dtext 160 240 2300 Click play to get a random key!
+	dtext 137 260 2300 If your key is exactly the same as the
+	dtext 135 280 2300 winner one you win the current Jackpot.  
+	dtext 140 300 2300 Else, you win according to the number 
+	dtext 170 320 2300 of matches you have got.	
+ENDIF
+
+IF (<EVAL <SRC.TAG0.WON>>==1)
+	dtext 215 295 67 You WON!
+ELSEIF (<EVAL <SRC.TAG0.LOST>>==1)
+	dtext 215 295 37 You LOST!
+ENDIF
+	
+
+dtext 240 350 2300 Play!
+button 220 353 1209 1210 1 0 1
+
+[DIALOG d_gamblestone button]
+ON=0
+SRC.f_gamble_stone_cleantags
+
+ON=1
+
+IF (<SRC.FINDID.i_gamble_delay>)
+	SRC.SYSMESSAGE You need to wait <EVAL <SRC.FINDID.i_gamble_delay.TIMER>> before you can gamble again.
+	DIALOG d_gamblestone
+	RETURN 1
+ENDIF
+
+IF (<SRC.GOLD> >= <EVAL <TAG0.GOLDTOPLAY>>)
+	SRC.GOLD -= <EVAL <TAG0.GOLDTOPLAY>>
+	TAG.JACKPOT += <EVAL <TAG.GOLDTOPLAY>/5>
+	TAG.TIMESPLAYED += 1
+	TAG.ACCUMULATEDGOLDTOPLAY += <EVAL <TAG0.GOLDTOPLAY>>
+	TAG.ACCUMULATEDTIMESPLAYED += 1
+	
+	IF !(<SRC.ISGM>)
+		SERV.NEWITEM i_gamble_delay
+		NEW.EQUIP
+	ENDIF
+	
+	SRC.TAG.NUMBER1=<TAG.NUMBER1>
+	SRC.TAG.NUMBER2=<TAG.NUMBER2>
+	SRC.TAG.NUMBER3=<TAG.NUMBER3>
+	SRC.TAG.NUMBER4=<TAG.NUMBER4>
+	
+	SRC.TAG.NUMBER11=<TAG.NUMBER1>
+	SRC.TAG.NUMBER12=<TAG.NUMBER2>
+	SRC.TAG.NUMBER13=<TAG.NUMBER3>
+	SRC.TAG.NUMBER14=<TAG.NUMBER4>
+	
+	SRC.TAG.COLOR1=67
+	SRC.TAG.COLOR2=67
+	SRC.TAG.COLOR3=67
+	SRC.TAG.COLOR4=67
+	
+		IF RAND(<EVAL <TAG.JACKPOT>/<EVAL (<EVAL <TAG.TIMESPLAYED>-1>*<EVAL <TAG.GOLDTOPLAY>/200>)>>)=1
+			SRC.GOLD += <EVAL <TAG.JACKPOT>>
+			TAG.ACCUMULATEDGOLDGIVEN += <EVAL <TAG.JACKPOT>>
+			SRC.SYSMESSAGE @07a1 Congratulations! You won the Jackpot of <EVAL <TAG.JACKPOT>> gold!
+			SERV.LOG :GAMBLE STONE: <SRC.UID> SRC.ACCOUNT> <SRC.NAME> won the jackpot of <EVAL <TAG.JACKPOT>> gold from <UID> after <EVAL <TAG.TIMESPLAYED>-1> times played.
+				IF (<EVAL <TAG.JACKPOT>> > <EVAL <TAG.JACKPOTRECORD>>)
+					TAG.JACKPOTRECORD = <EVAL <TAG.JACKPOT>>
+				ENDIF
+			TAG.TIMESPLAYED=1
+			TAG.JACKPOT=<EVAL <EVAL <TAG.GOLDTOPLAY>*100>+<EVAL <EVAL <TAG.TIMESPLAYED>-1>*<EVAL <TAG.GOLDTOPLAY>/5>>>
+			SRC.TAG.WON=1
+			SRC.TAG.LOST=
+		ELSEIF RAND(<EVAL <TAG.JACKPOT>/<EVAL (<EVAL <TAG.TIMESPLAYED>-1>*<EVAL <TAG.GOLDTOPLAY>/100>)>>)=1
+			SRC.GOLD += <EVAL <TAG.GOLDTOPLAY>*5>
+			TAG.ACCUMULATEDGOLDGIVEN += <EVAL <TAG.GOLDTOPLAY>*5>
+			SRC.SYSMESSAGE Congratulations! You won <EVAL <TAG.GOLDTOPLAY>*5> gold!
+			SRC.f_gamble_stone_key_1
+			SRC.TAG.WON=1
+			SRC.TAG.LOST=
+		ELSEIF RAND(<EVAL <TAG.JACKPOT>/<EVAL (<EVAL <TAG.TIMESPLAYED>-1>*<EVAL <TAG.GOLDTOPLAY>/50>)>>)=1
+			SRC.GOLD += <EVAL (<TAG.GOLDTOPLAY>/2)*5>
+			TAG.ACCUMULATEDGOLDGIVEN += <EVAL (<TAG.GOLDTOPLAY>/2)*5>
+			SRC.SYSMESSAGE Congratulations! You won <EVAL (<TAG.GOLDTOPLAY>/2)*5> gold!
+			SRC.f_gamble_stone_key_2
+			SRC.TAG.WON=1
+			SRC.TAG.LOST=
+		ELSEIF RAND(<EVAL <TAG.JACKPOT>/<EVAL (<EVAL <TAG.TIMESPLAYED>-1>*<EVAL <TAG.GOLDTOPLAY>/25>)>>)=1
+			SRC.GOLD += <EVAL <TAG.GOLDTOPLAY>>
+			TAG.ACCUMULATEDGOLDGIVEN += <EVAL <TAG.GOLDTOPLAY>>
+			SRC.SYSMESSAGE Congratulations! You won <EVAL <TAG.GOLDTOPLAY>> gold!
+			SRC.f_gamble_stone_key_3
+			SRC.TAG.WON=1
+			SRC.TAG.LOST=
+		ELSE
+			SRC.SYSMESSAGE Too bad! You won nothing this time.
+			SRC.f_gamble_stone_key_4
+			SRC.TAG.WON=
+			SRC.TAG.LOST=1
+		ENDIF
+ELSE
+	SRC.SYSMESSAGE You need <EVAL <TAG.GOLDTOPLAY>> gold in order to gamble in this machine.
+ENDIF
+DIALOG d_gamblestone
+RETURN 1
+
+[FUNCTION f_gamble_stone_cleantags]
+SRC.TAG.NUMBER1=
+SRC.TAG.NUMBER2=
+SRC.TAG.NUMBER3=
+SRC.TAG.NUMBER4=
+
+SRC.TAG.NUMBER11=
+SRC.TAG.NUMBER12=
+SRC.TAG.NUMBER13=
+SRC.TAG.NUMBER14=
+
+SRC.TAG.COLOR1=
+SRC.TAG.COLOR2=
+SRC.TAG.COLOR3=
+SRC.TAG.COLOR4=
+
+SRC.TAG.WON=
+SRC.TAG.LOST=
+
+[FUNCTION f_gamble_stone_pick_wrong_number_1]
+DORAND 10
+	SRC.TAG.NUMBER11=0
+	SRC.TAG.NUMBER11=1
+	SRC.TAG.NUMBER11=2
+	SRC.TAG.NUMBER11=3
+	SRC.TAG.NUMBER11=4
+	SRC.TAG.NUMBER11=5
+	SRC.TAG.NUMBER11=6
+	SRC.TAG.NUMBER11=7
+	SRC.TAG.NUMBER11=8
+	SRC.TAG.NUMBER11=9
+ENDDO
+IF (<EVAL <SRC.TAG0.NUMBER11>> == <EVAL <SRC.TAG0.NUMBER1>>)
+	SRC.f_gamble_stone_pick_wrong_number_1
+ENDIF
+SRC.TAG.COLOR1=37
+
+[FUNCTION f_gamble_stone_pick_wrong_number_2]
+DORAND 10
+	SRC.TAG.NUMBER12=0
+	SRC.TAG.NUMBER12=1
+	SRC.TAG.NUMBER12=2
+	SRC.TAG.NUMBER12=3
+	SRC.TAG.NUMBER12=4
+	SRC.TAG.NUMBER12=5
+	SRC.TAG.NUMBER12=6
+	SRC.TAG.NUMBER12=7
+	SRC.TAG.NUMBER12=8
+	SRC.TAG.NUMBER12=9
+ENDDO
+IF (<EVAL <SRC.TAG0.NUMBER12>> == <EVAL <SRC.TAG0.NUMBER2>>)
+	SRC.f_gamble_stone_pick_wrong_number_2
+ENDIF
+SRC.TAG.COLOR2=37
+
+[FUNCTION f_gamble_stone_pick_wrong_number_3]
+DORAND 10
+	SRC.TAG.NUMBER13=0
+	SRC.TAG.NUMBER13=1
+	SRC.TAG.NUMBER13=2
+	SRC.TAG.NUMBER13=3
+	SRC.TAG.NUMBER13=4
+	SRC.TAG.NUMBER13=5
+	SRC.TAG.NUMBER13=6
+	SRC.TAG.NUMBER13=7
+	SRC.TAG.NUMBER13=8
+	SRC.TAG.NUMBER13=9
+ENDDO
+IF (<EVAL <SRC.TAG0.NUMBER13>> == <EVAL <SRC.TAG0.NUMBER3>>)
+	SRC.f_gamble_stone_pick_wrong_number_3
+ENDIF
+SRC.TAG.COLOR3=37
+
+[FUNCTION f_gamble_stone_pick_wrong_number_4]
+DORAND 10
+	SRC.TAG.NUMBER14=0
+	SRC.TAG.NUMBER14=1
+	SRC.TAG.NUMBER14=2
+	SRC.TAG.NUMBER14=3
+	SRC.TAG.NUMBER14=4
+	SRC.TAG.NUMBER14=5
+	SRC.TAG.NUMBER14=6
+	SRC.TAG.NUMBER14=7
+	SRC.TAG.NUMBER14=8
+	SRC.TAG.NUMBER14=9
+ENDDO
+IF (<EVAL <SRC.TAG0.NUMBER14>> == <EVAL <SRC.TAG0.NUMBER4>>)
+	SRC.f_gamble_stone_pick_wrong_number_4
+ENDIF
+SRC.TAG.COLOR4=37
+
+
+[FUNCTION f_gamble_stone_key_1]
+// Pick 1 random wrong number for one random position
+DORAND 4
+SRC.f_gamble_stone_pick_wrong_number_1
+SRC.f_gamble_stone_pick_wrong_number_2
+SRC.f_gamble_stone_pick_wrong_number_3
+SRC.f_gamble_stone_pick_wrong_number_4
+ENDDO
+
+[FUNCTION f_gamble_stone_key_2]
+// Pick 2 random wrong numbers for two random positions
+DORAND 6
+	BEGIN // The first and the second numbers are wrong, so pick wrong numbers to replace them
+		SRC.f_gamble_stone_pick_wrong_number_1
+		SRC.f_gamble_stone_pick_wrong_number_2
+	END
+	BEGIN // The first and the third numbers are wrong, so pick wrong numbers to replace them
+		SRC.f_gamble_stone_pick_wrong_number_1
+		SRC.f_gamble_stone_pick_wrong_number_3
+	END
+	BEGIN // The first and the fourth numbers are wrong, so pick wrong numbers to replace them
+		SRC.f_gamble_stone_pick_wrong_number_1
+		SRC.f_gamble_stone_pick_wrong_number_4
+	END
+	BEGIN // The second and the third numbers are wrong, so pick wrong numbers to replace them
+		SRC.f_gamble_stone_pick_wrong_number_2
+		SRC.f_gamble_stone_pick_wrong_number_3
+	END
+	BEGIN // The second and the fourth numbers are wrong, so pick wrong numbers to replace them
+		SRC.f_gamble_stone_pick_wrong_number_2
+		SRC.f_gamble_stone_pick_wrong_number_4
+	END
+	BEGIN // The third and the fourth numbers are wrong, so pick wrong numbers to replace them
+		SRC.f_gamble_stone_pick_wrong_number_3
+		SRC.f_gamble_stone_pick_wrong_number_4
+	END
+ENDDO
+	
+[FUNCTION f_gamble_stone_key_3]
+// Pick 3 random wrong numbers for 3 random positions
+DORAND 4
+	BEGIN // The first, the second and the third numbers are wrong, so pick wrong numbers to replace them
+		SRC.f_gamble_stone_pick_wrong_number_1
+		SRC.f_gamble_stone_pick_wrong_number_2
+		SRC.f_gamble_stone_pick_wrong_number_3
+	END
+	BEGIN // The first, the second and the fourth numbers are wrong, so pick wrong numbers to replace them
+		SRC.f_gamble_stone_pick_wrong_number_1
+		SRC.f_gamble_stone_pick_wrong_number_2
+		SRC.f_gamble_stone_pick_wrong_number_4
+	END
+	BEGIN // The first, the third and the fourth numbers are wrong, so pick wrong numbers to replace them
+		SRC.f_gamble_stone_pick_wrong_number_1
+		SRC.f_gamble_stone_pick_wrong_number_3
+		SRC.f_gamble_stone_pick_wrong_number_4
+	END
+	BEGIN // The second, the third and the fourth numbers are wrong, so pick wrong numbers to replace them
+		SRC.f_gamble_stone_pick_wrong_number_2
+		SRC.f_gamble_stone_pick_wrong_number_3
+		SRC.f_gamble_stone_pick_wrong_number_4
+	END
+ENDDO
+
+	
+[FUNCTION f_gamble_stone_key_4]
+// Pick 4 random wrong numbers for all positions
+SRC.f_gamble_stone_pick_wrong_number_1
+SRC.f_gamble_stone_pick_wrong_number_2
+SRC.f_gamble_stone_pick_wrong_number_3
+SRC.f_gamble_stone_pick_wrong_number_4			
+
+
+[ITEMDEF i_gamble_delay]
+NAME=Gamble Timer
+ID=i_memory
+TYPE=t_eq_script
+
+ON=@CREATE
+TIMER=2
+
+ON=@TIMER
+   REMOVE
+   RETURN 1

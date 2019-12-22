@@ -1,0 +1,1214 @@
+//Wren Feb 16 '04 - add eval on line 173 to get rid of error
+/////////////////////////
+//// Ranger Quest //////
+//// By SQWEAK ////////
+//////////////////////
+///////////////////// ***** SPEECH FILES *****
+
+[SPEECH jobdoorkeeper] 
+on=*hi* 
+on=*hello*
+on=*hail*
+on=*Greetings*
+on=*quest*
+SAY Go away, we are closed. Can't you read the sign?
+
+on=*It never rains in Yew*
+IF ((0<SRC.TAG.Ranger> = 03) || (0<SRC.TAG.Ranger> = 04))
+SAY Ok, Ok... Luke Teleport him in!!!
+SRC.GO 1690,1550,45
+SRC.TAG.Ranger = 4
+RETURN 1
+ENDIF
+
+
+[SPEECH jobforger] 
+on=*hi* 
+on=*hello*
+on=*hail*
+on=*Greetings*
+on=*quest*
+
+IF (<SRC.TAG0.sealbroken> == 0)
+SAY You do not need me, go away.
+ENDIF
+
+ON=*fix*
+ON=*scroll*
+IF (<SRC.TAG0.sealbroken> == 01)
+SAY I see, easy job. It is not worth charging to fix. Do you agree to this?
+GREEN_SYSMSG Say AGREE to fix the message.
+RETURN 1
+ENDIF
+
+ON=*agree*
+SAY Ok, I'll fix it. No charge.
+SRC.TAG.sealbroken=0
+
+IF <SRC.RESTEST i_rangermessage1 1> 
+SRC.NEWITEM=i_rangermessage 
+SRC.ACT.BOUNCE 
+SOUND=01FC 
+GREEN_SYSMSG The scroll has now been fixed.
+SRC.CONSUME i_rangermessage1
+SAY Try not to let it happen again!
+NEWITEM i_quest_remover
+ACT.CONT = CONT.UID
+RETURN 1
+ENDIF
+
+[SPEECH jobranger] 
+on=*hi* 
+on=*hello*
+on=*hail*
+on=*Greetings*
+on=*quest*
+
+IF ( 0<SRC.TAG.Ranger> > 0 )
+SAY Haven't you got a job to do?
+RETURN 1
+
+ELSE
+SAY Can you take this important scroll to my friend Belek in Vesper? He can normally be found in the bar. 
+GREEN_SYSMSG Say ACCEPT to take the message.
+RETURN 1 
+
+on=*where*
+SAY Didn't I tell you in Vesper? It is near to a small mining town.
+RETURN 1
+ENDIF
+
+on=*Accept*
+IF (<SRC.TAG0.Ranger> == 0)
+SRC.TAG.ranger=1 
+SAY=Oh! Thank you. Be careful of the seal, it can be easily broken.
+SRC.NEWITEM=i_rangermessage 
+SRC.ACT.BOUNCE 
+SOUND=01FC 
+RETURN 1
+ELSE
+SAY You are already on this quest!
+RETURN 1
+ENDIF
+
+[SPEECH jobranger1] 
+on=*hi* 
+on=*hello*
+on=*hail*
+on=*Greetings*
+on=*quest*
+IF (<SRC.TAG0.Ranger> == 0) 
+SAY Go away fool, I am waiting for someone important.
+RETURN 1 
+ENDIF
+
+IF (<SRC.TAG0.Ranger> = 02)
+SAY You have not brought my lost goods back! Talk to me when you have finished.
+RETURN 1 
+ENDIF
+
+IF (<SRC.TAG0.Ranger> == 05)
+SAY I've dealt with you before go away.
+RETURN 1 
+ELSE
+SAY If you have my message just say, "I have your message" and we will go about some business.
+RETURN 1 
+ENDIF
+
+on=*where*
+SAY Didn't I tell you in Yew Crypts... It is deep in Yew Forest.
+
+on=*I have your message*
+
+IF ( 0<SRC.TAG.sealbroken> = 01 ) 
+SAY What is this? It is broken. THE SEAL IS BROKEN!!! I can't trust, you can go away!!!
+SRC.TAG.ranger=5
+RED_SYSMSG You have failed the quest. You won't be able to complete it now.
+RETURN 1
+
+ELSE
+SAY Glad you can help. An Evil Mage has stolen a valuable item of mine, a Golden Staff. I know he has taken it to Yew Crypts and placed it in a Large Silver Chest.
+SAY Can you recover the staff? I will give you 100.000gps reward, then find me again and say “REWARD” to fulfill our contract.
+SRC.TAG.ranger=2
+SRC.consume i_rangermessage
+SOUND=01FC        
+return 1
+endif
+
+[SPEECH joblocal1] 
+on=*I have your message* 
+SAY Sounds a bit too easy to.. I don't trust that strange ranger.
+EMOTE sips more beer
+RETURN 1
+
+[SPEECH joblocal2] 
+on=*hello* 
+SAY I know what you mean.. untrustworthy.. shifty eyes!
+EMOTE Burp
+RETURN 1
+
+/////////// ITEMS FOR QUESTS ///////////////////
+
+[ITEMDEF i_rangermessage] 
+ID=i_scroll_blank 
+TYPE=0
+NAME=Sealed Message for Balak
+
+ON=@Click
+SRC.MESSAGE The scroll has a wax seal, it can be easily broken open.
+RETURN 1 
+
+ON=@DClick 
+SRC.MESSAGE You break the seal... inside it says "This adventurer looks like a good candidate".
+SRC.TAG.sealbroken=1 
+SRC.CONSUME i_rangermessage
+SRC.NEWITEM=i_rangermessage1 
+SRC.ACT.BOUNCE 
+SOUND=01FC 
+RETURN 1 
+
+[ITEMDEF i_rangermessage1] 
+ID=i_scroll_blank 
+TYPE=0
+NAME=Message for Balak (seal is broken)
+
+ON=@Click
+SRC.MESSAGE The scroll did have a wax seal... maybe it can be fixed.
+RETURN 1 
+
+ON=@DClick 
+SRC.MESSAGE Upon closer inspection, you remember a forger in Skara Brae that might help. If you find the forger he may be able to fix it!
+RETURN 1 
+
+[ITEMDEF i_RQchest] 
+ID=0e40
+TYPE=t_script
+NAME=Large Silver Chest
+ON=@CREATE
+ATTR=00010
+COLOR=08fd
+
+on=@dclick
+IF (<EVAL <SRC.TAG0.Ranger>> == 02)
+SRC.DAMAGE {40 60}
+SRC.MESSAGE You set off a poisoned smoke cloud!
+SRC.NEWITEM i_transform_smoke
+SRC.ACT.P=<P>
+SRC.ACT.UPDATE
+REMOVE
+/// add the 4 NPCS in room and 2 archers outside.
+SRC.NEWNPC C_H_RangerQQ1
+P = 1012,709,0
+SRC.ACT.P=<p>
+SRC.ACT.UPDATE 
+SRC.NEWNPC C_H_RangerQQ2
+p = 1017,709,0
+SRC.ACT.P=<p> 
+SRC.ACT.UPDATE
+SRC.NEWNPC C_H_RangerQQ3
+p = 1012,701,0
+SRC.ACT.P=<p>
+SRC.ACT.UPDATE 
+SRC.NEWNPC C_H_RangerQQ3
+p = 1018,701,0
+SRC.ACT.P=<p> 
+SRC.ACT.UPDATE
+SRC.NEWNPC C_H_RangerQQ3
+p = 1014,696,0
+ACT.P=<p> 
+SRC.ACT.UPDATE
+SRC.NEWNPC C_H_RangerQQ3
+p = 1014,698,0
+ACT.P=<p>
+SRC.ACT.UPDATE
+SRC.TAG.Ranger = 3
+SRC.MESSAGE AMBUSH!!!!!!!!!
+SOUND=024a
+SRC.EMOTE been Tricked. IT IS AN AMBUSH!!!!
+SRC.MESSAGE Dark Rangers appear from the Shadows. Swords in their hands,and smiles on their faces!
+p = 1015,707,0
+ACT.P=<p>
+SRC.ACT.UPDATE
+RETURN 1
+ELSE
+SRC.MESSAGE Nothing happens.
+RETURN 1
+endif
+
+CATEGORY=Imperial uo
+SUBSECTION=Ranger Quest
+DESCRIPTION=trick chest
+
+[ITEMDEF i_Maprangerquest] 
+ID=014ec
+TYPE=t_script
+NAME=Map Showing Location of Dark Rangers Hide Out
+
+ON=@DClick
+SRC.MESSAGE This shows that the rangers HQ is in Britain in the shoe factory.
+RETURN 1
+
+[ITEMDEF i_passwordscroll] 
+ID=014ed
+TYPE=t_script
+NAME=Rolled up Parchment
+
+ON=@DClick
+SRC.MESSAGE Today's password is "It never rains in Yew".
+RETURN 1
+
+[ITEMDEF i_door1] 
+ID=06a5
+TYPE=t_door_locked
+NAME=Door
+
+ON=@DClick
+SRC.MESSAGE The door is firmly shut. Barred from the other side.
+RETURN 1
+
+[ITEMDEF i_door2] 
+ID=06a7
+TYPE=t_door_locked
+NAME=Door
+
+ON=@DClick
+SRC.MESSAGE There is a sign on the door... "CLOSED"... To enter say the password.
+
+[ITEMDEF i_gatetoden] 
+ID=i_moongate_blue
+TYPE=t_telepad
+NAME=Shimmering Teleporter
+
+
+ON=@step
+IF (0<SRC.TAG.Ranger> = 4)
+SRC.go 5248,1756,0
+SRC.MESSAGE You enter The Dark Rangers Den! Suddenly you realize there is only one way out! 
+endif
+ELSE
+SRC.MESSAGE You do not have permission to use this.
+return 1
+
+[ITEMDEF i_moongate_home] 
+ID=i_moongate_blue
+TYPE=t_telepad
+NAME=Shimmering Teleporter To Britain
+
+
+ON=@step
+SRC.go 1495,1629,10
+SRC.MESSAGE You are teleported back to safety.
+RETURN 1
+
+[ITEMDEF i_statdrag] 
+DEFNAME=i_statdrag 
+ID=i_pet_dragon 
+NAME=Dark Ranger Dragon Statue
+TYPE=t_normal 
+
+on=@create 
+COLOR=076b
+ATTR=00 
+
+on=@dclick 
+SOUND=snd_MONSTER_DRAGON1 
+
+CATEGORY=Imperial uo
+SUBSECTION=Ranger Quest Statues 
+DESCRIPTION=ranger quest reward
+
+///////////////////// ***** CHARACTERS **************
+
+[CHARDEF C_H_RangerQ1] 
+DEFNAME=C_H_RangerQ1
+NAME=Morrian
+ID=C_MAN 
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_run|MT_MALE
+DAM=15,20 
+ARMOR=20 
+TSPEECH=jobranger
+
+ON=@Create 
+TITLE=Ranger 
+color=colors_skin
+STR		= {250 300}
+DEX		= {80 110}
+INT		= {71 85}
+
+NPC		= brain_human
+PARRYING	= {75.0 80.0}
+SWORDSMANSHIP	= {80.0 90.0}
+MACEFIGHTING	= {80.0 90.0}
+FENCING	= {80.0 90.0}
+WRESTLING	= {87.0 90.0}
+MAGICRESISTANCE={65.0 88.0}
+TACTICS	= {80.0 90.0}
+DETECTION	= {40.0 50.0}
+ANATOMY       = {70.0 90.0}
+FAME		= 3000
+KARMA		= 4000
+ITEMNEWBIE=i_hair_long
+COLOR=08fd
+
+on=@npcrestock
+ITEM=i_sword_great
+ITEM=I_SHIELD_KITE_WOOD
+ITEM=i_CAPE
+COLOR=045e
+ITEM=i_SASH
+COLOR=0599
+ITEMNEWBIE=i_leather_sleeves
+COLOR=0599
+ITEMNEWBIE=i_leather_tunic
+COLOR=045e
+ITEMNEWBIE=i_leather_gloves
+COLOR=045e
+ITEMNEWBIE=i_leather_leggings
+COLOR=0599
+ITEMNEWBIE=i_leather_gorget
+COLOR=045e
+ITEM=i_boots_calf
+COLOR=045e
+
+
+on=@gethit 
+return 1 
+
+On=@NPCSeeNewPlayer 
+say Hail, <SRC.SEX Sir/Lady>, Can you help me?
+
+ON=@CLICK
+MESSAGE @0AFE [Quest NPC]
+
+CATEGORY=Imperial uo
+SUBSECTION=Ranger Quest
+DESCRIPTION=RANGERQ1
+
+[CHARDEF C_H_RangerQ3] 
+DEFNAME=C_H_RangerQ3
+NAME=Morrian
+ID=C_MAN 
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_run|MT_MALE
+DAM=30,43
+ARMOR=50 
+
+ON=@Create
+TITLE=Ranger 
+NPC=brain_human 
+  STR		= {250 300}
+  DEX		= {80 110}
+  INT		= {71 85}
+  NPC		= brain_human
+  PARRYING	= {75.0 80.0}
+  SWORDSMANSHIP	= {80.0 90.0}
+  MACEFIGHTING	= {80.0 90.0}
+  FENCING	= {80.0 90.0}
+  WRESTLING	= {87.0 90.0}
+  MAGICRESISTANCE={65.0 88.0}
+  TACTICS	= {80.0 90.0}
+  DETECTION	= {40.0 50.0}
+  ANATOMY       = {70.0 90.0}
+  FAME		= 3000
+  KARMA		= -4000
+ITEMNEWBIE=i_hair_long
+COLOR=08fd
+
+ON=@NPCRestock
+ITEM=i_sword_great
+ITEMNEWBIE=I_SHIELD_KITE_WOOD
+COLOR=0845
+ITEM=i_CAPE
+COLOR=045e
+ITEM=i_SASH
+COLOR=0599
+ITEMNEWBIE=i_leather_sleeves
+COLOR=0599
+ITEMNEWBIE=i_leather_tunic
+COLOR=045e
+ITEMNEWBIE=i_leather_gloves
+COLOR=045e
+ITEMNEWBIE=i_leather_leggings
+COLOR=0599
+ITEMNEWBIE=i_leather_gorget
+COLOR=045e
+ITEM=i_boots_calf
+COLOR=045e
+
+
+On=@NPCSeeNewPlayer 
+say Hail, <SRC.SEX Sir/Lady>, INTRUDER!!! Kill Him.
+
+CATEGORY=Imperial uo
+SUBSECTION=Ranger Quest
+DESCRIPTION=RANGERQ3
+
+[CHARDEF C_H_RangerQ2] 
+DEFNAME=C_H_RangerQ2
+NAME=Belek
+ID=C_MAN 
+DAM=15,20 
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_run|MT_MALE
+ARMOR=20 
+ 
+
+TSPEECH=jobranger1
+TEVENTS=e_npc_quest
+
+
+CATEGORY=Imperial uo
+SUBSECTION=Ranger Quest
+DESCRIPTION=RANGERQ2
+
+ON=@Create 
+TITLE=Ranger
+ STR		= {250 300}
+  DEX		= {80 110}
+  INT		= {71 85}
+  NPC		= brain_human
+  PARRYING	= {75.0 80.0}
+  SWORDSMANSHIP	= {80.0 90.0}
+  MACEFIGHTING	= {80.0 90.0}
+  FENCING	= {80.0 90.0}
+  WRESTLING	= {87.0 90.0}
+  MAGICRESISTANCE={65.0 88.0}
+  TACTICS	= {80.0 90.0}
+  DETECTION	= {40.0 50.0}
+  ANATOMY       = {70.0 90.0}
+  FAME		= 3000
+  KARMA		= 4000
+
+
+NPC=brain_human 
+ITEMNEWBIE=i_hair_long
+COLOR=08fd
+
+
+ON=@NPCRestock
+ITEM=i_sword_great
+ITEM=I_SHIELD_KITE_WOOD
+ITEM=i_CAPE
+COLOR=045e
+ITEM=i_SASH
+COLOR=0599
+ITEMNEWBIE=i_leather_sleeves
+COLOR=0599
+ITEMNEWBIE=i_leather_tunic
+COLOR=045e
+ITEMNEWBIE=i_leather_gloves
+COLOR=045e
+ITEMNEWBIE=i_leather_leggings
+COLOR=0599
+ITEMNEWBIE=i_leather_gorget
+COLOR=045e
+ITEM=i_boots_calf
+COLOR=045e
+
+
+On=@NPCSeeNewPlayer 
+SAY Hail, <SRC.SEX Sir/Lady>, Anything I can do for you?
+
+
+[CHARDEF C_H_RangerQ4] 
+DEFNAME=C_H_RangerQ4
+NAME=Belek
+ID=C_MAN 
+DAM=20,36 
+ARMOR=36 
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_run|MT_MALE
+
+
+ON=@Create 
+TITLE=Ranger
+COLOR=colors_skin 
+  STR		= {250 300}
+  DEX		= {80 110}
+  INT		= {71 85}
+  NPC		= brain_human
+  PARRYING	= {75.0 80.0}
+  SWORDSMANSHIP	= {80.0 90.0}
+  MACEFIGHTING	= {80.0 90.0}
+  FENCING	= {80.0 90.0}
+  WRESTLING	= {87.0 90.0}
+  MAGICRESISTANCE={65.0 88.0}
+  TACTICS	= {80.0 90.0}
+  DETECTION	= {40.0 50.0}
+  ANATOMY       = {70.0 90.0}
+  FAME		= 3000
+  KARMA		= -4000
+ITEMNEWBIE=i_hair_long
+COLOR=08fd
+ON=@NPCRestock
+ITEM=i_sword_great
+ITEM=I_SHIELD_KITE_WOOD
+COLOR=0845
+ITEM=i_CAPE
+COLOR=045e
+ITEM=i_SASH
+COLOR=0599
+ITEMNEWBIE=i_leather_sleeves
+COLOR=0599
+ITEMNEWBIE=i_leather_tunic
+COLOR=045e
+ITEMNEWBIE=i_leather_gloves
+COLOR=045e
+ITEMNEWBIE=i_leather_leggings
+COLOR=0599
+ITEMNEWBIE=i_leather_gorget
+COLOR=045e
+ITEM=i_boots_calf
+COLOR=045e
+
+
+On=@NPCSeeNewPlayer 
+say Hail, <SRC.SEX Sir/Lady>, You will taste the steel of my blade.
+
+
+CATEGORY=Imperial uo
+SUBSECTION=Ranger Quest
+DESCRIPTION=RANGERQ2
+
+[CHARDEF C_H_Forger] 
+DEFNAME=C_H_Forger
+NAME=Tono Groopa
+ID=C_MAN
+DAM=15,20 
+ARMOR=20 
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_run|MT_MALE
+
+TSPEECH=jobforger
+TEVENTS=e_npc_quest
+
+CATEGORY=Imperial uo
+SUBSECTION=Ranger Quest
+DESCRIPTION=Forger
+
+ON=@Create 
+STR={151 165} 
+DEX={80 120} 
+INT={151 165}
+TITLE=Forger 
+DETECTION={90.0 100.0} 
+FENCING={90.0 100.0} 
+PARRYING={90.0 100.0} 
+SWORDSMANSHIP={90.0 100.0} 
+WRESTLING={90.0 100.0} 
+MACEFIGHTING={90.0 100.0} 
+MAGICRESISTANCE={90.0 100.0} 
+TACTICS={90.0 100.0} 
+NPC=brain_human 
+COLOR=colors_skin 
+ITEMNEWBIE=random_male_hair 
+COLOR=colors_hair 
+ITEMNEWBIE=random_facial_hair 
+COLOR=match_hair 
+ 
+
+ON=@NPCRestock
+ITEM=i_shirt_plain 
+ITEM=random_pants 
+ITEM=01710
+
+On=@NPCSeeNewPlayer 
+IF (<SRC.TAG0.sealbroken> == 01)
+SAY You look worried do you need my help?
+ELSE
+SAY Whistle while we work. la la la
+ENDIF
+
+[CHARDEF C_H_local1] 
+DEFNAME=C_H_local1
+NAME=Barney
+ID=C_MAN 
+DAM=15,20 
+ARMOR=20 
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_run|MT_MALE
+TSPEECH=joblocal1
+
+
+CATEGORY=Imperial uo
+SUBSECTION=Ranger Quest
+DESCRIPTION=local 1
+
+ON=@Create 
+NPC=brain_human 
+COLOR=colors_skin 
+STR={151 165} 
+DEX={80 120} 
+INT={151 165} 
+DETECTION={50.0 60.0}  
+FENCING={50.0 60.0} 
+PARRYING={50.0 60.0} 
+SWORDSMANSHIP={50.0 60.0} 
+WRESTLING={50.0 60.0} 
+MACEFIGHTING={50.0 60.0} 
+MAGICRESISTANCE={50.0 60.0} 
+TACTICS={50.0 60.0} 
+
+ITEMNEWBIE=random_male_hair 
+COLOR=colors_hair 
+ITEMNEWBIE=random_facial_hair 
+COLOR=match_hair
+ 
+
+ON=@NPCRestock
+ITEM=i_shirt_plain 
+ITEM=random_pants 
+ITEM=01710
+
+On=@NPCSeeNewPlayer 
+SAY More beer here, barman!
+SAY Hic!
+
+[CHARDEF C_H_local2] 
+DEFNAME=C_H_local2
+NAME=Charlie
+ID=C_MAN 
+DAM=15,20 
+ARMOR=20 
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_run|MT_MALE
+TSPEECH=joblocal2
+
+
+CATEGORY=Imperial uo
+SUBSECTION=Ranger Quest
+DESCRIPTION=local 2
+
+ON=@Create 
+NPC=brain_human 
+COLOR=colors_skin 
+STR={151 165} 
+DEX={80 120} 
+INT={151 165} 
+DETECTION={50.0 60.0} 
+FENCING={50.0 60.0} 
+PARRYING={50.0 60.0} 
+SWORDSMANSHIP={50.0 60.0} 
+WRESTLING={50.0 60.0} 
+MACEFIGHTING={50.0 60.0} 
+MAGICRESISTANCE={50.0 60.0} 
+TACTICS={50.0 60.0} 
+
+ITEMNEWBIE=random_male_hair 
+COLOR=colors_hair 
+ITEMNEWBIE=random_facial_hair 
+COLOR=match_hair 
+
+ON=@NPCRestock
+ITEM=i_shirt_plain 
+ITEM=random_pants 
+ITEM=01710
+
+On=@NPCSeeNewPlayer 
+SAY More beer here, barman!
+
+
+[CHARDEF C_H_RangerQQ1] 
+DEFNAME=C_H_RangerQQ1
+NAME=Dark Ranger
+ID=C_MAN 
+DAM=20,33
+ARMOR=25,30 
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_run|MT_MALE
+
+
+
+ON=@Create 
+  STR		= {250 300}
+  DEX		= {80 110}
+  INT		= {71 85}
+  NPC		= brain_human
+  PARRYING	= {65.0 80.0}
+  SWORDSMANSHIP	= {60.0 90.0}
+  MACEFIGHTING	= {60.0 90.0}
+  FENCING	= {60.0 90.0}
+  WRESTLING	= {67.0 90.0}
+  MAGICRESISTANCE={65.0 88.0}
+  TACTICS	= {60.0 90.0}
+  DETECTION	= {40.0 50.0}
+  ANATOMY       = {70.0 90.0}
+  FAME		= 1500,2000
+  KARMA		= -3100,-4000
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+
+ON=@NPCRestock
+ITEM=i_sword_great
+ITEMNEWBIE=I_SHIELD_KITE_WOOD
+COLOR=0845
+ITEM=i_CAPE
+COLOR=colors_green
+ITEMNEWBIE=i_leather_sleeves
+COLOR=colors_green
+ITEMNEWBIE=i_leather_tunic
+COLOR=colors_green
+ITEMNEWBIE=i_leather_gloves
+COLOR=colors_green
+ITEMNEWBIE=i_leather_leggings
+COLOR=colors_green
+ITEMNEWBIE=i_leather_gorget
+COLOR=colors_green
+ITEM=i_boots_calf
+COLOR=colors_green
+ITEM=i_passwordscroll
+
+
+
+CATEGORY=Imperial uo
+SUBSECTION=Ranger Quest
+DESCRIPTION=Dark Rangers (password)
+
+[CHARDEF C_H_RangerQQ2] 
+DEFNAME=C_H_RangerQQ2
+NAME=Dark Ranger
+ID=C_MAN 
+DAM=20,33
+ARMOR=25,30 
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_run|MT_MALE
+
+
+
+ON=@Create 
+  STR		= {250 300}
+  DEX		= {80 110}
+  INT		= {71 85}
+  NPC		= brain_human
+  PARRYING	= {65.0 80.0}
+  SWORDSMANSHIP	= {60.0 90.0}
+  MACEFIGHTING	= {60.0 90.0}
+  FENCING	= {60.0 90.0}
+  WRESTLING	= {67.0 90.0}
+  MAGICRESISTANCE={65.0 88.0}
+  TACTICS	= {60.0 90.0}
+  DETECTION	= {40.0 50.0}
+  ANATOMY       = {70.0 90.0}
+  FAME		= 1500,2000
+  KARMA		= -3100,-4000
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+
+ON=@NPCRestock
+ITEM=i_sword_great
+ITEMNEWBIE=I_SHIELD_KITE_WOOD
+COLOR=0845
+ITEM=i_CAPE
+COLOR=colors_green
+ITEMNEWBIE=i_leather_sleeves
+COLOR=colors_green
+ITEMNEWBIE=i_leather_tunic
+COLOR=colors_green
+ITEMNEWBIE=i_leather_gloves
+COLOR=colors_green
+ITEMNEWBIE=i_leather_leggings
+COLOR=colors_green
+ITEMNEWBIE=i_leather_gorget
+COLOR=colors_green
+ITEM=i_boots_calf
+COLOR=colors_green
+ITEM=i_Maprangerquest
+
+
+CATEGORY=Imperial uo
+SUBSECTION=Ranger Quest
+DESCRIPTION=Dark Rangers (location)
+
+[CHARDEF C_H_RangerQQ3] 
+DEFNAME=C_H_RangerQQ3
+NAME=Dark Ranger
+ID=C_MAN 
+DAM=20,33
+ARMOR=25,30 
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_run|MT_MALE
+
+
+
+ON=@Create 
+  STR		= {150 250}
+  DEX		= {80 110}
+  INT		= {71 85}
+  NPC		= brain_human
+  PARRYING	= {65.0 80.0}
+  SWORDSMANSHIP	= {60.0 90.0}
+  MACEFIGHTING	= {60.0 90.0}
+  FENCING	= {60.0 90.0}
+  WRESTLING	= {67.0 90.0}
+  MAGICRESISTANCE={65.0 88.0}
+  TACTICS	= {60.0 90.0}
+  DETECTION	= {40.0 50.0}
+  ANATOMY       = {70.0 90.0}
+  FAME		= 1500,2000
+  KARMA		= -3100,-4000
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+
+ON=@NPCRestock
+ITEM=i_sword_great
+ITEMNEWBIE=I_SHIELD_KITE_WOOD
+COLOR=0845
+ITEM=i_CAPE
+COLOR=colors_green
+ITEMNEWBIE=i_leather_sleeves
+COLOR=colors_green
+ITEMNEWBIE=i_leather_tunic
+COLOR=colors_green
+ITEMNEWBIE=i_leather_gloves
+COLOR=colors_green
+ITEMNEWBIE=i_leather_leggings
+COLOR=colors_green
+ITEMNEWBIE=i_leather_gorget
+COLOR=colors_green
+ITEM=i_boots_calf
+COLOR=colors_green
+
+CATEGORY=Imperial uo
+SUBSECTION=Ranger Quest
+DESCRIPTION=Dark Rangers (medium)
+
+[CHARDEF C_H_RangerQQ4] 
+DEFNAME=C_H_RangerQQ4
+NAME=Ranger
+ID=C_MAN 
+DAM=20,33
+ARMOR=25,30 
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_run|MT_MALE
+
+
+
+ON=@Create 
+  STR		= {250 300}
+  DEX		= {80 110}
+  INT		= {71 85}
+  NPC		= brain_human
+  PARRYING	= {65.0 80.0}
+  SWORDSMANSHIP	= {60.0 90.0}
+  MACEFIGHTING	= {60.0 90.0}
+  FENCING	= {60.0 90.0}
+  WRESTLING	= {67.0 90.0}
+  MAGICRESISTANCE={65.0 88.0}
+  TACTICS	= {60.0 90.0}
+  DETECTION	= {40.0 50.0}
+  ANATOMY       = {70.0 90.0}
+  FAME		= 1500,2000
+  KARMA		= 3100,4000
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+
+ON=@NPCRestock
+ITEM=i_sword_great
+ITEMNEWBIE=I_SHIELD_KITE_WOOD
+COLOR=0845
+ITEM=i_CAPE
+COLOR=colors_green
+ITEMNEWBIE=i_leather_sleeves
+COLOR=colors_green
+ITEMNEWBIE=i_leather_tunic
+COLOR=colors_green
+ITEMNEWBIE=i_leather_gloves
+COLOR=colors_green
+ITEMNEWBIE=i_leather_leggings
+COLOR=colors_green
+ITEMNEWBIE=i_leather_gorget
+COLOR=colors_green
+ITEM=i_boots_calf
+COLOR=colors_green
+
+
+CATEGORY=Imperial uo
+SUBSECTION=Ranger Quest
+DESCRIPTION=Dark Rangers (shoe ranger)
+
+[CHARDEF C_H_RangerQQ5] 
+DEFNAME=C_H_RangerQQ5
+NAME=Aran Shiftblade
+ID=C_MAN 
+DAM=20,33
+ARMOR=25,30 
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_run|MT_MALE
+
+TSPEECH=jobdoorkeeper
+TEVENTS=e_npc_quest
+
+ON=@Create 
+  STR		= {250 300}
+  DEX		= {80 110}
+  INT		= {71 85}
+  NPC		= brain_human
+  PARRYING	= {65.0 80.0}
+  SWORDSMANSHIP	= {60.0 90.0}
+  MACEFIGHTING	= {60.0 90.0}
+  FENCING	= {60.0 90.0}
+  WRESTLING	= {67.0 90.0}
+  MAGICRESISTANCE={65.0 88.0}
+  TACTICS	= {60.0 90.0}
+  DETECTION	= {40.0 50.0}
+  ANATOMY       = {70.0 90.0}
+  FAME		= 1500,2000
+  KARMA		= 3100,4000
+
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+
+ON=@NPCRestock
+ITEM=i_sword_great
+ITEMNEWBIE=I_SHIELD_KITE_WOOD
+COLOR=0845
+ITEM=i_CAPE
+COLOR=colors_green
+ITEMNEWBIE=i_leather_sleeves
+COLOR=colors_green
+ITEMNEWBIE=i_leather_tunic
+COLOR=colors_green
+ITEMNEWBIE=i_leather_gloves
+COLOR=colors_green
+ITEMNEWBIE=i_leather_leggings
+COLOR=colors_green
+ITEMNEWBIE=i_leather_gorget
+COLOR=colors_green
+ITEM=i_boots_calf
+COLOR=colors_green
+
+CATEGORY=Imperial uo
+SUBSECTION=Ranger Quest
+DESCRIPTION=Dark Rangers (Door Keeper)
+
+[CHARDEF C_H_RangerQQ6] 
+DEFNAME=C_H_RangerQQ6
+NAME=Luke
+ID=C_MAN 
+DAM=20,33
+ARMOR=25,30 
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_run|MT_MALE
+
+
+
+ON=@Create 
+  STR		= {250 300}
+  DEX		= {80 110}
+  INT		= {71 85}
+  NPC		= brain_human
+  PARRYING	= {65.0 80.0}
+  SWORDSMANSHIP	= {60.0 90.0}
+  MACEFIGHTING	= {60.0 90.0}
+  FENCING	= {60.0 90.0}
+  WRESTLING	= {67.0 90.0}
+  MAGICRESISTANCE={65.0 88.0}
+  TACTICS	= {60.0 90.0}
+  DETECTION	= {40.0 50.0}
+  ANATOMY       = {70.0 90.0}
+  FAME		= 1500,2000
+  KARMA		= 3100,4000
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+
+ON=@NPCRestock
+ITEM=i_sword_great
+ITEMNEWBIE=I_SHIELD_KITE_WOOD
+COLOR=0845
+ITEM=i_CAPE
+COLOR=colors_green
+ITEMNEWBIE=i_leather_sleeves
+COLOR=colors_green
+ITEMNEWBIE=i_leather_tunic
+COLOR=colors_green
+ITEMNEWBIE=i_leather_gloves
+COLOR=colors_green
+ITEMNEWBIE=i_leather_leggings
+COLOR=colors_green
+ITEMNEWBIE=i_leather_gorget
+COLOR=colors_green
+ITEM=i_boots_calf
+COLOR=colors_green
+
+
+CATEGORY=Imperial uo
+SUBSECTION=Ranger Quest
+DESCRIPTION=Dark Rangers (Luke)
+
+[CHARDEF C_H_RangerQQ10] 
+DEFNAME=C_H_RangerQQ10
+NAME=Dark Ranger
+ID=C_MAN 
+DAM=20,38
+ARMOR=25,40 
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_run|MT_MALE
+
+ON=@Create 
+  STR		= {250 300}
+  DEX		= {80 110}
+  INT		= {71 85}
+  NPC		= brain_human
+  PARRYING	= {85.0 80.0}
+  SWORDSMANSHIP	= {80.0 90.0}
+  MACEFIGHTING	= {80.0 90.0}
+  FENCING	= {80.0 90.0}
+  WRESTLING	= {87.0 90.0}
+  MAGICRESISTANCE={85.0 88.0}
+  TACTICS	= {80.0 90.0}
+  DETECTION	= {80.0 50.0}
+  ANATOMY       = {80.0 90.0}
+  FAME		= 7000
+  KARMA		= -3100,-4000
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+
+ON=@NPCRestock
+ITEM=i_sword_great
+ITEMNEWBIE=I_SHIELD_KITE_WOOD
+COLOR=0845
+ITEM=i_CAPE
+COLOR=colors_green
+ITEMNEWBIE=i_leather_sleeves
+COLOR=colors_green
+ITEMNEWBIE=i_leather_tunic
+COLOR=colors_green
+ITEMNEWBIE=i_leather_gloves
+COLOR=colors_green
+ITEMNEWBIE=i_leather_leggings
+COLOR=colors_green
+ITEMNEWBIE=i_leather_gorget
+COLOR=colors_green
+ITEM=i_boots_calf
+COLOR=colors_green
+
+CATEGORY=Imperial uo
+SUBSECTION=Ranger Quest
+DESCRIPTION=Dark Rangers (hard)
+
+[CHARDEF c_ranger_Dragon]
+DEFNAME=c_rangerDragon
+ID=c_DRAGON_RED
+NAME=Dark Dragon
+SOUND=snd_MONSTER_DRAGON1
+ICON=i_pet_dragon
+
+DAM=9,29
+ARMOR=36
+RESOURCES=99 i_ribs_raw,8 i_reag_dragon_blood,2 i_hide
+
+//ALIGNMENT=CHAOTIC
+CAN=MT_WALK|MT_FLY|MT_FIRE_IMMUNE
+
+FOODTYPE=80 t_meat_raw
+DESIRES=i_gold
+AVERSIONS=r_water,r_civilization
+
+ON=@Create
+NPC=brain_dragon
+FAME={3000 9000}
+KARMA={-5000 -5999}
+
+COLOR=076b
+STR={795 825}
+DEX={200 300}
+INT=10000
+
+PARRYING={90.0 100.0}
+MAGICRESISTANCE={99.0 100.0}
+TACTICS={98.0 100.0}
+WRESTLING={90.0 93.0}
+NECROMANCY={90.0 100.0}
+MAGERY={90.0 100.0}
+
+ITEMNEWBIE=i_spellbook
+ADDSPELL=s_summon_elem_fire
+ADDSPELL=s_paralyze
+
+
+ON=@DEATH
+ACT.TAG.RANGER=5
+ACT.MESSAGE You have stopped the Evil Rangers. People can sleep safer in their beds tonight.
+ANNOUNCE Because of the Brave <ACT.NAME>, people can sleep safer in their beds tonight!
+
+ON=@GETHIT
+IF (<ACT.TAG0.Ranger> == 04)
+RETURN 0
+ELSE
+RETURN 1
+ENDIF
+
+ON=@NPCRestock
+ITEM=i_statdrag
+ITEM=i_gold,{19000 22000}
+
+CATEGORY=Imperial uo
+SUBSECTION=Ranger Quest
+DESCRIPTION=Dark Dragon
+
+[CHARDEF C_H_RANGER_QUEST_START]
+DEFNAME=C_H_RANGER_QUEST_START
+NAME=Garrett, the Ranger
+ID=C_MAN
+DESIRES=i_gold,e_notoriety
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_trainer
+TSPEECH=jobRanger
+TSPEECH=spk_needs
+TSPEECH=spk_rehello
+TSPEECH=spk_human_default
+
+TEVENTS=e_Human_HearUnk
+TEVENTS=e_Human_Needs
+TEVENTS=e_Human_ConvInit
+TEVENTS=e_Human_Greet
+TEVENTS=e_Human_Space
+TEVENTS=e_Human_Refuse
+TEVENTS=e_Human_Environ
+TEVENTS=e_npc_quest
+
+ON=@Create
+COLOR=colors_skin
+STR={71 85}
+DEX={76 90}
+INT={61 75}
+
+ANIMALLORE={55.0 78.0}
+ARCHERY={55.0 78.0}
+SURVIVAL={55.0 78.0}
+HERDING={45.0 68.0}
+HIDING={45.0 68.0}
+TRACKING={45.0 68.0}
+FENCING={35.0 58.0}
+PARRYING={65.0 88.0}
+SWORDSMANSHIP={35.0 58.0}
+WRESTLING={35.0 58.0}
+TACTICS={65.0 88.0}
+
+NPC=brain_human
+
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+
+ON=@NPCRestock
+ITEM=RANDOM_LIGHT
+ITEM=i_shirt_fancy
+COLOR=colors_green
+ITEM=random_pants
+COLOR=colors_brown
+ITEM=random_footwear
+COLOR=colors_neutral
+ITEM=random_coin_purse
+ITEM=i_bow_pine
+ITEM=i_arrow,{5 20}
+
+CATEGORY=Imperial uo
+SUBSECTION=Ranger Quest
+DESCRIPTION=Garrett, Quest Start
+
+[EOF]

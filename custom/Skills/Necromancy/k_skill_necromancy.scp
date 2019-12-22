@@ -1,0 +1,874 @@
+//CHANGELOG
+//OCT-04-03 - Added check for Line of Sight to I_necro_light - Wren
+//OCT-10-03 - Added check for LoS for i_necro_bomb, also added remove and fixed calc for bomb explosion - Wren
+//OCT-22-03 - Skullbomb tweek...again also changed to use xpot delay item
+//JAN-02-04 - Skullbombs tweaked to take into account necro skill level - Wren
+//Jan-10-04 - Summons weren't giving rolls...uncommented lines and changed skele heros out for skele knights - Wren
+//Jan-10-04 - Tweaked skull bombs again...raised req skill and mana useage
+//Jan-11-04 - Tweaked necro skeletons...added gump and additional skele types :)
+//Jan-12-04 - Tweaked necro zombies...works like skeletons with several undead types.
+//Jan-15-04 - Lowered damage on skull bombs again..so tired of people moaning >_< - Wren
+//Jan-20-04 - Added additional LOS check...hoping this might fix the random errors that are generated.
+
+[DEFNAME def_necromancy]
+i_skull_light		i_necro_light
+random_necro_book	{ i_necro_book1 50  i_necro_book2 30  i_necro_book3 15 i_necro_book4 5 }
+random_necro_item	{ i_necro_light 3 i_necro_skeletons 2 i_necro_zombies 1 }
+random_necro		{ random_necro_book 1 random_necro_item 1 }
+
+
+[TYPEDEF t_necro]
+ON = @Click
+  if ( !<ISIDENTIFIED> )
+     return <MESSAGE_UNIDENTIFIED>
+  endif
+
+  return 0
+
+[EVENTS e_necro_summon]
+ON = @Timer
+   Remove
+
+
+[EVENTS e_necro_spell]
+ON = @GetHit
+   CONSUME i_necro_delay
+ON = @Hit
+   CONSUME i_necro_delay
+ON = @Spellcast
+   CONSUME i_necro_delay
+
+[FUNCTION SKILLCHECK_NECRO]
+   SRC.TAG.MAKEITEM.LEVEL	= <args>
+   SRC.SKILLCHECK_RUN Skill_Necromancy
+
+[FUNCTION necro_dclick]
+   //See if they're paralyzed
+   if ( <SRC.FLAGS> & statf_freeze )
+      SRC.SYSMESSAGE You can't do much in your current state.
+      return 1
+   endif
+
+  if ( <TOPOBJ.UID> != <SRC.UID> )
+     SRC.SYSMESSAGE You must have it in your inventory.
+     return 1
+  endif
+
+  if !( <ISIDENTIFIED> )
+    SRC.SYSMESSAGE You don't know what to do with it.
+    return 1
+  endif
+  
+  if ( <SRC.NECROMANCY> < <TDATA1> )
+    SRC.SYSMESSAGE You lack the skill to do anything with that.
+    return 1
+  endif
+
+  TRIGGER @GetItemVars
+  if ( <SRC.HITS> < <VAR.ITEM.HITS> )
+     SRC.SYSMESSAGE Your life force is too low to use it.
+     return 1
+  endif
+  if ( <SRC.MANA> < <VAR.ITEM.MANA> )
+     SRC.SYSMESSAGE You can't muster enough mana to use it.
+     return 1
+  endif
+  if ( <SRC.STAM> < <VAR.ITEM.STAM> )
+     SRC.SYSMESSAGE You are too tired to use it.
+     return 1
+  endif
+  SRC.FINDLAYER.layer_hand1.unequip
+  SRC.FINDLAYER.layer_hand2.unequip
+  return 0
+
+
+[FUNCTION necro_start]
+  TRIGGER @GetItemVars
+  if ( <SRC.HITS> < <VAR.ITEM.HITS> )
+     SRC.SYSMESSAGE Your life force is too low to use it.
+     return 1
+  endif
+  if ( <SRC.MANA> < <VAR.ITEM.MANA> )
+     SRC.SYSMESSAGE You can't muster enough mana to use it.
+     return 1
+  endif
+  if ( <SRC.STAM> < <VAR.ITEM.STAM> )
+     SRC.SYSMESSAGE You are too tired to use it.
+     return 1
+  endif
+
+  SRC.CONSUME i_necro_delay
+  SRC.TAKE_HITS <VAR.ITEM.HITS>
+  SRC.TAKE_MANA <VAR.ITEM.MANA>
+  SRC.TAKE_STAM <VAR.ITEM.STAM>
+
+  SRC.ANIM 19
+  SRC.EVENTS	+e_necro_spell
+  SRC.NEWITEM	= i_necro_delay
+  SRC.ACT.LINK	= <UID>
+  SRC.ACT.TIMER	= <VAR.ITEM.DELAY>
+  SRC.ACT.MORE1	= <SRC.TARG>
+  SRC.ACT.EQUIP
+  return 1
+
+[FUNCTION necro_activate]
+   LINK.TRIGGER @Activate
+
+[ITEMDEF i_necro_delay]
+ID	= i_memory
+TYPE	= t_eq_script
+LAYER	= layer_special
+NAME	= necro delay
+
+ON = @Timer
+  CONT.TAG.NECRO_DELAY	= <UID>
+  P			= <CONT.P>
+  return 1
+
+ON = @Step
+  if ( 0<SRC.TAG.NECRO_DELAY> == 0 )
+     return 0
+  elseif !( <SRC.TAG.NECRO_DELAY> == <UID> )
+     return 0
+  endif
+  SRC.TAG.NECRO_DELAY	=
+  SRC.EVENTS	-e_necro_spell
+
+  if ( <SRC.ISDEAD> )
+     REMOVE
+     return 1
+  endif
+
+  SRC.ACT	= <MORE1>
+  necro_activate
+  REMOVE
+  return 1
+
+
+[FUNCTION necro_book]
+  if ( <TOPOBJ.UID> != <SRC.UID> )
+     SRC.SYSMESSAGE You must hold the book in your hands.
+     return 1
+  endif
+  
+  if ( !<ISIDENTIFIED> )
+    SRC.SYSMESSAGE The book is not properly identified.
+    return 1
+  endif
+
+  if ( <SRC.INT> < 55 )
+     SRC.SYSMESSAGE You lack the intelligence to understand the writings.
+     return 1
+  endif
+  
+  if ( <SRC.NECROMANCY> < <TDATA1> )
+     SRC.SYSMESSAGE The writings in the book are far beyond your understanding.
+     return 1
+  endif
+
+  if ( <SRC.NECROMANCY> > <TDATA2> )
+     SRC.SYSMESSAGE You can't learn anything new from this book.
+     return 1
+  endif
+
+  SRC.SYSMESSAGE You learn more about the dark arts of Necromancy.
+  if ( 0 )
+  elseif ( <SRC.INT> < 75 )
+     VAR.SKILL	= 1
+  elseif ( <SRC.INT> < 100 )
+     VAR.SKILL	= { 1 2 }
+  else
+     VAR.SKILL	= { 1 3 }
+  endif
+
+  SRC.NECROMANCY	= <eval (<SRC.NECROMANCY> + <VAR.SKILL>)>
+  SRC.SYSMESSAGE The <NAME> turns to dust.
+  REMOVE
+  return 1
+
+
+//
+// NECRO ITEMS
+//
+
+[ITEMDEF i_necro_book1]
+ID	= i_book_of_truth
+TYPE	= t_script
+NAME	= book
+VALUE   = 50
+TDATA1	=  0.0
+TDATA2	=  15.0
+
+ON = @Create
+  ATTR	= attr_magic
+  COLOR	= 04da
+ON = @GetItemVars
+  VAR.ITEM.MINSKILL_id	= 20.0
+ON = @UnIdentify
+  NAME	=
+  SETMAGIC 1
+ON = @Identify
+  NAME	= book of sorrow
+  SETMAGIC 0
+ON = @DClick
+//  SRC.SYSMESSAGE @50 It feels as if all the magic has been drained from this book...
+//  SERV.LOG <SRC.NAME> : <SRC.ACCOUNT> : <SRC.UID> : Attempted to use a book of sorrow
+//  RETURN 1
+  return <necro_book>
+
+
+[ITEMDEF i_necro_book2]
+ID	= i_book_of_truth
+TYPE	= t_script
+NAME	= book
+VALUE	= 100
+TDATA1	= 15.0
+TDATA2	= 30.0
+
+ON = @Create
+  ATTR	= attr_magic
+  COLOR	= 0662
+ON = @GetItemVars
+  VAR.ITEM.MINSKILL_id	= 30.0
+ON = @UnIdentify
+  NAME	=
+  SETMAGIC 1
+ON = @Identify
+  NAME	= book of blood
+  SETMAGIC 0
+ON = @DClick
+//  SRC.SYSMESSAGE @50 It feels as if all the magic has been drained from this book...
+//  SERV.LOG <SRC.NAME> : <SRC.ACCOUNT> : <SRC.UID> : Attempted to use a book of blood
+//  RETURN 1
+  return <necro_book>
+
+
+[ITEMDEF i_necro_book3]
+ID	= i_book_of_truth
+TYPE	= t_script
+NAME	= book
+VALUE	= 150
+TDATA1	= 30.0
+TDATA2	= 45.0
+
+ON = @Create
+  ATTR	= attr_magic
+  COLOR	= 051b
+ON = @UnIdentify
+  NAME	=
+  SETMAGIC 1
+ON = @GetItemVars
+  VAR.ITEM.MINSKILL_id	= 40.0
+ON = @Identify
+  NAME	= book of death
+  SETMAGIC 0
+ON = @DClick
+//  SRC.SYSMESSAGE @50 It feels as if all the magic has been drained from this book...
+//  SERV.LOG <SRC.NAME> : <SRC.ACCOUNT> : <SRC.UID> : Attempted to use a book of death
+//  RETURN 1
+  return <necro_book>
+
+
+[ITEMDEF i_necro_book4]
+ID	= i_book_of_truth
+TYPE	= t_script
+NAME	= book
+VALUE	= 200
+TDATA1	= 45.0
+TDATA2	= 60.0
+
+ON = @Create
+  ATTR	= attr_magic
+  COLOR	= 0149
+ON = @UnIdentify
+  NAME	=
+  SETMAGIC 1
+ON = @GetItemVars
+  VAR.ITEM.MINSKILL_id	= 50.0
+ON = @Identify
+  NAME	= tome of Necromancy
+  SETMAGIC 0
+ON = @DClick
+//  SRC.SYSMESSAGE @50 It feels as if all the magic has been drained from this book...
+//  SERV.LOG <SRC.NAME> : <SRC.ACCOUNT> : <SRC.UID> : Attempted to use a tome of necromancy
+//  RETURN 1
+  return <necro_book>
+
+//------------------------------------------------------------------------------------------------------------
+
+[ITEMDEF i_necro_light]
+ID	= 01ae3
+TYPE	= t_necro
+NAME	= skull
+VALUE	= 100
+TDATA1	= 10.0
+
+ON = @Create
+  ATTR		= attr_magic
+  TYPE		= t_weapon_mace_sharp
+  HITPOINTS	= { 100 150 }
+  TYPE		= t_necro
+
+ON = @DClick
+//SRC.SYSMESSAGE This is disabled
+//RETURN 1
+
+     IF STRMATCH( "PvP Realm 2", "<SRC.REGION.NAME>" )
+         SRC.SYSMESSAGE Necromancy is not allowed in this area.
+         RETURN 1
+	ENDIF
+      
+     IF STRMATCH( "Classic Arena", "<SRC.REGION.NAME>" )
+         SRC.SYSMESSAGE Necromancy is not allowed in this area.
+         RETURN 1
+	ENDIF
+
+  if ( <necro_dclick> )
+     return 1
+  endif
+  TARGET Who do you want to focus the skull to?
+  return 1
+
+ON = @Targon_char
+  IF <SRC.TARG.CanSeeLOS>
+     return <necro_start>
+  ELSE
+     SRC.SYSMESSAGE They are not in your line of sight.
+     RETURN 1
+  ENDIF
+
+ON = @Targon_item
+   if !( <SRC.TARG.BASEID> == i_necro_light )
+      src.sysmessage You can't do that.
+      return 1
+   endif
+
+   if ( <SRC.TARG.UID> == <UID> )
+      src.sysmessage You need another <NAME>.
+      return 1
+   endif
+
+   if ( <SRC.NECROMANCY> < 60.0 )
+      src.sysmessage You don't know how to do that.
+      return 1
+   endif
+
+   REMOVE
+   SRC.TARG.REMOVE
+   SRC.SYSMESSAGE With a little effort, you join the two skulls and create a skull bomb.
+   SRC.NEWITEM i_necro_bomb
+   SRC.ACT.TRIGGER @Identify
+   SRC.ACT.ATTR	= (<SRC.ACT.ATTR> | attr_identified)
+   SRC.ACT.BOUNCE
+   return 1
+   
+ON = @UnIdentify
+  NAME	=
+  SETMAGIC 1
+
+ON = @Identify
+  NAME	= Skull of Gloom
+  SETMAGIC 0
+
+ON = @GetItemVars
+  VAR.ITEM.MINSKILL_ID	= 30.0
+  VAR.ITEM.MANA	= 3
+  VAR.ITEM.HITS	= 3
+  VAR.ITEM.STAM	= 3
+  VAR.ITEM.DELAY	= 2
+
+ON = @Activate
+   IF !<SRC.TARG.CanSeeLOS>
+     SRC.SYSMESSAGE They are not in your line of sight.
+     RETURN 1
+   ENDIF
+
+   If ( RAND(1000) < <SRC.NECROMANCY> )
+     if ( <SRC.ACT.UID> == <SRC.UID> )
+        SRC.SYSMESSAGE The <NAME> projects its light upon you.
+     else
+        SRC.SYSMESSAGE The <NAME> projects its light upon <SRC.ACT.NAME>.
+     endif
+
+     SRC.CONSUME i_light_source
+     SRC.ACT.SPELLEFFECT s_light <SRC.NECROMANCY>
+     SRC.SKILLCHECK_NECRO <TDATA1>
+   ELSE
+     SOUND 250
+     SRC.SYSMESSAGE You lose your concentration and fail the spell.
+     IF ( <SRC.NECROMANCY> < 500 )
+        SRC.SKILLCHECK_NECRO <TDATA1>
+     ENDIF
+   ENDIF
+
+//------------------------------------------------------------------------------------------------------------
+
+[ITEMDEF i_necro_zombies]
+ID	= 01cdd
+TYPE	= t_necro
+NAME	= severed limb
+VALUE	= 100
+TDATA1	= 35.0
+
+ON = @Create
+  ATTR		= attr_magic
+  TYPE		= t_weapon_mace_sharp
+  HITPOINTS	= { 100 150 }
+  TYPE		= t_necro
+
+ON = @DClick
+//SRC.SYSMESSAGE This is disabled
+//RETURN 1
+
+  IF STRMATCH( "Britain Cowpen", "<SRC.REGION.TYPE>" )
+     SRC.SYSMESSAGE Summons are blocked in this arena.
+     RETURN 1
+  ENDIF
+
+     IF STRMATCH( "PvP Realm 2", "<SRC.REGION.NAME>" )
+         SRC.SYSMESSAGE Necromancy is not allowed in this area.
+         RETURN 1
+	ENDIF
+      
+     IF STRMATCH( "Classic Arena", "<SRC.REGION.NAME>" )
+         SRC.SYSMESSAGE Necromancy is not allowed in this area.
+         RETURN 1
+	ENDIF
+
+  if ( <necro_dclick> )
+     return 1
+  endif
+
+  VAR.NecroSkillReq1 = >70.0
+  VAR.NecroSkillReq2 = >80.0
+  VAR.NecroSkillReq3 = >90.0
+  VAR.NecroSkillReq4 = >=100.0
+  DIALOG d_necro_zombies
+  RETURN 1
+
+ON = @UnIdentify
+  NAME	=
+  SETMAGIC 1
+
+ON = @Identify
+  NAME	= Severed limbs
+  SETMAGIC 0
+
+ON = @GetItemVars
+  VAR.ITEM.MINSKILL_ID	= 30.0
+  VAR.ITEM.MANA	= 20
+  VAR.ITEM.HITS	= 5
+  VAR.ITEM.STAM	= 5
+  VAR.ITEM.DELAY = 4
+
+ON = @Activate
+   IF (<SRC.TAG.NECROSUMMON>=0)
+      RETURN 1
+   ELSE
+      SRC.NECROSUMMONHERE <SRC.TAG.NECROSUMMON>
+      SRC.SKILLCHECK_NECRO <TDATA1>
+      RETURN 1
+   ENDIF
+
+//------------------------------------------------------------------------------------------------------------
+
+[ITEMDEF i_necro_skeletons]
+ID	= 01b11
+TYPE	= t_necro
+NAME	= bone
+VALUE	= 100
+TDATA1	= 45.0
+
+ON = @Create
+  ATTR		= attr_magic
+  TYPE		= t_weapon_mace_sharp
+  HITPOINTS	= { 100 150 }
+  TYPE		= t_necro
+
+ON = @DClick
+//  SRC.SYSMESSAGE Summons are disabled
+//  RETURN 1
+  
+  IF STRMATCH( "Britain Cowpen", "<SRC.REGION.NAME>" )
+     SRC.SYSMESSAGE Summons are blocked in this arena.
+     RETURN 1
+  ENDIF
+
+     IF STRMATCH( "PvP Realm 2", "<SRC.REGION.NAME>" )
+         SRC.SYSMESSAGE Necromancy is not allowed in this area.
+         RETURN 1
+	ENDIF
+      
+     IF STRMATCH( "Classic Arena", "<SRC.REGION.NAME>" )
+         SRC.SYSMESSAGE Necromancy is not allowed in this area.
+         RETURN 1
+	ENDIF
+   
+  if ( <necro_dclick> )
+     return 1
+  endif
+  VAR.NecroSkillReq1 = >70.0
+  VAR.NecroSkillReq2 = >80.0
+  VAR.NecroSkillReq3 = >90.0
+  VAR.NecroSkillReq4 = >=100.0
+  DIALOG d_necro_skeletons
+  RETURN 1
+
+ON = @UnIdentify
+  NAME	=
+  SETMAGIC 1
+
+ON = @Identify
+  NAME	= skeleton bones
+  SETMAGIC 0
+
+ON = @GetItemVars
+  VAR.ITEM.MINSKILL_ID	= 30.0
+  VAR.ITEM.MANA	= 20
+  VAR.ITEM.HITS	= 5
+  VAR.ITEM.STAM	= 5
+  VAR.ITEM.DELAY = 4
+
+ON = @Activate
+   IF (<SRC.TAG.NECROSUMMON>=0)
+      RETURN 1
+   ELSE
+      SRC.NECROSUMMONHERE <SRC.TAG.NECROSUMMON>
+      SRC.SKILLCHECK_NECRO <TDATA1>
+      RETURN 1
+   ENDIF
+
+//------------------------------------------------------------------------------------------------------------
+
+[ITEMDEF i_necro_bomb]
+ID	= 01ae3
+TYPE	= t_necro
+NAME	= skull
+VALUE	= 100
+TDATA1	= 55.0
+
+ON = @Create
+  ATTR		= attr_magic
+  TYPE		= t_weapon_mace_sharp
+  HITPOINTS	= { 100 150 }
+  TYPE		= t_necro
+  
+ON = @DClick
+//  SRC.SYSMESSAGE The bomb appears to have had the magic sucked from it...
+//  RETURN 1
+
+     IF STRMATCH( "PvP Realm 2", "<SRC.REGION.NAME>" )
+         SRC.SYSMESSAGE Necromancy is not allowed in this area.
+         RETURN 1
+	ENDIF
+      
+     IF STRMATCH( "Classic Arena", "<SRC.REGION.NAME>" )
+         SRC.SYSMESSAGE Necromancy is not allowed in this area.
+         RETURN 1
+	ENDIF
+
+  if ( <necro_dclick> )
+     return 1
+  endif
+  TARGET Who do you want to throw the bomb at?
+  return 1
+
+ON = @Targon_char
+  IF !<SRC.TARG.CanSeeLOS>
+     SRC.SYSMESSAGE They are not in your line of sight.
+     RETURN 1
+  ENDIF
+
+  IF ( <SRC.REGION.GUARDED> || <SRC.TARG.REGION.GUARDED> )
+     SRC.SYSMESSAGE You can't use it in guarded zones.
+     RETURN 1
+  ENDIF
+
+  IF (<SRC.FINDID.i_xpot_memory>)
+    	SRC.MESSAGE You cant use the skull bomb again yet!
+    	RETURN 1
+  ELSE 
+    	SRC.NEWITEM=i_xpot_memory
+  	SRC.ACT.CONT=<SRC.UID>
+  ENDIF  
+
+  SRC.SAY Ort Corp
+  return <necro_start>
+
+ON = @UnIdentify
+  NAME	= 
+  COLOR	=
+  SETMAGIC 1
+
+ON = @Identify
+  NAME	= Skull Bomb
+  SETMAGIC 0
+  COLOR		= 036e
+
+ON = @GetItemVars
+  VAR.ITEM.MINSKILL_ID	= 30.0
+  VAR.ITEM.MANA	= 25
+  VAR.ITEM.HITS	= 8
+  VAR.ITEM.STAM	= 8
+  VAR.ITEM.DELAY = 2
+
+ON = @Activate
+   IF !<SRC.TARG.CanSeeLOS>
+     SRC.SYSMESSAGE They are not in your line of sight.
+     RETURN 1
+   ENDIF
+   f_necro_bomb_explode 0 0
+   f_necro_bomb_explode -1 0
+   f_necro_bomb_explode 0 -1
+   SRC.SKILLCHECK_NECRO <TDATA1>
+
+
+
+[FUNCTION f_necro_bomb_explode]
+   SERV.NEWITEM i_necro_bomb_explode
+   NEW.P	= <SRC.ACT.P>
+   NEW.MOVE <args>
+   NEW.LINK	= <SRC.UID>
+
+
+
+[ITEMDEF i_necro_bomb_explode]
+ID	= i_fx_explode
+NAME	= necro bomb explosion
+TYPE	= t_spell
+
+ON = @Create
+   TIMER	= 1
+   COLOR	= 0485
+   ATTR	= attr_move_never | attr_decay
+
+ON = @Step
+   IF ( <SRC.FLAGS> & statf_freeze )
+      SRC.findlayer(layer_spell_paralyze).remove
+   ENDIF
+   IF <LINK.NECROMANCY> = 100.0
+      SRC.DAMAGE <eval ({30 40})>, 0, <LINK.UID>
+   ELSEIF <LINK.NECROMANCY> >= 90.0
+      SRC.DAMAGE <eval ({25 35})>, 0, <LINK.UID>
+   ELSEIF <LINK.NECROMANCY> >= 80.0
+      SRC.DAMAGE <eval ({20 30})>, 0, <LINK.UID>
+   ELSEIF <LINK.NECROMANCY> >= 70.0
+      SRC.DAMAGE <eval ({15 25})>, 0, <LINK.UID>
+   ELSEIF <LINK.NECROMANCY> >= 60.0
+      SRC.DAMAGE <eval ({10 20})>, 0, <LINK.UID>
+   ENDIF
+   REMOVE
+
+//------------------------------------------------------------------------------------------------------------
+
+[DIALOG d_necro_skeletons]
+0, 0
+gumppic 0 0 71
+
+button 25 17 2360 2361 1 0 1
+text  37  11 50 1
+
+button <QVAL (<SRC.NECROMANCY><VAR.NecroSkillReq1>) ? 25 42 2360 2361 1 0 2 : 5000 42 2360 2361 1 0 2 >
+text  <QVAL (<SRC.NECROMANCY><VAR.NecroSkillReq1>) ? 37 36 50 2 : 37 36 50 0 >
+
+button <QVAL (<SRC.NECROMANCY><VAR.NecroSkillReq2>) ? 25 67 2360 2361 1 0 3 : 5000 67 2360 2361 1 0 3 >
+text  <QVAL (<SRC.NECROMANCY><VAR.NecroSkillReq2>) ? 37  61 50 3 : 37  61 50 0 >
+
+button <QVAL (<SRC.NECROMANCY><VAR.NecroSkillReq3>) ? 25 92 2360 2361 1 0 4 : 5000 92 2360 2361 1 0 4 >
+text  <QVAL (<SRC.NECROMANCY><VAR.NecroSkillReq3>) ? 37  86 50 4 : 37  86 50 0 >
+
+button <QVAL (<SRC.NECROMANCY><VAR.NecroSkillReq4>) ? 25 117 2360 2361 1 0 5 : 5000 117 2360 2361 1 0 5 >
+text  <QVAL (<SRC.NECROMANCY><VAR.NecroSkillReq4>) ? 37 111 50 5 : 37 111 50 0 >
+
+
+[DIALOG d_necro_skeletons TEXT]
+<VAR.BLANKLINE>
+skeleton
+skeleton knight
+skeleton archer
+skeleton mage
+skeleton hero
+
+
+[DIALOG d_necro_skeletons BUTTON]
+ON = 1
+   IF <SRC.RESTEST 1 i_reag_bone>
+      SRC.SAY Kal Xen Ort Corp
+      SRC.CONSUME i_reag_bone
+      SRC.SYSMESSAGE You conjure a skeleton out of the bones.
+      SRC.TAG.NECROSUMMON=c_skeleton
+      SRC.FINDID.i_necro_skeletons.necro_start
+   ELSE
+      SRC.SYSMESSAGE You need a bone to summon a skeleton.
+      SRC.TAG.NECROSUMMON=0
+   ENDIF
+   RETURN 1
+
+ON = 2
+   IF <SRC.RESTEST 2 i_reag_bone>
+      SRC.SAY Kal Xen Ort Corp
+      SRC.CONSUME 2 i_reag_bone
+      SRC.SYSMESSAGE You conjure a skeleton knight out of the bones.
+      SRC.TAG.NECROSUMMON=c_m_skeleton_knight
+      SRC.FINDID.i_necro_skeletons.necro_start
+   ELSE
+      SRC.SYSMESSAGE You need 2 bones to summon a skeleton knight.
+      SRC.TAG.NECROSUMMON=0
+   ENDIF
+   RETURN 1
+
+ON = 3
+   IF (<SRC.RESTEST 2 i_reag_bone> && <SRC.RESTEST 2 i_arrow>
+      SRC.SAY Kal Xen Ort Corp
+      SRC.CONSUME 2 i_reag_bone
+      SRC.CONSUME 2 i_arrow
+      SRC.SYSMESSAGE You conjure a skeleton archer out of the bones and arrows.
+      SRC.TAG.NECROSUMMON=c_m_skeletonarcher
+      SRC.FINDID.i_necro_skeletons.necro_start
+   ELSE
+      SRC.SYSMESSAGE You need 2 bones and 2 arrows to summon a skeleton archer.
+      SRC.TAG.NECROSUMMON=0
+   ENDIF
+   RETURN 1
+
+ON = 4
+   IF (<SRC.RESTEST 2 i_reag_bone> && <SRC.RESTEST i_reag_nightshade> && <SRC.RESTEST i_reag_blood_moss>)
+      SRC.SAY Kal Xen Ort Corp
+      SRC.CONSUME 2 i_reag_bone
+      SRC.CONSUME i_reag_nightshade 
+      SRC.CONSUME i_reag_blood_moss
+      SRC.SYSMESSAGE You conjure a skeleton mage out of the bones and regs.
+      SRC.TAG.NECROSUMMON=c_m_skeleton_mage
+      SRC.FINDID.i_necro_skeletons.necro_start
+   ELSE
+      SRC.SYSMESSAGE You need 2 bones, nightshade, and blood moss to summon a skeleton mage.
+      SRC.TAG.NECROSUMMON=0
+   ENDIF
+   RETURN 1
+
+ON = 5
+   IF ( <REGION.FLAGS> & region_flag_guarded )
+       SRC.SYSMESSAGE You can't summon heros in a guarded area.
+       return 1
+   ENDIF
+ 
+   IF (<SRC.RESTEST 5 i_reag_bone> && <SRC.RESTEST 2 i_ingot_iron>)
+      SRC.SAY Kal Xen Ort Corp
+      SRC.CONSUME 5 i_reag_bone
+      SRC.CONSUME 2 i_ingot_iron
+      SRC.SYSMESSAGE You conjure a skeleton hero out of the bones.
+      SRC.TAG.NECROSUMMON=c_m_skeleton_hero
+      SRC.FINDID.i_necro_skeletons.necro_start
+   ELSE
+      SRC.SYSMESSAGE You need 5 bones and 2 iron ingots to summon a skeleton hero.
+      SRC.TAG.NECROSUMMON=0
+   ENDIF
+   RETURN 1
+
+//------------------------------------------------------------------------------------------------------------
+
+[DIALOG d_necro_zombies]
+0, 0
+gumppic 0 0 71
+
+button 25 17 2360 2361 1 0 1
+text  37  11 50 1
+
+button <QVAL (<SRC.NECROMANCY><VAR.NecroSkillReq1>) ? 25 42 2360 2361 1 0 2 : 5000 42 2360 2361 1 0 2 >
+text  <QVAL (<SRC.NECROMANCY><VAR.NecroSkillReq1>) ? 37 36 50 2 : 37 36 50 0 >
+
+button <QVAL (<SRC.NECROMANCY><VAR.NecroSkillReq2>) ? 25 67 2360 2361 1 0 3 : 5000 67 2360 2361 1 0 3 >
+text  <QVAL (<SRC.NECROMANCY><VAR.NecroSkillReq2>) ? 37  61 50 3 : 37  61 50 0 >
+
+button <QVAL (<SRC.NECROMANCY><VAR.NecroSkillReq3>) ? 25 92 2360 2361 1 0 4 : 5000 92 2360 2361 1 0 4 >
+text  <QVAL (<SRC.NECROMANCY><VAR.NecroSkillReq3>) ? 37  86 50 4 : 37  86 50 0 >
+
+button <QVAL (<SRC.NECROMANCY><VAR.NecroSkillReq4>) ? 25 117 2360 2361 1 0 5 : 5000 117 2360 2361 1 0 5 >
+text  <QVAL (<SRC.NECROMANCY><VAR.NecroSkillReq4>) ? 37 111 50 5 : 37 111 50 0 >
+
+
+[DIALOG d_necro_zombies TEXT]
+<VAR.BLANKLINE>
+Zombie
+Ghoul
+Liche
+Wretched Corpse
+Liche Lord
+
+
+[DIALOG d_necro_zombies BUTTON]
+ON = 1
+   IF <SRC.RESTEST 1 i_reag_fertile_dirt>
+      SRC.SAY Kal Xen Ort Corp
+      SRC.CONSUME i_reag_fertile_dirt
+      SRC.SYSMESSAGE You conjure a zombie out of the dirt and severed limb.
+      SRC.TAG.NECROSUMMON=c_zombie
+      SRC.FINDID.i_necro_zombies.necro_start
+   ELSE
+      SRC.SYSMESSAGE You need a pile of fertile dirt to summon a zombie.
+      SRC.TAG.NECROSUMMON=0
+   ENDIF
+   RETURN 1
+
+ON = 2
+   IF <SRC.RESTEST 2 i_reag_fertile_dirt>
+      SRC.SAY Kal Xen Ort Corp
+      SRC.CONSUME 2 i_reag_fertile_dirt
+      SRC.SYSMESSAGE You conjure a ghoul out of the dirt and severed limb.
+      SRC.TAG.NECROSUMMON=c_m_ghoul
+      SRC.FINDID.i_necro_zombies.necro_start
+   ELSE
+      SRC.SYSMESSAGE You need 2 piles of fertile dirt to summon a ghoul.
+      SRC.TAG.NECROSUMMON=0
+   ENDIF
+   RETURN 1
+
+ON = 3
+   IF (<SRC.RESTEST 2 i_reag_fertile_dirt> && <SRC.RESTEST 2 i_reag_nightshade>
+      SRC.SAY Kal Xen Ort Corp
+      SRC.CONSUME 2 i_reag_fertile_dirt
+      SRC.CONSUME 2 i_reag_nightshade
+      SRC.SYSMESSAGE You conjure a Liche out of the dirt, regs, and severed limb.
+      SRC.TAG.NECROSUMMON=c_liche
+      SRC.FINDID.i_necro_zombies.necro_start
+   ELSE
+      SRC.SYSMESSAGE You need 2 piles of fertile dirt and 2 nightshade to summon a Liche.
+      SRC.TAG.NECROSUMMON=0
+   ENDIF
+   RETURN 1
+
+ON = 4
+   IF (<SRC.RESTEST 2 i_reag_fertile_dirt> && <SRC.RESTEST i_reag_nightshade> && <SRC.RESTEST i_reag_blood_moss>)
+      SRC.SAY Kal Xen Ort Corp
+      SRC.CONSUME 2 i_reag_fertile_dirt
+      SRC.CONSUME i_reag_nightshade 
+      SRC.CONSUME i_reag_blood_moss
+      SRC.SYSMESSAGE You conjure a Wretched Corpse out of the dirt, regs, and severed limb.
+      SRC.TAG.NECROSUMMON=c_m_WrechedCorpse
+      SRC.FINDID.i_necro_zombies.necro_start
+   ELSE
+      SRC.SYSMESSAGE You need 2 piles of fertile dirt, nightshade, and blood moss to summon a Wretched Corpse.
+      SRC.TAG.NECROSUMMON=0
+   ENDIF
+   RETURN 1
+
+ON = 5
+   IF ( <REGION.FLAGS> & region_flag_guarded )
+       SRC.SYSMESSAGE You can't summon Liche Lords in a guarded area.
+       return 1
+   ENDIF
+ 
+   IF (<SRC.RESTEST 5 i_reag_fertile_dirt> && <SRC.RESTEST 2 i_reag_nightshade>)
+      SRC.SAY Kal Xen Ort Corp
+      SRC.CONSUME 5 i_reag_fertile_dirt
+      SRC.CONSUME 2 i_reag_nightshade
+      SRC.SYSMESSAGE You conjure a Liche Lord out of the dirt, regs, and severed limb.
+      SRC.TAG.NECROSUMMON=c_m_liche_lord
+      SRC.FINDID.i_necro_zombies.necro_start
+   ELSE
+      SRC.SYSMESSAGE You need 5 piles of fertile dirt and 2 nightshade to summon a Liche Lord.
+      SRC.TAG.NECROSUMMON=0
+   ENDIF
+   RETURN 1
+
+[EOF]

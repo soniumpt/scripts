@@ -1,0 +1,856 @@
+////////////////////////////////////////////////////////////////////////////
+// Scripted by Gimbar 
+// Admin www.DZDZ.de
+// Bitte nicht entfernen 
+////////////////////////////////////////////////////////////////////////////
+// Inhalt
+//-------------------------------------------------------------------------
+// Adressbuch
+// Briefkasten
+// leere Visitenkarten
+// Stift zum Visitenkarten beschreiben
+// Translated by sqweak
+////////////////////////////////////////////////////////////////////////////
+
+[ITEMDEF I_BRIEFROLLE]
+ID=014ef
+DEFNAME=i_Briefrolle
+NAME=Letter
+TYPE=T_script
+
+CATEGORY=Imperial uo	
+SUBSECTION=Post System
+DESCRIPTION=Letter
+
+ON=@CREATE
+COLOR=0532
+ATTR=04
+TAG.LOCAL1=.
+TAG.LOCAL2=.
+TAG.LOCAL3=.
+TAG.LOCAL4=.
+TAG.LOCAL5=.
+TAG.LOCAL6=.
+TAG.LOCAL7=.
+TAG.LOCAL8=.
+TAG.LOCAL9=.
+TAG.LOCAL10=.
+TAG.LOCAL11=.
+TAG.LOCAL12=.
+TAG.LOCAL13=.
+TAG.LOCAL14=.
+TAG.LOCAL15=.
+TAG.LOCAL16=.
+TAG.LOCAL17=.
+TAG.LOCAL18=.
+
+ON=@DCLICK
+SRC.SOUND=85
+DIALOG d_Briefrolle
+RETURN 1
+
+ON=@TARGON_CHAR
+if (<SRC.TARG.BASEID>== C_A_BRIEFTAUBE)
+	IF ((<SRC.TARG.ISMYPET>) && (<src.targ.DISTANCE> <2))
+		src.targ.findid.I_taubenreise.timer =2
+		src.targ.findid.I_taubenreise.more1 =3
+		src.targ.flags=<src.targ.flags>|statf_freeze
+		src.sound=85
+		SRC.ANIM=020
+		src.newitem i_Timermodul_Adressbuch
+		src.act.more1=1//***************Waiting period in seconds here set*****************
+		src.act.equip
+		CONT=<LINK>
+		CONT.EMOTE Gets a Message
+		RETURN 1
+		endif
+	ENDIF
+RETURN 1
+ENDIF
+
+
+
+[CHARDEF C_A_Brieftaube]
+DEFNAME=C_A_Brieftaube
+ID=06
+NAME=Homing Pigeon
+ICON=i_pet_BIRD
+DAM=1
+ARMOR=1
+CAN=MT_WALK|MT_FLY|MT_RUN
+FOODTYPE=25 t_crops, 25 t_grain
+
+
+CATEGORY=Animals
+SUBSECTION=Air (Domestic)
+DESCRIPTION=Brieftaube
+
+ON=@Create
+NPC=BRAIN_ANIMAL
+STR=6
+DEX=100
+INT={6 10}
+FAME=10
+KARMA={-1 -99}
+PARRYING=5.0
+MAGICRESISTANCE=5.0
+TACTICS=4.0
+WRESTLING=5.0
+TAMING=25.0
+ITEMNEWBIE=I_Taubenreise
+
+[ITEMDEF i_letterbox_DEED]
+DEFNAME=i_letterbox_DEED
+NAME=letterbox and pen deed
+ID=i_deed
+
+CATEGORY=Imperial uo	
+SUBSECTION=Post System
+DESCRIPTION=letterbox deed
+
+ON=@DCLICK
+IF (<SRC.RESTEST i_letterbox_DEED>))
+        SERV.NEWITEM I_Briefkasten
+        NEW.NAME=<SRC.NAME>'s Letterbox
+        NEW.TAG.OWNERUID=<SRC.UID>
+   	NEW.BOUNCE
+        SERV.NEWITEM I_VK_STIFT
+   	NEW.BOUNCE  	  	
+ENDIF
+SRC.consume i_letterbox_DEED 1
+RETURN 1
+
+[ITEMDEF I_Briefkasten]
+ID=09aa
+NAME=Letterbox
+DEFNAME=i_Briefkasten
+WEIGHT=10
+SKILLMAKE= TINKERING 59.0, t_tinker_tools
+RESOURCES= 5 i_ingot_brass, 2 i_nails_brass, 2 i_hinge_iron, 1 i_dyes
+
+CATEGORY=Imperial uo	
+SUBSECTION=Post System
+DESCRIPTION=Letterbox
+
+ON=@CREATE
+Attr=01
+COLOR=0084
+NAME=Letterbox
+
+//ON=@DCLICK
+//IF (<TAG.OWNERUID>=<src.UID>)
+//ELSE
+//     SRC.MESSAGE Thats not yours
+//     RETURN 1
+//ENDIF
+
+[ITEMDEF I_VK_STIFT]
+ID=0fc0
+Name=quill for address cards
+DEFNAME=i_VK_STIFT
+WEIGHT=1
+RESOURCES= 1 i_FEATHER,1 i_ingot_brass, 16 i_scribe_powder
+SKILLMAKE= TINKERING 52.0, Inscription 35.1, t_tinker_tools
+
+CATEGORY=Imperial uo	
+SUBSECTION=Post System
+DESCRIPTION=quill for address cards
+
+on=@CREATE
+Name=quill for address cards
+
+on=@DCLICK
+Target Select your Letterbox!
+return 1
+
+ON=@TARGON_ITEM
+IF (<SRC.TARG.TAG.OWNERUID>==<src.UID>)
+    IF (<SRC.TARG.BASEID>==I_BRIEFKASTEN)
+	IF <SRC.RESTEST 1000 i_gold> 
+	    SRC.CONSUME=1000 i_gold   
+	    SRC.NEWITEM I_VISITENKARTE
+	    SRC.ACT.NAME=<src.name>'s Address Card
+	    SRC.ACT.TAG.NAME=<src.name>
+	    SRC.ACT.LINK=<SRC.TARG.UID>
+	    SRC.ACT.Bounce
+	 ELSE
+	    SRC.MESSAGE=You lack 1000 Gold to create the card 
+         ENDIF
+     ENDIF
+ELSE
+SRC.MESSAGE Thats not your postbox.
+ENDIF
+return 1
+
+
+[ITEMDEF I_VISITENKARTE]
+ID=0ff1
+DEFNAME=i_Visitenkarte
+WEIGHT=1
+TYPE=t_script
+
+CATEGORY=Imperial uo	
+SUBSECTION=Post System
+DESCRIPTION=callingcard
+
+on=@create
+Name=Calling Card
+COLOR=04b
+
+ON=@DCLICK
+RETURN 1
+
+
+[ITEMDEF I_ADRESSBUCH]
+ID=i_Spellbook
+Name=Address Book
+DEFNAME=i_Adressbuch
+RESOURCES=1 I_HIDE,1 i_thread, 16 i_scroll_blank, 1 i_cloth
+SKILLMAKE=Inscription 65.1
+TYPE=T_Script
+WEIGHT=1
+
+
+CATEGORY=Imperial uo	
+SUBSECTION=Post System
+DESCRIPTION=Address Book
+
+ON=@CREATE
+COLOR=0532
+ATTR=04
+TAG.POS1_X=0
+TAG.POS2_X=0
+TAG.POS3_X=0
+TAG.POS4_X=0
+TAG.POS5_X=0
+TAG.POS6_X=0
+TAG.POS7_X=0
+TAG.POS8_X=0
+TAG.POS9_X=0
+TAG.POS10_X=0
+TAG.POS11_X=0
+TAG.POS12_X=0
+TAG.POS13_X=0
+TAG.POS14_X=0
+TAG.POS15_X=0
+TAG.POS16_X=0
+
+ON=@DCLICK
+SRC.SOUND=85
+DIALOG d_Adressbuch
+RETURN 1
+
+ON=@TARGON_CHAR
+SRC.SYSMESSAGE You can't target yourself!
+RETURN 1
+
+
+ON=@TARGON_ITEM
+IF (<SRC.TARG.BASEID>==I_VISITENKARTE)        
+	IF (<SRC.TARG.LINK>==0)
+          SRC.SYSMESSAGE Thats a blank card?
+          RETURN 1
+        ENDIF
+IF (<TAG.POS1_X>=00)
+        SRC.SOUND=79
+       try  TAG.LOCAL1=<SRC.TARG.TAG.NAME>
+       try  TAG.POS1_X=<SRC.TARG.LINK>
+	src.targ.remove
+        RETURN 1
+ENDIF
+IF (<TAG.POS2_X>=00)
+        SRC.SOUND=79
+       try  TAG.LOCAL2=<SRC.TARG.TAG.NAME>
+       try  TAG.POS2_X=<SRC.TARG.LINK>
+        src.targ.remove
+	RETURN 1
+ENDIF
+IF (<TAG.POS3_X>=00)
+        SRC.SOUND=79
+       try  TAG.LOCAL3=<SRC.TARG.TAG.NAME>
+       try  TAG.POS3_X=<SRC.TARG.LINK>
+        src.targ.remove
+	RETURN 1
+ENDIF
+IF (<TAG.POS4_X>=00)
+        SRC.SOUND=79
+       try  TAG.LOCAL4=<SRC.TARG.TAG.NAME>
+       try  TAG.POS4_X=<SRC.TARG.LINK>
+        src.targ.remove
+	RETURN 1
+ENDIF
+IF (<TAG.POS5_X>=00)
+        SRC.SOUND=79
+       try  TAG.LOCAL5=<SRC.TARG.TAG.NAME>
+       try  TAG.POS5_X=<SRC.TARG.LINK>
+        src.targ.remove
+	RETURN 1
+ENDIF
+IF (<TAG.POS6_X>=00)
+        SRC.SOUND=79
+       try  TAG.LOCAL6=<SRC.TARG.TAG.NAME>
+       try  TAG.POS6_X=<SRC.TARG.LINK>
+        src.targ.remove
+	RETURN 1
+ENDIF
+IF (<TAG.POS7_X>=00)
+        SRC.SOUND=79
+       try  TAG.LOCAL7=<SRC.TARG.TAG.NAME>
+       try  TAG.POS7_X=<SRC.TARG.LINK>
+        src.targ.remove
+	RETURN 1
+ENDIF
+IF (<TAG.POS8_X>=00)
+        SRC.SOUND=79
+       try  TAG.LOCAL8=<SRC.TARG.TAG.NAME>
+       try  TAG.POS8_X=<SRC.TARG.LINK>
+        src.targ.remove
+	RETURN 1
+ENDIF
+IF (<TAG.POS9_X>=00)
+        SRC.SOUND=79
+       try  TAG.LOCAL9=<SRC.TARG.TAG.NAME>
+       try  TAG.POS9_X=<SRC.TARG.LINK>
+        src.targ.remove
+	RETURN 1
+ENDIF
+IF (<TAG.POS10_X>=00)
+        SRC.SOUND=79
+       try  TAG.LOCAL10=<SRC.TARG.TAG.NAME>
+       try  TAG.POS10_X=<SRC.TARG.LINK>
+        src.targ.remove
+	RETURN 1
+ENDIF
+IF (<TAG.POS11_X>=00)
+        SRC.SOUND=79
+       try  TAG.LOCAL11=<SRC.TARG.TAG.NAME>
+       try  TAG.POS11_X=<SRC.TARG.LINK>
+        src.targ.remove
+	RETURN 1
+ENDIF
+IF (<TAG.POS12_X>=00)
+        SRC.SOUND=79
+       try  TAG.LOCAL12=<SRC.TARG.TAG.NAME>
+       try  TAG.POS12_X=<SRC.TARG.LINK>
+        src.targ.remove
+	RETURN 1
+ENDIF
+IF (<TAG.POS13_X>=00)
+        SRC.SOUND=79
+       try  TAG.LOCAL13=<SRC.TARG.TAG.NAME>
+       try  TAG.POS13_X=<SRC.TARG.LINK>
+        src.targ.remove
+	RETURN 1
+ENDIF
+IF (<TAG.POS14_X>=00)
+        SRC.SOUND=79
+       try  TAG.LOCAL14=<SRC.TARG.TAG.NAME>
+       try  TAG.POS14_X=<SRC.TARG.LINK>
+        src.targ.remove
+	RETURN 1
+ENDIF
+IF (<TAG.POS15_X>=00)
+        SRC.SOUND=79
+       try  TAG.LOCAL15=<SRC.TARG.TAG.NAME>
+       try  TAG.POS15_X=<SRC.TARG.LINK>
+        src.targ.remove
+	RETURN 1
+ENDIF
+IF (<TAG.POS16_X>=00)
+        SRC.SOUND=79
+       try  TAG.LOCAL16=<SRC.TARG.TAG.NAME>
+       try  TAG.POS16_X=<SRC.TARG.LINK>
+        src.targ.remove
+	RETURN 1
+ENDIF
+
+SRC.SYSMESSAGE Your Address book is full
+RETURN 1
+ELSE
+SRC.SYSMESSAGE You enter <SRC.TARG.TAG.NAME>'s address!
+RETURN 1
+ENDIF
+RETURN 1
+
+
+
+[DIALOG d_Adressbuch]
+0, 0
+//Seite 0
+gumppic 100 10 2200
+gumppic 125 50 57
+gumppic 145 50 58
+gumppic 160 50 58
+gumppic 175 50 58
+gumppic 190 50 58
+gumppic 205 50 58
+gumppic 220 50 58
+gumppic 230 50 59
+//Seite 1
+gumppic 290 50 57
+gumppic 310 50 58
+gumppic 325 50 58
+gumppic 340 50 58
+gumppic 355 50 58
+gumppic 370 50 58
+gumppic 385 50 58
+gumppic 395 50 59
+
+page 0
+//Adressknöpfe
+button 125 65 2103 2104 1 0 1
+button 125 80 2103 2104 1 0 2
+button 125 95 2103 2104 1 0 3
+button 125 110 2103 2104 1 0 4
+button 125 125 2103 2104 1 0 5
+button 125 140 2103 2104 1 0 6
+button 125 155 2103 2104 1 0 7
+button 125 170 2103 2104 1 0 8
+//Entfernen Knöpfe
+button 250 65 2103 2104 1 0 17
+button 250 80 2103 2104 1 0 18
+button 250 95 2103 2104 1 0 19
+button 250 110 2103 2104 1 0 20
+button 250 125 2103 2104 1 0 21
+button 250 140 2103 2104 1 0 22
+button 250 155 2103 2104 1 0 23
+button 250 170 2103 2104 1 0 24
+//2te Seite
+//Adressknöpfe
+button 285 65 2103 2104 1 0 9 
+button 285 80 2103 2104 1 0 10 
+button 285 95 2103 2104 1 0 11 
+button 285 110 2103 2104 1 0 12
+button 285 125 2103 2104 1 0 13
+button 285 140 2103 2104 1 0 14
+button 285 155 2103 2104 1 0 15
+button 285 170 2103 2104 1 0 16
+//Enfernen Knöpfe
+button 410 65 2103 2104 1 0 25
+button 410 80 2103 2104 1 0 26
+button 410 95 2103 2104 1 0 27
+button 410 110 2103 2104 1 0 28
+button 410 125 2103 2104 1 0 29
+button 410 140 2103 2104 1 0 30
+button 410 155 2103 2104 1 0 31
+button 410 170 2103 2104 1 0 32
+//Einfuegeknopf
+button 295 30 4033 4033 1 0 33
+//Texte
+croppedtext 145 60 115 17 0 0
+croppedtext 145 75 115 17 0 1
+croppedtext 145 90 115 17 0 2
+croppedtext 145 105 115 17 0 3
+croppedtext 145 120 115 17 0 4
+croppedtext 145 135 115 17 0 5
+croppedtext 145 150 115 17 0 6
+croppedtext 145 165 115 17 0 7
+//2te Seite
+croppedtext 305 60 115 17 0 8
+croppedtext 305 75 115 17 0 9
+croppedtext 305 90 115 17 0 10
+croppedtext 305 105 115 17 0 11
+croppedtext 305 120 115 17 0 12
+croppedtext 305 135 115 17 0 13
+croppedtext 305 150 115 17 0 14
+croppedtext 305 165 115 17 0 15
+//Extra Texte
+text 128 180 0 16
+text 320 25 0 17
+text 160 25 0 18
+text 287 180 0 19
+
+
+[DIALOG d_Adressbuch TEXT]
+//Seite1
+<TAG.local1>
+<TAG.local2>
+<TAG.local3>
+<TAG.local4>
+<TAG.local5>
+<TAG.local6>
+<TAG.local7>
+<TAG.local8>
+//Seite2
+<TAG.local9>
+<TAG.local10>
+<TAG.local11>
+<TAG.local12>
+<TAG.local13>
+<TAG.local14>
+<TAG.local15>
+<TAG.local16>
+send       remove 
+new address 
+Directory
+send       remove 
+
+[DIALOG d_Adressbuch BUTTON]
+ONBUTTON=0
+   SRC.SOUND=85
+   RETURN 1
+
+ONBUTTON=1 16
+   IF <TAG.POS<EVAL <ARGN1>>_X>==0
+      SRC.SYSMESSAGE There is no address here
+      RETURN 1
+   else
+   	IF <SRC.RESTEST 1000 i_gold> 
+	    SRC.CONSUME=1000 i_gold   
+            src.newitem I_BRIEFROLLE
+            try   src.act.LINK=<TAG.POS<EVAL <ARGN1>>_X>
+            try   SRC.ACT.TAG.ABS=<src.name>
+            try   SRC.ACT.TAG.EMP=<TAG.LOCAL<EVAL <ARGN1>>>
+            src.act.bounce
+            RETURN 1
+        ELSE
+	    SRC.MESSAGE=You lack 1000 Gold to create the letter 
+        ENDIF
+   ENDIF
+
+ONBUTTON=17 30
+LOCAL.POSITION = <EVAL (<ARGN1>-16)>
+SRC.SOUND=43
+SRC.SYSMESSAGE Address removed!
+tryp 0 TAG.POS<EVAL (<ARGN1>-16)>_X=00
+tryp 0 TAG.local<EVAL (<ARGN1>-16)>=
+
+
+
+ONBUTTON=33
+//Visitenkarte einfuegen
+SRC.SOUND=85
+TARGET Please select a calling card.
+
+[DIALOG d_Briefrolle]
+0, 0
+NOCLOSE
+gumppic 20 10 9380
+gumppic 134 10 9381
+gumppic 191 10 9381
+gumppic 248 10 9381
+gumppic 305 10 9381
+gumppic 362 10 9381
+gumppic 419 10 9381
+gumppic 476 10 9381
+gumppic 533 10 9381
+gumppic 590 10 9381
+gumppic 647 10 9382
+
+gumppic 20 150 9383
+gumppic 134 150 9384
+gumppic 191 150 9384
+gumppic 248 150 9384
+gumppic 305 150 9384
+gumppic 362 150 9384
+gumppic 419 150 9384
+gumppic 476 150 9384
+gumppic 533 150 9384
+gumppic 590 150 9384
+gumppic 647 150 9385
+
+gumppic 20 192 9383
+gumppic 134 192 9384
+gumppic 191 192 9384
+gumppic 248 192 9384
+gumppic 305 192 9384
+gumppic 362 192 9384
+gumppic 419 192 9384
+gumppic 476 192 9384
+gumppic 533 192 9384
+gumppic 590 192 9384
+gumppic 647 192 9385
+
+gumppic 20 234 9383
+gumppic 134 234 9384
+gumppic 191 234 9384
+gumppic 248 234 9384
+gumppic 305 234 9384
+gumppic 362 234 9384
+gumppic 419 234 9384
+gumppic 476 234 9384
+gumppic 533 234 9384
+gumppic 590 234 9384
+gumppic 647 234 9385
+
+gumppic 20 276 9383
+gumppic 134 276 9384
+gumppic 191 276 9384
+gumppic 248 276 9384
+gumppic 305 276 9384
+gumppic 362 276 9384
+gumppic 419 276 9384
+gumppic 476 276 9384
+gumppic 533 276 9384
+gumppic 590 276 9384
+gumppic 647 276 9385
+
+gumppic 20 318 9383
+gumppic 134 318 9384
+gumppic 191 318 9384
+gumppic 248 318 9384
+gumppic 305 318 9384
+gumppic 362 318 9384
+gumppic 419 318 9384
+gumppic 476 318 9384
+gumppic 533 318 9384
+gumppic 590 318 9384
+gumppic 647 318 9385
+
+gumppic 20 360 9386
+gumppic 134 360 9387
+gumppic 191 360 9387
+gumppic 248 360 9387
+gumppic 305 360 9387
+gumppic 362 360 9387
+gumppic 419 360 9387
+gumppic 476 360 9387
+gumppic 533 360 9387
+gumppic 590 360 9387
+gumppic 647 360 9388
+
+gumppic 50 58 57
+gumppic 65 58 58
+gumppic 80 58 58
+gumppic 95 58 58
+gumppic 110 58 58
+gumppic 125 58 58
+gumppic 130 58 58
+gumppic 145 58 58
+gumppic 160 58 58
+gumppic 175 58 58
+gumppic 190 58 58
+gumppic 205 58 58
+gumppic 220 58 58
+gumppic 235 58 58
+gumppic 250 58 58
+gumppic 265 58 58
+gumppic 280 58 58
+gumppic 295 58 58
+gumppic 310 58 58
+gumppic 325 58 58
+gumppic 340 58 58
+gumppic 355 58 58
+gumppic 370 58 58
+gumppic 385 58 58
+gumppic 400 58 58
+gumppic 415 58 58
+gumppic 430 58 58
+gumppic 445 58 58
+gumppic 460 58 58
+gumppic 475 58 58
+gumppic 490 58 58
+gumppic 505 58 58
+gumppic 520 58 58
+gumppic 535 58 58
+gumppic 550 58 58
+gumppic 565 58 58
+gumppic 580 58 58
+gumppic 595 58 58
+gumppic 610 58 58
+gumppic 625 58 58
+gumppic 640 58 58
+gumppic 655 58 58
+gumppic 670 58 58
+gumppic 685 58 58
+gumppic 700 58 59
+
+gumppic 50 430 57
+gumppic 65 430 58
+gumppic 80 430 58
+gumppic 95 430 58
+gumppic 110 430 58
+gumppic 125 430 58
+gumppic 130 430 58
+gumppic 145 430 58
+gumppic 160 430 58
+gumppic 175 430 58
+gumppic 190 430 58
+gumppic 205 430 58
+gumppic 220 430 58
+gumppic 235 430 58
+gumppic 250 430 58
+gumppic 265 430 58
+gumppic 280 430 58
+gumppic 295 430 58
+gumppic 310 430 58
+gumppic 325 430 58
+gumppic 340 430 58
+gumppic 355 430 58
+gumppic 370 430 58
+gumppic 385 430 58
+gumppic 400 430 58
+gumppic 415 430 58
+gumppic 430 430 58
+gumppic 445 430 58
+gumppic 460 430 58
+gumppic 475 430 58
+gumppic 490 430 58
+gumppic 505 430 58
+gumppic 520 430 58
+gumppic 535 430 58
+gumppic 550 430 58
+gumppic 565 430 58
+gumppic 580 430 58
+gumppic 595 430 58
+gumppic 610 430 58
+gumppic 625 430 58
+gumppic 640 430 58
+gumppic 655 430 58
+gumppic 670 430 58
+gumppic 685 430 58
+gumppic 700 430 59
+
+button 540 450 2103 2104 1 0 1
+button 640 450 2103 2104 1 0 2
+//Text
+textentry 80 70 620 15 0 0 0
+textentry 80 90 620 15 0 1 1
+textentry 80 110 620 15 0 2 2
+textentry 80 130 620 15 0 3 3
+textentry 80 150 620 15 0 4 4
+textentry 80 170 620 15 0 5 5
+textentry 80 190 620 15 0 6 6
+textentry 80 210 620 15 0 7 7
+textentry 80 230 620 15 0 8 8
+textentry 80 250 620 15 0 9 9
+textentry 80 270 620 15 0 10 10
+textentry 80 290 620 15 0 11 11
+textentry 80 310 620 15 0 12 12
+textentry 80 330 620 15 0 13 13
+textentry 80 350 620 15 0 14 14
+textentry 80 370 620 15 0 15 15
+textentry 80 390 620 15 0 16 16
+textentry 80 410 620 15 0 17 17
+
+croppedtext 175 40 115 17 0 18
+text 80 40 0 19
+croppedtext 155 445 115 17 0 20
+text 80 445 0 21
+text 555 445 0 22
+text 655 445 0 23
+
+[DIALOG d_Briefrolle TEXT]
+<tag.LOCAL1>
+<TAG.LOCAL2>
+<TAG.LOCAL3>
+<TAG.LOCAL4>
+<TAG.LOCAL5>
+<TAG.LOCAL6>
+<TAG.LOCAL7>
+<TAG.LOCAL8>
+<TAG.LOCAL9>
+<TAG.LOCAL10>
+<TAG.LOCAL11>
+<TAG.LOCAL12>
+<TAG.LOCAL13>
+<TAG.LOCAL14>
+<TAG.LOCAL15>
+<TAG.LOCAL16>
+<TAG.LOCAL17>
+<TAG.LOCAL18>
+<TAG.EMP>
+Receiver :
+<TAG.ABS>
+Sender :
+Mail
+Delete
+
+[DIALOG d_Briefrolle BUTTON]
+
+ONBUTTON=0
+
+SRC.SOUND=85
+RETURN 1
+
+ONBUTTON=1
+tag.LOCAL1=<ARGTXT[0]>
+tag.LOCAL2=<ARGTXT[1]>
+tag.LOCAL3=<ARGTXT[2]>
+tag.LOCAL4=<ARGTXT[3]>
+tag.LOCAL5=<ARGTXT[4]>
+tag.LOCAL6=<ARGTXT[5]>
+tag.LOCAL7=<ARGTXT[6]>
+tag.LOCAL8=<ARGTXT[7]>
+tag.LOCAL9=<ARGTXT[8]>
+tag.LOCAL10=<ARGTXT[9]>
+tag.LOCAL11=<ARGTXT[10]>
+tag.LOCAL12=<ARGTXT[11]>
+tag.LOCAL13=<ARGTXT[12]>
+tag.LOCAL14=<ARGTXT[13]>
+tag.LOCAL15=<ARGTXT[14]>
+tag.LOCAL16=<ARGTXT[15]>
+tag.LOCAL17=<ARGTXT[16]>
+tag.LOCAL18=<ARGTXT[17]>
+Target Select a carrier Pigeon!
+ 
+SRC.SOUND=85
+RETURN 1
+
+ONBUTTON=2
+SRC.SOUND=85
+REMOVE
+RETURN 1
+
+[ITEMDEF i_Timermodul_Adressbuch]
+NAME=Timermodul_Adressbuch
+ID=i_handr_1
+TYPE=T_EQ_SCRIPT
+WEIGHT=0
+LAYER=layer_special
+
+ON=@Create
+        ATTR=attr_invis|attr_decay
+
+ON=@Equip
+	TIMER=1
+
+ON=@Timer
+	if ( <cont> )
+		if ( <more1> )
+			more1=<more1>-1
+			TIMER=1
+			return 1
+		else
+			cont.ANIM=17
+			cont.message you watch it fly off into the skies
+			
+		endif
+	endif
+REMOVE
+RETURN 1
+
+
+[ITEMDEF I_Taubenreise]
+NAME=Taubenflug
+ID=i_handr_1
+TYPE=T_EQ_SCRIPT
+WEIGHT=0
+LAYER=layer_special
+
+ON=@Create
+        ATTR=attr_invis|attr_decay
+	TIMER=-1
+
+ON=@Timer
+	if ( <cont> )
+		if ( <more1> )
+			more1=<more1>-1
+			cont.move 0,0,15
+			TIMER=1
+			return 1
+		else
+		
+		cont.SOUND=001e	
+		cont.move 0,0,5
+		
+		timer=1
+		endif
+	endif
+
+Timer=-1
+cont.emote disappears into the sky*
+cont.remove
+RETURN 1
+
+[EOF]

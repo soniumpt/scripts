@@ -1,0 +1,183 @@
+[CHARDEF C_Paladin]
+   NAME=#NAMES_HUMANMALE
+   ID=C_man
+   DAM=15,20
+   ARMOR=20
+   
+   TSPEECH=paladinquest_a
+
+TEVENTS=e_npc_quest
+ON=@Create
+   COLOR=colors_skin
+   NPC=brain_human
+   KARMA=200
+   STR=100
+   DEX=100
+   INT=100
+   
+   SWORDSMANSHIP=100.0
+   TACTICS=100.0
+   
+   ITEMNEWBIE=random_male_hair 
+   COLOR=colors_hair 
+   ITEMNEWBIE=random_facial_hair 
+   COLOR=match_hair
+   ITEMNEWBIE=i_platemail_gloves
+   ITEMNEWBIE=i_platemail_arms
+   ITEMNEWBIE=i_platemail_gorget
+   ITEMNEWBIE=i_platemail_chest
+   ITEMNEWBIE=i_platemail_leggings
+   ITEMNEWBIE=i_sword_great
+   ITEMNEWBIE=i_CAPE
+   COLOR=colors_all 
+ 
+ON=@NPCRESTOCK
+   ITEM=i_gold,{200 500}
+   ITEM=i_SASH
+   COLOR=colors_all
+   ITEM=i_apron_half
+   COLOR=colors_all
+   ITEM=i_shirt_plain 
+   COLOR=colors_all 
+   ITEM=random_pants 
+   COLOR=colors_all 
+   ITEM=01710 
+   COLOR=colors_all 
+
+On=@NPCSeeNewPlayer
+   SAY My friend... Help my poor soul... 
+
+
+CATEGORY=Imperial uo
+SUBSECTION=Paladin Quest
+DESCRIPTION=Paladin
+
+
+[SPEECH paladinquest_a]
+on=*helo*
+on=*hello*
+on=*hail*
+   SAY <SRC.SEX Sir/Lady> , thank you for your compassion...please find my sacred helm!!
+   
+ON=*HOW*
+ON=*WHAT*
+ON=*HELM*
+   SAY A horrorible figure attacked me somewhere in these caves, and stole my Avatar's Helm! 
+   SAY Without it i am nothing!
+
+on=*quest*
+ON=*HELP*
+ON=*ok*
+   SAY You must find the horrorible figure somewhere in these caves.
+   SAY Slay the beast and bring back my sacred helm! Say *agree* if you want to help me
+
+ON=*agree*
+ON=*yes*
+ON=*ok*
+   IF ( <SRC.TAG.NPC_QUEST_START> & NPCQ_Paladin )
+      SAY You have already agreed to help me!
+   ELSE
+      SAY I will be waiting right here praying for your success.
+      SAY Come back to me with the helm and say 'collect' for you reward my warrior!
+      SOUND=01FC
+      SRC.TAG.NPC_QUEST_START = <eval ( <SRC.TAG.NPC_QUEST_START> | NPCQ_Paladin )>
+   endif
+   RETURN 1
+   
+on=*collect*
+   IF !( <SRC.TAG.NPC_QUEST_START> & NPCQ_Paladin )
+      SAY Will you help me? You've never agreed!
+   ELSEIF (( <SRC.TAG.NPC_QUEST_START> & NPCQ_Paladin ) && !<SRC.RESTEST 1 i_avatar_helm>)
+      SAY You don't have my sacred helm!!
+   ELSEIF <SRC.RESTEST i_avatar_helm> 
+      SAY Here is your reward!
+      SRC.NEWITEM=i_gold
+      SRC.ACT.AMOUNT=2000
+      SRC.ACT.BOUNCE
+      SRC.SYSMESSAGE=You are now 2000 gps richer.
+      SRC.consume i_avatar_helm
+      SRC.TAG.NPC_QUEST_START = <eval ( <SRC.TAG.NPC_QUEST_START> &~ NPCQ_Paladin )>
+      SRC.TAG.NPC_QUEST_DONE = <eval ( <SRC.TAG.NPC_QUEST_DONE> | NPCQ_Paladin )>
+      SRC.SYSMESSAGE Thank you my brave warrior... i was once brave like you... now i can rest. 
+      remove
+   ENDIF
+   RETURN 1
+   
+[ITEMDEF i_avatar_helm] 
+   NAME=The Avatar's Helm 
+   ID=01412
+   REQSTR=300
+
+ON=@Create
+   HITPOINTS={51 65}
+ 
+CATEGORY=Imperial uo 
+SUBSECTION=Paladin Quest 
+DESCRIPTION=Avatars Helm 
+
+[CHARDEF c_horror_f]
+   DEFNAME=c_horror_f
+   ID=C_MAN
+   NAME=Flint
+   SOUND=snd_HUMAN_M_DIE_01
+   DAM=30,50
+   ARMOR=60
+   CAN=MT_WALK|MT_RUN|MT_EQUIP|MT_USEHANDS
+
+   
+   TSPEECH=spk_human_prime
+   TSPEECH=jobMageEvil
+   TSPEECH=spk_needs
+   TSPEECH=spk_rehello
+   TSPEECH=spk_human_default
+
+ON=@Create
+   TITLE=The Horror Figure
+   COLOR=02938
+   STR={600 800}
+   DEX={200 300}
+   INT={71 85}
+   PARRYING={90.0 100.0}
+   SWORDSMANSHIP={80.0 100.0}
+   WRESTLING={67.0 90.0}
+   MAGICRESISTANCE={100.0 100.0}
+   TACTICS={100.0 100.0}
+   POISONING={90.0 100.0}
+   DETECTION={90.0 100.0}
+   NPC=BRAIN_MONSTER
+   FAME=9999
+   KARMA=-9999
+
+   ITEMNEWBIE=random_male_hair
+   COLOR=colors_hair
+   ITEMNEWBIE=random_facial_hair
+   COLOR=match_hair
+
+On=@NPCSeeNewPlayer
+   SAY Ack! The Helm is mine!
+
+ON=@NPCRestock
+   ITEM=i_platemail_gloves
+   ITEM=i_avatar_helm
+   ITEM=i_platemail_arms
+   ITEM=i_platemail_gorget
+   ITEM=i_platemail_chest
+   ITEM=i_platemail_leggings
+   ITEM=i_sword_viking
+   ITEM=i_CAPE
+   COLOR=02938
+   ITEM=i_SASH
+   COLOR=02938
+   ITEM=i_apron_half
+   COLOR=02938
+   ITEM={ random_jewel 1 0 1 }
+   ITEM={ random_jewel 1 0 1 }
+   ITEM={ random_jewel 1 0 1 }
+   ITEM={ random_jewel 1 0 1 }
+   ITEM=i_gold,{250 450}
+
+CATEGORY=Imperial uo
+SUBSECTION=Paladin Quest
+DESCRIPTION=Horro Figure
+
+[EOF]

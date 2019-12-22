@@ -1,0 +1,617 @@
+//Tailoring fix for MPZ UO Shard
+//Scripted by Warman - Warman@mail.pt
+//Wren - 13-09-03 - Add "=" on line 434
+//Wren - 21NOV03 - Cleaned up script format and leftover test material and fixed some typos
+
+  /////////////
+ //RAW ITEMS//
+/////////////
+
+[ITEMDEF 011f4]
+DEFNAME=i_fur_dark
+TYPE=T_FUR
+VALUE=8
+WEIGHT=12
+CATEGORY=Items by Professions
+SUBSECTION=Tanner
+DESCRIPTION=Hide (Regular)
+DUPELIST=011f5,011f7,011f8,011f9,011fa,011fb
+
+
+[ITEMDEF 011f6]
+DEFNAME=i_fur_light
+TYPE=T_FUR
+VALUE=8
+WEIGHT=12
+CATEGORY=Items by Professions
+SUBSECTION=Tanner
+DESCRIPTION=Hide (Llama)
+
+
+[ITEMDEF 01078]
+// DEFNAME2=PILE_HIDES
+DEFNAME=i_hide
+TYPE=t_hide // T_HIDE made into t_leather later ?
+WEIGHT=6
+VALUE=3
+CATEGORY=Items by Professions
+SUBSECTION=Tanner
+DESCRIPTION=Hides (Pile)
+DUPELIST=01079
+
+
+[ITEMDEF 01067]
+DEFNAME=i_hides_cut
+TYPE=T_LEATHER
+DYE=1
+WEIGHT=5
+VALUE=5
+DUPELIST=01068,01081,01082
+SKILLMAKE=TAILORING 30.0
+
+CATEGORY=Items by Professions
+SUBSECTION=Tanner
+DESCRIPTION=Cut-up Leather
+
+
+[ITEMDEF i_hides_cut_a]
+ID=i_hides_cut
+TYPE=T_LEATHER
+DYE=1
+WEIGHT=5
+VALUE=5
+DUPELIST=01067,01068,01081,01082
+SKILLMAKE=TAILORING 30.0
+
+CATEGORY=Items by Professions
+SUBSECTION=Tanner
+DESCRIPTION=Cut-up Leather
+
+ON=@create
+   AMOUNT=2
+
+  /////////////////
+ //TAILORING FIX//
+/////////////////
+
+[ITEMDEF 0f9e]
+//Scissors
+DEFNAME=i_scissors
+RESOURCES=4 i_ingot_iron
+TYPE=T_SCISSORS
+WEIGHT=1
+CATEGORY=Items by Professions
+SUBSECTION=Tailor
+DESCRIPTION=Scissors
+SKILLMAKE=TINKERING 14.5,t_tinker_tools
+DUPELIST=0f9f
+
+ON=@TARGON_ITEM
+   IF (<SRC.FINDID.m_scissor_timer.UID>)
+      SRC.SYSMESSAGE Your mother would remind you that patience is a virtue, especially with sharp objects. You cannot cut yet for another <EVAL <SRC.FINDID.m_scissor_timer.TIMER>> seconds.
+      RETURN 1
+   ENDIF
+      IF ((<SRC.TARG.TYPE> == t_fur)||(<SRC.TARG.TYPE> == t_hide))
+         IF (<SRC.TAILORING> < 30.0)
+            SRC.SYSMESSAGE You lack the necessary skill to do this.
+            RETURN 1
+         ENDIF
+
+         //case of dark fur
+         IF (<SRC.TARG.BASEID> == i_fur_dark)
+            SRC.TARG.CONSUME
+            IF (<SRC.TARG.AMOUNT>==0)
+	       SRC.TARG.REMOVE
+            ENDIF
+	    SRC.NEWITEM i_hides_cut_a
+	    SRC.ACT.COLOR = <SRC.TARG.COLOR>
+	    SRC.ACT.BOUNCE
+	    SERV.NEWITEM m_scissor_timer
+	    NEW.EQUIP <SRC.UID>
+	    SRC.TARG.UPDATE
+      	    RETURN 1
+         ENDIF
+         
+         //case of light fur
+	 IF (<SRC.TARG.BASEID> == i_fur_light)
+            SRC.TARG.CONSUME
+            IF (<SRC.TARG.AMOUNT>==0)
+	       SRC.TARG.REMOVE
+            ENDIF
+	    SRC.NEWITEM i_hides_cut_a
+	    SRC.ACT.COLOR = <SRC.TARG.COLOR>
+	    SRC.ACT.BOUNCE
+	    SERV.NEWITEM m_scissor_timer
+	    NEW.EQUIP <SRC.UID>
+	    SRC.TARG.UPDATE
+      	    RETURN 1
+         ENDIF
+
+         //case of hide
+         IF (<SRC.TARG.TYPE> == t_hide)                    
+            SRC.TARG.CONSUME
+            IF (<SRC.TARG.AMOUNT>==0)
+	       SRC.TARG.REMOVE
+            ENDIF
+	    SRC.NEWITEM i_hides_cut
+	    SRC.ACT.COLOR = <SRC.TARG.COLOR>
+	    SRC.ACT.BOUNCE
+	    SERV.NEWITEM m_scissor_timer
+	    NEW.EQUIP <SRC.UID>
+	    SRC.TARG.UPDATE
+      	    RETURN 1
+         ENDIF
+	
+         //Case of nothing left
+         //IF (<SRC.ACT.AMOUNT>==0)
+            //SRC.ACT.REMOVE
+            //RETURN 1
+         //ENDIF
+
+         //SRC.ACT.BOUNCE
+         SRC.SYSMESSAGE You must target an item which can be cut!
+         RETURN 1
+      //ENDIF
+   ENDIF
+
+
+IF ( <SRC.TARG.BASEID> == i_cloth) 
+	      SRC.TARG.CONSUME
+	      SRC.NEWITEM i_bandage
+	      SRC.ACT.AMOUNT 10
+	      SRC.ACT.COLOR = <SRC.TARG.COLOR>
+	      SRC.ACT.BOUNCE
+	      SERV.NEWITEM m_scissor_timer
+	      NEW.EQUIP <SRC.UID>
+	      SRC.TARG.UPDATE
+      RETURN 1
+ENDIF
+
+IF ( <SRC.TARG.BASEID> == i_cloth_bolt) 
+	IF (<SRC.TAILORING> > 14.9)
+	      SRC.TARG.CONSUME
+	      SRC.NEWITEM i_cloth
+	      SRC.ACT.COLOR = <SRC.TARG.COLOR>
+	      SRC.ACT.BOUNCE
+	      SERV.NEWITEM m_scissor_timer
+	      NEW.EQUIP <SRC.UID>
+	      SRC.TARG.UPDATE
+      	      RETURN 1
+      	ENDIF
+      	SRC.SYSMESSAGE You are not skilled enough to do that!
+      	RETURN 1
+ENDIF
+	
+//IF ( <SRC.TARG.BASEID> == i_cloth_bolt )               	
+//   	SRC.SYSMESSAGE You start cutting the cloth..
+//   	SRC.MAKEITEM i_cloth
+//   	SRC.TAG.MAKEITEM.LEVEL	= 15.0
+//   	SRC.TARG.AMOUNT = <eval <SRC.TARG.AMOUNT> - 1>
+//	    IF (<SRC.TARG.AMOUNT> == 0)
+//	          SRC.TARG.REMOVE
+//            ENDIF
+//   	SERV.NEWITEM m_scissor_timer
+//   	NEW.EQUIP <SRC.UID>
+//   	SRC.TARG.UPDATE
+//   	RETURN 1
+//ENDIF
+
+IF (<SRC.TARG.TYPE> == t_clothing)
+   //IF (<SRC.TAILORING> < 15.0)
+      SRC.TARG.CONSUME
+      SRC.NEWITEM i_bandage
+      SRC.ACT.AMOUNT 10
+      SRC.ACT.COLOR = <SRC.TARG.COLOR>
+      SRC.ACT.BOUNCE
+      SERV.NEWITEM m_scissor_timer
+      NEW.EQUIP <SRC.UID>
+      SRC.TARG.UPDATE
+      RETURN 1
+   //endif
+   
+   
+
+
+[ITEMDEF m_scissor_timer]
+ID=i_memory
+TYPE=t_eq_script
+NAME=Scissors Timer
+
+ON=@CREATE
+   TIMER=7
+
+ON=@TIMER
+   REMOVE
+   RETURN 1
+
+
+[ITEMDEF 0fa0]
+//Spool of Thread
+DEFNAME=i_thread
+TYPE=T_THREAD
+DYE=1
+WEIGHT=1
+VALUE=1
+SKILLMAKE=TAILORING 30.0
+CATEGORY=Items by Professions
+SUBSECTION=Tailor
+DESCRIPTION=Spool of Thread
+DUPELIST=0fa1
+
+ON=@TARGON_ITEM
+   IF !( <SRC.TARG.TYPE> == T_LOOM )
+      RETURN 0
+   ENDIF
+
+   IF (<SRC.TAILORING> < 40.0)
+      SRC.SYSMESSAGE You lack the necessary skill to weave cloth.
+      RETURN 1
+   ENDIF
+
+   IF (<SRC.TARG.DISTANCE> > 1)
+      SRC.SYSMESSAGE You are too far away.
+      RETURN 1
+   ENDIF
+
+   //Test Resources
+   IF (<AMOUNT> < 4)
+      IF ( !<SRC.RESTEST 4 i_thread> )
+         SRC.SYSMESSAGE You must have 4 thread pieces together.
+         RETURN 1
+      ENDIF
+
+      SRC.SYSMESSAGE You lack the necessary ammount of thread to weave a bolt of cloth.
+      RETURN 1
+   ENDIF
+
+   //Anti macro script
+   IF (<AMOUNT>==4)
+      REMOVE
+   ELSE
+      SRC.NEWITEM i_thread
+      SRC.ACT.AMOUNT = <EVAL( <AMOUNT>-4)>
+      REMOVE
+      SRC.ACT.BOUNCE
+   ENDIF
+
+   SRC.SYSMESSAGE You start weaving the cloth.
+   SRC.MAKEITEM i_cloth_bolt
+   SRC.TAG.MAKEITEM.LEVEL	= 40.0
+   RETURN 1
+
+ON=@CREATE
+AMOUNT=6
+
+[ITEMDEF 0e1d]
+// DEFNAME2=BALL_OF_YARN_1
+DEFNAME=i_yarn_ball
+TYPE=T_YARN
+WEIGHT=1
+VALUE = 1
+SKILLMAKE=TAILORING 30.0
+CATEGORY=Items by Professions
+SUBSECTION=Tailor
+DESCRIPTION=BALL OF YARN
+DUPELIST=0e1e,0e1f
+
+ON=@TARGON_ITEM
+   IF !( <SRC.TARG.TYPE> == T_LOOM )
+      RETURN 0
+   ENDIF
+
+   IF (<SRC.TAILORING> < 40.0)
+      SRC.SYSMESSAGE You lack the necessary skill to weave cloth.
+      RETURN 1
+   ENDIF
+
+   IF (<SRC.TARG.DISTANCE> > 1)
+      SRC.SYSMESSAGE You are too far away.
+      RETURN 1
+   ENDIF
+
+   //Test Resources
+   IF (<AMOUNT> < 4)
+      IF ( !<SRC.RESTEST 4 i_yarn_ball> )
+         SRC.SYSMESSAGE You must to have 4 yarn balls together.
+         RETURN 1
+      ENDIF
+      SRC.SYSMESSAGE You lack the necessary ammount of yarn balls to weave a bolt of cloth.
+      RETURN 1
+   ENDIF
+
+   //Anti macro script
+   IF (<AMOUNT>==4)
+      REMOVE
+   ELSE
+      SRC.NEWITEM i_yarn_ball
+      SRC.ACT.AMOUNT = <EVAL( <AMOUNT>-4)>
+      REMOVE
+      SRC.ACT.BOUNCE
+   ENDIF
+
+   SRC.SYSMESSAGE You start weaving the cloth.
+   SRC.MAKEITEM i_cloth_bolt
+   SRC.TAG.MAKEITEM.LEVEL	= 40.0
+   RETURN 1
+
+ON=@CREATE
+AMOUNT=6
+
+
+[ITEMDEF 0df8]
+DEFNAME=i_wool
+VALUE=3
+TYPE=t_WOOL
+WEIGHT=8
+CATEGORY=Items by Professions
+SUBSECTION=Tailor
+DESCRIPTION=WOOL (PILE)
+DUPELIST=0101f
+
+ON=@TARGON_ITEM
+   IF !( <SRC.TARG.TYPE> == T_SPINWHEEL )
+      RETURN 0
+   ENDIF
+
+   IF (<SRC.TAILORING> < 30.0)
+      SRC.SYSMESSAGE You lack the necessary skill to do this.
+      RETURN 1
+   ENDIF
+
+   IF (<SRC.TARG.DISTANCE> > 1)
+      SRC.SYSMESSAGE You are too far away.
+      RETURN 1
+   ENDIF
+
+   //Anti Macro Script
+   IF (<AMOUNT>==1)
+      REMOVE
+   ELSE
+      SRC.NEWITEM i_wool
+      SRC.ACT.AMOUNT = <EVAL( <AMOUNT>-1)>
+      REMOVE
+      SRC.ACT.BOUNCE
+   ENDIF
+
+   SRC.SYSMESSAGE You start spinning the wool.
+   SRC.MAKEITEM i_yarn_ball
+   SRC.TAG.MAKEITEM.LEVEL	= 30.0
+   RETURN 1
+
+
+[ITEMDEF 0df9]
+// DEFNAME2=RAW_COTTON
+DEFNAME=i_cotton
+VALUE=3
+//RESOURCES=16 i_crop_COTTON
+TYPE=t_COTTON
+CATEGORY=Items by Professions
+SUBSECTION=Tailor
+DESCRIPTION=BAILS OF COTTON
+DUPELIST=0def
+WEIGHT=8
+
+ON=@TARGON_ITEM
+   IF !( <SRC.TARG.TYPE> == T_SPINWHEEL )
+      RETURN 0
+   ENDIF
+
+   IF (<SRC.TAILORING> < 30.0)
+      SRC.SYSMESSAGE You lack the necessary skill to do this.
+      RETURN 1
+   ENDIF
+
+   IF (<SRC.TARG.DISTANCE> > 1)
+      SRC.SYSMESSAGE You are too far away.
+      RETURN 1
+   ENDIF
+
+   IF (<AMOUNT>==1)
+      REMOVE
+   ELSE
+      SRC.NEWITEM i_cotton
+      SRC.ACT.AMOUNT = <EVAL( <AMOUNT>-1)>
+      REMOVE
+      SRC.ACT.BOUNCE
+   ENDIF
+
+   SRC.SYSMESSAGE You start spinning the cotton.
+   SRC.MAKEITEM i_thread
+   SRC.TAG.MAKEITEM.LEVEL	= 30.0
+   RETURN 1
+
+
+[ITEMDEF 0f95]
+//Bolt of Cloth
+// DEFNAME2=BOLT_OF_CLOTH
+TYPE=t_normal
+DEFNAME=i_cloth_bolt
+VALUE=15
+TYPE=T_NORMAL
+DYE=1
+WEIGHT=10
+
+CATEGORY=Items by Professions
+SUBSECTION=Tailor
+DESCRIPTION=Bolt of Cloth
+SKILLMAKE=TAILORING 40.0
+DUPELIST=0f96,0f97,0f98,0f99,0f9a,0f9b,0f9c
+
+
+[ITEMDEF 0175d]
+// DEFNAME2=FOLDED_CLOTH_1
+DEFNAME=i_cloth
+WEIGHT=1
+VALUE=2
+TYPE=t_cloth
+DYE=1
+SKILLMAKE=TAILORING 15.0
+CATEGORY=Items by Professions
+SUBSECTION=Tailor
+DESCRIPTION=Folded Cloth
+DUPELIST=0175e,0175f,01760,01761,01762,01763,01764,01765
+
+ON=@CREATE
+   AMOUNT=10
+
+
+[ITEMDEF 0f9d]
+//Sewing Kit
+DEFNAME=i_sewing_kit
+TYPE=T_sewing_kit
+RESOURCES=2 i_ingot_iron
+WEIGHT=2
+CATEGORY=Items by Professions
+SUBSECTION=Tailor
+DESCRIPTION=Sewing Kit
+SKILLMAKE=TINKERING 18.8,t_tinker_tools
+
+ON=@DCLICK
+   TARGET What do you want to use this on?
+   Return 1
+
+ON=@TARGON_ITEM
+IF (<SRC.TARG.TDATA1> = mat_red)
+   IF (<SRC.TAILORING> < 75.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+      SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+      RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 1 i_dragonhide_red> && <SRC.RESTEST 1 i_ingot_steel>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_dragonhide_red 
+      SRC.CONSUME i_ingot_steel
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 1 red dragon hide and 1 steel ingot to repair this...
+      RETURN 1
+   ENDIF
+ELSEIF (<SRC.TARG.TDATA1> = mat_green)
+   IF (<SRC.TAILORING> < 75.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+      SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+      RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 1 i_dragonhide_green> && <SRC.RESTEST 1 i_ingot_steel>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_dragonhide_green 
+      SRC.CONSUME i_ingot_steel
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 1 green dragon hide and 1 steel ingot to repair this...
+      RETURN 1
+   ENDIF
+ELSEIF (<SRC.TARG.TDATA1> = mat_crystal)
+   IF (<SRC.TAILORING> < 85.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+      SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+      RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 1 i_dragonhide_crystal> && <SRC.RESTEST 1 i_ingot_steel>)   
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_dragonhide_crystal 
+      SRC.CONSUME i_ingot_steel
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 1 crystal dragon hide and 1 steel ingot to repair this...
+      RETURN 1
+   ENDIF
+ELSEIF (<SRC.TARG.TDATA1> = mat_ice)
+   IF (<SRC.TAILORING> < 85.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+      SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+      RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 1 i_dragonhide_ice> && <SRC.RESTEST 1 i_ingot_steel>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_dragonhide_ice 
+      SRC.CONSUME i_ingot_steel
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 1 ice dragon hide and 1 steel ingot to repair this...
+      RETURN 1
+   ENDIF
+ELSEIF (<SRC.TARG.TDATA1> = mat_drake)
+   IF (<SRC.TAILORING> < 65.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+      SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+      RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 1 i_dragonhide_drake> && <SRC.RESTEST 1 i_ingot_steel>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_dragonhide_drake 
+      SRC.CONSUME i_ingot_steel
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 1 drake dragon hide and 1 steel ingot to repair this...
+      RETURN 1
+   ENDIF
+ELSEIF (<SRC.TARG.TYPE> = t_armor_leather)
+   IF (<SRC.TAILORING> < 40.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+      SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+      RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_hides_cut> && <SRC.RESTEST 1 i_thread>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_hides_cut 3
+      SRC.CONSUME i_thread
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 1 spool of thread and 3 cut hides to repair this...
+      RETURN 1
+   ENDIF  
+ELSEIF ( <SRC.TARG.BASEID> == i_cloth_bolt )
+      SRC.SYSMESSAGE Bolts must be cut into cloth first.
+      RETURN 1
+ELSEIF ( <SRC.TARG.BASEID> == (i_dragonhide_red))
+      SRC.SKILLMENU=sm_Dragon_Leather_Armour       
+      RETURN 1
+ELSEIF ( <SRC.TARG.BASEID> == (i_dragonhide_green))
+      SRC.SKILLMENU=sm_Dragon_Leather_Armour       
+      RETURN 1
+ELSEIF ( <SRC.TARG.BASEID> == (i_dragonhide_ice))
+      SRC.SKILLMENU=sm_Dragon_Leather_Armour       
+      RETURN 1
+ELSEIF ( <SRC.TARG.BASEID> == (i_dragonhide_crystal))
+      SRC.SKILLMENU=sm_Dragon_Leather_Armour       
+      RETURN 1
+ELSEIF ( <SRC.TARG.BASEID> == (i_dragonhide_drake))
+      SRC.SKILLMENU=sm_Dragon_Leather_Armour       
+      RETURN 1
+ELSEIF ( <SRC.TARG.TYPE> == t_cloth )
+      SRC.SKILLMENU=sm_tailorcloth
+      RETURN 1
+ELSEIF ( <SRC.TARG.DISPID> == i_hides_cut)
+      SRC.SKILLMENU=sm_tailorleather
+      RETURN 1
+ENDIF
+SRC.SYSMESSAGE There is nothing you can do with this.
+RETURN 1
+
+
+[EOF]

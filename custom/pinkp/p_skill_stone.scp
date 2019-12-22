@@ -1,0 +1,789 @@
+// Changelog
+// 02/06/18 - Wigifer - Firstly, I *love* this stone. It's so clean... But then it's also not quite suitable.
+		      - Due to the storing of tags on an item, the values cannot be dynamic. Not having that.
+                      - Removed the ability to amend the Skill Quantity.
+                      - Altered it to be 50%.
+                      - Tidied it up to be MUCH neater
+                      - Added a series of defnames (Tags are a HORRIBLE way to store this data)
+                      - [PENDING] The GUMP has been modified to be more user-friendly.
+                      - f_skillselector_finish is now redundant - Use f_skillselector_update instead.
+
+//*********************************************************************************************************//
+//                    Starter Skills and Stats Selector Stone Created by Pink Panther                      //
+//*********************************************************************************************************//
+
+[DEFNAME skillselector_amounts]
+skillselector_newbie_claimcap 500
+skillselector_newbie_quantity 6
+skillselector_newbie_totalcap 3000
+
+[ITEMDEF i_skillselector_stone_starter]
+ID=0ed4
+TYPE=00
+NAME=Starter Skills Selector Stone [Double Click]
+ 
+ON=@CREATE
+ 
+COLOR=07a1
+TAG.SKILLCLAIMCAP= 500 // Maximum you can claim in one skill
+TAG.SKILLCLAIMNUMBER= 6 // Maximum number of skills you can claim
+ 
+ 
+ON=@DCLICK
+
+IF !(<SRC.TAG0.SSSSFIRSTCLICK>==1)
+	SRC.TAG.SSSSFIRSTCLICK=1
+	SRC.ALLSKILLS = 0
+	SRC.TAG.SHOW.DAMROLLS = 1
+	IF (<SRC.FINDID.i_spellbook>)
+		SRC.FINDID.i_spellbook.remove
+	ENDIF
+ENDIF
+ 
+IF (<SRC.TAG0.SKILLSELECTORSTONEMENU>==1)
+        SRC.SYSMESSAGE You can't do that as you already have one Skills and Stats Selector Stone menu opened. If this is wrong, please page.
+        RETURN 1
+ELSE
+        SRC.TAG.SKILLSELECTORSTONEMENU=1
+        SRC.DIALOG d_skillselector_starter
+        RETURN 1
+ENDIF
+ 
+ 
+[DIALOG d_skillselector_starter]
+200, 50
+NOMOVE
+NODISPOSE
+
+ 
+page 0
+
+resizepic 13 26 9350 510 527
+resizepic 39 64 9300 460 315
+resizepic 39 385 9300 460 90
+resizepic 39 480 9300 460 45
+
+ 
+  dtext 200 26 2300 Skills Selector Stone
+  
+  // SKILL SELECTION BUTTONS - DISABLED IF SKILLTOTAL IS 300
+  IF (<SRC.SKILLTOTAL> < 3000)
+  dtext 45 43 0 Select the skill to increase by <EVAL skillselector_newbie_claimcap / 10>% (You can only do this for 6 skills)
+
+  button  45 90 210 211 1 0 10 // Alchemy
+  button  45 112 210 211 1 0 11 // Assessment
+  button  45 134 210 211 1 0 12 // Creature Lore
+  button  45 156 210 211 1 0 13 // Item Lore
+  button  45 178 210 211 1 0 14 // Arms Lore
+  button  45 200 210 211 1 0 15 // Shieldfighting
+//button  55 192 210 211 1 0 16 // unused
+  button  45 222 210 211 1 0 26 // Mystic Lore
+  button  45 244 210 211 1 0 17 // Blacksmith
+  button  45 266 210 211 1 0 18 // Bowery
+//button  45 243 210 211 1 0 19 // Songs of Peace
+//button  45 261 210 211 1 0 20 // Surival
+  button  45 288 210 211 1 0 21 // Carpentry
+//button  45 310 210 211 1 0 22 // Cartography
+  button  45 332 210 211 1 0 23 // Cooking
+  button  45 354 210 211 1 0 24 // Detection
+//button  45 315 210 211 1 0 25 // Songs of the World
+ 
+  button 205  90 210 211 1 0 27 // Healing
+  button 205 112 210 211 1 0 28 // Fishing
+//button 205 134 210 211 1 0 29 // Netherworld Lore
+//button 205 156 210 211 1 0 30 // Farming/Herding
+  button 205 178 210 211 1 0 31 // Hiding
+  button 205 200 210 211 1 0 32 // Songs of War
+  button 205 222 210 211 1 0 33 // Inscription
+//button 205 209 210 211 1 0 34 // Lockpicking/Trap Removal
+  button 205 244 210 211 1 0 35 // Magery
+  button 205 266 210 211 1 0 36 // Resist Magic
+  button 205 288 210 211 1 0 37 // Tatics
+//button 205 278 210 211 1 0 38 // Snooping
+  button 45 310 210 211 1 0 39 // Musicianship
+  button 205 68 210 211 1 0 40 // Poisoning
+  button 205 332 210 211 1 0 41 // Archery
+  button 45 68 210 211 1 0 42 // Necromancy
+//button 205 298 210 211 1 0 43 // Stealing
+  button 205  354 210 211 1 0 44 // Tailoring
+ 
+  button 355 354 210 211 1 0 45 // Taming
+//button 355 90 210 211 1 0 46 // Herbs Lore
+  button 355 310 210 211 1 0 47 // Tinkering
+//button 355 134 210 211 1 0 48 // Tracking
+//button 355 156 210 211 1 0 49 // Masonry
+  button 205 156 210 211 1 0 50 // Blade Weapons
+  button 205 134 210 211 1 0 51 // Blunt Weapons
+  button 355 222 210 211 1 0 52 // Piercing Weapons
+  button 355 244 210 211 1 0 53 // Unarmed Combat
+  button 355 266 210 211 1 0 54 // Lumberjacking
+  button 355 288 210 211 1 0 55 // Mining
+  button 205 310 210 211 1 0 56 // Meditation
+  button 355 332 210 211 1 0 57 // Stealth
+//button 335 329 210 211 1 0 58 // unused
+
+  button  45 415 210 211 1 0 64 // Warrior
+  button  45 440 210 211 1 0 65 // Mage
+  button  205 415 210 211 1 0 66 // Mage/Warrior
+  button  205 440 210 211 1 0 67 // Trader 
+
+  ELSE
+     dtext 45 43 0 You have now selected your skills. Either confirm or cancel your selection.
+  ENDIF
+ 
+
+ 
+
+  
+  
+  dtext 45 390 2300 Pre-Selected Builds
+  
+  dtext 65 415 0 Warrior
+  
+  dtext 65 440 0 Pure Mage
+  
+  dtext 225 415 0 Mage/Healer
+  
+  dtext 225 440 0 Trader 
+ 
+  // Only show if the skilltotal has been reached
+  IF (<SRC.SKILLTOTAL> >= 3000)
+     button  45 490 210 211 1 0 63 // Starter Kit
+     dtext 65 490 07a6 Confirm Skill Selection
+     button 205 490 210 211 1 0 59 // Nuke All Skills
+     dtext 225 490 07a5 Reset Skill Selection
+  ELSE
+  
+  ENDIF
+ 
+  dtext  65  90 0 Alchemy
+  dtext  65 112 0 Assessment
+  dtext  65 134 0 Creature lore
+  dtext  65 156 0 Item lore
+  dtext  65 178 0 Arms lore
+  dtext  65 200 0 Shieldfighting
+//dtext  75 192 0 unused
+  dtext  65 222 0 Mystic lore
+  dtext  65 244 0 Blacksmithy
+//dtext  60 243 0 Songs of Peace
+//dtext  60 261 0 Survival
+  dtext  65 266 0 Bowery
+  dtext  65 288 0 Carpentry  
+  dtext  65 310 0 Musicianship  
+  dtext  65 332 0 Cooking
+//dtext  60 346 0 Songs of the World
+  dtext  65 354 0 Detection
+ 
+  dtext 225  90 0 Healing
+  dtext 225 112 0 Fishing
+//dtext 225 134 0 Netherworld lore
+//dtext 225 156 0 Farming/Herding
+  dtext 225 178 0 Hiding
+  dtext 225 200 0 Songs of War
+  dtext 225 222 0 Inscription
+//dtext 220 209 0 Lockpicking/Traps
+  dtext 225 244 0 Magery
+  dtext 225 266 0 Resist Magic
+  dtext 225 288 0 Tactics
+//dtext 220 278 0 Snooping
+//dtext 225 310 0 Musicianship
+  dtext 225 68 0 Poisoning
+  dtext 225 332 0 Archery
+  dtext 65 68 0 Necromancy
+//dtext 370 329 0 Stealing
+  dtext 225  354 0 Tailoring
+ 
+  dtext 375 354 0 Taming
+//dtext 375 90 0 Herbs lore
+  dtext 375 310 0 Tinkering
+//dtext 375 134 0 Tracking
+//dtext 375 156 0 Masonry
+  dtext 225 156 0 Blade weapons
+  dtext 225 134 0 Blunt weapons
+  dtext 375 222 0 Piercing weapons
+  dtext 375 244 0 Unarmed combat
+  dtext 375 266 0 Lumberjacking
+  dtext 375 288 0 Mining
+  dtext 225 310 0 Meditation
+  dtext 375 332 0 Stealth
+//dtext 375 364 0 Stealing
+ 
+  dtext 99 526 52 Please pick 6 skills or one of the Pre-Selected Builds.
+ 
+//button 400 350 <eval 047b> <eval 047c> 1 0 60
+ 
+ 
+[DIALOG d_skillselector_starter BUTTON]
+ 
+ONBUTTON=0
+ 
+SRC.f_ssss_cleartags
+ 
+ONBUTTON=10 58
+ 
+SRC.TAG.SKILLCLAIM=500
+
+// ---- Commenting out this code, as it's useful but not pertinent right now. ----
+//IF (<EVAL <SRC.TAG0.SKILLCLAIM>> > <EVAL <SRC.TAG0.SKILLCLAIMCAP>>)
+//        SRC.SYSMESSAGE The current maximum skill increase allowed is <EVAL <SRC.TAG0.SKILLCLAIMCAP>/10>% (<EVAL <SRC.TAG0.SKILLCLAIMCAP>>)
+//        SRC.f_ssss_cleartags
+//        RETURN 1
+//ENDIF
+ 
+IF (<SRC.SKILLTOTAL> >= skillselector_newbie_totalcap)
+        SRC.SYSMESSAGE You already have <EVAL <SRC.SKILLTOTAL> / 10> Total Skill. If you want to change your skills, please first nuke all of them through the option found in the Skills and Stats Selector Stone menu.
+        SRC.f_ssss_cleartags
+        RETURN 1
+ENDIF
+       
+       
+LOCAL.SKILL = <ARGN1>
+SRC.TAG.SKILLCLAIMCAP=<TAG.SKILLCLAIMCAP>
+SRC.TAG.SKILLCLAIMNUMBER=<TAG.SKILLCLAIMNUMBER>
+SRC.f_skillselector_update <LOCAL.SKILL>
+ 
+       
+ 
+ONBUTTON=59
+ 
+        SRC.ALLSKILLS=0
+        SRC.SYSMESSAGE All skills sucessfully nuked.
+        SERV.LOG :Starter Skill and Stats Selector Stone: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> has just nuked all skills.
+        SRC.f_ssss_cleartags
+        RETURN 1
+ 
+ 
+ 
+ONBUTTON=62
+ 
+ 
+IF (<ARGTXT[2]> <= 120) && (<ARGTXT[3]> <= 120) && (<ARGTXT[4]> <= 120)
+        IF (<EVAL <ARGTXT[2]> + <ARGTXT[3]> + <ARGTXT[4]>> = 275)
+                SRC.OSTR=<ARGTXT[2]>
+                SRC.ODEX=<ARGTXT[3]>
+                SRC.OINT=<ARGTXT[4]>
+                SRC.SYSMESSAGE Stats sucessfully changed.
+                SERV.LOG :Starter Skill and Stats Selector Stone: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> has just changed stats to <ARGTXT[2]> STR, <ARGTXT[3]> DEX and <ARGTXT[4]> INT.
+        ELSE
+                SRC.SYSMESSAGE At this time you can't have more nor less than 275 total stats.
+        ENDIF
+ELSE
+        SRC.SYSMESSAGE You can't have more than 120 in any stat.
+ENDIF
+       
+       
+SRC.f_ssss_cleartags
+ 
+ONBUTTON=63
+ 
+IF (<EVAL <SRC.TAG0.STARTERKITCLAIMED>> = 1)
+        SRC.SYSMESSAGE @07a1 Please page for a GM, citing error "Can't claim starter skills twice".
+ELSE
+        SERV.NEWITEM tm_reagents_sm
+        NEW.BOUNCE
+        SERV.NEWITEM i_gold
+        NEW.AMOUNT=2500
+        NEW.BOUNCE
+	SERV.NEWITEM i_spellbook
+	NEW.MORE=0effffd
+	NEW.BOUNCE
+        SRC.TAG.STARTERKITCLAIMED=1
+        SRC.GO Ocllo
+        SRC.SYSMESSAGE @150 Welcome to the start of your adventure... Good luck!
+        SRC.SYSMESSAGE @170 If you're lost, check the website or join our Discord by typing .discord now!
+ENDIF
+ 
+SRC.f_ssss_cleartags
+
+ONBUTTON=64
+
+SRC.ALLSKILLS=0
+
+
+SRC.SWORDSMANSHIP=500
+SRC.PARRYING=500
+SRC.TACTICS=500
+SRC.ANATOMY=500
+SRC.HEALING=500
+SRC.MAGERY=500
+
+
+SERV.LOG :Starter Skill and Stats Selector Stone: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> has just chosen the Warrior pre-selected build.
+
+SRC.f_ssss_cleartags
+
+ONBUTTON=65
+
+SRC.ALLSKILLS=0
+
+
+SRC.MAGERY=500
+SRC.MAGICRESISTANCE=500
+SRC.EVALUATINGINTEL=500
+SRC.MEDITATION=500
+SRC.HIDING=500
+SRC.ANATOMY=500
+
+
+
+SERV.LOG :Starter Skill and Stats Selector Stone: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> has just chosen the Mage pre-selected build.
+
+SRC.f_ssss_cleartags
+
+ONBUTTON=66
+
+SRC.ALLSKILLS=0
+
+
+SRC.ANATOMY=500
+SRC.HEALING=500
+SRC.MAGERY=500
+SRC.TACTICS=500
+SRC.FENCING=500
+SRC.HIDING=500
+
+
+
+SERV.LOG :Starter Skill and Stats Selector Stone: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> has just chosen the Mage/Warrior pre-selected build.
+
+SRC.f_ssss_cleartags
+
+ONBUTTON=67
+
+SRC.ALLSKILLS=0
+
+SRC.LUMBERJACKING=500
+SRC.CARPENTRY=500
+SRC.MINING=500
+SRC.BLACKSMITHING=500
+SRC.ARMSLORE=500
+SRC.TAILORING=500
+
+
+
+SERV.LOG :Starter Skill and Stats Selector Stone: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> has just chosen the Trader pre-selected build.
+
+SRC.f_ssss_cleartags 
+
+//*********************************************************************************************************//
+//                    Skills and Stats Selector Stone Created by Pink Panther                              //
+//*********************************************************************************************************//
+
+[ITEMDEF i_skillselector_stone]
+ID=0ed4
+TYPE=00
+NAME=Skills and Stats Selector Stone [Double Click]
+
+ON=@CREATE
+
+COLOR=07a1
+TAG.SKILLCLAIMCAP=500 // Maximum you can claim in one skill
+TAG.SKILLCLAIMNUMBER=3 // Maximum number of skills you can claim
+
+
+ON=@DCLICK
+
+IF (<SRC.TAG0.SKILLSELECTORSTONEMENU>==1)
+	SRC.SYSMESSAGE You can't do that as you already have one Skills and Stats Selector Stone menu opened. If this is wrong, please page.
+	RETURN 1
+ELSE
+	SRC.TAG.SKILLCLAIMCAP=<TAG.SKILLCLAIMCAP>
+	SRC.TAG.SKILLCLAIM=<TAG.SKILLCLAIMCAP>
+	SRC.TAG.SKILLCLAIMNUMBER=<TAG.SKILLCLAIMNUMBER>
+	SRC.TAG.SKILLSELECTORSTONEMENU=1
+	SRC.DIALOG d_skillselector
+	RETURN 1
+ENDIF
+
+
+[DIALOG d_skillselector]
+200, 50
+NOMOVE
+NODISPOSE
+
+page 0
+resizepic 13 26 9350 510 390
+resizepic 39 64 9300 460 315
+
+  dtext 200 26 2300 Skills Selector Stone
+  dtext 45 43 0 Select the skill to increase by 50% (<EVAL (3000 - <SRC.SKILLTOTAL>) / 500> skills remaining).
+  button  45 90 210 211 1 0 10 // Alchemy
+  button  45 112 210 211 1 0 11 // Assessment
+  button  45 134 210 211 1 0 12 // Creature Lore
+  button  45 156 210 211 1 0 13 // Item Lore
+  button  45 178 210 211 1 0 14 // Arms Lore
+  button  45 200 210 211 1 0 15 // Shieldfighting
+//button  55 192 210 211 1 0 16 // unused
+  button  45 222 210 211 1 0 26 // Mystic Lore
+  button  45 244 210 211 1 0 17 // Blacksmith
+  button  45 266 210 211 1 0 18 // Bowery
+//button  45 243 210 211 1 0 19 // Songs of Peace
+//button  45 261 210 211 1 0 20 // Surival
+  button  45 288 210 211 1 0 21 // Carpentry
+//button  45 310 210 211 1 0 22 // Cartography
+  button  45 332 210 211 1 0 23 // Cooking
+  button  45 354 210 211 1 0 24 // Detection
+//button  45 315 210 211 1 0 25 // Songs of the World
+  
+  button 205  90 210 211 1 0 27 // Healing
+  button 205 112 210 211 1 0 28 // Fishing
+//button 205 134 210 211 1 0 29 // Netherworld Lore
+//button 205 156 210 211 1 0 30 // Farming/Herding
+  button 205 178 210 211 1 0 31 // Hiding
+  button 205 200 210 211 1 0 32 // Songs of War
+  button 205 222 210 211 1 0 33 // Inscription
+//button 205 209 210 211 1 0 34 // Lockpicking/Trap Removal
+  button 205 244 210 211 1 0 35 // Magery
+  button 205 266 210 211 1 0 36 // Resist Magic
+  button 205 288 210 211 1 0 37 // Tatics
+//button 205 278 210 211 1 0 38 // Snooping
+  button 45 310 210 211 1 0 39 // Musicianship
+  button 205 68 210 211 1 0 40 // Poisoning
+  button 205 332 210 211 1 0 41 // Archery
+  button 45 68 210 211 1 0 42 // Necromancy
+//button 205 298 210 211 1 0 43 // Stealing
+  button 205  354 210 211 1 0 44 // Tailoring
+
+  button 355 354 210 211 1 0 45 // Taming
+//button 355 90 210 211 1 0 46 // Herbs Lore
+  button 355 310 210 211 1 0 47 // Tinkering
+//button 355 134 210 211 1 0 48 // Tracking
+//button 355 156 210 211 1 0 49 // Masonry
+  button 205 156 210 211 1 0 50 // Blade Weapons
+  button 205 134 210 211 1 0 51 // Blunt Weapons
+  button 355 222 210 211 1 0 52 // Piercing Weapons
+  button 355 244 210 211 1 0 53 // Unarmed Combat
+  button 355 266 210 211 1 0 54 // Lumberjacking
+  button 355 288 210 211 1 0 55 // Mining
+  button 205 310 210 211 1 0 56 // Meditation
+  button 355 332 210 211 1 0 57 // Stealth
+//button 335 329 210 211 1 0 58 // unused
+//button 125 384 210 211 1 0 59 // Nuke All Skills
+  
+// button 280 384 210 211 1 0 61 // Save current build and retreive one previously saved
+// dtext 300 384 0 Save/Retrieve Build
+  
+// button  45 415 210 211 1 0 62 // Stats
+// dtext 65 415 2300 Stats:
+  
+// dtext 65 440 0 STR:
+// dtext 65 465 0 DEX:
+// dtext 65 490 0 INT:
+  
+// dtextentrylimited 95 440 253 25 0 2 3 120
+  
+// dtextentrylimited 95 465 253 25 0 3 3 90
+  
+// dtextentrylimited 95 490 253 25 0 4 3 65
+  
+
+  dtext  65  90 0 Alchemy
+  dtext  65 112 0 Assessment
+  dtext  65 134 0 Creature lore
+  dtext  65 156 0 Item lore
+  dtext  65 178 0 Arms lore
+  dtext  65 200 0 Shieldfighting
+//dtext  75 192 0 unused
+  dtext  65 222 0 Mystic lore 
+  dtext  65 244 0 Blacksmithy 
+//dtext  60 243 0 Songs of Peace
+//dtext  60 261 0 Survival
+  dtext  65 266 0 Bowery 
+  dtext  65 288 0 Carpentry  
+//dtext  65 310 0 Cartography  
+  dtext  65 332 0 Cooking 
+//dtext  60 346 0 Songs of the World
+  dtext  65 354 0 Detection
+  
+  dtext 225  90 0 Healing
+  dtext 225 112 0 Fishing
+//dtext 225 134 0 Netherworld lore
+//dtext 225 156 0 Farming/Herding
+  dtext 225 178 0 Hiding
+  dtext 225 200 0 Songs of War
+  dtext 225 222 0 Inscription
+//dtext 220 209 0 Lockpicking/Traps
+  dtext 225 244 0 Magery 
+  dtext 225 266 0 Resist Magic 
+  dtext 225 288 0 Tactics 
+//dtext 220 278 0 Snooping
+  dtext 65 310 0 Musicianship 
+  dtext 225 68 0 Poisoning
+  dtext 225 332 0 Archery 
+  dtext 65 68 0 Necromancy
+//dtext 370 329 0 Stealing 
+  dtext 225  354 0 Tailoring
+  
+  dtext 375 354 0 Taming
+//dtext 375 90 0 Herbs lore
+  dtext 375 310 0 Tinkering 
+//dtext 375 134 0 Tracking 
+//dtext 375 156 0 Masonry
+  dtext 225 156 0 Blade weapons
+  dtext 225 134 0 Blunt weapons
+  dtext 375 222 0 Piercing weapons
+  dtext 375 244 0 Unarmed combat
+  dtext 375 266 0 Lumberjacking
+  dtext 375 288 0 Mining
+  dtext 225 310 0 Meditation
+  dtext 375 332 0 Stealth
+//dtext 375 364 0 Stealing
+//dtext 145 384 0 Nuke All Skills
+  
+//dtext 48 520 0 You can only change stats and nuke/save/retrieve skills once every 24h.
+  
+//button 400 350 <eval 047b> <eval 047c> 1 0 60
+
+
+[DIALOG d_skillselector BUTTON]
+
+ONBUTTON=0
+
+SRC.f_ssss_cleartags
+
+ONBUTTON=10 58
+
+SRC.TAG.SKILLCLAIM=500
+
+// ---- Commenting out this code, as it's useful but not pertinent right now. ----
+//IF (<EVAL <SRC.TAG0.SKILLCLAIM>> > <EVAL <SRC.TAG0.SKILLCLAIMCAP>>)
+//	SRC.SYSMESSAGE The current maximum skill increase allowed is <EVAL <SRC.TAG0.SKILLCLAIMCAP>/10>% (<EVAL <SRC.TAG0.SKILLCLAIMCAP>>)
+//	SRC.f_ssss_cleartags
+//	RETURN 1
+//ENDIF
+
+IF (<SRC.SKILLTOTAL> >= 3000) 
+	SRC.SYSMESSAGE You already have 300.0 Total Skill. If you want to change your skills, please first nuke all of them through the option found in the Skills and Stats Selector Stone menu.
+	SRC.f_ssss_cleartags
+	RETURN 1
+ENDIF
+	
+	
+LOCAL.SKILL = <ARGN1>
+SRC.TAG.SKILLCLAIMCAP=<TAG.SKILLCLAIMCAP>
+SRC.TAG.SKILLCLAIMNUMBER=<TAG.SKILLCLAIMNUMBER>
+SRC.f_skillselector_update <LOCAL.SKILL>
+
+	
+
+ONBUTTON=59
+
+IF (<SRC.FINDID.i_skillselectorstone_skill>)
+	SRC.SYSMESSAGE You need to wait <EVAL <SRC.FINDID.I_SKILLSELECTORSTONE_SKILL.TIMER>/60> minutes before you can trade builds again.
+	SRC.f_ssss_cleartags
+	RETURN 1
+ELSE
+	SRC.ALLSKILLS=0
+	SRC.SYSMESSAGE All skills sucessfully nuked.
+	SERV.LOG :Skill and Stats Selector Stone: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> has just nuked all skills.
+	SERV.NEWITEM i_skillselectorstone_skill
+	NEW.EQUIP
+	SRC.f_ssss_cleartags
+	RETURN 1
+ENDIF
+
+
+ONBUTTON=61
+
+IF (<SRC.FINDID.I_SKILLSELECTORSTONE_SKILL>)
+	SRC.SYSMESSAGE You need to wait <EVAL <SRC.FINDID.I_SKILLSELECTORSTONE_SKILL.TIMER>/60> minutes before you can trade builds again.
+	SRC.f_ssss_cleartags
+	RETURN 1
+ENDIF
+
+
+//Save your current skills, temporarily, in your tags
+
+FOR 10 58
+
+LOCAL.SKILL	= <EVAL (<LOCAL._FOR> - 10)>
+LOCAL.SKILL = <SERV.SKILL(<LOCAL.SKILL>).KEY>
+LOCAL.SKILLAMOUNT=<<LOCAL.SKILL>>
+LOCAL.SKILLNAME = <SERV.SKILL(<LOCAL.SKILL>).NAME>
+
+SRC.TAG.SKILLSAVE<EVAL <LOCAL._FOR>>=
+
+IF (<LOCAL.SKILLAMOUNT> > 0)
+	SRC.TAG.SKILLSAVE<EVAL <LOCAL._FOR>>=<LOCAL.SKILLAMOUNT>
+	SRC.SYSMESSAGE <LOCAL.SKILLAMOUNT> <LOCAL.SKILLNAME> sucessfully saved.
+	LOCAL.SKILLSAVED +=1
+ENDIF
+
+ENDFOR
+
+IF !(<LOCAL.SKILLSAVED> > 0)
+	SRC.SYSMESSAGE You have no skills to be saved.
+ENDIF
+
+SRC.ALLSKILLS=0
+
+// Retrieve any skill currently saved in your tags
+
+FOR 10 58
+
+LOCAL.SKILL	= <EVAL (<LOCAL._FOR> - 10)>
+LOCAL.SKILL = <SERV.SKILL(<LOCAL.SKILL>).KEY>
+LOCAL.SKILLAMOUNT=<<LOCAL.SKILL>>
+LOCAL.SKILLNAME = <SERV.SKILL(<LOCAL.SKILL>).NAME>
+
+IF (<EVAL <SRC.TAG0.SKILL<EVAL <LOCAL._FOR>>>> > 0)
+	TRY <LOCAL.SKILL> = <EVAL <SRC.TAG.SKILL<EVAL <LOCAL._FOR>>>>
+	SRC.SYSMESSAGE <EVAL <SRC.TAG.SKILL<EVAL <LOCAL._FOR>>>> <LOCAL.SKILLNAME> retrieved.
+	SRC.TAG.SKILL<EVAL <LOCAL._FOR>>=
+	LOCAL.SKILLRETRIEVED +=1
+ENDIF
+
+ENDFOR
+
+IF !(<LOCAL.SKILLRETRIEVED> > 0)
+	SRC.SYSMESSAGE You have no skills saved to be retrieved.
+ENDIF
+
+// Moves your first saved skills to different tags, so they can be retrieve later
+
+FOR 10 58
+
+IF (<EVAL <SRC.TAG0.SKILLSAVE<EVAL <LOCAL._FOR>>>> > 0)
+	SRC.TAG.SKILL<EVAL <LOCAL._FOR>>=<EVAL <SRC.TAG.SKILLSAVE<EVAL <LOCAL._FOR>>>>
+	SRC.TAG.SKILLSAVE<EVAL <LOCAL._FOR>>=
+ENDIF
+
+ENDFOR
+
+IF (<LOCAL.SKILLRETRIEVED> > 0) || (<LOCAL.SKILLSAVED> > 0)
+	SERV.LOG :Skill and Stats Selector Stone: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> has just traded builds. Skills Saved: <EVAL <LOCAL.SKILLSAVED>> Skills Retrieved: <EVAL <LOCAL.SKILLRETRIEVED>>
+	SERV.NEWITEM i_skillselectorstone_skill
+	NEW.EQUIP
+ENDIF
+		
+SRC.f_ssss_cleartags
+
+
+ONBUTTON=62
+
+IF (<SRC.FINDID.I_SKILLSELECTORSTONE_STAT>)
+	SRC.SYSMESSAGE You need to wait <EVAL <SRC.FINDID.I_SKILLSELECTORSTONE_STAT.TIMER>/60> minutes before you can trade stats again.
+	SRC.f_ssss_cleartags
+	RETURN 1
+ENDIF
+
+IF (<EVAL <SRC.TAG0.FLUX>> > 0)
+	SRC.SYSMESSAGE You can't change your stats through this stone once you have fluxed yourself. Please page a Game Master to change stats for you.
+	SRC.f_ssss_cleartags
+	RETURN 1
+ENDIF
+
+IF (<ARGTXT[2]> <= 120) && (<ARGTXT[3]> <= 120) && (<ARGTXT[4]> <= 120)
+	IF (<EVAL <ARGTXT[2]> + <ARGTXT[3]> + <ARGTXT[4]>> = 275)
+		SRC.OSTR=<ARGTXT[2]>
+		SRC.ODEX=<ARGTXT[3]>
+		SRC.OINT=<ARGTXT[4]>
+		SRC.SYSMESSAGE Stats sucessfully changed.
+		SERV.LOG :Skill and Stats Selector Stone: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> has just changed stats to <ARGTXT[2]> STR, <ARGTXT[3]> DEX and <ARGTXT[4]> INT.
+		SERV.NEWITEM i_skillselectorstone_stat
+		NEW.EQUIP
+	ELSE
+		SRC.SYSMESSAGE You can't have more nor less than 275 total stats.
+	ENDIF
+ELSE
+	SRC.SYSMESSAGE You can't have more than 120 in any stat.
+ENDIF
+	
+	
+SRC.f_ssss_cleartags
+
+
+[FUNCTION f_skillselector_finish] 
+
+LOCAL.SKILL	= <eval (<args> - 10)>
+LOCAL.SKILL = <SERV.SKILL(<LOCAL.SKILL>).KEY>
+LOCAL.SKILLAMOUNT=<<LOCAL.SKILL>>
+LOCAL.SKILLNAME = <SERV.SKILL(<LOCAL.SKILL>).NAME>
+
+		
+	IF (<EVAL <LOCAL.SKILLAMOUNT> + <EVAL <SRC.TAG.SKILLCLAIM>>> <= <EVAL <SRC.TAG.SKILLCLAIMCAP>>)
+		IF (<EVAL <SRC.SKILLTOTAL> + <EVAL <SRC.TAG.SKILLCLAIM>>> <= <EVAL <SRC.TAG.SKILLCLAIMCAP> * <SRC.TAG.SKILLCLAIMNUMBER>> )
+			TRY <LOCAL.SKILL> = <LOCAL.SKILLAMOUNT> + <EVAL <SRC.TAG.SKILLCLAIM>>
+			SRC.SYSMESSAGE Your skill in <LOCAL.SKILLNAME> has been raised from <LOCAL.SKILLAMOUNT>% to <EVAL <EVAL <LOCAL.SKILLAMOUNT> + <EVAL <SRC.TAG.SKILLCLAIM>>>/10>%
+			SERV.LOG :Skill and Stats Selector Stone: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> has just raised <LOCAL.SKILLNAME> from <LOCAL.SKILLAMOUNT>% to <EVAL <EVAL <LOCAL.SKILLAMOUNT> + <EVAL <SRC.TAG.SKILLCLAIM>>>/10>%
+				IF (<SRC.SKILLTOTAL> < 3000)
+					DIALOG d_skillselector
+					RETURN 1
+				ELSE
+				   SRC.SYSMESSAGE @079c You have now claimed your allocated skills. If you wish to change them, go to the stone again and select "Reset Skill Selection."
+				   SRC.SYSMESSAGE @079c If you are ready to leave, however, please select "Confirm Skill Selection" from the stone.
+				ENDIF
+		ELSE
+			SRC.SYSMESSAGE @079c You can't do this or your total skill amount will go beyond the total skill cap allowed (<EVAL (<SRC.TAG.SKILLCLAIMCAP>/10) * <SRC.TAG.SKILLCLAIMNUMBER>>%)
+		ENDIF
+	ELSE
+		SRC.SYSMESSAGE @079c You can't do this or your selected skill amount will go beyond the skill cap allowed (<EVAL <SRC.TAG.SKILLCLAIMCAP>/10>%)
+	ENDIF
+	
+SRC.f_ssss_cleartags
+
+
+
+[FUNCTION f_skillselector_update] 
+
+LOCAL.SKILL	= <eval (<args> - 10)>
+LOCAL.SKILL = <SERV.SKILL(<LOCAL.SKILL>).KEY>
+LOCAL.SKILLAMOUNT=<<LOCAL.SKILL>>
+LOCAL.SKILLNAME = <SERV.SKILL(<LOCAL.SKILL>).NAME>
+
+	IF (<EVAL <LOCAL.SKILLAMOUNT>> < skillselector_newbie_claimcap)
+		IF (<EVAL <SRC.SKILLTOTAL>> < skillselector_newbie_totalcap)
+			TRY <LOCAL.SKILL> = <LOCAL.SKILLAMOUNT> + <EVAL <SRC.TAG.SKILLCLAIM>>
+			SRC.SYSMESSAGE Your skill in <LOCAL.SKILLNAME> has been raised from <LOCAL.SKILLAMOUNT>% to <EVAL <EVAL <LOCAL.SKILLAMOUNT> + <EVAL <SRC.TAG.SKILLCLAIM>>>/10>%
+			SERV.LOG :Skill and Stats Selector Stone: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> has just raised <LOCAL.SKILLNAME> from <LOCAL.SKILLAMOUNT>% to <EVAL <EVAL <LOCAL.SKILLAMOUNT> + <EVAL <SRC.TAG.SKILLCLAIM>>>/10>%
+				IF (<SRC.SKILLTOTAL> < 3000)
+					DIALOG d_skillselector
+					RETURN 1
+				ELSE
+				   SRC.SYSMESSAGE @079c You have now claimed your allocated skills. If you wish to change them, go to the stone again and select "Reset Skill Selection."
+				   SRC.SYSMESSAGE @079c If you are ready to leave, however, please select "Confirm Skill Selection" from the stone.
+				ENDIF
+		ELSE
+			SRC.SYSMESSAGE @079c You can't do this or your total skill amount will go beyond the total skill cap allowed (<EVAL skillselector_newbie_totalcap / 10>%)
+		ENDIF
+	ELSE
+		SRC.SYSMESSAGE @079c You can't do this or your selected skill amount will go beyond the skill cap allowed (<EVAL skillselector_newbie_claimcap / 10>%)
+	ENDIF
+	
+SRC.f_ssss_cleartags
+
+
+[FUNCTION f_ssss_cleartags]
+
+SRC.TAG.SKILLSELECTORSTONEMENU=
+SRC.TAG.SKILLCLAIM=
+SRC.TAG.SKILLCLAIMCAP=
+SRC.TAG.SKILLCLAIMNUMBER=
+
+
+
+[ITEMDEF i_skillselectorstone_skill]
+NAME=Skill Selector Timer
+ID=i_memory
+TYPE=t_eq_script
+
+ON=@CREATE
+TIMER=-1
+
+ON=@TIMER
+   CONT.SYSMESSAGE You can trade builds again in the Skill and Stats Selector Stone.
+   REMOVE
+   RETURN 1
+   
+[ITEMDEF i_skillselectorstone_stat]
+NAME=Stat Selector Timer
+ID=i_memory
+TYPE=t_eq_script
+
+ON=@CREATE
+TIMER=-1
+
+ON=@TIMER
+   CONT.SYSMESSAGE You can trade stats again in the Skill and Stats Selector Stone.
+   REMOVE
+   RETURN 1

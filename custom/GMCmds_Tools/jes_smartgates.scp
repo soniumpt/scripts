@@ -1,0 +1,784 @@
+////////////////////////////////////THE ORIGINAL SMART GATES///////////////////////////////////////////
+//Scripted By: Wren        									     //
+//Smart Entrance/Exit Gates   									     //
+//        											     //
+//Variables:        										     //
+//MORE1-Max Skill Total that people can have and use this gate                  		     //
+//TAG.ExitPoint (On the player) - Tells the exit gate where the player used the entrance gate	     //
+//LINK - Entrance gates should be linked to the exit gate.  No link on Exit Gate.      		     //
+//      											     //
+//General Info:      										     //
+//Can have multiple entries with a single exit.  Players will always be sent back to the entrance    //
+//that they used. They cannot use the entrance gate unless they are full health and are not criminal.//
+//Only Players with a skill total under MORE1 can enter.  This should be entered without a           //
+//decimal. i.e. 1000 = 100.0									     //
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+[ITEMDEF i_Smart_entrance]
+ID=i_moongate_blue
+NAME=Smart Entrance Gate
+
+ON=@CREATE
+  COLOR=07a0
+  MORE1=100000
+
+ON=@STEP
+IF <SRC.NPC> 
+   RETURN 1
+ENDIF
+
+IF !(<SRC.FINDID(M_Gate_Timer)>)
+   IF !(<SRC.FLAGS> & statf_criminal) 
+     IF !(<SRC.MEMORYFINDTYPE.memory_fight>)
+        IF (<SRC.HITS> >= <SRC.STR>)
+           IF !(<LINK>=04fffffff)
+              IF <SRC.SKILLTOTAL> <= <MORE1>
+                 SRC.TAG.ExitPoint = <SRC.P>
+                 SRC.GO <LINK.P>
+                 SRC.NEWITEM M_Gate_Timer
+                 SRC.EQUIP <SRC.ACT>
+              ELSE
+                 SRC.SYSMESSAGE You are too skilled to use this gate.
+              ENDIF
+           ELSE
+              SRC.SYSMESSAGE This gate has not been linked yet or is broken please notify staff.
+           ENDIF
+        ELSE
+          SRC.SYSMESSAGE You must have full health before you can use this gate.
+        ENDIF
+      ELSE
+         SRC.SYSMESSAGE You must make peace before entering this gate.
+      ENDIF
+   ELSE
+      SRC.SYSMESSAGE You must wait until you are no longer criminal to use this gate.
+   ENDIF
+ENDIF
+  
+CATEGORY=Imperial uo
+SUBSECTION=Gates
+DESCRIPTION=Smart Entrance Gate
+
+
+
+[ITEMDEF i_Smart_exit]
+ID=i_moongate_blue
+NAME=Smart Exit Gate
+
+ON=@CREATE
+  COLOR=07a1
+
+ON=@STEP
+
+IF !(<SRC.FINDID(M_Gate_Timer)>)
+  IF <SRC.TAG.ExitPoint>
+    SRC.GO <SRC.TAG.ExitPoint>
+    SRC.TAG.ExitPoint =
+    SRC.NEWITEM M_Gate_Timer
+    SRC.EQUIP <SRC.ACT>
+  ELSE
+    SRC.SYSMESSAGE You cannot use this gate.
+  ENDIF
+ENDIF
+
+CATEGORY=Imperial uo
+SUBSECTION=Gates
+DESCRIPTION=Smart Exit Gate
+
+
+[ITEMDEF m_Gate_Timer]
+id=i_memory
+Name=Gate Timer
+type=t_eq_script
+
+ON=@Create
+   TIMER=3
+
+ON=@Timer
+   Remove 
+   RETURN 1
+
+
+//////////////////////////////////////////////RANDOMIZER///////////////////////////////////////////////
+//Scripted By: Wren        									     //
+//January 24, 2004  										     //
+//Random Positioner Tile       									     //
+//        											     //
+//Variables:        										     //
+//TAG.Coord[0-7] - Holds the coordinates of where the players will be sent       		     //
+//TAG.PointUsed[0-7] - Has the associated coordinate already been used.        			     //
+//TAG.SendToPoint - Used to Pick a point and then send the player to it.        		     //
+//      											     //
+//General Info:      										     //
+//Double-click and Enter 8 Coordinates, it will send one player to each spot.   		     //
+//If you want to send 8 more player one to each spot just double-click the tile and click ok         //
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+[ITEMDEF i_Randomizer_Tile]
+ID=i_floor_marble_3
+NAME=Random Positioner
+TYPE=t_Script
+
+ON=@CREATE
+COLOR=07a1
+
+ON=@STEP
+//Make sure all coordinates are entered before moving anyone.
+IF ( ( <EVAL <TAG.Coord0>>=0 ) || ( <EVAL <TAG.Coord1>>=0 ) || ( <EVAL <TAG.Coord2>>=0 ) || ( <EVAL <TAG.Coord3>>=0 ) || ( <EVAL <TAG.Coord4>>=0 ) || ( <EVAL <TAG.Coord5>>=0 ) || ( <EVAL <TAG.Coord6>>=0 ) || ( <EVAL <TAG.Coord7>>=0 ) )
+SRC.SYSMESSAGE This tile has not been configured for entry yet.
+RETURN 1
+ENDIF
+
+//Check to see if all arenas are full, if they are not, find an empty one and send the player there
+
+IF ( ( <EVAL <TAG.UsedPoint0>>=1 ) && ( <EVAL <TAG.UsedPoint1>>=1 ) && ( <EVAL <TAG.UsedPoint2>>=1 ) && ( <EVAL <TAG.UsedPoint3>>=1 ) && ( <EVAL <TAG.UsedPoint4>>=1 ) && ( <EVAL <TAG.UsedPoint5>>=1 ) && ( <EVAL <TAG.UsedPoint6>>=1 ) && ( <EVAL <TAG.UsedPoint7>>=1 ))
+SRC.SYSMESSAGE All Arenas Full.
+ELSE
+RandomPlacementTwo
+SRC.GO <TAG.Coord<EVAL <TAG.SendToPoint>>>
+ENDIF
+RETURN 1
+
+ON=@CLICK
+SRC.SYSMESSAGE Stop poking me!
+RETURN 0
+
+ON=@DCLICK
+//Gump for setup here.  Lets you enter the coordinates and reset the Vars
+IF (<SRC.ACCOUNT.PLEVEL> > 1)
+DIALOG d_RandomPlacement_2
+ENDIF
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Gates
+DESCRIPTION=Randomizer Tile
+
+
+[FUNCTION RandomPlacementTwo]
+//Get a random number
+TAG.SendToPoint=<EVAL Rand(8)>
+//If that coordinate hasn't been used, return otherwise look for another one
+If ( <EVAL <TAG.UsedPoint<EVAL <TAG.SendToPoint>>>> = 0 )
+TRYP 0 TAG.UsedPoint<EVAL <TAG.SendToPoint>> = 1
+RETURN 1
+ELSE
+RandomPlacementTwo
+ENDIF
+
+
+[DIALOG d_RandomPlacement_2] 
+0,0 
+
+resizepic 190 175 5054 335 380 
+resizepic 200 185 3000 315 360 
+
+//Text Borders
+resizepic 220 225 3000 270 22 
+resizepic 220 260 3000 270 22 
+resizepic 220 295 3000 270 22 
+resizepic 220 330 3000 270 22 
+resizepic 220 365 3000 270 22 
+resizepic 220 400 3000 270 22 
+resizepic 220 435 3000 270 22 
+resizepic 220 470 3000 270 22 
+
+text 215 200 995 0 
+
+//Text where coordinates will be entered.
+textentry 225 225 253 25 0 0 1 
+textentry 225 260 253 25 0 1 2 
+textentry 225 295 253 25 0 2 3 
+textentry 225 330 253 25 0 3 4 
+textentry 225 365 253 25 0 4 5 
+textentry 225 400 253 25 0 5 6 
+textentry 225 435 253 25 0 6 7 
+textentry 225 470 253 25 0 7 8 
+
+text 255 500 0000 9 
+button 220 500 4005 4006 1 0 1 
+
+text 435 500 0000 10 
+button 400 500 4005 4006 1 0 0 
+
+
+[DIALOG d_RandomPlacement_2 TEXT] 
+Enter the Coordinates below.
+<TAG.COORD0>
+<TAG.COORD1>
+<TAG.COORD2>
+<TAG.COORD3>
+<TAG.COORD4>
+<TAG.COORD5>
+<TAG.COORD6>
+<TAG.COORD7>
+Accept 
+Cancel 
+
+[DIALOG d_RandomPlacement_2 BUTTON] 
+ON=0 
+SRC.SYSMESSAGE No changes made.
+RETURN 1
+
+ON=1
+TAG.UsedPoint0=0
+TAG.UsedPoint1=0
+TAG.UsedPoint2=0
+TAG.UsedPoint3=0
+TAG.UsedPoint4=0
+TAG.UsedPoint5=0
+TAG.UsedPoint6=0
+TAG.UsedPoint7=0
+   
+TAG.COORD0=<ARGTXT[0]>
+TAG.COORD1=<ARGTXT[1]>
+TAG.COORD2=<ARGTXT[2]>
+TAG.COORD3=<ARGTXT[3]>
+TAG.COORD4=<ARGTXT[4]>
+TAG.COORD5=<ARGTXT[5]>
+TAG.COORD6=<ARGTXT[6]>
+TAG.COORD7=<ARGTXT[7]>
+
+SRC.SYSMESSAGE Changes applied and tile has been reset for use.
+RETURN 1 
+
+
+//////////////////////////////////////////////RESOURCE GATES///////////////////////////////////////////
+//Scripted By: Wren                               						     //
+//January 24, 2004  										     //
+//Resource Gate                                							     //
+//                                								     //
+//Variables:                                							     //
+//TAG.RESOURCEID - ID of the resource the gate will look for                                         //
+//TAG.AMOUNTREQUIRED - The amount the gate requires you to have                                      //
+//TAG.CONSUMEAMOUNT - The amount the gate will consume                                	             //
+//TAG.AMOUNTTOGIVE - The amount the gate will give you if you don't have any                         //
+//MOREP - The Coordinates of where the gate will take you if you meet the requirements               //
+//                                							             //
+//General Info:                                				       		             //
+//Double-click to configure...variables really tell everything else...                               //
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+[ITEMDEF i_Resource_Gate]
+ID=i_moongate_blue
+TYPE=t_script
+NAME=Resource Gate
+
+ON=@CREATE
+   COLOR=07a1
+
+ON=@DCLICK
+   IF (<SRC.ACCOUNT.PLEVEL> > 1)
+      DIALOG d_ResourceGate 
+   ENDIF
+   RETURN 1
+
+ON=@STEP
+   IF (<EVAL <TAG.RESOURCEID>>=0)
+      SRC.SYSMESSAGE This tile has not been configured for entry yet.
+      RETURN 1
+   ENDIF
+
+   IF !(<EVAL <TAG.AMOUNTTOGIVE>>=0)
+      IF !<SRC.FINDID.<TAG.RESOURCEID>.UID>
+         SRC.NEWITEM <TAG.RESOURCEID>
+         SRC.ACT.AMOUNT=<EVAL <TAG.AMOUNTTOGIVE>>
+         SRC.ACT.BOUNCE
+      ENDIF
+   ENDIF
+
+   IF <SRC.RESTEST <EVAL <TAG.AMOUNTREQUIRED>> <TAG.RESOURCEID>>
+
+      IF !(<EVAL <TAG.CONSUMEAMOUNT>>=0)
+         SRC.CONSUME=<EVAL <TAG.CONSUMEAMOUNT>> <TAG.RESOURCEID>
+      ENDIF
+ 
+     SRC.GO <MOREP>
+   ENDIF
+
+   RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Gates
+DESCRIPTION=Resource Consumption Gate
+
+
+[DIALOG d_ResourceGate] 
+0,0 
+
+resizepic 190 175 5054 390 250 
+resizepic 200 185 3000 370 230 
+
+//Text Borders
+resizepic 370 200 3000 185 22 
+resizepic 370 235 3000 185 22 
+resizepic 370 270 3000 185 22 
+resizepic 370 305 3000 185 22 
+resizepic 370 340 3000 185 22 
+
+text 215 200 995 1 
+text 215 235 995 2 
+text 215 270 995 3 
+text 215 305 995 4 
+text 215 340 995 5 
+
+//Text where coordinates will be entered.
+textentry 375 200 175 25 0 0 6 
+textentry 375 235 175 25 0 1 7 
+textentry 375 270 175 25 0 2 8 
+textentry 375 305 175 25 0 3 9 
+textentry 375 340 175 25 0 4 10 
+
+text 295 375 0000 11 
+button 260 375 4005 4006 1 0 1 
+
+text 465 375 0000 12 
+button 430 375 4005 4006 1 0 0 
+
+
+[DIALOG d_ResourceGate TEXT] 
+<VAR.BLANKLINE>
+Resource ID:
+Amount Required:
+Amount to Consume:
+Amount to Give:
+Coordinates:
+<TAG.RESOURCEID>
+<EVAL <TAG.AMOUNTREQUIRED>>
+<EVAL <TAG.CONSUMEAMOUNT>>
+<EVAL <TAG.AMOUNTTOGIVE>>
+<MOREP>
+Accept 
+Cancel 
+
+
+[DIALOG d_ResourceGate BUTTON] 
+ON=0 
+   SRC.SYSMESSAGE No changes made.
+   RETURN 1
+
+ON=1
+   TAG.RESOURCEID=<ARGTXT[0]>
+   TAG.AMOUNTREQUIRED=<ARGTXT[1]>
+   TAG.CONSUMEAMOUNT=<ARGTXT[2]>
+   TAG.AMOUNTTOGIVE=<ARGTXT[3]>
+   MOREP=<ARGTXT[4]>
+   RETURN 1 
+
+
+
+
+
+
+
+//////////////////////////////////////////////PREVIEWER////////////////////////////////////////////////
+//Scripted By: Wren                               						     //
+//June 17, 2005  										     //
+//Previewer                               							     //
+//                                								     //
+//Variables:                                							     //
+//TAG.UID - ID of item you want to cycle dispids                                                     //
+//TAG.BASEID[1-10] - ID of item you want to display                                                  //
+//TAG.NAME[1-10] - Description of the associated BASEID                               	             //
+//TAG.CURRENT - Temp Variable to determine which selection a player made                             //
+//                                							             //
+//General Info:                                				       		             //
+//Double-click with gm on to configure...variables really tell everything else...                    //
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+[itemdef i_stone_previewer]
+Name= Previewer Stone
+ID=i_guildstone
+Type=T_Script
+
+ON=@CREATE
+   COLOR=07a0
+
+ON=@DCLICK
+   IF <SRC.ISGM>
+      DIALOG d_Previewer_staff
+   ELSE
+      DIALOG d_Previewer
+   ENDIF
+   RETURN 1
+ 
+ 
+[DIALOG d_Previewer_staff] 
+0,0 
+
+resizepic 190 135 5054 570 480 
+resizepic 200 145 3000 550 460 
+
+//Text Borders
+resizepic 320 170 3000 315 22 
+
+resizepic 220 225 3000 250 22 
+resizepic 220 260 3000 250 22 
+resizepic 220 295 3000 250 22 
+resizepic 220 330 3000 250 22 
+resizepic 220 365 3000 250 22 
+resizepic 220 400 3000 250 22 
+resizepic 220 435 3000 250 22 
+resizepic 220 470 3000 250 22 
+resizepic 220 505 3000 250 22 
+resizepic 220 540 3000 250 22 
+
+resizepic 480 225 3000 250 22 
+resizepic 480 260 3000 250 22 
+resizepic 480 295 3000 250 22 
+resizepic 480 330 3000 250 22 
+resizepic 480 365 3000 250 22 
+resizepic 480 400 3000 250 22 
+resizepic 480 435 3000 250 22 
+resizepic 480 470 3000 250 22 
+resizepic 480 505 3000 250 22 
+resizepic 480 540 3000 250 22 
+
+dtext 325 150 995 Enter the UID of the item that will cycle. 
+textentry 325 170 253 25 0 0 0 
+
+dtext 220 205 995 ItemDefs:
+dtext 480 205 995 Descriptions: 
+textentry 225 225 244 25 0 1 1 
+textentry 225 260 244 25 0 2 2 
+textentry 225 295 244 25 0 3 3 
+textentry 225 330 244 25 0 4 4 
+textentry 225 365 244 25 0 5 5 
+textentry 225 400 244 25 0 6 6 
+textentry 225 435 244 25 0 7 7 
+textentry 225 470 244 25 0 8 8 
+textentry 225 505 244 25 0 9 9 
+textentry 225 540 244 25 0 10 10 
+
+textentry 485 225 244 25 0 11 11 
+textentry 485 260 244 25 0 12 12 
+textentry 485 295 244 25 0 13 13 
+textentry 485 330 244 25 0 14 14 
+textentry 485 365 244 25 0 15 15 
+textentry 485 400 244 25 0 16 16 
+textentry 485 435 244 25 0 17 17 
+textentry 485 470 244 25 0 18 18 
+textentry 485 505 244 25 0 19 19 
+textentry 485 540 244 25 0 20 20 
+
+dtext 415 570 0000 Accept 
+button 380 570 4005 4006 1 0 1 
+
+dtext 535 570 0000 Cancel 
+button 500 570 4005 4006 1 0 0 
+
+
+[DIALOG d_Previewer_staff TEXT] 
+<TAG.UID>
+<TAG.BASEID1>
+<TAG.BASEID2>
+<TAG.BASEID3>
+<TAG.BASEID4>
+<TAG.BASEID5>
+<TAG.BASEID6>
+<TAG.BASEID7>
+<TAG.BASEID8>
+<TAG.BASEID9>
+<TAG.BASEID10>
+<TAG.NAME1>
+<TAG.NAME2>
+<TAG.NAME3>
+<TAG.NAME4>
+<TAG.NAME5>
+<TAG.NAME6>
+<TAG.NAME7>
+<TAG.NAME8>
+<TAG.NAME9>
+<TAG.NAME10>
+
+[DIALOG d_Previewer_staff BUTTON] 
+ON=0 
+   SRC.SYSMESSAGE No changes made.
+   RETURN 1
+
+ON=1   
+   TAG.UID=<ARGTXT[0]>
+   TAG.BASEID1=<ARGTXT[1]>
+   TAG.BASEID2=<ARGTXT[2]>
+   TAG.BASEID3=<ARGTXT[3]>
+   TAG.BASEID4=<ARGTXT[4]>
+   TAG.BASEID5=<ARGTXT[5]>
+   TAG.BASEID6=<ARGTXT[6]>
+   TAG.BASEID7=<ARGTXT[7]>
+   TAG.BASEID8=<ARGTXT[8]>
+   TAG.BASEID9=<ARGTXT[9]>
+   TAG.BASEID10=<ARGTXT[10]>
+   TAG.NAME1=<ARGTXT[11]>
+   TAG.NAME2=<ARGTXT[12]>
+   TAG.NAME3=<ARGTXT[13]>
+   TAG.NAME4=<ARGTXT[14]>
+   TAG.NAME5=<ARGTXT[15]>
+   TAG.NAME6=<ARGTXT[16]>
+   TAG.NAME7=<ARGTXT[17]>
+   TAG.NAME8=<ARGTXT[18]>
+   TAG.NAME9=<ARGTXT[19]>
+   TAG.NAME10=<ARGTXT[20]>
+   
+   SRC.SYSMESSAGE Changes applied and stone has been reset for use.
+   RETURN 1 
+ 
+
+
+
+
+
+[DIALOG d_Previewer] 
+0,0 
+
+resizepic 190 135 5054 375 480 
+resizepic 200 145 3000 355 460 
+
+IF 0<TAG.UID>=0
+   dtext 250 150 995 This stone has not been configured.
+   RETURN 1
+ELSE
+   dtext 248 150 995 Select the item that you wish to view.
+   IF !(0<TAG.BASEID1>=0) 
+      radio 215 170 210 211 0  2
+      dtext 235 170 995 <TAG.NAME1>
+   ENDIF
+   IF !(0<TAG.BASEID2>=0) 
+      radio 215 200 210 211 0  3
+      dtext 235 200 995 <TAG.NAME2>
+   ENDIF
+   IF !(0<TAG.BASEID3>=0) 
+      radio 215 230 210 211 0  4
+      dtext 235 230 995 <TAG.NAME3>
+   ENDIF
+   IF !(0<TAG.BASEID4>=0) 
+      radio 215 260 210 211 0  5
+      dtext 235 260 995 <TAG.NAME4>
+   ENDIF
+   IF !(0<TAG.BASEID5>=0) 
+      radio 215 290 210 211 0  6
+      dtext 235 290 995 <TAG.NAME5>      
+   ENDIF
+   IF !(0<TAG.BASEID6>=0) 
+      radio 215 320 210 211 0  7
+      dtext 235 320 995 <TAG.NAME6>      
+   ENDIF
+   IF !(0<TAG.BASEID7>=0) 
+      radio 215 350 210 211 0  8
+      dtext 235 350 995 <TAG.NAME7>      
+   ENDIF
+   IF !(0<TAG.BASEID8>=0) 
+      radio 215 380 210 211 0  9
+      dtext 235 380 995 <TAG.NAME8>      
+   ENDIF
+   IF !(0<TAG.BASEID9>=0) 
+      radio 215 410 210 211 0  10
+      dtext 235 410 995 <TAG.NAME9>      
+   ENDIF
+   IF !(0<TAG.BASEID10>=0) 
+      radio 215 440 210 211 0  11
+      dtext 235 440 995 <TAG.NAME10>      
+   ENDIF
+   
+   dtext 335 570 0000 OK 
+   button 300 570 4005 4006 1 0 1 
+   
+   dtext 435 570 0000 Cancel 
+   button 400 570 4005 4006 1 0 0
+
+ENDIF
+
+
+[DIALOG d_Previewer BUTTON] 
+ON=0 
+   SRC.SYSMESSAGE No changes made.
+   RETURN 1
+
+ON=1  
+   IF <argchk[2]>=1
+      TAG.CURRENT=<TAG.BASEID1>   
+   ENDIF
+   IF <argchk[3]>=1
+      TAG.CURRENT=<TAG.BASEID2>   
+   ENDIF
+   IF <argchk[4]>=1
+      TAG.CURRENT=<TAG.BASEID3>   
+   ENDIF
+   IF <argchk[5]>=1
+      TAG.CURRENT=<TAG.BASEID4>   
+   ENDIF
+   IF <argchk[6]>=1
+      TAG.CURRENT=<TAG.BASEID5>   
+   ENDIF
+   IF <argchk[7]>=1
+      TAG.CURRENT=<TAG.BASEID6>   
+   ENDIF
+   IF <argchk[8]>=1
+      TAG.CURRENT=<TAG.BASEID7>   
+   ENDIF
+   IF <argchk[9]>=1
+      TAG.CURRENT=<TAG.BASEID8>   
+   ENDIF
+   IF <argchk[10]>=1
+      TAG.CURRENT=<TAG.BASEID9>   
+   ENDIF
+   IF <argchk[11]>=1
+      TAG.CURRENT=<TAG.BASEID10>   
+   ENDIF
+
+   TRY UID.<TAG.UID>.ID=<TAG.CURRENT>
+   TRY UID.<TAG.UID>.DISPID=<TAG.CURRENT>
+   TAG.CURRENT=
+   
+   SRC.UPDATE
+   RETURN 1 
+
+
+
+//////////////////////////////////////////////BRAIN TILE///////////////////////////////////////////////
+//Scripted By: Wren        									     //
+//January 15, 2006  										     //
+//Brain Restriction Tile       									     //
+//        											     //
+//Variables:        										     //
+//TAG.Coord - Holds the coordinates of where the unallowed brains will be sent       		     //
+//TAG.Brain[1-4] - The braintypes that can cross the barrier	        			     //
+//      											     //
+//General Info:      										     //
+//Double-click and Enter up to 8 brain types to be restricted & where to send them   		     //
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+[ITEMDEF i_Brain_Tile]
+ID=i_floor_marble_3
+NAME=Brain Restriction Tile
+TYPE=t_brain_tile
+
+ON=@CREATE
+   COLOR=07a1
+
+CATEGORY=Imperial uo
+SUBSECTION=Gates
+DESCRIPTION=Brain Restriction Tile
+
+
+[TYPEDEF t_brain_tile]
+ON=@STEP
+   //Check to see if all arenas are full, if they are not, find an empty one and send the player there
+   IF ( ( <SRC.NPC>=<EVAL <TAG.BRAIN1>> ) || ( <SRC.NPC>=<EVAL <TAG.BRAIN2>> ) || ( <SRC.NPC>=<EVAL <TAG.BRAIN3>> ) || ( <SRC.NPC>=<EVAL <TAG.BRAIN4>> ) )
+      //Do nothing, they are allwed to enter
+   ELSE
+      SRC.GO <TAG.Coord>
+   ENDIF
+   RETURN 1
+
+ON=@DCLICK
+   //Gump for setup here.
+   IF (<SRC.ACCOUNT.PLEVEL> > 1)
+      DIALOG d_braintype
+   ENDIF
+   RETURN 1
+
+
+[DIALOG d_braintype] 
+0,0 
+
+resizepic 190 175 5054 335 380 
+resizepic 200 185 3000 315 360 
+
+//Text Borders
+resizepic 220 225 3000 270 22 
+resizepic 220 295 3000 270 22 
+resizepic 220 330 3000 270 22 
+resizepic 220 365 3000 270 22 
+resizepic 220 400 3000 270 22 
+resizepic 220 470 3000 270 22 
+
+
+
+//Text where coordinates will be entered.
+dtext 215 200 995 Enter the Coord for Rejected Types:
+dtextentry 225 225 253 25 0 0 <TAG.COORD> 
+
+dtext 215 270 995 Enter the Permitted Brain Types (#):
+dtextentry 225 295 253 25 0 1 <TAG.BRAIN1> 
+dtextentry 225 330 253 25 0 2 <TAG.BRAIN2> 
+dtextentry 225 365 253 25 0 3 <TAG.BRAIN3> 
+dtextentry 225 400 253 25 0 4 <TAG.BRAIN4> 
+
+dtext 215 445 995 Enter the Tile Name:
+dtextentry 225 470 253 25 0 5 <NAME> 
+
+dtext 255 500 0000 Accept
+button 220 500 4005 4006 1 0 1 
+
+dtext 435 500 0000 Cancel
+button 400 500 4005 4006 1 0 0 
+
+
+[DIALOG d_braintype BUTTON] 
+ON=0 
+   SRC.SYSMESSAGE No changes made.
+   RETURN 1
+
+ON=1   
+   TAG.COORD=<ARGTXT[0]>
+   TAG.BRAIN1=<ARGTXT[1]>
+   TAG.BRAIN2=<ARGTXT[2]>
+   TAG.BRAIN3=<ARGTXT[3]>
+   TAG.BRAIN4=<ARGTXT[4]>
+   NAME = <ARGTXT[5]>
+   
+   SRC.SYSMESSAGE Changes applied.
+   RETURN 1 
+
+
+/////////////////////////////////////RESTRICTED TELEPAD TYPE///////////////////////////////////////////
+//Scripted By: Wren        									     //
+//April 29, 2006  										     //
+//Restricted Telepad Type       							             //
+//        											     //
+//Works like a standard telepad but has a delay of MORE1 seconds      			             //
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+[TYPEDEF T_TIMED_TELE]
+ON=@STEP
+IF <SRC.NPC> 
+   RETURN 1
+ENDIF
+
+IF <SRC.FINDID.M_Teleporter_Delay.UID>
+   IF (<SRC.FINDID.M_Teleporter_Delay.MORE1> = 1)
+      SRC.SYSMESSAGE @26 You will be teleported in <SRC.FINDID.M_Teleporter_Delay.TIMER> seconds
+   ENDIF
+ELSE
+   SRC.SYSMESSAGE @24 You will be teleported in <EVAL <MORE1>> seconds.  Type .Cancel to cancel the teleport.
+   SERV.NEWITEM M_Teleporter_Delay
+   NEW.MORE1 = 1
+   NEW.MOREP = <MOREP>
+   NEW.TIMER = <MORE1>
+   SRC.EQUIP <NEW.UID>
+ENDIF
+
+[ItemDef M_Teleporter_Delay]
+id=i_memory
+Name=Teleporter Delay
+type=t_eq_script
+
+ON=@Create
+   TIMER    = 3
+
+ON=@Timer
+   IF <MORE1> = 1
+      CONT.GO <MOREP>
+      MORE1 = 0
+      TIMER=3
+   ELSE
+      REMOVE
+   ENDIF
+   RETURN 1
+
+[FUNCTION CANCEL]
+IF <SRC.FINDID.M_Teleporter_Delay.UID>
+  SRC.FINDID.M_Teleporter_Delay.REMOVE
+ENDIF
+
+[PLEVEL 1]
+CANCEL
+
+[EOF]

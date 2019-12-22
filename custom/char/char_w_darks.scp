@@ -1,0 +1,1309 @@
+// #-----------#
+// # CHANGELOG #
+// #-----------#
+//
+// 19/08/18 - Wigifer - Removed random loot from these monsters, ready for conversion to the new f_central_loot table.
+
+[EVENTS e_darkonian]
+ON = @Click
+   KARMA	= -100
+
+ON = @NPCSeeNewPlayer
+   if ( <SRC.ISFACTION_DK> == 0 )
+      SAY Die, scum!
+      ATTACK
+      return 1
+   endif
+
+   if ( rand(100) > 20 )
+      return 0
+   endif
+
+   doswitch <EVAL (0<src.TAG.DK.RANK>)>
+      SAY_NOTHING
+      SAY_NOTHING
+      SAY_NOTHING
+      SAY_NOTHING
+      SAY Well met, Sir Knight.
+      SAY Well met, Sir Squire.
+      SAY Milord...
+      SAY Hail milord Baron...
+      SAY Hail milord Viscount...
+      SAY I bow to thee <SRC.NAME>
+      SAY We serve you <SRC.NAME>
+      SAY Your Command milord Marquis?
+   enddo
+   return 0
+
+// Wigifer - Added event for fighting darkonian assassins
+
+ON=@NPCLOOKATCHAR
+   EVENTS +e_darkonian
+   if ( !( (<SRC.ISEVENT.e_darkonian>) || (<SRC.ISEVENT.e_shadow>) ) && ( (<SRC.NPC>==brain_vendor) || (<SRC.NPC>==brain_human) ) &! (<src.flags> & statf_invul) )
+      IF (rand(100) = 1)
+         SAY All of Britannia shall bow before the dark empire!
+         SRC.DAMAGE 1
+      ENDIF
+      SAY Die tainted scum!
+      attack
+   endif
+
+
+
+//Memory UO Darkonian Script v1.1
+
+//Monsters in Pack:
+//=================
+//o Darkonian Swordsman
+//o Darkonian Halberdsman
+//o Darkonian Guard - Instakill of Blues
+//o Darkonian Archer
+//o Darkonian Cavalier
+//o Darkonian Knight
+//o Darkonian Peasant
+//o Darkonian Mount
+//=================
+//Memory UO Darkonian Script v1.3
+//Scripted by Warman assisted by Kell
+//New Monsters in Pack:
+//=================
+//o Darkonian Imperial Archer
+//o Darkonian Imperial Mage
+//o Darkonian Imperial Cavalry/Knight
+//o Darkonian zostrich
+//o Terathane zostrich
+//==================
+//Updated monsters:
+//==================
+//o Darkonian Swordsman
+//o Darkonian Halberdsman
+//o Darkonian Archer
+//o Darkonian Knight
+//o Darkonian Cavalier
+
+
+
+  //////////
+ //MOUNTS//
+//////////
+
+
+[ITEMDEF i_mt_horse_darkonian]
+//ship (really used as horse equipped)
+ID	= i_mt_horse_gray
+NAME	= evil steed
+TYPE	= T_EQ_HORSE
+LAYER	= layer_horse
+TDATA3	= c_horse_darkonian
+
+
+[CHARDEF c_horse_darkonian]
+//HORSE,Gray,White
+ID	= c_horse_gray
+NAME	= Evil Steed
+SOUND	= snd_ANIMALS_HORSE1
+ICON	= i_pet_horse_gray
+CAN	= MT_WALK|MT_RUN
+ANIM	= 01fff
+DAM	= 3,4
+ARMOR	= 9
+DESIRES	= c_horse_gray,c_man,c_woman
+FOODTYPE= 55 t_crops, 55 t_fruit, 55 t_grain, 64 t_grass
+AVERSIONS = e_carnivores3
+RESOURCES = 15 i_ribs_raw,10 i_hide
+TEVENTS	= e_darkonian
+
+ON=@Create
+  TAG.DK.RANK	= 1
+  NPC=brain_animal
+  COLOR=01
+  STR={44 120}
+  DEX={36 55}
+  INT={6 10}
+
+  PARRYING={35.0 45.0}
+  MAGICRESISTANCE={25.0 30.0}
+  TACTICS={29.0 44.0}
+  WRESTLING={29.0 44.0}
+  TAMING=90.0
+  ARMSLORE=30.0
+  FAME=0
+  KARMA	= -4000
+
+DESCRIPTION=Darkonian Horse
+SUBSECTION=T2A Animals
+CATEGORY=Animals
+
+
+[CHARDEF c_terathane_zost]
+ID=c_ostard_zostrich
+NAME=Terathane Zostrich
+SOUND=snd_ANIMAL_OSTARD_FRENZIED1
+ICON=i_pet_OSTARD_ZOSTRICH
+CAN=MT_WALK|MT_RUN
+TEVENTS	= e_darkonian
+
+DAM=5,10
+ARMOR=40
+RESOURCES=7 i_reag_scales_terathane, 15 i_ribs_raw
+FOODTYPE=55 t_crops, 55 t_fruit, 64 t_grass
+DESIRES=e_OSTARDS
+ANIM=01fff
+
+ON = @Click
+  STR=185
+  DEX=65
+
+ON=@Create
+  NPC=brain_animal
+  COLOR=color_o_terathane
+  STR=185
+  DEX=65
+  INT={5 10}
+
+  PARRYING={75.0 85.0}
+  MAGICRESISTANCE={79.0 80.0}
+  TACTICS={85.0 94.0}
+  WRESTLING=10.0
+  ARMSLORE=40.0
+  TAMING=80.0
+
+  FAME=0
+   KARMA	= -4000
+
+DESCRIPTION=terathane zostrich
+SUBSECTION=T2A Animals
+CATEGORY=Animals
+
+
+[ITEMDEF i_mt_dark_zost]
+ID	= i_mt_ostard_zostrich
+NAME	= dark zostrich
+TYPE	= T_EQ_HORSE
+LAYER	= layer_horse
+TDATA3	= c_dark_zost
+
+
+[CHARDEF c_dark_zost]
+ID	= c_ostard_zostrich
+NAME	= dark zostrich
+SOUND   = snd_ANIMAL_OSTARD_FRENZIED1
+ICON	= i_pet_ostard_zostrich
+CAN	= MT_WALK|MT_RUN
+ANIM	= 01fff
+DAM=5,10
+ARMOR=40
+DESIRES	= c_man,c_woman
+FOODTYPE= 55 t_crops, 55 t_fruit, 55 t_grain, 64 t_grass
+AVERSIONS=t_spell,t_TRAP,t_eerie_stuff
+RESOURCES = 7 i_reag_scales_terathane, 15 i_ribs_raw
+TEVENTS	= e_darkonian
+
+ON=@Create
+  TAG.DK.RANK	= 1
+  NPC=brain_animal
+  COLOR=color_o_terathane
+  STR={150 200}
+  DEX={110 150}
+  INT={6 10}
+
+  PARRYING={85.0 90.0}
+  MAGICRESISTANCE={90.0 100.0}
+  TACTICS={90.0 100.0}
+  WRESTLING=10.0
+  ANATOMY={90.0 100.0}
+  ARMSLORE=80.0
+  TAMING=95.0
+
+  FAME=0
+     KARMA	= -100
+
+DESCRIPTION=Darkonian Zostrich
+SUBSECTION=T2A Animals
+CATEGORY=Animals
+
+
+  ////////
+ //NPCs//
+////////
+
+[CHARDEF c_h_darkwarrior]
+ID=C_MAN
+NAME=#NAMES_DREAD_LORD the Dark Warrior
+SOUND=snd_HUMAN_M_DIE_01
+DAM=10,20
+ARMOR=30
+AVERSIONS=t_TRAP,t_eerie_stuff
+TEVENTS	= e_darkonian
+
+
+ON=@Create
+  TAG.DK.RANK	= 1
+  COLOR		= colors_skin
+  STR		= {100 150}
+  DEX		= {80 95}
+  INT		= {71 85}
+  NPC		= brain_monster
+  PARRYING	= {75.0 80.0}
+  SWORDSMANSHIP	= {60.0 70.0}
+  WRESTLING	= {67.0 90.0}
+  MAGICRESISTANCE={65.0 88.0}
+  TACTICS	= {60.0 80.0}
+  POISONING	= {90.0 100.0}
+  DETECTION	={40.0 50.0}
+  ANATOMY       = {40.0 50.0}
+  FAME		= 3000
+     KARMA	= -100
+
+  ITEMNEWBIE=random_male_hair
+  COLOR=colors_hair
+  ITEMNEWBIE=random_facial_hair
+  COLOR=match_hair
+
+  ITEM=m_posdef_army
+
+  ITEMNEWBIE=i_platemail_gloves_terathane
+  ITEMNEWBIE=i_platemail_helm_terathane
+  ITEMNEWBIE=i_platemail_arms_terathane
+  ITEMNEWBIE=i_platemail_gorget_terathane
+  ITEMNEWBIE=i_platemail_chest_terathane
+  ITEMNEWBIE=i_platemail_leggings_terathane
+  ITEMNEWBIE=i_sword_long_b_terathane
+  ITEMNEWBIE=i_shield_heater_terathane
+  ITEMNEWBIE=i_CAPE
+  COLOR=0487
+  ITEMNEWBIE=i_SASH
+  COLOR=0487
+
+
+CATEGORY=Memory UO
+SUBSECTION=Darkonians
+DESCRIPTION=Darkonian Warrior(Sword)
+
+
+[CHARDEF c_h_darkwarriorm]
+ID=C_MAN
+NAME=#NAMES_DREAD_LORD the Dark Warrior
+SOUND=snd_HUMAN_M_DIE_01
+DAM=10,20
+ARMOR=30
+AVERSIONS=t_TRAP,t_eerie_stuff
+TEVENTS	= e_darkonian
+
+
+CATEGORY=Memory UO
+SUBSECTION=Darkonians
+DESCRIPTION=Darkonian Warrior(Mace)
+
+ON=@Create
+  TAG.DK.RANK	= 1
+  COLOR	= colors_skin
+  STR	= {100 150}
+  DEX	= {80 95}
+  INT	= {71 85}
+  NPC	= brain_monster
+  PARRYING	= {75.0 80.0}
+  SWORDSMANSHIP	= {60.0 70.0}
+  WRESTLING	= {67.0 90.0}
+  MAGICRESISTANCE={65.0 88.0}
+  TACTICS	= {60.0 80.0}
+  POISONING	= {90.0 100.0}
+  DETECTION	= {40.0 50.0}
+  ANATOMY       = {40.0 50.0}
+  FAME		= 3000
+  KARMA		= -100
+
+  ITEMNEWBIE=random_male_hair
+  COLOR=colors_hair
+  ITEMNEWBIE=random_facial_hair
+  COLOR=match_hair
+
+  ITEM=m_posdef_army
+
+  ITEMNEWBIE=i_platemail_gloves_terathane
+  ITEMNEWBIE=i_platemail_helm_terathane
+  ITEMNEWBIE=i_platemail_arms_terathane
+  ITEMNEWBIE=i_platemail_gorget_terathane
+  ITEMNEWBIE=i_platemail_chest_terathane
+  ITEMNEWBIE=i_platemail_leggings_terathane
+  ITEMNEWBIE=i_mace_terathane
+  ITEMNEWBIE=i_shield_heater_terathane
+  ITEMNEWBIE=i_CAPE
+  COLOR=0487
+  ITEMNEWBIE=i_SASH
+  COLOR=0487
+
+
+[CHARDEF c_h_darkwarriorh]
+ID=C_MAN
+NAME=#NAMES_DREAD_LORD the Dark Warrior
+SOUND=snd_HUMAN_M_DIE_01
+DAM=10,20
+ARMOR=30
+AVERSIONS=t_TRAP,t_eerie_stuff
+TEVENTS	= e_darkonian
+
+
+CATEGORY=Memory UO
+SUBSECTION=Darkonians
+DESCRIPTION=Darkonian Warrior(Halberd)
+
+ON=@Create
+  TAG.DK.RANK	= 1
+  COLOR		= colors_skin
+  STR		= {100 150}
+  DEX		= {80 95}
+  INT		= {71 85}
+  NPC		= brain_monster
+  SWORDSMANSHIP	= {60.0 70.0}
+  WRESTLING	= {67.0 90.0}
+  MAGICRESISTANCE={65.0 88.0}
+  TACTICS	= {60.0 80.0}
+  POISONING	= {90.0 100.0}
+  DETECTION	={40.0 50.0}
+  ANATOMY       = {40.0 50.0}
+  FAME		= 3000
+  KARMA		= -100
+
+  ITEMNEWBIE=random_male_hair
+  COLOR=colors_hair
+  ITEMNEWBIE=random_facial_hair
+  COLOR=match_hair
+
+  ITEM=m_posdef_army
+
+  ITEMNEWBIE=i_platemail_gloves_terathane
+  ITEMNEWBIE=i_platemail_helm_terathane
+  ITEMNEWBIE=i_platemail_arms_terathane
+  ITEMNEWBIE=i_platemail_gorget_terathane
+  ITEMNEWBIE=i_platemail_chest_terathane
+  ITEMNEWBIE=i_platemail_leggings_terathane
+  ITEMNEWBIE=i_halberd_terathane
+  ITEMNEWBIE=i_CAPE
+  COLOR=0487
+  ITEMNEWBIE=i_SASH
+  COLOR=0487
+
+
+[CHARDEF c_h_darkknight]
+ID=C_MAN
+NAME=#NAMES_DREAD_LORD the Dark Knight
+SOUND=snd_HUMAN_M_DIE_01
+DAM=10,25
+ARMOR=35
+AVERSIONS=t_TRAP,t_eerie_stuff
+TEVENTS	= e_darkonian
+
+CATEGORY=Memory UO
+SUBSECTION=Darkonians
+DESCRIPTION=Darkonian Knight
+
+
+ON=@Create
+  TAG.DK.RANK	= 1
+  COLOR=colors_skin
+  STR={200 275}
+  DEX={90 100}
+  INT={80 100}
+  NPC=brain_monster
+  ANATOMY={60.0 80.0}
+  PARRYING={80.0 95.0}
+  SWORDSMANSHIP={80.0 92.0}
+  WRESTLING={67.0 90.0}
+  MAGICRESISTANCE={65.0 95.0}
+  TACTICS={80.0 96.0}
+  POISONING={90.0 100.0}
+  DETECTION	={80.0 90.0}
+  FAME=9999
+  KARMA	= -100
+
+  ITEMNEWBIE=random_male_hair
+  COLOR=colors_hair
+  ITEMNEWBIE=random_facial_hair
+  COLOR=match_hair
+
+  ITEM=m_posdef_army
+
+  ITEMNEWBIE=i_platemail_gloves_terathane
+  ITEMNEWBIE=i_platemail_helm_terathane
+  ITEMNEWBIE=i_platemail_arms_terathane
+  ITEMNEWBIE=i_platemail_gorget_terathane
+  ITEMNEWBIE=i_platemail_chest_terathane
+  ITEMNEWBIE=i_platemail_leggings_terathane
+  ITEMNEWBIE=i_sword_long_b_terathane
+  ITEMNEWBIE=i_shield_chaos
+  ITEMNEWBIE=i_CAPE
+  COLOR=0487
+  ITEMNEWBIE=i_SASH
+  COLOR=0487
+
+
+[CHARDEF c_h_darkmage]
+NAME=#NAMES_HUMANMALE the Dark Mage
+ID=C_MAN
+DAM=40,50
+ARMOR=15,20
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_MALE
+TEVENTS	= e_darkonian
+
+
+CATEGORY=Memory UO
+SUBSECTION=Darkonians
+DESCRIPTION=Darkonian Mage
+
+ON=@Create
+  TAG.DK.RANK	= 1
+  COLOR		= colors_skin
+  STR={100 100}
+  DEX={81 95}
+  INT={300 300}
+  MAGICRESISTANCE={70.0 80.0}
+  TACTICS={70.0 90.0}
+  EVALUATINGINTEL={70.0 90.0}
+  WRESTLING=900
+  MAGERY=800
+  NPC=BRAIN_MONSTER
+  KARMA	= -100
+  FAME={2500 4000}
+
+  ITEM=m_posdef_army
+
+  ITEMNEWBIE=i_hair_long
+  COLOR=0
+  ITEM=i_robe
+  COLOR=0487
+  ITEM=i_hat_wizards
+  COLOR=1
+  ITEM=i_boots_calf
+  COLOR=1
+  ITEM=random_scroll
+
+  ITEM=i_spellbook
+  ADDSPELL=s_paralyze
+  ADDSPELL=s_mass_dispel
+  ADDSPELL=s_flamestrike
+  ADDSPELL=s_resurrection
+
+
+[CHARDEF c_h_darkmagehigh]
+NAME=#NAMES_HUMANMALE the Dark High Mage
+ID=C_MAN
+DAM=20,35
+ARMOR=30,40
+//ALIGNMENT=EVIL
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_MALE
+TEVENTS	= e_darkonian
+
+
+CATEGORY=Memory UO
+SUBSECTION=Darkonians
+DESCRIPTION=Darkonian Mage
+
+ON=@Create
+  TAG.DK.RANK	= 1
+  COLOR		= colors_skin
+  STR={150 150}
+  DEX={80 95}
+  INT={400 500}
+  MAGICRESISTANCE={99.0 99.0}
+  EVALUATINGINTEL={70.0 90.0}
+  TACTICS={70.0 90.0}
+  WRESTLING=700
+  MAGERY=1000
+  NPC=BRAIN_MONSTER
+  KARMA	= -100
+  FAME={9998 9999}
+
+  ITEM=m_posdef_army
+
+  ITEMNEWBIE=i_hair_long
+  COLOR=0
+  ITEM=i_robe
+  COLOR=0487
+  ITEM=i_hat_wizards
+  COLOR=1
+  ITEM=i_boots_calf
+  COLOR=1
+  ITEM=random_upper_scroll
+
+  ITEM=i_spellbook
+  ADDSPELL=s_paralyze
+  ADDSPELL=s_mass_dispel
+  ADDSPELL=s_flamestrike
+  ADDSPELL=s_resurrection
+
+
+
+[CHARDEF c_h_darkarcher]
+ID=C_MAN
+NAME=#NAMES_DREAD_LORD the Dark Archer
+SOUND=snd_HUMAN_M_DIE_01
+DAM=10,20
+ARMOR=30
+AVERSIONS=t_TRAP,t_eerie_stuff
+TEVENTS	= e_darkonian
+
+
+CATEGORY=Memory UO
+SUBSECTION=Darkonians
+DESCRIPTION=Darkonian Archer
+
+ON=@Create
+  TAG.DK.RANK	= 1
+  COLOR=colors_skin
+  STR={150 200}
+  DEX={60 90}
+  INT={71 85}
+  NPC=brain_monster
+  PARRYING={75.0 80.0}
+  ARCHERY={60.0 82.0}
+  MAGICRESISTANCE={65.0 88.0}
+  TACTICS={60.0 80.0}
+  ANATOMY={60.0 80.0}
+  DETECTION	={40.0 50.0}
+  FAME=3000
+  KARMA	= -100
+
+  ITEM=m_posdef_army
+
+  ITEMNEWBIE=random_male_hair
+  COLOR=colors_hair
+  ITEMNEWBIE=random_facial_hair
+  COLOR=match_hair
+  ITEMNEWBIE=i_RINGMAIL_TUNIC_terathane
+  ITEMNEWBIE=i_RINGMAIL_GLOVES_terathane
+  ITEMNEWBIE=i_RINGMAIL_SLEEVES_terathane
+  ITEMNEWBIE=i_RINGMAIL_leggings_terathane
+  ITEMNEWBIE=i_boots_calf
+  ITEMNEWBIE=i_bow
+  ITEMNEWBIE=i_CAPE
+  COLOR=0487
+  ITEMNEWBIE=i_SASH
+  COLOR=0487
+  ITEM=i_arrow,{20 45}
+
+
+[CHARDEF c_h_darkcavalry]
+ID=C_MAN
+NAME=#NAMES_DREAD_LORD the Dark Cavalier
+SOUND=snd_HUMAN_M_DIE_01
+DAM=10,25
+ARMOR=35
+AVERSIONS=t_TRAP,t_eerie_stuff
+TEVENTS	= e_darkonian
+
+TSPEECH=jobMageEvil
+
+CATEGORY=Memory UO
+SUBSECTION=Darkonians
+DESCRIPTION=Darkonian Cavalier
+
+ON=@Create
+  TAG.DK.RANK	= 1
+  COLOR=colors_skin
+  STR={200 275}
+  DEX={90 100}
+  INT={80 100}
+  ANATOMY={60.0 80.0}
+  PARRYING={80.0 95.0}
+  SWORDSMANSHIP={80.0 92.0}
+  WRESTLING={67.0 90.0}
+  MAGICRESISTANCE={65.0 95.0}
+  TACTICS={80.0 96.0}
+  POISONING={90.0 100.0}
+  DETECTION	={80.0 90.0}
+  NPC=brain_monster
+  FAME=9999
+     KARMA	= -100
+
+  ITEM=m_posdef_army
+
+  ITEMNEWBIE=random_male_hair
+  COLOR=colors_hair
+  ITEMNEWBIE=random_facial_hair
+  COLOR=match_hair
+  ITEMNEWBIE=i_platemail_gloves_terathane
+  ITEMNEWBIE=i_platemail_helm_terathane
+  ITEMNEWBIE=i_platemail_arms_terathane
+  ITEMNEWBIE=i_platemail_gorget_terathane
+  ITEMNEWBIE=i_platemail_chest_terathane
+  ITEMNEWBIE=i_platemail_leggings_terathane
+  ITEMNEWBIE=i_sword_long_b_terathane
+  ITEMNEWBIE=i_shield_chaos
+  ITEMNEWBIE=i_CAPE
+  COLOR=0487
+  ITEMNEWBIE=i_SASH
+
+ON=@Death
+  findlayer(layer_horse).remove
+  
+ON=@NPCRestock
+  COLOR=0487
+  ITEM=i_mt_horse_darkonian
+  COLOR=1
+
+[CHARDEF dark_PEASANT]
+NAME=#NAMES_HUMANMALE the Dark Peasant
+ID=C_MAN
+HIREDAYWAGE=10
+DESIRES=i_gold,e_notoriety
+AVERSIONS=t_TRAP,t_eerie_stuff,e_carnivores3
+
+TSPEECH=joblaborer
+TSPEECH=jobPEASANT
+
+TEVENTS	= e_darkonian
+
+
+TEVENTS=e_Human_HearUnk
+TEVENTS=e_Human_Needs
+TEVENTS=e_Human_ConvInit
+TEVENTS=e_Human_Greet
+TEVENTS=e_Human_Scavenge
+TEVENTS=e_Human_Space
+TEVENTS=e_Human_Refuse
+TEVENTS=e_Human_Environ
+
+CATEGORY=Memory UO
+SUBSECTION=Darkonians
+DESCRIPTION=Darkonian Peasant (male)
+
+ON=@Create
+  TAG.DK.RANK	= 1
+  COLOR=colors_skin
+  STR={26 40}
+  DEX={21 35}
+  INT={16 30}
+
+  WRESTLING={15.0 38.0}
+  TACTICS={15.0 38.0}
+
+  NPC=brain_human
+  NEED=i_gold
+
+  ITEM=RANDOM_LIGHT
+  ITEMNEWBIE=random_male_hair
+  COLOR=01
+  ITEMNEWBIE=random_facial_hair
+  COLOR=match_hair
+  ITEM=i_shirt_plain
+  COLOR=0770
+  ITEMNEWBIE=random_pants
+  COLOR=01
+  ITEM=backpack_poor
+
+  FAME=0
+     KARMA	= -100
+
+[CHARDEF Dark_PEASANT_F]
+NAME=#NAMES_HUMANFEMALE the Dark Peasant
+ID=C_WOMAN
+HIREDAYWAGE=10
+DESIRES=i_gold,e_notoriety
+AVERSIONS=t_TRAP,t_eerie_stuff,e_carnivores3
+CATEGORY=Memory UO
+SUBSECTION=Darkonians
+DESCRIPTION=Darkonian Peasant (female)
+
+TSPEECH=joblaborer
+TSPEECH=jobPEASANT
+
+TEVENTS	= e_darkonian
+
+
+TEVENTS=e_Human_HearUnk
+TEVENTS=e_Human_Needs
+TEVENTS=e_Human_ConvInit
+TEVENTS=e_Human_Greet
+TEVENTS=e_Human_Space
+TEVENTS=e_Human_Scavenge
+TEVENTS=e_Human_Refuse
+TEVENTS=e_Human_Environ
+
+ON=@Create
+  TAG.DK.RANK	= 1
+  COLOR=colors_skin
+  STR={26 40}
+  DEX={21 35}
+  INT={16 30}
+
+  WRESTLING={15.0 38.0}
+  TACTICS={15.0 38.0}
+
+  NPC=brain_human
+  NEED=i_gold
+
+  ITEM=m_posdef_civilian
+
+  ITEM=RANDOM_LIGHT
+  ITEMNEWBIE=random_female_hair
+  COLOR=01
+  ITEM=i_shirt_plain
+  COLOR=0770
+  ITEMNEWBIE=random_skirt
+  COLOR=01
+  ITEM=backpack_poor
+
+  FAME=0
+     KARMA	= -100
+
+
+[CHARDEF c_darkonian_guard]
+ID=C_MAN
+NAME=#NAMES_DREAD_LORD the Dark Guard
+SOUND=snd_HUMAN_M_DIE_01
+DAM=10,25
+ARMOR=35
+AVERSIONS=t_TRAP,t_eerie_stuff
+TEVENTS	= e_darkonian
+
+
+CATEGORY=Memory UO
+SUBSECTION=Darkonians
+DESCRIPTION=Darkonian Guard
+
+ON=@Create
+  TAG.DK.RANK	= 1
+  COLOR=colors_skin
+  STR={150 200}
+  DEX={100 120}
+  INT={100 200}
+  NPC=brain_monster
+
+  PARRYING={99.0 100.0}
+  SWORDSMANSHIP={99.0 100.0}
+  WRESTLING={99.0 100.0}
+  MAGICRESISTANCE={99.0 100.0}
+  TACTICS={99.0 100.0}
+  POISONING={99.0 100.0}
+  DETECTION	={99.0 100.0}
+
+  FAME=9999
+     KARMA	= -100
+
+  ITEMNEWBIE=random_male_hair
+  COLOR=colors_hair
+  ITEMNEWBIE=random_facial_hair
+  COLOR=match_hair
+  ITEM=m_posdef_army
+  ITEMNEWBIE=i_platemail_gloves_terathane
+  ITEMNEWBIE=i_platemail_helm_terathane
+  ITEMNEWBIE=i_platemail_arms_terathane
+  ITEMNEWBIE=i_platemail_chest_terathane
+  ITEMNEWBIE=i_platemail_gorget_terathane
+  ITEMNEWBIE=i_platemail_leggings_terathane
+  ITEMNEWBIE=i_sword_great_terathane
+  ITEMNEWBIE=i_shield_chaos
+  ITEMNEWBIE=i_CAPE
+  COLOR=0487
+  ITEMNEWBIE=i_SASH
+  COLOR=0487
+
+
+
+[CHARDEF c_h_darkleetmage]
+NAME=#NAMES_HUMANMALE the Imperial Guard Mage
+ID=C_MAN
+DAM=10,15
+ARMOR=30,40
+//ALIGNMENT=EVIL
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_MALE|MT_FIRE_IMMUNE|MT_RUN
+TEVENTS	= e_darkonian
+
+
+CATEGORY=Memory UO
+SUBSECTION=Darkonians
+DESCRIPTION=Elite Mage
+
+ON=@Create
+  TAG.DK.RANK	= 1
+  COLOR		= colors_skin
+  STR={170 200}
+  DEX={90 95}
+  INT={600 700}
+  MAGICRESISTANCE={99.0 100.0}
+  EVALUATINGINTEL={80.0 90.0}
+  TACTICS={80.0 90.0}
+  WRESTLING=900
+  MAGERY=1000
+  NPC=BRAIN_MONSTER
+     KARMA	= -100
+  FAME={9998 9999}
+
+  ITEMNEWBIE=i_hair_long
+  COLOR=0
+  ITEMNEWBIE=i_robe
+  COLOR=1
+  ITEMNEWBIE=i_hat_wizards
+  COLOR=1
+  ITEMNEWBIE=i_boots_calf
+  COLOR=1
+  ITEM=random_upper_scroll
+  ITEM=m_posdef_army
+  ITEM=i_spellbook
+  ADDSPELL=s_flamestrike
+  ADDSPELL=s_resurrection
+
+ON=@NPCRestock
+  ITEM=i_robe, R50
+  COLOR=1
+  ITEM=i_hat_wizards, R50
+  COLOR=1
+  ITEM=i_boots_calf, R50
+  COLOR=1
+
+[CHARDEF c_h_darkleetarcher]
+ID=C_MAN
+NAME=#NAMES_DREAD_LORD the Imperial Guard Archer
+SOUND=snd_HUMAN_M_DIE_01
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_MALE|MT_FIRE_IMMUNE|MT_RUN
+DAM=10,20
+ARMOR=30
+AVERSIONS=t_spell,t_TRAP,t_eerie_stuff
+//DESIRES=i_gold,e_notoriety
+//ALIGNMENT=EVIL
+TEVENTS	= e_darkonian
+
+
+CATEGORY=Memory UO
+SUBSECTION=Darkonians
+DESCRIPTION=Elite Archer
+
+ON=@Create
+  TAG.DK.RANK	= 1
+  COLOR=colors_skin
+  STR={150 200}
+  DEX={90 100}
+  INT={71 85}
+  NPC=brain_monster
+  PARRYING={80.0 90.0}
+  ARCHERY={90.0 100.0}
+  MAGICRESISTANCE={80.0 90.0}
+  TACTICS={90.0 100.0}
+  ANATOMY={90.0 100.0}
+  DETECTION	={80.0 100.0}
+  FAME=5000
+     KARMA	= -100
+
+ON=@NPCRestock
+  ITEMNEWBIE=random_male_hair
+  COLOR=colors_hair
+  ITEMNEWBIE=random_facial_hair
+  COLOR=match_hair
+  ITEM=m_posdef_army
+  ITEMNEWBIE=i_CHAINMAIL_TUNIC_terathane
+  ITEMNEWBIE=i_RINGMAIL_GLOVES_terathane
+  ITEMNEWBIE=i_RINGMAIL_SLEEVES_terathane
+  ITEMNEWBIE=i_CHAINMAIL_leggings_terathane
+  ITEMNEWBIE=i_chainmail_coif_terathane
+  ITEMNEWBIE=i_boots_calf
+  ITEMNEWBIE=i_crossbow_heavy_composite
+  ITEMNEWBIE=i_CAPE
+  COLOR=01
+  ITEMNEWBIE=i_SASH
+  COLOR=01
+  ITEM=i_xbolt,{20 45}
+
+
+[CHARDEF c_h_darkleetcavalry]
+ID=C_MAN
+NAME=#NAMES_DREAD_LORD the Imperial Guard Cavalier
+SOUND=snd_HUMAN_M_DIE_01
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_RUN|MT_MALE|MT_FIRE_IMMUNE
+DAM=20,35
+ARMOR=45
+AVERSIONS=t_spell,t_TRAP,t_eerie_stuff
+TEVENTS	= e_darkonian
+
+TSPEECH=jobMageEvil
+
+CATEGORY=Memory UO
+SUBSECTION=Darkonians
+DESCRIPTION=Elite Cavalier
+
+ON=@Create
+  TAG.DK.RANK	= 1
+  COLOR=colors_skin
+  STR={300 500}
+  DEX={100 120}
+  INT={80 100}
+  PARRYING={90.0 100.0}
+  SWORDSMANSHIP={90.0 100.0}
+  WRESTLING={80.0 90.0}
+  MAGICRESISTANCE={90.0 100.0}
+  TACTICS={95.0 100.0}
+  ANATOMY={95.0 100.0}
+  POISONING={90.0 100.0}
+  DETECTION	={90.0 100.0}
+  NPC=brain_monster
+  FAME=9999
+     KARMA	= -100
+
+  ITEMNEWBIE=random_male_hair
+  COLOR=colors_hair
+  ITEMNEWBIE=random_facial_hair
+  COLOR=match_hair
+  ITEM=m_posdef_army
+  ITEMNEWBIE=i_platemail_gloves_terathane
+  ITEMNEWBIE=i_platemail_helm_terathane
+  ITEMNEWBIE=i_platemail_arms_terathane
+  ITEMNEWBIE=i_platemail_chest_terathane
+  ITEMNEWBIE=i_platemail_gorget_terathane
+  ITEMNEWBIE=i_platemail_leggings_terathane
+  ITEMNEWBIE=i_sword_long_b_terathane
+  ITEMNEWBIE=i_shield_chaos
+  ITEMNEWBIE=i_CAPE
+  COLOR=01
+  ITEMNEWBIE=i_SASH
+
+ON=@Death
+  findlayer(layer_horse).remove
+  
+ON=@NPCRestock
+  ITEM=i_mt_dark_zost
+  COLOR=0770
+
+
+  //////////
+ //EVENTS//
+//////////
+
+[EVENTS e_darkonian_guard] 
+ON=@NPCSeeNewPlayer
+IF (<SRC.KARMA><=-100)
+FACE
+BOW
+DORAND 3
+SAY=Tis a good day to be evil is it not?
+SAY=Tis good to see a fellow member of darkness!
+SAY=Welcome to the Darklands friend!
+ENDDO
+
+ELSEIF (<SRC.KARMA>>=500)
+DORAND 3
+SAY=This is no place for followers of good!
+SAY=Die to my sword Brittanian Scum!
+SAY=Prepare for battle foul heathen!
+ENDDO
+ATTACK
+ENDIF
+
+ON=@Hit
+SAY Do not return here foul heathen!
+SRC.DAMAGE={600 700}
+
+
+  //////////
+ //MEMOBJ//
+//////////
+
+[ITEMDEF m_posdef_army]
+ID	= i_memory
+TYPE	= t_eq_script
+LAYER	= layer_special
+NAME	= posdef
+
+ON=@Create
+ATTR = 02
+TIMER = 2
+
+ON=@TIMER
+CONT.HOME=<CONT.P>
+CONT.HOMEDIST=1
+REMOVE
+
+[ITEMDEF m_posdef_civilian]
+ID	= i_memory
+TYPE	= t_eq_script
+LAYER	= layer_special
+NAME	= posdef
+
+ON=@Create
+ATTR = 02
+TIMER = 2
+
+ON=@TIMER
+CONT.HOME=<CONT.P>
+CONT.HOMEDIST=10
+REMOVE
+
+
+  //////////////////
+ //RENEGADE DARKS//
+//////////////////
+
+[CHARDEF c_h_darkrenecavalry]
+ID=C_MAN
+NAME=#NAMES_DREAD_LORD the Renegade Dark Knight
+SOUND=snd_HUMAN_M_DIE_01
+DAM=10,25
+ARMOR=35
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_MALE|MT_RUN
+AVERSIONS=t_TRAP,t_eerie_stuff
+TEVENTS	= e_darkonian
+
+TSPEECH=jobMageEvil
+
+CATEGORY=Memory UO
+SUBSECTION=Darkonians
+DESCRIPTION=Renegade Darkonian Cavalier
+
+ON=@Create
+  TAG.DK.RANK	= 1
+  COLOR=colors_skin
+  STR={200 275}
+  DEX={90 100}
+  INT={80 100}
+  ANATOMY={60.0 80.0}
+  PARRYING={80.0 95.0}
+  SWORDSMANSHIP={80.0 92.0}
+  WRESTLING={67.0 90.0}
+  MAGICRESISTANCE={65.0 95.0}
+  TACTICS={80.0 96.0}
+  POISONING={90.0 100.0}
+  DETECTION	={80.0 90.0}
+  NPC=BRAIN_MONSTER
+  FAME=9999
+  KARMA=-9999
+
+  ITEM=m_posdef_army
+
+  ITEMNEWBIE=random_male_hair
+  COLOR=colors_hair
+  ITEMNEWBIE=random_facial_hair
+  COLOR=match_hair
+  ITEMNEWBIE=i_platemail_gloves_terathane
+  ITEMNEWBIE=i_platemail_helm_terathane
+  ITEMNEWBIE=i_platemail_arms_terathane
+  ITEMNEWBIE=i_platemail_gorget_terathane
+  ITEMNEWBIE=i_platemail_chest_terathane
+  ITEMNEWBIE=i_platemail_leggings_terathane
+  ITEMNEWBIE=i_halberd_terathane
+  ITEMNEWBIE=i_CAPE
+  COLOR=0487
+  ITEMNEWBIE=i_SASH
+
+ON=@Death
+  findlayer(layer_horse).remove
+  
+ON=@NPCRestock
+  ITEM=i_mt_horse_darkonian
+
+
+[CHARDEF c_h_darkrenemage]
+NAME=#NAMES_HUMANMALE the Renegade Dark Knight
+ID=C_MAN
+DAM=10,20
+ARMOR=15,20
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_MALE|MT_RUN
+TEVENTS	= e_darkonian
+
+
+CATEGORY=Memory UO
+SUBSECTION=Darkonians
+DESCRIPTION=Renegade Dark Mage
+
+ON=@Create
+  TAG.DK.RANK	= 1
+  COLOR		= colors_skin
+  STR={100 100}
+  DEX={81 95}
+  INT={300 300}
+  MAGICRESISTANCE={70.0 80.0}
+  TACTICS={70.0 90.0}
+  EVALUATINGINTEL={70.0 90.0}
+  WRESTLING=900
+  MAGERY=800
+  NPC=BRAIN_MONSTER
+
+  KARMA={-3000 -5000}
+  FAME={2500 4000}
+
+  ITEM=m_posdef_army
+
+  ITEMNEWBIE=i_hair_long
+  COLOR=0
+  ITEM=i_robe
+  COLOR=0487
+  ITEM=i_hat_wizards
+  COLOR=1
+  ITEM=i_boots_calf
+  COLOR=1
+  ITEM=random_scroll
+
+  ITEM=i_spellbook
+  ADDSPELL=s_paralyze
+  ADDSPELL=s_mass_dispel
+  ADDSPELL=s_flamestrike
+  ADDSPELL=s_resurrection
+
+ON=@Death
+  findlayer(layer_horse).remove
+ON=@NPCRestock
+  ITEM=i_mt_horse_darkonian
+
+
+[CHARDEF c_h_darkrenearcher]
+ID=C_MAN
+NAME=#NAMES_DREAD_LORD the Renegade Dark Knight
+SOUND=snd_HUMAN_M_DIE_01
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_MALE|MT_RUN
+DAM=10,20
+ARMOR=30
+AVERSIONS=t_TRAP,t_eerie_stuff
+TEVENTS	= e_darkonian
+
+
+CATEGORY=Memory UO
+SUBSECTION=Darkonians
+DESCRIPTION=Renegade Dark Archer
+
+ON=@Create
+  TAG.DK.RANK	= 1
+  COLOR=colors_skin
+  STR={150 200}
+  DEX={60 90}
+  INT={71 85}
+  NPC=brain_monster
+  PARRYING={75.0 80.0}
+  ARCHERY={60.0 82.0}
+  MAGICRESISTANCE={65.0 88.0}
+  TACTICS={60.0 80.0}
+  ANATOMY={60.0 80.0}
+  DETECTION	={40.0 50.0}
+  FAME=3000
+  KARMA=-9999
+
+  ITEM=m_posdef_army
+
+  ITEMNEWBIE=random_male_hair
+  COLOR=colors_hair
+  ITEMNEWBIE=random_facial_hair
+  COLOR=match_hair
+  ITEMNEWBIE=i_RINGMAIL_TUNIC_terathane
+  ITEMNEWBIE=i_RINGMAIL_GLOVES_terathane
+  ITEMNEWBIE=i_RINGMAIL_SLEEVES_terathane
+  ITEMNEWBIE=i_RINGMAIL_leggings_terathane
+  ITEMNEWBIE=i_boots_calf
+  ITEMNEWBIE=i_bow_ironwood
+  ITEMNEWBIE=i_CAPE
+  COLOR=0487
+  ITEMNEWBIE=i_SASH
+  COLOR=0487
+  ITEM=i_arrow,{20 45}
+
+ON=@Death
+  findlayer(layer_horse).remove
+ON=@NPCRestock
+  ITEM=i_mt_horse_darkonian
+
+
+[CHARDEF c_h_darkrenecom]
+  //Insert desired monster here
+
+  ID=C_MAN
+  NAME=#NAMES_DREAD_LORD the Renegade Dark Knight Commander
+  SOUND=snd_HUMAN_M_DIE_01
+  DAM=15,35
+  ARMOR=45
+  CAN=MT_WALK|MT_RUN|MT_USEHANDS|MT_FIRE_IMMUNE
+  AVERSIONS=t_spell,t_TRAP,t_eerie_stuff
+TEVENTS	= e_darkonian
+  TEVENTS=e_npc_gazer
+  
+  TSPEECH=jobMageEvil
+
+  CATEGORY=Memory UO
+  SUBSECTION=Foes
+  DESCRIPTION=Final Guardian
+
+ON=@Create
+     TAG.DK.RANK	= 1
+      COLOR=colors_skin
+      STR=1000
+      DEX={250 500}
+      INT={250 500}
+      WRESTLING={150.0 200.0}
+      MAGICRESISTANCE=2000
+      MAGERY = {150.0 200.0}
+      TACTICS={95.0 100.0}
+      ANATOMY={95.0 100.0}
+      POISONING={90.0 100.0}
+      DETECTION	={90.0 100.0}
+      NPC=brain_monster
+      FAME=9999
+      KARMA=-9999
+
+      ITEM=m_posdef_army
+
+      ITEMNEWBIE=random_male_hair
+      COLOR=colors_hair
+      ITEMNEWBIE=random_facial_hair
+      COLOR=match_hair
+      ITEMNEWBIE=i_platemail_gloves_terathane
+      ITEMNEWBIE=i_platemail_helm_terathane
+      ITEMNEWBIE=i_platemail_arms_terathane
+      ITEMNEWBIE=i_platemail_gorget_terathane
+      ITEMNEWBIE=i_platemail_chest_terathane
+      ITEMNEWBIE=i_platemail_leggings_terathane
+      ITEMNEWBIE=i_halberd_terathane
+      ITEMNEWBIE=i_CAPE
+      COLOR=0487
+      ITEMNEWBIE=i_SASH
+
+ON=@Death
+  findlayer(layer_horse).remove
+ON=@NPCRestock
+  ITEM=i_mt_horse_darkonian
+
+CATEGORY=Memory UO
+SUBSECTION=Darkonians
+DESCRIPTION=Renegade Darkonian Commander
+
+
+
+
+[ITEMDEF i_resurrect_stone_dark]
+ID=0ed6
+NAME=Resurrection Stone
+
+CATEGORY=Memory UO
+SUBSECTION=Custom Items
+DESCRIPTION=Resurrection Stone
+
+ON=@CREATE
+   ATTR=010
+   COLOR=COLOR_O_TERATHANE
+
+ON=@DClick
+   IF (0<SRC.TAG.DK.RANK>)
+      IF (<SRC.HITS> == 0)
+          SRC.RESURRECT
+          SRC.MESSAGE The emperor grants you new life.
+      ENDIF
+   ENDIF
+   RETURN 1
+
+
+
+[ITEMDEF i_bank_stone_dark]
+  ID=0ed6
+  NAME=Bank Stone
+
+CATEGORY=Memory UO
+SUBSECTION=Custom Items
+DESCRIPTION=Dark Bank Access
+
+ON=@CREATE
+   ATTR=010
+   COLOR=COLOR_O_TERATHANE
+
+ON=@DClick
+   IF (0<SRC.TAG.DK.RANK>)
+      SRC.BANKSELF
+      RETURN 1
+   ENDIF
+   RETURN 1
+
+[EOF]
+

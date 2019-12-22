@@ -1,0 +1,1080 @@
+//////////////////
+///Prison Wars///
+////////////////
+
+[FUNCTION Bank_all]
+IF (0<FINDLAYER(21).FINDCONT(0).UID>==0)
+	RETURN 1
+ELSE
+	FINDLAYER(21).FINDCONT(0).CONT = <args>
+	BANK_ALL <args>
+ENDIF
+
+[FUNCTION Dispel_all]
+	IF (<src.findtype.t_spell>)
+		src.findtype.t_spell.remove
+		dispel_all
+	ELSE
+		return 1	
+	ENDIF
+
+[FUNCTION pad_undress]
+findlayer(1).unequip
+findlayer(2).unequip
+findlayer(3).unequip
+findlayer(4).unequip
+findlayer(5).unequip
+findlayer(6).unequip
+findlayer(7).unequip
+findlayer(8).unequip
+findlayer(10).unequip
+findlayer(12).unequip
+findlayer(13).unequip
+findlayer(14).unequip
+findlayer(17).unequip
+findlayer(18).unequip
+findlayer(19).unequip
+findlayer(20).unequip
+findlayer(22).unequip
+findlayer(23).unequip
+findlayer(24).unequip
+
+
+
+VAR.PRIZONWARSSTONECONTROL=0437d6565
+VAR.PRIZONWARSSTONERED=0437d611c
+VAR.PRIZONWARSSTONEBLUE=0437d60f2
+
+[itemdef i_Prizonwars_stone]
+	id=i_grave_stone
+	name=Prison Wars
+	type=t_normal
+
+on=@create
+	color=0
+	more1=0
+	more2=0
+	tag.last=0
+	timer=-1
+
+on=@click
+	message @88 <name>
+	return 1
+
+on=@dclick
+if (<src.account.plevel> > 3)
+	src.dialog d_Prizonwars_stone_control
+	return 1
+endif
+
+if (<src.flags>&statf_dead)
+	src.message You can't use this while dead!
+	return 1
+endif
+
+if  (<distance> > 4)
+	src.message Move closer!
+	return 1
+endif
+
+IF (<SRC.FINDLAYER(25)>)
+	src.message Dismount first!
+	return 1
+ENDIF
+
+
+if (<src.account.plevel> < 4) && (<more1> == 1)
+	src.dialog d_PrizonWars_stone_join
+	return 1
+endif
+
+//on=@timer
+//	region.allclients stone 0
+//	timer=15
+//	return 1
+
+
+//////
+
+[dialog d_Prizonwars_stone_control]
+250,200
+src.dialogclose d_Prizonwars_stone_control
+VAR.PRIZONWARSSTONECONTROL=0437d6565
+page 0 
+resizepic 0 0 5054 200 190
+resizepic 5 5 3000 190 30
+resizepic 5 60 3000 190 125
+
+htmlgump 10 10 100 20 0 0 0
+htmlgump 30 65 100 20 1 0 0
+htmlgump 30 90 100 20 2 0 0
+htmlgump 30 115 100 20 3 0 0
+htmlgump 30 140 100 20 4 0 0
+htmlgump 30 165 100 20 5 0 0
+	
+button 10 66 5601 5605 1 0 1
+button 10 91 5601 5605 1 0 2
+button 10 116 5601 5605 1 0 3
+button 10 141 5601 5605 1 0 4
+button 10 166 5601 5605 1 0 5
+
+[dialog d_Prizonwars_stone_control text]
+Prison wars Control
+Activate Stone
+Deactivate Stone
+Start Prison Wars
+Finish Prison Wars
+Restart Prison Wars
+
+[dialog d_Prizonwars_stone_control button]
+onbutton = 1
+	TRYSRC <UID> UID.<VAR.PRIZONWARSSTONECONTROL>.say Stone activated!
+	TRYSRC <UID> UID.<VAR.PRIZONWARSSTONECONTROL>.more1=1
+	TRYSRC <UID> UID.<VAR.PRIZONWARSSTONECONTROL>.color=07fc
+
+onbutton = 2
+	TRYSRC <UID> UID.<VAR.PRIZONWARSSTONECONTROL>.say Stone deactivated!
+	TRYSRC <UID> UID.<VAR.PRIZONWARSSTONECONTROL>.more1=0
+	TRYSRC <UID> UID.<VAR.PRIZONWARSSTONECONTROL>.color=0
+	
+onbutton = 3
+	//serv.b The Prison Wars tournament has begun!
+	TRYSRC <UID> UID.<VAR.PRIZONWARSSTONECONTROL>.more2=1
+	TRYSRC <UID> UID.<VAR.PRIZONWARSSTONECONTROL>.timer=15
+	TRYSRC <UID> UID.<VAR.PRIZONWARSSTONERED>.more1 = 1
+	TRYSRC <UID> UID.<VAR.PRIZONWARSSTONEBLUE>.more1 = 1
+	region.allclients stone 0
+
+onbutton = 4
+	//serv.b The Prison Wars tournament has ended!
+	VAR.PRIZONWARSSTONERED=0437d611c
+	VAR.PRIZONWARSSTONEBLUE=0437d60f2
+	TRYSRC <UID> UID.<VAR.PRIZONWARSSTONECONTROL>.timer=-1
+	TRYSRC <UID> UID.<VAR.PRIZONWARSSTONECONTROL>.MORE2=0
+	TRYSRC <UID> UID.<VAR.PRIZONWARSSTONERED>.more1 = 0
+	TRYSRC <UID> UID.<VAR.PRIZONWARSSTONERED>.TAG.redfree = 0
+	TRYSRC <UID> UID.<VAR.PRIZONWARSSTONERED>.TAG.redinjail = 0
+	TRYSRC <UID> UID.<VAR.PRIZONWARSSTONEBLUE>.more1 = 0
+	TRYSRC <UID> UID.<VAR.PRIZONWARSSTONEBLUE>.TAG.bluefree = 0
+	TRYSRC <UID> UID.<VAR.PRIZONWARSSTONEBLUE>.TAG.blueinjail = 0
+	SERV.ALLCLIENTS f_prizonwars_end
+
+onbutton = 5
+	//serv.b The Prison Wars Tournament has restarted.
+	VAR.PRIZONWARSSTONERED=0437d611c
+	VAR.PRIZONWARSSTONEBLUE=0437d60f2
+	TRYSRC <UID> UID.<VAR.PRIZONWARSSTONEBLUE>.TAG.bluefree = 0
+	TRYSRC <UID> UID.<VAR.PRIZONWARSSTONEBLUE>.TAG.blueinjail = 0
+	TRYSRC <UID> UID.<VAR.PRIZONWARSSTONERED>.TAG.redfree = 0
+	TRYSRC <UID> UID.<VAR.PRIZONWARSSTONERED>.TAG.redinjail = 0
+	region.allclients stone 1 
+	SERV.ALLCLIENTS f_prizonwars_restart			
+
+[function f_prizonwars_restart]
+if (<isevent.e_prizonwars_blue>)
+ f_prizonwars_blue_restart
+elseif (<isevent.e_prizonwars_red>)
+ f_prizonwars_red_restart
+
+[function f_prizonwars_blue_restart]
+if	(<isevent.e_prizonwars_blue>)
+	tag.prizonwarsjail.blue=
+	dispel_all
+	hits = <src.str>
+	food = 20
+	invul 0
+	goname PWBLUETEAM 1235
+	OBJ=0437d60f2
+	OBJ.TAG.bluefree = (<OBJ.TAG.bluefree> + 1 )
+	
+endif
+
+[function f_prizonwars_red_restart]
+if	(<isevent.e_prizonwars_red>)
+	tag.prizonwarsjail.red=
+	dispel_all
+	hits = <src.str>
+	food = 20
+	invul 0
+	goname PWREDTEAM 1235
+	OBJ=0437d611c
+	OBJ.TAG.redfree = (<OBJ.TAG.redfree> + 1 )
+	
+endif
+
+
+
+[function f_prizonwars_end]
+if (<isevent.e_prizonwars_blue>)
+ f_prizonwars_end_blue
+elseif (<isevent.e_prizonwars_red>)
+ f_prizonwars_end_red
+
+
+[function f_prizonwars_end_blue]
+	if	(<isevent.e_prizonwars_blue>)
+		tag.prizonwarsjail.blue=
+		tag.teamon=
+		FINDLAYER(1).remove
+		FINDLAYER(2).remove
+		findid.i_pw_robe.remove
+		findid.i_pw_heater.remove
+		findid.i_pw_chest.remove
+		findid.i_pw_gloves.remove
+		findid.i_pw_leggings.remove
+		findid.i_pw_arms.remove  
+		findid.i_pw_gorget.remove
+		findid.i_pw_helm.remove
+		findid.pw_supplies.remove
+		findid.i_mt_horse_tan.remove
+		findid.pw_weapons.remove 
+		FINDLAYER(21).EMPTY		
+		events -e_prizonwars_blue
+		events -e_prizonwars_red
+		findid.i_Prizonwars_memory_blue.remove
+		newitem i_tourny_ticket
+		act.cont = <findlayer(29).uid>
+		stone 1
+		invul 0
+		goname PWBLUETEAM 1235
+		return 1
+	else
+		return 1
+	ENDIF
+	
+
+[function f_prizonwars_end_red]
+	if	(<isevent.e_prizonwars_red>)
+		tag.prizonwarsjail.red=
+		tag.teamon=
+		FINDLAYER(1).remove
+		FINDLAYER(2).remove
+		findid.i_pw_robe.remove
+		findid.i_pw_heater.remove
+		findid.i_pw_chest.remove
+		findid.i_pw_gloves.remove
+		findid.i_pw_leggings.remove
+		findid.i_pw_arms.remove  
+		findid.i_pw_gorget.remove
+		findid.i_pw_helm.remove
+		findid.pw_supplies.remove
+		findid.pw_weapons.remove
+		findid.i_mt_horse_tan.remove
+		FINDLAYER(21).EMPTY
+		events -e_prizonwars_blue
+		events -e_prizonwars_red
+		findid.i_Prizonwars_memory_red.remove
+		newitem i_tourny_ticket
+		act.cont = <findlayer(29).uid>
+		stone 1
+		invul 0
+		goname PWREDTEAM 1235
+		return 1
+	else
+		return 1
+	endif
+
+///
+[dialog d_Prizonwars_stone_join]
+250,200
+src.dialogclose d_Prizonwars_stone_join
+page 0 
+resizepic 0 0 5054 200 170
+resizepic 5 5 3000 190 30
+resizepic 5 60 3000 190 105
+	
+dtext 10 10 0 Imperial UO Prison Wars
+dtext 10 65 0 Click OK to join,
+dtext 10 85 0 all your items will be 
+dtext 10 105 0 automatically banked.
+
+button 10 140 247 248 1 0 1
+button 125 140 241 242 1 0 0
+
+
+[dialog d_Prizonwars_stone_join button]
+onbutton = 1
+	if 	(<src.findlayer(31)>)
+		src.say I'm trying to cheat and have <src.findlayer(31).amount> <src.findlayer(31).name> on my cursor!
+	return 1
+	endif
+
+	if 	(<src.findlayer(25)>)
+		src.message Unmount your ride first!
+		return 1
+	endif
+
+
+		src.pad_undress
+		src.newitem i_bag
+   		src.act.cont = <src.findlayer(29).uid>
+		src.act.color = 020
+		src.bank_all <src.act.uid>
+		src.findlayer(21).updatex
+
+
+		src.dispel_all
+		src.hits = <src.str>
+		src.sysmessage Any items you had are now in your bank!
+		src.stone
+
+		src.dispel_all
+		src.hits = <src.str>
+
+	if 	(<src.food> < 20)
+		src.food = 20
+	endif
+
+	OBJ = 0437d6565
+	//controlstoneid
+	IF (<OBJ.TAG.last> == 1)
+     		obj.tag.last=0
+     		src.sysmessage You are on the team red team!
+		src.events +e_prizonwars_Red	
+		src.events -e_prizonwars_blue
+		src.act.tag.tourney=1
+		src.tag.teamon=01
+		src.newitem = i_Prizonwars_memory_red
+		src.act.equip
+		src.newitem = i_pw_robe
+		src.act.color = 00026
+		src.act.equip	
+		src.newitem = i_pw_heater
+		src.act.color = 00026
+		src.act.equip
+		src.newitem = i_pw_chest
+		src.act.color = 00026
+		src.act.equip
+		src.newitem = i_pw_leggings
+		src.act.color = 00026
+		src.act.equip
+		src.newitem = i_pw_gloves
+		src.act.color = 00026
+		src.act.equip
+		src.newitem = i_pw_arms
+		src.act.color = 00026
+		src.act.equip
+		src.newitem = i_pw_gorget
+		src.act.color = 00026
+		src.act.equip
+		src.newitem = i_pw_helm
+		src.act.color = 00026
+		src.act.equip
+		src.newitem = pw_supplies
+		src.act.color = 00026	
+		src.act.bounce
+		src.newitem = pw_weapons
+		src.act.color = 00026
+		src.act.bounce
+		SRC.NEWITEM i_mt_horse_tan
+		SRC.ACT.MORE1 c_horse_tan
+		SRC.ACT.MORE2 <SRC.UID>
+		SRC.ACT.EQUIP
+		SRC.ACT.COLOR = 00026
+				
+		src.goname PWREDTEAM 1235
+		src.stone 1
+		//// RED
+		OBJ=0437d611c
+		OBJ.TAG.redfree = (<OBJ.TAG.redfree> + 1 )
+///////CONTROL	
+	OBJ = 0437d6565
+	return 1
+	elseif (<OBJ.TAG.last> == 0)
+		obj.tag.last=1
+		src.sysmessage You are on the blue team!
+		src.events +e_prizonwars_blue
+		src.events -e_prizonwars_Red
+		src.act.tag.tourney=1
+		src.newitem = i_Prizonwars_memory_Blue
+		src.act.equip
+		src.tag.teamon=02
+		src.newitem = i_pw_robe
+		src.act.color = 03
+		src.act.equip	
+		src.newitem = i_pw_heater
+		src.act.color = 03
+		src.act.equip
+		src.newitem = i_pw_chest
+		src.act.color = 03
+		src.act.equip
+		src.newitem = i_pw_leggings
+		src.act.color = 03
+		src.act.equip
+		src.newitem = i_pw_gloves
+		src.act.color = 03
+		src.act.equip
+		src.newitem = i_pw_arms
+		src.act.color = 03
+		src.act.equip
+		src.newitem = i_pw_gorget
+		src.act.color = 03
+		src.act.equip
+		src.newitem = i_pw_helm
+		src.act.color = 03
+		src.act.equip
+		src.newitem = pw_supplies
+		src.act.color = 03
+		src.act.bounce
+		src.newitem = pw_weapons
+		src.act.color = 03
+		src.act.bounce
+		SRC.NEWITEM i_mt_horse_tan
+		SRC.ACT.MORE1 c_horse_tan
+		SRC.ACT.MORE2 <SRC.UID>
+		SRC.ACT.EQUIP
+		
+		src.act.color = 03
+		src.goname PWBLUETEAM 1235
+		src.stone 1
+/// BLUE	
+OBJ=0437d60f2
+OBJ.TAG.bluefree = (<OBJ.TAG.bluefree> + 1 )
+	
+		
+//////
+
+///////////////////////////////
+////     Red Team and Blue Team stone   /////////
+///////////////////////////////
+
+[itemdef i_Prizonwars_stone_red]
+	id=i_grave_stone
+	name=Red Team Stone
+	type=t_normal
+
+on=@create
+	color=020
+	more1=1
+	more2=1
+	tag.redinjail=0
+	tag.redfree=0
+
+on=@click
+	message [<eval <tag.redfree>> Free]
+	message [<eval <tag.redinjail>> In Jail]
+	message <name>
+	return 1
+
+
+	
+
+[itemdef i_Prizonwars_stone_blue]
+	id=i_grave_stone
+	name=Blue Team Stone
+	type=t_normal
+
+on=@create
+	color=03
+	more1=1
+	more2=1
+	tag.blueinjail=0
+	tag.bluefree=0
+	
+
+on=@click
+	message [<eval <tag.bluefree>> Free]
+	message [<eval <tag.blueinjail>> In Jail]
+	message <name>
+	return 1
+
+//////////////
+////SCORE
+///////////////
+[plevel 3]
+pwscore
+ 
+[FUNCTION pwscore]
+	REGION.ALLCLIENTS SYSMESSAGE Prison Wars: [ Red Free: <eval <UID.0437d611c.tag.redfree>> / Red In Jail: <eval <UID.0437d611c.tag.redinjail>> ]
+	REGION.ALLCLIENTS SYSMESSAGE Prison Wars: [ Blue Free: <eval <UID.0437d60f2.tag.bluefree>> / Blue In Jail: <eval <UID.0437d60f2.tag.blueinjail>> ]
+	return 1
+endif
+
+
+
+
+///////////////////////////////
+////     Memories     /////////
+///////////////////////////////
+
+[itemdef i_red_Rescue_mem]
+		ID=i_memory
+		type=t_eq_script
+
+on=@create
+		name=Prison Wars mem DONT REMOVE!
+		attr=attr_decay
+		timer=3600
+
+
+ON=@Equip
+ 		TARGET Who do you wish rescue?
+  		return 1
+
+ON=@TargOn_Char
+//	IF 	!(<SRC.ISEVENT.e_all_pc>)
+//		SRC.SYSMESSAGE You must target a player
+//		RETURN 1
+//	ENDIF
+	IF	(<SRC.TARG.UID> == <SRC.UID>)
+		SRC.SYSMESSAGE You cannot target yourself!
+		RETURN 1
+	ENDIF
+	IF  	((<src.tag.teamon>=2) && (<src.targ.tag.prizonwarsjail.red>=0))
+		src.sysmessage That player is not in jail!
+		return 1
+	ENDIF
+
+	IF	((<src.tag.teamon>=1) && (<src.targ.tag.teamon>=2))
+  		src.sysmessage That player isn't in your team!
+	ELSE
+		OBJ=0437d611c
+		OBJ.TAG.redfree = (<OBJ.TAG.redfree> + 1 )
+		OBJ.TAG.redinjail = (<OBJ.TAG.redinjail> - 1 )
+		src.targ.tag.prizonwarsjail.red=
+  		src.targ.go 6098,489,22
+  		src.go 6098,489,22
+  		src.hits 100
+  		src.mana 100
+  		src.stam 100
+		src.targ.flags = <src.targ.flags> & ~statf_invul	
+ 		
+	ENDIF
+	REMOVE
+
+	RETURN 1
+
+
+[itemdef i_blue_Rescue_mem]
+		ID=i_memory
+		type=t_eq_script
+
+on=@create
+		name=Prison Wars mem DONT REMOVE!
+		attr=attr_decay
+		timer=3600
+
+ON=@Equip
+ 		TARGET Who do you wish rescue?
+  		return 1
+
+ON=@TargOn_Char
+	IF 	!(<SRC.ISEVENT.e_player>)
+		SRC.SYSMESSAGE You must target a player
+		RETURN 1
+	ENDIF
+	IF	(<SRC.TARG.UID> == <SRC.UID>)
+		SRC.SYSMESSAGE You cannot target yourself!
+		RETURN 1
+	ENDIF
+	IF  	((<src.tag.teamon>=2) && (<src.targ.tag.prizonwarsjail.blue>=0))
+		src.sysmessage That Player is not in jail
+		return 1
+	ENDIF
+
+	IF	((<src.tag.teamon>=2) && (<src.targ.tag.teamon>=1))
+  		src.sysmessage That player isn't in your team!
+	ELSE
+		OBJ=0437d60f2
+		OBJ.TAG.bluefree = (<OBJ.TAG.bluefree> + 1 )
+		OBJ.TAG.blueinjail = (<OBJ.TAG.blueinjail> - 1 )
+		src.targ.tag.prizonwarsjail.blue=
+  		src.targ.go 6119,467,22
+  		src.go 6119,467,22
+  		src.hits 100
+  		src.mana 100
+  		src.stam 100
+		src.targ.flags = <src.targ.flags> & ~statf_invul
+ 		
+	ENDIF
+	REMOVE
+
+	RETURN 1
+
+[itemdef i_Prizonwars_memory_red] 
+id=i_worldgem_bit 
+type=t_eq_script 
+weight=0 
+layer=layer_special 
+name=Red Team Prisonwars Memory 
+
+on=@create
+	attr=00090 
+	timer=8000
+
+on=@timer
+	remove
+	return 1
+
+[itemdef i_Prizonwars_memory_blue] 
+id=i_worldgem_bit 
+type=t_eq_script 
+weight=0 
+layer=layer_special 
+name=Blue Team Prison wars Memory 
+
+on=@create
+	attr=00090 
+	timer=8000
+
+on=@timer
+	remove
+	return 1
+
+///////////////////////////////
+////     Rescue Stone /////////
+///////////////////////////////
+
+[itemdef i_red_rescue]
+		name=Red Team Rescue stone
+		id=i_crystal_purple
+
+on=@create
+		color=00026
+		attr=00010
+		tag.teamon=1
+
+on=@dclick
+	IF 	(<src.hits> < 80)
+		src.sysmessage You cannot rescue a team mate when your hits are below 80!
+	return 1
+	endif
+	IF 	!(<SRC.ISEVENT.e_prizonwars_RED>)
+		src.sysmessage You cannot use the other teams rescue stone!
+		return 1
+	ELSE
+		src.newitem i_red_Rescue_mem
+		src.act.equip
+	RETURN 1
+
+[itemdef i_blue_rescue]
+		name=blue Team Rescue stone
+		id=i_crystal_purple
+
+on=@create
+		color=03
+		attr=00010
+		tag.teamon=2
+
+on=@dclick
+	IF 	(<src.hits> < 80)
+		src.sysmessage You cannot rescue a team mate when your hits are below 80!
+	return 1
+	endif
+	
+	IF 	!(<SRC.ISEVENT.e_prizonwars_BLUE>)
+		src.sysmessage You cannot use the other teams rescue stone!
+		return 1
+	ELSE
+		src.newitem i_blue_Rescue_mem
+		src.act.equip
+	RETURN 1
+
+
+
+///////////////////////////////
+////     Events    /////////
+///////////////////////////////
+
+[events e_prizonwars_Blue]
+on=@CLICK
+	IF 	(0<tag.prizonwarsjail.blue>== 01)
+		message= @03 [In Jail]
+		message= @03 Blue Team
+		MESSAGE= <NAME>
+	return 1
+	else
+		message= @03 Blue Team
+		MESSAGE= <name>
+	return 1
+	endif
+
+on=@DCLICK
+	if (<src.account.plevel> > 3)
+	else
+	return 1
+	endif
+
+on=@hittry
+	IF 	(0<tag.prizonwarsjail.blue>== 01)
+		go=6099,493,22
+		return 1
+	endif
+	IF 	(<src.tag.teamon>== 02)
+		sysmessage You cant hit a team mate!
+		action = -1
+		flags = <flags> & ~statf_war
+		return 1
+	endif
+
+ON=@SpellCast
+		IF 	(0<tag.prizonwarsjail.blue>== 01)
+		go=6099,493,22
+		return 1
+	endif
+	if 	(<ARGN>==10) || (<ARGN>==24) || (<ARGN>==28) || (<ARGN>==32) || (<ARGN>==33) || (<ARGN>==35) || (<ARGN>==39) || (<ARGN>==40) || (<ARGN>==44) || (<ARGN>==45) || (<ARGN>==47) || (<ARGN>==49) || (<ARGN>==50) || (<ARGN>==52) || (<ARGN>==55) || (<ARGN>==56) || (<ARGN>==57) || (<ARGN>==58) || (<ARGN>==60) || (<ARGN>==61) || (<ARGN>==62) || (<ARGN>==63) || (<ARGN>==64)
+		sysmessage= Sorry, you cannot cast this spell in the Prison Wars event.
+	return 1
+	endif	
+
+on=@SpellEffect
+	IF 	(<src.tag.teamon>== 02)
+	if 	(<ARGN>==25) || (<ARGN>==1) || (<ARGN>==10) || (<ARGN>==27) || (<ARGN>==42) || (<ARGN>==43) || (<ARGN>==3) || (<ARGN>==69) || (<ARGN>==18) || (<ARGN>==51) || (<ARGN>==70) || (<ARGN>==12) || (<ARGN>==31) || (<ARGN>==30) || (<ARGN>==5) || (<ARGN>==37) || (<ARGN>==46) || (<ARGN>==55) || (<ARGN>==38) || (<ARGN>==20) || (<ARGN>==26) || (<ARGN>==53) || (<ARGN>==8) || (<ARGN>==47) || (<ARGN>==28) || (<ARGN>==39)	
+		src.sysmessage You cant hit a team mate.
+		return 1
+	endif	  
+	
+on=@death
+		hits=<str>
+		src.dispel_all
+	IF 	(<eval <tag.hitsleft>> < 1 )
+		src.tag.prizonwarsjail.blue=01
+		region.allclients sysmessage=<act.name>(Red) Sent <name>(Blue) to JAIL!
+		go=6099,493,22
+		src.flags = <src.flags>|01
+		OBJ=0437d60f2
+		OBJ.TAG.bluefree = (<OBJ.TAG.bluefree> - 1 )
+		OBJ.TAG.blueinjail = (<OBJ.TAG.blueinjail> + 1 )
+		return 1
+	endif
+
+on=@skillstart
+	if 	(<action> == skill_stealth )||(<action> == skill_hiding )
+		src.sysmessage=Sorry, you cannot hide in the Prison Wars event.
+		action=-1
+	return 1
+	endif
+
+
+on=@logout
+//blueteamstone
+		region.allclients sysmessage=<name>(blue) Logged Out!
+		src.tag.prizonwarsjail.blue=01
+		go=6099,493,22
+		OBJ=0437d60f2
+		OBJ.TAG.bluefree = (<OBJ.TAG.bluefree> - 1 )
+		OBJ.TAG.blueinjail = (<OBJ.TAG.blueinjail> + 1 )
+	return 1
+
+on=@itemdclick
+	IF (<ACT.BASEID> == i_runebook)
+		SYSMESSAGE @35 You cannot use that!
+		RETURN 1
+	ENDIF	
+//	IF (<ACT.CONT> == <FINDLAYER(15).UID>) && (<ACT.BASEID> != i_spellbook)
+//		SYSMESSAGE You cannot reach that.
+//		RETURN 1
+//	ENDIF
+//	IF (<ACT.BASEID> == i_et_eh) || (<ACT.BASEID> == i_et_el) || (<ACT.BASEID> == i_et_eo) && (0<OBJ.TAG.ALLOWMOUNTS> == 0)
+//		SYSMESSAGE @35 You cannot use that!
+//		RETURN 1
+//	ENDIF
+	
+//ON=@ItemPickup_Pack
+//	IF (<ACT.CONT> == <FINDLAYER(15).UID>)
+//		SYSMESSAGE You cannot reach that.
+//		RETURN 1
+//	ENDIF
+
+
+[events e_prizonwars_Red]
+on=@CLICK
+	IF 	(0<tag.prizonwarsjail.red>== 01)
+		message= @026 [In Jail]
+		message= @026 Red Team
+		MESSAGE= <NAME>
+	return 1
+	else
+		message= @26 Red Team
+		MESSAGE= <name>
+	return 1
+	endif
+
+on=@DCLICK
+	if (<src.account.plevel> > 3)
+	else
+	return 1
+	endif
+
+
+on=@hittry
+		IF 	(0<tag.prizonwarsjail.red>== 01)
+		go=6125,467,22
+		return 1
+	endif
+	IF 	(<src.tag.teamon>== 01)
+		sysmessage you cant hit a teammate
+		action = -1
+		flags = <flags> & ~statf_war
+	return 1
+	endif
+		
+
+ON=@SpellCast
+	IF 	(0<tag.prizonwarsjail.red>== 01)
+		go=6125,467,22
+		return 1
+	endif
+	if 	(<ARGN>==10) || (<ARGN>==24) || (<ARGN>==28) || (<ARGN>==32) || (<ARGN>==33) || (<ARGN>==35) || (<ARGN>==39) || (<ARGN>==40) || (<ARGN>==44) || (<ARGN>==45) || (<ARGN>==47) || (<ARGN>==49) || (<ARGN>==50) || (<ARGN>==52) || (<ARGN>==55) || (<ARGN>==56) || (<ARGN>==57) || (<ARGN>==58) || (<ARGN>==60) || (<ARGN>==61) || (<ARGN>==62) || (<ARGN>==63) || (<ARGN>==64)
+		sysmessage= Sorry, you cannot cast this spell in the Prison Wars event
+	return 1
+	endif	
+
+on=@SpellEffect
+	IF 	(<src.tag.teamon>== 01)
+	if 	(<ARGN>==25) || (<ARGN>==1) || (<ARGN>==10) || (<ARGN>==27) || (<ARGN>==42) || (<ARGN>==43) || (<ARGN>==3) || (<ARGN>==69) || (<ARGN>==18) || (<ARGN>==51) || (<ARGN>==70) || (<ARGN>==12) || (<ARGN>==31) || (<ARGN>==30) || (<ARGN>==5) || (<ARGN>==37) || (<ARGN>==46) || (<ARGN>==55) || (<ARGN>==38) || (<ARGN>==20) || (<ARGN>==26) || (<ARGN>==53) || (<ARGN>==8) || (<ARGN>==47) || (<ARGN>==28) || (<ARGN>==39)	
+		src.sysmessage you cant hit a teammate
+	return 1
+	endif	  
+
+
+		
+on=@skillselect
+	if 	(<serv.skill.<argn1>.key>==hiding) || (<serv.skill.<argn1>.key>==stealth)
+		sysmessage= Sorry You cannot use that skill in the Prison Wars event
+	return 1
+	endif
+
+on=@death
+		hits=<str>
+		src.dispel_all
+	if 	(<eval <tag.hitsleft>> < 1 )
+		src.tag.prizonwarsjail.red=01
+		region.allclients sysmessage=<act.name>(Blue) Sent <name>(Red) to JAIL!
+		go=6125,467,22
+		src.flags = <src.flags>|01
+		OBJ=0437d611c
+		OBJ.TAG.redfree = (<OBJ.TAG.redfree> - 1 )
+		OBJ.TAG.redinjail = (<OBJ.TAG.redinjail> + 1 )
+	return 1
+
+on=@logout
+
+		region.allclients sysmessage=<name>(red) Logged Out!
+		go=6125,467,22
+		src.tag.prizonwarsjail.red=01
+		OBJ=0437d611c
+		OBJ.TAG.redfree = (<OBJ.TAG.redfree> - 1 )
+		OBJ.TAG.redinjail = (<OBJ.TAG.redinjail> + 1 )
+	return 1
+
+//on=@itemdclick
+//	IF (<ACT.BASEID> == i_runebook)
+//		SYSMESSAGE @35 You cannot use that!
+//		RETURN 1
+//	ENDIF
+//	IF (<ACT.CONT> == <FINDLAYER(15).UID>) && (<ACT.BASEID> != i_spellbook)
+//		SYSMESSAGE You cannot reach that.
+//		RETURN 1
+//	ENDIF
+//	IF (<ACT.BASEID> == i_et_eh) || (<ACT.BASEID> == i_et_el) || (<ACT.BASEID> == i_et_eo)  && (0<OBJ.TAG.ALLOWMOUNTS> == 0)
+//		SYSMESSAGE @35 You cannot use that!
+//		RETURN 1
+//	ENDIF
+	
+//ON=@ItemPickup_Pack
+//	IF (<ACT.CONT> == <FINDLAYER(15).UID>)
+//		SYSMESSAGE You cannot reach that.
+//		RETURN 1
+//	ENDIF
+
+
+///////////////////////////////
+////     Items        /////////
+///////////////////////////////
+
+
+
+[itemdef i_Pw_robe]
+		ID=i_robe
+		name=Prison Wars Suit
+
+on=@create
+		HITPOINTS={200}
+		
+//on=@equip
+//	attr=attr_move_never
+
+[itemdef i_Pw_heater]
+		id=i_shield_heater
+		name=Prison Wars Suit
+
+on=@create
+		HITPOINTS={200}
+
+//on=@equip
+//	attr=attr_move_never
+
+
+[itemdef i_Pw_chest]
+		id=i_platemail_chest
+		name=Prison Wars Suit
+
+on=@create
+		HITPOINTS={200}
+
+//on=@equip
+//	attr=attr_move_never
+
+[itemdef i_Pw_leggings]
+		id=i_platemail_leggings
+		name=Prison Wars Suit
+
+on=@create
+		HITPOINTS={200}
+
+//on=@equip
+//	attr=attr_move_never
+
+
+[itemdef i_Pw_gloves]
+		id=i_platemail_gloves
+		name=Prison Wars Suit
+
+on=@create
+	HITPOINTS={200}
+
+//on=@equip
+//	attr=attr_move_never
+
+
+[itemdef i_Pw_arms]
+		id=i_platemail_arms
+		name=Prison Wars Suit
+
+on=@create
+		HITPOINTS={200}
+
+//on=@equip
+//	attr=attr_move_never
+
+
+[itemdef i_Pw_helm]
+		id=i_platemail_helm
+		name=Prison Wars Suit
+
+on=@create
+		HITPOINTS={200}
+
+//on=@equip
+//	attr=attr_move_never
+
+
+[itemdef i_Pw_gorget]
+		id=i_platemail_gorget
+		name=Prison Wars Suit
+
+on=@create
+		HITPOINTS={200}
+
+//on=@equip
+//	attr=attr_move_never
+
+[itemdef i_pw_horse]
+		id=i_pet_horse_gray
+		
+
+[template pw_supplies]
+		defname=loot_Prizonwars_supplies
+		container=i_bag
+		item=i_reag_black_pearl,200
+		item=i_reag_blood_moss,200
+		item=i_reag_garlic,200
+		item=i_reag_ginseng,200
+		item=i_reag_mandrake_root,200
+		item=i_reag_nightshade,200
+		item=i_reag_sulfur_ash,200
+		item=i_reag_spider_silk,200
+		item=i_potion_healgreat,30
+		item=i_potion_manatotal,30
+		item=i_scroll_flamestrike,30
+		item=i_scroll_mana_vampire,30
+		item=i_full_spellbook
+		item=i_potion_explosion
+		item=i_potion_explosion
+		item=i_potion_explosion
+		item=i_potion_explosion
+		item=i_potion_explosion
+		item=i_potion_explosion
+		item=i_potion_explosion
+		item=i_potion_explosion
+		item=i_potion_explosion
+		item=i_potion_explosion
+
+[template pw_Weapons]
+		defname=loot_Prizonwars_Weapons
+		container=i_bag
+		item=i_war_fork
+		item=i_hammer_pick
+		item=i_sword_long
+		item=i_axe_exec
+		item=i_kryss
+		item=i_sword_viking
+
+[plevel 1]
+pw
+
+[function pw]
+if (<src.findid.i_Prizonwars_memory_red>)
+	serv.allclients findid.i_Prizonwars_memory_red.cont.Prizonwars_chat_red <args>
+	serv.allclients findid.i_staff.cont.Prizonwars_chat_red <args>
+endif
+if (<src.findid.i_Prizonwars_memory_Blue>) 
+	serv.allclients findid.i_Prizonwars_memory_blue.cont.Prizonwars_chat_blue <args>
+	serv.allclients findid.i_staff.cont.Prizonwars_chat_blue <args>
+endif
+
+[function Prizonwars_chat_red]
+if (<findid.i_Prizonwars_memory_red>)
+	sysmessage @38 <src.name> [Red] >> <args>
+elseif (<account.plevel> > 3)
+	sysmessage @38 <src.name> [Red] >> <args>
+endif
+
+[function Prizonwars_chat_blue]
+if (<findid.i_Prizonwars_memory_Blue>)
+	sysmessage @2989 <src.name> [Blue] >> <args>
+elseif (<account.plevel> > 3)
+	sysmessage @2989 <src.name> [Blue] >> <args>
+endif
+
+
+[ITEMDEF i_pw_red_end]
+ID=I_teleporter
+name=Red Prison Wars Exit
+
+on=@create
+	attr= 08
+	color = 38
+
+on=@step
+	OBJ=0437d611c
+IF 	(<tag.redfree>==01)
+	OBJ.TAG.redfree = (<OBJ.TAG.redfree> - 1 )
+	src.f_prizonwars_end
+IF	(<tag.redinjail>==01)
+	OBJ.TAG.redfree = (<OBJ.TAG.redinjail> - 1 )
+	src.f_prizonwars_end
+endif
+endif
+
+[ITEMDEF i_pw_blue_end]
+ID=I_teleporter
+name=Blue Prison Wars Exit
+
+on=@create
+	attr= 08
+	color = 0289
+
+on=@step
+	OBJ=0437d60f2
+IF 	(<tag.bluefree>==01)
+	OBJ.TAG.bluefree = (<OBJ.TAG.bluefree> - 1 )
+	src.f_prizonwars_end
+IF	(<tag.blueinjail>==01)
+	OBJ.TAG.blueinjail = (<OBJ.TAG.blueinjail> - 1 )
+	src.f_prizonwars_end
+endif
+endif
+
+[eof]

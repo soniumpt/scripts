@@ -1,0 +1,560 @@
+// #-----------#
+// # CHANGELOG #
+// #-----------#
+//
+// 18/08/18 - Wigifer - f_central_loot does not apply to this file - Marked for review.
+
+//coded by Soulless 
+//v0.2
+//Mondain spawns in the hedge maze, every couple days or so.
+//he can see britain from his tower there
+//when players arrive and attack him he will fight them for a while with magic
+//close attackers will be damaged 50% of their health  and a black swarm will overtake them
+//ranged attackers will be ungulfed by a poisonus gassy ball, damaged for 33% health, they also will be severely poisoned
+//at 66% health he will summon 4 demons and teleport to one of the 4 areas in the hedge maze  around the center
+//at 33% health he will call forth minax to heal him and aid him in killing the adeventurers
+//minax must be killed, or she will continue to heal him
+//at 10% health he will transport to the tower in the middle of the hedge maze at the top, the gem of immortality will also be there with him
+//the gem must be destroyed before he can be killed furhter.
+
+[itemdef i_mondain_tribute]
+id=i_statue_stone_lg_2
+name=Tribute to Mondain
+type=t_script
+
+on=@create
+color=066d
+attr=010
+timer=1
+
+on=@dclick
+//src.sysmessage You need to destroy Mondain's forces in order to get his attention
+return 1
+
+on=@timer
+if <tag0.mondain_active>	//spawn corrupted britannians , 50 to be exact
+  
+  if <tag0.defeated_minions> >= 50
+   if !<tag0.mondain_summoned>
+   serv.b @02b Mondain has arrived at the Hedge maze to oversee his operations.
+   tag0.mondain_summoned=1
+   serv.newnpc c_mondain 
+   new.p=<p>
+   new.home=<p>
+   new.homedist=20
+   new.update
+   endif
+  endif
+
+  if <tag0.corrupted_britannians> < 50
+    if !<tag0.corrupted_britannians>
+	serv.b @02b Mondain has begun his corruption of Britannia in the Hedge Maze.
+	endif
+  tag0.corrupted_britannians += 1
+  serv.newnpc c_corrupted_britannian
+  new.tag0.tribute=<uid>
+  new.p=<p>
+  new.home=<p>
+  new.homedist=20
+  new.update
+  endif
+  
+timer=1
+return 1
+endif
+
+  if (strmatch(Monday,<serv.rtime.format %A>) 	//start the whole mondain process at 6:30pm on Monday night
+   if <serv.rtime.format %H>==18 
+   tag.mondain_active=1
+   endif
+  endif
+  
+  if (strmatch(Tuesday,<serv.rtime.format %A>) 	//reset all the tags the day after
+   if <serv.rtime.format %H>==18 	
+   tag.mondain_active=
+   tag.corrupted_britannians=
+   tag.defeated_minions=
+   tag.mondain_summoned=
+   endif
+  endif
+  
+timer=1
+return 1
+
+
+[chardef c_corrupted_britannian]
+id=c_man
+name=Corrupted Britannian
+DESIRES=i_gold,t_wand,t_reagent,t_bone
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+CATEGORY=Memory UO
+subsection=World Bosses
+description=Corrupted Britannian
+
+on=@create
+	color=083ea
+	str={100 200}
+	dex={100 200}
+	int=0
+	fencing=1500
+	magicresistance=1500
+	tactics=1500
+	npc=brain_human
+	karma=-3001
+
+on=@npcrestock
+	item=random_hats 
+	color=colors_neutral
+	item=random_male_tops
+	color=colors_neutral
+	item=random_male_pants
+	color=colors_neutral
+	item=random_shoes 
+	item=i_pitchfork
+	
+on=@destroy
+	ref1=<tag0.tribute>
+	ref1.tag0.defeated_minions += 1
+
+[chardef c_mondain]
+id=c_man
+name=Mondain
+DESIRES=i_gold,t_wand,t_reagent,t_bone
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+CATEGORY=Memory UO
+subsection=World Bosses
+description=Mondain The Wizard
+
+on=@create
+	events=+e_mondain_worldboss
+	color=083ea
+	str={500 1000}
+	maxhits={20000 25000}
+	hits=<maxhits>
+	dex={100 200}
+	int={8000 9999}
+	evaluatingintel=1500
+	inscription=1500
+	magery=1500
+	magicresistance=1500
+	meditation=1500
+	npc=brain_human
+	fame=9999
+	karma=-9999
+	itemnewbie=i_beard_goatee
+	color=0322
+
+on=@npcrestock
+	item=i_skirt_long
+	color=0b03
+	item=i_sandals
+	color=0b1d
+	item=i_doublet
+	color=0b16
+	item=i_shirt_plain
+	color=0b03
+	item=i_necklace_gold
+	
+	
+on=@NPCActFight
+if !(rand(3)
+if <canseelos <src>>
+  if <argn1> < 3
+    mondain_special_1
+  else
+    dorand 2
+    mondain_ranged_attack_1 <src>
+	mondain_ranged_attack_2 <src>
+	enddo
+  endif
+endif
+endif
+
+on=@gethit
+if (<src.tag0.mondains_minion>) || (<baseid>==c_minax_apprentice)	//dont get damaged by my minions
+return 1
+endif
+
+if (<eval (<hits>*100)/<maxhits>> < 66) && (!<tag0.summoned_demons>)	//summon some demons and go to a new spot
+sound 258
+sound 1396
+for 4		
+  serv.newnpc c_daemon
+  new.movenear <uid> 5
+  new.events=+e_mondain_worldboss
+endfor
+//go 1138,2219,60,0
+say @0482 Pathetic fool! You can not defeat Mondain the Great! 
+tag.summoned_demons=1
+endif
+
+if (<eval (<hits>*100)/<maxhits>> < 33) && (!<tag0.summoned_minax>)
+   dorand 3
+   say @0482 Minax come to me!
+   say @0482 Help me my apprentice!
+   say @0482 Help me, Minax!
+   enddo
+serv.newnpc c_minax_apprentice
+new.movenear <uid> 1
+new.findid.i_heal_mondain.link=<uid>
+tag0.summoned_minax=1
+endif
+
+if (<eval (<hits>*100)/<maxhits>> < 10) && (!<tag0.gem_shattered>)	//the gem he dropped must be shattered.
+  if !<tag0.gem_dropped>
+  serv.newitem i_gem_immortality
+  tag0.gem_dropped=1
+  new.link <uid>
+  new.p=1163,2208,75
+  new.update
+  go 1163,2211,65
+  return 1
+  endif
+  if !(rand(15)
+  sound 1073
+  dorand 4
+  say @0482 Fool you can not defeat me!
+  say @0482 You will not succeed!
+  say @0482 Weakling!
+  say @0482 You'll never win!
+  enddo
+  endif
+src.sysmessage @0482 You can not kill Mondain before shattering the gem of immortality!
+return 1
+endif
+
+
+on=@deathcorpse
+argo.tag.special_corpse=1	//make sure it cant be sac'd
+for 2
+serv.newitem i_set_armor4
+new.cont <argo>
+serv.newitem i_rare_weapon5
+new.cont <argo>
+endfor
+for 5
+serv.newitem i_rare_armor3
+new.cont <argo>
+endfor
+
+[chardef c_minax_apprentice]
+id=c_woman
+name=Minax
+
+on=@create
+	events=+e_mondain_worldboss
+	color=083ea
+	str={250 500}
+	maxhits={10000 15000}
+	hits=<maxhits>
+	dex={100 200}
+	int={4000 5999}
+	evaluatingintel=1500
+	inscription=1500
+	magery=1500
+	magicresistance=1500
+	meditation=1500
+	npc=brain_human
+	fame=9999
+	karma=-9999
+	itemnewbie=i_hair_long
+	color=0455
+
+	
+on=@npcrestock
+	item=i_leather_gloves
+	color=066d
+	item=i_armor_female_studded
+	color=0455
+	item=i_necklace_gold
+	item=i_cape
+	color=066d
+	item=i_sandals
+	color=0455
+	item=i_heal_mondain
+
+on=@gethit
+if <baseid>==c_mondain
+return 1 	//dont get hurt by mondain, her master.
+endif
+	
+
+/////////////
+///////////// - FUNCTIONS USED BY WORLD BOSS AND HIS MINIONS
+/////////////	
+
+[function mondain_ranged_attack_1]
+/////this is something mondain will do to melee attackers
+ref1=<args>
+ref1.damage,<eval {30 60}>,dam_god,<uid>	//50 damage
+ref1.effect,3,i_fx_sparkle,1,16,0,0455
+ref1.emote writhe in pain
+ref1.sound 1389
+dorand 3
+  say Taste my black magic!
+  say You're no match for my dark arts!
+  say Darkness will cover your world!
+enddo
+
+[function mondain_ranged_attack_2]
+/////this is something mondain will do to melee attackers
+ref1=<args>
+ref1.damage,<eval {20 40}>,dam_god,<uid>	//50 damage
+ref1.poison 1000		//a massive poison spell
+ref1.effect,3,i_fx_explode_ball,1,16,0,040,0
+ref1.emote become deathly ill
+ref1.sound 1140
+dorand 3
+  say Death for you sickly creature!
+  say Your body shall rot!
+  say To wither away is your fate! 
+enddo
+
+[function mondain_special_1]
+ref1=<uid>
+fxt,i_fire_column,01
+  forchars 5
+   if <uid>!=<ref1>
+   damage,<eval {25 50}>,dam_god,<ref1>		//50 damage
+   emote burst into flames
+   effect,3,i_fx_explode,1,16,0,0,0
+   sound snd_spell_explosion
+   endif
+  endfor
+ref1.sound 1487
+dorand 3
+  ref1.say You can not defeat me!
+  ref1.say Pathetic fools! Burn!
+  ref1.say The heat! it's fire related
+enddo
+
+
+/////////////
+///////////// - ITEMS FOR THIS WORLD BOSS
+/////////////
+
+[itemdef i_gem_immortality]
+id=i_crystal_ball
+name=Gem of Immortality
+type=t_script
+
+on=@create
+attr=010
+color=01f8
+tag0.hitpoints=15
+
+on=@dclick
+if <timer>>=0
+src.sysmessage @0482 You must wait to hit the gem again.
+return 1
+endif
+src.anim 11
+src.sound 568
+  if <tag0.hitpoints> <= 0
+  src.sysmessage @0482 You shatter the gem of immortality!
+  link.tag0.gem_shattered=1
+  fxt,i_fx_sparkle_2,0482
+  sound 910
+  sound 1099
+  remove
+  return 1
+  endif
+timer=3
+sound 320
+src.sysmessage @0482 You strike the black gem with all your strength!
+return 1
+
+on=@timer
+tag0.hitpoints -= 1
+ // if <tag0.hitpoints> > 10 
+ // message @026 cracked
+  //elseif <tag0.hitpoints> > 5
+  //message @026 very broken
+  //else 
+ // message @026 about to shatter
+ // endif
+ message @026 <eval (<tag0.hitpoints>*100)/15>%
+return 1
+
+[itemdef i_heal_mondain]
+id=i_memory
+name=Heal Mondain
+type=t_eq_script
+
+on=@create
+timer=1
+
+on=@timer
+if (<link.hits>) && (<cont.canseelos <link>>) && !(rand(3) 
+link.spelleffect s_greater_heal,5000
+link.sound snd_spell_heal
+cont.anim 16
+cont.say @0482 In Vas Mani
+if !(rand(15)
+  dorand 3
+  cont.say @0482 Master you must escape, i will take care of them!
+  cont.say @0482 Mondain will not fall!
+  cont.say @0482 These whelps are no match for you master!
+  enddo
+endif
+timer=3
+else
+remove
+endif
+return 1
+
+
+[itemdef i_mondains_translocation_pylon]
+id=01183
+name=Mondain's Pylon of Translocation
+type=t_script
+
+on=@create
+attr=010
+color=01f8
+
+on=@dclick
+if <distance <src>> < 4
+src.go 1171,2202,0,0
+src.sound 496
+else
+src.sysmessage @0482 You are too far away.
+endif
+return 1
+
+[itemdef i_mondains_garments]
+id=i_skirt_long
+name=Mondain's Garments
+type=t_clothing
+
+on=@create
+color=0b03
+maxhits=65535
+hits=<maxhits>
+events=+t_special_item
+tag0.description Mondain's garments, they still surge with powerful energy.
+
+on=@equip
+src.int += 20
+src.evaluatingintel += 250
+src.inscription += 250
+src.magery += 250
+src.magicresistance += 250
+src.meditation += 250
+src.sysmessage @0482 You feel extreme magical energy radiating from the robe.
+
+on=@unequip
+src.int -= 20
+src.evaluatingintel -= 250
+src.inscription -= 250
+src.magery -= 250
+src.magicresistance -= 250
+src.meditation -= 250
+src.sysmessage @0482 The magical energy fades away and you feel normal again.
+
+[itemdef i_mondains_robe]
+id=i_robe
+name=Mondain's Robe
+type=t_clothing
+
+on=@create
+color=0b03
+maxhits=65535
+hits=<maxhits>
+events=+t_special_item
+tag0.description Mondain's robe, it still surges with powerful energy.
+
+on=@equip
+src.int += 20
+src.evaluatingintel += 250
+src.inscription += 250
+src.magery += 250
+src.magicresistance += 250
+src.meditation += 250
+src.sysmessage @0482 You feel extreme magical energy radiating from the robe.
+
+on=@unequip
+src.int -= 20
+src.evaluatingintel -= 250
+src.inscription -= 250
+src.magery -= 250
+src.magicresistance -= 250
+src.meditation -= 250
+src.sysmessage @0482 The magical energy fades away and you feel normal again.
+
+[typedef t_mondain_item]
+
+on=@equip
+src.int += 20
+src.evaluatingintel += 250
+src.inscription += 250
+src.magery += 250
+src.magicresistance += 250
+src.meditation += 250
+src.sysmessage @0482 You feel extreme magical energy radiating from the robe.
+
+on=@unequip
+src.int -= 20
+src.evaluatingintel -= 250
+src.inscription -= 250
+src.magery -= 250
+src.magicresistance -= 250
+src.meditation -= 250
+src.sysmessage @0482 The magical energy fades away and you feel normal again.
+
+[itemdef i_gem_immortality_deco]
+id=i_crystal_ball
+name=Gem of Immortality
+type=t_script
+
+on=@create
+color=01f8
+events=+t_special_item
+tag0.description The gem which gave mondain immortal life, it was believed to have been destroyed. What is it doing here.
+
+//minax's footnotes
+//black compendium
+
+[itemdef i_black_compendium_deco]
+id=i_spellbook
+name=Black Compendium
+type=t_script
+
+on=@create
+color=0455
+events=+t_special_item
+tag0.description Mondain's tome of knowledge for acheiving immortal life through magical means, best to keep this in a safe place.
+
+
+[typedef t_special_item]
+//items that were created by hand
+
+on=@click
+message @02b <name>
+if !<isempty <tag.description>>
+src.sysmessage @02b <tag.description>
+endif
+return 1
+
+
+//////////
+////////// - EVENTS FOR THIS WORLD BOSS
+//////////
+
+[events e_mondain_worldboss]	
+on=@gethit
+  if (<act.isevent.e_mondain_worldboss>) || (<act.baseid>==c_mondain) || (<act.baseid>==c_minax_apprentice)
+  act.memoryfind.<uid>.remove
+  memoryfind.<act>.remove
+  return 1
+  endif
+  
+on=@spelleffect
+  if (<act.isevent.e_mondain_worldboss>) || (<act.baseid>==c_mondain) || (<act.baseid>==c_minax_apprentice)
+  return 1
+  endif
+
+[EOF]
+	

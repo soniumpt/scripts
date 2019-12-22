@@ -1,0 +1,552 @@
+//25/11/2019 - Wigifer - Updated all remaining <TIME> to <SERV.TIME> (56d update issue)
+
+[DEFNAME Worldsettings] 
+time_control_uid	043f49ab3 //04001f3d4
+
+seconds_per_minute	4
+minutes_per_hour	60 
+hours_per_day		24 
+days_per_month		30 
+months_per_year		12 
+
+light_midnight		6 
+light_night		4 
+light_dawn		2 
+light_dawn_2		4 
+light_dusk		2 
+light_dusk_2		4
+light_noon		0 
+light_dungeon		24 
+
+light_effect_moon	6
+light_effect_rain	4 
+light_effect_snow	(-3) 
+
+weather_rain_spring	40 
+weather_rain_summer	20 
+weather_rain_fall	30 
+
+weather_snow_winter	40 
+weather_snow_spring	50 
+weather_snow_fall	50 
+
+
+[ITEMDEF i_control_time] 
+ID	= i_clock
+TYPE	= t_script
+NAME	= time control
+
+ON = @CREATE 
+  MOREX	= 0 
+  MOREY	= 0 
+  MOREZ	= 0 
+  COLOR	= 0483
+
+ON = @Click
+  MESSAGE <NAME> (<uid>)
+  return 1
+
+ON = @DCLICK 
+  if ( time_control_uid != <UID> )
+     SRC.SYSMESSAGE WARNING: This is NOT the active weather control.
+  endif
+  DIALOG d_weather 
+  RETURN 1 
+
+ON=@TIMER 
+  MOREX = <MOREX> + 1
+
+  LOCAL.MOREY	= <MOREy>
+  if (<MOREX>==minutes_per_hour + 1) 
+    MOREX=1 
+    MOREY=<MOREY>+1 
+  endif
+  if (<MOREY>==hours_per_day + 1) 
+     MOREY=1 
+     MOREZ=<MOREZ>+1 
+  endif
+  
+  if !( <LOCAL.MOREY> == <MOREy> )
+     LOCAL.MSG2	= "."
+     if ( <MOREy> == 24 )
+        LOCAL.TMP_HOUR	= midnight
+         
+     elseif ( <MOREy> == 12 )
+        LOCAL.TMP_HOUR	= midday
+     elseif ( <MOREy> < 12 )
+        LOCAL.TMP_HOUR	= "<eval <MOREy>> o'clock in the morning"
+        if ( <MOREy> == 4 )
+           TAG.VEND_RESTOCK	= <SERV.TIME>
+            elseif ( <MOREy> == 1 )
+           
+        endif
+     else
+        LOCAL.TMP_HOUR	= "<eval (<MOREy>-12)> o'clock in the afternoon"
+     endif
+     
+     SERV.ALLCLIENTS f_warn_time It is now <LOCAL.TMP_HOUR><LOCAL.MSG2>
+  endif
+     
+  if (<MOREZ>==days_per_month + 1) 
+    MOREZ=1 
+    MORE1=<MORE>+1 
+  endif 
+  if (<MORE1>==months_per_year + 1) 
+     MORE1=1 
+     MORE2=<MORE2>+1 
+  endif 
+
+  TIMER=seconds_per_minute 
+  RETURN 1 
+
+
+
+[FUNCTION f_warn_time] 
+  if ( <INDOORS> )
+     return 0
+  endif
+
+  SYSMESSAGE @10 <args>
+  
+
+[PLEVEL 1] 
+showtime
+showage
+
+[FUNCTION showtime] 
+  LOCAL.MINUTES	= <UID.time_control_uid.MOREX> 
+  LOCAL.TMP_HOURS	= <UID.time_control_uid.MOREY> 
+  LOCAL.DAYS	= <UID.time_control_uid.MOREZ> 
+  LOCAL.MONTH	= <UID.time_control_uid.MORE1> 
+
+  if (<LOCAL.MINUTES><30) 
+    LOCAL.WHEN=1 
+  elseif (<LOCAL.MINUTES>==60) 
+    LOCAL.WHEN=3 
+  else 
+    LOCAL.WHEN=2 
+  endif 
+  if (<LOCAL.TMP_HOURS>==24) 
+    LOCAL.WHEN2=1 
+  else 
+    LOCAL.WHEN2=0 
+  endif 
+
+  DOSWITCH <LOCAL.MONTH>
+     LOCAL.MONTHNAME=
+     LOCAL.MONTHNAME=Martel 
+     LOCAL.MONTHNAME=Alturiak 
+     LOCAL.MONTHNAME=Ches 
+     LOCAL.MONTHNAME=Tarsakh 
+     LOCAL.MONTHNAME=Mirtul 
+     LOCAL.MONTHNAME=Kythorn 
+     LOCAL.MONTHNAME=Flammerige 
+     LOCAL.MONTHNAME=Eleasias 
+     LOCAL.MONTHNAME=Eleinte 
+     LOCAL.MONTHNAME=Marpenoth 
+     LOCAL.MONTHNAME=Uktar 
+     LOCAL.MONTHNAME=Iylviernar 
+  ENDDO
+
+  if (<LOCAL.WHEN2>==0) 
+    if (<LOCAL.WHEN>==1) 
+      SYSMESSAGE It is <EVAL <LOCAL.MINUTES>> minutes past <EVAL <LOCAL.TMP_HOURS>>o'clock. 
+    elseif (<LOCAL.WHEN>==2) 
+      SYSMESSAGE It is <EVAL 60-<LOCAL.MINUTES>> minutes before <EVAL <LOCAL.TMP_HOURS>+1>o'clock. 
+    elseif (<LOCAL.WHEN>==3) 
+      SYSMESSAGE It is <EVAL <LOCAL.TMP_HOURS>+1>o'clock.
+    endif 
+  else 
+    if (<LOCAL.WHEN>==1) 
+      SYSMESSAGE It is <EVAL <LOCAL.MINUTES>> minutes past midnight. 
+    elseif (<LOCAL.WHEN>==2) 
+      SYSMESSAGE It is <EVAL 60-<LOCAL.MINUTES>> minutes before 1 o'clock. 
+    elseif (<LOCAL.WHEN>==3) 
+      SYSMESSAGE It is 1 o'clock. 
+    endif 
+  endif 
+
+[FUNCTION DEFAULTLIGHT]
+   SECTOR.LIGHT 0
+   
+[FUNCTION FORCELIGHT]
+   SERV.ALLCLIENTS EVENTS -e_weather 
+   SECTOR.LIGHT <args>
+   SERV.ALLCLIENTS EVENTS +e_weather 
+
+
+
+[EVENTS e_weather]
+ON = @EnvironChange
+  LOCAL.NEWLIGHT	= <SRC.LightCheck>
+  //serv.log CHECK DEBUG <src.p>
+  if ( <SECTOR.LIGHT> == <LOCAL.NEWLIGHT> )
+     if ( 0<SRC.TAG.DEBUG.LIGHT> )
+        sysmessage LIGHT: ignoring light update to <eval <LOCAL.newlight>>.
+     endif
+     return 0
+  endif
+  if ( 0<SRC.TAG.DEBUG.LIGHT> )
+     sysmessage LIGHT: updating light to <eval <LOCAL.newlight>>.
+  endif
+  
+// SERV.ALLCLIENTS EVENTS -e_weather 
+  //SECTOR.LIGHT	= <LOCAL.NEWLIGHT>
+  //SERV.LOG WEATHER BUG: <sector.light> = <local.newlight> [<name>] [<p>]
+//  SERV.ALLCLIENTS EVENTS +e_weather
+
+
+[FUNCTION LightCheck] 
+  LOCAL.TMP_HOUR	= <UID.time_control_uid.MOREy>
+
+  if ( 0<LOCAL.TMP_HOUR> == 0 )
+      IF STRMATCH("<REGION.NAME>","Cove")
+         RETURN 15
+      ELSE
+         LOCAL.TMP_HOUR	= 20
+      ENDIF
+  endif
+  
+  if ( <UNDERGROUND> )
+    LOCAL.LIGHTCHECK	= <eval light_dungeon>
+  elseif ( <LOCAL.TMP_HOUR> == 24 )
+    LOCAL.LIGHTCHECK	= <eval light_midnight>
+  elseif ( <LOCAL.TMP_HOUR> <  4 )
+    LOCAL.LIGHTCHECK	= <eval light_midnight>
+  elseif ( <LOCAL.TMP_HOUR> <  7 )
+    LOCAL.LIGHTCHECK	= <eval light_dawn_2>
+  elseif ( <LOCAL.TMP_HOUR> < 10 )
+    LOCAL.LIGHTCHECK	= <eval light_dawn>
+  elseif ( <LOCAL.TMP_HOUR> < 16 )
+    LOCAL.LIGHTCHECK	= <eval light_noon>
+  elseif ( <LOCAL.TMP_HOUR> < 19 )
+    LOCAL.LIGHTCHECK	= <eval light_dusk>
+  elseif ( <LOCAL.TMP_HOUR> < 22 )
+    LOCAL.LIGHTCHECK	= <eval light_dusk_2>
+  else
+    LOCAL.LIGHTCHECK	= <eval light_night>
+  endif
+
+  return <EVAL <LOCAL.LIGHTCHECK>>
+
+
+[FUNCTION WeatherCheck] 
+  if ( <INDOORS> )
+     SRC.SECTOR.DRY
+     return 1
+  endif
+     
+  LOCAL.WeatherCHANCE=<EVAL {50 100}> 
+  LOCAL.MONTH	= <UID.time_control_uid.MORE1>
+
+  if ( 0 )
+  elseif ( (<LOCAL.MONTH> == 12) || (<LOCAL.MONTH> == 1) || (<LOCAL.MONTH> == 2) )
+    if (<LOCAL.WeatherCHANCE><<EVAL (weather_snow_winter)> ) 
+      SECTOR.SNOW 
+      SRC.WeatherDry 
+      SRC.WeatherSnow 
+    else 
+      SECTOR.DRY 
+      SRC.WeatherDry 
+    endif 
+  elseif ( (<LOCAL.MONTH> == 3) || (<LOCAL.MONTH> == 4) || (<LOCAL.MONTH> == 5) )
+    if (<LOCAL.WeatherCHANCE><<EVAL (weather_rain_spring)> ) 
+      SECTOR.RAIN 
+      SRC.WeatherDry 
+      SRC.WeatherRain 
+    elseif (<LOCAL.WeatherCHANCE><<EVAL (weather_snow_spring)> ) 
+      SECTOR.SNOW 
+      SRC.WeatherDry 
+      SRC.WeatherSnow 
+    else 
+      SECTOR.DRY 
+      SRC.WeatherDry 
+    endif 
+  elseif ( (<LOCAL.MONTH> == 6) || (<LOCAL.MONTH> == 7) || (<LOCAL.MONTH> == 8) )
+    if (<LOCAL.WeatherCHANCE><<EVAL (weather_rain_summer)> ) 
+      SECTOR.RAIN 
+      SRC.WeatherDry 
+      SRC.WeatherRain 
+    else 
+      SECTOR.DRY 
+      SRC.WeatherDry 
+    endif 
+  elseif ( (<LOCAL.MONTH> == 9) || (<LOCAL.MONTH> == 10) || (<LOCAL.MONTH> == 11) )
+    if (<LOCAL.WeatherCHANCE><<EVAL (weather_rain_fall> ) 
+      SECTOR.RAIN 
+      SRC.WeatherDry 
+      SRC.WeatherRain 
+    elseif (<LOCAL.WeatherCHANCE><<EVAL (weather_snow_fall)> ) 
+      SECTOR.SNOW 
+      SRC.WeatherDry 
+      SRC.WeatherSnow 
+    else 
+      SECTOR.DRY 
+      SRC.WeatherDry 
+    endif 
+  endif 
+
+
+[DIALOG d_weather] 
+250, 125 
+resizepic 0 0 3600 250 210 
+
+resizepic 20 20 3000 50 22 
+textentry 20 20 50 25 0 1 0 
+text 75 20 026 1 
+
+resizepic 20 50 3000 50 22 
+textentry 20 50 50 25 0 2 2 
+text 75 50 026 3 
+
+resizepic 20 80 3000 50 22 
+textentry 20 80 50 25 0 3 4 
+text 75 80 026 5 
+
+resizepic 20 110 3000 50 22 
+textentry 20 110 50 25 0 4 6 
+text 75 110 026 7 
+
+resizepic 20 140 3000 50 22 
+textentry 20 140 50 25 0 5 8 
+text 75 140 026 9 
+
+button 170 18 239 238 1 0 1 
+button 170 48 239 238 1 0 2 
+button 170 78 239 238 1 0 3 
+button 170 108 239 238 1 0 4 
+button 170 138 239 238 1 0 5 
+button 100 168 248 247 1 0 6 
+
+[DIALOG d_weather TEXT] 
+<EVAL <MOREX>> 
+Minutes 
+<EVAL <MOREY>> 
+Hours 
+<EVAL <MOREZ>> 
+Days 
+<EVAL <MORE1>> 
+Month 
+<EVAL <MORE2>> 
+Year 
+
+[DIALOG d_weather BUTTON] 
+ONBUTTON=0 
+  SRC.SYSMESSAGE Time is unchanged. 
+ONBUTTON=1 
+  if (<ARGTXT[1]>>0) && (<ARGTXT[1]><<EVAL (minutes_per_hour)+1> ) 
+    MOREX <ARGTXT[1]> 
+    SRC.SYSMESSAGE Minutes have been modified. 
+  else 
+    SRC.SYSMESSAGE Minutes must be between 1 and <EVAL (minutes_per_hour)>. 
+  endif 
+  TIMER seconds_per_minute 
+
+ONBUTTON=2 
+  if (<ARGTXT[2]>>0) && (<ARGTXT[2]><<EVAL (hours_per_day)+1> ) 
+    MOREY <ARGTXT[2]> 
+    SRC.SYSMESSAGE Hours have been modified. 
+  else 
+    SRC.SYSMESSAGE Hours must be between 1 and <EVAL (hours_per_day)>. 
+  endif 
+  TIMER seconds_per_minute 
+
+ONBUTTON=3 
+  if (<ARGTXT[3]>>0) && (<ARGTXT[3]><<EVAL (days_per_month)+1> ) 
+    MOREZ <ARGTXT[3]> 
+    SRC.SYSMESSAGE Days have been modified. 
+  else 
+    SRC.SYSMESSAGE Days must be between 1 and <EVAL (days_per_month)>. 
+  endif 
+  TIMER seconds_per_minute 
+
+ONBUTTON=4 
+  if (<ARGTXT[4]>>0) && (<ARGTXT[4]><<EVAL (months_per_year)+1> ) 
+    MORE1 <ARGTXT[4]> 
+    SRC.SYSMESSAGE Months have been modified. 
+  else 
+    SRC.SYSMESSAGE Months must be between 1 and <EVAL (months_per_year)>. 
+  endif 
+  TIMER seconds_per_minute 
+
+ONBUTTON=5 
+  if (<ARGTXT[5]>>0) 
+    MORE2 <ARGTXT[5]> 
+    SRC.SYSMESSAGE Years have been modified. 
+  else 
+    SRC.SYSMESSAGE Years can't be negative. 
+  endif 
+  TIMER seconds_per_minute 
+
+ONBUTTON=6 
+  if (<ARGTXT[1]>>0) && (<ARGTXT[1]><<EVAL (minutes_per_hour)+1> ) 
+    MOREX <ARGTXT[1]> 
+    SRC.SYSMESSAGE Minutes have been modified. 
+  else 
+    SRC.SYSMESSAGE Minutes must be between 1 and <EVAL (minutes_per_hour)>. 
+  endif 
+  if (<ARGTXT[2]>>0) && (<ARGTXT[2]><<EVAL (hours_per_day)+1> ) 
+    MOREY <ARGTXT[2]> 
+    SRC.SYSMESSAGE Hours have been modified. 
+  else 
+    SRC.SYSMESSAGE Hours must be between 1 and <EVAL (hours_per_day)>. 
+  endif 
+  if (<ARGTXT[3]>>0) && (<ARGTXT[3]><<EVAL (days_per_month)+1> ) 
+    MOREZ <ARGTXT[3]> 
+    SRC.SYSMESSAGE Days have been modified. 
+  else 
+    SRC.SYSMESSAGE Days must be between 1 and <EVAL (days_per_month)>. 
+  endif 
+  if (<ARGTXT[4]>>0) && (<ARGTXT[4]><<EVAL (months_per_year)+1> ) 
+    MORE1 <ARGTXT[4]> 
+    SRC.SYSMESSAGE Months have been modified. 
+  else 
+    SRC.SYSMESSAGE Months must be between 1 and <EVAL (months_per_year)>. 
+  endif 
+  if (<ARGTXT[5]>>0) 
+    MORE2 <ARGTXT[5]> 
+    SRC.SYSMESSAGE Years have been modified. 
+  else 
+    SRC.SYSMESSAGE Years can't be negative. 
+  endif 
+  TIMER seconds_per_minute 
+
+
+
+
+
+[ITEMDEF i_control_snow] 
+ID	= i_memory 
+TYPE	= t_eq_script 
+NAME	= Snow 
+
+ON = @EQUIP 
+  TIMER	= 1 
+
+ON=@TIMER 
+  LOCAL.X	= <EVAL {-10 10}> 
+  LOCAL.Y	= <EVAL {-10 10}> 
+  CONT.NEWNPC c_man 
+  CONT.ACT.P = <EVAL <CONT.P.X>+<LOCAL.X>>,<EVAL <CONT.P.Y>+<LOCAL.Y>>,<CONT.P.Z> 
+  CONT.ACT.FIX 
+  CONT.ACT.RUN N 
+  if !(<CONT.ACT.FLAGS>&01000000) 
+    CONT.ACT.REMOVE 
+    CONT.NEWITEM=i_weather_snow 
+    CONT.ACT.P=<EVAL <CONT.P.X>+<LOCAL.X>>,<EVAL <CONT.P.Y>+<LOCAL.Y>>,<CONT.P.Z> 
+    CONT.ACT.FIX 
+  else 
+    CONT.ACT.REMOVE 
+  endif 
+  
+  LOCAL.X = <EVAL {-10 10}> 
+  LOCAL.Y=<EVAL {-10 10}> 
+  CONT.NEWNPC c_man 
+  CONT.ACT.P=<EVAL <CONT.P.X>+<LOCAL.X>>,<EVAL <CONT.P.Y>+<LOCAL.Y>>,<CONT.P.Z> 
+  CONT.ACT.FIX 
+  CONT.ACT.RUN N 
+  if !(<CONT.ACT.FLAGS>&01000000) 
+    CONT.ACT.REMOVE 
+    CONT.NEWITEM	= i_weather_snow 
+    CONT.ACT.P		= <EVAL <CONT.P.X>+<LOCAL.X>>,<EVAL <CONT.P.Y>+<LOCAL.Y>>,<CONT.P.Z> 
+    CONT.ACT.FIX
+  else 
+    CONT.ACT.REMOVE 
+  endif 
+  TIMER = 3
+  RETURN 1 
+
+
+[ITEMDEF i_weather_snow] 
+ID	= 020E8 
+NAME	= Snow 
+
+ON = @CREATE
+  COLOR	= 07A1 
+  ATTR	= 012 
+  TIMER	= 30 
+
+ON = @CLICK 
+
+ON = @DCLICK 
+//  TARGET You take up the snow and prepare a ball with it. Who do you wish to throw it at? 
+  RETURN 1 
+
+ON=@TARGON_CHAR
+  SRC.TARG.EFFECT 0,0E73,1,30,0 
+  SRC.TARG.SYSMESSAGE You receive a snow ball from <SRC.NAME>.
+  REMOVE 
+  RETURN 1 
+
+CATEGORY=Imperial uo
+SUBSECTION=weather
+DESCRIPTION=snow
+
+
+[ITEMDEF i_control_rain] 
+ID	= i_memory 
+TYPE	= t_eq_script 
+NAME	= Rain 
+
+ON = @EQUIP
+  TIMER	= 1 
+
+ON=@TIMER 
+  LOCAL.X	= <EVAL {-10 10}> 
+  LOCAL.Y	= <EVAL {-10 10}> 
+  CONT.NEWNPC c_man 
+  CONT.ACT.P=<EVAL <CONT.P.X>+<LOCAL.X>>,<EVAL <CONT.P.Y>+<LOCAL.Y>>,<CONT.P.Z> 
+  CONT.ACT.FIX 
+  CONT.ACT.RUN N 
+  if !(<CONT.ACT.FLAGS>&01000000) 
+    CONT.ACT.REMOVE 
+    CONT.NEWITEM=i_weather_rain 
+    CONT.ACT.P=<EVAL <CONT.P.X>+<LOCAL.X>>,<EVAL <CONT.P.Y>+<LOCAL.Y>>,<CONT.P.Z> 
+    CONT.ACT.FIX 
+  else 
+    CONT.ACT.REMOVE 
+  endif
+  
+  LOCAL.X	= <EVAL {-10 10}> 
+  LOCAL.Y	= <EVAL {-10 10}> 
+  CONT.NEWNPC c_man 
+  CONT.ACT.P=<EVAL <CONT.P.X>+<LOCAL.X>>,<EVAL <CONT.P.Y>+<LOCAL.Y>>,<CONT.P.Z> 
+  CONT.ACT.FIX 
+  CONT.ACT.RUN N 
+  if !(<CONT.ACT.FLAGS>&01000000) 
+    CONT.ACT.REMOVE 
+    CONT.NEWITEM=i_weather_rain 
+    CONT.ACT.P=<EVAL <CONT.P.X>+<LOCAL.X>>,<EVAL <CONT.P.Y>+<LOCAL.Y>>,<CONT.P.Z> 
+    CONT.ACT.FIX 
+  else 
+    CONT.ACT.REMOVE 
+  endif 
+  TIMER	= 3 
+  RETURN 1 
+
+
+[ITEMDEF i_weather_rain] 
+ID	= 0122A 
+NAME	= pool of water 
+
+ON = @CREATE 
+COLOR	= { 02abf 1 0252 1 }// 07A0 
+ATTR	= 012 
+TIMER	= 30 
+
+
+[FUNCTION WeatherSnow] 
+  //NEWITEM=i_control_snow 
+  //ACT.EQUIP 
+
+[FUNCTION WeatherRain] 
+  //NEWITEM	= i_control_rain 
+  //ACT.EQUIP 
+
+[FUNCTION WeatherDry] 
+  //FINDID(i_control_snow).REMOVE 
+  //FINDID(i_control_rain).REMOVE 
+
+
+
+[EOF]

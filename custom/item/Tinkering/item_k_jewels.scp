@@ -1,0 +1,350 @@
+[TYPEDEF t_jewel]
+ON = @Targon_Char
+   src.sysmessage You can't encrust jewels on living beings!
+   return 1
+ON = @Targon_item
+   VAR.JEWEL.NAME    = <SRC.TAG.JEWEL.NAME>
+   VAR.JEWEL.NUMBER    = <MORE2>
+   VAR.JEWEL.VALUE    = rand(3)
+   VAR.JEWEL.ENCODE    = <eval ((<eval <VAR0.JEWEL.VALUE>> * 64) + <eval <VAR0.JEWEL.NUMBER>>)>
+   SRC.TAG.JEWEL.NAME    =
+
+   if !( <SRC.TARG.ISIDENTIFIED> )
+      src.sysmessage That's not propperly identified.
+      return 1
+   endif
+
+   if ( 0 )
+   elseif ( <SRC.TARG.ISWEAPON> )
+      if ( <SRC.TARG.SLOT1_GEM> )
+         SRC.SYSMESSAGE You can't encrust any more jewels onto that.
+         return 1
+      endif
+   elseif ( <SRC.TARG.ISARMOUR> )
+      if !( <TDATA1> == 1 )
+         SRC.SYSMESSAGE This jewel has no effect on armour.
+         return 1
+      endif
+      if ( <SRC.TARG.SLOT2_GEM> )
+         SRC.SYSMESSAGE You can't encrust any more jewels onto that.
+         return 1
+      endif
+      if !( <SRC.TARG.TYPE> == t_armor_leather )
+        if ( <SRC.TARG.SLOT1_GEM> )
+           SRC.SYSMESSAGE You can't encrust a second jewel in that kind of armour.
+           return 1
+        endif
+      endif
+   elseif ( <SRC.TARG.ISSHIELD> )
+      src.sysmessage You don't know how to encrust jewels on shields.
+      return 1
+   else
+      src.sysmessage You can't encrust the <NAME> onto THAT!
+      return 1
+   endif
+
+   if ( <SRC.TARG.CONT.UID> == <SRC.UID> )
+      SRC.SYSMESSAGE You can't do that while equipping the item.
+      return 1
+   endif
+
+   if ( <SRC.TARG.CONT> != <SRC.findlayer.21.uid> )
+      SRC.SYSMESSAGE That is not in your backpack.
+      return 1
+   endif
+
+   SRC.TARG.SLOT_INIT
+   if ( <SRC.TARG.SLOT1_GEM> )
+      // SRC.TARG.QUALITY    = <eval (<VAR.LOW> + (<VAR.JEWEL.ENCODE>*256))>
+      SRC.TARG.MOREz    = <VAR0.JEWEL.ENCODE>
+   else
+      SRC.TARG.MOREm    = <VAR0.JEWEL.ENCODE>
+   endif
+
+   SRC.TARG.MAKE_NAME
+   CONSUMEONE
+   src.sysmessage You encrust the <NAME>.
+   return 1
+
+
+
+[FUNCTION jewel_dclick]
+  if ( (<SRC.ItemID> < 30.0) && (<SRC.ARMSLORE> < 20.0) )
+     SRC.SYSMESSAGE You have no idea on how to encrust the <NAME>. Some Item or Arms lore would surely help.
+     return 1
+  endif
+  TARGET What item do you want to encrust the <NAME>?
+  return 1
+
+
+
+//
+// ITEMS
+//
+
+
+// not used
+[ITEMDEF 04f00]
+ID        = i_memory
+NAME        = no jewel
+TYPE        = t_jewel
+
+
+[ITEMDEF i_jewel_star_sapphire]
+ID        = i_gem_star_sapphire_2
+NAME        = star sapphire jewel
+TYPE        = t_jewel
+WEIGHT        = 5
+SKILLMAKE    = TINKERING 85.0, t_tinker_tools
+RESOURCES    = 5 i_gem_star_sapphire
+TDATA1        = 1
+ON=@Create
+    MORE2 = 01
+ON = @DClick
+   SRC.SYSMESSAGE @024 The jewel appears to be inert, for some strange reason...
+   RETURN 1
+   //SRC.TAG.JEWEL.NAME    = star sapphire
+   //return <jewel_dclick>
+
+[FUNCTION JEWELDATA_01]
+VAR.JEWEL.NAME        = star sapphire
+VAR.EFFECT.ENERGY    = <eval (<VAR.EFFECT.ENERGY> + 9 + ((<args>+1)*3) )>
+VAR.ARM.EFFECT.RES_ENERGY    = <eval (<VAR.ARM.EFFECT.RES_ENERGY> + 2 + ((<args>+1)/2) )>
+
+
+[ITEMDEF i_jewel_emerald]
+ID        = i_gem_emerald_2
+NAME        = emerald jewel
+TYPE        = t_jewel
+WEIGHT        = 5
+SKILLMAKE    = TINKERING 70.0, t_tinker_tools
+RESOURCES    = 5 i_gem_emerald
+TDATA1        = 1
+ON=@Create
+    MORE2 = 02
+ON = @DClick
+   SRC.SYSMESSAGE @024 The jewel appears to be inert, for some strange reason...
+   RETURN 1
+   //SRC.TAG.JEWEL.NAME    = emerald
+   //return <jewel_dclick>
+
+[FUNCTION JEWELDATA_02]
+VAR.JEWEL.NAME        = emerald
+VAR.EFFECT.ACID    = <eval (<VAR.EFFECT.ACID> + 9 + ((<args>+1)*3) )>
+VAR.ARM.EFFECT.RES_ACID    = <eval (<VAR.ARM.EFFECT.RES_ACID> + 2 + ((<args>+1)/2) )>
+
+
+
+
+[ITEMDEF i_jewel_sapphire]
+ID        = i_gem_sapphire_2
+NAME        = sapphire jewel
+TYPE        = t_jewel
+WEIGHT        = 5
+SKILLMAKE    = TINKERING 95.0, t_tinker_tools
+RESOURCES    = 5 i_gem_sapphire
+TDATA1        = 1
+ON=@Create
+    MORE2 = 03
+ON = @DClick
+   SRC.SYSMESSAGE @024 The jewel appears to be inert, for some strange reason...
+   RETURN 1
+   //SRC.TAG.JEWEL.NAME    = sapphire
+   //return <jewel_dclick>
+
+[FUNCTION JEWELDATA_03]
+VAR.JEWEL.NAME        = sapphire
+VAR.EFFECT.COLD        = <eval (<VAR.EFFECT.COLD> + 3 )> //<eval (<VAR.EFFECT.COLD> + 3 + ((<args>+1)*2) )>
+VAR.EFFECT.DRAIN_STAM    = <eval (<VAR.EFFECT.DRAIN_STAM> + 9 + ((<args>+1)*3) )>//<eval (<VAR.EFFECT.DRAIN_STAM> + 9 + ((<args>+1)*3) )>
+VAR.ARM.EFFECT.RES_COLD    = <eval (<VAR.ARM.EFFECT.RES_COLD> + 2 + ((<args>+1)/2) )>
+
+
+[ITEMDEF i_jewel_ruby]
+ID        = i_gem_ruby_2
+NAME        = ruby jewel
+TYPE        = t_jewel
+WEIGHT        = 5
+SKILLMAKE    = TINKERING 65.0, t_tinker_tools
+RESOURCES    = 5 i_gem_ruby
+ON=@Create
+    MORE2 = 04
+ON = @DClick
+   SRC.SYSMESSAGE @024 The jewel appears to be inert, for some strange reason...
+   RETURN 1
+   //SRC.TAG.JEWEL.NAME    = ruby
+   //return <jewel_dclick>
+
+[FUNCTION JEWELDATA_04]
+VAR.JEWEL.NAME        = ruby
+VAR.EFFECT.DRAIN_LIFE    = <eval (<VAR.EFFECT.DRAIN_LIFE> + 9 + ((<args>+1)*3) )>
+
+
+[ITEMDEF i_jewel_citrine]
+ID        = i_gem_citrine_2
+NAME        = citrine jewel
+TYPE        = t_jewel
+WEIGHT        = 5
+SKILLMAKE    = TINKERING 80.0, t_tinker_tools
+RESOURCES    = 5 i_gem_citrine
+TDATA1        = 1
+ON=@Create
+    MORE2 = 05
+ON = @DClick
+   SRC.SYSMESSAGE @024 The jewel appears to be inert, for some strange reason...
+   RETURN 1
+   //SRC.TAG.JEWEL.NAME    = citrine
+   //return <jewel_dclick>
+
+[FUNCTION JEWELDATA_05]
+VAR.JEWEL.NAME        = citrine
+VAR.EFFECT.FIRE        = <eval (<VAR.EFFECT.FIRE> + 9 + ((<args>+1)*3) )>
+VAR.ARM.EFFECT.RES_FIRE    = <eval (<VAR.ARM.EFFECT.RES_FIRE> + 2 + ((<args>+1)/2) )>
+
+
+
+[ITEMDEF i_jewel_amethyst]
+ID        = i_gem_amethyst_2
+NAME        = amethyst jewel
+TYPE        = t_jewel
+WEIGHT        = 5
+SKILLMAKE    = TINKERING 75.0, t_tinker_tools
+RESOURCES    = 5 i_gem_amethyst
+ON=@Create
+    MORE2 = 06
+ON = @DClick
+   SRC.SYSMESSAGE @024 The jewel appears to be inert, for some strange reason...
+   RETURN 1
+   //SRC.TAG.JEWEL.NAME    = amethyst
+   //return <jewel_dclick>
+
+[FUNCTION JEWELDATA_06]
+VAR.JEWEL.NAME        = amethyst
+VAR.EFFECT.ENERGY        = <eval (<VAR.EFFECT.ENERGY> + 4 )>
+VAR.EFFECT.DRAIN_MANA    = <eval (<VAR.EFFECT.DRAIN_MANA> + 9 + ((<args>+1)*3) )>
+
+
+[ITEMDEF i_jewel_tourmaline]
+ID        = i_gem_tourmaline_2
+NAME        = tourmaline jewel
+TYPE        = t_jewel
+WEIGHT        = 5
+SKILLMAKE    = TINKERING 185.0, t_tinker_tools
+RESOURCES    = 5 i_gem_tourmaline
+ON=@Create
+    MORE2 = 07
+ON = @DClick
+   SRC.SYSMESSAGE @024 The jewel appears to be inert, for some strange reason...
+   RETURN 1
+   //SRC.TAG.JEWEL.NAME    = tourmaline
+   //return <jewel_dclick>
+
+[FUNCTION JEWELDATA_07]
+VAR.JEWEL.NAME        = tourmaline
+VAR.EFFECT.LEGENDARY_ENERGY = <<eval (<VAR.EFFECT.LEGENDARY_ENERGY> + 9 + ((<args>+1)*3) )>
+
+
+[ITEMDEF i_jewel_amber]
+ID        = i_gem_amber
+NAME        = amber jewel
+TYPE        = t_jewel
+WEIGHT        = 5
+SKILLMAKE    = TINKERING 60.0, t_tinker_tools
+RESOURCES    = 5 i_gem_amber
+ON=@Create
+    MORE2 = 08
+ON = @DClick
+   SRC.SYSMESSAGE @024 The jewel appears to be inert, for some strange reason...
+   RETURN 1
+   //SRC.TAG.JEWEL.NAME    = amber
+   //return <jewel_dclick>
+
+[FUNCTION JEWELDATA_08]
+VAR.JEWEL.NAME        = amber
+VAR.EFFECT.DISPELL    = <eval (<VAR.EFFECT.DISPELL> + 9 + ((<args>+1)*3) )>
+
+
+[ITEMDEF i_jewel_diamond]
+ID        = i_gem_diamond
+NAME        = diamond jewel
+TYPE        = t_jewel
+WEIGHT        = 5
+SKILLMAKE    = TINKERING 70.0, t_tinker_tools
+RESOURCES    = 5 i_gem_diamond
+ON=@Create
+    MORE2 = 09
+ON = @DClick
+   SRC.SYSMESSAGE @024 The jewel appears to be inert, for some strange reason...
+   RETURN 1
+   //SRC.TAG.JEWEL.NAME    = diamond
+   //return <jewel_dclick>
+
+
+[FUNCTION JEWELDATA_09]
+VAR.JEWEL.NAME        = diamond
+VAR.EFFECT.DAMAGE    = <eval (<VAR.EFFECT.DAMAGE> + 9 + ((<args>+1)*3) )>
+
+
+[ITEMDEF i_jewel_elemental_fury]
+ID        = i_gem_emerald
+NAME        = elemental fury jewel
+TYPE        = t_jewel
+WEIGHT        = 5
+SKILLMAKE    = TINKERING 95.0, t_tinker_tools
+RESOURCES    = 4 i_gem_citrine, 4 i_gem_sapphire, 4 i_gem_emerald, 4 i_gem_star_sapphire
+TDATA1        = 1
+ON = @Create
+   COLOR    = 0488
+   MORE2 = 0a
+
+ON = @DClick
+   SRC.SYSMESSAGE @024 The jewel appears to be inert, for some strange reason...
+   RETURN 1
+   // SRC.TAG.JEWEL.NAME    = elemental fury
+   // return <jewel_dclick>
+
+
+[FUNCTION JEWELDATA_0a]
+VAR.JEWEL.NAME        = elemental fury
+VAR.EFFECT.FIRE        = <eval (<VAR.EFFECT.FIRE>     + 4)>
+VAR.EFFECT.COLD        = <eval (<VAR.EFFECT.COLD>     + 4)>
+VAR.EFFECT.ACID        = <eval (<VAR.EFFECT.ACID>     + 4)>
+VAR.EFFECT.ENERGY    = <eval (<VAR.EFFECT.ENERGY>   + 4)>
+VAR.ARM.EFFECT.RES_ENERGY    = <eval (<VAR.ARM.EFFECT.RES_ENERGY> + 1 + ((<args>+1)/4) )>
+VAR.ARM.EFFECT.RES_COLD        = <eval (<VAR.ARM.EFFECT.RES_COLD> + 1 + ((<args>+1)/4) )>
+VAR.ARM.EFFECT.RES_FIRE        = <eval (<VAR.ARM.EFFECT.RES_FIRE> + 1 + ((<args>+1)/4) )>
+VAR.ARM.EFFECT.RES_ACID        = <eval (<VAR.ARM.EFFECT.RES_ACID> + 1 + ((<args>+1)/4) )>
+VAR.ARM.EFFECT.STAM        = <eval (<VAR.ARM.EFFECT.STAM> + 2 + ((<args>+1)/2) )>
+
+
+[ITEMDEF i_jewel_elemental_mayhem]
+ID        = i_gem_emerald
+NAME        = elemental mayhem jewel
+TYPE        = t_jewel
+WEIGHT        = 5
+SKILLMAKE    = TINKERING 100.0, t_tinker_tools
+RESOURCES    = 10 i_gem_citrine, 10 i_gem_sapphire, 10 i_gem_emerald, 10 i_gem_star_sapphire
+TDATA1        = 1
+
+ON = @Create
+   COLOR    = 048b
+   MORE2 = 0b
+ON = @DClick
+   SRC.SYSMESSAGE @024 The jewel appears to be inert, for some strange reason...
+   RETURN 1
+   // SRC.TAG.JEWEL.NAME    = elemental mayhem
+   // return <jewel_dclick>
+
+
+[FUNCTION JEWELDATA_0b]
+VAR.JEWEL.NAME        = elemental mayhem
+VAR.EFFECT.FIRE        = <eval (<VAR.EFFECT.FIRE>     + 5)>
+VAR.EFFECT.COLD        = <eval (<VAR.EFFECT.COLD>     + 5)>
+VAR.EFFECT.ACID        = <eval (<VAR.EFFECT.ACID>     + 5)>
+VAR.EFFECT.ENERGY    = <eval (<VAR.EFFECT.ENERGY>   + 5)>
+VAR.ARM.EFFECT.RES_ENERGY    = <eval (<VAR.ARM.EFFECT.RES_ENERGY> + 2 + ((<args>+1)/2) )>
+VAR.ARM.EFFECT.RES_COLD        = <eval (<VAR.ARM.EFFECT.RES_COLD> + 2 + ((<args>+1)/2) )>
+VAR.ARM.EFFECT.RES_FIRE        = <eval (<VAR.ARM.EFFECT.RES_FIRE> + 2 + ((<args>+1)/2) )>
+VAR.ARM.EFFECT.RES_ACID        = <eval (<VAR.ARM.EFFECT.RES_ACID> + 2 + ((<args>+1)/2) )>
+VAR.ARM.EFFECT.MANA        = <eval (<VAR.ARM.EFFECT.MANA> + 2 + ((<args>+1)/2) )>
+
+[EOF]

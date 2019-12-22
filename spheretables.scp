@@ -1,0 +1,477 @@
+///****************************************************************************
+//SPHERE by : Menasoft ?1997-2000
+//www.sphereserver.com
+// All SPHERE script files and formats are copyright Menasoft & Partners.
+// This file may be freely edited for personal use, but may not be distributed
+// in whole or in part, in any format without express written permission from
+// Menasoft & Partners.  All donations and contributions
+// become the property of Menasoft & Partners.
+//****************************************************************************
+// FILE LAST UPDATED: Friday, April 28, 2000
+// NOTE: This is loaded 2nd after SPHERE.INI watch out for order of dependancies ! (keyword DEFNAME)
+VERSION=0.54
+
+//Changelog:
+//10/10/2003 - Firefly - Updated Vote100 URLS and voteall URLS - Tested
+//feb 25, 03 - Tiffany - added peace - testING
+// 17/08/2018 - Wigifer - Added RANGE=2 to Mining and Lumberjacking, as well as checked the flags...
+// 18/08/2018 - Wigifer - Added all the flags from the 56d skills to the skills in this script.
+//                      - IMPORTANT: To use skf_gather with KAWSP's "e_probe" as it moves the player, you need to add SKF_NOMINDIST too.
+//                      - If you just have SKF_NOMINDIST, it breaks the game. If you just have SKF_GATHER, you can't gather.
+// 15/11/2019 - Wigifer - Changed [STARTS] as new Sphere can't cope with just one starting loc.
+
+
+
+[RESOURCES]
+// sphere.ini and spheretable.scp are automatic.I_CAP_DRAGONHIDE_CRYSTAL
+// All the other scripts we want to load.
+
+scripts/custom/ServerCore_Security/spheredefs.scp
+scripts/custom/Skills/bfuo_skill.scp
+
+scripts/custom/ServerCore_Security/sphere_serv_triggers.scp
+scripts/custom/ServerCore_Security/spherebook.scp
+scripts/custom/ServerCore_Security/RescriptedTypes.scp
+scripts/custom/ServerCore_Security/sphere_types.scp
+scripts/custom/ServerCore_Security/spheredialog.scp
+scripts/custom/ServerCore_Security/sphere_backward_compatibility.scp
+scripts/custom/ServerCore_Security/Sphere56bCore/stones/
+scripts/custom/ServerCore_Security/Sphere56bCore/stones/guilds/
+scripts/custom/ServerCore_Security/Sphere56bCore/stones/towns/
+
+scripts/speech/
+
+scripts/custom/Skills/Mine_LumberGathering.scp
+scripts/custom/item/Base/sphereresources.scp
+scripts/custom/item/Base/sphereitemb1.scp
+scripts/custom/item/Base/sphereitemb2.scp
+scripts/custom/item/Base/sphereitemb3.scp
+scripts/custom/item/Base/sphereitemb4.scp
+scripts/custom/item/Base/sphereitemb5.scp
+scripts/custom/item/Base/sphereitemb6.scp
+scripts/custom/item/Base/sphereitemb7.scp
+scripts/custom/item/Base/sphereitem_multis.scp
+scripts/custom/item/Base/sphereitem_x.scp
+scripts/custom/item/Base/sphereitem_deed.scp
+scripts/custom/item/Base/
+
+scripts/custom/item/
+scripts/custom/item/Alchemy/
+scripts/custom/item/Cooking/
+scripts/custom/item/Inscription/
+scripts/custom/item/Lumber_Carpentry_Bowery/
+scripts/custom/item/Mining_Blacksmithing_Masonry/
+scripts/custom/item/Rares_Rewards/
+scripts/custom/item/Tailoring/
+scripts/custom/item/Tinkering/
+
+scripts/custom/SkillMenus/
+
+scripts/custom/k/k_MAIN_periodic.scp
+scripts/custom/char/Base/CharacterEvents.scp
+scripts/custom/char/Base/spherename.scp
+scripts/custom/char/Base/
+scripts/custom/Vendors/
+scripts/custom/char/
+scripts/custom/boo/sphere_item_magic_necromancer_aos.scp
+scripts/custom/boo/
+scripts/custom/lile/
+scripts/custom/char/SpawnGroups/
+scripts/custom/factions/
+scripts/custom/Resources/
+scripts/custom/WorldMap/mpz_region.scp
+scripts/custom/WorldMap/mpz_region_rock.scp
+scripts/custom/WorldMap/mpz_region_tree.scp
+scripts/custom/WorldMap/mpz_region_water.scp
+scripts/custom/WorldMap/spheremap.scp
+scripts/custom/WorldMap/spherepoints.scp
+scripts/custom/WorldMap/sphere_map_points2.scp
+scripts/custom/WorldMap/sphere_map_points3.scp
+scripts/custom/WorldMap/sphere_map_points4.scp
+scripts/custom/WorldMap/sphere_map2.scp
+scripts/custom/WorldMap/sphere_map3.scp
+scripts/custom/WorldMap/sphere_map4.scp
+
+scripts/custom/ServerCore_Security/Sphere56bCore/
+scripts/custom/ServerCore_Security/spheremenu.scp
+scripts/custom/ServerCore_Security/spherenewb.scp
+scripts/custom/ServerCore_Security/spheretable_x.scp
+
+scripts/custom/			
+scripts/custom/bf_npc_quests/		// NPC Quests
+scripts/custom/bf_npc_quests/Companies/	// Wig's Companies
+scripts/custom/Graham_Sqweak/		// Graham's (Kira)
+scripts/custom/k/			// Kell's (Kell)
+scripts/custom/j/			// Wigifer
+scripts/custom/jes/			// Wren
+scripts/custom/jim/			// Jimmie
+scripts/custom/luci/	         	// Lucifus
+scripts/custom/liled/                   // Lil_eddie
+scripts/custom/GMCmds_Tools/
+scripts/custom/GMCmds_Tools/EventSystems/
+scripts/custom/Combat/
+scripts/custom/contributions/
+scripts/custom/contributions/dafty/
+scripts/custom/PlayerCmds/
+scripts/custom/SkillBackbone/
+scripts/custom/Skills/
+scripts/custom/Skills/Bard/
+scripts/custom/Skills/Magery/
+scripts/custom/Skills/Necromancy/
+scripts/custom/Skills/Poisoning/
+scripts/custom/ServerCore_Security/
+
+scripts/custom/ray/
+scripts/custom/ray/r_necrograves.scp
+scripts/custom/ray/r_sosbottles.scp
+scripts/custom/ray/r_farming.scp
+
+scripts/custom/pinkp/
+scripts/custom/pinkp/bomberman.scp
+scripts/custom/pinkp/p_achievements.scp
+scripts/custom/pinkp/p_afk_check.scp
+scripts/custom/pinkp/p_blackmarket.scp
+scripts/custom/pinkp/p_capture_the_head.scp
+scripts/custom/pinkp/p_christmas.scp
+scripts/custom/pinkp/p_events_functions.scp
+scripts/custom/pinkp/p_events_items.scp
+scripts/custom/pinkp/p_events_kits.scp
+scripts/custom/pinkp/p_events_manager.scp
+scripts/custom/pinkp/p_events_records.scp
+scripts/custom/pinkp/p_farquharsen.scp
+scripts/custom/pinkp/p_functions.scp
+scripts/custom/pinkp/p_jewelry_changer.scp
+scripts/custom/pinkp/p_misc.scp
+scripts/custom/pinkp/p_quizz.scp
+scripts/custom/pinkp/p_referral.scp
+scripts/custom/pinkp/p_royal_rumble.scp
+scripts/custom/pinkp/p_skill_stone.scp
+scripts/custom/pinkp/p_treasure_hunt.scp
+scripts/custom/pinkp/p_weddings.scp
+scripts/custom/pinkp/p_gamble.scp
+scripts/custom/pinkp/p_donator.scp
+
+scripts/custom/wignew/
+
+
+[RUNES]
+An
+Bet
+Corp
+Des
+Ex
+Flam
+Grav
+Hur
+In
+Jux
+Kal
+Lor
+Mani
+Nox
+Ort
+Por
+Quas
+Rel
+Sanct
+Tym
+Uus
+Vas
+Wis
+Xen
+Ylem
+Zan
+
+[OBSCENE]
+*fuck*
+*shit
+shit*
+nigger*
+*nigger
+nigga
+cunt*
+cock
+cocksucker
+asshole
+asswipe
+tits
+whore
+jigaboo
+chigaboo
+kyke
+kike
+spic
+prick
+piss
+lezbo
+lesbo
+felatio
+dyke
+dildo
+chinc
+chink
+cunniling*
+clitor*
+clit
+penis
+klit
+kunt
+jism
+jerkoff
+jackoff
+goddamn
+blowjob
+bitch
+dick
+pussy
+snatch
+twat
+
+[FAME]
+0,2000,6000
+Anonymous
+Known
+Famous
+
+[KARMA]
+-10000,-6000,-2000,2001,6001
+Wicked
+Belligerent
+Neutral
+Kindly
+Goodhearted
+
+[NOTOTITLES] // NotoTitles
+9900,5000,1000,500,100,-100,-500,-1000,-5000,-9900    // karma levels
+500,1000,5000,9900                                    // fame levels
+
+// highest karma
+Trustworthy
+Estimable
+Great
+Glorious
+Glorious
+
+Honest
+Commendable
+Famed
+Illustrious
+Illustrious
+
+Good
+Honorable
+Admirable
+Noble
+Noble
+
+Kind
+Respectable
+Proper
+Eminent
+Eminent
+
+Fair
+Upstanding
+Reputable
+Distinguished
+Distinguished
+
+<none>
+Notable
+Prominent
+Renowned
+Renowned
+
+Rude
+Disreputable
+Notorious
+Imfamous
+Dishonored
+
+Unsavory
+Dishonorable
+Ignoble
+Sinister
+Sinister
+
+Scoundrel
+Malicious
+Vile
+Villainous
+Dark
+
+Despicable
+Dastardly
+Wicked
+Evil
+Evil
+
+Outcast
+Wretched
+Nefarious
+Dread
+Dread
+
+[PLEVEL 1]	// extra player commands.
+AFK
+DETAIL
+WHERE
+SELF
+LAST
+HELP
+HelpPage
+ACCOUNTINFO
+online
+g
+dcshow125a
+listguild
+password
+peace
+claimskill
+
+[FUNCTION GSET]
+SET <args>
+
+[PLEVEL 2]	// extra counselor commands.
+REMOVE
+THROWXPOT
+XMUTE
+XAFKTEST
+INFO
+FLIP
+PROPS
+CAST
+TELE
+TWEAK
+ADMIN
+PAGE
+GO
+SLEEP
+BARK
+SUICIDE
+RESEND
+SYNC
+ANIM
+UNDERWEAR
+FIX
+INVIS
+CYCLE
+NUDGEUP
+NUDGEDOWN
+MTELE
+MNIGHTSIGHT
+
+[PLEVEL 3]
+CHARLIST
+
+[PLEVEL 4]
+RESYNC
+GM
+LINK
+TILE
+NUKE
+PASSRESET
+XGO
+GOUID
+INVUL
+FIXPAD
+REGION
+ALLCLIENTS
+KILL
+JAIL
+FORGIVE
+GONAME
+ALLSHOW
+STATIC
+DUPE
+FLIP
+GOCHAR
+ADD
+GOSOCK
+NIGHTSIGHT
+GOCLI
+GOTYPE
+
+[PLEVEL 5]
+EXPORT
+
+[PLEVEL 6]
+ACCOUNT
+SETPRIV
+DIALOG
+BLOCKIP
+TOME
+EXTRACT
+UNEXTRACT
+IMPORT
+EMAIL
+SHUTDOWN
+SAVE
+
+[ADVANCE]
+STR=0,0,0
+INT=0,0,0
+DEX=0,0,0
+
+
+[FUNCTION TestNewLBs]
+SYSMESSAGE Wuddup G
+
+
+[STARTS]
+Arrival
+The Main Room
+5240,1391,1,0
+Arrival
+The Main Room
+5240,1391,1,0
+Arrival
+The Main Room
+5240,1391,1,0
+Arrival
+The Main Room
+5240,1391,1,0
+Arrival
+The Main Room
+5240,1391,1,0
+Arrival
+The Main Room
+5240,1391,1,0
+Arrival
+The Main Room
+5240,1391,1,0
+Arrival
+The Main Room
+5240,1391,1,0
+Arrival
+The Main Room
+5240,1391,1,0
+Arrival
+The Main Room
+5240,1391,1,0
+Arrival
+The Main Room
+5240,1391,1,0
+Arrival
+The Main Room
+5240,1391,1,0
+
+
+
+// [Function online]
+// ctag.admin_numplayers=0
+// ctag.admin_numnewclients=0
+// ctag.admin_numstaff=0
+// SERV.ALLCLIENTS admin_getplayers
+// SYSMESSAGE There are <eval <ctag0.admin_numplayers>> players online.
+// IF (<ACCOUNT.PLEVEL> > 1)
+//    SYSMESSAGE GM Info: Of these <EVAL <ctag0.admin_numnewclients>> are using Mondains Legacy clients, and <EVAL <ctag0.admin_numstaff>> are staff.
+// ENDIF
+
+
+//[FUNCTION voteall]
+//SRC.WEBLINK=www.theuoproject.co.uk/vote_s.php?acct=<SRC.ACCOUNT>
+//SYSMESSAGE You are now being redirected to our voting links.
+//SYSMESSAGE Thank you very much.
+
+

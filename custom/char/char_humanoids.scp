@@ -1,0 +1,2637 @@
+//Loot for humanoid characters.  BFUO Shard.
+//Assembled by Kell. (evren@portugalmail.pt)
+//Revamped by Warman. (warman@mail.pt)
+//Changed loot for @DeathCorpse event on all NPCs, by Yin (yinling@hong-kong-1.com) 25.03.2006
+//Changed for region/death dependable gold loot and chance of geting items, by Yin  (yinling@hong-kong-1.com) 30.03.2006
+
+// #-----------#
+// # CHANGELOG #
+// #-----------#
+//
+// 19/08/18 - Wigifer - Removed random loot from these monsters, ready for conversion to the new f_central_loot table.
+
+
+  /////////////
+ //LIZARDMEN//
+/////////////
+
+[CHARDEF 021]
+DEFNAME		= c_lizardman
+NAME		= #NAMES_LIZARDMAN the Lizard Man
+SOUND		= snd_MONSTER_LZRDMN1
+ICON		= i_pet_LIZMAN
+ANIM		= 078c7f
+DAM		= 6,18
+ARMOR		= 24
+RESOURCES	= 6 i_ribs_raw,4 i_hide
+CAN		= MT_WALK|MT_RUN|MT_USEHANDS
+FOODTYPE	= 15 t_meat_raw
+DESIRES		= i_gold,c_LIZARDMAN
+AVERSIONS	= e_carnivores3
+TEVENTS		= e_npc_frenzy
+
+//TEVENTS         = +e_looter
+CATEGORY	= Monsters
+SUBSECTION	= Lizardmen
+DESCRIPTION	= Lizardman
+ON=@Create
+  NPC		= brain_monster
+  FAME		= {300 1000}
+  KARMA		= {-2000 -2999}
+  STR		= {120 150}
+  DEX		= {50 60}
+  INT		= {60 78}
+  PARRYING	= {55.0 75.0}
+  MagicResistance={35.0 60.0}
+  TACTICS	= {55.0 80.0}
+  WRESTLING	= {50.0 70.0}
+  
+
+[FUNCTION loot_LIZARDMAN]
+addlootgold ,380
+addlootrandom ,2,7,1,random_agility_potion
+addlootrandom ,280,500,1,random_rare_1
+
+	
+[CHARDEF 023]
+DEFNAME		= c_lizardman_spear
+NAME		= #NAMES_lizardman the Lizard Man
+SOUND		= snd_MONSTER_LZRDMN1
+ICON		= i_pet_LIZMAN
+ANIM		= 078c7f
+DAM		= 13,19
+ARMOR		= 24
+RESOURCES	= 6 i_ribs_raw,4 i_hide
+CAN		= MT_WALK|MT_RUN|MT_USEHANDS
+FOODTYPE	= 15 t_meat_raw
+DESIRES		= i_gold,c_lizardman
+AVERSIONS	= e_carnivores3
+TEVENTS		= e_npc_frenzy
+
+CATEGORY	= Monsters
+SUBSECTION	= Lizardmen
+DESCRIPTION	= Lizardman (Spear)
+ON=@Create
+  NPC		= brain_monster
+  FAME		= {300 1000}
+  KARMA		= {-2000 -2999}
+  STR		= {120 150}
+  DEX		= {50 60}
+  INT		= {60 78}
+  FENCING	= {40.0 65.0}
+  PARRYING	= {55.0 75.0}
+  MAGICRESISTANCE={35.0 60.0}
+  TACTICS	= {55.0 80.0}
+  WRESTLING	= {50.0 70.0}
+  
+
+[FUNCTION loot_LIZARDMAN_SPEAR]
+addlootitem ,random_spear_loot,1
+addlootgold ,450
+addlootrandom ,2,7,1,random_agility_potion
+addlootrandom ,280,500,1,random_rare_1
+
+[CHARDEF 024]
+DEFNAME		= c_lizardman_mace
+NAME		= #NAMES_lizardman the Lizard Man
+SOUND		= snd_MONSTER_LZRDMN1
+ICON		= i_pet_LIZMAN
+ANIM		= 078c7f
+DAM		= 13,19
+ARMOR		= 24
+RESOURCES	= 6 i_ribs_raw, 4 i_hide
+CAN		= MT_WALK|MT_RUN|MT_USEHANDS
+FOODTYPE	= 15 t_meat_raw
+DESIRES		= i_gold,c_lizardman
+AVERSIONS	= e_carnivores3
+TEVENTS		= e_npc_frenzy
+
+CATEGORY	= Monsters
+SUBSECTION	= Lizardmen
+DESCRIPTION	= Lizardman (Mace)
+ON = @Create
+  NPC		= brain_monster
+  FAME		= {300 1000}
+  KARMA		= {-2000 -2999}
+  STR		= {120 150}
+  DEX		= {50 60}
+  INT		= {60 78}
+  MACEFIGHTING	= {45.0 60.0}
+  PARRYING	= {55.0 75.0}
+  MAGICRESISTANCE={35.0 60.0}
+  TACTICS	= {55.0 80.0}
+  WRESTLING	= {50.0 70.0}
+  
+  
+[FUNCTION loot_LIZARDMAN_MACE]
+addlootitem ,random_mace_loot,1
+addlootgold ,380
+addlootrandom ,2,7,1,random_agility_potion
+addlootrandom ,280,500,1,random_rare_1
+
+
+  //////////
+ //RATMEN//
+//////////
+
+[CHARDEF 02a]
+DEFNAME		= c_ratman
+NAME		= #NAMES_RATMAN the Rat Man
+SOUND		= snd_MONSTER_RATMAN1
+ICON		= i_pet_RATMAN
+ANIM		= 078c7f
+DAM		= 8,10
+ARMOR		= 15
+CAN		= MT_WALK|MT_RUN|MT_USEHANDS
+RESOURCES	= 6 i_ribs_raw,2 i_fur_light
+FOODTYPE	= 15 t_meat_raw,i_cheese_wheel
+DESIRES		= c_ratman,c_ratman_w_sword,c_ratman_w_mace
+
+CATEGORY	= Monsters
+SUBSECTION	= Ratmen
+DESCRIPTION	= Rat Man
+ON = @Create
+  NPC		= brain_monster
+  COLOR		= 08000
+  FAME		= {100 300}
+  KARMA		= {-2000 -2999}
+  STR		= {96 120}
+  DEX		= { 55 65 }
+  INT		= {36 60}
+  PARRYING	= {50.0 70.0}
+  MAGICRESISTANCE={35.0 60.0}
+  TACTICS	= {50.0 75.0}
+  WRESTLING	= {50.0 75.0}
+
+[CHARDEF 02c]
+DEFNAME		= c_ratman_w_mace
+NAME		= #NAMES_RATMAN the Rat Man
+SOUND		= snd_MONSTER_RATMAN1
+ICON		= i_pet_RATMAN
+ANIM		= 078c7f
+DAM		= 5,9
+ARMOR		= 16
+RESOURCES	= 6 i_ribs_raw, 2 i_fur_light
+CAN		= MT_WALK|MT_RUN|MT_USEHANDS
+FOODTYPE	= 15 t_meat_raw,i_cheese_wheel
+DESIRES		= c_ratman,c_ratman_w_sword,c_ratman_w_mace
+
+CATEGORY	= Monsters
+SUBSECTION	= Ratmen
+DESCRIPTION	= Rat Man
+ON = @Create
+  NPC		= brain_monster
+  COLOR		= 08032
+  FAME		= {100 300}
+  KARMA		= {-2000 -2999}
+  STR		= {96 120}
+  DEX		= { 55 65 }
+  INT		= {36 60}
+  MACEFIGHTING	= {45.0 60.0}
+  PARRYING	= {50.0 70.0}
+  MAGICRESISTANCE={35.0 60.0}
+  TACTICS	= {50.0 75.0}
+  WRESTLING	= {50.0 75.0}
+
+[CHARDEF 02d]
+DEFNAME		= c_ratman_w_sword
+NAME		= #NAMES_RATMAN the Rat Man
+SOUND		= snd_MONSTER_RATMAN1
+ICON		= i_pet_RATMAN
+ANIM		= 078c7f
+DAM		= 9,16
+ARMOR		= 16
+RESOURCES	= 6 i_ribs_raw,2 i_fur_light
+CAN		= MT_WALK|MT_RUN|MT_USEHANDS
+FOODTYPE	= 15 t_meat_raw,i_cheese_wheel
+DESIRES		= c_ratman,c_ratman_w_sword,c_ratman_w_mace
+
+CATEGORY	= Monsters
+SUBSECTION	= Ratmen
+DESCRIPTION	= Rat Man (Club)
+ON=@Create
+  NPC		= brain_monster
+  COLOR		= 08032
+  STR		= {96 120}
+  DEX		= { 55 65 }
+  INT		= {36 60}
+  SWORDSMANSHIP	= {40.0 60.0}
+  PARRYING	= {50.0 70.0}
+  MAGICRESISTANCE={35.0 60.0}
+  TACTICS	= {50.0 75.0}
+  WRESTLING	= {50.0 75.0}
+  FAME		= {100 300}
+  KARMA		= {-2000 -2999}
+
+[FUNCTION loot_RATMAN]
+addlootgold ,280
+addlootrandom ,800,1200,1,random_rare_1
+addlootrandom ,2,7,1,random_agility_potion
+addlootrandom ,10,40,1,i_ingot_gold
+addlootrandom ,20,25, 1, random_LOWER_MERC
+addlootrandom ,10,30,1,i_ingot_silver
+
+  ///////////
+ //HARPIES//
+///////////
+
+[CHARDEF 01e]
+DEFNAME		= c_harpy
+NAME		= Harpy
+SOUND		= snd_MONSTER_HARPY1
+ICON		= i_pet_HARPY
+ANIM		= 03f8c7f
+DAM		= 4, 10
+ARMOR		= 18
+CAN		= MT_WALK|MT_FLY|MT_FEMALE|MT_USEHANDS
+RESOURCES	= 9 i_ribs_raw,50 i_feather
+FOODTYPE	= 5 t_meat_raw
+DESIRES		= i_gold, c_harpy
+AVERSIONS	= r_civilization
+TEVENTS		= e_npc_harpy
+
+CATEGORY	= Monsters
+SUBSECTION	= Miscellaneous
+DESCRIPTION	= Harpy
+ON = @Create
+  NPC		= brain_monster
+  FAME		= {300 1000}
+  KARMA		= {-2000 -2999}
+  STR		= {120 150}
+  DEX		= {86 110}
+  INT		= {51 77}
+  PARRYING	= {75.0 90.0}
+  MAGICRESISTANCE={50.0 65.0}
+  TACTICS	= {80.0 100.0}
+  WRESTLING	= {75.0 90.0}
+
+[FUNCTION loot_HARPY]
+addlootgold ,280
+addlootitem ,MEAGER_MONSTER_BACKPACK,1
+addlootrandom ,300,500,1,random_rare_1
+
+
+[CHARDEF 01020]
+DEFNAME		= c_m_stoneharpy
+NAME		= Stone Harpy
+ID		= c_harpy
+SOUND		= snd_MONSTER_HARPY1
+ICON		= i_pet_HARPY
+CAN		= MT_FLY|MT_WALK|MT_FEMALE
+DAM		= 3,21
+ARMOR		= 40
+RESOURCES	= 3 i_ribs_raw, 50 i_feather, 5 tm_rocks
+FOODTYPE	= 5 t_meat_raw, 5 t_arock
+DESIRES		= i_gold, t_arock, c_harpy
+AVERSIONS	= r_water,r_civilization
+TEVENTS		= e_npc_harpy
+
+CATEGORY	= Monsters
+SUBSECTION	= Miscellaneous
+DESCRIPTION	= Stone Harpy
+ON=@Create
+  NPC		= brain_monster
+  COLOR		= color_rock
+  FAME		= {300 1000}
+  KARMA		= {-4000 -4999}
+  STR		= {295 320}
+  DEX		= {86 110}
+  INT		= {88 103}
+  PARRYING	= {75.0 90.0}
+  MAGICRESISTANCE={50.0 65.0}
+  TACTICS	= {70.0 100.0}
+  WRESTLING	= {60.0 90.0}
+  
+[FUNCTION loot_STONE_HARPY]
+  addlootgold ,650
+  addlootitem ,AVERAGE_MONSTER_BACKPACK,1
+  addlootrandom ,20,25, 1, random_MERC
+  addlootrandom ,180,280,1,random_rare_1
+
+
+  //////////
+ //TITANS//
+//////////
+
+[CHARDEF 01]
+DEFNAME=c_ogre
+NAME=#NAMES_OGRE the Ogre
+SOUND=snd_MONSTER_OGRE1
+ICON=i_pet_OGRE
+ANIM=078c7f
+CAN=MT_WALK|MT_USEHANDS
+
+DAM=5,20
+ARMOR=16
+RESOURCES=6 i_ribs_raw
+FOODTYPE=15 t_meat_raw
+DESIRES=c_ogre, t_arock
+AVERSIONS=t_TRAP,r_civilization
+CATEGORY=Monsters
+SUBSECTION=Ettins, Ogres, Trolls, Cyclops, and Titans
+DESCRIPTION=Ogre
+
+ON=@Create	// stuff that happens to the created instance of a char.
+  NPC=brain_monster
+  STR={165 195}
+  DEX={46 65}
+  INT={69 83}
+  PARRYING={45.0 55.0}
+  MAGICRESISTANCE={45.0 60.0}
+  TACTICS={60.0 70.0}
+  WRESTLING={70.0 80.0}
+  FAME=4500
+  KARMA={-1000 -1999}
+
+[FUNCTION loot_OGRE]
+addlootgold ,300
+addlootrandom ,3,18,3,random_jewel
+addlootrandom ,3,12,1,tm_boulders
+addlootrandom ,2,4,1,tm_rocks
+addlootrandom ,20,25, 1, random_LOWER_MERC
+
+
+[CHARDEF 02]
+// Ettin with no stone axe.
+DEFNAME=c_ettin
+NAME=Ettin
+SOUND=snd_MONSTER_ETTIN1
+ICON=i_pet_ETTIN
+ANIM=078c7f
+CAN=MT_WALK|MT_USEHANDS
+
+DAM=4,20
+ARMOR=19
+RESOURCES=8 i_ribs_raw
+FOODTYPE=15 t_meat_raw
+DESIRES=c_ettin,c_ettin_w_axe,t_arock
+AVERSIONS=r_civilization
+
+CATEGORY=Monsters
+SUBSECTION=Ettins, Ogres, Trolls, Cyclops, and Titans
+DESCRIPTION=Ettin
+
+ON=@Create
+NPC=brain_monster
+FAME=5000
+KARMA={-2000 -2999}
+STR={135 165}
+DEX={56 75}
+INT={69 83}
+
+PARRYING={50.0 60.0}
+MAGICRESISTANCE={40.0 55.0}
+TACTICS={50.0 70.0}
+WRESTLING={50.0 60.0}
+
+ 
+[FUNCTION loot_ETTIN]
+addlootitem ,random_potion,1
+addlootitem ,random_potion,1
+addlootrandom ,3,9,1,random_jewel
+addlootrandom ,2,4,1,tm_rocks
+addlootrandom ,20,25, 1, random_LOWER_MERC
+addlootgold ,250
+
+
+[CHARDEF 012]
+// Ettin with big stone axe.
+DEFNAME=c_ettin_w_axe
+NAME=Ettin
+SOUND=snd_MONSTER_ETTIN1
+ICON=i_pet_ETTIN
+ANIM=078c7f
+DAM=8,20
+ARMOR=19
+RESOURCES=20 i_ribs_raw
+CAN=MT_WALK|MT_USEHANDS
+
+FOODTYPE=15 t_meat_raw
+DESIRES=c_ettin,c_ettin_w_axe
+AVERSIONS=r_civilization
+
+CATEGORY=Monsters
+SUBSECTION=Ettins, Ogres, Trolls, Cyclops, and Titans
+DESCRIPTION=Ettin (Axe)
+
+ON=@Create
+  NPC=brain_monster
+  FAME={600 5000}
+  KARMA={-2000 -2999}
+
+  STR={135 165}
+  DEX={56 75}
+  INT={69 83}
+
+  SWORDSMANSHIP={45.0 65.0}
+  PARRYING={50.0 60.0}
+  MAGICRESISTANCE={40.0 55.0}
+  TACTICS={50.0 70.0}
+  WRESTLING={50.0 60.0}
+
+[CHARDEF 035]
+DEFNAME=c_troll_w_axe
+NAME=Troll
+SOUND=snd_MONSTER_TROLL1
+ICON=i_pet_TROLL
+ANIM=078c7f
+DAM=10,23
+ARMOR=20
+RESOURCES=10 i_ribs_raw
+CAN=MT_WALK|MT_USEHANDS
+
+FOODTYPE=15 t_meat_raw
+DESIRES=i_gold
+AVERSIONS=r_civilization
+CATEGORY=Monsters
+SUBSECTION=Ettins, Ogres, Trolls, Cyclops, and Titans
+DESCRIPTION=Troll (Sword)
+
+ON=@Create
+NPC=brain_monster
+
+STR={175 205}
+DEX={46 65}
+INT={69 83}
+
+SWORDSMANSHIP={50.0 70.0}
+PARRYING={45.0 60.0}
+MAGICRESISTANCE={45.0 60.0}
+TACTICS={50.0 70.0}
+WRESTLING={50.0 70.0}
+
+FAME={100 5000}
+KARMA={-3000 -3999}
+
+[FUNCTION loot_TROLL]
+addlootitem ,random_potion,1
+addlootitem ,random_potion,1
+addlootgold ,280
+
+	
+[CHARDEF 036]
+DEFNAME=c_troll
+NAME=Troll
+SOUND=snd_MONSTER_TROLL1
+ICON=i_pet_TROLL
+ANIM=078c7f
+DAM=5,17
+ARMOR=20
+RESOURCES=10 i_ribs_raw
+CAN=MT_WALK|MT_USEHANDS
+
+FOODTYPE=15 t_meat_raw
+DESIRES=i_gold
+AVERSIONS=r_civilization
+CATEGORY=Monsters
+SUBSECTION=Ettins, Ogres, Trolls, Cyclops, and Titans
+DESCRIPTION=Troll
+
+ON=@Create
+NPC=brain_monster
+STR={175 205}
+DEX={46 65}
+INT={69 83}
+
+PARRYING={45.0 60.0}
+MAGICRESISTANCE={45.0 60.0}
+TACTICS={50.0 70.0}
+WRESTLING={50.0 70.0}
+
+FAME={100 5000}
+KARMA={-3000 -3999}
+
+[CHARDEF 037]
+DEFNAME=c_troll_w_mace
+NAME=Troll
+SOUND=snd_MONSTER_TROLL1
+ICON=i_pet_TITAN
+ANIM=078c7f
+CAN=MT_WALK|MT_USEHANDS
+
+DAM=10,23
+ARMOR=20
+RESOURCES=10 i_ribs_raw
+FOODTYPE=15 t_meat_raw
+DESIRES=i_gold
+AVERSIONS=r_civilization
+CATEGORY=Monsters
+SUBSECTION=Ettins, Ogres, Trolls, Cyclops, and Titans
+DESCRIPTION=Troll (Mace)
+
+ON=@Create
+NPC=brain_monster
+
+STR={175 205}
+DEX={46 65}
+INT={69 83}
+
+MACEFIGHTING={50.0 70.0}
+PARRYING={45.0 60.0}
+MAGICRESISTANCE={45.0 60.0}
+TACTICS={50.0 70.0}
+WRESTLING={50.0 70.0}
+
+FAME={100 5000}
+KARMA={-3000 -3999}
+
+[CHARDEF 04b]
+DEFNAME=c_titan
+NAME=Titan
+SOUND=snd_MONSTER_TITAN1
+ICON=i_pet_TITAN
+ANIM=078c7f
+DAM=4,18
+ARMOR=20
+RESOURCES=10 i_ribs_raw
+CAN=MT_WALK|MT_USEHANDS
+
+FOODTYPE=15 t_meat_raw
+DESIRES=c_titan
+AVERSIONS=r_civilization
+CATEGORY=Monsters
+SUBSECTION=Ettins, Ogres, Trolls, Cyclops, and Titans
+DESCRIPTION=Titan
+
+ON=@Create
+NPC=brain_monster
+
+STR={535 585}
+DEX={125 145}
+INT={80 93}
+
+PARRYING={40.0 50.0}
+MAGERY={85.0 100.0}
+MAGICRESISTANCE={80.0 95.0}
+TACTICS={60.0 80.0}
+WRESTLING={40.0 50.0}
+
+FAME={100 2000}
+KARMA={-5000 -5999}
+
+[FUNCTION loot_TITAN]
+addlootitem ,random_potion,1
+addlootgold ,600
+
+
+[CHARDEF 04c]
+DEFNAME=c_cyclops
+NAME=Cyclops
+SOUND=snd_MONSTER_CYCLOPS1
+ICON=i_pet_CYCLOPS
+ANIM=078c7f
+CAN=MT_WALK|MT_USEHANDS
+
+DAM=4,26
+ARMOR=22
+RESOURCES=10 i_ribs_raw
+FOODTYPE=15 t_meat_raw
+DESIRES=c_cyclops,t_arock
+AVERSIONS=r_civilization
+CATEGORY=Monsters
+SUBSECTION=Ettins, Ogres, Trolls, Cyclops, and Titans
+DESCRIPTION=Cyclops
+
+ON=@Create
+NPC=brain_monster
+FAME={100 2000}
+KARMA={-4000 -4999}
+STR={335 385}
+DEX={95 115}
+INT={41 65}
+
+PARRYING={70.0 80.0}
+MAGICRESISTANCE={60.0 75.0}
+TACTICS={80.0 100.0}
+WRESTLING={80.0 90.0}
+
+[FUNCTION loot_CYCLOPS]
+addlootitem ,random_potion,1
+addlootitem ,random_potion,1
+addlootrandom ,4,9,1,random_jewel
+addlootrandom ,3,12,1,tm_boulders
+addlootrandom ,2,4,1,tm_rocks
+addlootgold ,320
+
+
+[CHARDEF 01124]
+DEFNAME=c_m_frost_ettin
+NAME=a Frost Ettin
+ID=c_ettin
+SOUND=snd_MONSTER_ETTIN1
+ICON=i_pet_ETTIN
+CAN=MT_USEHANDS|MT_WALK
+
+DAM=3,15
+ARMOR=17,17
+FOODTYPE=5 t_meat_raw
+RESOURCES={5 10} i_ribs_raw
+
+ON=@Create
+  COLOR=color_snow
+  STR={250 350}
+  INT={31 55}
+  DEX={100 150}
+
+  PARRYING={56.6 65.8}
+  MAGICRESISTANCE={85.0 95.0}
+  TACTICS={52.1 78.8}
+  WRESTLING={58.4 67.6}
+ 
+  NPC=BRAIN_MONSTER
+  
+  FAME={4000 4000}
+  KARMA={-2000 -2999}
+
+CATEGORY=Monsters
+SUBSECTION=Ettins, Ogres, Trolls, Cyclops, and Titans
+DESCRIPTION=Frost Ettin
+
+[CHARDEF 01127]
+DEFNAME=c_m_cyclops_king
+NAME=a Cyclop King
+SOUND=snd_MONSTER_CYCLOPS1
+ID=c_CYCLOPS
+DAM=6,30
+ARMOR=28
+RESOURCES=30 i_ribs_raw
+FOODTYPE=15 t_meat_raw
+
+CAN=MT_WALK
+
+//ALIGNMENT=EVIL
+
+ON=@Create
+STR={350 390}
+DEX={95 115}
+INT={69 83}
+
+MAGICRESISTANCE={60.0 75.0}
+PARRYING={70.0 80.0}
+TACTICS={80.0 100.0}
+WRESTLING={80.0 90.0}
+
+NPC=BRAIN_MONSTER
+
+KARMA={-5000 -5999}
+FAME={100 2000}
+
+CATEGORY=Monsters
+SUBSECTION=Ettins, Ogres, Trolls, Cyclops, and Titans
+DESCRIPTION=Cyclops King
+
+[CHARDEF 01128]
+DEFNAME=c_m_ettin_lord
+NAME=Ettin Lord
+SOUND=snd_MONSTER_ETTIN1
+ID=c_ETTIN_W_AXE
+
+DAM=20,30
+ARMOR={30 40}
+RESOURCES=20 i_ribs_raw
+
+CAN=MT_USEHANDS|MT_WALK
+
+FOODTYPE=15 t_meat_raw
+
+ON=@Create
+  STR={200 300}
+  DEX={56 75}
+  INT={80 90}
+
+  MAGERY={30.0 50.0}
+  MAGICRESISTANCE={40.0 55.0}
+  PARRYING={50.0 60.0}
+  SWORDSMANSHIP={60.0 75.0}
+  TACTICS={60.0 70.0}
+  WRESTLING={50.0 60.0}
+  NPC=BRAIN_MONSTER  
+  KARMA={-5000 -7999}
+  FAME={4500 6999}
+  ITEMNEWBIE=i_spellbook
+  MORE1=000000d1
+  MORE2=00000000
+
+CATEGORY=Monsters
+SUBSECTION=Ettins, Ogres, Trolls, Cyclops, and Titans
+DESCRIPTION=Ettin Lord
+
+[CHARDEF 01040]
+DEFNAME=c_m_ogre_lord
+NAME=Ogre Lord
+ID=c_OGRE
+SOUND=snd_MONSTER_OGRE1
+ICON=i_pet_OGRE_2
+
+DAM=10,42
+ARMOR=40
+RESOURCES=10 i_ribs_raw
+
+CAN=MT_WALK
+
+FOODTYPE=15 t_meat_raw
+DESIRES=C_OGRE
+AVERSIONS=r_civilization
+
+ON=@Create
+  STR={765 945}
+  DEX={120 130}
+  INT={81 94}
+  PARRYING={75.0 85.0}
+  MAGICRESISTANCE={65.0 80.0}
+  TACTICS={90.0 100.0}
+  WRESTLING={90.0 100.0}
+  NPC=BRAIN_MONSTER
+  FAME={100 2000}
+  KARMA={-4000 -4999}
+
+CATEGORY=Monsters
+SUBSECTION=Ettins, Ogres, Trolls, Cyclops, and Titans
+DESCRIPTION=Ogre Lord
+
+[FUNCTION loot_OGRE_LORD]
+addlootgold ,1600
+addlootrandom ,3,9,1,random_jewel
+addlootrandom ,2,4,1,tm_rocks
+
+
+[CHARDEF 01054]
+DEFNAME=c_m_frost_troll
+NAME=Frost Troll
+ID=c_TROLL
+SOUND=snd_MONSTER_TROLL1
+ICON=i_pet_TITAN
+DAM=9,25
+ARMOR=25
+RESOURCES=10 i_ribs_raw
+CAN=MT_WALK
+
+FOODTYPE=15 t_meat_raw
+DESIRES=i_gold
+AVERSIONS=r_civilization
+
+ON=@Create
+COLOR=color_snow
+STR={300 350}
+DEX={46 65}
+INT={60 78}
+
+PARRYING={65.0 80.0}
+MAGICRESISTANCE={95.0 100.0}
+TACTICS={90.0 100.0}
+WRESTLING={90.0 100.0}
+
+NPC=BRAIN_MONSTER
+
+FAME={100 2000}
+KARMA={-2000 -2999}
+
+CATEGORY=Monsters
+SUBSECTION=Ettins, Ogres, Trolls, Cyclops, and Titans
+DESCRIPTION=Frost Troll
+
+[FUNCTION loot_FROST_TROLL]
+addlootgold ,650
+addlootitem ,random_potion,1
+addlootrandom ,7,14,1,random_weapon
+
+
+
+  ////////
+ //ORCS//
+////////
+
+
+[CHARDEF 01057]
+DEFNAME=c_m_orc_captain
+NAME=Orc Captain
+ID=c_orc_lord
+DAM=2,18
+ARMOR=17
+RESOURCES=8 i_ribs_raw,1 i_Orc_spine //, ORCCAMP
+FOODTYPE=15 t_meat_raw
+DESIRES=i_gold,spk_orc
+
+ON=@Create
+  STR={90 125}
+  DEX={100 135}
+  INT={68 81}
+  SWORDSMANSHIP={70.0 85.0}
+  PARRYING={70.0 95.0}
+  MAGICRESISTANCE={70.0 85.0}
+  TACTICS={85.0 100.0}
+  MACEFIGHTING={50.0 70.0}
+  NPC=brain_monster
+  FAME={100 2000}
+  KARMA={-2000 -2999}
+
+CATEGORY=Monsters
+SUBSECTION=Orcs
+DESCRIPTION=Orc Captain
+
+[FUNCTION loot_ORC_CAPTAIN]
+  addlootgold ,550
+  addlootitem ,random_axe,1
+  addlootitem ,i_ringmail_tunic,1
+  addlootitem ,i_helm_orc,1
+  addlootitem ,i_boots_thigh,1
+  addlootitem ,Random_Potion,1
+
+[CHARDEF 01058]
+DEFNAME=c_m_orc_mage
+NAME=#NAMES_ORC the Orc Mage
+ID=c_ORC
+DAM=2,16
+ARMOR=15
+RESOURCES=8 i_ribs_raw,1 i_Orc_spine
+FOODTYPE=15 t_meat_raw
+DESIRES=i_gold,spk_orc
+
+ON=@Create
+  COLOR=colors_green
+  STR={105 110}
+  DEX={91 115}
+  INT={60 75}
+  PARRYING={60.0 85.0}
+  MAGERY={70.0 95.0}
+  MAGICRESISTANCE={70.0 85.0}
+  TACTICS={75.0 90.0}
+  NPC=BRAIN_MONSTER
+  FAME={100 2000}
+  KARMA={-3000 -3999}
+  ITEMNEWBIE=i_spellbook
+  MORE1=06c0a0895
+  MORE2=00000000
+
+CATEGORY=Monsters
+SUBSECTION=Orcs
+DESCRIPTION=Orc Mage
+
+[FUNCTION loot_ORCISH_MAGE]
+addlootgold ,550
+addlootitem ,i_boots_thigh,1
+addlootitem ,Random_Potion,1
+addlootitem ,Random_Potion,1
+addlootrandom ,2,4,1,RANDOM_SCROLL
+
+
+[CHARDEF 07]
+DEFNAME=c_orc_lord
+//DEFNAME2=c_ORC_LORD
+NAME=#NAMES_ORC the Orc Lord
+SOUND=snd_MONSTER_ORC1
+ICON=i_pet_ORC
+ANIM=078c7f
+CAN=MT_WALK|MT_RUN|MT_USEHANDS|MT_EQUIP
+
+DAM=2,16
+ARMOR=15
+RESOURCES=8 i_ribs_raw,1 i_Orc_spine
+FOODTYPE=15 t_meat_raw
+DESIRES=i_gold,spk_orc
+CATEGORY=Monsters
+SUBSECTION=Orcs
+DESCRIPTION=Orc Lord
+
+ON=@Create
+  NPC=brain_monster
+  FAME={2000 4000}
+  KARMA={-2000 -2999}
+  STR={120 200}
+  DEX={65 160}
+  INT={74 83}
+  PARRYING={60.0 85.0}
+  MAGICRESISTANCE={70.0 85.0}
+  TACTICS={75.0 90.0}
+  SWORDSMANSHIP={60.0 85.0}
+  MACEFIGHTING={50.0 70.0}
+  ITEMNEWBIE=i_boots_thigh
+
+[FUNCTION loot_ORCISH_LORD]
+addlootgold ,650
+addlootitem ,Random_Potion,1
+addlootitem ,random_axe,1
+addlootitem ,i_ringmail_tunic,1
+addlootitem ,i_helm_orc,1
+addlootrandom ,5,7,1,RANDOM_JEWEL
+
+
+[CHARDEF 011]
+DEFNAME=c_orc
+NAME=#NAMES_ORC the Orc
+SOUND=snd_MONSTER_ORC1
+ICON=i_pet_ORC
+ANIM=078c7f
+DAM=3,9
+ARMOR=14
+CAN=MT_WALK|MT_RUN|MT_USEHANDS|MT_EQUIP
+
+TEVENTS=e_despise_todd
+RESOURCES=8 i_ribs_raw, 1 i_Orc_spine
+FOODTYPE=15 t_meat_raw
+DESIRES=i_gold,spk_orc
+CATEGORY=Monsters
+SUBSECTION=Orcs
+DESCRIPTION=Orc
+
+ON=@Create
+  NPC=brain_monster
+  FAME={100 1000}
+  KARMA={-1000 -5000}
+  STR={76 100}
+  DEX={81 105}
+  INT={55 72}
+  PARRYING={50.0 75.0}
+  MAGICRESISTANCE={50.0 75.0}
+  TACTICS={55.0 80.0}
+  WRESTLING={50.0 70.0}
+
+
+[FUNCTION loot_ORC]
+addlootgold ,350
+addlootitem ,i_boots_thigh,1
+
+[CHARDEF 029]
+DEFNAME=c_orc_w_club
+NAME=#NAMES_ORC the Orc
+SOUND=snd_MONSTER_ORC1
+ICON=i_pet_ORC
+ANIM=078c7f
+DAM=5,12
+ARMOR=14
+CAN=MT_WALK|MT_RUN|MT_USEHANDS|MT_EQUIP
+
+TEVENTS=e_despise_todd
+RESOURCES=8 i_ribs_raw,1 i_Orc_spine
+FOODTYPE=15 t_meat_raw
+DESIRES=i_gold,spk_orc
+TSPEECH=spk_orc
+
+CATEGORY=Monsters
+SUBSECTION=Orcs
+DESCRIPTION=Orc (Club)
+
+ON=@Create
+  NPC=brain_monster
+  FAME={100 1000}
+  KARMA={-1000 -4999}
+  STR={76 100}
+  DEX={81 105}
+  INT={55 72}
+  MACEFIGHTING={55.0 65.0}
+  PARRYING={50.0 75.0}
+  MAGICRESISTANCE={50.0 75.0}
+  TACTICS={55.0 80.0}
+  WRESTLING={50.0 70.0}
+
+  ///////////
+ //GOBLINS//
+///////////
+
+[CHARDEF 01125]
+DEFNAME=c_m_goblin_shaman
+NAME=#NAMES_GOBLIN the Goblin Shaman
+ID=c_ORC
+ARMOR=14,14
+DAM=10,13
+RESOURCES=9 i_ribs_raw, 1 i_Orc_spine
+FOODTYPE=15 t_meat_raw
+DESIRES=i_gold,spk_orc
+
+ON=@Create
+  COLOR=colors_green
+  STR={45 65}
+  DEX={60 70}
+  INT={60 87}
+  MAGICRESISTANCE={51.6 75.2}
+  PARRYING={56.2 75.2}
+  TACTICS={55.7 88.5}
+  MAGERY={60.0 75.0}
+  WRESTLING={46.5 68.6}
+  NPC=BRAIN_MONSTER
+  KARMA={-1000 -4000}
+  FAME={450 800}
+
+[CHARDEF 01126]
+DEFNAME=c_m_goblin_lord
+NAME=#NAMES_GOBLIN the Goblin Lord
+ID=c_ORC_LORD
+DAM=5,10
+ARMOR=10,12
+RESOURCES=9 i_ribs_raw, 1 i_Orc_spine
+FOODTYPE=15 t_meat_raw
+DESIRES=i_gold,spk_orc
+
+ON=@Create
+  COLOR=colors_green
+  STR={50 75}
+  DEX={40 50}
+  INT={60 87}
+  MACEFIGHTING={40.0 55.0}
+  MAGICRESISTANCE={25.0 35.0}
+  PARRYING={45.0 60.0}
+  TACTICS={45.0 55.5}
+  WRESTLING={50.0 65.0}
+  NPC=BRAIN_MONSTER
+  KARMA={-100 -499}
+  FAME={100 250}
+  ITEMNEWBIE=i_boots_thigh
+
+CATEGORY=Monsters
+SUBSECTION=Goblins
+DESCRIPTION=Goblin Lord  (club)
+
+[CHARDEF 01064]
+DEFNAME=c_m_goblin
+NAME=#NAMES_GOBLIN the Goblin
+ID=c_ORC
+RESOURCES=6 i_ribs_raw, 1 i_Orc_spine
+DAM=3,6
+ARMOR=10,10
+FOODTYPE=15 t_meat_raw
+DESIRES=i_gold,spk_orc
+
+ON=@Create
+  COLOR=colors_green
+  STR={50 75}
+  DEX={50 75}
+  INT={55 80}
+  MAGICRESISTANCE={50.0 75.0}
+  PARRYING={35.0 55.0}
+  TACTICS={55.0 80.0}
+  WRESTLING={35.0 55.0}
+  KARMA={-3000 -1000}
+  FAME={100 500}
+  NPC=BRAIN_MONSTER
+
+CATEGORY=Monsters
+SUBSECTION=Goblins
+DESCRIPTION=Goblin
+
+[CHARDEF 01065]
+DEFNAME=c_m_goblin_mage
+NAME=#NAMES_GOBLIN the Goblin Mage
+ID=c_ORC
+RESOURCES=6 i_ribs_raw, 1 i_Orc_spine
+FOODTYPE=15 t_meat_raw
+DAM=3,6
+ARMOR=10
+DESIRES=i_gold,spk_orc
+
+
+ON=@Create
+  COLOR=colors_green
+  STR={50 75}
+  DEX={50 75}
+  INT={60 87}
+  MAGERY={35.0 60.0}
+  MAGICRESISTANCE={50.0 75.0}
+  PARRYING={35.0 55.0}
+  TACTICS={55.0 80.0}
+  WRESTLING={35.0 55.0}
+  NPC=BRAIN_MONSTER
+  KARMA={-3000 -1000}
+  FAME={100 500}
+  ITEMNEWBIE=i_spellbook
+  MORE1=068020811
+  MORE2=00000000
+
+CATEGORY=Monsters
+SUBSECTION=Goblins
+DESCRIPTION=Goblin Mage
+
+[CHARDEF 01066]
+DEFNAME=c_m_goblin_chief
+NAME=#NAMES_GOBLIN the Goblin Chief
+ID=c_orc_lord
+RESOURCES=6 i_ribs_raw, 1 i_Orc_spine
+FOODTYPE=15 t_meat_raw
+DAM=5,12
+ARMOR=13
+DESIRES=i_gold,spk_orc
+
+
+ON=@Create
+  NPC=BRAIN_MONSTER
+  COLOR=colors_green
+  STR={65 90}
+  DEX={60 80}
+  INT={60 87}
+  MAGICRESISTANCE={50.0 75.0}
+  PARRYING={50.0 70.0}
+  TACTICS={55.0 80.0}
+  WRESTLING={50.0 70.0}
+  MACEFIGHTING={50.0 70.0}
+  KARMA={-3000 -1000}
+  FAME={100 500}
+  ITEMNEWBIE={ i_boots_thigh 1 0 1}
+
+CATEGORY=Monsters
+SUBSECTION=Goblins
+DESCRIPTION=Goblin Chief
+
+
+  //////////
+ //SPRITE//
+//////////
+
+[CHARDEF 01070]
+DEFNAME=c_h_sprite_sprite
+NAME=#NAMES_ELF_FEMALE the Sprite
+ID=C_WOMAN
+CAN=MT_WALK|MT_FLY|MT_FEMALE
+
+DESIRES=i_gold,e_notoriety
+AVERSIONS=t_TRAP,t_eerie_stuff
+DAM=6,10
+TSPEECH=spk_human_prime
+TSPEECH=spk_human_default
+
+ON=@Create
+  COLOR=045e
+  STR={86 90}
+  DEX={91 100}
+  INT={61 77}
+  FENCING={65.0 88.0}
+  WRESTLING={35.0 58.0}
+  MAGICRESISTANCE={60.0 80.0}
+  TACTICS={75.0 85.0}
+  NPC=brain_Human
+  KARMA={-1500 -6000}
+  FAME={1200 3200}
+  ITEMNEWBIE=i_hair_PONYTAIL
+  COLOR=0597
+  ITEMNEWBIE=i_armor_female_plate
+  COLOR=0599
+  ITEMNEWBIE={ i_kryss_copper 10 i_kryss 3 i_kryss_bronze 1 }
+  COLOR=0599
+
+ON=@NPCRestock
+  ITEM=i_boots_calf
+  COLOR=0599
+  ITEM=i_cape
+  COLOR=0599
+
+CATEGORY=Civilized
+SUBSECTION=Sprite-Elf (Evil)
+DESCRIPTION=Sprite
+
+[CHARDEF 01071]
+DEFNAME=c_h_sprte_mage
+NAME=#NAMES_ELF_FEMALE the Sprite Mage
+ID=C_WOMAN
+DAM=6,10
+DESIRES=i_gold,e_notoriety
+AVERSIONS=t_TRAP,t_eerie_stuff
+CAN=MT_WALK|MT_FLY|MT_FEMALE
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_human_default
+
+ON=@Create
+  COLOR=045e
+  STR={86 90}
+  DEX={91 100}
+  INT={99 112}
+  WRESTLING={58.0 78.0}
+  MAGICRESISTANCE={60.0 80.0}
+  MAGERY={65.0 85.0}
+  NPC=brain_thief
+  KARMA={-1500 -6000}
+  FAME={1200 3200}
+  ITEMNEWBIE=i_hair_PONYTAIL
+  COLOR=0597
+
+ON=@NPCRestock
+  ITEM=i_robe
+  COLOR=0599
+  ITEM=i_sandals
+  COLOR=0599
+
+CATEGORY=Civilized
+SUBSECTION=Sprite-Elf (Evil)
+DESCRIPTION=Sprite Mage
+
+
+[CHARDEF 01072]
+DEFNAME=c_h_sprite_sorc
+//DEFNAME=C_H_SPRITE_SORCERESS
+NAME=#NAMES_ELF_FEMALE the Sprite Sorceress
+ID=C_WOMAN
+DAM=6,10
+DESIRES=i_gold,e_notoriety
+AVERSIONS=t_TRAP,t_eerie_stuff
+CAN=MT_WALK|MT_FLY|MT_FEMALE
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_human_default
+
+ON=@Create
+  COLOR=045e
+  STR={86 95}
+  DEX={91 100}
+  INT={61 77}
+  WRESTLING={68.0 88.0}
+  MAGICRESISTANCE={70.0 85.0}
+  MAGERY={75.0 95.0}
+  KARMA={-2000 -6500}
+  FAME={1700 3700}
+  NPC=brain_thief
+  ITEMNEWBIE=i_hair_LONG
+  COLOR=0
+
+ON=@NPCRestock
+  ITEMNEWBIE=i_hat_wizards
+  COLOR=0599
+  ITEMNEWBIE=i_robe
+  COLOR=0595
+  ITEMNEWBIE=i_sandals
+  COLOR=0599
+  
+CATEGORY=Civilized
+SUBSECTION=Sprite-Elf (Evil)
+DESCRIPTION=Sprite Sorcerous
+
+[CHARDEF 01073]
+DEFNAME=c_h_sprite_archer
+NAME=#NAMES_ELF_FEMALE the Sprite Archer
+ID=C_WOMAN
+DAM=6,10
+CAN=MT_WALK|MT_FLY|MT_FEMALE
+
+DESIRES=i_gold,e_notoriety
+AVERSIONS=t_TRAP,t_eerie_stuff
+TSPEECH=spk_human_prime
+TSPEECH=spk_human_default
+
+ON=@Create
+  COLOR=045e
+  STR={86 90}
+  DEX={91 100}
+  INT={61 77}
+  ARCHERY={65.0 88.0}
+  WRESTLING={35.0 58.0}
+  MAGICRESISTANCE={50.0 60.0}
+  TACTICS={75.0 85.0}
+  NPC=brain_Human
+  KARMA={-1500 -6000}
+  FAME={1200 3200}
+  ITEMNEWBIE=i_hair_KRISNA
+  COLOR=0597
+
+ON=@NPCRestock
+  ITEM=i_arrow,{20 40}
+  ITEMNEWBIE=I_LEATHER_TUNIC
+  COLOR=0595
+  ITEMNEWBIE=i_leather_gloves
+  COLOR=0595
+  ITEMNEWBIE=i_leather_leggings
+  COLOR=0595
+  ITEM=i_bow_pine
+  ITEMNEWBIE=i_boots_calf
+  COLOR=0599
+  ITEM=i_cape
+  COLOR=0599
+  ITEM=random_armour_leather
+  COLOR=0599
+  
+CATEGORY=Civilized
+SUBSECTION=Sprite-Elf (Evil)
+DESCRIPTION=Sprite Archer
+
+
+  //////////////
+ //FROST ELFS//
+//////////////
+
+[CHARDEF 01074]
+DEFNAME=c_h_frostelf_archer
+NAME=#NAMES_ELF_MALE the Frost Elf Archer
+ID=C_MAN
+DAM=10,20
+ARMOR=15
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_MALE
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_human_default
+
+ON=@Create
+  COLOR=05d
+  STR={70 90}
+  DEX={81 95}
+  INT={74 83}
+  ARCHERY={70.0 90.0}
+  MAGICRESISTANCE={20.0 30.0}
+  TACTICS={70.0 90.0}
+  WRESTLING={25.0 40.0}
+  NPC=BRAIN_HUMAN
+  KARMA={-3000 -4000}
+  FAME={2500 4000}
+  ITEMNEWBIE=i_hair_krisna
+
+ON=@NPCRestock
+ITEMNEWBIE=i_leather_tunic
+ITEMNEWBIE=i_tunic
+ITEM=random_shoes
+COLOR=01bb
+ITEM=i_bow_pine
+ITEM=i_arrow,{10 50}
+
+
+CATEGORY=Civilized
+SUBSECTION=Frost-Elf (Evil)
+DESCRIPTION=Frost Elven Archer
+
+
+[CHARDEF 01075]
+DEFNAME=c_h_frostelf_warrior
+NAME=#NAMES_ELF_MALE the Frost Elf Warrior
+ID=C_MAN
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_MALE
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_human_default
+DAM=10,20
+ARMOR=15
+
+ON=@Create
+  COLOR=05d
+  STR={80 100}
+  DEX={81 95}
+  INT={74 83}
+  MAGICRESISTANCE={35.0 45.0}
+  TACTICS={70.0 90.0}
+  WRESTLING={40.0 55.0}
+  SWORDSMANSHIP={70.0 90.0}
+  NPC=BRAIN_HUMAN
+  KARMA={-3000 -4000}
+  FAME={2500 4000}
+  ITEMNEWBIE=i_hair_krisna
+
+ON=@NPCRestock
+  ITEMNEWBIE=i_leather_tunic
+  ITEM=i_tunic
+  ITEM=random_shoes
+  COLOR=01bb
+  ITEMNEWBIE=i_halberd
+
+CATEGORY=Civilized
+SUBSECTION=Frost-Elf (Evil)
+DESCRIPTION=Frost Elven Warrior
+
+
+[CHARDEF 01076]
+DEFNAME=c_h_frostelf_chief
+NAME=#NAMES_ELF_MALE the Frost Elf Chieftain
+ID=C_MAN
+DAM=20,25
+ARMOR=20
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_MALE
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_human_default
+
+ON=@Create
+  COLOR=05d
+  STR={150 200}
+  DEX=150
+  INT={74 93}
+  MAGICRESISTANCE={60.0 75.0}
+  TACTICS={70.0 90.0}
+  WRESTLING={40.0 55.0}
+  SWORDSMANSHIP=100.0
+  PARRYING={75.0 100.0}
+  NPC=BRAIN_HUMAN
+  KARMA={-4000 -6000}
+  FAME={3500 5000}
+  ITEMNEWBIE=i_hair_krisna
+
+ON=@NPCRestock
+  ITEMNEWBIE=i_leather_tunic
+  ITEMNEWBIE=i_tunic
+  ITEM=i_pants_long
+  ITEM=random_shoes
+  COLOR=01bb
+  ITEMNEWBIE=i_sword_great
+
+CATEGORY=Civilized
+SUBSECTION=Frost-Elf (Evil)
+DESCRIPTION=Frost Elf Chieftain
+
+
+[CHARDEF 01077]
+DEFNAME=c_h_frostelf_shaman
+NAME=#NAMES_ELF_MALE the Frost Elf Shaman
+ID=C_MAN
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_MALE
+
+DAM=15,20
+ARMOR={15 20}
+TSPEECH=spk_human_prime
+TSPEECH=spk_human_default
+
+ON=@Create
+  COLOR=05d
+  STR={80 120}
+  DEX={81 95}
+  INT={74 83}
+  MAGICRESISTANCE={60.0 75.0}
+  TACTICS={70.0 90.0}
+  WRESTLING={40.0 55.0}
+  MAGERY={75.0 85.0}
+  NPC=BRAIN_HUMAN
+  KARMA={-3000 -5000}
+  FAME={2500 4000}
+  ITEMNEWBIE=i_hair_krisna
+
+ON=@NPCRestock
+  ITEM=i_ROBE
+  ITEM=random_shoes
+  COLOR=01bb
+  ITEMNEWBIE=i_spellbook
+  ADDSPELL=s_paralyze
+  ADDSPELL=s_flamestrike
+
+CATEGORY=Civilized
+SUBSECTION=Frost-Elf (Evil)
+DESCRIPTION=Frost Elf Shaman
+
+[CHARDEF 01078]
+DEFNAME=c_h_frostelf_warrioress
+NAME=#NAMES_ELF_FEMALE the Frost Elf Warrioress
+ID=C_WOMAN
+DAM=10,20
+ARMOR=15
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_MALE
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_human_default
+
+ON=@Create
+  COLOR=05d
+  STR={80 100}
+  DEX={81 95}
+  INT={74 83}
+  MAGICRESISTANCE={35.0 45.0}
+  TACTICS={70.0 90.0}
+  WRESTLING={40.0 55.0}
+  MACEFIGHTING={70.0 90.0}
+  NPC=BRAIN_HUMAN
+  KARMA={-3000 -4000}
+  FAME={2500 4000}
+  ITEMNEWBIE=i_hair_long
+
+ON=@NPCRestock
+  ITEMNEWBIE=i_armor_female_leather
+  ITEM=random_shoes
+  COLOR=01bb
+  ITEM=i_staff_quarter
+
+CATEGORY=Civilized
+SUBSECTION=Frost-Elf (Evil)
+DESCRIPTION=Frost Elven Warrioress
+
+  //////////////
+ //BARBARIANS//
+//////////////
+
+[CHARDEF 01079]
+DEFNAME=c_h_barbarian_warrior
+NAME=#NAMES_HUMANMALE the Barbarian Warrior
+ID=C_MAN
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_MALE|MT_RUN
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_human_default
+DAM=20,25
+ARMOR=20
+
+ON=@Create
+  STR={300 350}
+  DEX={81 95}
+  INT={74 83}
+  MAGICRESISTANCE={20.0 35.0}
+  TACTICS={80.0 95.0}
+  WRESTLING={80.0 95.0}
+  SWORDSMANSHIP=100.0
+  PARRYING={75.0 100.0}
+  NPC=BRAIN_HUMAN
+  KARMA={-4000 -6000}
+  FAME={3500 5000}
+  ITEMNEWBIE=i_hair_long
+  COLOR=colors_red
+  ITEMNEWBIE=i_beard_short_med
+  COLOR=match_hair
+
+ON=@NPCRestock
+  ITEM=i_boots_calf
+  COLOR=01bb
+  ITEM=i_mask_deer
+  ITEM=i_axe_double
+  ITEM=i_leather_tunic
+  ITEM=i_kilt
+  COLOR=01bb
+
+CATEGORY=Civilized
+SUBSECTION=Barbarians (Evil)
+DESCRIPTION=Barbarian Warrior
+
+
+[CHARDEF 01080]
+DEFNAME=c_h_barbarian_chieftan
+NAME=#NAMES_HUMANMALE the Barbarian Chieftain
+ID=C_MAN
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_MALE|MT_RUN
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_human_default
+DAM={25 28}
+ARMOR=22
+
+ON=@Create
+  STR={400 450}
+  DEX={98 98}
+  INT={84 95}
+  MAGICRESISTANCE={20.0 35.0}
+  TACTICS={90.0 100.0}
+  WRESTLING={90.0 100.0}
+  SWORDSMANSHIP=100.0
+  PARRYING={85.0 100.0}
+  NPC=BRAIN_HUMAN
+  KARMA={-4500 -6500}
+  FAME={4000 5500}
+  ITEMNEWBIE=i_hair_long
+  COLOR=colors_red
+  ITEMNEWBIE=i_beard_long_med
+  COLOR=match_hair
+
+ON=@NPCRestock
+  ITEM=i_boots_calf
+  COLOR=01bb
+  ITEMNEWBIE=I_LEATHER_TUNIC
+  ITEMNEWBIE=i_kilt
+  COLOR=01bb
+  ITEM=i_axe_double
+  ITEM=i_mask_bear
+
+CATEGORY=Civilized
+SUBSECTION=Barbarians (Evil)
+DESCRIPTION=Barbarian Chieftain
+
+
+[CHARDEF 01081]
+DEFNAME=c_h_barbarian_shaman
+NAME=#NAMES_HUMANMALE the Barbarian Shaman
+ID=C_MAN
+DAM=20,25
+ARMOR=20
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_MALE
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_human_default
+
+ON=@Create
+  STR={100 150}
+  DEX={81 95}
+  INT={84 95}
+  MAGICRESISTANCE={40.0 55.0}
+  MAGERY={60.0 75.0}
+  TACTICS={80.0 95.0}
+  WRESTLING={80.0 95.0}
+  MACEFIGHTING=100.0
+  PARRYING={75.0 100.0}
+  NPC=BRAIN_HUMAN
+  KARMA={-4000 -6000}
+  FAME={3500 5000}
+  ITEMNEWBIE=i_hair_long
+  COLOR=colors_red
+  ITEMNEWBIE=i_beard_short_med
+  COLOR=match_hair
+
+ON=@NPCRestock
+  ITEMNEWBIE=i_boots_calf
+  COLOR=01bb
+  ITEM=i_staff_gnarled
+  ITEM=i_SASH
+  COLOR=01bb
+  ITEMNEWBIE=i_kilt
+  COLOR=01bb
+  ITEM=i_mask_tribal_red
+
+CATEGORY=Civilized
+SUBSECTION=Barbarians (Evil)
+DESCRIPTION=Barbarian Shaman
+
+
+[CHARDEF 01082]
+DEFNAME=c_h_barbarian_warrioress
+NAME=#NAMES_HUMANFEMALE the Barbarian Warrioress
+ID=C_WOMAN
+DAM=20,25
+ARMOR=20
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_MALE|MT_RUN
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_human_default
+
+ON=@Create
+  STR={90 110}
+  DEX={81 95}
+  INT={74 83}
+  MAGICRESISTANCE={20.0 35.0}
+  TACTICS={80.0 95.0}
+  WRESTLING={80.0 95.0}
+  SWORDSMANSHIP=100.0
+  PARRYING={65.0 90.0}
+  NPC=BRAIN_HUMAN
+  FAME={3500 5000}
+  KARMA={-4000 -6000}
+  ITEMNEWBIE=i_hair_ponytail
+  COLOR=colors_red
+
+ON=@NPCRestock
+  ITEM=i_boots_thigh
+  COLOR=01bb
+  ITEM=i_armor_female_leather
+  ITEM=i_axe_battle
+  ITEM=i_mask_deer
+
+CATEGORY=Civilized
+SUBSECTION=Barbarians (Evil)
+DESCRIPTION=Barbarian Warrioress
+
+
+  ///////////
+ //WITCHES//
+///////////
+
+[CHARDEF 01083]
+DEFNAME=c_h_warlock
+NAME=#NAMES_HUMANMALE the Warlock
+ID=C_MAN
+DAM=20,35
+ARMOR=15,20
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_MALE
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_human_default
+
+ON=@Create
+  COLOR=0599
+  STR={200 250}
+  DEX={91 95}
+  INT={82 93}
+  MAGICRESISTANCE={90.0 95.0}
+  TACTICS={70.0 90.0}
+  WRESTLING={40.0 55.0}
+  MAGERY={95.0 100.0}
+  NPC=BRAIN_MONSTER
+  KARMA={-3000 -5000}
+  FAME={2500 4000}
+  ITEMNEWBIE=i_hair_long
+  COLOR=0
+  ITEMNEWBIE=i_spellbook
+  ADDSPELL=s_paralyze
+  ADDSPELL=s_lightning
+  ADDSPELL=s_curse
+
+ON=@NPCRestock
+  ITEM=i_robe
+  COLOR=1
+  ITEM=i_hat_wizards
+  COLOR=1
+  ITEM=i_boots_calf
+  COLOR=1
+ 
+CATEGORY=Civilized
+SUBSECTION=Witches (Evil)
+DESCRIPTION=Warlock
+
+[CHARDEF 01084]
+DEFNAME=c_h_witch
+NAME=#NAMES_HUMANFEMALE the Witch
+ID=C_WOMAN
+DAM=15,20
+ARMOR=15,20
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_FEMALE
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_human_default
+
+ON=@Create
+  COLOR=0599
+  STR={70 90}
+  DEX={81 95}
+  INT={78 89}
+  TACTICS={70.0 90.0}
+  WRESTLING={40.0 55.0}
+  MACEFIGHTING={55.0 75.0}
+  MAGERY={65.0 85.0}
+  MAGICRESISTANCE={80.0 90.0}
+  NPC=BRAIN_HUMAN
+  KARMA={-3000 -5000}
+  FAME={2000 4000}
+  ITEMNEWBIE=i_hair_long
+  COLOR=color_gray_dk
+
+ON=@NPCRestock
+  ITEM=i_shirt_fancy
+  COLOR=0
+  ITEM=i_skirt_long
+  COLOR=1
+  ITEM=i_hat_wizards
+  COLOR=1
+  ITEM=i_boots_calf
+  COLOR=1
+  ITEM=i_staff_gnarled
+
+CATEGORY=Civilized
+SUBSECTION=Witches (Evil)
+DESCRIPTION=Witch
+
+
+[CHARDEF 01085]
+DEFNAME=c_h_witch_high
+NAME=#NAMES_HUMANFEMALE the High Witch
+ID=C_WOMAN
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_FEMALE
+
+DAM=15,20
+ARMOR=15,20
+TSPEECH=spk_human_prime
+TSPEECH=spk_human_default
+
+ON=@Create
+  COLOR=0599
+  STR={90 110}
+  DEX={81 95}
+  INT={82 93}
+  MAGICRESISTANCE={90.0 95.0}
+  TACTICS={80.0 90.0}
+  WRESTLING={40.0 55.0}
+  MACEFIGHTING={75.0 95.0}
+  MAGERY={75.0 95.0}
+  NPC=BRAIN_HUMAN
+  KARMA={-3000 -5000}
+  FAME={2000 4000}
+  ITEMNEWBIE=i_hair_long
+  COLOR=color_gray_dk
+
+ON=@NPCRestock
+  ITEM=i_dress_plain
+  COLOR=1
+  ITEM=i_hat_wizards
+  COLOR=1
+  ITEM=i_boots_calf
+  COLOR=1
+  ITEM=I_STAFF_BLACK
+ 
+CATEGORY=Civilized
+SUBSECTION=Witches (Evil)
+DESCRIPTION=High Witch
+
+
+  ///////////
+ //BANDITS//
+///////////
+
+[CHARDEF 01087]
+DEFNAME=c_h_bandit_m
+NAME=#NAMES_HUMANMALE the Bandit
+ID=C_MAN
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK
+
+DESIRES=i_gold,e_notoriety
+AVERSIONS=t_TRAP,t_eerie_stuff
+TSPEECH=spk_human_prime
+TSPEECH=jobBrigand
+TSPEECH=spk_needs
+TSPEECH=spk_rehello
+TSPEECH=spk_human_default
+TEVENTS=e_Human_HearUnk
+TEVENTS=e_Human_ConvInit
+TEVENTS=e_Human_Greet
+TEVENTS=e_Human_Space
+TEVENTS=e_Human_Needs
+TEVENTS=e_Human_Refuse
+
+ON=@Create
+  COLOR=colors_skin
+  STR={66 80}
+  DEX={81 95}
+  INT={61 75}
+  HIDING={45.0 68.0}
+  SNOOPING={75.0 90.0}
+  LockPicking={35.0 58.0}
+  STEALING={75.0 90.0}
+  PARRYING={55.0 78.0}
+  SWORDSMANSHIP={35.0 58.0}
+  WRESTLING={35.0 58.0}
+  MAGICRESISTANCE={45.0 58.0}
+  TACTICS={55.0 78.0}
+  NPC=brain_thief
+  KARMA={-3000 -4000}
+  FAME={2500 4000}
+  ITEMNEWBIE=random_male_hair
+  COLOR=colors_hair
+  ITEMNEWBIE=random_facial_hair
+  COLOR=match_hair
+
+ON=@NPCRestock
+  ITEM=i_shirt_plain
+  COLOR=colors_all
+  ITEM=random_pants
+  COLOR=colors_all
+  ITEM=random_shoes
+  COLOR=colors_neutral
+  ITEM=i_skull_cap
+  COLOR=colors_all
+  ITEM=random_sword
+
+CATEGORY=Civilized
+SUBSECTION=Bandits (Evil)
+DESCRIPTION=Bandit (male)
+
+
+[CHARDEF 01088]
+DEFNAME=c_h_bandit_f
+NAME=#NAMES_HUMANFEMALE the Bandit
+ID=C_WOMAN
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK
+
+DESIRES=i_gold,e_notoriety
+AVERSIONS=t_TRAP,t_eerie_stuff
+TSPEECH=spk_human_prime
+TSPEECH=jobBrigand
+TSPEECH=spk_needs
+TSPEECH=spk_rehello
+TSPEECH=spk_human_default
+TEVENTS=e_Human_HearUnk
+TEVENTS=e_Human_ConvInit
+TEVENTS=e_Human_Greet
+TEVENTS=e_Human_Space
+TEVENTS=e_Human_Needs
+TEVENTS=e_Human_Refuse
+
+ON=@Create
+  COLOR=colors_skin
+  STR={66 80}
+  DEX={81 95}
+  INT={61 75}
+  HIDING={45.0 68.0}
+  SNOOPING={75.0 90.0}
+  LockPicking={35.0 58.0}
+  STEALING={75.0 90.0}
+  PARRYING={55.0 78.0}
+  WRESTLING={35.0 58.0}
+  MACEFIGHTING={35.0 58.0}
+  MAGICRESISTANCE={45.0 58.0}
+  TACTICS={55.0 78.0}
+  NPC=brain_thief
+  KARMA={-3000 -4000}
+  FAME={2500 4000}
+  ITEMNEWBIE=random_female_hair
+  COLOR=colors_hair
+
+ON=@NPCRestock
+  ITEMNEWBIE=i_shirt_plain
+  COLOR=colors_all
+  ITEM=i_skirt_long
+  COLOR=colors_all
+  ITEM=random_shoes
+  COLOR=colors_neutral
+  ITEMNEWBIE=i_skull_cap
+  COLOR=colors_all
+  ITEM=random_mace
+
+CATEGORY=Civilized
+SUBSECTION=Bandits (Evil)
+DESCRIPTION=Bandit (female)
+
+
+  //////////
+ //DREADS//
+//////////
+
+[CHARDEF 01089]
+DEFNAME=c_h_dreadlord
+ID=C_MAN
+NAME=#NAMES_DREAD_LORD the Dread Lord
+SOUND=snd_HUMAN_M_DIE_01
+DAM=10,20
+ARMOR=30
+
+AVERSIONS=t_TRAP,t_eerie_stuff
+TSPEECH=spk_human_prime
+TSPEECH=jobMageEvil
+TSPEECH=spk_needs
+TSPEECH=spk_rehello
+TSPEECH=spk_human_default
+
+ON=@Create
+  COLOR=colors_skin
+  STR={200 250}
+  DEX={100 150}
+  INT={81 95}
+  PARRYING={75.0 98.0}
+  SWORDSMANSHIP={80.0 95.0}
+  WRESTLING={67.0 90.0}
+  MAGICRESISTANCE={65.0 88.0}
+  TACTICS={80.0 98.0}
+  POISONING={90.0 100.0}
+  detection={90.0 100.0}
+  NPC=brain_monster
+  FAME=1000
+  KARMA=-4000
+  ITEMNEWBIE=random_male_hair
+  COLOR=colors_hair
+  ITEMNEWBIE=random_facial_hair
+  COLOR=match_hair
+
+ON=@NPCRestock
+  ITEMNEWBIE=i_platemail_gloves
+  ITEMNEWBIE=i_platemail_helm
+  ITEMNEWBIE=i_platemail_arms
+  ITEMNEWBIE=i_platemail_gorget
+  ITEMNEWBIE=i_platemail_chest
+  ITEMNEWBIE=i_platemail_leggings
+  ITEMNEWBIE=i_sword_great
+  ITEMNEWBIE=i_CAPE
+  COLOR=020
+  ITEMNEWBIE=i_SASH
+  COLOR=020
+  ITEMNEWBIE=i_apron_half
+  COLOR=020
+
+CATEGORY=Civilized
+SUBSECTION=Dread Lords
+DESCRIPTION=Dread Lord
+
+
+[CHARDEF 01090]
+DEFNAME=c_h_dreadlord_captain
+ID=C_MAN
+NAME=#NAMES_DREAD_LORD the Dread Lord Captain
+SOUND=snd_HUMAN_M_DIE_01
+DAM=10,20
+ARMOR=30
+AVERSIONS=t_TRAP,t_eerie_stuff
+TSPEECH=spk_human_prime
+TSPEECH=jobMageEvil
+TSPEECH=spk_needs
+TSPEECH=spk_rehello
+TSPEECH=spk_human_default
+
+ON=@Create
+  COLOR=colors_skin
+  STR={350 400}
+  DEX={200 250}
+  INT={103 118}
+  PARRYING={85.0 98.0}
+  SWORDSMANSHIP={90.0 95.0}
+  WRESTLING={67.0 90.0}
+  MAGICRESISTANCE={65.0 88.0}
+  TACTICS={90.0 98.0}
+  POISONING={90.0 100.0}
+  MAGERY={90.0 100.0}
+  NPC=brain_monster
+  FAME=2000
+  KARMA=-5000
+  ITEMNEWBIE=random_male_hair
+  COLOR=colors_hair
+  ITEMNEWBIE=random_facial_hair
+  COLOR=match_hair
+
+ON=@NPCRestock
+  ITEMNEWBIE=i_platemail_gloves
+  ITEMNEWBIE=i_platemail_helm
+  ITEMNEWBIE=i_platemail_arms
+  ITEMNEWBIE=i_platemail_gorget
+  ITEMNEWBIE=i_platemail_chest
+  ITEMNEWBIE=i_platemail_leggings
+  ITEMNEWBIE=i_sword_great
+  ITEMNEWBIE=i_CAPE
+  COLOR=020
+  ITEMNEWBIE=i_SASH
+  COLOR=020
+  ITEMNEWBIE=i_apron_half
+  COLOR=020
+
+CATEGORY=Civilized
+SUBSECTION=Dread Lords
+DESCRIPTION=Dread Lord Captain
+
+[CHARDEF c_h_lb_scout]
+DEFNAME=c_h_lb_scout
+ID=C_MAN
+NAME=Rift Trooper
+SOUND=snd_HUMAN_M_DIE_01
+DAM=10,20
+ARMOR=30
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+ON=@Create
+  COLOR=07a10
+  STR={450 500}
+  DEX={200 250}
+  INT={103 118}
+  PARRYING={85.0 98.0}
+  SWORDSMANSHIP={90.0 95.0}
+  WRESTLING={67.0 90.0}
+  MAGICRESISTANCE={65.0 88.0}
+  TACTICS={90.0 98.0}
+  POISONING={90.0 100.0}
+  MAGERY={90.0 100.0}
+  NPC=brain_monster
+  FAME=2000
+  KARMA=-5000
+
+ON=@NPCRestock
+  ITEMNEWBIE=i_platemail_gloves_shadow
+  COLOR=07a10
+  ITEMNEWBIE=i_platemail_helm_shadow
+  COLOR=07a10
+  ITEMNEWBIE=i_platemail_arms_shadow
+  COLOR=07a10
+  ITEMNEWBIE=i_platemail_gorget_shadow
+  COLOR=07a10
+  ITEMNEWBIE=i_platemail_chest_shadow
+  COLOR=07a10
+  ITEMNEWBIE=i_platemail_leggings_shadow
+  COLOR=07a10
+  ITEMNEWBIE=i_sword_great_shadow
+  COLOR=07a10
+ 
+CATEGORY=Civilized
+SUBSECTION=Dread Lords
+DESCRIPTION=Rift Trooper
+
+[CHARDEF c_h_lb_guard]
+DEFNAME=c_h_lb_guard
+ID=C_MAN
+NAME=#NAMES_DREAD_LORD Lord Blackthorne's Personal Guard
+SOUND=snd_HUMAN_M_DIE_01
+DAM=10,20
+ARMOR=30
+AVERSIONS=t_TRAP,t_eerie_stuff
+TSPEECH=spk_human_prime
+TSPEECH=jobMageEvil
+TSPEECH=spk_needs
+TSPEECH=spk_rehello
+TSPEECH=spk_human_default
+
+ON=@Create
+  COLOR=colors_skin
+  STR={450 500}
+  DEX={200 250}
+  INT={103 118}
+  PARRYING={85.0 98.0}
+  SWORDSMANSHIP={90.0 95.0}
+  WRESTLING={67.0 90.0}
+  MAGICRESISTANCE={65.0 88.0}
+  TACTICS={90.0 98.0}
+  POISONING={90.0 100.0}
+  MAGERY={90.0 100.0}
+  NPC=brain_monster
+  FAME=2000
+  KARMA=-5000
+  ITEMNEWBIE=random_male_hair
+  COLOR=colors_hair
+  ITEMNEWBIE=random_facial_hair
+  COLOR=match_hair
+
+ON=@NPCRestock
+  ITEMNEWBIE=i_platemail_gloves_shadow
+  ITEMNEWBIE=i_platemail_helm_shadow
+  ITEMNEWBIE=i_platemail_arms_shadow
+  ITEMNEWBIE=i_platemail_gorget_shadow
+  ITEMNEWBIE=i_platemail_chest_shadow
+  ITEMNEWBIE=i_platemail_leggings_shadow
+  ITEMNEWBIE=i_sword_great_shadow
+  ITEMNEWBIE=i_shield_chaos
+  ITEMNEWBIE=i_CAPE
+  COLOR=020
+  ITEMNEWBIE=i_SASH
+  COLOR=020
+  ITEMNEWBIE=i_apron_half
+  COLOR=020
+
+CATEGORY=Civilized
+SUBSECTION=Dread Lords
+DESCRIPTION=Lord Blackthorne's Personal Guard
+
+  /////////////
+ //WOOD ELFS//
+/////////////
+
+[CHARDEF 01095]
+DEFNAME=c_h_woodelf_elite_ranger
+NAME=#NAMES_ELF_MALE the Wood-Elf Elite Ranger
+SOUND=snd_HUMAN_M_DIE_01
+ID=C_MAN
+CAN=MT_EQUIP|MT_RUN|MT_USEHANDS|MT_WALK
+
+DAM=15,30
+ARMOR=25
+TSPEECH=jobFighter
+
+ON=@Create
+  COLOR=0597
+  STR={90 100}
+  DEX={81 95}
+  INT={68 79}
+  MAGICRESISTANCE={15.0 38.0}
+  TACTICS={70.0 100.0}
+  WRESTLING={25.0 40.0}
+  ARCHERY={80.0 100.0}
+  BOWCRAFT={60.0 80.0}
+  SWORDSMANSHIP={50.0 70.0}
+  NPC=BRAIN_HUMAN
+  KARMA={-2000 -4000}
+  ITEMNEWBIE=i_hair_long
+  ITEMNEWBIE=i_beard_goatee
+
+ON=@NPCRestock
+  ITEM=i_CAPE
+  COLOR=045e
+  ITEMNEWBIE=i_leather_gloves
+  COLOR=045e
+  ITEMNEWBIE=i_leather_tunic
+  COLOR=045e
+  ITEMNEWBIE=i_leather_gorget
+  COLOR=045e
+  ITEMNEWBIE=i_leather_leggings
+  COLOR=0599
+  ITEMNEWBIE=i_leather_sleeves
+  COLOR=0599
+  ITEM=i_boots_calf
+  COLOR=045e
+  ITEM=i_SASH
+  COLOR=0599
+  ITEM=i_bow_pine
+  ITEM=i_arrow,{10 20}
+      	
+CATEGORY=Civilized
+SUBSECTION=Wood Elves
+DESCRIPTION=Wood-Elf Elite Ranger
+
+
+[CHARDEF 01096]
+DEFNAME=c_h_woodelf_elite_warrior
+NAME=#NAMES_ELF_MALE the Wood-Elf Elite Warrior
+SOUND=snd_HUMAN_M_DIE_01
+ID=C_MAN
+CAN=MT_EQUIP|MT_RUN|MT_USEHANDS|MT_WALK
+
+DAM=10,30
+ARMOR=30
+TSPEECH=jobFighter
+
+ON=@Create
+  COLOR=0597
+  STR={120 150}
+  DEX={81 95}
+  INT={75 89}
+  MAGICRESISTANCE={35.0 48.0}
+  SWORDSMANSHIP={80.0 100.0}
+  TACTICS={70.0 100.0}
+  WRESTLING={25.0 40.0}
+  NPC=BRAIN_HUMAN
+  KARMA={-2000 -5000}
+  ITEMNEWBIE=i_hair_long
+  ITEMNEWBIE=i_beard_goatee
+
+ON=@NPCRestock
+  ITEM=i_sword_great
+  ITEM=I_SHIELD_KITE_WOOD
+  ITEM=i_CAPE
+  COLOR=045e
+  ITEMNEWBIE=i_SASH
+  COLOR=0599
+  ITEMNEWBIE=i_leather_sleeves
+  COLOR=0599
+  ITEMNEWBIE=i_leather_tunic
+  COLOR=045e
+  ITEMNEWBIE=i_leather_gloves
+  COLOR=045e
+  ITEMNEWBIE=i_leather_leggings
+  COLOR=0599
+  ITEMNEWBIE=i_leather_gorget
+  COLOR=045e
+  ITEMNEWBIE=i_boots_calf
+  COLOR=045e
+
+CATEGORY=Civilized
+SUBSECTION=Wood Elves
+DESCRIPTION=Wood-Elf Elite Warrior
+
+
+[CHARDEF 01097]
+DEFNAME=c_h_woodelf_ranger
+NAME=#NAMES_ELF_MALE the Wood-Elf Ranger
+SOUND=snd_HUMAN_M_DIE_01
+ID=C_MAN
+DAM=10,25
+ARMOR=22
+CAN=MT_EQUIP|MT_RUN|MT_USEHANDS|MT_WALK
+
+TSPEECH=jobFighter
+
+ON=@Create
+  COLOR=0597
+  STR={60 90}
+  DEX={50 70}
+  INT={68 79}
+  ARCHERY={65.0 80.0}
+  BOWCRAFT={60.0 80.0}
+  MAGICRESISTANCE={15.0 38.0}
+  NECROMANCY={30.0 100.0}
+  SWORDSMANSHIP={30.0 50.0}
+  TACTICS={50.0 80.0}
+  WRESTLING={25.0 40.0}
+  NPC=BRAIN_HUMAN
+  KARMA={-2000 -3000}
+  ITEMNEWBIE=i_hair_long
+  ITEMNEWBIE=i_beard_goatee
+
+ON=@NPCRestock
+  ITEMNEWBIE=i_leather_sleeves
+  COLOR=0599
+  ITEMNEWBIE=i_leather_tunic
+  COLOR=0599
+  ITEMNEWBIE=i_leather_gloves
+  COLOR=01bb
+  ITEMNEWBIE=i_leather_leggings
+  COLOR=0599
+  ITEMNEWBIE=i_leather_gorget
+  COLOR=0599
+  ITEMNEWBIE=i_boots_calf
+  COLOR=01bb
+  ITEM=i_cape
+  COLOR=01bb
+  ITEMNEWBIE=i_sash
+  COLOR=01bb
+  ITEM=i_bow_pine
+  ITEM=i_arrow,{10 50}
+
+CATEGORY=Civilized
+SUBSECTION=Wood Elves
+DESCRIPTION=Wood-Elf Ranger
+
+
+[CHARDEF 01098]
+DEFNAME=c_h_woodelf_hunter
+NAME=#NAMES_ELF_MALE the Wood-Elf hunter
+SOUND=snd_HUMAN_M_DIE_01
+ID=C_MAN
+DAM=5,20
+ARMOR=13
+CAN=MT_EQUIP|MT_RUN|MT_USEHANDS|MT_WALK
+
+TSPEECH=jobFighter
+
+ON=@Create
+  COLOR=0597
+  STR={70 80}
+  DEX={60 70}
+  INT={60 72}
+  FENCING={50.0 60.0}
+  MAGICRESISTANCE={15.0 38.0}
+  TACTICS={38.0 50.0}
+  WRESTLING={25.0 40.0}
+  NPC=BRAIN_HUMAN
+  KARMA={-2000 -3000}
+  ITEMNEWBIE=i_hair_long
+  ITEMNEWBIE=i_beard_long_med
+
+ON=@NPCRestock
+  ITEMNEWBIE=i_leather_tunic
+  ITEMNEWBIE=i_leather_gorget
+  ITEMNEWBIE=i_leather_leggings
+  ITEM=i_sandals
+  ITEM=i_spear
+
+CATEGORY=Civilized
+SUBSECTION=Wood Elves
+DESCRIPTION=Wood-Elf hunter
+
+
+[CHARDEF 01100]
+DEFNAME=c_h_woodelf_fighter
+NAME=#NAMES_ELF_MALE the Wood_Elf Fighter
+SOUND=snd_HUMAN_M_DIE_01
+ID=C_MAN
+DAM=5,10
+ARMOR=5,10
+CAN=MT_EQUIP|MT_RUN|MT_USEHANDS|MT_WALK
+
+TSPEECH=jobFighter
+
+ON=@Create
+  COLOR=0597
+  STR={65 85}
+  DEX={55 70}
+  INT={68 79}
+  MAGICRESISTANCE={35.0 48.0}
+  SWORDSMANSHIP={70.0 80.0}
+  TACTICS={60.0 80.0}
+  WRESTLING={25.0 40.0}
+  NPC=BRAIN_HUMAN
+  KARMA={-2000 -4000}
+  ITEMNEWBIE=i_hair_long
+
+ON=@NPCRestock
+  ITEM=i_sandals
+  ITEMNEWBIE=i_shield_wood
+  ITEMNEWBIE=i_sword_long
+  ITEMNEWBIE=i_leather_tunic
+  COLOR=0599
+  ITEMNEWBIE=i_leather_gloves
+  COLOR=0599
+  ITEMNEWBIE=i_leather_leggings
+  COLOR=0599
+
+CATEGORY=Civilized
+SUBSECTION=Wood Elves
+DESCRIPTION=Wood-Elf Fighter
+
+
+[CHARDEF 01105]
+DEFNAME=c_h_woodelf_archer
+ID=C_MAN
+NAME=#NAMES_ELF_MALE the Wood-Elf Archer
+SOUND=snd_HUMAN_M_DIE_01
+DAM=10,20
+ARMOR=20
+CAN=MT_EQUIP|MT_RUN|MT_USEHANDS|MT_WALK
+
+TSPEECH=jobFighter
+
+ON=@Create
+  COLOR=0597
+  STR={50 60}
+  DEX={45 60}
+  INT={60 72}
+  ARCHERY={50.0 70.0}
+  BOWCRAFT={60.0 80.0}
+  MAGICRESISTANCE={15.0 38.0}
+  NECROMANCY={30.0 100.0}
+  SWORDSMANSHIP={30.0 50.0}
+  TACTICS={40.0 60.0}
+  WRESTLING={25.0 40.0}
+  NPC=BRAIN_HUMAN
+  KARMA={-2000 -4000}
+  ITEMNEWBIE=i_hair_long
+
+ON=@NPCRestock
+  ITEM=i_arrow,{20 40}
+  ITEMNEWBIE=I_LEATHER_TUNIC
+  COLOR=0599
+  ITEMNEWBIE=i_leather_gloves
+  COLOR=0599
+  ITEMNEWBIE=i_leather_leggings
+  COLOR=0599
+  ITEM=i_bow_pine
+  ITEM=i_sandals
+
+CATEGORY=Civilized
+SUBSECTION=Wood Elves
+DESCRIPTION=Wood-Elf Archer
+
+
+  /////////////
+ //DARK ELFS//
+/////////////
+
+[CHARDEF 01099]
+DEFNAME=c_darkelf_war_sword
+NAME=#NAMES_ELF_MALE the Dark-Elf Warrior
+SOUND=snd_HUMAN_M_DIE_01
+ID=C_MAN
+DAM=15,30
+ARMOR=19,19
+CAN=MT_EQUIP|MT_RUN|MT_USEHANDS|MT_WALK
+
+TSPEECH=jobFighter
+CATEGORY=Civilized
+SUBSECTION=Dark Elves
+DESCRIPTION=Dark-Elf Warrior w/sword
+
+ON=@Create
+  COLOR=0597
+  STR={70 90}
+  DEX={81 95}
+  INT={62 75}
+  MAGICRESISTANCE={15.0 38.0}
+  SWORDSMANSHIP={60.0 100.0}
+  TACTICS={50.0 100.0}
+  WRESTLING={25.0 40.0}
+  NPC=BRAIN_HUMAN
+  KARMA={-3000 -5000}
+  FAME={1000 3000}
+  ITEMNEWBIE=i_beard_goatee
+  ITEMNEWBIE=i_hair_long
+
+ON=@NPCRestock
+  ITEM=i_sword_great
+  ITEMNEWBIE=I_BONE_CHEST
+  COLOR=0455
+  ITEMNEWBIE=I_BONE_GLOVES
+  COLOR=0455
+  ITEMNEWBIE=I_BONE_HELMET
+  COLOR=0455
+  ITEMNEWBIE=i_chainmail_leggings
+  COLOR=0455
+  ITEM=i_boots_calf
+  COLOR=0455
+  ITEM=i_CAPE
+  COLOR=0455
+  ITEMNEWBIE=i_shield_round
+
+[CHARDEF 01101]
+DEFNAME=c_darkelf_fight_mace
+NAME=#NAMES_ELF_MALE the Dark-Elf Fighter
+SOUND=snd_HUMAN_M_DIE_01
+ID=C_MAN
+DAM=10,20
+ARMOR=15,15
+CAN=MT_EQUIP|MT_RUN|MT_USEHANDS|MT_WALK
+
+TSPEECH=jobFighter
+CATEGORY=Civilized
+SUBSECTION=Dark Elves
+DESCRIPTION=Dark-Elf Fighter
+
+ON=@Create
+  COLOR=0597
+  STR={70 80}
+  DEX={61 80}
+  INT={62 75}
+  FENCING={60.0 80.0}
+  MACEFIGHTING={60.0 80.0}
+  MAGICRESISTANCE={15.0 38.0}
+  SWORDSMANSHIP={60.0 80.0}
+  TACTICS={60.0 90.0}
+  WRESTLING={25.0 40.0}
+  NPC=BRAIN_HUMAN
+  KARMA={-2000 -5000}
+  ITEMNEWBIE=i_beard_goatee
+  ITEMNEWBIE=i_hair_long
+
+ON=@NPCRestock
+  ITEMNEWBIE=I_BONE_CHEST
+  COLOR=0455
+  ITEMNEWBIE=I_BONE_GLOVES
+  COLOR=0455
+  ITEMNEWBIE=I_BONE_HELMET
+  COLOR=0455
+  ITEMNEWBIE=i_boots_calf
+  COLOR=0455
+  ITEMNEWBIE=i_mace_war
+  ITEMNEWBIE=i_shield_wood
+  ITEMNEWBIE=i_leather_leggings
+  COLOR=0455
+
+[CHARDEF 01102]
+DEFNAME=c_darkelf_grunt
+NAME=#NAMES_ELF_MALE the Dark-Elf Grunt
+SOUND=snd_HUMAN_M_DIE_01
+ID=C_MAN
+DAM=10,20
+ARMOR=15,15
+CAN=MT_EQUIP|MT_RUN|MT_USEHANDS|MT_WALK
+
+TSPEECH=jobFighter
+
+ON=@Create
+  COLOR=0597
+  STR={50 70}
+  DEX={61 80}
+  INT={62 75}
+  ARCHERY={60.0 80.0}
+  FENCING={60.0 80.0}
+  MACEFIGHTING={60.0 80.0}
+  MAGICRESISTANCE={15.0 38.0}
+  SWORDSMANSHIP={60.0 80.0}
+  TACTICS={60.0 90.0}
+  WRESTLING={25.0 40.0}
+  NPC=BRAIN_HUMAN
+  KARMA={-2500 -3500}
+  FAME={1000 2000}
+  ITEMNEWBIE=i_beard_goatee
+  ITEMNEWBIE=i_hair_long
+
+ON=@NPCRestock
+  ITEMNEWBIE=I_BONE_CHEST
+  COLOR=0455
+  ITEMNEWBIE=I_BONE_GLOVES
+  COLOR=0455
+  ITEMNEWBIE=I_BONE_HELMET
+  COLOR=0455
+  ITEMNEWBIE=i_boots_calf
+  COLOR=0455
+  ITEMNEWBIE=i_leather_leggings
+  COLOR=0455
+  ITEMNEWBIE=i_shield_wood
+  ITEMNEWBIE=i_axe_war
+
+CATEGORY=Civilized
+SUBSECTION=Dark Elves
+DESCRIPTION=Dark-Elf Grunt
+
+
+[CHARDEF 01103]
+DEFNAME=c_darkelf_fight_sword
+NAME=#NAMES_ELF_MALE the Dark-Elf Fighter
+SOUND=snd_HUMAN_M_DIE_01
+ID=C_MAN
+DAM=10,20
+ARMOR=15,15
+CAN=MT_EQUIP|MT_RUN|MT_USEHANDS|MT_WALK
+
+TSPEECH=jobFighter
+CATEGORY=Civilized
+SUBSECTION=Dark Elves
+DESCRIPTION=Dark-Elf with Sword
+
+ON=@Create
+  COLOR=0597
+  STR={50 70}
+  DEX={61 80}
+  INT={62 75}
+  ARCHERY={60.0 80.0}
+  FENCING={60.0 80.0}
+  MACEFIGHTING={60.0 80.0}
+  MAGICRESISTANCE={15.0 38.0}
+  SWORDSMANSHIP={60.0 80.0}
+  TACTICS={60.0 90.0}
+  WRESTLING={25.0 40.0}
+  NPC=BRAIN_HUMAN
+  KARMA={-3000 -4000}
+  FAME={2500 4000}
+  ITEMNEWBIE=i_beard_goatee
+  ITEMNEWBIE=i_hair_long
+
+ON=@NPCRestock
+  ITEM=I_BONE_CHEST
+  COLOR=0455
+  ITEM=I_BONE_GLOVES
+  COLOR=0455
+  ITEM=I_BONE_HELMET
+  COLOR=0455
+  ITEMNEWBIE=i_boots_calf
+  COLOR=0455
+  ITEMNEWBIE=i_leather_leggings
+  COLOR=0455
+  ITEMNEWBIE=i_shield_wood
+  ITEMNEWBIE=i_sword_broad
+
+[CHARDEF 01104]
+DEFNAME=c_darkelf_war_axe
+NAME=#NAMES_ELF_MALE the Dark-Elf Warrior
+SOUND=snd_HUMAN_M_DIE_01
+ID=C_MAN
+DAM=15,30
+ARMOR=19
+CAN=MT_EQUIP|MT_RUN|MT_USEHANDS|MT_WALK
+
+TSPEECH=jobFighter
+CATEGORY=Civilized
+SUBSECTION=Dark Elves
+DESCRIPTION=Dark-Elf Warrior w/btl axe
+
+ON=@Create
+  COLOR=0597
+  STR={70 90}
+  DEX={81 95}
+  INT={62 75}
+  ARCHERY={75.0 100.0}
+  MACEFIGHTING={75.0 100.0}
+  MAGICRESISTANCE={15.0 38.0}
+  PARRYING={40.0 50.0}
+  SWORDSMANSHIP={75.0 100.0}
+  TACTICS={75.0 100.0}
+  WRESTLING={25.0 40.0}
+  NPC=BRAIN_HUMAN
+  KARMA={ -3000 -5000 }
+  FAME={3000 4000}
+  ITEMNEWBIE=i_hair_long
+  ITEMNEWBIE=i_beard_goatee
+
+ON=@NPCRestock
+  ITEM=I_BONE_CHEST
+  COLOR=0455
+  ITEM=I_BONE_GLOVES
+  COLOR=0455
+  ITEM=I_BONE_HELMET
+  COLOR=0455
+  ITEM=i_chainmail_leggings
+  COLOR=0455
+  ITEMNEWBIE=i_boots_calf
+  COLOR=0455
+  ITEM=i_CAPE
+  COLOR=0455
+  ITEM=i_axe_two_hand
+
+
+[EOF]

@@ -1,0 +1,716 @@
+[ITEMDEF i_vendor_test]
+ID=i_anchor
+TYPE=t_normal
+
+ON=@CREATE
+   COLOR=07a1
+
+ON=@DCLICK
+   DIALOG d_vendor_sales
+   RETURN 1
+
+[ITEMDEF i_wand_asda]
+ID=i_wand_1
+TYPE=t_normal
+NAME=Price Checker
+
+ON=@DCLICK
+   TARGET Target the item for which you would like to check the price
+   RETURN 1
+   
+ON=@TARGON_ITEM
+   IF (<SRC.TARG.VALUE> > <SRC.TARG.PRICE>)
+      SRC.SAY Value greater than price
+   ENDIF
+   IF (<SRC.TARG.PRICE> < -1 )
+      SRC.SAY Price less than -1
+   ELSE
+      SRC.SAY Price greater than -1
+   ENDIF
+
+[FUNCTION f_call_vendor]
+IF (<FINDLAYER.layer_vendor_stock.FINDCONT(<ARGS>).UID> == 0) || (<ARGS> >= 75)
+   IF (<ARGS> == 0)
+      SAY Sorry I have no goods to sell
+      RETURN 1
+   ENDIF
+   TAG.ITEMCOUNT=<EVAL <ARGS>-1>
+   TAG.CURRENTITEM=<EVAL <ARGS>-1>
+   SRC.TAG.CURRENTVENDOR=<UID>
+   TAG.CURRENTCUSTOMER=<SRC.UID>  
+   SRC.FILLVENDORTAGS
+   SRC.DIALOG d_vendor_sales
+   RETURN 1
+ELSE
+   TRY TAG.ITEM<EVAL <ARGS>+1>.UID=<FINDLAYER.layer_vendor_stock.FINDCONT(<ARGS>).UID>
+   f_call_vendor <EVAL <ARGS>+1>
+ENDIF
+
+
+[FUNCTION FILLVENDORTAGS]
+TRY UID.<TAG.CURRENTVENDOR>.TAG.SLOT1=(<UID.<TAG.CURRENTVENDOR>.TAG.CURRENTITEM>)
+TRY UID.<TAG.CURRENTVENDOR>.TAG.SLOT2=(<UID.<TAG.CURRENTVENDOR>.TAG.CURRENTITEM> - 1)
+TRY UID.<TAG.CURRENTVENDOR>.TAG.SLOT3=(<UID.<TAG.CURRENTVENDOR>.TAG.CURRENTITEM> - 2)
+TRY UID.<TAG.CURRENTVENDOR>.TAG.SLOT4=(<UID.<TAG.CURRENTVENDOR>.TAG.CURRENTITEM> - 3)
+TRY UID.<TAG.CURRENTVENDOR>.TAG.SLOT5=(<UID.<TAG.CURRENTVENDOR>.TAG.CURRENTITEM> - 4)
+RETURN 1
+
+
+[FUNCTION CLEARVENDORTAGS]
+TRY UID.<SRC.TAG.CURRENTVENDOR>.TAG.SLOT1=
+TRY UID.<SRC.TAG.CURRENTVENDOR>.TAG.SLOT2=
+TRY UID.<SRC.TAG.CURRENTVENDOR>.TAG.SLOT3=
+TRY UID.<SRC.TAG.CURRENTVENDOR>.TAG.SLOT4=
+TRY UID.<SRC.TAG.CURRENTVENDOR>.TAG.SLOT5=
+TRY UID.<SRC.TAG.CURRENTVENDOR>.TAG.CURRENTCUSTOMER=
+SRC.TAG.CURRENTVENDOR=
+RETURN 1
+
+
+// To add:
+// Bag contents listing
+// Quality of item
+
+[DIALOG d_vendor_sales]
+0,0
+NODISPOSE
+
+page 0
+resizepic 25 30 5170 560 420
+
+page 1
+// ------
+// Window
+// ------
+gumppic 70 350 93 // Line break
+gumppic 120 350 93 // Line break
+gumppic 170 350 93 // Line break
+gumppic 220 350 93 // Line break
+gumppic 270 350 93 // Line break
+gumppic 320 350 93 // Line break
+gumppic 370 350 93 // Line break
+gumppic 420 350 93 // Line break
+gumppic 340 385 5134 // Column
+gumppic 340 400 5134 // Column
+
+button 25 402 5156 5156 1 0 0 // Close menu
+LOCAL.CURRENTITEM=<UID.<SRC.TAG.CURRENTVENDOR>.TAG.CURRENTITEM>
+LOCAL.ITEMCOUNT=<UID.<SRC.TAG.CURRENTVENDOR>.TAG.ITEMCOUNT>
+
+IF (<LOCAL.CURRENTITEM> < <LOCAL.ITEMCOUNT>)
+   IF (<EVAL <LOCAL.CURRENTITEM>> >= 0) // Checks to be certain that the shop isn't empty
+      button 547 30 5152 5152 1 0 201 // Scroll up
+   ENDIF
+ENDIF
+
+IF (<LOCAL.CURRENTITEM> > 4) // Only scrolls if there's enough to fill screen remaining
+   button 547 402 5158 5158 1 0 202 // Scroll down
+ENDIF
+
+// ------
+// Slot 1
+// ------
+LOCAL.SLOT1=(<UID.<SRC.TAG.CURRENTVENDOR>.TAG.CURRENTITEM>)
+IF (0<LOCAL.SLOT1> >= 0)
+   tilepichue 45 65 <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT1>).DISPIDDEC> <EVAL <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT1>).COLOR>>
+   dtext 100 60 37 <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT1>).NAME>
+   IF (<UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT1>).AMOUNT> > 0 )    
+      dtext 100 80 0 Amount: <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT1>).AMOUNT>
+      dtext 100 100 0 Colour: <VENDOR_NAMED_COLOR <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT1>).COLOR>>
+      IF (<UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT1>).PRICE> <= 0 )
+         dtext 220 80 0 Price: <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT1>).VALUE> gps
+      ELSE
+         dtext 220 80 0 Price: <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT1>).PRICE> gps
+      ENDIF
+      dtext 370 100 0 # to buy:
+      resizepic 440 100 3000 80 20 // Enter amount to buy here - Background
+      IF ( <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT1>).AMOUNT> = 1 )
+         textentry 443 100 78 20 210 1 1 // Enter amount to buy here - Text entry
+      ELSE
+         textentry 443 100 78 20 210 1 0 // Enter amount to buy here - Text entry
+      ENDIF
+      dtext 370 80  0 Detailed Information // Detailed info Text
+      button 510 85 2360 2361 1 0 301 // Detailed info Button
+      button 530 89 4037 4036 1 0 1 // Purchase Button
+   ELSE
+      dtext 100 80 37 SOLD OUT
+   ENDIF
+ENDIF
+
+// ------
+// Slot 2
+// ------
+LOCAL.SLOT2=(<LOCAL.SLOT1> - 1)
+IF (0<LOCAL.SLOT2> >= 0)
+   tilepichue 45 125 <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT2>).DISPIDDEC> <EVAL <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT2>).COLOR>>
+   dtext 100 120 37 <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT2>).NAME>
+   IF (<UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT2>).AMOUNT> > 0 )    
+      dtext 100 140 0 Amount: <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT2>).AMOUNT>
+      dtext 100 160 0 Colour: <VENDOR_NAMED_COLOR <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT2>).COLOR>>
+      IF (<UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT2>).PRICE> <= 0 )
+         dtext 220 140 0 Price: <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT2>).VALUE> gps
+      ELSE
+         dtext 220 140 0 Price: <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT2>).PRICE> gps
+      ENDIF
+      dtext 370 160 0 # to buy:
+      resizepic 440 160 3000 80 20 // Enter amount to buy here - Background
+      IF ( <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT2>).AMOUNT> = 1 )
+         textentry 443 160 78 20 210 2 1 // Enter amount to buy here - Text entry
+      ELSE
+         textentry 443 160 78 20 210 2 0 // Enter amount to buy here - Text entry
+      ENDIF
+      dtext 370 140 0 Detailed Information // Detailed info Text
+      button 510 145 2360 2361 1 0 302 // Detailed info Button
+      button 530 149 4037 4036 1 0 2 // Purchase Button
+   ELSE
+      dtext 100 140 37 SOLD OUT
+   ENDIF
+ENDIF
+
+// ------
+// Slot 3
+// ------
+LOCAL.SLOT3=(<LOCAL.SLOT1> - 2)
+IF (0<LOCAL.SLOT3> >= 0)
+   tilepichue 45 185 <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT3>).DISPIDDEC> <EVAL <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT3>).COLOR>>
+   dtext 100 180 37 <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT3>).NAME>
+   IF (<UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT3>).AMOUNT> > 0 )   
+      dtext 100 200 0 Amount: <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT3>).AMOUNT>
+      dtext 100 220 0 Colour: <VENDOR_NAMED_COLOR <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT3>).COLOR>> 
+      IF (<UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT3>).PRICE> <= 0 )
+         dtext 220 200 0 Price: <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT3>).VALUE> gps
+      ELSE
+         dtext 220 200 0 Price: <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT3>).PRICE> gps
+      ENDIF
+      dtext 370 220 0 # to buy:
+      resizepic 440 220 3000 80 20 // Enter amount to buy here - Background
+      IF ( <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT3>).AMOUNT> = 1 )
+         textentry 443 220 78 20 210 3 1 // Enter amount to buy here - Text entry
+      ELSE
+         textentry 443 220 78 20 210 3 0 // Enter amount to buy here - Text entry
+      ENDIF
+      dtext 370 200 0 Detailed Information // Detailed info Text
+      button 510 205 2360 2361 1 0 303 // Detailed info Button
+      button 530 209 4037 4036 1 0 3 // Purchase Button
+   ELSE
+      dtext 100 200 37 SOLD OUT
+   ENDIF
+ENDIF
+
+// ------
+// Slot 4
+// ------
+LOCAL.SLOT4=(<LOCAL.SLOT1> - 3)
+IF (0<LOCAL.SLOT4> >= 0)
+   tilepichue 45 245 <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT4>).DISPIDDEC> <EVAL <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT4>).COLOR>>
+   dtext 100 240 37 <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT4>).NAME>
+   IF (<UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT4>).AMOUNT> > 0 )
+      dtext 100 260 0 Amount: <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT4>).AMOUNT>
+      dtext 100 280 0 Colour: <VENDOR_NAMED_COLOR <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT4>).COLOR>> 
+      IF (<UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT4>).PRICE> <= 0 )
+         dtext 220 260 0 Price: <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT4>).VALUE> gps
+      ELSE
+         dtext 220 260 0 Price: <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT4>).PRICE> gps
+      ENDIF
+      dtext 370 280 0 # to buy:
+      resizepic 440 280 3000 80 20 // Enter amount to buy here - Background
+      IF ( <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT4>).AMOUNT> = 1 )
+         textentry 443 280 78 20 210 4 1 // Enter amount to buy here - Text entry
+      ELSE
+         textentry 443 280 78 20 210 4 0 // Enter amount to buy here - Text entry
+      ENDIF
+      dtext 370 260 0 Detailed Information // Detailed info Text
+      button 510 265 2360 2361 1 0 304 // Detailed info Button
+      button 530 269 4037 4036 1 0 4 // Purchase Button
+   ELSE
+      dtext 100 260 37 SOLD OUT
+   ENDIF
+ENDIF
+
+// ------
+// Slot 5
+// ------
+LOCAL.SLOT5=(<LOCAL.SLOT1> - 4)
+IF (0<LOCAL.SLOT5> >= 0)
+   tilepichue 45 305 <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT5>).DISPIDDEC> <EVAL <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT5>).COLOR>>
+   dtext 100 300 37 <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT5>).NAME>
+   IF (<UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT4>).AMOUNT> > 0 )
+      dtext 100 320 0 Amount: <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT5>).AMOUNT>
+      dtext 100 340 0 Colour: <VENDOR_NAMED_COLOR <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT5>).COLOR>> 
+      IF (<UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT5>).PRICE> <= 0 )
+         dtext 220 320 0 Price: <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT5>).VALUE> gps
+      ELSE
+         dtext 220 320 0 Price: <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT5>).PRICE> gps
+      ENDIF
+      dtext 370 340 0 # to buy:
+      resizepic 440 340 3000 80 20 // Enter amount to buy here - Background
+      IF ( <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<LOCAL.SLOT5>).AMOUNT> = 1 )
+         textentry 443 340 78 20 210 5 1 // Enter amount to buy here - Text entry
+      ELSE
+         textentry 443 340 78 20 210 5 0 // Enter amount to buy here - Text entry
+      ENDIF
+      dtext 370 320 0 Detailed Information // Detailed info Text
+      button 510 325 2360 2361 1 0 305 // Detailed info Button
+      button 530 329 4037 4036 1 0 5 // Purchase Button
+   ELSE
+      dtext 100 320 37 SOLD OUT
+   ENDIF
+      
+ENDIF
+
+// ----
+// Base
+// ----
+dtext 50 380 0 Shop owned by:
+//dtext 160 380 112 <UID.<UID.<SRC.TAG.CURRENTVENDOR>.memoryfindtype(memory_ipet).LINK>.name>
+dtext 77 400 0 Shop name:
+dtext 160 400 112 <UID.<SRC.TAG.CURRENTVENDOR>.TAG.VENDOR_TITLE>
+dtext 350 390 0 Current Gold:
+dtext 450 390 87 <EVAL <SRC.TOTALGOLD>>
+dtext 65 424 0 Close
+
+
+[DIALOG d_vendor_sales TEXT]
+<VAR.BLANKLINE>
+1
+
+[DIALOG d_vendor_sales BUTTON]
+ONBUTTON=1 5
+   if ( <SRC.ISDEAD> )
+      TRY UID.<SRC.TAG.CURRENTVENDOR>.SAY Get a life...
+      CLEARVENDORTAGS
+      return 1
+   endif
+
+
+   TRY VAR.SLOT<ARGN1>=<UID.<SRC.TAG.CURRENTVENDOR>.TAG.SLOT<ARGN1>>
+   
+   SRC.TAG.INTENDEDPURCHASE=<UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<VAR.SLOT<ARGN1>>).UID>
+   SRC.TAG.INTENDEDAMOUNT=<EVAL <ARGTXT[<ARGN1>]>>
+   IF (<UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<VAR.SLOT<ARGN1>>).PRICE> <= 0 )
+      SRC.TAG.TOTALCOST=(<UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<VAR.SLOT<ARGN1>>).VALUE> * <SRC.TAG.INTENDEDAMOUNT>)
+   ELSE
+      SRC.TAG.TOTALCOST=(<UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<VAR.SLOT<ARGN1>>).PRICE> * <SRC.TAG.INTENDEDAMOUNT>)
+   ENDIF
+   
+   SERV.LOG <SRC.ACCOUNT>-<SRC.NAME>[<SRC.UID>] - Trying to Buy <argtxt[<ARGN1>]> <UID.<SRC.TAG.INTENDEDPURCHASE>.NAME> for <EVAL <SRC.TAG.TOTALCOST>> gold from <SRC.TAG.CURRENTVENDOR>.
+
+   IF ( <strpos 1 60 <argtxt[<ARGN1>]>> > 0 )
+      SRC.SYSMESSAGE @94 You MUST input an amount between 1-59999
+      SRC.FILLVENDORTAGS
+      DIALOG d_vendor_sales
+   ELSEIF ( <strpos 1 62 <argtxt[<ARGN1>]>> > 0 )
+      SRC.SYSMESSAGE @94 You MUST input an amount between 1-59999
+      SRC.FILLVENDORTAGS
+      DIALOG d_vendor_sales
+   ELSEIF ( strmatch("[1-9]","<ARGTXT[<ARGN1>]>")
+      f_purchase_item
+   ELSEIF ( strmatch("[1-9][0-9]","<ARGTXT[<ARGN1>]>")
+      f_purchase_item
+   ELSEIF ( strmatch("[1-9][0-9][0-9]","<ARGTXT[<ARGN1>]>")
+      f_purchase_item
+   ELSEIF ( strmatch("[1-9][0-9][0-9][0-9]","<ARGTXT[<ARGN1>]>")
+      f_purchase_item
+   ELSEIF ( strmatch("[1-5][0-9][0-9][0-9][0-9]","<ARGTXT[<ARGN1>]>")
+      f_purchase_item
+   ELSE
+      SRC.SYSMESSAGE @94 You MUST input an amount between 1-59999
+      SRC.FILLVENDORTAGS
+      DIALOG d_vendor_sales
+   ENDIF
+
+//-----------------------General Window Commands-----------------------
+
+ONBUTTON=0 // Close
+IF <SRC.TAG0.CURRENTVENDOR> > 0
+   SERV.LOG <SRC.ACCOUNT>-<SRC.NAME>[<SRC.UID>] closes buy window for <SRC.TAG.CURRENTVENDOR>(may be wrong if opened twice on two diff vendors).
+   TRY UID.<SRC.TAG.CURRENTVENDOR>.SAY Thank you, come again!
+   CLEARVENDORTAGS
+ENDIF
+
+ONBUTTON=201
+TRY UID.<SRC.TAG.CURRENTVENDOR>.TAG.CURRENTITEM=(0<UID.<SRC.TAG.CURRENTVENDOR>.TAG.CURRENTITEM> + 5)
+SRC.FILLVENDORTAGS
+DIALOG d_vendor_sales
+
+ONBUTTON=202
+TRY UID.<SRC.TAG.CURRENTVENDOR>.TAG.CURRENTITEM=(0<UID.<SRC.TAG.CURRENTVENDOR>.TAG.CURRENTITEM> - 5)
+SRC.FILLVENDORTAGS
+DIALOG d_vendor_sales
+
+ONBUTTON=301 305
+LOCAL.SLOT=<EVAL (<ARGN1>-300)>
+VAR.DETAILEDITEM=<UID.<SRC.TAG.CURRENTVENDOR>.TAG.SLOT<EVAL <LOCAL.SLOT>>>
+TRY UID.<SRC.TAG.CURRENTVENDOR>.ACT=<UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<VAR.DETAILEDITEM>).UID>
+TRY UID.<SRC.TAG.CURRENTVENDOR>.ItemLore_Identify
+
+DIALOG d_vendor_sales_extra
+
+
+
+//--------------------------------------------------------
+
+[DIALOG d_vendor_sales_extra]
+0,0
+NODISPOSE
+page 0
+resizepic 60 40 2620 500 400
+
+page 1
+button 510 310 4037 4036 1 0 0 Close Window
+tilepichue 70 60 <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<VAR.DETAILEDITEM>).DISPIDDEC> <EVAL <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<VAR.DETAILEDITEM>).COLOR>>
+dtext 115 60 424 <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<VAR.DETAILEDITEM>).NAME>
+dtext 115 80 340 Amount: <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<VAR.DETAILEDITEM>).AMOUNT>
+dtext 245 80 340 Colour: <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<VAR.DETAILEDITEM>).COLOR>
+IF (<UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<VAR.DETAILEDITEM>).PRICE> < -1 )
+   dtext 115 100 280 Price: <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<VAR.DETAILEDITEM>).VALUE> Gold
+ELSE
+   dtext 115 100 280 Price: <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<VAR.DETAILEDITEM>).PRICE> Gold
+ENDIF
+
+IF ( strmatch("t_armor","<UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<VAR.DETAILEDITEM>).TYPE>") )
+   dtext 115 140 135 Armour rating in full set: 
+   dtext 305 140 165 <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<VAR.DETAILEDITEM>).ARMOR>
+   dtext 115 160 135 Quality:
+   IF (<UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<VAR.DETAILEDITEM>).QUALITY> < 70)
+      dtext 175 160 165 None
+   ELSEIF (<UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<VAR.DETAILEDITEM>).QUALITY> < 100)
+      dtext 175 160 165 Fine
+   ELSEIF (<UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<VAR.DETAILEDITEM>).QUALITY> < 150)
+      dtext 175 160 165 Superior
+   ELSEIF (<UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<VAR.DETAILEDITEM>).QUALITY> < 199)
+      dtext 175 160 165 Superb
+   ELSE
+      dtext 175 160 165 Exceptional
+   ENDIF
+   dtext 115 180 135 Condition:
+   VAR.DAMAGE=((<UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<VAR.DETAILEDITEM>).MORE1l>*100) / (<UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<VAR.DETAILEDITEM>).MORE1h>))
+   dtext 185 180 165 <EVAL <VAR.DAMAGE>>%
+ENDIF
+
+IF ( strmatch("t_weapon_*","<UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<VAR.DETAILEDITEM>).TYPE>") )
+   dtext 115 140 135 Base Damage range: 
+   dtext 255 140 165 <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<VAR.DETAILEDITEM>).ARMOR>
+   dtext 115 160 135 Quality:
+   IF (<UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<VAR.DETAILEDITEM>).QUALITY> < 70)
+      dtext 175 160 165 None
+   ELSEIF (<UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<VAR.DETAILEDITEM>).QUALITY> < 100)
+      dtext 175 160 165 Fine
+   ELSEIF (<UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<VAR.DETAILEDITEM>).QUALITY> < 150)
+      dtext 175 160 165 Superior
+   ELSEIF (<UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<VAR.DETAILEDITEM>).QUALITY> < 199)
+      dtext 175 160 165 Superb
+   ELSE
+      dtext 175 160 165 Exceptional
+   ENDIF
+   dtext 115 180 135 Condition:
+   VAR.DAMAGE=((<UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<VAR.DETAILEDITEM>).MORE1l>*100) / (<UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<VAR.DETAILEDITEM>).MORE1h>))
+   dtext 185 180 165 <EVAL <VAR.DAMAGE>>%
+ENDIF
+
+IF ( strmatch("t_shield","<UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<VAR.DETAILEDITEM>).TYPE>") )
+   dtext 115 140 135 Armour rating: 
+   dtext 225 140 165 <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<VAR.DETAILEDITEM>).ARMOR>
+   dtext 115 160 135 Quality:
+   IF (<UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<VAR.DETAILEDITEM>).QUALITY> < 70)
+      dtext 175 160 165 None
+   ELSEIF (<UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<VAR.DETAILEDITEM>).QUALITY> < 100)
+      dtext 175 160 165 Fine
+   ELSEIF (<UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<VAR.DETAILEDITEM>).QUALITY> < 150)
+      dtext 175 160 165 Superior
+   ELSEIF (<UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<VAR.DETAILEDITEM>).QUALITY> < 199)
+      dtext 175 160 165 Superb
+   ELSE
+      dtext 175 160 165 Exceptional
+   ENDIF
+   dtext 115 180 135 Condition:
+   VAR.DAMAGE=((<UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<VAR.DETAILEDITEM>).MORE1l>*100) / (<UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<VAR.DETAILEDITEM>).MORE1h>))
+   dtext 185 180 165 <EVAL <VAR.DAMAGE>>%
+ENDIF
+
+
+IF ( strmatch("t_container","<UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<VAR.DETAILEDITEM>).TYPE>") )
+   dtext 115 140 135 Number of contents:
+   f_find_contents 0
+   dtext 255 140 165 <EVAL <VAR.TOTALCONTENTS>+1>
+   dtext 115 160 135 Contains:
+ENDIF
+
+
+[DIALOG d_vendor_sales_extra TEXT]
+
+[DIALOG d_vendor_sales_extra BUTTON]
+ONBUTTON=0
+SRC.FILLVENDORTAGS
+SRC.DIALOG d_vendor_sales
+
+//--------------------------------------------------------
+
+[DIALOG d_vendor_sales_confirm]
+0,0
+
+[DIALOG d_vendor_sales_confirm TEXT]
+
+[DIALOG d_vendor_sales_confirm BUTTON]
+
+//--------------------------------------------------------
+
+// Required variables to set up:
+// LOCAL.TOTALCOST -- Total cost of items
+// LOCAL.PURCHASED -- UID of the item to be purchased
+// LOCAL.AMOUNTBOUGHT -- Total amount to be purchased
+
+
+[FUNCTION f_purchase_item]
+LOCAL.TOTALCOST=<SRC.TAG.TOTALCOST>
+LOCAL.PURCHASED=<SRC.TAG.INTENDEDPURCHASE>
+LOCAL.AMOUNTBOUGHT=<EVAL <SRC.TAG.INTENDEDAMOUNT>> //Insert linking command here.
+LOCAL.PURCHASEDITEMNAME=<UID.<LOCAL.PURCHASED>.NAME>
+
+//Check Distance from Vendor
+IF ( <UID.<SRC.TAG.CURRENTVENDOR>.DISTANCE> > 3 )
+   SRC.SYSMESSAGE You are too far away to purchase anything
+   CLEARVENDORTAGS
+   RETURN 1
+ENDIF
+
+//Check to see if they still have the item.
+VAR.ORIGINALAMOUNT=<UID.<LOCAL.PURCHASED>.AMOUNT>
+IF (<EVAL <VAR.ORIGINALAMOUNT>> < <EVAL <LOCAL.AMOUNTBOUGHT>>)
+   TRY UID.<SRC.TAG.CURRENTVENDOR>.SAY Oh my, I appear to have fallen short of supplies! I am dreadfully sorry!
+   VAR.RETURN=1
+   CLEARVENDORTAGS
+   RETURN 1
+ENDIF
+
+//Try to consume gold
+consumegold_everywhere <eval (<LOCAL.TOTALCOST>)>
+IF ( <VAR.CONSUMEGOLD> > 0 )
+   TRY UID.<SRC.TAG.CURRENTVENDOR>.SAY You are <eval <VAR.consumegold>> gp too poor to purchase this.
+   VAR.RETURN=1
+   CLEARVENDORTAGS
+   return 1
+ENDIF
+
+//Give item to player/take away from vendor
+IF (<UID.<LOCAL.PURCHASED>.AMOUNT> = 1)
+   IF (<UID.<SRC.TAG.CURRENTVENDOR>.BASEID>=C_H_PLAYER_VENDOR)||(<UID.<SRC.TAG.CURRENTVENDOR>.BASEID>=C_H_PLAYER_VENDOR_F)
+      TRY UID.<LOCAL.PURCHASED>.BOUNCE
+   ELSE
+      SERV.NEWDUPE <UID.<LOCAL.PURCHASED>.UID>
+      NEW.AMOUNT 1
+      NEW.BOUNCE
+      IF strmatch("i_pet*", "<NEW.BASEID>")
+         SRC.ACT=<NEW.UID>
+         SRC.ACT.DCLICK
+      ENDIF
+      TRY UID.<LOCAL.PURCHASED>.AMOUNT=0   
+   ENDIF
+   TRY UID.<SRC.TAG.CURRENTVENDOR>.SAY Thank you for buying <LOCAL.PURCHASEDITEMNAME> for <EVAL <LOCAL.TOTALCOST>> gold.
+ELSEIF (<UID.<LOCAL.PURCHASED>.AMOUNT>=<LOCAL.AMOUNTBOUGHT>)
+   IF (<UID.<SRC.TAG.CURRENTVENDOR>.BASEID>=C_H_PLAYER_VENDOR)||(<UID.<SRC.TAG.CURRENTVENDOR>.BASEID>=C_H_PLAYER_VENDOR_F)
+      TRY UID.<LOCAL.PURCHASED>.BOUNCE
+   ELSE
+      IF (<LOCAL.AMOUNTBOUGHT> < 30)
+         FOR <LOCAL.AMOUNTBOUGHT>
+            SERV.NEWDUPE <UID.<LOCAL.PURCHASED>.UID>
+            NEW.AMOUNT 1
+            NEW.BOUNCE
+            IF strmatch("i_pet*", "<NEW.BASEID>")
+               SRC.ACT=<NEW.UID>
+               SRC.ACT.DCLICK
+            ENDIF
+         ENDFOR
+      ELSE
+         SERV.NEWDUPE <UID.<LOCAL.PURCHASED>.UID>
+         NEW.AMOUNT <LOCAL.AMOUNTBOUGHT>
+         NEW.BOUNCE
+         IF strmatch("i_pet*", "<NEW.BASEID>")
+            SRC.ACT=<NEW.UID>
+            SRC.ACT.DCLICK
+         ENDIF
+      ENDIF
+      TRY UID.<LOCAL.PURCHASED>.AMOUNT=0  
+   ENDIF
+   TRY UID.<SRC.TAG.CURRENTVENDOR>.SAY Thank you for buying all <EVAL <LOCAL.AMOUNTBOUGHT>> <LOCAL.PURCHASEDITEMNAME> for <EVAL <LOCAL.TOTALCOST>> gold.   
+ELSE
+   VAR.RESULTINGAMOUNT=(<UID.<LOCAL.PURCHASED>.AMOUNT> - <LOCAL.AMOUNTBOUGHT>)
+   TRY UID.<LOCAL.PURCHASED>.AMOUNT=<EVAL <VAR.RESULTINGAMOUNT>>
+   IF (<LOCAL.AMOUNTBOUGHT> < 30)
+      FOR <LOCAL.AMOUNTBOUGHT>
+         SERV.NEWDUPE <UID.<LOCAL.PURCHASED>.UID>
+         NEW.AMOUNT 1
+         NEW.BOUNCE
+         IF !(<UID.<SRC.TAG.CURRENTVENDOR>.BASEID>=C_H_PLAYER_VENDOR)||(<UID.<SRC.TAG.CURRENTVENDOR>.BASEID>=C_H_PLAYER_VENDOR_F)
+            IF strmatch("i_pet*", "<NEW.BASEID>")
+               SRC.ACT=<NEW.UID>
+               SRC.ACT.DCLICK
+            ENDIF
+         ENDIF
+      ENDFOR
+   ELSE
+      SERV.NEWDUPE <UID.<LOCAL.PURCHASED>.UID>
+      NEW.AMOUNT <LOCAL.AMOUNTBOUGHT>
+      NEW.BOUNCE
+      IF !(<UID.<SRC.TAG.CURRENTVENDOR>.BASEID>=C_H_PLAYER_VENDOR)||(<UID.<SRC.TAG.CURRENTVENDOR>.BASEID>=C_H_PLAYER_VENDOR_F)
+         IF strmatch("i_pet*", "<NEW.BASEID>")
+            SRC.ACT=<NEW.UID>
+            SRC.ACT.DCLICK
+         ENDIF
+      ENDIF
+   ENDIF
+   TRY UID.<SRC.TAG.CURRENTVENDOR>.SAY Thank you for buying <EVAL <LOCAL.AMOUNTBOUGHT>> <LOCAL.PURCHASEDITEMNAME> for <EVAL <LOCAL.TOTALCOST>> gold.
+ENDIF
+
+//Increase Vendor's Cash
+TRY UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_bankbox.MORE1=<HVAL <UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_bankbox.MORE1>+<LOCAL.TOTALCOST>>
+SERV.LOG <SRC.ACCOUNT>-<SRC.NAME>[<SRC.UID>] - Bought <EVAL <LOCAL.AMOUNTBOUGHT>> <UID.<LOCAL.PURCHASED>.NAME> for <EVAL <LOCAL.TOTALCOST>> gold from <SRC.TAG.CURRENTVENDOR>.
+
+//Fix Dialog and Reopen
+TRY UID.<SRC.TAG.CURRENTVENDOR>.TAG.CURRENTITEM=(0<UID.<SRC.TAG.CURRENTVENDOR>.TAG.CURRENTITEM> - 1)
+SRC.FILLVENDORTAGS
+DIALOG d_vendor_sales
+
+[FUNCTION f_find_contents]
+IF ( <UID.<UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<VAR.DETAILEDITEM>).UID>.FINDCONT(<ARGS>).UID>)
+   IF (<ARGS> = 0)
+      dtext 115 180 165 <UID.<UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<VAR.DETAILEDITEM>).UID>.FINDCONT(<ARGS>).NAME>
+   ELSEIF (<ARGS> < 11)
+      dtext 115 <EVAL (<ARGS>*20)+180> 165 <UID.<UID.<SRC.TAG.CURRENTVENDOR>.FINDLAYER.layer_vendor_stock.FINDCONT(<VAR.DETAILEDITEM>).UID>.FINDCONT(<ARGS>).NAME>
+   ELSEIF (<ARGS> = 11)
+      dtext 115 400 165 And more
+   ENDIF
+   f_find_contents <EVAL <ARGS>+1>
+ELSE
+   VAR.TOTALCONTENTS=<EVAL <ARGS>-1>
+ENDIF
+
+
+
+
+
+
+
+
+[FUNCTION VENDOR_NAMED_COLOR]
+IF (<args>=0484)
+   RETURN Snow
+ELSEIF (<args>=09e1)
+   RETURN Snow
+ELSEIF (<args>=07b5) 
+   RETURN Mytheril
+ELSEIF (<args>=07a1) 
+   RETURN Stronghold
+ELSEIF (<args>=07ad) 
+   RETURN Sun
+ELSEIF (<args>=0798) 
+   RETURN Gold
+ELSEIF (<args>=079a) 
+   RETURN Butterscotch
+ELSEIF (<args>=0785) 
+   RETURN Fire [Reward]
+ELSEIF (<args>=0afe) 
+   RETURN Fire [Reward]
+ELSEIF (<args>=0783) 
+   RETURN Jupiter
+ELSEIF (<args>=079c) 
+   RETURN War
+ELSEIF (<args>=04c2) 
+   RETURN Maroon
+ELSEIF (<args>=0af7
+   RETURN Maroon
+ELSEIF (<args>=0491) 
+   RETURN Neon Green
+ELSEIF (<args>=0795) 
+   RETURN Jungle Green
+ELSEIF (<args>=0488) 
+   RETURN Bronze
+ELSEIF (<args>=079e) 
+   RETURN Dark Chocolate
+ELSEIF (<args>=079b) 
+   RETURN Verminard
+ELSEIF (<args>=0489) 
+   RETURN Blue
+ELSEIF (<args>=07a0) 
+   RETURN Moon
+ELSEIF (<args>=0796) 
+   RETURN Midnight
+ELSEIF (<args>=07ab)
+   RETURN Royal Blue
+ELSEIF (<args>=01) 
+   RETURN Pure Black
+ELSEIF (<args>=0799)
+   RETURN Blood
+ELSEIF (<args>=0868)
+   RETURN Lavender
+ELSEIF (<args>=0aac)
+   RETURN Cream
+ELSEIF (<args>=09ef)
+   RETURN Mud
+ELSEIF (<args>=07b8)
+   RETURN Onyx
+ELSEIF (<args>=0aca)
+   RETURN Pistachio
+ELSEIF (<args>=0aff)
+   RETURN Yellow
+
+ELSEIF (<args>=0485)
+   RETURN Pitch Black
+ELSEIF (<args>=0480)
+   RETURN Ice
+ELSEIF (<args>=048f)
+   RETURN Angel
+ELSEIF (<args>=0481)
+   RETURN White
+ELSEIF (<args>=048c)
+   RETURN Passion Pink [Old]
+ELSEIF (<args>=09b1)
+   RETURN Passion Pink
+ELSEIF (<args>=0483)
+   RETURN Purple
+ELSEIF (<args>=0484)
+   RETURN Pure White
+ELSEIF (<args>=0486)
+   RETURN Fire [Tailor]
+ELSEIF (<args>=0487)
+   RETURN Green
+ELSEIF (<args>=048a)
+   RETURN Soft Green
+ELSEIF (<args>=079e)
+   RETURN Dark Bronze
+ELSEIF (<args>=0488)
+   RETURN Bronze
+ELSEIF (<args>=0489)
+   RETURN Blue
+ELSEIF (<args>=048d)
+   RETURN Soft Blue
+ELSEIF (<args>=048b)
+   RETURN Soft Purple
+ELSEIF (<args>=048e)
+   RETURN Strong Pink [Old]
+ELSEIF (<args>=0a10)
+   RETURN Strong Pink
+ELSEIF (<args>=0455)
+   RETURN Black
+ELSEIF (<args>=099d)
+   RETURN Rain
+ELSEIF (<args>=09f6)
+   RETURN Swamp
+ELSEIF (<args>=0af1)
+   RETURN Cardinal
+ELSEIF (<args>=07eb)
+   RETURN Fog
+ELSEIF (<args>=0ae3)
+   RETURN Sunset
+ELSEIF (<args>=0ac9)
+   RETURN Passion Purple
+
+
+ELSEIF (<args>=00)
+   RETURN Standard
+ELSE
+   RETURN <args>
+ENDIF
+
+
+[EOF]

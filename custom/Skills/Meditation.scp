@@ -1,0 +1,70 @@
+[FUNCTION meditation_remove]
+   SRC.EVENTS -e_meditation
+   if ( <SRC.findid(b_meditating).uid> )
+      SRC.findid(b_meditating).remove
+      SRC.meditation_remove
+      return 1
+   endif
+
+
+[EVENTS e_meditation]
+if ( <src.FLAGS> & statf_war )
+   SRC.meditation_remove
+endif
+ON=@GetHit
+   SRC.meditation_remove
+on=@spellcast
+   SRC.meditation_remove
+if ( <FLAGS> & statf_hidden )
+   SRC.meditation_remove
+endif
+
+
+[ITEMDEF b_meditating]	
+ID	= 0bbf
+TYPE	= t_eq_script
+LAYER	= layer_special
+NAME	= meditating
+WEIGHT	= 0
+ON = @Create
+   TYPE		= t_eq_script
+
+ON = @Equip
+   ATTR		= attr_newbie | attr_move_never
+   CONT.EVENTS +e_meditation
+   TIMER	= 5
+
+ON = @Unequip
+   CONT.EVENTS -e_meditation
+
+ON = @Timer
+   if (<cont.mana> == <cont.int>)
+      remove
+      return 1
+   elseif (<cont.mana> > <cont.int>)
+      remove
+      return 1
+   endif
+
+   // * bonus mana depending on med %
+   if ( <CONT.meditation> > 95.0 )
+          cont.mana =  <eval ( <cont.mana> + 5 )>
+          timer = 5
+   elseif ( <CONT.meditation> > 90.0 )
+          cont.mana =  <eval ( <cont.mana> + 4 )>
+          timer = 5
+   elseif ( <CONT.meditation> > 80.0 )
+          cont.mana =  <eval ( <cont.mana> + 3 )>
+          timer = 5
+   elseif ( <CONT.meditation> > 70.0 )
+          cont.mana =  <eval ( <cont.mana> + 2 )>
+          timer = 5
+   elseif ( <CONT.meditation> > 60.0 )
+          cont.mana =  <eval ( <cont.mana> + 1 )>
+          timer = 5
+   else 
+          remove                   
+   endif
+   return 1  
+   
+[EOF]

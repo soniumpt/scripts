@@ -1,0 +1,1610 @@
+// #-----------#
+// # CHANGELOG #
+// #-----------#
+//
+// 19/08/18 - Wigifer - Removed random loot from these monsters, ready for conversion to the new f_central_loot table.
+
+//Loot for undead characters. Memory UO Shard.
+//Assembled by Kell. (evren@portugalmail.pt)
+//Revamped by Warman. (warman@mail.pt)
+
+//********************************************************************//
+//                               SKELETONS                            //
+//********************************************************************//
+[CHARDEF 032]
+DEFNAME		= c_skeleton
+NAME		= Skeleton
+SOUND		= snd_MONSTER_SKLETN1
+ICON		= i_pet_SKELETON
+ANIM		= 078c7f
+CAN		= MT_WALK
+DAM		= 2,8
+ARMOR		= 8
+RESOURCES	= 8 i_reag_bone
+FOODTYPE	=
+DESIRES		= t_bone,i_gold
+BLOODCOLOR	= -1
+
+TEVENTS		= e_undead
+CATEGORY	= Monsters
+SUBSECTION	= Undeads
+DESCRIPTION	= Skeleton
+ON=@Create
+  NPC		= brain_undead
+  FAME		= {100 2000}
+  KARMA		= {-999 -4999}
+  STR		= {56 80}
+  DEX		= {56 75}
+  INT		= {60 70}
+  PARRYING	= {45.0 55.0}
+  MAGICRESISTANCE={45.0 60.0}
+  TACTICS	= {45.0 50.0}
+  WRESTLING	= {45.0 55.0}
+
+//********************************************************************//
+[CHARDEF 038]
+DEFNAME		= c_skeleton_w_axe
+NAME		= Skeleton
+SOUND		= snd_MONSTER_SKLETN1
+ICON		= i_pet_SKELETON
+ANIM		= 078c7f
+DAM		= 6,12
+ARMOR		= 8
+RESOURCES	= 8 i_reag_bone
+CAN		= MT_WALK|MT_USEHANDS|MT_RUN
+FOODTYPE	=
+DESIRES		= t_bone,i_gold
+BLOODCOLOR	= -1
+
+TEVENTS		= e_undead
+CATEGORY	= Monsters
+SUBSECTION	= Undeads
+DESCRIPTION	= Skeleton (Axe)
+
+ON = @Create
+  NPC		= brain_undead
+  FAME		= {100 2000}
+  KARMA		= {-999 -5999}
+  STR		= {56 80}
+  DEX		= {56 75}
+  INT		= {60 70}
+  SWORDSMANSHIP	= {50.0 55.0}
+  PARRYING	= {45.0 55.0}
+  MAGICRESISTANCE={45.0 60.0}
+  TACTICS	= {45.0 60.0}
+  WRESTLING	= {45.0 55.0}
+
+ON = @NPCRestock
+  ITEMNEWBIE	= { i_axe_battle_copper 5 i_axe_battle 1 }
+
+//********************************************************************//
+[CHARDEF 039]
+DEFNAME		= c_skeleton_w_sword
+NAME		= Skeleton
+SOUND		= snd_MONSTER_SKLETN1
+ICON		= i_pet_SKELETON
+ANIM		= 078c7f
+CAN		= MT_WALK|MT_USEHANDS|MT_EQUIP
+DAM		= 7, 13
+ARMOR		= 9
+RESOURCES	= 8 i_reag_bone
+DESIRES		= t_bone,i_gold
+FOODTYPE	=
+BLOODCOLOR	= -1
+
+TEVENTS		= e_undead
+CATEGORY	= Monsters
+SUBSECTION	= Undeads
+DESCRIPTION	= Skeleton (Sword & Shield)
+
+ON=@Create
+  NPC		= brain_undead
+  FAME		= {100 2000}
+  KARMA		= {-999 -5999}
+  STR		= {56 80}
+  DEX		= {56 75}
+  INT		= {60 70}
+  SWORDSMANSHIP	= {50.0 55.0}
+  PARRYING	= {45.0 55.0}
+  MAGICRESISTANCE={45.0 60.0}
+  TACTICS	= {45.0 60.0}
+  WRESTLING	= {45.0 55.0}
+
+//********************************************************************//
+[CHARDEF 0900]
+DEFNAME		= c_m_skeletonarcher
+NAME		= Skeleton Archer
+ID		= c_SKELETON_W_AXE
+CAN		= MT_WALK|MT_RUN|MT_EQUIP
+DAM		= 6 , 20
+ARMOR		= 12
+RESOURCES	= 8 i_reag_bone
+FOODTYPE	=
+
+TEVENTS		= e_undead
+CATEGORY	= Monsters
+SUBSECTION	= Undeads
+DESCRIPTION	= Skeleton Archer
+
+ON=@Create
+  NPC		= brain_undead
+  FAME		= {100 2000}
+  KARMA		= {-1999 -4999}
+  STR		= {100 150}
+  DEX		= {56 75}
+  INT		= {60 70}
+  ARCHERY	= { 95.0 100.0 }
+  PARRYING	= {45.0 55.0}
+  MAGICRESISTANCE={45.0 60.0}
+  TACTICS	= {45.0 60.0}
+  WRESTLING	= {45.0 55.0}
+
+ON=@NPCRestock
+  ITEMNEWBIE	= i_bow_pine
+  ITEM		= i_arrow,{10 20}
+
+
+//********************************************************************//
+[CHARDEF 01046]
+DEFNAME		= c_m_skeleton_mage
+NAME		= Skeleton Mage
+ID		= c_skeleton
+DAM		= 2,8
+ARMOR		= 40
+RESOURCES	= 8 i_reag_bone
+
+TEVENTS		= e_Undead
+CATEGORY	= Monsters
+SUBSECTION	= Undeads
+DESCRIPTION	= Skeleton Mage
+ON=@Create
+  NPC		= brain_undead
+  COLOR		= colors_red
+  FAME		= {100 2000}
+  KARMA		= {-3000 -3999}
+  STR		= {120 140}
+  DEX		= {56 75}
+  INT		= {100 110}
+  PARRYING	= {45.0 55.0}
+  MAGERY	= {60.0 70.0}
+  MAGICRESISTANCE={45.0 60.0}
+  TACTICS	= {45.0 60.0}
+  WRESTLING	= {45.0 55.0}
+
+
+//********************************************************************//
+[CHARDEF 01047]
+DEFNAME		= c_m_skeleton_knight
+NAME		= Skeleton Knight
+ID		= c_skeleton_w_sword
+DAM		= 5,25
+ARMOR		= 30
+RESOURCES	= 8 i_reag_bone
+
+TEVENTS		= e_Undead
+CATEGORY	= Monsters
+SUBSECTION	= Undeads
+DESCRIPTION	= Skeleton Knight
+
+ON = @Create
+  NPC		= brain_undead
+  FAME		= {100 2000}
+  KARMA		= {-3000 -3999}
+  STR		= {195 250}
+  DEX		= {76 95}
+  INT		= {100 110}
+  PARRYING	= {85.0 95.0}
+  MAGICRESISTANCE={65.0 80.0}
+  TACTICS	= {85.0 100.0}
+  WRESTLING	= {85.0 95.0}
+
+
+//********************************************************************//
+[CHARDEF c_m_skeleton_hero]
+DEFNAME		= c_m_skeleton_hero
+NAME		= Skeleton Hero
+ID		= c_skeleton_w_sword
+DAM		= 20,35
+ARMOR		= 40
+RESOURCES	= 8 i_reag_bone
+
+TEVENTS		= e_Undead
+
+
+ON = @Create
+  NPC		= brain_undead
+  COLOR		= colors_white
+  FAME		= {100 2000}
+  KARMA		= {-3000 -3999}
+  STR		= {360 500}
+  DEX		= {140 160}
+  INT		= {36 60}
+  PARRYING	= {85.0 95.0}
+  MAGICRESISTANCE={85.0 90.0}
+  TACTICS	= {95.0 100.0}
+  WRESTLING	= {95.0 100.0}
+
+
+CATEGORY=Memory UO
+SUBSECTION=Undead
+DESCRIPTION=Skeleton Hero
+
+//********************************************************************//
+//                         NECROMANCY LOOTS                           //
+//********************************************************************//
+
+[FUNCTION loot_necromancy]
+ addlootrandom ,5,10,1,i_necro_zombies
+ addlootrandom ,5,10,1,i_necro_skeletons
+ addlootrandom ,5,10,1,i_necro_light
+
+
+[DEFNAME item_necro_loots]
+loot_necro  {i_necro_zombies 25 i_necro_skeletons 25 i_necro_light 1 0 50}
+
+
+
+//********************************************************************//
+//                           SKELETON LOOTS                           //
+//********************************************************************//
+
+[FUNCTION loot_SKELETON]
+ addlootgold ,250
+ addlootrandom ,225,250,1,i_skull_undertaker
+ addlootmisc 15,i_reward_ticket
+ 
+//********************************************************************//
+[FUNCTION loot_SKELETAL_KNIGHT]
+ addlootgold ,400
+ addlootrandom ,125,150,1,i_skull_undertaker
+ addlootmisc 25,i_reward_ticket
+ addlootrandom ,15,16,1,random_plate_armour_iron
+ addlootrandom ,7,8,1,random_plate_armour_copper
+
+//********************************************************************//
+[FUNCTION loot_SKELETAL_MAGE]
+ addlootgold ,200
+ addlootrandom ,225,250,1,i_skull_undertaker
+ addlootmisc 25,i_reward_ticket
+ addlootitem Random_Potion, 2  
+ addlootrandom ,4,5,1,RANDOM_lower_scroll
+ addlootmisc 5,i_reag_blood_spawn
+ addlootrandom ,2,3,5,RANDOM_REAGENT
+ addlootrandom ,2,3,4,i_reag_brimstone
+
+
+//********************************************************************//
+//                                UNDEAD                              //
+//********************************************************************//
+[CHARDEF 03]
+DEFNAME		= c_zombie
+NAME		= Zombie
+SOUND		= snd_MONSTER_ZOMBIE1
+ICON		= i_pet_ZOMBIE
+ANIM		= 078c7f
+CAN		= MT_WALK
+DAM		= 4,10
+ARMOR		= 9
+RESOURCES	= 10 t_eerie_stuff, 1 i_reag_heart_zombie
+FOODTYPE	= 20 t_meat_raw
+DESIRES		= i_gold,t_meat_raw, t_corpse
+AVERSIONS	= t_TRAP
+BLOODCOLOR	= colors_green
+
+TEVENTS		= e_undead
+CATEGORY	= Monsters
+SUBSECTION	= Undeads
+DESCRIPTION	= Zombie
+ON=@Create
+  NPC		= brain_undead
+  FAME		= 300
+  KARMA		= {-2000 -3999}
+  STR		= {46 70}
+  DEX		= {31 50}
+  INT		= {50 60}
+  PARRYING	= {20.0 30.0}
+  MAGICRESISTANCE={15.0 40.0}
+  TACTICS	= {35.0 50.0}
+  WRESTLING	= {35.0 50.0}
+
+//********************************************************************//
+[CHARDEF 018]
+DEFNAME		= c_liche
+NAME		= Liche
+SOUND		= snd_MONSTER_LICHE1
+ICON		= i_pet_LICH
+ANIM		= 07bc7f
+DAM		= 15,25
+ARMOR		= 35
+CAN		= MT_WALK|MT_USEHANDS
+FOODTYPE	=
+DESIRES		= t_bone,i_gold,t_wand,t_reagent
+BLOODCOLOR	= colors_green
+
+TEVENTS		= e_undead
+CATEGORY	= Monsters
+SUBSECTION	= Undeads
+DESCRIPTION	= Liche
+ON=@Create
+  NPC		= brain_undead
+  FAME		= {600 5000}
+  KARMA		= {-4000 -4999}
+  STR		= {145 175}
+  DEX		= {80 100}
+  INT		= {125 131}
+  PARRYING	= {55.0 65.0}
+  MAGERY	= {70.0 80.0}
+  MAGICRESISTANCE={70.0 90.0}
+  NECROMANCY	= { 90.0 100.0 }
+  MACEFIGHTING	= {60.0 80.0}
+  WRESTLING	= {60.0 80.0}
+  TACTICS	= {70.0 90.0}
+  POISONING	= {50.0 60.0}
+
+ON = @NPCRestock
+  ITEMNEWBIE=i_spellbook
+   ADDSPELL=s_Harm
+   ADDSPELL=s_poison
+   ADDSPELL=s_curse
+   ADDSPELL=s_paralyze
+   ADDSPELL=s_summon_undead
+   ADDSPELL=s_Hallucination
+
+//********************************************************************//
+[CHARDEF 01041]
+DEFNAME		= c_m_liche_lord
+NAME		= Liche Lord
+ID		= c_Liche
+ICON		= i_pet_LICH
+DAM		= 25, 40
+ARMOR		= 50
+RESOURCES	=
+CAN		= MT_WALK
+DESIRES		= t_bone,i_gold,t_wand,t_reagent,e_undead
+
+TEVENTS		= e_undead
+CATEGORY	= Monsters
+SUBSECTION	= Undeads
+DESCRIPTION	= Liche Lord
+ON = @Create
+  NPC		= brain_undead
+  STR		= {515 525}
+  DEX		= {96 115}
+  INT		= {131 137}
+  PARRYING	= {55.0 65.0}
+  MACEFIGHTING	= {60.0 80.0}
+  MAGERY	= {90.0 100.0}
+  NECROMANCY	= {90.0 100.0}
+  MAGICRESISTANCE={90.0 100.0}
+  TACTICS	= {50.0 70.0}
+  WRESTLING	= {60.0 80.0}
+  POISONING	= {70.0 80.0}
+  FAME		= {100 2000}
+  KARMA		= {-5000 -5999}
+
+ON=@NPCRestock
+  ITEMNEWBIE=i_spellbook
+   ADDSPELL=s_lightning
+   ADDSPELL=s_fire_bolt
+   ADDSPELL=s_poison
+   ADDSPELL=s_curse
+   ADDSPELL=s_paralyze
+   ADDSPELL=s_summon_undead
+   ADDSPELL=s_Hallucination
+   
+
+//********************************************************************//
+[CHARDEF 01067]
+DEFNAME		= c_m_ghoul
+DEFNAME2	= C_GHOUL
+NAME		= Ghoul
+SOUND		= snd_MONSTER_ZOMBIE1
+ICON		= i_pet_ZOMBIE
+ID		= c_ZOMBIE
+FOODTYPE	=
+CAN		= MT_WALK
+
+TEVENTS		= e_Undead
+DAM		= 4,16
+ARMOR		= 20
+CATEGORY	= Monsters
+SUBSECTION	= Undeads
+DESCRIPTION	= Ghoul
+ON=@Create
+  NPC		= BRAIN_UNDEAD
+  COLOR		= colors_gray
+  KARMA		= {-5000 -2500}
+  FAME		= {600 900}
+  STR		= {70 95}
+  DEX		= {50 75}
+  INT		= {60 70}
+  MAGICRESISTANCE={30.0 60.0}
+  PARRYING	= {40.0 70.0}
+  TACTICS	= {50.0 75.0}
+  WRESTLING	= {55.0 75.0}
+
+
+//********************************************************************//
+[CHARDEF 01022]
+DEFNAME		= c_m_mummy
+NAME		= Mummy
+ID		= c_ZOMBIE
+SOUND		= snd_MONSTER_GHOST1
+ICON		= i_pet_ZOMBIE
+DAM		= 4,32
+ARMOR		= 25
+RESOURCES	= 7 t_eerie_stuff
+CAN		= MT_WALK
+DESIRES		= i_gold
+
+TEVENTS		= e_undead
+CATEGORY	= Monsters
+SUBSECTION	= Undeads
+DESCRIPTION	= Mummy
+ON = @Create
+  NPC		= brain_undead
+  COLOR		= color_rock
+  FAME		= {100 2000}
+  KARMA		= {-4000 -4999}
+  STR		= {345 370}
+  DEX		= {71 90}
+  INT		= {110 120}
+  PARRYING	= {20.0 60.0}
+  MAGICRESISTANCE={15.0 40.0}
+  TACTICS	= {35.0 50.0}
+  WRESTLING	= {35.0 50.0}
+
+//********************************************************************//
+[CHARDEF c_m_WrechedCorpse]
+DEFNAME		= c_m_WrechedCorpse
+NAME		= Wretched Corpse
+ID		= c_ZOMBIE
+SOUND		= snd_MONSTER_GHOST1
+ICON		= i_pet_ZOMBIE
+DAM		= 12,32
+ARMOR		= 35
+RESOURCES	= 7 t_eerie_stuff
+CAN		= MT_WALK
+DESIRES		= i_gold
+
+TEVENTS		= e_undead
+ON = @Create
+  NPC		= brain_undead
+  KARMA		= {-3000 -3999}
+  FAME		= {1500 3000}
+  STR		= {345 370}
+  DEX		= {100 135}
+  INT		= {200 300}
+  MAGERY        ={90.0,100.0}
+  PARRYING	= {20.0 60.0}
+  MAGICRESISTANCE={90.0 100.0}
+  TACTICS	= {35.0 50.0}
+  WRESTLING	= {35.0 50.0}
+  MEDITATION    = {50.0 70.0}
+  ITEMNEWBIE=i_spellbook
+  ADDSPELL=s_paralyze
+
+
+CATEGORY=Memory UO
+SUBSECTION=Undead
+DESCRIPTION=Wreched corpse
+
+//********************************************************************//
+[CHARDEF c_m_Skulk]
+DEFNAME		= c_m_Skulk
+NAME		= Skulk
+ID		= c_ZOMBIE
+SOUND		= snd_MONSTER_GHOST1
+ICON		= i_pet_ZOMBIE
+DAM		= 20,42
+ARMOR		= 35,40
+RESOURCES	= 7 t_eerie_stuff
+CAN		= MT_WALK
+DESIRES		= i_gold
+
+TEVENTS		= e_undead
+ON = @Create
+  NPC		= brain_undead
+  COLOR		= 0900
+  KARMA		= {-4000 -5000}
+  FAME		= {1500 3000}
+  STR		= {600 700}
+  DEX		= {130 140}
+  INT		= {200 300}
+  MANA=900
+  MAGERY        ={100.0,100.0}
+  PARRYING	= {90.0 100.0}
+  MAGICRESISTANCE={90.0 100.0}
+  TACTICS	= {75.0 100.0}
+  WRESTLING	= {80.0 100.0}
+  MEDITATION    = {80.0 100.0}
+  ITEMNEWBIE=i_spellbook
+  ADDSPELL=s_mana_drain
+  ADDSPELL=s_paralyze
+  ADDSPELL=s_blade_spirits
+
+
+CATEGORY=Memory UO
+SUBSECTION=Undead
+DESCRIPTION=Skulk
+
+
+//********************************************************************//
+//                            UNDEAD LOOTS                            //
+//********************************************************************//
+[FUNCTION loot_ZOMBIE]
+ addlootgold ,100
+ addlootrandom ,225,250,1,i_skull_undertaker
+ addlootmisc 10,i_reward_ticket
+ 
+//********************************************************************//
+[FUNCTION loot_GHOUL]
+ addlootgold ,150
+ addlootrandom ,225,200,1,i_skull_undertaker
+ addlootmisc 15,i_reward_ticket
+
+//********************************************************************//
+[FUNCTION loot_LICH]
+ addlootgold ,400
+ addlootrandom ,150,175,1,i_skull_undertaker
+ addlootmisc 30,i_reward_ticket
+ addlootitem RANDOM_lower_SCROLL, 1
+ addlootrandom ,2,3,5,RANDOM_REAGENT
+ addlootrandom ,2,3,4,i_reag_blood_spawn
+
+//********************************************************************//
+[FUNCTION loot_LICH_LORD]
+ addlootgold ,1000
+ addlootrandom ,125,150,1,i_skull_undertaker
+ addlootmisc 50,i_reward_ticket
+ addlootitem i_staff_gnarled, 1
+ addlootitem RANDOM_lower_SCROLL, 1
+ addlootrandom ,2,3,5,RANDOM_REAGENT
+ addlootrandom ,2,3,4,i_reag_brimstone
+
+
+//********************************************************************//
+[FUNCTION loot_MUMMY]
+ addlootgold ,300
+ addlootrandom ,225,250,1,i_skull_undertaker
+ addlootmisc 30,i_reward_ticket
+ addlootitem RANDOM_SCROLL, 1 
+ addlootitem Random_Potion, 1
+  
+
+//********************************************************************//
+//                                GHOSTS                              //
+//********************************************************************//
+[CHARDEF 01a]
+DEFNAME		= c_spectre
+NAME		= Spectre
+SOUND		= snd_MONSTER_GHOST1
+ICON		= i_pet_GHOUL
+ANIM		= 078c7f
+DAM		= 6,12
+ARMOR		= 14
+RESOURCES	= 1 i_reag_ectoplasm_vial
+CAN		= MT_WALK|MT_GHOST
+FOODTYPE	=
+BLOODCOLOR	= colors_green
+
+TEVENTS		= e_undead
+CATEGORY	= Monsters
+SUBSECTION	= Undeads
+DESCRIPTION	= Spectre
+
+ON=@Create
+  NPC		= brain_undead
+  FAME		= {600 2000}
+  KARMA		= {-1000 -1999}
+  STR		= {76 100}
+  DEX		= {76 95}
+  INT		= {80 90}
+  PARRYING	= {45.0 55.0}
+  MAGICRESISTANCE={35.0 50.0}
+  TACTICS	= {45.0 60.0}
+  WRESTLING	= {45.0 55.0}
+
+
+
+//********************************************************************//
+[CHARDEF 03ca]
+DEFNAME		= c_grim_reaper
+NAME		= Grim Reaper
+DAM		= 12,20
+ARMOR		= 20,25
+CAN		= MT_WALK|MT_SWIM|MT_GHOST|MT_USEHANDS
+BLOODCOLOR	= colors_green
+
+TEVENTS		= e_undead
+DESCRIPTION	= Grim Reaper
+SUBSECTION	= Undeads
+CATEGORY	= Monsters
+
+ON = @Create
+  COLOR		= colors_black
+  NPC		= brain_monster
+  KARMA		= {-5000 -3000}
+  FAME		= {1000 2000}
+  STR		= {160 190}
+  INT		= {90 100}
+  DEX		= {100 150}
+  PARRYING	= {65.0 75.0}
+  MAGICRESISTANCE={75.0 80.0}
+  TACTICS	= {55.0 70.0}
+  WRESTLING	= {65.0 75.0}
+
+//********************************************************************//
+[CHARDEF 01068]
+DEFNAME		= c_m_wraith
+NAME		= Wraith
+SOUND		= snd_MONSTER_GHOST1
+ICON		= i_pet_GHOUL
+ID		= c_SPECTRE
+FOODTYPE	=
+CAN		= MT_GHOST|MT_WALK
+DAM		= 12,20
+ARMOR		= 20,25
+
+TEVENTS		= e_Undead
+CATEGORY	= Monsters
+SUBSECTION	= Undeads
+DESCRIPTION	= Wraith
+ON = @Create
+  NPC		= BRAIN_UNDEAD
+  COLOR		= colors_gray
+  KARMA		= {-4000 -2000}
+  FAME		= {1500 3000}
+  STR		= {100 125}
+  DEX		= {90 120}
+  INT		= {70 80}
+  MAGICRESISTANCE={60.0 85.0}
+  PARRYING	= {60.0 85.0}
+  TACTICS	= {60.0 85.0}
+  WRESTLING	= {60.0 85.0}
+
+
+
+//********************************************************************//
+[CHARDEF 01069]
+DEFNAME		= c_m_ghost
+NAME		= Ghost
+SOUND		= snd_MONSTER_GHOST1
+ICON		= i_pet_GHOUL
+ID		= c_Grim_Reaper
+DAM		= 12,20
+ARMOR		= 20,25
+FOODTYPE	=
+CAN		= MT_GHOST|MT_WALK
+
+TEVENTS		= e_Undead
+CATEGORY	= Monsters
+SUBSECTION	= Undeads
+DESCRIPTION	= Ghost
+ON = @Create
+  NPC		= BRAIN_UNDEAD
+  COLOR		= colors_gray
+  KARMA		= {-4000 -2000}
+  FAME		= {1500 3000}
+  STR		= {100 125}
+  DEX		= {90 120}
+  INT		= {80 90}
+  MAGICRESISTANCE={60.0 85.0}
+  PARRYING	= {60.0 85.0}
+  TACTICS	= {60.0 85.0}
+  WRESTLING	= {60.0 85.0}
+  
+
+//********************************************************************//
+[CHARDEF c_m_lostsoul]
+DEFNAME		= c_m_lostsoul
+NAME		= Lost Soul
+SOUND		= snd_MONSTER_GHOST1
+ICON		= i_pet_GHOUL
+ID		= c_Grim_Reaper
+DAM		= 12,25
+ARMOR		= 20,25
+FOODTYPE	=
+CAN		= MT_GHOST|MT_WALK
+
+TEVENTS		= e_Undead
+ON = @Create
+  NPC		= BRAIN_UNDEAD
+  COLOR		= colors_white
+  KARMA		= {-3000 -3999}
+  FAME		= {1500 3000}
+  STR		= {100 125}
+  DEX		= {130 250}
+  INT		= {60 90}
+  MAGICRESISTANCE={85.0 90.0}
+  PARRYING	= {60.0 85.0}
+  TACTICS	= {60.0 85.0}
+  WRESTLING	= {60.0 85.0}
+
+
+CATEGORY=Memory UO
+SUBSECTION=Undead
+DESCRIPTION=Lost Soul
+
+//********************************************************************//
+[CHARDEF c_Phantom]
+DEFNAME		= c_Phantom
+NAME		= Phantom
+SOUND		= snd_MONSTER_GHOST1
+ICON		= i_pet_GHOUL
+ID		= c_SPECTRE
+ANIM		= 078c7f
+DAM		= 6,45
+ARMOR		= 14,21
+CAN		= MT_WALK|MT_GHOST
+FOODTYPE	=
+BLOODCOLOR	= colors_green
+
+TEVENTS		= e_undead
+
+ON=@Create
+  NPC		= brain_undead
+  COLOR         = colors_black
+  FAME		= {600 2000}
+  KARMA		= {-3001 -3999}
+  STR		= {700 900}
+  DEX		= {300 400}
+  INT		= {36 60}
+  PARRYING	= {75.0 95.0}
+  MAGICRESISTANCE={35.0 50.0}
+  TACTICS	= {45.0 60.0}
+  WRESTLING	= {45.0 65.0}
+
+
+CATEGORY=Memory UO
+SUBSECTION=Undead
+DESCRIPTION=Phantom
+
+
+//********************************************************************//
+//                             GHOST LOOTS                            //
+//********************************************************************//
+[FUNCTION loot_SPECTRE]
+ addlootgold ,200
+ addlootmisc 20,i_reward_ticket
+ addlootitem RANDOM_lower_SCROLL, 1
+ addlootitem RANDOM_REAGENT, 6
+
+//********************************************************************//
+[FUNCTION loot_WRAITH]
+ addlootgold ,200
+ addlootmisc 20,i_reward_ticket
+ addlootitem RANDOM_lower_SCROLL, 1
+ addlootitem RANDOM_REAGENT, 6
+ addlootitem RANDOM_REAGENT, 6
+
+
+//Loot for undead characters. Memory UO Shard.
+//Assembled by Kell. (evren@portugalmail.pt)
+//Revamped by Warman. (warman@mail.pt)
+
+[EVENTS e_Undead_Decrepit]
+ ON=@EnvironChange_unused
+	// i like the dark
+	if <sector.isdark> || (<flags>&(statf_nightsight|statf_indoors))
+		if ! <tag.lightstr>
+			return 0
+		endif
+		anim 011
+		bark 4
+		str=<tag.lightstr>	// restore me.
+		hits=<str>
+		tag.lightstr=0
+		karma=<tag.lightkarma>
+		tag.lightkarma=//just dispose of this.
+		fame=<tag.lightfame>
+		tag.lightfame=
+		flags=<flags>&~statf_conjured	// no loot if killed.
+		return 0
+	endif
+	// i can't live in light areas. weaken me ? or destroy me ?
+	anim 014
+	bark 4
+	if <tag.lightstr>
+		return 0
+	endif
+	if ( <flags>&statf_conjured	) 
+		remove
+		return 1
+	endif
+	flags=<flags>|statf_conjured	// no loot if killed.
+	tag.lightstr=<str>
+	str=1
+	hits=1	// very weak.
+	tag.lightkarma=<karma>	// killing it means nothing now.
+	karma=-2
+	tag.lightfame=<fame>
+	fame=10
+	return 0
+	
+ON=@DeathCorpse
+IF ( RAND(5000) < <str> )
+//SERV.NEWITEM random_necro_scroll
+//NEW.MORE1 = 2
+//NEW.COLOR = 00
+//NEW.CONT=<ARGO.UID>
+ENDIF
+
+ON = @SpellEffect
+
+   // immune to fields and earthquake
+   IF ( (<argn> == 28) || (<argn> == 39) || (<argn> == 47) || (<argn> == 57) )
+      RETURN 1
+   ELSEIF ( <argn> == 3 )
+      EMOTE resist the spell
+      RETURN 1
+   ELSEIF (<argn> == 20)
+      IF (rand(10))
+         EMOTE resist the spell
+         RETURN 1
+      ENDIF
+   ELSEIF (<argn> == 30)
+      IF (rand(5))
+         EMOTE gain strength
+         HITS = <eval (<hits> + 10)>
+         RETURN 1
+      ENDIF
+   ELSEIF ( (<argn> == 29) || (<argn> == 38) )
+      SRC.SYSMESSAGE They seem unaffected by the spell.
+      RETURN 1
+   ENDIF
+
+ON=@GetHit
+   IF ( <SRC.ICON> == 020D6 )
+         VAR.FORGIVER = <SRC.UID>
+         FOR_MEMORY f_peace
+   ENDIF
+   FLAGS = (<FLAGS> & ~statf_poisoned)
+   IF ( (<SRC.FLAGS> & statf_conjured) && <SRC.NPC> )
+            SRC.NPC = brain_undead
+            EMOTE get stronger
+            HITS = <eval (<hits> + 5)>
+            SRC.EVENTS +e_undead_Decrepit
+            VAR.FORGIVER = <UID>
+            SRC.FOR_MEMORY f_peace
+            VAR.FORGIVER = <SRC.UID>
+            FOR_MEMORY f_peace
+   ENDIF
+
+ON = @Hit
+   IF !(<SRC.ACT.BASEID>=m_kell_control)
+      IF ( <SRC.ACT.ICON> == 020D6 )
+            VAR.FORGIVER = <UID>
+            SRC.FOR_MEMORY f_peace
+            VAR.FORGIVER = <SRC.UID>
+            FOR_MEMORY f_peace
+            RETURN 1   
+      ENDIF   
+   ENDIF
+
+   
+ON = @NPCSeeNewPlayer
+IF !(<SRC.ISGM>)
+	IF (<SRC.ISPLAYER>)  
+	ATTACK   
+   	ENDIF
+endif
+
+ON=@NPCLOOKATCHAR
+ 
+IF !(<SRC.ISGM>)
+	IF (<SRC.ISPLAYER>)
+        ATTACK
+   	ENDIF
+endif
+
+//********************************************************************//
+//                               SKELETONS                            //
+//********************************************************************//
+[CHARDEF c_skeleton_Decrepit]
+DEFNAME = c_skeleton_Decrepit
+ID		= c_skeleton
+NAME		= Decrepit Skeleton
+SOUND		= snd_MONSTER_SKLETN1
+ICON		= i_pet_SKELETON
+ANIM		= 078c7f
+CAN		= MT_WALK
+DAM		= 8,20
+ARMOR		= 32
+RESOURCES	= 8 i_reag_bone
+FOODTYPE	=
+DESIRES		= t_bone,i_gold
+BLOODCOLOR	= -1
+
+TEVENTS		= e_undead_Decrepit
+CATEGORY	= Monsters
+SUBSECTION	= Decrepit Undeads
+DESCRIPTION	= Skeleton
+ON=@Create
+COLOR=07fff
+  NPC		= brain_undead
+  FAME		= {100 2000}
+  KARMA		= {-999 -4999}
+  STR		= {156 180}
+  DEX		= {156 175}
+  INT		= {160 170}
+  PARRYING	= {85.0 95.0}
+  MAGICRESISTANCE={45.0 90.0}
+  TACTICS	= {45.0 90.0}
+  WRESTLING	= {45.0 95.0}
+
+
+//********************************************************************//
+[CHARDEF c_skeleton_w_sword_Decrepit]
+DEFNAME		= c_skeleton_w_sword_Decrepit
+ID		= c_skeleton_w_sword
+NAME		= Decrepit Skeleton
+SOUND		= snd_MONSTER_SKLETN1
+ICON		= i_pet_SKELETON
+ANIM		= 078c7f
+CAN		= MT_WALK|MT_USEHANDS|MT_EQUIP
+DAM		= 14, 26
+ARMOR		= 18
+RESOURCES	= 8 i_reag_bone
+DESIRES		= t_bone,i_gold
+FOODTYPE	=
+BLOODCOLOR	= -1
+
+TEVENTS		= e_undead_Decrepit
+CATEGORY	= Monsters
+SUBSECTION	= DecrepitUndeads
+DESCRIPTION	= Skeleton (Sword & Shield)
+
+ON=@Create
+COLOR=07fff
+  NPC		= brain_undead
+  FAME		= {100 2000}
+  KARMA		= {-999 -5999}
+  STR		= {156 180}
+  DEX		= {156 175}
+  INT		= {160 170}
+  SWORDSMANSHIP	= {50.0 95.0}
+  PARRYING	= {45.0 95.0}
+  MAGICRESISTANCE={45.0 90.0}
+  TACTICS	= {45.0 90.0}
+  WRESTLING	= {45.0 95.0}
+
+
+//********************************************************************//
+[CHARDEF c_m_skeletonarcher_Decrepit]
+DEFNAME		= c_m_skeletonarcher_Decrepit
+NAME		= Decrepit Skeleton Archer
+ID		= c_SKELETON_W_AXE
+CAN		= MT_WALK|MT_RUN|MT_EQUIP
+DAM		= 12,40
+ARMOR		= 24
+RESOURCES	= 8 i_reag_bone
+FOODTYPE	=
+
+TEVENTS		= e_undead_Decrepit
+CATEGORY	= Monsters
+SUBSECTION	= Undeads
+DESCRIPTION	= Skeleton Archer
+
+ON=@Create
+COLOR=07fff
+  NPC		= brain_undead
+  FAME		= {100 2000}
+  KARMA		= {-1999 -4999}
+  STR		= {200 250}
+  DEX		= {156 175}
+  INT		= {160 170}
+  ARCHERY	= { 95.0 100.0 }
+  PARRYING	= {45.0 95.0}
+  MAGICRESISTANCE={45.0 90.0}
+  TACTICS	= {45.0 90.0}
+  WRESTLING	= {45.0 95.0}
+
+ON=@NPCRestock
+  ITEMNEWBIE	= i_bow_pine
+  ITEM		= i_arrow,{10 20}
+
+
+//********************************************************************//
+[CHARDEF c_m_skeleton_mage_Decrepit]
+DEFNAME		= c_m_skeleton_mage_Decrepit
+NAME		= Decrepit Skeleton Mage
+ID		= c_skeleton
+DAM		= 6,20
+ARMOR		= 80
+RESOURCES	= 8 i_reag_bone
+
+TEVENTS		= e_undead_Decrepit
+CATEGORY	= Monsters
+SUBSECTION	= Decrepit Undeads
+DESCRIPTION	= Skeleton Mage
+ON=@Create
+  NPC		= brain_undead
+COLOR=07fff
+  FAME		= {100 2000}
+  KARMA		= {-3000 -3999}
+  STR		= {220 240}
+  DEX		= {156 175}
+  INT		= {300 410}
+  PARRYING	= {45.0 155.0}
+  MAGERY	= {60.0 170.0}
+  MAGICRESISTANCE={45.0 160.0}
+  TACTICS	= {45.0 160.0}
+  WRESTLING	= {45.0 155.0}
+
+
+//********************************************************************//
+[CHARDEF c_m_skeleton_knight_Decrepit]
+DEFNAME		= c_m_skeleton_knight_Decrepit
+NAME		= Decrepit Skeleton Knight
+ID		= c_skeleton_w_sword
+DAM		= 10,50
+ARMOR		= 60
+RESOURCES	= 8 i_reag_bone
+
+TEVENTS		= e_undead_Decrepit
+CATEGORY	= Monsters
+SUBSECTION	= Decrepit Undeads
+DESCRIPTION	= Skeleton Knight
+
+ON = @Create
+COLOR=07fff
+  NPC		= brain_undead
+  FAME		= {100 2000}
+  KARMA		= {-3000 -3999}
+  STR		= {295 350}
+  DEX		= {126 195}
+  INT		= {200 210}
+  PARRYING	= {85.0 195.0}
+  MAGICRESISTANCE={65.0 180.0}
+  TACTICS	= {85.0 200.0}
+  WRESTLING	= {85.0 195.0}
+
+
+//********************************************************************//
+[CHARDEF c_m_skeleton_hero_Decrepit]
+DEFNAME		= c_m_skeleton_hero_Decrepit
+NAME		= Decrepit Skeleton Hero
+ID		= c_skeleton_w_sword
+DAM		= 40,70
+ARMOR		= 80
+RESOURCES	= 8 i_reag_bone
+
+TEVENTS		= e_undead_Decrepit
+
+
+ON = @Create
+  NPC		= brain_undead
+COLOR=07fff
+  FAME		= {100 2000}
+  KARMA		= {-3000 -3999}
+  STR		= {460 700}
+  DEX		= {140 160}
+  INT		= {76 90}
+  PARRYING	= {85.0 195.0}
+  MAGICRESISTANCE={85.0 190.0}
+  TACTICS	= {95.0 200.0}
+  WRESTLING	= {95.0 200.0}
+
+
+CATEGORY=Memory UO
+SUBSECTION=Decrepit Undead
+DESCRIPTION=Skeleton Hero
+
+
+//********************************************************************//
+//                                UNDEAD                              //
+//********************************************************************//
+[CHARDEF c_zombie_Decrepit]
+DEFNAME		= c_zombie_Decrepit
+ID		= c_zombie
+NAME		= Decrepit Zombie
+SOUND		= snd_MONSTER_ZOMBIE1
+ICON		= i_pet_ZOMBIE
+ANIM		= 078c7f
+CAN		= MT_WALK
+DAM		= 8,20
+ARMOR		= 19
+RESOURCES	= 10 t_eerie_stuff, 1 i_reag_heart_zombie
+FOODTYPE	= 20 t_meat_raw
+DESIRES		= i_gold,t_meat_raw, t_corpse
+AVERSIONS	= t_TRAP
+BLOODCOLOR	= colors_green
+
+TEVENTS		= e_undead_Decrepit
+CATEGORY	= Monsters
+SUBSECTION	= Decrepit Undeads
+DESCRIPTION	= Zombie
+ON=@Create
+COLOR=07fff
+  NPC		= brain_undead
+  FAME		= 300
+  KARMA		= {-2000 -3999}
+  STR		= {146 170}
+  DEX		= {131 150}
+  INT		= {150 160}
+  PARRYING	= {20.0 130.0}
+  MAGICRESISTANCE={15.0 140.0}
+  TACTICS	= {35.0 150.0}
+  WRESTLING	= {35.0 150.0}
+
+
+//********************************************************************//
+[CHARDEF c_liche_Decrepit]
+DEFNAME		= c_liche_Decrepit
+ID		= c_liche
+NAME		= Decrepit Liche
+SOUND		= snd_MONSTER_LICHE1
+ICON		= i_pet_LICH
+ANIM		= 07bc7f
+DAM		= 30,50
+ARMOR		= 70
+CAN		= MT_WALK|MT_USEHANDS
+FOODTYPE	=
+DESIRES		= t_bone,i_gold,t_wand,t_reagent
+BLOODCOLOR	= colors_black
+
+TEVENTS		= e_undead_Decrepit
+CATEGORY	= Monsters
+SUBSECTION	= Decrepit Undeads
+DESCRIPTION	= Liche
+ON=@Create
+COLOR=07fff
+  NPC		= brain_undead
+  FAME		= {600 5000}
+  KARMA		= {-4000 -4999}
+  STR		= {145 275}
+  DEX		= {80 200}
+  INT		= {125 331}
+  PARRYING	= {55.0 165.0}
+  MAGERY	= {70.0 180.0}
+  MAGICRESISTANCE={70.0 190.0}
+  NECROMANCY	= {90.0 100.0 }
+  MACEFIGHTING	= {60.0 180.0}
+  WRESTLING	= {60.0 180.0}
+  TACTICS	= {70.0 190.0}
+  POISONING	= {50.0 160.0}
+ON = @NPCRestock
+  ITEMNEWBIE=i_spellbook
+   ADDSPELL=s_Harm
+   ADDSPELL=s_poison
+   ADDSPELL=s_curse
+   ADDSPELL=s_paralyze
+   ADDSPELL=s_summon_undead
+   ADDSPELL=s_Hallucination
+
+
+//********************************************************************//
+[CHARDEF c_m_liche_lord_Decrepit]
+DEFNAME		= c_m_liche_lord_Decrepit
+NAME		= Decrepit Liche Lord
+ID		= c_Liche
+ICON		= i_pet_LICH
+DAM		= 50, 80
+ARMOR		= 100
+RESOURCES	=
+CAN		= MT_WALK
+DESIRES		= t_bone,i_gold,t_wand,t_reagent,e_undead_Decrepit
+
+TEVENTS		= e_undead_Decrepit
+CATEGORY	= Monsters
+SUBSECTION	= Decrepit Undeads
+DESCRIPTION	= Liche Lord
+ON = @Create
+COLOR=07fff
+  NPC		= brain_undead
+  STR		= {815 925}
+  DEX		= {96 115}
+  INT		= {231 237}
+  PARRYING	= {55.0 165.0}
+  MACEFIGHTING	= {60.0 180.0}
+  MAGERY	= {90.0 200.0}
+  NECROMANCY	= {90.0 200.0}
+  MAGICRESISTANCE={90.0 200.0}
+  TACTICS	= {50.0 170.0}
+  WRESTLING	= {60.0 180.0}
+  POISONING	= {70.0 180.0}
+  FAME		= {100 2000}
+  KARMA		= {-5000 -5999}
+ON=@NPCRestock
+  ITEMNEWBIE=i_spellbook
+   ADDSPELL=s_lightning
+   ADDSPELL=s_fire_bolt
+   ADDSPELL=s_poison
+   ADDSPELL=s_curse
+   ADDSPELL=s_paralyze
+   ADDSPELL=s_summon_undead
+   ADDSPELL=s_Hallucination
+
+
+//********************************************************************//
+[CHARDEF c_m_ghoul_Decrepit]
+DEFNAME		= c_m_ghoul_Decrepit
+NAME		= Decrepit Ghoul
+SOUND		= snd_MONSTER_ZOMBIE1
+ICON		= i_pet_ZOMBIE
+ID		= c_ZOMBIE
+FOODTYPE	=
+CAN		= MT_WALK
+
+TEVENTS		= e_undead_Decrepit
+DAM		= 8,32
+ARMOR		= 40
+CATEGORY	= Monsters
+SUBSECTION	= Decrepit Undeads
+DESCRIPTION	= Ghoul
+ON=@Create
+  NPC		= BRAIN_UNDEAD
+COLOR=07fff
+  KARMA		= {-5000 -2500}
+  FAME		= {600 900}
+  STR		= {70 295}
+  DEX		= {50 275}
+  INT		= {60 270}
+  MAGICRESISTANCE={30.0 160.0}
+  PARRYING	= {40.0 170.0}
+  TACTICS	= {50.0 175.0}
+  WRESTLING	= {55.0 175.0}
+
+
+//********************************************************************//
+[CHARDEF c_m_mummy_Decrepit]
+DEFNAME		= c_m_mummy_Decrepit
+NAME		= Decrepit Mummy
+ID		= c_ZOMBIE
+SOUND		= snd_MONSTER_GHOST1
+ICON		= i_pet_ZOMBIE
+DAM		= 8,64
+ARMOR		= 50
+RESOURCES	= 7 t_eerie_stuff
+CAN		= MT_WALK
+DESIRES		= i_gold
+
+TEVENTS		= e_undead_Decrepit
+CATEGORY	= Monsters
+SUBSECTION	= Decrepit Undeads
+DESCRIPTION	= Mummy
+ON = @Create
+  NPC		= brain_undead
+  COLOR		= 07fff
+  FAME		= {100 2000}
+  KARMA		= {-4000 -4999}
+  STR		= {345 670}
+  DEX		= {71 190}
+  INT		= {110 220}
+  PARRYING	= {20.0 160.0}
+  MAGICRESISTANCE={15.0 140.0}
+  TACTICS	= {35.0 150.0}
+  WRESTLING	= {35.0 150.0}
+
+//********************************************************************//
+[CHARDEF c_m_WrechedCorpse_Decrepit]
+DEFNAME		= c_m_WrechedCorpse_Decrepit
+NAME		= Decrepit Corpse
+ID		= c_ZOMBIE
+SOUND		= snd_MONSTER_GHOST1
+ICON		= i_pet_ZOMBIE
+DAM		= 24,64
+ARMOR		= 70
+RESOURCES	= 7 t_eerie_stuff
+CAN		= MT_WALK
+DESIRES		= i_gold
+
+TEVENTS		= e_undead_Decrepit
+ON = @Create
+COLOR=07fff
+  NPC		= brain_undead
+  KARMA		= {-3000 -3999}
+  FAME		= {1500 3000}
+  STR		= {345 370}
+  DEX		= {100 135}
+  INT		= {200 300}
+  MAGERY        ={90.0,200.0}
+  PARRYING	= {20.0 160.0}
+  MAGICRESISTANCE={90.0 200.0}
+  TACTICS	= {35.0 150.0}
+  WRESTLING	= {35.0 150.0}
+  MEDITATION    = {50.0 170.0}
+  ITEMNEWBIE=i_spellbook
+  ADDSPELL=s_paralyze
+  NPC=brain_monster
+
+
+CATEGORY=Memory UO
+SUBSECTION=Decrepit Undead
+DESCRIPTION=Wreched corpse
+
+
+
+//********************************************************************//
+//                                GHOSTS                              //
+//********************************************************************//
+[CHARDEF c_spectre_Decrepit]
+DEFNAME		= c_spectre_Decrepit
+ID		= c_spectre
+NAME		= Decrepit Spectre
+SOUND		= snd_MONSTER_GHOST1
+ICON		= i_pet_GHOUL
+ANIM		= 078c7f
+DAM		= 12,32
+ARMOR		= 34
+RESOURCES	= 1 i_reag_ectoplasm_vial
+CAN		= MT_WALK|MT_GHOST
+FOODTYPE	=
+BLOODCOLOR	= colors_green
+
+TEVENTS		= e_undead_Decrepit
+CATEGORY	= Monsters
+SUBSECTION	= Undeads
+DESCRIPTION	= Spectre
+
+ON=@Create
+COLOR=07fff
+  NPC		= brain_undead
+  FAME		= {600 2000}
+  KARMA		= {-1000 -1999}
+  STR		= {176 200}
+  DEX		= {176 195}
+  INT		= {180 190}
+  PARRYING	= {45.0 155.0}
+  MAGICRESISTANCE={35.0 150.0}
+  TACTICS	= {45.0 160.0}
+  WRESTLING	= {45.0 155.0}
+
+//********************************************************************//
+[CHARDEF c_grim_reaper_Decrepit]
+ID		= c_grim_reaper
+DEFNAME		= c_grim_reaper_Decrepit
+NAME		= Decrepit Reaper
+DAM		= 22,30
+ARMOR		= 30,55
+CAN		= MT_WALK|MT_SWIM|MT_GHOST|MT_USEHANDS
+BLOODCOLOR	= colors_green
+
+TEVENTS		= e_undead_Decrepit
+DESCRIPTION	= Grim Reaper
+SUBSECTION	= Decrepit Undeads
+CATEGORY	= Monsters
+
+ON = @Create
+COLOR=07fff
+  NPC		= brain_monster
+  KARMA		= {-5000 -3000}
+  FAME		= {1000 2000}
+  STR		= {260 290}
+  INT		= {190 200}
+  DEX		= {200 250}
+  PARRYING	= {65.0 175.0}
+  MAGICRESISTANCE={75.0 180.0}
+  TACTICS	= {55.0 170.0}
+  WRESTLING	= {65.0 175.0}
+
+//********************************************************************//
+[CHARDEF c_m_wraith_Decrepit]
+ID		= c_m_wraith_Decrepit
+NAME		= Decrepit Wraith
+SOUND		= snd_MONSTER_GHOST1
+ICON		= i_pet_GHOUL
+ID		= c_SPECTRE
+FOODTYPE	=
+CAN		= MT_GHOST|MT_WALK
+DAM		= 22,30
+ARMOR		= 30,55
+
+TEVENTS		= e_undead_Decrepit
+CATEGORY	= Monsters
+SUBSECTION	= Decrepit Undeads
+DESCRIPTION	= Wraith
+ON = @Create
+  NPC		= BRAIN_UNDEAD
+COLOR=07fff
+  KARMA		= {-4000 -2000}
+  FAME		= {1500 3000}
+  STR		= {200 325}
+  DEX		= {90 320}
+  INT		= {170 180}
+  MAGICRESISTANCE={60.0 185.0}
+  PARRYING	= {60.0 185.0}
+  TACTICS	= {60.0 185.0}
+  WRESTLING	= {60.0 185.0}
+
+//********************************************************************//
+[CHARDEF c_m_ghost_Decrepit]
+DEFNAME		= c_m_ghost_Decrepit
+ID		= c_Grim_Reaper
+NAME		= Decrepit Ghost
+SOUND		= snd_MONSTER_GHOST1
+ICON		= i_pet_GHOUL
+DAM		= 22,30
+ARMOR		= 40,45
+FOODTYPE	=
+CAN		= MT_GHOST|MT_WALK
+
+TEVENTS		= e_undead_Decrepit
+CATEGORY	= Monsters
+SUBSECTION	= Decrepit Undeads
+DESCRIPTION	= Ghost
+ON = @Create
+  NPC		= BRAIN_UNDEAD
+COLOR=07fff
+  KARMA		= {-4000 -2000}
+  FAME		= {1500 3000}
+  STR		= {200 225}
+  DEX		= {190 220}
+  INT		= {180 190}
+  MAGICRESISTANCE={60.0 185.0}
+  PARRYING	= {60.0 185.0}
+  TACTICS	= {60.0 185.0}
+  WRESTLING	= {60.0 185.0}
+  
+
+//********************************************************************//
+[CHARDEF c_Phantom_Decrepit]
+DEFNAME		= c_Phantom_Decrepit
+NAME		= Decrepit Phantom
+SOUND		= snd_MONSTER_GHOST1
+ICON		= i_pet_GHOUL
+ID		= c_SPECTRE
+ANIM		= 078c7f
+DAM		= 26,65
+ARMOR		= 34,51
+CAN		= MT_WALK|MT_GHOST
+FOODTYPE	=
+BLOODCOLOR	= colors_green
+
+TEVENTS		= e_undead_Decrepit
+
+ON=@Create
+  NPC		= brain_undead
+  COLOR		= 07fff
+  FAME		= {600 2000}
+  KARMA		= {-3001 -3999}
+  STR		= {900 1900}
+  DEX		= {300 400}
+  INT		= {136 160}
+  PARRYING	= {75.0 195.0}
+  MAGICRESISTANCE={35.0 150.0}
+  TACTICS	= {45.0 160.0}
+  WRESTLING	= {45.0 165.0}
+
+
+CATEGORY=Memory UO
+SUBSECTION=Undead
+DESCRIPTION=Phantom
+
+[chardef c_skeletal_dragon_Decrepit] 
+DEFNAME=c_skeletal_dragon_Decrepit
+ID=c_skeletal_dragon
+name=Skeletal Dragon
+SOUND=snd_monster_dragon1
+ICON=i_pet_dragon
+
+DAM=40,60
+RESDISPDNID=c_man
+RESLEVEL=2
+RESDISPDNHUE=33
+ARMOR=98
+RESOURCES=15 i_ribs_raw,10 i_hide 
+CAN=MT_WALK|MT_USEHANDS|MT_FLY
+FOODTYPE=40 t_meat_raw 
+DESIRES=i_gold,e_notoriety,e_horses,c_man,c_woman 
+AVERSIONS=e_carnivores3 
+CATEGORY=Memory UO
+SUBSECTION=LBR
+DESCRIPTION=Decrepit Skeletal Dragon
+TEVENTS		= e_undead_Decrepit
+
+ON=@Create 
+COLOR=07fff
+NPC=brain_dragon
+FAME=8000
+KARMA=-10000
+STR={898 2030}
+INT={488 620}
+DEX={168 300} 
+MAGICRESISTANCE={100.3 230.0}
+TACTICS={97.6 200.0}
+WRESTLING={97.6 200.0}
+MAGERY={80.0 200.0}
+EVALUATINGINTEL={80.0 200.0}
+ITEMNEWBIE=i_spellbook
+ADDCIRCLE 8,1
+
+
+//********************************************************************//
+//                           SKELETON LOOTS                           //
+//********************************************************************//
+[FUNCTION loot_SKELETON_Decrepit]
+ addlootgold ,450
+ addlootmisc 30,i_reward_ticket
+ 
+//********************************************************************//
+[FUNCTION loot_SKELETAL_KNIGHT_Decrepit]
+ addlootgold ,800
+ addlootmisc 50,i_reward_ticket
+ addlootrandom ,15,16,1,random_plate_armour_iron
+ addlootrandom ,7,8,1,random_plate_armour_copper
+ 
+[FUNCTION loot_SKELETAL_HERO_Decrepit]
+ addlootgold ,1200
+ addlootmisc 150,i_reward_ticket
+ addlootrandom ,15,16,1,random_plate_armour_iron
+ addlootrandom ,7,8,1,random_plate_armour_copper
+
+
+//********************************************************************//
+[FUNCTION loot_SKELETAL_MAGE_Decrepit]
+ addlootgold ,400
+ addlootmisc 50,i_reward_ticket
+ addlootitem Random_Potion, 2  
+ addlootrandom ,4,5,1,RANDOM_lower_scroll
+ addlootmisc 5,i_reag_blood_spawn
+ addlootrandom ,2,3,5,RANDOM_REAGENT
+ addlootrandom ,2,3,4,i_reag_brimstone
+
+//********************************************************************//
+//                            UNDEAD LOOTS                            //
+//********************************************************************//
+[FUNCTION loot_ZOMBIE_Decrepit]
+ addlootgold ,300
+ addlootmisc 20,i_reward_ticket
+ 
+//********************************************************************//
+[FUNCTION loot_GHOUL_Decrepit]
+ addlootgold ,350
+ addlootmisc 30,i_reward_ticket
+
+//********************************************************************//
+[FUNCTION loot_LICH_Decrepit]
+ addlootgold ,800
+ addlootmisc 60,i_reward_ticket
+ addlootitem RANDOM_lower_SCROLL, 1
+ addlootrandom ,2,3,5,RANDOM_REAGENT
+ addlootrandom ,2,3,4,i_reag_blood_spawn
+
+//********************************************************************//
+[FUNCTION loot_LICH_LORD_Decrepit]
+ addlootgold ,1800
+ addlootmisc 100,i_reward_ticket
+ addlootitem i_staff_gnarled, 1
+ addlootitem RANDOM_lower_SCROLL, 1
+ addlootrandom ,2,3,5,RANDOM_REAGENT
+ addlootrandom ,2,3,4,i_reag_brimstone
+
+
+//********************************************************************//
+[FUNCTION loot_MUMMY_Decrepit]
+ addlootgold ,600
+ addlootmisc 60,i_reward_ticket
+ addlootitem RANDOM_SCROLL, 1 
+ addlootitem Random_Potion, 1
+  
+
+//********************************************************************//
+//                             GHOST LOOTS                            //
+//********************************************************************//
+[FUNCTION loot_SPECTRE_Decrepit]
+ addlootgold ,800
+ addlootmisc 40,i_reward_ticket
+ addlootitem RANDOM_lower_SCROLL, 1
+ addlootitem RANDOM_REAGENT, 6
+ 
+
+//********************************************************************//
+[FUNCTION loot_WRAITH_Decrepit]
+ addlootgold ,200
+ addlootmisc 20,i_reward_ticket
+ addlootitem RANDOM_lower_SCROLL, 1
+ addlootitem RANDOM_REAGENT, 6
+ addlootitem RANDOM_REAGENT, 6
+
+[FUNCTION loot_dragon_Decrepit]
+   addlootgold ,3000
+   addlootitem ,loot_newrares_Easy,1
+   addlootrandom ,200,300,1,random_rare_1
+   addlootmisc 3,random_jewel
+   addlootrandom ,2,4,1,random_jewel
+   addlootmisc 400, i_reward_ticket
+
+
+[EOF]

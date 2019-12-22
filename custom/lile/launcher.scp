@@ -1,0 +1,27 @@
+// The UO Project Game Launcher
+// Daniel Ramos (Bahbel) and Richard Edwards (Charm)
+// 2013
+
+[function disconnectPlayers]
+ctag.online_players=
+SERV.ALLCLIENTS launcher_getplayers
+SERV.LOG <ctag.online_players>
+IF ( <DB.CONNECTED> )
+   DB.QUERY "call GetAccountsToDC('<src.ctag.online_players>')"
+    if (<DB.ROW.NUMROWS> > 0)
+        for R 0 <eval <DB.ROW.NUMROWS>-1>
+            //serv.account <DB.ROW.<eval <LOCAL.R>>.account_name> disconnect
+            serv.log TUP Launcher: <eval <LOCAL.R>> / <eval <DB.ROW.NUMROWS>> Rows - Account <DB.ROW.<eval <LOCAL.R>>.account_name> has been disconnected for not using the launcher.
+        end
+    endif
+ENDIF
+ctag.online_players=
+
+
+
+[FUNCTION launcher_getplayers]
+IF (0<src.ctag.online_players> == 0)
+	src.ctag.online_players = <ACCOUNT.NAME>
+ELSE
+	src.ctag.online_players = <src.ctag.online_players>,<ACCOUNT.NAME>
+ENDIF

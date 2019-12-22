@@ -1,0 +1,199 @@
+//Zak's NPC Quest's - V1.0
+
+[CHARDEF c_h_darrell]
+   Name=Darrell
+   ID=c_man
+   DAM={10,15}
+   DESIRES=i_gold,e_notoriety
+   AVERSIONS=t_TRAP,t_eerie_stuff
+   TSPEECH=spk_human_default
+   TSPEECH=spk_quest_darrell
+
+ON=@NPCSeeNewPlayer
+   IF !( 0<SRC.TAG.NPC_QUEST_START> & NPCQ_Darrell )
+      IF (<SRC.SKILLTOTAL> < 500.0)
+         SAY Please come here <src.name> , I need your help! I have a Quest for you to go on!
+      ELSE
+	 SAY Could you direct some lower skilled people in my direction please ? 
+	 SAY I need some help, but your skill is much to high <SRC.SEX Milord/Milady>
+      ENDIF
+   ELSE
+      SAY Well met <SRC.NAME>, Have you retrieved my key?
+   ENDIF
+        
+ON=@Create
+   NPC=brain_human
+   COLOR=colors_skin
+   STR={66 80}
+   DEX={66 80}
+   INT={61 75}
+
+   FENCING=75.0
+   PARRYING=75.0
+   SWORDSMANSHIP=75.0
+   WRESTLING=75.0
+   MACEFIGHTING=75.0
+   TACTICS=75.0
+
+   ITEMNEWBIE=random_male_hair
+   COLOR=colors_hair
+   ITEMNEWBIE=random_facial_hair
+   COLOR=match_hair
+   ITEM=i_candle
+   ITEM=i_shirt_plain
+   COLOR=colors_all
+   ITEM=random_pants
+   COLOR=colors_all
+   ITEM=random_shoes
+   COLOR=colors_neutral
+   ITEM=i_lantern
+   ITEM=random_coin_purse
+  
+ON=@NPCRestock
+   ITEM=i_candle
+   ITEM=i_shirt_plain
+   COLOR=colors_all
+   ITEM=random_pants
+   COLOR=colors_all
+   ITEM=random_shoes
+   COLOR=colors_neutral
+   ITEM=i_lantern
+   ITEM=random_coin_purse
+ 
+   CATEGORY=Imperial uo
+   SUBSECTION=Darrel Quest
+   DESCRIPTION=Darrell
+
+[SPEECH spk_quest_darrell]
+ON=*help*
+ON=*quest*
+   IF ( 0<SRC.TAG.NPC_QUEST_START> & NPCQ_Darrell )
+      Say You are already helping me <SRC.SEX milord/milady>
+   ELSEIF ( <SRC.TAG.NPC_QUEST_DONE> & NPCQ_Darrell )
+      SAY You already done this quest!
+   ELSE
+      Say Near the west entry of this fair town, is my old humble abode, I was forced out by a group of bandits, can you please reclaim the land for me and return some proof. Say "accept" if you agree to help me <SRC.SEX milord/milady>
+   ENDIF
+   RETURN 1
+   
+ON=*accept*
+   IF ( 0<SRC.TAG.NPC_QUEST_START> & NPCQ_Darrell )
+      SAY You already agreed to do help me.
+   ELSEIF (<SRC.SKILLTOTAL> >= 500.0)
+      Say Your a mighty fine warrior, I shall not bother you...
+      Say Maybe some other time perhaps...
+   ELSE
+      SRC.TAG.NPC_QUEST_START = <eval ( 0<SRC.TAG.NPC_QUEST_START> | NPCQ_Darrell )>
+      SAY Return my house key so I know that the bearer was slain and it is safe for me to return home. Say "location" for more information.... Say "Reward" if you have found the key.
+      RETURN 0
+   ENDIF
+   RETURN 1
+
+ON=*Location*
+ON=*Place*                           
+   IF ( 0<SRC.TAG.NPC_QUEST_START> & NPCQ_Darrell )
+      SAY My old home is near the west entry of this fair town. Bandits are hiding there, so please, be careful <SRC.SEX milord/milad>
+   ELSE
+      SAY You must agree to help me, to get the information young friend.
+   ENDIF
+   RETURN 1
+   
+ON=*reward*
+   IF !( 0<SRC.TAG.NPC_QUEST_START> & NPCQ_Darrell )
+      SAY You must agree to help me to get the information.
+   ELSEIF (( 0<SRC.TAG.NPC_QUEST_START> & NPCQ_Darrell ) && !<SRC.RESTEST 1 i_key_darrell>)
+      SAY Return my house key and I shall reward you <SRC.SEX milord/milady>
+   ELSEIF <SRC.RESTEST 1 i_key_darrell>
+      SRC.SYSMESSAGE <NAME> hands you a reasonable pile of gold and walks away with a content look in its face.
+      SRC.CONSUME 1 i_key_darrell
+      SRC.NEWITEM=i_gold 
+      SRC.ACT.AMOUNT=5000
+      SRC.ACT.BOUNCE 
+      SOUND=01FC 
+      SRC.SYSMESSAGE=You are now 2500 gps richer. 
+      SRC.TAG.NPC_QUEST_START = <eval ( 0<SRC.TAG.NPC_QUEST_START> &~ NPCQ_Darrell )>
+      SRC.TAG.NPC_QUEST_DONE = <eval ( 0<SRC.TAG.NPC_QUEST_DONE> | NPCQ_Darrell )>	   
+      REMOVE
+      ANNOUNCE <SRC.NAME> has allowed Tavern Owner Darrell to return to his humble abode.
+      RETURN 0
+   ENDIF
+   RETURN 1
+   
+ON=*hi*
+SAY If you would like to help me out say "Quest"
+
+[ITEMDEF i_key_darrell]
+   Name=Darrells house-key
+   ID=i_key_copper
+   TYPE=t_normal
+   WEIGHT=1
+
+CATEGORY=Imperial uo
+SUBSECTION=Darrel Quest
+DESCRIPTION=Darrels house key
+
+
+[CHARDEF c_bandit_darrell]
+   NAME=The Bandit
+   ID=C_MAN
+   CAN=MT_EQUIP|MT_USEHANDS|MT_WALK
+   DESIRES=i_gold,e_notoriety
+   AVERSIONS=t_TRAP,t_eerie_stuff
+
+   TSPEECH=spk_human_prime
+   TSPEECH=jobBrigand
+   TSPEECH=spk_needs
+   TSPEECH=spk_rehello
+   TSPEECH=spk_human_default
+
+   TEVENTS=e_Human_HearUnk
+   TEVENTS=e_Human_ConvInit
+   TEVENTS=e_Human_Greet
+   TEVENTS=e_Human_Space
+   TEVENTS=e_Human_Needs
+   TEVENTS=e_Human_Refuse
+
+ON=@Create
+   COLOR=colors_skin
+   STR={66 80}
+   DEX={81 95}
+   INT={61 75}
+
+   HIDING={45.0 68.0}
+   SNOOPING={75.0 90.0}
+   LockPicking={35.0 58.0}
+   STEALING={75.0 90.0}
+   PARRYING={55.0 78.0}
+   SWORDSMANSHIP={35.0 58.0}
+   WRESTLING={35.0 58.0}
+   MAGICRESISTANCE={45.0 58.0}
+   TACTICS={55.0 78.0}
+
+   NPC=brain_thief
+
+   KARMA={-3000 -4000}
+   FAME={2500 4000}
+
+   ITEMNEWBIE=random_male_hair
+   COLOR=colors_hair
+   ITEMNEWBIE=random_facial_hair
+   COLOR=match_hair
+
+ON=@NPCRestock
+   ITEM=i_shirt_plain
+   COLOR=colors_all
+   ITEM=random_pants
+   COLOR=colors_all
+   ITEM=random_shoes
+   COLOR=colors_neutral
+   ITEM=i_skull_cap
+   COLOR=colors_all
+   ITEM=random_sword
+   ITEM=random_coin_purse
+   ITEM=i_key_darrell
+
+   CATEGORY=Imperial uo
+   SUBSECTION=Darrel Quest
+   DESCRIPTION=Bandit with Key
+
+[EOF]

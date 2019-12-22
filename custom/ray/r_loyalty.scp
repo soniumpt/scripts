@@ -1,0 +1,2225 @@
+//*******************************************************************//
+//             Function to award loyalty points through donations    //
+//*******************************************************************//
+
+
+[FUNCTION loyaltytier]
+
+IF (<ISEMPTY <ARGS>>)
+SRC.SYSMESSAGE Please specify a Donation Tier to reward Loyalty Points for.
+RETURN 1
+ENDIF
+
+IF !(strmatch("<args>","0")) && !(strmatch("<args>","1")) && !(strmatch("<args>","2")) && !(strmatch("<args>","3")) && !(strmatch("<args>","4"))
+SRC.SYSMESSAGE Please select a Tier from 0 to 4:
+SRC.SYSMESSAGE 0 - 325 Loyalty Points
+SRC.SYSMESSAGE 1 - 50 Loyalty Points
+SRC.SYSMESSAGE 2 - 150 Loyalty Points
+SRC.SYSMESSAGE 3 - 200 Loyalty Points
+SRC.SYSMESSAGE 4 - 300 Loyalty Points
+RETURN 1
+ENDIF
+
+SRC.NEWITEM i_loyaltytier_targetter
+NEW.MORE1=<ARGS>
+SRC.ACT.TARGET At whom do you want to reward Loyalty Points for a Tier <ARGS> Donation?
+RETURN 1
+
+
+[ITEMDEF i_loyaltytier_targetter]
+
+NAME=Loyalty Tier Targetter
+ID=i_memory
+TYPE=T_EQ_SCRIPT
+LAYER=30
+
+ON=@CREATE
+   ATTR=attr_decay
+
+ON=@TARGON_CHAR
+
+IF (<EVAL <MORE1>>==0)
+SRC.TARG.ACCOUNT.TAG.VOTEPOINTS=<EVAL <SRC.TARG.ACCOUNT.TAG0.VOTEPOINTS> + 325>
+SRC.TARG.SYSMESSAGE @07a1 You have been given 325 Loyalty Points for your Donation.
+SRC.SYSMESSAGE @07a1 You gave 325 Loyalty Points to <SRC.TARG.NAME>.
+SERV.LOG :LOYALTY TIER: <SRC.ACCOUNT> <SRC.UID> <SRC.NAME> gave 325 Loyalty Points to <SRC.TARG.ACCOUNT> <SRC.TARG.UID> <SRC.TARG.NAME>.
+ELSEIF (<EVAL <MORE1>>==1)
+SRC.TARG.ACCOUNT.TAG.VOTEPOINTS=<EVAL <SRC.TARG.ACCOUNT.TAG0.VOTEPOINTS> + 50>
+SRC.TARG.SYSMESSAGE @07a1 You have been given 50 Loyalty Points for your Donation.
+SRC.SYSMESSAGE @07a1 You gave 50 Loyalty Points to <SRC.TARG.NAME>.
+SERV.LOG :LOYALTY TIER: <SRC.ACCOUNT> <SRC.UID> <SRC.NAME> gave 50 Loyalty Points to <SRC.TARG.ACCOUNT> <SRC.TARG.UID> <SRC.TARG.NAME>.
+ELSEIF (<EVAL <MORE1>>==2)
+SRC.TARG.ACCOUNT.TAG.VOTEPOINTS=<EVAL <SRC.TARG.ACCOUNT.TAG0.VOTEPOINTS> + 150>
+SRC.TARG.SYSMESSAGE @07a1 You have been given 150 Loyalty Points for your Donation.
+SRC.SYSMESSAGE @07a1 You gave 150 Loyalty Points to <SRC.TARG.NAME>.
+SERV.LOG :LOYALTY TIER: <SRC.ACCOUNT> <SRC.UID> <SRC.NAME> gave 150 Loyalty Points to <SRC.TARG.ACCOUNT> <SRC.TARG.UID> <SRC.TARG.NAME>.
+ELSEIF (<EVAL <MORE1>>==3)
+SRC.TARG.ACCOUNT.TAG.VOTEPOINTS=<EVAL <SRC.TARG.ACCOUNT.TAG0.VOTEPOINTS> + 200>
+SRC.TARG.SYSMESSAGE @07a1 You have been given 200 Loyalty Points for your Donation.
+SRC.SYSMESSAGE @07a1 You gave 200 Loyalty Points to <SRC.TARG.NAME>.
+SERV.LOG :LOYALTY TIER: <SRC.ACCOUNT> <SRC.UID> <SRC.NAME> gave 200 Loyalty Points to <SRC.TARG.ACCOUNT> <SRC.TARG.UID> <SRC.TARG.NAME>.
+ELSEIF (<EVAL <MORE1>>==4)
+SRC.TARG.ACCOUNT.TAG.VOTEPOINTS=<EVAL <SRC.TARG.ACCOUNT.TAG0.VOTEPOINTS> + 300>
+SRC.TARG.SYSMESSAGE @07a1 You have been given 300 Loyalty Points for your Donation.
+SRC.SYSMESSAGE @07a1 You gave 300 Loyalty Points to <SRC.TARG.NAME>.
+SERV.LOG :LOYALTY TIER: <SRC.ACCOUNT> <SRC.UID> <SRC.NAME> gave 300 Loyalty Points to <SRC.TARG.ACCOUNT> <SRC.TARG.UID> <SRC.TARG.NAME>.
+ENDIF
+RETURN 1
+
+
+ON=@TARGON_ITEM
+  SRC.SYSMESSAGE You can't target an item!
+  TIMER=1
+  REMOVE
+  RETURN 1
+
+ON=@TARGON_GROUND
+  SRC.SYSMESSAGE You can't target the ground!
+  TIMER=1
+  REMOVE
+  RETURN 1
+
+
+//*******************************************************************//
+//             Loyalty Function                                     //
+//*******************************************************************//
+
+
+[PLEVEL 1]
+loyalty
+
+[FUNCTION loyalty]
+dialog d_loyalty
+
+[FUNCTION f_lowtime]
+IF (<SRC.TAG0.LOYALTIME> < 9000)
+	SRC.SYSMESSAGE You don't have enough minutes to redeem.
+ELSE
+	SRC.TAG0.LOYALTIME = <EVAL <SRC.TAG0.LOYALTIME> - 9000>
+	SRC.ACCOUNT.TAG0.VOTEPOINTS = <EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS> +1>
+	SRC.SYSMESSAGE @030 You successfully redeemed 1 loyalty point.
+	SRC.DIALOG d_papers_loyalty
+ENDIF
+RETURN 1
+
+[DIALOG d_loyalty]
+0,0
+page 0
+
+gumppic 13 24 9390
+gumppic 127 24 9391
+gumppic 184 24 9391
+gumppic 127 24 9391
+gumppic 240 24 9392
+gumppic 13 300 9396
+gumppic 127 300 9397
+gumppic 184 300 9397
+gumppic 241 300 9398
+gumppic 13 258 9393
+gumppic 13 216 9393
+gumppic 13 174 9393
+gumppic 13 162 9393
+gumppic 241 132 9395
+gumppic 241 174 9395
+gumppic 241 216 9395
+gumppic 241 258 9395
+gumppic 127 164 9394
+gumppic 184 164 9394
+gumppic 127 206 9394
+gumppic 127 248 9394
+gumppic 127 287 9394
+gumppic 184 206 9394
+gumppic 184 248 9394
+gumppic 184 290 9394
+gumppic 184 206 9394
+gumppic 146 60 9000
+dtext 45 170 0 You have <EVAL <SRC.TAG0.LOYALTIME>/600> minutes left to redeem.
+dtext 45 190 0 You currently have <EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS>> loyalty points.
+dtext 45 210 0 You spent a total of <EVAL <SRC.ACCOUNT.TAG0.WASTEDPOINTS>> loyalty points.
+button 80 245 9728 9729 1 0 1
+dtext 115 250 0 Redeem Points
+button 80 290 9728 9729 1 0 2
+dtext 115 295 0 Loyalty Points Shop
+button 80 335 9728 9729 1 0 3
+dtext 115 340 0 Loyalty Milestone Rewards
+button 80 380 9728 9729 1 0 4
+dtext 115 385 0 Vote for Imperial UO
+
+[DIALOG d_loyalty button]
+
+ON=1
+SRC.f_lowtime
+
+ON=2
+SRC.DIALOG d_loyalshop
+
+ON=3
+SRC.DIALOG d_loyalshop3
+
+ON=4
+SRC.DIALOG d_papers_loyalty
+
+[DIALOG d_loyalshop]
+0,0
+page 0
+
+gumppic 13 24 9390
+gumppic 127 24 9391
+gumppic 241 24 9391
+gumppic 184 24 9391
+gumppic 298 24 9391
+gumppic 355 24 9391
+gumppic 412 24 9391
+gumppic 469 24 9391
+gumppic 127 24 9391
+gumppic 526 24 9392
+gumppic 13 300 9396
+gumppic 127 300 9397
+gumppic 184 300 9397
+gumppic 241 300 9397
+gumppic 298 300 9397
+gumppic 355 300 9397
+gumppic 412 300 9397
+gumppic 469 300 9397
+gumppic 526 300 9398
+gumppic 13 258 9393
+gumppic 13 216 9393
+gumppic 13 174 9393
+gumppic 13 162 9393
+gumppic 526 164 9395
+gumppic 526 206 9395
+gumppic 526 248 9395
+gumppic 526 290 9395
+gumppic 127 164 9394
+gumppic 184 164 9394
+gumppic 241 164 9394
+gumppic 298 164 9394
+gumppic 355 164 9394
+gumppic 412 164 9394
+gumppic 469 164 9394
+gumppic 127 206 9394
+gumppic 127 248 9394
+gumppic 127 287 9394
+gumppic 184 206 9394
+gumppic 241 206 9394
+gumppic 298 206 9394
+gumppic 355 206 9394
+gumppic 412 206 9394
+gumppic 469 206 9394
+gumppic 184 248 9394
+gumppic 241 248 9394
+gumppic 298 248 9394
+gumppic 355 248 9394
+gumppic 412 248 9394
+gumppic 469 248 9394
+gumppic 241 290 9394
+gumppic 184 290 9394
+gumppic 298 290 9394
+gumppic 355 290 9394
+gumppic 412 290 9394
+gumppic 469 290 9394
+gumppic 184 206 9394
+
+dtext 55 180 085 Imperial UO Loyalty Shop
+
+button 46 210 9728 9729 1 0 1
+dtext 86 215 0 Magic Jewelry
+dtext 86 235 0 (New Jewel) (40 Points)
+
+button 46 275 9728 9729 1 0 2
+dtext 86 280 0 Magic Jewelry
+dtext 86 300 0 (Bonus Re-Roll) (40 Points)
+
+button 234 80 9728 9729 1 0 3
+dtext 274 85 0 Magic Jewelry 
+dtext 274 105 0 (Skill Re-Roll) (40 Points)
+
+button 234 145 9728 9729 1 0 4
+dtext 274 150 0 Mount Dye Tub
+dtext 274 170 0 (100 Points)
+
+button 234 210 9728 9729 1 0 5
+dtext 274 215 0 Supporter's Backpack Dye Tub
+dtext 274 235 0 (100 Points)
+
+button 234 275 9728 9729 1 0 6
+dtext 274 280 0 Karma Restore Potion
+dtext 274 300 0 (Karma = 0) (100 Points)
+
+button 443 80 9728 9729 1 0 7
+dtext 483 85 0 Flux of Strength
+dtext 483 105 0 (200 Points)
+
+button 443 145 9728 9729 1 0 8
+dtext 483 150 0 Flux of Intelligence
+dtext 483 170 0 (200 Points)
+
+button 443 210 9728 9729 1 0 9
+dtext 483 215 0 Flux of Dexterity
+dtext 483 235 0 (200 Points)
+
+button 443 275 9728 9729 1 0 10
+dtext 483 280 0 Kills Restore Potion
+dtext 483 300 0 (-100 Kills) (500 Points)
+
+button 567 370 4005 4006 1 0 11
+dtext 530 360 0 Next
+dtext 530 375 0 Page
+
+gumppic 92 67 9000
+tilepic 120 360 9003
+tilepic 150 345 9003
+tilepic 90 345 9003
+tilepic 60 360 9003
+tilepic 30 345 9003
+tilepic 180 360 9003
+tilepic 210 345 9003
+tilepic 240 360 9003
+tilepic 270 345 9003
+tilepic 300 360 9003
+tilepic 330 345 9003
+tilepic 360 360 9003
+tilepic 390 345 9003
+tilepic 420 360 9003
+tilepic 450 345 9003
+tilepic 480 360 9003
+
+dtext 254 28 085 Loyalty Points Shop
+dtext 50 415 085 Each one of this items can be bought as many times as you wish, with Loyalty Points.
+
+[DIALOG d_loyalshop BUTTON]
+
+//Magic Jewelry
+
+ON=1
+
+IF (<EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS>> < 40)
+	SRC.SYSMESSAGE You don't have enough Loyalty Points to buy this item.
+ELSE
+	SRC.ACCOUNT.TAG.VOTEPOINTS = <EVAL <SRC.ACCOUNT.TAG.VOTEPOINTS> - 40>
+	SRC.ACCOUNT.TAG0.WASTEDPOINTS = <EVAL <SRC.ACCOUNT.TAG0.WASTEDPOINTS> +40>
+	SERV.NEWITEM={i_skill_necklace_1 1 i_skill_necklace_2 1 i_skill_necklace_3 1 i_skill_earrings 1 i_skill_ring 1 i_skill_bracelet 1}
+	LOCAL.JEWELRY=<NEW.NAME>
+	IF (!(strcmpi("<STRSUB 0 4 <LOCAL.JEWELRY>>","ring")))
+		f_finish_skill_item ring
+	ELSEIF (!(strcmpi("<STRSUB 0 4 <LOCAL.JEWELRY>>","neck")))
+		f_finish_skill_item necklace
+	ELSEIF (!(strcmpi("<STRSUB 0 4 <LOCAL.JEWELRY>>","earr")))
+		f_finish_skill_item earrings
+	ELSEIF (!(strcmpi("<STRSUB 0 4 <LOCAL.JEWELRY>>","brac")))
+		f_finish_skill_item bracelet
+	ENDIF
+	NEW.BOUNCE
+	SRC.SYSMESSAGE @030 You have successfully bought the Magic Jewelry with 40 Loyalty Points. 
+	SRC.SYSMESSAGE @030 The points spent in this item have been successfully converted to Loyalty Spent Points.
+	SERV.LOG :Loyalty Points Shop: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> bought a jewel <NEW.NAME> <NEW.UID> through the Loyalty Points Shop.
+ENDIF
+
+//Magic Jewelry (Bonus Re-Roll)
+
+ON=2
+
+IF (<EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS>> < 40)
+	SRC.SYSMESSAGE You don't have enough Loyalty Points to buy this item.
+ELSE
+	SRC.ACCOUNT.TAG.VOTEPOINTS = <EVAL <SRC.ACCOUNT.TAG.VOTEPOINTS> - 45>
+	SRC.ACCOUNT.TAG0.WASTEDPOINTS = <EVAL <SRC.ACCOUNT.TAG0.WASTEDPOINTS> +45>
+	SERV.NEWITEM=i_jewelry_reroll_1
+	NEW.BOUNCE
+	SRC.SYSMESSAGE @030 You have successfully bought the Magic Jewelry (Bonus Re-Roll) with 40 Loyalty Points. 
+	SRC.SYSMESSAGE @030 The points spent in this item have been successfully converted to Loyalty Spent Points.
+	SERV.LOG :Loyalty Points Shop: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> bought a <NEW.NAME> <NEW.UID> through the Loyalty Points Shop.
+ENDIF
+
+//Magic Jewelry (Skill Re-Roll)
+
+ON=3
+
+IF (<EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS>> < 40)
+	SRC.SYSMESSAGE You don't have enough Loyalty Points to buy this item.
+ELSE
+	SRC.ACCOUNT.TAG.VOTEPOINTS = <EVAL <SRC.ACCOUNT.TAG.VOTEPOINTS> - 45>
+	SRC.ACCOUNT.TAG0.WASTEDPOINTS = <EVAL <SRC.ACCOUNT.TAG0.WASTEDPOINTS> +45>
+	SERV.NEWITEM=i_jewelry_reroll_2
+	NEW.BOUNCE
+	SRC.SYSMESSAGE @030 You have successfully bought the Magic Jewelry (Bonus Re-Roll) with 40 Loyalty Points. 
+	SRC.SYSMESSAGE @030 The points spent in this item have been successfully converted to Loyalty Spent Points.
+	SERV.LOG :Loyalty Points Shop: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> bought a <NEW.NAME> <NEW.UID> through the Loyalty Points Shop.
+ENDIF
+
+
+//Mount Dye Tub
+
+ON=4
+
+IF (<EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS>> < 100)
+	SRC.SYSMESSAGE You don't have enough Loyalty Points to buy this item.
+ELSE
+	SRC.ACCOUNT.TAG.VOTEPOINTS = <EVAL <SRC.ACCOUNT.TAG.VOTEPOINTS> - 100>
+	SRC.ACCOUNT.TAG0.WASTEDPOINTS = <EVAL <SRC.ACCOUNT.TAG0.WASTEDPOINTS> +100>
+	SERV.NEWITEM=i_mount_tub
+	NEW.BOUNCE
+	SRC.SYSMESSAGE @030 You have successfully bought the Mount Dye Tub with 100 Loyalty Points. 
+	SRC.SYSMESSAGE @030 The points spent in this item have been successfully converted to Loyalty Spent Points.
+	SERV.LOG :Loyalty Points Shop: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> bought a <NEW.NAME> <NEW.UID> through the Loyalty Points Shop.
+ENDIF
+
+//Supporter's Backpack Dye Tub
+
+ON=5
+
+IF (<EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS>> < 100)
+	SRC.SYSMESSAGE You don't have enough Loyalty Points to buy this item.
+ELSE
+	SRC.ACCOUNT.TAG.VOTEPOINTS = <EVAL <SRC.ACCOUNT.TAG.VOTEPOINTS> - 100>
+	SRC.ACCOUNT.TAG0.WASTEDPOINTS = <EVAL <SRC.ACCOUNT.TAG0.WASTEDPOINTS> +100>
+	SERV.NEWITEM=i_dye_tub_backpack
+	NEW.COLOR=color_supporter_items
+	NEW.BOUNCE
+	SRC.SYSMESSAGE @030 You have successfully bought the Supporter's Backpack Dye Tub with 100 Loyalty Points. 
+	SRC.SYSMESSAGE @030 The points spent in this item have been successfully converted to Loyalty Spent Points.
+	SERV.LOG :Loyalty Points Shop: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> bought a <NEW.NAME> <NEW.UID> through the Loyalty Points Shop.
+ENDIF
+
+//Karma Restore Potion
+
+ON=6
+
+IF (<EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS>> < 100)
+	SRC.SYSMESSAGE You don't have enough Loyalty Points to buy this item.
+ELSE
+	SRC.ACCOUNT.TAG.VOTEPOINTS = <EVAL <SRC.ACCOUNT.TAG.VOTEPOINTS> - 100>
+	SRC.ACCOUNT.TAG0.WASTEDPOINTS = <EVAL <SRC.ACCOUNT.TAG0.WASTEDPOINTS> +100>
+	SERV.NEWITEM=i_karma_restore_potion
+	NEW.BOUNCE
+	SRC.SYSMESSAGE @030 You have successfully bought the Karma Restore Potion (Karma = 0) with 100 Loyalty Points. 
+	SRC.SYSMESSAGE @030 The points spent in this item have been successfully converted to Loyalty Spent Points.
+	SERV.LOG :Loyalty Points Shop: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> bought a <NEW.NAME> <NEW.UID> through the Loyalty Points Shop.
+ENDIF
+
+//Flux of Strenght
+
+ON=7
+IF (<EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS>> < 200)
+	SRC.SYSMESSAGE You don't have enough Loyalty Points to buy this item.
+ELSE
+	SRC.ACCOUNT.TAG.VOTEPOINTS = <EVAL <SRC.ACCOUNT.TAG.VOTEPOINTS> - 200>
+	SRC.ACCOUNT.TAG0.WASTEDPOINTS = <EVAL <SRC.ACCOUNT.TAG0.WASTEDPOINTS> +200>
+	SERV.NEWITEM=i_flux_might 
+	NEW.BOUNCE
+	SRC.SYSMESSAGE @030 You have successfully bought the Flux of Might with 200 Loyalty Points. 
+	SRC.SYSMESSAGE @030 The points spent in this item have been successfully converted to Loyalty Spent Points.
+	SERV.LOG :Loyalty Points Shop: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> bought a <NEW.NAME> <NEW.UID> through the Loyalty Points Shop.
+ENDIF
+
+
+//Flux of Intelligence
+
+ON=8
+
+IF (<EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS>> < 200)
+	SRC.SYSMESSAGE You don't have enough Loyalty Points to buy this item.
+ELSE
+	SRC.ACCOUNT.TAG.VOTEPOINTS = <EVAL <SRC.ACCOUNT.TAG.VOTEPOINTS> - 200>
+	SRC.ACCOUNT.TAG0.WASTEDPOINTS = <EVAL <SRC.ACCOUNT.TAG0.WASTEDPOINTS> +200>
+	SERV.NEWITEM=i_flux_brilliance 
+	NEW.BOUNCE
+	SRC.SYSMESSAGE @030 You have successfully bought the Flux of Intelligence with 200 Loyalty Points. 
+	SRC.SYSMESSAGE @030 The points spent in this item have been successfully converted to Loyalty Spent Points.
+	SERV.LOG :Loyalty Points Shop: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> bought a <NEW.NAME> <NEW.UID> through the Loyalty Points Shop.
+ENDIF
+
+//Flux of Dexterity
+
+ON=9
+
+IF (<EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS>> < 200)
+	SRC.SYSMESSAGE You don't have enough Loyalty Points to buy this item.
+ELSE
+	SRC.ACCOUNT.TAG.VOTEPOINTS = <EVAL <SRC.ACCOUNT.TAG.VOTEPOINTS> - 200>
+	SRC.ACCOUNT.TAG0.WASTEDPOINTS = <EVAL <SRC.ACCOUNT.TAG0.WASTEDPOINTS> +200>
+	SERV.NEWITEM=i_flux_haste 
+	NEW.BOUNCE
+	SRC.SYSMESSAGE @030 You have successfully bought the Flux of Dexterity with 200 Loyalty Points. 
+	SRC.SYSMESSAGE @030 The points spent in this item have been successfully converted to Loyalty Spent Points.
+	SERV.LOG :Loyalty Points Shop: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> bought a <NEW.NAME> <NEW.UID> through the Loyalty Points Shop.
+ENDIF
+
+//Kills Restore Potion
+
+ON=10
+
+IF (<EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS>> < 500)
+	SRC.SYSMESSAGE You don't have enough Loyalty Points to buy this item.
+ELSE
+	SRC.ACCOUNT.TAG.VOTEPOINTS = <EVAL <SRC.ACCOUNT.TAG.VOTEPOINTS> - 500>
+	SRC.ACCOUNT.TAG0.WASTEDPOINTS = <EVAL <SRC.ACCOUNT.TAG0.WASTEDPOINTS> +500>
+	SERV.NEWITEM=i_strong_penance_potion 
+	NEW.BOUNCE
+	SRC.SYSMESSAGE @030 You have successfully bought the Kills Restore Potion (-100 Kills) with 500 Loyalty Points. 
+	SRC.SYSMESSAGE @030 The points spent in this item have been successfully converted to Loyalty Spent Points.
+	SERV.LOG :Loyalty Points Shop: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> bought a <NEW.NAME> <NEW.UID> through the Loyalty Points Shop.
+ENDIF
+
+
+
+//NEXT PAGE
+
+ON=11
+SRC.DIALOG d_loyalshop2
+
+
+[DIALOG d_loyalshop2]
+0,0
+page 0
+
+gumppic 13 24 9390
+gumppic 127 24 9391
+gumppic 241 24 9391
+gumppic 184 24 9391
+gumppic 298 24 9391
+gumppic 355 24 9391
+gumppic 412 24 9391
+gumppic 469 24 9391
+gumppic 127 24 9391
+gumppic 526 24 9392
+gumppic 13 300 9396
+gumppic 127 300 9397
+gumppic 184 300 9397
+gumppic 241 300 9397
+gumppic 298 300 9397
+gumppic 355 300 9397
+gumppic 412 300 9397
+gumppic 469 300 9397
+gumppic 526 300 9398
+gumppic 13 258 9393
+gumppic 13 216 9393
+gumppic 13 174 9393
+gumppic 13 162 9393
+gumppic 526 164 9395
+gumppic 526 206 9395
+gumppic 526 248 9395
+gumppic 526 290 9395
+gumppic 127 164 9394
+gumppic 184 164 9394
+gumppic 241 164 9394
+gumppic 298 164 9394
+gumppic 355 164 9394
+gumppic 412 164 9394
+gumppic 469 164 9394
+gumppic 127 206 9394
+gumppic 127 248 9394
+gumppic 127 287 9394
+gumppic 184 206 9394
+gumppic 241 206 9394
+gumppic 298 206 9394
+gumppic 355 206 9394
+gumppic 412 206 9394
+gumppic 469 206 9394
+gumppic 184 248 9394
+gumppic 241 248 9394
+gumppic 298 248 9394
+gumppic 355 248 9394
+gumppic 412 248 9394
+gumppic 469 248 9394
+gumppic 241 290 9394
+gumppic 184 290 9394
+gumppic 298 290 9394
+gumppic 355 290 9394
+gumppic 412 290 9394
+gumppic 469 290 9394
+gumppic 184 206 9394
+
+dtext 55 180 085 Imperial UO Loyalty Shop
+
+button 46 210 9728 9729 1 0 1
+dtext 86 215 0 Sex Change Voucher
+dtext 86 235 0 (800 Points)
+
+button 46 275 9728 9729 1 0 2
+dtext 86 280 0 Name Change Voucher
+dtext 86 300 0 (900 points)
+
+button 234 80 9728 9729 1 0 3
+dtext 274 85 0 Non-Newbied Item Rename
+dtext 274 105 0 (1000 Points)
+
+button 234 145 9728 9729 1 0 4
+dtext 274 150 0 Weapon Jewel Removal
+dtext 274 170 0 (1000 Points)
+
+button 234 210 9728 9729 1 0 5
+dtext 274 215 0 Supporter's Bowery Dagger
+dtext 274 235 0 (1 Week) (1000 Points)
+
+button 234 275 9728 9729 1 0 6
+dtext 274 280 0 Supporter's Blacksmith Hammer
+dtext 274 300 0 (1 Week) (1000 Points)
+
+button 443 80 9728 9729 1 0 7
+dtext 483 85 0 Supporter's Alchemy Hat
+dtext 483 105 0 (1 Week) (1000 Points)
+
+button 443 145 9728 9729 1 0 8
+dtext 483 150 0 Supporter's Carpentry Hat
+dtext 483 170 0 (1 Week) (1000 Points)
+
+button 443 210 9728 9729 1 0 9
+dtext 483 215 0 Supporter's Taming Crook
+dtext 483 235 0 (1 Week) (1000 Points)
+
+//button 443 275 9728 9729 1 0 10
+//dtext 483 280 0 
+//dtext 483 300 0 (X Points)
+
+//button 567 370 4005 4006 1 0 11
+//dtext 530 360 0 Next
+//dtext 530 375 0 Page
+
+button 50 370 4016 4015 1 0 12
+dtext 87 360 0 Previous
+dtext 87 375 0 Page
+
+gumppic 92 67 9000
+tilepic 120 360 9003
+tilepic 150 345 9003
+tilepic 180 360 9003
+tilepic 210 345 9003
+tilepic 240 360 9003
+tilepic 270 345 9003
+tilepic 300 360 9003
+tilepic 330 345 9003
+tilepic 360 360 9003
+tilepic 390 345 9003
+tilepic 420 360 9003
+tilepic 450 345 9003
+tilepic 480 360 9003
+
+dtext 254 28 085 Loyalty Points Shop
+dtext 50 415 085 Each one of this items can be bought as many times as you wish, with Loyalty Points.
+
+[DIALOG d_loyalshop2 button]
+
+//Sex Change Voucher
+
+ON=1
+
+IF (<EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS>> < 800)
+	SRC.SYSMESSAGE You don't have enough Loyalty Points to buy this item.
+ELSE
+	SRC.ACCOUNT.TAG.VOTEPOINTS = <EVAL <SRC.ACCOUNT.TAG.VOTEPOINTS> - 800>
+	SRC.ACCOUNT.TAG0.WASTEDPOINTS = <EVAL <SRC.ACCOUNT.TAG0.WASTEDPOINTS> +800>
+	SERV.NEWITEM=i_sex_change_voucher 
+	NEW.BOUNCE
+	SRC.SYSMESSAGE @030 You have successfully bought the Sex Change Voucher with 800 Loyalty Points. 
+	SRC.SYSMESSAGE @030 The points spent in this item have been successfully converted to Loyalty Spent Points.
+	SERV.LOG :Loyalty Points Shop: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> bought a <NEW.NAME> <NEW.UID> through the Loyalty Points Shop.
+ENDIF
+
+//Name Change Voucher
+
+ON=2
+
+IF (<EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS>> < 900)
+	SRC.SYSMESSAGE You don't have enough Loyalty Points to buy this item.
+ELSE
+	SRC.ACCOUNT.TAG.VOTEPOINTS = <EVAL <SRC.ACCOUNT.TAG.VOTEPOINTS> - 900>
+	SRC.ACCOUNT.TAG0.WASTEDPOINTS = <EVAL <SRC.ACCOUNT.TAG0.WASTEDPOINTS> +900>
+	SERV.NEWITEM=i_rename_voucher
+	NEW.BOUNCE
+	SRC.SYSMESSAGE @030 You have successfully bought the Name Change Voucher with 900 Loyalty Points. 
+	SRC.SYSMESSAGE @030 The points spent in this item have been successfully converted to Loyalty Spent Points.
+	SERV.LOG :Loyalty Points Shop: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> bought a <NEW.NAME> <NEW.UID> through the Loyalty Points Shop.
+ENDIF
+
+//Non-Newbied Item Re-Name
+
+ON=3
+IF (<EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS>> < 1000)
+	SRC.SYSMESSAGE You don't have enough Loyalty Points to buy this item.
+ELSE
+	SRC.ACCOUNT.TAG.VOTEPOINTS = <EVAL <SRC.ACCOUNT.TAG.VOTEPOINTS> - 1000>
+	SRC.ACCOUNT.TAG0.WASTEDPOINTS = <EVAL <SRC.ACCOUNT.TAG0.WASTEDPOINTS> +1000>
+	SERV.NEWITEM=i_item_rename_voucher
+	NEW.BOUNCE
+	SRC.SYSMESSAGE @030 You have successfully bought the Non-Newbied Item Re-Name Voucher with 1000 Loyalty Points. 
+	SRC.SYSMESSAGE @030 The points spent in this item have been successfully converted to Loyalty Spent Points.
+	SERV.LOG :Loyalty Points Shop: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> bought a <NEW.NAME> <NEW.UID> through the Loyalty Points Shop.
+ENDIF
+
+// Weapon Jewel Removal
+
+ON=4
+IF (<EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS>> < 1000)
+	SRC.SYSMESSAGE You don't have enough Loyalty Points to buy this item.
+ELSE
+	SRC.ACCOUNT.TAG.VOTEPOINTS = <EVAL <SRC.ACCOUNT.TAG.VOTEPOINTS> - 1000>
+	SRC.ACCOUNT.TAG0.WASTEDPOINTS = <EVAL <SRC.ACCOUNT.TAG0.WASTEDPOINTS> +1000>
+	SERV.NEWITEM=i_jewel_removal
+	NEW.BOUNCE
+	SRC.SYSMESSAGE @030 You have successfully bought the Weapon Jewel Removal with 1000 Loyalty Points. 
+	SRC.SYSMESSAGE @030 The points spent in this item have been successfully converted to Loyalty Spent Points.
+	SERV.LOG :Loyalty Points Shop: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> bought a <NEW.NAME> <NEW.UID> through the Loyalty Points Shop.
+ENDIF
+
+
+// Supporter's Bowery Dagger
+
+ON=5
+IF (<EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS>> < 1000)
+	SRC.SYSMESSAGE You don't have enough Loyalty Points to buy this item.
+ELSE
+	SRC.ACCOUNT.TAG.VOTEPOINTS = <EVAL <SRC.ACCOUNT.TAG.VOTEPOINTS> - 1000>
+	SRC.ACCOUNT.TAG0.WASTEDPOINTS = <EVAL <SRC.ACCOUNT.TAG0.WASTEDPOINTS> +1000>
+	SERV.NEWITEM=i_dagger_supporter
+	NEW.TAG.UID=<SRC.ACCOUNT>
+	NEW.BOUNCE
+	SRC.SYSMESSAGE @030 You have successfully bought the Supporter's Bowery Dagger with 1000 Loyalty Points. 
+	SRC.SYSMESSAGE @030 The points spent in this item have been successfully converted to Loyalty Spent Points.
+	SRC.SYSMESSAGE @079c This item will be automatically removed within 1 week and can only be used by your account characters.
+	SERV.LOG :Loyalty Points Shop: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> bought a <NEW.NAME> <NEW.UID> through the Loyalty Points Shop.
+ENDIF
+
+// Supporter's Blacksmith Hammer
+
+ON=6
+IF (<EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS>> < 1000)
+	SRC.SYSMESSAGE You don't have enough Loyalty Points to buy this item.
+ELSE
+	SRC.ACCOUNT.TAG.VOTEPOINTS = <EVAL <SRC.ACCOUNT.TAG.VOTEPOINTS> - 1000>
+	SRC.ACCOUNT.TAG0.WASTEDPOINTS = <EVAL <SRC.ACCOUNT.TAG0.WASTEDPOINTS> +1000>
+	SERV.NEWITEM=i_hammer_supporter
+	NEW.TAG.UID=<SRC.ACCOUNT>
+	NEW.BOUNCE
+	SRC.SYSMESSAGE @030 You have successfully bought the Supporter's Blacksmith Hammer with 1000 Loyalty Points. 
+	SRC.SYSMESSAGE @030 The points spent in this item have been successfully converted to Loyalty Spent Points.
+	SRC.SYSMESSAGE @079c This item will be automatically removed within 1 week and can only be used by your account characters.
+	SERV.LOG :Loyalty Points Shop: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> bought a <NEW.NAME> through the Loyalty Points Shop.
+ENDIF
+
+// Supporter's Alchemy Hat
+
+ON=7
+IF (<EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS>> < 1000)
+	SRC.SYSMESSAGE You don't have enough Loyalty Points to buy this item.
+ELSE
+	SRC.ACCOUNT.TAG.VOTEPOINTS = <EVAL <SRC.ACCOUNT.TAG.VOTEPOINTS> - 1000>
+	SRC.ACCOUNT.TAG0.WASTEDPOINTS = <EVAL <SRC.ACCOUNT.TAG0.WASTEDPOINTS> +1000>
+	SERV.NEWITEM=i_hat_supporter
+	NEW.TAG.UID=<SRC.ACCOUNT>
+	NEW.BOUNCE
+	SRC.SYSMESSAGE @030 You have successfully bought the Supporter's Alchemy Hat with 1000 Loyalty Points. 
+	SRC.SYSMESSAGE @030 The points spent in this item have been successfully converted to Loyalty Spent Points.
+	SRC.SYSMESSAGE @079c This item will be automatically removed within 1 week and can only be used by your account characters.
+	SERV.LOG :Loyalty Points Shop: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> bought a <NEW.NAME> <NEW.UID> through the Loyalty Points Shop.
+ENDIF
+
+// Supporter's Carpentry Hat
+
+ON=8
+IF (<EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS>> < 1000)
+	SRC.SYSMESSAGE You don't have enough Loyalty Points to buy this item.
+ELSE
+	SRC.ACCOUNT.TAG.VOTEPOINTS = <EVAL <SRC.ACCOUNT.TAG.VOTEPOINTS> - 1000>
+	SRC.ACCOUNT.TAG0.WASTEDPOINTS = <EVAL <SRC.ACCOUNT.TAG0.WASTEDPOINTS> +1000>
+	SERV.NEWITEM=i_hat_supporter_2
+	NEW.TAG.UID=<SRC.ACCOUNT>
+	NEW.BOUNCE
+	SRC.SYSMESSAGE @030 You have successfully bought the Supporter's Carpentry Hat with 1000 Loyalty Points. 
+	SRC.SYSMESSAGE @030 The points spent in this item have been successfully converted to Loyalty Spent Points.
+	SRC.SYSMESSAGE @079c This item will be automatically removed within 1 week and can only be used by your account characters.
+	SERV.LOG :Loyalty Points Shop: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> bought a <NEW.NAME> <NEW.UID> through the Loyalty Points Shop.
+ENDIF
+
+// Supporter's Taming Crook
+
+ON=9
+IF (<EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS>> < 1000)
+	SRC.SYSMESSAGE You don't have enough Loyalty Points to buy this item.
+ELSE
+	SRC.ACCOUNT.TAG.VOTEPOINTS = <EVAL <SRC.ACCOUNT.TAG.VOTEPOINTS> - 1000>
+	SRC.ACCOUNT.TAG0.WASTEDPOINTS = <EVAL <SRC.ACCOUNT.TAG0.WASTEDPOINTS> +1000>
+	SERV.NEWITEM=i_crook_supporter
+	NEW.TAG.UID=<SRC.ACCOUNT>
+	NEW.BOUNCE
+	SRC.SYSMESSAGE @030 You have successfully bought the Supporter's Taming Crook with 1000 Loyalty Points. 
+	SRC.SYSMESSAGE @030 The points spent in this item have been successfully converted to Loyalty Spent Points.
+	SRC.SYSMESSAGE @079c This item will be automatically removed within 1 week and can only be used by your account characters.
+	SERV.LOG :Loyalty Points Shop: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> bought a <NEW.NAME> <NEW.UID> through the Loyalty Points Shop.
+ENDIF
+
+
+ON=12
+SRC.DIALOG d_loyalshop
+
+
+[DIALOG d_loyalshop3]
+0,0
+page 0
+
+gumppic 13 24 9390
+gumppic 127 24 9391
+gumppic 241 24 9391
+gumppic 184 24 9391
+gumppic 298 24 9391
+gumppic 355 24 9391
+gumppic 412 24 9391
+gumppic 469 24 9391
+gumppic 127 24 9391
+gumppic 526 24 9392
+gumppic 13 300 9396
+gumppic 127 300 9397
+gumppic 184 300 9397
+gumppic 241 300 9397
+gumppic 298 300 9397
+gumppic 355 300 9397
+gumppic 412 300 9397
+gumppic 469 300 9397
+gumppic 526 300 9398
+gumppic 13 258 9393
+gumppic 13 216 9393
+gumppic 13 174 9393
+gumppic 13 162 9393
+gumppic 526 164 9395
+gumppic 526 206 9395
+gumppic 526 248 9395
+gumppic 526 290 9395
+gumppic 127 164 9394
+gumppic 184 164 9394
+gumppic 241 164 9394
+gumppic 298 164 9394
+gumppic 355 164 9394
+gumppic 412 164 9394
+gumppic 469 164 9394
+gumppic 127 206 9394
+gumppic 127 248 9394
+gumppic 127 287 9394
+gumppic 184 206 9394
+gumppic 241 206 9394
+gumppic 298 206 9394
+gumppic 355 206 9394
+gumppic 412 206 9394
+gumppic 469 206 9394
+gumppic 184 248 9394
+gumppic 241 248 9394
+gumppic 298 248 9394
+gumppic 355 248 9394
+gumppic 412 248 9394
+gumppic 469 248 9394
+gumppic 241 290 9394
+gumppic 184 290 9394
+gumppic 298 290 9394
+gumppic 355 290 9394
+gumppic 412 290 9394
+gumppic 469 290 9394
+gumppic 184 206 9394
+
+dtext 55 180 085 Imperial UO Loyalty Shop
+
+button 46 210 9728 9729 1 0 1
+dtext 86 215 0 Supporter's Robe
+dtext 86 235 0 (1000 Spent Points)
+
+button 46 275 9728 9729 1 0 2
+dtext 86 280 0 15 PvP Tickets Dye Tub
+dtext 86 300 0 (2000 Spent Points)
+
+button 234 80 9728 9729 1 0 3
+dtext 274 85 0 Supporter's Steed
+dtext 274 105 0 (3000 Spent Points)
+
+button 234 145 9728 9729 1 0 4
+dtext 274 150 0 Supporter's Spellbook
+dtext 274 170 0 (4000 Spent Points)
+
+button 234 210 9728 9729 1 0 5
+dtext 274 215 0 70 PvP Tickets Dye Tub
+dtext 274 235 0 (5000 Spent Points)
+
+button 234 275 9728 9729 1 0 6
+dtext 274 280 0 Supporter's Cloak
+dtext 274 300 0 (6000 Spent Points)
+
+button 443 80 9728 9729 1 0 7
+dtext 483 85 0 Newbied Item Rename
+dtext 483 105 0 (7000 Spent Points)
+
+button 443 145 9728 9729 1 0 8
+dtext 483 150 0 Supporter's Shroud
+dtext 483 170 0 (8000 Spent Points)
+
+button 443 210 9728 9729 1 0 9
+dtext 483 215 0 Supporter's Bankstone
+dtext 483 235 0 (9000 Spent Points)
+
+button 443 275 9728 9729 1 0 10
+dtext 483 280 0 Supporter's Donator Mount
+dtext 483 300 0 (10000 Spent Points)
+
+//button 443 340 9728 9729 1 0 11
+//dtext 483 345 0 Donator Mount Voucher
+//dtext 483 365 0 (10000 Spent Points)
+
+//button 50 370 4016 4015 1 0 12
+//dtext 87 360 0 Previous
+//dtext 87 375 0 Page
+
+//button 567 370 4005 4006 1 0 13
+//dtext 530 360 0 Next
+//dtext 530 375 0 Page
+
+gumppic 92 67 9000
+tilepic 120 360 9003
+tilepic 150 345 9003
+tilepic 180 360 9003
+tilepic 210 345 9003
+tilepic 240 360 9003
+tilepic 270 345 9003
+tilepic 300 360 9003
+tilepic 330 345 9003
+tilepic 360 360 9003
+tilepic 390 345 9003
+//tilepic 420 360 9003
+//tilepic 450 345 9003
+//tilepic 480 360 9003
+//tilepic 510 345 9003
+//tilepic 540 360 9003
+//tilepic 570 345 9003
+
+dtext 254 28 085 Loyalty Milestone Rewards
+dtext 35 415 085 Each one of this items can only be claimed once, by the correct order, with Loyalty Spent Points.
+
+[DIALOG d_loyalshop3 button]
+
+// Supporters Robe
+
+ON=1
+
+IF (<EVAL <SRC.ACCOUNT.TAG0.WASTEDPOINTS>> >= 1000) && (<EVAL <SRC.ACCOUNT.TAG0.LOYALCLAIM>>==0)
+	SRC.ACCOUNT.TAG.LOYALCLAIM=1
+	SERV.NEWITEM=i_robe_supporter
+	NEW.TAG.UID=<SRC.ACCOUNT>
+	NEW.BOUNCE
+	SRC.SYSMESSAGE @030 You have successfully claimed the Supporter's Robe. This item can only be claimed once and can only be used by your account characters.
+	SERV.LOG :Loyalty Milestone Rewards: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> claimed <NEW.NAME> <NEW.UID> through the Loyalty Milestone Rewards.
+ELSE
+	SRC.SYSMESSAGE You don't have enough Loyalty Spent Points to buy this item, or you have already claimed this item, or you have not claimed the previous item yet.
+ENDIF
+
+// 15 pvp tickets dye tub
+
+ON=2
+
+IF (<EVAL <SRC.ACCOUNT.TAG0.WASTEDPOINTS>> >= 2000) && (<EVAL <SRC.ACCOUNT.TAG0.LOYALCLAIM>>==1)
+	SRC.ACCOUNT.TAG.LOYALCLAIM=2
+	SERV.NEWITEM=i_pvp_tub_15
+	NEW.BOUNCE
+	SRC.SYSMESSAGE @030 You have successfully claimed the 15 PvP Tickets Dye Tub. This item can only be claimed once.
+	SERV.LOG :Loyalty Milestone Rewards: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> claimed <NEW.NAME> <NEW.UID> through the Loyalty Milestone Rewards.
+ELSE
+	SRC.SYSMESSAGE You don't have enough Loyalty Spent Points to buy this item, or you have already claimed this item, or you have not claimed the previous item yet.
+ENDIF
+
+// Supporter's Steed
+
+ON=3
+
+IF (<EVAL <SRC.ACCOUNT.TAG0.WASTEDPOINTS>> >= 3000) && (<EVAL <SRC.ACCOUNT.TAG0.LOYALCLAIM>>==2)
+	SRC.ACCOUNT.TAG.LOYALCLAIM=3
+	SERV.NEWITEM=i_supporter_horse_deed
+	NEW.BOUNCE
+	SRC.SYSMESSAGE @030 You have successfully claimed the Supporter's Steed. This item can only be claimed once.
+	SERV.LOG :Loyalty Milestone Rewards: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> claimed <NEW.NAME> <NEW.UID> through the Loyalty Milestone Rewards.
+ELSE
+	SRC.SYSMESSAGE You don't have enough Loyalty Spent Points to buy this item, or you have already claimed this item, or you have not claimed the previous item yet.
+ENDIF
+
+// Supporter's Spellbook
+
+ON=4
+IF (<EVAL <SRC.ACCOUNT.TAG0.WASTEDPOINTS>> >= 4000) && (<EVAL <SRC.ACCOUNT.TAG0.LOYALCLAIM>>==3)
+	SRC.ACCOUNT.TAG.LOYALCLAIM=4
+	SERV.NEWITEM=i_book_supporter
+	NEW.TAG.UID=<SRC.ACCOUNT>
+	NEW.BOUNCE
+	SRC.SYSMESSAGE @030 You have successfully claimed the Supporter's Spellbook. This item can only be claimed once and can only be used by your account characters.
+	SERV.LOG :Loyalty Milestone Rewards: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> claimed <NEW.NAME> <NEW.UID> through the Loyalty Milestone Rewards.
+ELSE
+	SRC.SYSMESSAGE You don't have enough Loyalty Spent Points to buy this item, or you have already claimed this item, or you have not claimed the previous item yet.
+ENDIF
+
+// 70 pvp tickets dye tub
+
+ON=5
+
+IF (<EVAL <SRC.ACCOUNT.TAG0.WASTEDPOINTS>> >= 5000) && (<EVAL <SRC.ACCOUNT.TAG0.LOYALCLAIM>>==4)
+	SRC.ACCOUNT.TAG.LOYALCLAIM=5
+	SERV.NEWITEM=i_pvp_tub_70
+	NEW.BOUNCE
+	SRC.SYSMESSAGE @030 You have successfully claimed the 70 PvP Tickets Dye Tub. This item can only be claimed once.
+	SERV.LOG :Loyalty Milestone Rewards: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> claimed <NEW.NAME> <NEW.UID> through the Loyalty Milestone Rewards.
+ELSE
+	SRC.SYSMESSAGE You don't have enough Loyalty Spent Points to buy this item, or you have already claimed this item, or you have not claimed the previous item yet.
+ENDIF
+
+ON=6
+
+// SUPPORTER CLOAK
+
+IF (<EVAL <SRC.ACCOUNT.TAG0.WASTEDPOINTS>> >= 6000) && (<EVAL <SRC.ACCOUNT.TAG0.LOYALCLAIM>>==5)
+	SRC.ACCOUNT.TAG.LOYALCLAIM=6
+	SRC.NEWITEM=i_cloak_supporter
+	NEW.TAG.UID=<SRC.ACCOUNT>
+	NEW.BOUNCE
+	SRC.SYSMESSAGE @030 You have successfully claimed the Supporter's Cloak. This item can only be claimed once and can only be used by your account characters.
+	SERV.LOG :Loyalty Milestone Rewards: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> claimed <NEW.NAME> <NEW.UID> through the Loyalty Milestone Rewards.
+ELSE
+	SRC.SYSMESSAGE You don't have enough Loyalty Spent Points to buy this item, or you have already claimed this item, or you have not claimed the previous item yet.
+ENDIF
+
+// Newbied Item Rename Voucher
+
+ON=7
+
+IF (<EVAL <SRC.ACCOUNT.TAG0.WASTEDPOINTS>> >= 7000) && (<EVAL <SRC.ACCOUNT.TAG0.LOYALCLAIM>>==6)
+	SRC.ACCOUNT.TAG.LOYALCLAIM=7
+	SERV.NEWITEM=i_newbied_item_rename_voucher
+	NEW.BOUNCE
+	SRC.SYSMESSAGE @030 You have successfully claimed the Newbied Item Rename Voucher. This item can only be claimed once.
+	SERV.LOG :Loyalty Milestone Rewards: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> claimed <NEW.NAME> <NEW.UID> through the Loyalty Milestone Rewards.
+ELSE
+	SRC.SYSMESSAGE You don't have enough Loyalty Spent Points to buy this item, or you have already claimed this item, or you have not claimed the previous item yet.
+ENDIF
+
+// Supporter's Shroud
+
+ON=8
+
+IF (<EVAL <SRC.ACCOUNT.TAG0.WASTEDPOINTS>> >= 8000) && (<EVAL <SRC.ACCOUNT.TAG0.LOYALCLAIM>>==7)
+	SRC.ACCOUNT.TAG.LOYALCLAIM=8
+	SERV.NEWITEM=i_shroud_supporter
+	NEW.TAG.UID=<SRC.ACCOUNT>
+	NEW.BOUNCE
+	SRC.SYSMESSAGE @030 You have successfully claimed the Supporter's Shroud. This item can only be claimed once and can only be used by your account characters.
+	SERV.LOG :Loyalty Milestone Rewards: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> claimed <NEW.NAME> <NEW.UID> through the Loyalty Milestone Rewards.
+ELSE
+	SRC.SYSMESSAGE You don't have enough Loyalty Spent Points to buy this item, or you have already claimed this item, or you have not claimed the previous item yet.
+ENDIF
+
+// Bank Stone
+
+ON=9
+
+IF (<EVAL <SRC.ACCOUNT.TAG0.WASTEDPOINTS>> >= 9000) && (<EVAL <SRC.ACCOUNT.TAG0.LOYALCLAIM>>==8)
+	SRC.ACCOUNT.TAG.LOYALCLAIM=9
+	SERV.NEWITEM=i_bankstone_supporter
+	NEW.TAG.UID=<SRC.ACCOUNT>
+	NEW.BOUNCE
+	SRC.SYSMESSAGE @030 You have successfully claimed the Supporter's Bankstone. This item can only be claimed once and can only be used by your account characters.
+	SERV.LOG :Loyalty Milestone Rewards: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> claimed <NEW.NAME> <NEW.UID> through the Loyalty Milestone Rewards.
+ELSE
+	SRC.SYSMESSAGE You don't have enough Loyalty Spent Points to buy this item, or you have already claimed this item, or you have not claimed the previous item yet.
+ENDIF
+
+// Supporter's Donator Mount
+
+ON=10
+
+IF (<EVAL <SRC.ACCOUNT.TAG0.WASTEDPOINTS>> >= 10000) && (<EVAL <SRC.ACCOUNT.TAG0.LOYALCLAIM>>==9)
+	SRC.ACCOUNT.TAG.LOYALCLAIM=10
+	SERV.NEWITEM=i_deed
+	NEW.NAME=Supporter's Donator Steed Voucher - Page a Game Master to claim it.
+	NEW.COLOR=color_supporter_items
+	NEW.TAG.UID=<SRC.ACCOUNT>
+	NEW.BOUNCE
+	SRC.SYSMESSAGE @030 You have successfully claimed the Supporter's Donator Mount. This item can only be claimed once and can only be used by your account characters.
+	SERV.ALLCLIENTS SYSMESSAGE @07A1 Congratulations to <SRC.NAME> for reaching 10.000 Spent Points through the Loyalty System!
+	SERV.LOG :Loyalty Milestone Rewards: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> claimed <NEW.NAME> <NEW.UID> through the Loyalty Milestone Rewards.
+ELSE
+	SRC.SYSMESSAGE You don't have enough Loyalty Spent Points to buy this item, or you have already claimed this item, or you have not claimed the previous item yet.
+ENDIF
+
+
+ON=12
+SRC.DIALOG d_loyalshop2
+
+
+//*******************************************************************//
+//             Loyalty Shop Items                                    //
+//*******************************************************************//
+
+///////////////////////////////////
+//Non-Newbied Item Rename Voucher//
+//////////////////////////////////
+
+[ITEMDEF i_item_rename_voucher]
+ID = i_scroll_blank
+NAME = Non-Newbied Item Rename Voucher
+TYPE=t_eq_script
+VALUE=10000
+WEIGHT=1
+
+ON=@Create
+COLOR = 1947
+ATTR = attr_newbie
+
+ON=@DCLICK
+TARGET @50 What item would you like to rename?
+RETURN 1
+
+ON=@TARGON_CHAR
+SRC.SYSMESSAGE @021 You can't rename a character.
+RETURN 1
+
+ON=@TARGON_ITEM
+IF (<SRC.TARG.ATTR>  &  attr_newbie)
+SRC.SYSMESSAGE @021 You need a Super Item Rename Voucher for this.
+RETURN 1
+
+ELSEIF ( <SRC.TARG.TOPOBJ.UID> != <SRC.UID> )
+SRC.SYSMESSAGE @021 You must have it in your back pack to rename it.
+RETURN 1
+
+ELSEIF ((<SRC.TARG.BASEID> == i_backpack) || (<SRC.TARG.BASEID> == i_bag))
+SRC.SYSMESSAGE @021 You cannot rename a bag or a back pack with this.
+RETURN 1
+
+ELSE
+SRC.DIALOG d_ItemRename
+ENDIF
+RETURN 1
+
+[DIALOG d_ItemRename]
+150,200
+gumppic 100 10 2070
+resizepic 130 45 3000 115 22
+button 165 85 247 248 1 0 1
+textentry 135 45 95 15 0 0 0
+
+[DIALOG d_ItemRename BUTTON]
+
+ON=1
+
+IF (<STRLENGTH <ARGTXT[0]>> < 4)
+SRC.SYSMESSAGE @50 You must specify longer name.
+RETURN 1
+ENDIF
+
+IF (<STRLENGTH <ARGTXT[0]>> > 16)
+SRC.SYSMESSAGE @50 Please specify a shorter name.
+RETURN 1
+ENDIF
+
+IF (<HVAL STRREGEX([^A-Za-z0-9 ], <ARGTXT[0]>)>)
+SRC.SYSMESSAGE @50 You cannot rename to that!
+RETURN 1
+ELSEIF (<HVAL STRMATCH(ray*, <ARGTXT[0]>)>)
+SRC.SYSMESSAGE @50 You cannot rename to that!
+RETURN 1
+ELSEIF (<HVAL STRMATCH(*<chr 32><chr 32>*, <ARGTXT[0]>)>)
+SRC.SYSMESSAGE @50 You cannot rename to that!
+RETURN 1
+
+ELSE
+
+TAG.RENAME=<ARGTXT[0]>
+SRC.DIALOG d_confirmItemRename
+ENDIF
+RETURN 1
+
+[DIALOG d_confirmItemRename]
+150,200
+gumppic 100 10 1140
+button 250 150 247 248 1 0 1
+dtext 170 75 125 Are you sure you wish to rename your 
+dtext 170 105 125 <SRC.TARG.NAME> to: <TAG.RENAME>?
+
+[DIALOG d_confirmItemRename BUTTON]
+
+ON=1
+IF (<SRC.RESTEST 1 i_item_rename_voucher>)
+SRC.CONSUME 1 i_item_rename_voucher
+SRC.SYSMESSAGE @50 Successfully renamed your <SRC.TARG.NAME> to: <TAG.RENAME>
+SERV.LOG ::RENAME:: Account: <SRC.ACCOUNT> - UID: <SRC.UID> - Original Name: <SRC.NAME> - New Name: <TAG.RENAME>
+SRC.TARG.NAME=<TAG.RENAME>
+SRC.TAG.RENAME=
+ELSE
+SRC.SYSMESSAGE You must have the Item Rename Voucher in your back pack.
+ENDIF
+RETURN 1
+
+
+///////////////////////////////
+//Newbied Item Rename Voucher//
+//////////////////////////////
+
+[ITEMDEF i_newbied_item_rename_voucher]
+ID = i_scroll_blank
+NAME = Newbied Item Rename Voucher
+TYPE=t_eq_script
+VALUE=10000
+WEIGHT=1
+
+ON=@Create
+COLOR = 1948
+ATTR = attr_newbie
+
+ON=@DCLICK
+TARGET @50 What item would you like to rename?
+RETURN 1
+
+ON=@TARGON_CHAR
+SRC.SYSMESSAGE @021 You can't rename a character.
+RETURN 1
+
+ON=@TARGON_ITEM
+IF !(<SRC.TARG.ATTR>  &  attr_newbie)
+SRC.SYSMESSAGE @021 You need a Item Rename Voucher for this.
+RETURN 1
+
+ELSEIF ( <SRC.TARG.TOPOBJ.UID> != <SRC.UID> )
+SRC.SYSMESSAGE @021 You must have it in your back pack to rename it.
+RETURN 1
+
+ELSEIF ((<SRC.TARG.BASEID> == i_backpack) || (<SRC.TARG.BASEID> == i_bag))
+SRC.SYSMESSAGE @021 You cannot rename a bag or a back pack with this.
+RETURN 1
+
+ELSE
+SRC.DIALOG d_NewbiedItemRename
+ENDIF
+RETURN 1
+
+[DIALOG d_NewbiedItemRename]
+150,200
+gumppic 100 10 2070
+resizepic 130 45 3000 115 22
+button 165 85 247 248 1 0 1
+textentry 135 45 95 15 0 0 0
+
+[DIALOG d_NewbiedItemRename BUTTON]
+
+ON=1
+
+IF (<STRLENGTH <ARGTXT[0]>> < 4)
+SRC.SYSMESSAGE @021 You must specify longer name.
+RETURN 1
+ENDIF
+
+IF (<STRLENGTH <ARGTXT[0]>> > 16)
+SRC.SYSMESSAGE @021 Please specify a shorter name.
+RETURN 1
+ENDIF
+
+IF (<HVAL STRREGEX([^A-Za-z0-9 ], <ARGTXT[0]>)>)
+SRC.SYSMESSAGE @ 021 You cannot rename to that!
+RETURN 1
+ELSEIF (<HVAL STRMATCH(ray*, <ARGTXT[0]>)>)
+SRC.SYSMESSAGE @021 You cannot rename to that!
+RETURN 1
+ELSEIF (<HVAL STRMATCH(*<chr 32><chr 32>*, <ARGTXT[0]>)>)
+SRC.SYSMESSAGE @021 You cannot rename to that!
+RETURN 1
+
+ELSE
+
+TAG.RENAME=<ARGTXT[0]>
+SRC.DIALOG d_confirmItemRename
+ENDIF
+RETURN 1
+
+[DIALOG d_confirmNewbiedItemRename]
+150,200
+gumppic 100 10 1140
+button 250 150 247 248 1 0 1
+dtext 170 75 125 Are you sure you wish to rename your 
+dtext 170 105 125 <SRC.TARG.NAME> to: <TAG.RENAME>?
+
+[DIALOG d_confirmNewbiedItemRename BUTTON]
+
+ON=1
+IF (<SRC.RESTEST 1 i_newbied_item_rename_voucher>)
+SRC.CONSUME 1 i_newbied_item_rename_voucher
+SRC.SYSMESSAGE @50 Successfully renamed your <SRC.TARG.NAME> to: <TAG.RENAME>
+SERV.LOG ::NEWBIED RENAME:: Account: <SRC.ACCOUNT> - UID: <SRC.UID> - Original Name: <SRC.NAME> - New Name: <TAG.RENAME>
+SRC.TARG.NAME=<TAG.RENAME>
+SRC.TAG.RENAME=
+ELSE
+SRC.SYSMESSAGE @021 You must have the Newbied Item Rename Voucher in your back pack.
+ENDIF
+RETURN 1
+
+//////////////////////////
+//Karma Restore Potion  //
+/////////////////////////
+
+[ITEMDEF i_karma_restore_potion]
+NAME=Karma Restore Potion
+ID=i_flask1_red
+TYPE=t_script
+
+ON=@DClick
+
+IF ( <SRC.KARMA> > 1 )
+SRC.SYSMESSAGE @021 Your karma should be lower than 0 in order to be able to use this potion.
+RETURN 1
+
+ELSE
+SRC.KARMA=0
+SRC.SYSMESSAGE @060 You feel your karma getting restored...
+REMOVE
+ENDIF
+RETURN 1
+
+//////////////////////////
+//Kills Restore Potion  //
+/////////////////////////
+
+[ITEMDEF i_strong_penance_potion]
+NAME=Kills Restore Potion
+ID=i_flask1_red
+TYPE=t_script
+
+ON=@DClick
+
+IF ( <SRC.KILLS> < 4 )
+SRC.SYSMESSAGE @021 Your kills should be higher than 3 in order to be able to use this potion.  
+RETURN 1
+
+ELSEIF ( <SRC.KILLS> < 100 )
+SRC.NEWITEM m_penance
+SRC.ACT.EQUIP
+SRC.SYSMESSAGE @060 You feel the burdens of your crimes easing as you pay penance.
+SRC.KILLS=0
+REMOVE
+ELSE
+SRC.NEWITEM m_penance
+SRC.ACT.EQUIP
+SRC.SYSMESSAGE @060 You feel the burdens of your crimes easing as you pay penance.
+SRC.KILLS=(<SRC.KILLS> - 100)
+REMOVE
+ENDIF
+RETURN 1
+
+/////////////////////////
+//Supporter's Spellbook//
+/////////////////////////
+
+[ITEMDEF i_book_supporter]
+NAME=Imperial UO Supporter's Spellbook
+ID=i_spellbook
+TYPE=t_spellbook
+
+ON=@CREATE
+COLOR=color_supporter_items
+ATTR=attr_magic|attr_newbie
+MORE=0ffeffffd
+MORE2=0ffffffff
+
+ON=@EQUIP
+IF !(strmatch("<TAG.UID>","<SRC.ACCOUNT>"))
+SRC.SYSMESSAGE This book does not belong to you.
+UNEQUIP
+RETURN 1
+ENDIF
+
+////////////////////
+//Supporter's Robe//
+////////////////////
+
+[ITEMDEF i_robe_supporter]
+ID=i_robe
+NAME=Imperial UO Supporter's Robe
+TYPE=T_ARMOR
+ARMOR=5
+DYE=0
+VALUE=500000
+
+ON=@Create
+HITPOINTS=150
+COLOR=color_supporter_items
+ATTR=05
+
+ON=@EQUIP
+IF !(strmatch("<TAG.UID>","<SRC.ACCOUNT>"))
+SRC.SYSMESSAGE This robe does not belong to you.
+UNEQUIP
+RETURN 1
+ENDIF
+
+//////////////////////
+//Supporter's Shroud//
+//////////////////////
+
+[ITEMDEF i_shroud_supporter]
+ID=i_hooded_shroud
+NAME=Imperial UO Supporter's Shroud
+TYPE=T_ARMOR
+ARMOR=5
+DYE=0
+VALUE=500000
+
+ON=@Create
+HITPOINTS=150
+COLOR=color_supporter_items
+ATTR=05
+
+ON=@EQUIP
+IF !(strmatch("<TAG.UID>","<SRC.ACCOUNT>"))
+SRC.SYSMESSAGE This shroud does not belong to you.
+UNEQUIP
+RETURN 1
+ENDIF
+
+//////////////////////
+//Supporter's Cloak//
+//////////////////////
+
+[ITEMDEF i_cloak_supporter]
+ID=i_cape
+NAME=Imperial UO Supporter's Cloak
+TYPE=T_ARMOR
+ARMOR=5
+DYE=0
+VALUE=500000
+
+ON=@Create
+HITPOINTS=150
+COLOR=color_supporter_items
+ATTR=05
+
+ON=@EQUIP
+IF !(strmatch("<TAG.UID>","<SRC.ACCOUNT>"))
+SRC.SYSMESSAGE This cloak does not belong to you.
+UNEQUIP
+RETURN 1
+ENDIF
+
+//////////////////////
+//Jewelry Re-Roll  ///
+//////////////////////
+[ITEMDEF i_jewelry_reroll_1]
+ID=i_deed
+NAME=Magic Jewelry (Bonus Re-Roll)
+
+ON=@CREATE
+ATTR=05
+
+ON=@DCLICK
+SRC.SYSMESSAGE This can be used in the Reward Board as a payment to a Magic Jewelry (Bonus Re-Roll) under the Magic section. 
+RETURN 1
+
+[ITEMDEF i_jewelry_reroll_2]
+ID=i_deed
+NAME=Magic Jewelry (Skill Re-Roll)
+
+ON=@CREATE
+ATTR=05
+
+ON=@DCLICK
+SRC.SYSMESSAGE This can be used in the Reward Board as a payment to a Magic Jewelry (Skill Re-Roll) under the Magic section. 
+RETURN 1
+
+//////////////////////
+//Supporter's Steed///
+//////////////////////
+
+[ITEMDEF i_supporter_horse_deed]
+DEFNAME= i_supporter_horse_deed
+ID=i_deed
+NAME=Supporter Horse Deed
+
+ON=@CREATE
+COLOR=color=color_supporter_items
+
+ON=@DCLICK
+IF ( (<SRC.TARG.ATTR> & attr_move_never)
+SRC.SYSMESSAGE You can't unshrink that.
+RETURN 1
+ENDIF 
+
+IF <SRC.RESTEST i_supporter_horse_deed>
+SERV.NEWNPC c_supporter_horse
+LOCAL.NPC=<NEW.UID>
+SERV.NEWITEM i_memory
+NEW.COLOR=042
+NEW.LINK=<SRC.UID>
+NEW.CONT=<LOCAL.NPC>
+TRY UID.<LOCAL.NPC>.update
+SRC.CONSUME i_supporter_horse_deed 1
+ENDIF
+RETURN 1
+
+[CHARDEF c_supporter_horse]
+DEFNAME=c_supporter_horse
+ID=c_horse_gray
+NAME=Supporter Horse
+SOUND=snd_ANIMALS_HORSE1
+ICON=i_pet_horse_gray
+CAN=MT_WALK|MT_RUN
+RESOURCES=15 i_ribs_raw, 8 i_hide
+FOODTYPE=55 t_crops,55 t_fruit,55 t_grain, 64 t_grass
+DAM=10,20
+ARMOR=20
+
+ON=@Create
+color=color_supporter_items
+NPC=BRAIN_ANIMAL
+FAME=0
+STR={150 200}
+DEX={100 120}
+INT={10 50}
+
+PARRYING={40.0 55.0}
+MAGICRESISTANCE={60.0 80.0}
+TACTICS={50.0 60.0}
+WRESTLING={40.0 60.0}
+ARMSLORE=70.0
+
+
+//////////////////////////
+//Supporter's Bankstone///
+/////////////////////////
+
+[ITEMDEF i_bankstone_supporter]
+ID=i_talisman2
+NAME=Imperial UO Supporter's Bankstone
+
+ON=@CREATE
+color=color_supporter_items
+ATTR=05
+
+ON=@DCLICK
+IF !(strmatch("<TAG.UID>","<SRC.ACCOUNT>"))
+SRC.SYSMESSAGE This bankstone does not belong to you.
+RETURN 1
+ENDIF
+
+IF (strmatch("<SRC.REGION.NAME>","Britain Cowpen"))
+SRC.SYSMESSAGE You cant use that in the Britain Cowpen.
+RETURN 1
+ENDIF
+
+IF (<EVAL <SRC.TAG0.INEVENT>>==1)
+SRC.SYSMESSAGE You cant use that in events.
+RETURN 1
+ENDIF
+
+IF (strmatch("<SRC.REGION.NAME>","Jail"))
+SRC.SYSMESSAGE You can use that in jail.
+RETURN 1
+ENDIF
+
+IF !(<SRC.FINDID.i_bankstone_supporter>)
+SRC.SYSMESSAGE You must carry the bankstone with yourself in order to use it.
+RETURN 1
+ENDIF
+
+
+if ( <src.findid( i_openbank ).uid> )
+     if ( <src.findid( i_openbank ).timer> < 1 )
+        src.findid.i_openbank.remove
+     else
+		src.sysmessage You already requested access to your account. Please wait.
+		return 1		
+     endif
+endif
+
+IF (<SRC.FINDID.i_bankstone_supporter_delay>)
+	SRC.SYSMESSAGE You must wait <EVAL <SRC.FINDID.i_bankstone_supporter_delay.timer>/60> minutes before you can use this stone again.
+	RETURN 1
+ENDIF
+ 
+  src.newitem	= i_openbank
+  src.act.morep	= <src.p>
+  SRC.ACT.TIMER	= 5
+  src.act.EQUIP
+  SRC.NEWITEM i_bankstone_supporter_delay
+  SRC.ACT.EQUIP
+  SRC.SYSMESSAGE You requested access to your bank account. Please wait here.
+  SERV.LOG :Loyalty Supporter Bankstone: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> is requesting bank access at <SRC.P>
+  
+  
+[Itemdef i_bankstone_supporter_delay]
+Name=Supporter Bankstone Timer
+id=i_memory
+layer= 30
+TYPE=t_eq_script
+
+ON=@CREATE
+TIMER=3600
+
+ON=@TIMER
+   cont.sysmessage You can now use your Supporter's Bankstone again.
+   remove
+   return 1
+
+   
+//////////////////////////////
+//Supporter's Trader Items///
+/////////////////////////////
+
+[DEFNAME params_supporter_color]
+color_supporter_items 0ba2
+
+[ITEMDEF i_dagger_supporter]
+NAME=Supporter's Bowery Dagger
+ID=i_dagger
+TYPE=T_WEAPON_FENCE
+WEIGHT=1
+DUPELIST=0f52
+
+ON=@Create
+ATTR=05
+COLOR=color_supporter_items
+HITPOINTS={21 23}
+TIMERF 604800,remove_me
+
+ON=@EQUIP 
+IF !(strmatch("<TAG.UID>","<SRC.ACCOUNT>"))
+SRC.SYSMESSAGE This dagger does not belong to you.
+UNEQUIP
+RETURN 1
+ENDIF
+SRC.BOWCRAFT=(<SRC.BOWCRAFT> + 10.0) 
+SRC.MESSAGE As you use the Supporter's Bowery Dagger, you become more creative. 
+ON=@UNEQUIP 
+SRC.BOWCRAFT=(<SRC.BOWCRAFT> - 10.0) 
+SRC.MESSAGE As you unequip the Supporter's Bowery Dagger, you become less creative.
+
+[ITEMDEF i_hammer_supporter]
+NAME=Supporter's Blacksmith Hammer
+ID=i_hammer_smith
+TYPE=T_WEAPON_MACE_SMITH
+WEIGHT=1
+DUPELIST=013e4
+
+ON=@Create
+ATTR=05
+COLOR=color_supporter_items
+HITPOINTS={21 23}
+TIMERF 604800,remove_me
+
+ON=@EQUIP 
+IF !(strmatch("<TAG.UID>","<SRC.ACCOUNT>"))
+SRC.SYSMESSAGE This hammer does not belong to you.
+UNEQUIP
+RETURN 1
+ENDIF
+SRC.Blacksmithing=(<SRC.Blacksmithing> + 10.0) 
+SRC.MESSAGE As you use the Supporter's Blacksmith Hammer, you become more creative. 
+ON=@UNEQUIP 
+SRC.Blacksmithing=(<SRC.Blacksmithing> - 10.0) 
+SRC.MESSAGE As you unequip the Supporter's Blacksmith Hammer, you become less creative.
+
+[ITEMDEF i_hat_supporter_2]
+NAME=Supporter's Carpentry Hat
+ID=i_hat_floppy
+TYPE=T_Clothing
+WEIGHT=1
+
+ON=@Create
+ATTR=05
+COLOR=color_supporter_items
+HITPOINTS={21 23}
+TIMERF 604800,remove_me
+
+ON=@EQUIP 
+IF !(strmatch("<TAG.UID>","<SRC.ACCOUNT>"))
+SRC.SYSMESSAGE This hat does not belong to you.
+UNEQUIP
+RETURN 1
+ENDIF
+SRC.CARPENTRY=(<SRC.CARPENTRY> + 10.0) 
+SRC.MESSAGE As you use the Supporter's Carpentry Hat, you become more creative. 
+ON=@UNEQUIP 
+SRC.CARPENTRY=(<SRC.CARPENTRY> - 10.0) 
+SRC.MESSAGE As you unequip the Supporter's Carpentry Hat, you become less creative.
+
+[ITEMDEF i_hat_supporter]
+NAME=Supporter's Alchemy Hat
+ID=i_hat_floppy
+TYPE=T_CLOTHING
+WEIGHT=1
+
+ON=@Create
+ATTR=05
+COLOR=color_supporter_items
+HITPOINTS={21 23}
+TIMERF 604800,remove_me
+
+ON=@EQUIP 
+IF !(strmatch("<TAG.UID>","<SRC.ACCOUNT>"))
+SRC.SYSMESSAGE This hat does not belong to you.
+UNEQUIP
+RETURN 1
+ENDIF
+SRC.ALCHEMY=(<SRC.ALCHEMY> + 10.0) 
+SRC.MESSAGE As you use the Supporter's Alchemy Hat, you become more creative. 
+ON=@UNEQUIP 
+SRC.ALCHEMY=(<SRC.ALCHEMY> - 10.0) 
+SRC.MESSAGE As you unequip the Supporter's Alchemy Hat, you become less creative.
+
+[ITEMDEF i_crook_supporter]
+NAME=Supporter's Taming Crook
+ID=i_shepherds_crook
+TYPE=T_WEAPON_MACE_CROOK
+WEIGHT=1
+
+ON=@Create
+ATTR=05
+COLOR=color_supporter_items
+HITPOINTS={21 23}
+TIMERF 604800,remove_me
+
+ON=@EQUIP 
+IF !(strmatch("<TAG.UID>","<SRC.ACCOUNT>"))
+SRC.SYSMESSAGE This crook does not belong to you.
+UNEQUIP
+RETURN 1
+ENDIF
+SRC.TAMING=(<SRC.TAMING> + 10.0) 
+SRC.MESSAGE As you use the Supporter's Taming Crook, you become more creative. 
+ON=@UNEQUIP 
+SRC.TAMING=(<SRC.TAMING> - 10.0) 
+SRC.MESSAGE As you unequip the Supporter's Taming Crook, you become less creative.
+
+
+
+//*******************************************************************//
+//             Loyalty Vote Function                                 //
+//*******************************************************************//
+
+[DIALOG d_vote]
+0,0
+page 1
+
+resizepic 74 73 9200 366 338
+resizepic 152 83 9200 273 100
+resizepic 77 220 9200 145 80
+resizepic 77 301 9200 145 80
+resizepic 152 189 9200 137 202
+resizepic 290 189 9200 137 202
+
+tilepic 75 87 14139
+tilepichue 93 114 16373 1979
+tilepic 98 310 9002
+tilepic 99 203 16173
+tilepic 156 110 5357
+tilepic 381 110 5358
+
+button 161 203 1209 1210 1 0 1
+button 299 203 1209 1210 1 0 2
+button 161 231 1209 1210 1 0 3
+button 299 231 1209 1210 1 0 4
+button 161 260 1209 1210 1 0 5
+button 299 260 1209 1210 1 0 6
+button 161 288 1209 1210 1 0 7
+button 299 288 1209 1210 1 0 8
+button 161 316 1209 1210 1 0 9
+button 299 316 1209 1210 1 0 10
+
+button 83 280 1209 1210 0 3 // trophy
+button 83 361 1209 1210 1 0 11 // giftbox
+
+dtext 210 110 0 Imperial UO Vote System
+dtext 195 150 0 You can vote again in TIME HERE
+
+//dtext 181 199 0 Join UO
+//dtext 181 227 0 XtremeTop 100
+dtext 181 256 0 GTop 100
+//dtext 181 284 0 Game Sites
+dtext 181 312 0 UOGateway
+
+//dtext 319 199 0 UO Top 200
+//dtext 319 227 0 MMORPG List
+//dtext 319 256 0 TOP 100 UO
+//dtext 319 284 0 MMORPGTop 200
+//dtext 319 312 0 Top MMORPG
+
+dtext 103 358 0 Prizes
+dtext 103 277 0 Why?
+
+// WHY
+
+page 3
+
+resizepic 74 73 9200 472 398
+tilepic 75 87 14139
+tilepichue 93 114 16373 1979
+resizepic 152 83 9200 384 100
+resizepic 77 220 9200 145 80
+resizepic 77 301 9200 145 80
+resizepic 152 189 9200 384 271
+tilepic 98 310 9002
+button 99 248 4016 4015 0 1 // return
+button 83 361 1209 1210 1 0 11 // gift
+tilepic 210 110 5357
+tilepic 430 110 5358
+dtext 103 358 0 Prizes
+dtext 93 277 0 Return
+dtext 260 110 0 Imperial UO Voting System
+dtext 270 130 0 Why voting for us?
+dtext 175 200 0 By voting for us, you help us to improve our
+dtext 175 225 0 position in the main Ultima Online game ranks.
+dtext 175 250 0 When we reach the first positions, our server
+dtext 175 275 0 will bring more attention to people searching
+dtext 175 300 0 a new shard to be their home, this way, we will
+dtext 175 325 0 greatly improve our player database.
+dtext 175 350 0 You can vote for us every 24 hours. Every time
+dtext 175 375 0 you vote, you'll earn 1 loyalty point. These points
+dtext 175 400 0 can be used to get some really unique and great prizes.
+dtext 175 425 0 Don't hesitate to check the prizes tab!
+
+[DIALOG d_vote BUTTON]
+
+ON=1
+
+IF !(<EVAL <SRC.ACCOUNT.TAG0.VOTEJOINUO>> == 1)
+
+	IF (<SRC.FINDID.i_mem_vote_joinuo>) 
+		SRC.FINDID.i_mem_vote_joinuo.REMOVE
+	ENDIF
+	
+	SERV.NEWITEM i_mem_vote_joinuo
+	NEW.EQUIP <SRC.UID>
+	NEW.TIMER=86400
+	
+	WEBLINK www.joinuo.com/vote/49
+	SRC.ACCOUNT.TAG0.VOTEJOINUO=1
+	VAR.TOTALVOTING = <EVAL <VAR.TOTALVOTING> +1>
+	SRC.ACCOUNT.TAG0.VOTEPOINTS = <EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS> +4>
+	SRC.SYSMESSAGE @35 Thank you for voting for us on JoinUO. You got 4 more loyalty points.
+	SRC.DIALOG d_papers_loyalty
+
+ELSE
+	IF (<SRC.FINDID.i_mem_vote_joinuo>) 
+		SRC.SYSMESSAGE @35 You already voted for JoinUO. Please wait <EVAL <SRC.FINDID.i_mem_vote_joinuo.TIMER>/60> minutes to vote again.
+	ELSE
+		SRC.SYSMESSAGE @35 You already voted for JoinUO. Please login with the last character you voted with to check the remaining time until you can vote again.
+	ENDIF
+ENDIF
+
+//UO TOP 200
+
+ON=2
+
+IF !(<EVAL <SRC.ACCOUNT.TAG0.VOTEUOTOP>> == 1)
+
+	IF (<SRC.FINDID.i_mem_vote_uotop>) 
+		SRC.FINDID.i_mem_vote_uotop.REMOVE
+	ENDIF
+	
+	SERV.NEWITEM i_mem_vote_uotop
+	NEW.EQUIP <SRC.UID>
+	NEW.TIMER=86400
+	
+	WEBLINK www.Imperialuo.com/gamesites200.php
+	SRC.ACCOUNT.TAG0.VOTEUOTOP=1
+	VAR.TOTALVOTING = <EVAL <VAR.TOTALVOTING> +1>
+	SRC.ACCOUNT.TAG0.VOTEPOINTS = <EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS> +4>
+	SRC.SYSMESSAGE @35 Thank you for voting for us on UO Top 200. You got 4 more loyalty points.
+	SRC.DIALOG d_papers_loyalty
+
+ELSE
+	IF (<SRC.FINDID.i_mem_vote_uotop>) 
+		SRC.SYSMESSAGE @35 You already voted for UO Top 200. Please wait <EVAL <SRC.FINDID.i_mem_vote_uotop.TIMER>/60> minutes to vote again.
+	ELSE
+		SRC.SYSMESSAGE @35 You already voted for UO Top 200. Please login with the last character you voted with to check the remaining time until you can vote again.
+	ENDIF
+ENDIF
+
+//XtremeTop 100
+
+ON=3
+
+IF !(<EVAL <SRC.ACCOUNT.TAG0.VOTEXTREMETOP>> == 1)
+
+	IF (<SRC.FINDID.i_mem_vote_xtremetop>) 
+		SRC.FINDID.i_mem_vote_xtremetop.REMOVE
+	ENDIF
+	
+	SERV.NEWITEM i_mem_vote_xtremetop
+	NEW.EQUIP <SRC.UID>
+	NEW.TIMER=86400
+	
+	WEBLINK www.Imperialuo.com/xtremetop100.php
+	SRC.ACCOUNT.TAG0.VOTEXTREMETOP=1
+	VAR.TOTALVOTING = <EVAL <VAR.TOTALVOTING> +1>
+	SRC.ACCOUNT.TAG0.VOTEPOINTS = <EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS> +4>
+	SRC.SYSMESSAGE @35 Thank you for voting for us on XtremeTop 100. You got 4 more loyalty points.
+	SRC.DIALOG d_papers_loyalty
+
+ELSE
+	IF (<SRC.FINDID.i_mem_vote_xtremetop>) 
+		SRC.SYSMESSAGE @35 You already voted for XtremeTop 100. Please wait <EVAL <SRC.FINDID.i_mem_vote_xtremetop.TIMER>/60> minutes to vote again.
+	ELSE
+		SRC.SYSMESSAGE @35 You already voted for XtremeTop 100. Please login with the last character you voted with to check the remaining time until you can vote again.
+	ENDIF
+ENDIF
+
+//MMORPG List
+
+ON=4
+
+IF !(<EVAL <SRC.ACCOUNT.TAG0.VOTEMMORPGLIST>> == 1)
+
+	IF (<SRC.FINDID.i_mem_vote_mmorpglist>) 
+		SRC.FINDID.i_mem_vote_mmorpglist.REMOVE
+	ENDIF
+	
+	SERV.NEWITEM i_mem_vote_mmorpglist
+	NEW.EQUIP <SRC.UID>
+	NEW.TIMER=86400
+	
+	WEBLINK www.Imperialuo.com/mmorpgtoplist.php
+	SRC.ACCOUNT.TAG0.VOTEMMORPGLIST=1
+	VAR.TOTALVOTING = <EVAL <VAR.TOTALVOTING> +1>
+	SRC.ACCOUNT.TAG0.VOTEPOINTS = <EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS> +4>
+	SRC.SYSMESSAGE @35 Thank you for voting for us on MMORPG List. You got 4 more loyalty points.
+	SRC.DIALOG d_papers_loyalty
+
+ELSE
+	IF (<SRC.FINDID.i_mem_vote_mmorpglist>) 
+		SRC.SYSMESSAGE @35 You already voted for MMORPG List. Please wait <EVAL <SRC.FINDID.i_mem_vote_mmorpglist.TIMER>/60> minutes to vote again.
+	ELSE
+		SRC.SYSMESSAGE @35 You already voted for MMORPG List. Please login with the last character you voted with to check the remaining time until you can vote again.
+	ENDIF
+ENDIF
+
+
+ON=5
+
+IF !(<EVAL <SRC.ACCOUNT.TAG0.VOTEGTOP>> == 1)
+
+	IF (<SRC.FINDID.i_mem_vote_gtop>) 
+		SRC.FINDID.i_mem_vote_gtop.REMOVE
+	ENDIF
+	
+	SERV.NEWITEM i_mem_vote_gtop
+	NEW.EQUIP <SRC.UID>
+	NEW.TIMER=86400
+	
+	WEBLINK www.gtop100.com/topsites/Ultima-Online/sitedetails/Imperial-UO-90452?vote=1
+	SRC.ACCOUNT.TAG0.VOTEGTOP=1
+	VAR.TOTALVOTING = <EVAL <VAR.TOTALVOTING> +1>
+	SRC.ACCOUNT.TAG0.VOTEPOINTS = <EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS> +4>
+	SRC.SYSMESSAGE @35 Thank you for voting for us on GTop 100. You got 4 more loyalty points.
+	SRC.DIALOG d_papers_loyalty
+
+ELSE
+	IF (<SRC.FINDID.i_mem_vote_gtop>) 
+		SRC.SYSMESSAGE @35 You already voted for GTop 100. Please wait <EVAL <SRC.FINDID.i_mem_vote_gtop.TIMER>/60> minutes to vote again.
+	ELSE
+		SRC.SYSMESSAGE @35 You already voted for GTop 100. Please login with the last character you voted with to check the remaining time until you can vote again.
+	ENDIF
+ENDIF
+
+ON=6
+
+IF !(<EVAL <SRC.ACCOUNT.TAG0.VOTETOP100UO>> == 1)
+
+	IF (<SRC.FINDID.i_mem_vote_top100uo>) 
+		SRC.FINDID.i_mem_vote_top100uo.REMOVE
+	ENDIF
+	
+	SERV.NEWITEM i_mem_vote_top100uo
+	NEW.EQUIP <SRC.UID>
+	NEW.TIMER=86400
+	
+	WEBLINK www.Imperialuo.com/gamesites100.php
+	SRC.ACCOUNT.TAG0.VOTETOP100UO=1
+	VAR.TOTALVOTING = <EVAL <VAR.TOTALVOTING> +1>
+	SRC.ACCOUNT.TAG0.VOTEPOINTS = <EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS> +4>
+	SRC.SYSMESSAGE @35 Thank you for voting for us on TOP 100 UO. You got 4 more loyalty points.
+	SRC.DIALOG d_papers_loyalty
+
+ELSE
+	IF (<SRC.FINDID.i_mem_vote_top100uo>) 
+		SRC.SYSMESSAGE @35 You already voted for TOP 100 UO. Please wait <EVAL <SRC.FINDID.i_mem_vote_top100uo.TIMER>/60> minutes to vote again.
+	ELSE
+		SRC.SYSMESSAGE @35 You already voted for TOP 100 UO. Please login with the last character you voted with to check the remaining time until you can vote again.
+	ENDIF
+ENDIF
+
+ON=7
+
+IF !(<EVAL <SRC.ACCOUNT.TAG0.VOTEGAMESITES>> == 1)
+
+	IF (<SRC.FINDID.i_mem_vote_gamesites>) 
+		SRC.FINDID.i_mem_vote_gamesites.REMOVE
+	ENDIF
+	
+	SERV.NEWITEM i_mem_vote_gamesites
+	NEW.EQUIP <SRC.UID>
+	NEW.TIMER=86400
+	
+	WEBLINK www.Imperialuo.com/topgamesites.php
+	SRC.ACCOUNT.TAG0.VOTEGAMESITES=1
+	VAR.TOTALVOTING = <EVAL <VAR.TOTALVOTING> +1>
+	SRC.ACCOUNT.TAG0.VOTEPOINTS = <EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS> +4>
+	SRC.SYSMESSAGE @35 Thank you for voting for us on Top Games Sites. You got 4 more loyalty points.
+	SRC.DIALOG d_papers_loyalty
+
+ELSE
+	IF (<SRC.FINDID.i_mem_vote_gamesites>) 
+		SRC.SYSMESSAGE @35 You already voted for Top Games Sites. Please wait <EVAL <SRC.FINDID.i_mem_vote_gamesites.TIMER>/60> minutes to vote again.
+	ELSE
+		SRC.SYSMESSAGE @35 You already voted for Top Games Sites. Please login with the last character you voted with to check the remaining time until you can vote again.
+	ENDIF
+ENDIF
+
+ON=8
+
+IF !(<EVAL <SRC.ACCOUNT.TAG0.VOTEMMORPGTOP>> == 1)
+
+	IF (<SRC.FINDID.i_mem_vote_mmorpgtop>) 
+		SRC.FINDID.i_mem_vote_mmorpgtop.REMOVE
+	ENDIF
+	
+	SERV.NEWITEM i_mem_vote_mmorpgtop
+	NEW.EQUIP <SRC.UID>
+	NEW.TIMER=86400
+	
+	WEBLINK www.Imperialuo.com/topmmorpgsites.php
+	SRC.ACCOUNT.TAG0.VOTEMMORPGTOP=1
+	VAR.TOTALVOTING = <EVAL <VAR.TOTALVOTING> +1>
+	SRC.ACCOUNT.TAG0.VOTEPOINTS = <EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS> +4>
+	SRC.SYSMESSAGE @35 Thank you for voting for us on Top MMORPG Sites. You got 4 more loyalty points.
+	SRC.DIALOG d_papers_loyalty
+
+ELSE
+	IF (<SRC.FINDID.i_mem_vote_mmorpgtop>) 
+		SRC.SYSMESSAGE @35 You already voted for Top MMORPG Sites. Please wait <EVAL <SRC.FINDID.i_mem_vote_mmorpgtop.TIMER>/60> minutes to vote again.
+	ELSE
+		SRC.SYSMESSAGE @35 You already voted for Top MMORPG Sites. Please login with the last character you voted with to check the remaining time until you can vote again.
+	ENDIF
+ENDIF
+
+ON=9
+
+IF !(<EVAL <SRC.ACCOUNT.TAG0.VOTEUOGATEWAY>> == 1)
+
+	IF (<SRC.FINDID.i_mem_vote_uogateway>) 
+		SRC.FINDID.i_mem_vote_uogateway.REMOVE
+	ENDIF
+	
+	SERV.NEWITEM i_mem_vote_uogateway
+	NEW.EQUIP <SRC.UID>
+	NEW.TIMER=86400
+	
+	WEBLINK www.uogateway.com/shard.php?id=1017&act=vote
+	SRC.ACCOUNT.TAG0.VOTEUOGATEWAY=1
+	VAR.TOTALVOTING = <EVAL <VAR.TOTALVOTING> +1>
+	SRC.ACCOUNT.TAG0.VOTEPOINTS = <EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS> +4>
+	SRC.SYSMESSAGE @35 Thank you for voting for us on UO Gateway. You got 4 more loyalty points.
+	SRC.DIALOG d_papers_loyalty
+
+ELSE
+	IF (<SRC.FINDID.i_mem_vote_uogateway>) 
+		SRC.SYSMESSAGE @35 You already voted for UO Gateway. Please wait <EVAL <SRC.FINDID.i_mem_vote_uogateway.TIMER>/60> minutes to vote again.
+	ELSE
+		SRC.SYSMESSAGE @35 You already voted for UO Gateway. Please login with the last character you voted with to check the remaining time until you can vote again.
+	ENDIF
+ENDIF
+
+
+ON=10
+
+IF !(<EVAL <SRC.ACCOUNT.TAG0.VOTETOPMMORPG>> == 1)
+
+	IF (<SRC.FINDID.i_mem_vote_topmmorpg>) 
+		SRC.FINDID.i_mem_vote_topmmorpg.REMOVE
+	ENDIF
+	
+	SERV.NEWITEM i_mem_vote_topmmorpg
+	NEW.EQUIP <SRC.UID>
+	NEW.TIMER=86400
+	
+	WEBLINK www.Imperialuo.com/mmorpgtop200.php
+	SRC.ACCOUNT.TAG0.VOTETOPMMORPG=1
+	VAR.TOTALVOTING = <EVAL <VAR.TOTALVOTING> +1>
+	SRC.ACCOUNT.TAG0.VOTEPOINTS = <EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS> +4>
+	SRC.SYSMESSAGE @35 Thank you for voting for us on MMORPG Top 200. You got 4 more loyalty points.
+	SRC.DIALOG d_papers_loyalty
+
+ELSE
+	IF (<SRC.FINDID.i_mem_vote_topmmorpg>) 
+		SRC.SYSMESSAGE @35 You already voted for MMORPG Top 200. Please wait <EVAL <SRC.FINDID.i_mem_vote_topmmorpg.TIMER>/60> minutes to vote again.
+	ELSE
+		SRC.SYSMESSAGE @35 You already voted for MMORPG Top 200. Please login with the last character you voted with to check the remaining time until you can vote again.
+	ENDIF
+ENDIF
+
+ON=11
+SRC.DIALOG d_loyalshop
+
+
+[DIALOG d_vote_checker]
+0,0
+page 0
+resizepic 259 207 9200 276 100
+text 329 220 0 0
+text 296 257 0 1
+
+[DIALOG d_vote_checker text]
+Total Votes In-Game:
+<EVAL <VAR.TOTALVOTING>>
+
+[FUNCTION checkvotes]
+DIALOG d_vote_checker
+SAY Last Restart: 26-02-2014
+RETURN 1
+
+[PLEVEL 5]
+checkvotes
+
+//Vote Mems
+
+[ITEMDEF i_mem_vote_joinuo]
+ID=i_memory
+TYPE=t_eq_script
+NAME=Join UO Vote Timer
+
+ON=@CREATE
+ATTR=attr_decay|attr_invis
+
+ON=@TIMER
+CONT.SYSMESSAGE @30 You can now vote for us on Join UO again.
+CONT.ACCOUNT.TAG.VOTEJOINUO=
+REMOVE
+RETURN 1
+
+
+[ITEMDEF i_mem_vote_uotop]
+ID=i_memory
+TYPE=t_eq_script
+NAME=UO Top Vote Timer
+
+ON=@CREATE
+ATTR=attr_decay|attr_invis
+
+ON=@TIMER
+CONT.SYSMESSAGE @30 You can now vote for us on Join UO again.
+CONT.ACCOUNT.TAG.VOTEUOTOP=
+REMOVE
+RETURN 1
+
+
+[ITEMDEF i_mem_vote_xtremetop]
+ID=i_memory
+TYPE=t_eq_script
+NAME=Xtreme Top Vote Timer
+
+ON=@CREATE
+ATTR=attr_decay|attr_invis
+
+ON=@TIMER
+CONT.SYSMESSAGE @30 You can now vote for us on Join UO again.
+CONT.ACCOUNT.TAG.VOTEXTREMETOP=
+REMOVE
+RETURN 1
+
+[ITEMDEF i_mem_vote_mmorpglist]
+ID=i_memory
+TYPE=t_eq_script
+NAME=MMORPG List Vote Timer
+
+ON=@CREATE
+ATTR=attr_decay|attr_invis
+
+ON=@TIMER
+CONT.SYSMESSAGE @30 You can now vote for us on MMORPG List again.
+CONT.ACCOUNT.TAG.VOTEMMORPGLIST=
+REMOVE
+RETURN 1
+
+[ITEMDEF i_mem_vote_gtop]
+ID=i_memory
+TYPE=t_eq_script
+NAME=GTop Vote Timer
+
+ON=@CREATE
+ATTR=attr_decay|attr_invis
+
+ON=@TIMER
+CONT.SYSMESSAGE @30 You can now vote for us on GTop again.
+CONT.ACCOUNT.TAG.VOTEGTOP=
+REMOVE
+RETURN 1
+
+
+[ITEMDEF i_mem_vote_top100uo]
+ID=i_memory
+TYPE=t_eq_script
+NAME=Top 100 UO Vote Timer
+
+ON=@CREATE
+ATTR=attr_decay|attr_invis
+
+ON=@TIMER
+CONT.SYSMESSAGE @30 You can now vote for us on Top 100 UO again.
+CONT.ACCOUNT.TAG.VOTETOP100UO=
+REMOVE
+RETURN 1
+
+
+[ITEMDEF i_mem_vote_gamesites]
+ID=i_memory
+TYPE=t_eq_script
+NAME=Game Sites Vote Timer
+
+ON=@CREATE
+ATTR=attr_decay|attr_invis
+
+ON=@TIMER
+CONT.SYSMESSAGE @30 You can now vote for us on Game Sites again.
+CONT.ACCOUNT.TAG.VOTEGAMESITES=
+REMOVE
+RETURN 1
+
+
+[ITEMDEF i_mem_vote_mmorpgtop]
+ID=i_memory
+TYPE=t_eq_script
+NAME=MMORPG Top Vote Timer
+
+ON=@CREATE
+ATTR=attr_decay|attr_invis
+
+ON=@TIMER
+CONT.SYSMESSAGE @30 You can now vote for us on MMORPG Top 200 again.
+CONT.ACCOUNT.TAG.VOTEMMORPGTOP=
+REMOVE
+RETURN 1
+
+
+[ITEMDEF i_mem_vote_uogateway]
+ID=i_memory
+TYPE=t_eq_script
+NAME=UO Gateway Vote Timer
+
+ON=@CREATE
+ATTR=attr_decay|attr_invis
+
+ON=@TIMER
+CONT.SYSMESSAGE @30 You can now vote for us on UO Gateway again.
+CONT.ACCOUNT.TAG.VOTEUOGATEWAY=
+REMOVE
+RETURN 1
+
+
+[ITEMDEF i_mem_vote_topmmorpg]
+ID=i_memory
+TYPE=t_eq_script
+NAME=Top MMORPG Vote Timer
+
+ON=@CREATE
+ATTR=attr_decay|attr_invis
+
+ON=@TIMER
+CONT.SYSMESSAGE @30 You can now vote for us on Top MMORPG again.
+CONT.ACCOUNT.TAG.VOTETOPMMORPG=
+REMOVE
+RETURN 1
+

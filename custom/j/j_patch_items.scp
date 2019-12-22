@@ -1,0 +1,328 @@
+[ITEMDEF 02D82]
+DEFNAME=i_pet_jabba
+NAME=Jabba the Hutt
+TYPE=T_FIGURINE
+VALUE=500
+//TDATA3=c_m_jabba
+ON=@DCLICK
+if ( (<SRC.TARG.ATTR> & attr_move_never)
+      src.sysmessage You Cant Unshrink that
+      return 1
+ENDIF 
+
+
+//***********************************
+//*            Patch 1.6            *
+//***********************************
+
+[ITEMDEF 02328]
+DEFNAME=i_snowman
+NAME=Snowman
+FLIP=1
+DUPELIST=02329
+
+ON=@DCLICK
+   SRC.MESSAGE You admire the snowman and ponder who made it...
+   RETURN 1
+
+[ITEMDEF 02329]
+DUPELIST=02328
+
+[ITEMDEF 0232A]
+DEFNAME=i_present
+NAME=Gift Box
+FLIP=1
+DYE=1
+TDATA2=049
+DUPELIST=0232B
+SKILLMAKE=TAILORING 90.0, t_sewing_kit
+RESOURCES=1 i_hides_cut, 1 i_ingot_adamantine, 1 i_nails_titanium, 2 i_hinge_titanium, 1 i_reag_spider_silk, 1 i_scroll_mark
+
+[ITEMDEF 0232B]
+DUPELIST=0232A
+
+[ITEMDEF 0232E]
+DEFNAME=i_snowflake_1
+NAME=Snowflake
+
+[ITEMDEF 0232F]
+DEFNAME=i_snowflake_2
+NAME=Snowflake
+
+[ITEMDEF 02330]
+DEFNAME=i_poinsettia_red
+NAME=Red Poinsettia
+
+[ITEMDEF 02331]
+DEFNAME=i_poinsettia_white
+NAME=White Poinsettia
+
+[ITEMDEF 0234E]
+DEFNAME=i_tapestry_sosaria
+NAME=Tapestry of Sosaria
+FLIP=1
+DUPELIST=0234F
+
+[ITEMDEF 0234F]
+DUPELIST=0234E
+
+[ITEMDEF 0236E]
+DEFNAME=i_candle_holiday
+NAME=Holiday Candle
+FLIP=1
+DUPELIST=02371
+
+[ITEMDEF 02371]
+DUPELIST=0236E
+
+[ITEMDEF 02374]
+DEFNAME=i_mistletoe
+NAME=Mistletoe
+FLIP=1
+DUPELIST=02375
+
+[ITEMDEF 02375]
+DUPELIST=02374
+
+[ITEMDEF 02376]
+DEFNAME=i_cactus_festive
+NAME=Cactus
+
+[ITEMDEF 02377]
+DEFNAME=i_tree_snowy
+NAME=Snowy Tree
+
+[ITEMDEF 02378]
+DEFNAME=i_topiary_festive
+NAME=Topiary
+
+[ITEMDEF 0238C]
+DEFNAME=i_book_bushido
+NAME=Book of Bushido
+TYPE=t_normal
+
+[ITEMDEF 023A0]
+DEFNAME=i_book_ninjitsu
+NAME=Book of Ninjitsu
+TYPE=t_normal
+
+
+//*****Skipping Roof Tiles: 023BE-023FF*****
+
+[ITEMDEF 02409]
+DEFNAME=i_fan_decorative_1
+NAME=Fan
+FLIP=1
+DUPELIST=0240A
+
+[ITEMDEF 0240A]
+DUPELIST=02409
+
+[ITEMDEF 0240B]
+DEFNAME=i_fan_decorative_2
+NAME=Fan
+FLIP=1
+DUPELIST=0240C
+
+[ITEMDEF 0240C]
+DUPELIST=0240B
+
+[ITEMDEF 0240D]
+DEFNAME=i_painting_oriental_1
+NAME=Painting
+FLIP=1
+DUPELIST=0240E
+
+[ITEMDEF 0240E]
+DUPELIST=0240D
+
+[ITEMDEF 0240F]
+DEFNAME=i_painting_oriental_2
+NAME=Painting
+FLIP=1
+DUPELIST=02410
+
+[ITEMDEF 02410]
+DUPELIST=0240F
+
+[ITEMDEF 02411]
+DEFNAME=i_painting_oriental_3
+NAME=Painting
+FLIP=1
+DUPELIST=02412
+
+[ITEMDEF 02412]
+DUPELIST=02411
+
+[ITEMDEF 02413]
+DEFNAME=i_painting_oriental_4
+NAME=Painting
+FLIP=1
+DUPELIST=02414
+
+[ITEMDEF 02414]
+DUPELIST=02413
+
+[ITEMDEF 02415]
+DEFNAME=i_painting_oriental_5
+NAME=Painting
+FLIP=1
+DUPELIST=02416
+
+[ITEMDEF 02416]
+DUPELIST=02415
+
+[ITEMDEF 02417]
+DEFNAME=i_painting_oriental_6
+NAME=Painting
+FLIP=1
+DUPELIST=02418
+
+[ITEMDEF 02418]
+DUPELIST=02417
+
+[ITEMDEF 02419]
+DEFNAME=i_sculpture_oriental_1
+NAME=Sculpture
+
+[ITEMDEF 0241A]
+DEFNAME=i_sculpture_oriental_2
+NAME=Sculpture
+
+[ITEMDEF 0241B]
+DEFNAME=i_sculpture_oriental_3
+NAME=Sculpture
+
+[ITEMDEF 0241C]
+DEFNAME=i_urn_oriental_1
+NAME=Urn
+
+[ITEMDEF 0241D]
+DEFNAME=i_urn_oriental_1
+NAME=Urn
+
+[ITEMDEF 0241E]
+DEFNAME=i_urn_oriental_1
+NAME=Urn
+
+//*****Skipping Past Up To 0253E*****
+
+[ITEMDEF 02685]
+DEFNAME=i_deathshroud_new
+NAME=Death Shroud
+TYPE=T_CLOTHING
+DUPELIST=02686
+
+ON=@Equip
+   IF (<CONT.findlayer.layer_hair.uid>)
+      CONT.findlayer.layer_hair.ATTR=(<CONT.findlayer.layer_hair.ATTR>|attr_invis)
+      CONT.findlayer.layer_hair.REMOVEFROMVIEW
+   ENDIF
+ 
+ON=@Unequip
+   IF (<CONT.findlayer.layer_hair.uid>)
+      CONT.findlayer.layer_hair.ATTR = (<CONT.findlayer.layer_hair.ATTR> &~ attr_invis)
+      CONT.findlayer.layer_hair.UPDATE
+   ENDIF
+
+[ITEMDEF 02686]
+DUPELIST=02685
+
+//*****Skipping Past Up To 02832*****
+
+[ITEMDEF 02832]
+DEFNAME=i_windchime_1
+NAME=wind chime
+
+ON=@DCLICK 
+   SOUND 023c
+   RETURN 1
+   
+//*****Skipping Past Up To 02838*****
+
+[ITEMDEF 02838]
+DEFNAME=i_origami_butterfly
+NAME=butterfly origami
+RESOURCES=10 i_scroll_blank
+SKILLMAKE=INSCRIPTION 85.0, t_scribe_tools
+
+[ITEMDEF 02839]
+DEFNAME=i_origami_swan
+NAME=swan origami
+RESOURCES=10 i_scroll_blank
+SKILLMAKE=INSCRIPTION 85.0, t_scribe_tools
+
+[ITEMDEF 0283A]
+DEFNAME=i_origami_frog
+NAME=frog origami
+RESOURCES=10 i_scroll_blank
+SKILLMAKE=INSCRIPTION 85.0, t_scribe_tools
+
+[ITEMDEF 0283B]
+DEFNAME=i_origami_star
+NAME=star origami
+RESOURCES=10 i_scroll_blank
+SKILLMAKE=INSCRIPTION 85.0, t_scribe_tools
+
+[ITEMDEF 0283C]
+DEFNAME=i_origami_bird
+NAME=bird origami
+RESOURCES=10 i_scroll_blank
+SKILLMAKE=INSCRIPTION 85.0, t_scribe_tools
+
+[ITEMDEF 0283D]
+DEFNAME=i_origami_fish
+NAME=fish origami
+RESOURCES=10 i_scroll_blank
+SKILLMAKE=INSCRIPTION 85.0, t_scribe_tools
+
+//*****Skipping Past Up To 02855*****
+
+[ITEMDEF 02855]
+DUPELIST=02856
+
+[ITEMDEF 02856]
+
+
+//***********************************
+//*            Patch 1.7            *
+//***********************************
+
+[ITEMDEF 02AB8]
+DEFNAME=i_shrine_evil_small
+NAME=Small Shrine to the Dark Lords
+RESOURCES=40 i_log_ironwood, 20 i_nails, 2 i_candle, 1 i_dyes
+SKILLMAKE = CARPENTRY 995, t_carpentry
+
+ON=@DCLICK
+   IF (<SRC.KARMA> > 0)
+      SRC.EMOTE shiver, as if feeling the dark forces eminating...
+   ELSE
+      SRC.BOW
+      SRC.EMOTE pray to the Dark Lords for guidance...
+   ENDIF
+   RETURN 1
+   
+[ITEMDEF 02DD8]
+DEFNAME=i_elven_fountain
+NAME=Elven Fountain
+
+[ITEMDEF 02FE6]
+DEFNAME=i_purple_crystal
+NAME=Purple Crystal
+
+[ITEMDEF 02FE7]
+DEFNAME=i_purple_crystal
+NAME=Purple Crystal
+
+//***********************************
+//*            Patch 2.0            *
+//***********************************
+
+
+[ITEMDEF 02DF3]
+DEFNAME=i_ornate_elven_chest
+DUPELIST=02DF4
+
+[ITEMDEF 02DF4]
+DUPELIST=02DF3

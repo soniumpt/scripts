@@ -1,0 +1,103 @@
+[ITEMDEF 013b1]
+DEFNAME	 = i_bow
+NAME = pine bow
+TYPE = T_WEAPON_BOW
+TDATA1 = mat_pine
+FLIP = 1
+//SKILLMAKE = BOWCRAFT 17.8
+RESOURCES = 10 i_log, 1 i_hide
+WEIGHT = 5
+DAM = 9, 24
+VALUE = 30
+SKILL = Archery
+REQSTR = 20
+TWOHANDS = Y
+DUPELIST = 013b2
+TDATA3 = i_arrow
+TDATA4 = i_arrow_x
+
+ON=@Create
+HITPOINTS = {31 60}
+COLOR = color_o_pine
+
+ON=@EQUIP 
+IF (<SRC.ARCHERY>>=1)
+SRC.SYSMESSAGE You equip the bow
+ELSE
+SRC.SYSMESSAGE You are not skilled enough to use this weapon 
+BOUNCE
+RETURN 1
+ENDIF 
+ON=@DCLICK 
+EQUIP
+RETURN 1
+
+
+[ITEMDEF 0f4f]
+DEFNAME = i_crossbow
+NAME = pine crossbow
+TDATA1 = mat_pine
+TYPE = T_WEAPON_XBOW
+FLIP = 1
+RESOURCES = 15 i_log, 1 i_hide
+//SKILLMAKE = BOWCRAFT 34.8
+DAM = 8, 38
+VALUE = 40
+SKILL = Archery
+REQSTR = 35
+TWOHANDS = Y
+WEIGHT = 8
+DUPELIST = 0f50
+TDATA3 = i_xbolt
+TDATA4 = i_xbolt_x
+
+ON=@Create
+HITPOINTS = {31 80}
+COLOR = color_o_pine
+
+ON=@EQUIP 
+IF (<SRC.ARCHERY>>=298)
+SRC.SYSMESSAGE You equip the bow
+ELSE
+SRC.SYSMESSAGE You are not skilled enough to use this weapon 
+BOUNCE
+RETURN 1 
+ENDIF 
+ON=@DCLICK 
+EQUIP
+RETURN 1
+
+
+[ITEMDEF 013fc]
+DEFNAME = i_crossbow_heavy
+NAME = pine heavy crossbow
+TDATA1 = mat_pine
+TYPE = T_WEAPON_XBOW
+FLIP = 1
+//SKILLMAKE = BOWCRAFT 52.4
+RESOURCES = 15 i_log, 1 i_hide
+WEIGHT = 9
+DAM = 11, 43
+VALUE = 50
+SKILL = Archery
+REQSTR = 50
+TWOHANDS = Y
+DUPELIST = 013fd
+TDATA3 = i_xbolt
+TDATA4 = i_xbolt_x
+
+ON=@Create
+HITPOINTS={31 100}
+COLOR = color_o_pine
+ON=@EQUIP 
+IF (<SRC.ARCHERY>>=544) 
+SRC.SYSMESSAGE You equip the bow
+ELSE
+SRC.SYSMESSAGE You are not skilled enough to use this weapon 
+BOUNCE
+RETURN 1 
+ENDIF 
+ON=@DCLICK 
+EQUIP
+RETURN 1
+

@@ -1,0 +1,544 @@
+// #-----------#
+// # CHANGELOG #
+// #-----------#
+//
+// 15/11/19 - Wigifer - Updated line 80 from "if ( (<SERV.TIME> - <REGION.TAG.LASTMARKUP>) > time_k_vendormarkup )" to use <SERV.TIME>
+// 15/11/19 - Wigifer - Updated line 87 from "REGION.TAG.LASTMARKUP	= <SERV.TIME>" to use <SERV.TIME>
+//                    - Removed RESTOCK from spk_shopkeep as this seems to cause 0 stock vendors. Why?
+                        At a guess I would assume it's because it's emptying stock same tick now... And then updates next tick.
+                        Goddamnit, STOP CHANGING HOW SPHERE WORKS FOR LIMITED GOOD REASON.
+// 25/11/19 - Wigifer - Updated all remaining <TIME> to <SERV.TIME> (56d update issue)     
+// 04/12/19 - Wigifer - Added death check to purchasing... 
+
+
+[FUNCTION ADD_PRICE_MOD]
+  VAR.PRICE_MOD	= <eval (<VAR.PRICE_MOD> + (<args>))>
+
+
+[FUNCTION vendor_reprice_buy]
+   TAG.VENDORMARKUP = -15	// set the diff to 0%
+   findlayer(layer_vendor_stock).LOOPITEMS reprice_buy
+
+[FUNCTION reprice_buy]
+   VAR.PRICE_MOD	= 110	// 10% extra price
+
+   ADD_PRICE_MOD	(<QUALITY>/10)	// add 1% per each 10 quality
+
+   PRICE		=  <eval ((<VALUE> * <VAR.PRICE_MOD>)/(100))>
+   SRC.SYSMESSAGE <NAME>: value <VALUE>, price <PRICE>
+
+
+
+
+[ITEMDEF i_vendor_sleep]
+ID	= i_memory
+TYPE	= t_eq_script
+LAYER	= layer_k_vendor
+NAME	= vendor periodic
+
+ON = @Create
+   MOREx	= 0
+   TIMER	= { 20 60 }
+ON = @Timer
+   CONT.TAG.VENDORSLEEP	=
+   REMOVE
+   return 1
+
+[COMMENT deleted]
+   LINK		= time_control_uid
+   TIMER	= { 20 60 }
+   if ( <CONT.MAPPLANE> )
+      MOREx	= 0
+      if ( <LINK.MOREy> < 4 )
+         return 1
+      endif
+      CONT.findlayer(layer_vendor_stock).remove
+      CONT.NEWNPC <CONT.BASEID>
+      CONT.ACT.findlayer(layer_vendor_stock).CONT	= <CONT.UID>
+      CONT.ACT.REMOVE
+      CONT.MAPPLANE	= 0
+      CONT.FIX
+      endif
+   elseif ( <MOREx> == 0 )
+     if ( <LINK.MOREy> >= 4 )
+        return 0
+     endif
+    
+     TIMER	= { 10 40 }
+     MOREx	= 1
+   elseif ( <MOREx> == 1 )
+     TIMER		= 60*3
+     CONT.REMOVEFROMVIEW
+     CONT.MAPPLANE	= 20
+     MOREx		= 0
+   elseif ( <MOREx> == 2 )
+     MOREx		= 0
+   endif
+   return 1  
+
+
+[FUNCTION vendor_reprice]
+  if !( 0<TAG.VENDMARKUP_FIXED> )
+     TAG.VENDMARKUP_FIXED	= 0
+  elseif ( <TAG.VENDMARKUP_FIXED> = 100 )
+     return 0
+  endif
+
+  // READJUSTMENT OF PRICES
+  if ( 0<REGION.TAG.LASTMARKUP> == 0 )
+     REGION.TAG.LASTMARKUP	= 0
+     REGION.TAG.VENDORMARKUP	= 0
+  endif
+
+  if ( (<SERV.TIME> - <REGION.TAG.LASTMARKUP>) > time_k_vendormarkup )
+     REGION.TAG.LASTMARKUP	= <SERV.TIME>
+     REGION.TAG.VENDORMARKUP	= <eval -(rand(4))>
+  endif
+
+  // readjust HARDCODED vendor cap of 10000
+  if ( <VENDCAP> > vend_cap )
+     VAR.TAKE		= <eval (<VENDCAP> - vend_cap)>
+     VENDCAP		= vend_cap
+     if ( <VENDGOLD> > vend_cap )
+        VENDGOLD	= vend_cap
+     endif
+  endif
+  
+  if ( <VENDCAP> > 0 )
+     LOCAL.GREED	= <eval (((<VENDCAP> - <VENDGOLD>)*4)/<VENDCAP>)>
+  else
+     LOCAL.GREED	= 0
+  endif
+  if ( <LOCAL.GREED> < 0 )
+     LOCAL.GREED	= 0
+  endif
+
+  if ( 0<TAG.VENDMARKUP_FIXED> == 0 )
+     TAG.VENDMARKUP_FIXED	= 0
+  endif
+  TAG.VENDORMARKUP	= <eval (<REGION.TAG0.VENDORMARKUP> + <LOCAL.GREED> + <TAG.VENDMARKUP_FIXED>)>
+  TAG.VENDORMARKUP = 0
+
+
+[FUNCTION vendor_closed]
+  LOCAL.TMP_HOURS	= <SRC.UID.time_control_uid.MOREY> 
+  if ( (<VAR.TMP_HOURS> > 0) && (<LOCAL.TMP_HOURS> < 4) )
+     return 0
+  endif
+  return 0
+
+
+[FUNCTION vendor_restock]
+  if ( <TAG0.VEND_RESTOCK> == 0 )
+     TAG.VEND_RESTOCK	= 0
+  endif
+  return 0
+
+  if ( <TAG.VEND_RESTOCK> > <SRC.UID.time_control_uid.TAG.VEND_RESTOCK> )
+     return 0
+  endif
+  TAG.VEND_RESTOCK	= <SERV.TIME>
+  SAY Please come back in a moment, I'm reorganizing my stock.
+  findlayer.layer_vendor_stock.remove
+  NEWNPC <BASEID>
+  ACT.findlayer(layer_vendor_stock).CONT	= <UID>
+  ACT.REMOVE
+  return 1
+
+
+
+[SPEECH spk_shopkeep]
+ON = restock
+   if !( <SRC.ISGM> )
+      SAY There is nothing wrong with my stock!
+      return 1
+   endif
+   TAG.VEND_RESTOCK	= 0
+   SRC.SYSMESSAGE Vendor will restock next time someone tries to buy or sell something.
+
+ON=*what*thou*sell*
+ON=*what*thou*sale*
+ON=*what*you*sell*
+ON=*what*you*sale*
+ON=*can*you*sell*
+ON=*can*you*sale*
+  if ( <region_chaos> )
+     if ( !<SRC.ISALIGNMENT_chaos> )
+        SAY We only serve members of Chaos here! Begone!
+        return 1
+     endif
+     SAY Hail, milord. Let Chaos rule the lands!
+  endif
+  if ( <region_order> )
+     if ( !<SRC.ISALIGNMENT_order> )
+        SAY We only serve members of Order here! Begone!
+        return 1
+     endif
+     SAY Hail, milord. Let Order rule the lands!
+  endif 
+  DORAND 4
+    SAY Why, I sell the same things that any other <JOB> would sell.
+    SAY If thou dost look around my shop, I'm sure it will become obvious to thee.
+    SAY I am a <JOB>.  What wouldst thou expect me to sell?
+    SAY I sell fairy dust.  What dost thou think a <JOB> would sell?
+  ENDDO
+
+ON=*sell*
+ON=*thou*purchase*
+ON=*you*purchase*
+ON=*you*buy*
+ON=*I*sale*
+   IF (<SRC.FLAGS> & statf_dead)
+      SRC.SYSMESSAGE @025 The dead cannot make transactions, friend...
+      RETURN 1
+   ENDIF
+ if ( <region_order> )
+       IF !( <SRC.ISALIGNMENT_order> )
+          SAY We only serve members of Order here! Begone!
+          return 1
+       endif
+     SAY Hail my <SRC.SEX Lord/Lady>. Let Order rule the lands!
+      elseif ( <region_chaos> )
+         IF !( <SRC.ISALIGNMENT_chaos> )
+            SAY We only serve members of Chaos here! Begone!
+            return 1
+         endif
+     SAY Hail my <SRC.SEX Lord/Lady>. Let Chaos rule the lands!
+  elseif strmatch("<GET_REGION_AFFILIATION>","ALIGNMENT_NONE")
+  elseif strmatch("<GET_REGION_AFFILIATION>","<SRC.ALIGNMENT>")
+     ALIGNMENT_NAME <GET_REGION_AFFILIATION>
+     SAY Welcome my <SRC.SEX Lord/Lady>. Let <VAR.ALIGNMENT_NAME> rule the lands!
+  elseif strmatch( "<SRC.ALIGNMENT>", "ALIGNMENT_NONE")
+     ALIGNMENT_NAME <GET_REGION_AFFILIATION>
+     SAY Welcome my <SRC.SEX Lord/Lady>. <VAR.ALIGNMENT_NAME> rules this town!
+  else
+
+  endif
+  
+  if ( <vendor_restock> )
+     return 1
+  endif
+  vendor_reprice
+  SELL
+
+
+ON=*buy*
+ON=*supplies*
+ON=*wares*
+   IF (<SRC.FLAGS> & statf_dead)
+      SRC.SYSMESSAGE @025 The dead cannot make transactions, friend...
+      RETURN 1
+   ENDIF
+   IF (0<VAR.VENDOR_ESTOP>=1)
+     IF (<SRC.ACCOUNT.PLEVEL> <= 1)
+        SAY Temporarily Closed due to command of Lord British.
+        RETURN 1
+     ENDIF
+   ENDIF
+
+  if ( <region_order> )
+       IF !( <SRC.ISALIGNMENT_order> )
+          SAY We only serve members of Order here! Begone!
+          return 1
+       endif
+     SAY Hail my <SRC.SEX Lord/Lady>. Let Order rule the lands!
+      elseif ( <region_chaos> )
+         IF !( <SRC.ISALIGNMENT_chaos> )
+            SAY We only serve members of Chaos here! Begone!
+            return 1
+         endif
+     SAY Hail my <SRC.SEX Lord/Lady>. Let Chaos rule the lands!
+  elseif strmatch("<GET_REGION_AFFILIATION>","ALIGNMENT_NONE")
+  elseif strmatch("<GET_REGION_AFFILIATION>","<SRC.ALIGNMENT>")
+     ALIGNMENT_NAME <GET_REGION_AFFILIATION>
+     SAY Welcome my <SRC.SEX Lord/Lady>. Let <VAR.ALIGNMENT_NAME> rule the lands!
+  elseif strmatch( "<SRC.ALIGNMENT>", "ALIGNMENT_NONE")
+     ALIGNMENT_NAME <GET_REGION_AFFILIATION>
+     SAY Welcome my <SRC.SEX Lord/Lady>. <VAR.ALIGNMENT_NAME> rules this town!
+  else
+   
+  endif
+
+  if ( <vendor_restock> )
+     return 1
+  endif
+  vendor_reprice
+  
+  IF <FINDLAYER.27.UID>
+     f_vendorhack_container_dupe <FINDLAYER.27.UID>
+  ENDIF
+
+  // RESTOCK  
+  //f_call_vendor 0
+  BUY
+ 
+ON=Hi
+ON=Hello
+ON=Hail
+ON=Greet
+  if ( <region_chaos> )
+     IF !( <SRC.ISALIGNMENT_chaos> )
+        SAY We only serve members of Chaos here! Begone!
+        return 1
+     endif
+     SAY Hail my <SRC.SEX Lord/Lady>. Let Chaos rule the lands!
+  elseif ( <region_order> )
+     IF !( <SRC.ISALIGNMENT_order> )
+        SAY We only serve members of Order here! Begone!
+        return 1
+     endif
+     SAY Hail my <SRC.SEX Lord/Lady>. Let Order rule the lands!
+  elseif strmatch("<GET_REGION_AFFILIATION>","ALIGNMENT_NONE")
+  elseif strmatch("<GET_REGION_AFFILIATION>","<SRC.ALIGNMENT>")
+     ALIGNMENT_NAME <GET_REGION_AFFILIATION>
+     SAY Welcome my <SRC.SEX Lord/Lady>. Let <VAR.ALIGNMENT_NAME> rule the lands!
+  elseif strmatch( "<SRC.ALIGNMENT>", "ALIGNMENT_NONE")
+     ALIGNMENT_NAME <GET_REGION_AFFILIATION>
+     SAY Welcome my <SRC.SEX Lord/Lady>. <VAR.ALIGNMENT_NAME> rules this town!
+  else
+ 
+  endif
+
+ON=Bye
+ON=Goodbye
+ON=Farewell
+    if ( <region_order> )
+       IF !( <SRC.ISALIGNMENT_order> )
+          SAY We only serve members of Order here! Begone!
+          return 1
+       endif
+     SAY Hail my <SRC.SEX Lord/Lady>. Let Order rule the lands!
+      elseif ( <region_chaos> )
+         IF !( <SRC.ISALIGNMENT_chaos> )
+            SAY We only serve members of Chaos here! Begone!
+            return 1
+         endif
+     SAY Hail my <SRC.SEX Lord/Lady>. Let Chaos rule the lands!
+  elseif strmatch("<GET_REGION_AFFILIATION>","ALIGNMENT_NONE")
+  elseif strmatch("<GET_REGION_AFFILIATION>","<SRC.ALIGNMENT>")
+     ALIGNMENT_NAME <GET_REGION_AFFILIATION>
+     SAY Welcome my <SRC.SEX Lord/Lady>. Let <VAR.ALIGNMENT_NAME> rule the lands!
+  elseif strmatch( "<SRC.ALIGNMENT>", "ALIGNMENT_NONE")
+     ALIGNMENT_NAME <GET_REGION_AFFILIATION>
+     SAY Welcome my <SRC.SEX Lord/Lady>. <VAR.ALIGNMENT_NAME> rules this town!
+  else
+  
+  endif
+  BYE
+  return 1
+
+
+
+ON=What do you do
+ON=Job 
+
+     SAY I sell useful supplies.
+ 
+  BYE
+
+
+//*********************
+//*                   *
+//*     Architect     *
+//*                   *
+//*********************
+
+
+
+[SPEECH spk_shopkeepArchitect]
+ON = restock
+   if !( <SRC.ISGM> )
+      SAY There is nothing wrong with my stock!
+      return 1
+   endif
+   TAG.VEND_RESTOCK	= 0
+   SRC.SYSMESSAGE Vendor will restock next time someone tries to buy or sell something.
+ON=*what*thou*sell*
+ON=*what*thou*sale*
+ON=*what*you*sell*
+ON=*what*you*sale*
+ON=*can*you*sell*
+ON=*can*you*sale*
+  if ( <region_order> )
+       IF !( <SRC.ISALIGNMENT_order> )
+          SAY We only serve members of Order here! Begone!
+          return 1
+       endif
+     SAY Hail my <SRC.SEX Lord/Lady>. Let Order rule the lands!
+      elseif ( <region_chaos> )
+         IF !( <SRC.ISALIGNMENT_chaos> )
+            SAY We only serve members of Chaos here! Begone!
+            return 1
+         endif
+     SAY Hail my <SRC.SEX Lord/Lady>. Let Chaos rule the lands!
+  elseif strmatch("<GET_REGION_AFFILIATION>","ALIGNMENT_NONE")
+  elseif strmatch("<GET_REGION_AFFILIATION>","<SRC.ALIGNMENT>")
+     ALIGNMENT_NAME <GET_REGION_AFFILIATION>
+     SAY Welcome my <SRC.SEX Lord/Lady>. Let <VAR.ALIGNMENT_NAME> rule the lands!
+  elseif strmatch( "<SRC.ALIGNMENT>", "ALIGNMENT_NONE")
+     ALIGNMENT_NAME <GET_REGION_AFFILIATION>
+     SAY Welcome my <SRC.SEX Lord/Lady>. <VAR.ALIGNMENT_NAME> rules this town!
+  else
+  
+  endif
+
+  DORAND 4
+    SAY Why, I sell the same things that any other <JOB> would sell.
+    SAY If thou dost look around my shop, I'm sure it will become obvious to thee.
+    SAY I am a <JOB>.  What wouldst thou expect me to sell?
+    SAY I sell fairy dust.  What dost thou think a <JOB> would sell?
+  ENDDO
+
+ON=*sell*
+ON=*thou*purchase*
+ON=*you*purchase*
+ON=*you*buy*
+ON=*I*sale*
+   IF (<SRC.FLAGS> & statf_dead)
+      SRC.SYSMESSAGE @025 The dead cannot make transactions, friend...
+      RETURN 1
+   ENDIF
+	if ( <region_order> )
+		IF !( <SRC.ISALIGNMENT_order> )
+			SAY We only serve members of Order here! Begone!
+			return 1
+		endif
+		SAY Hail my <SRC.SEX Lord/Lady>. Let Order rule the lands!
+   elseif ( <region_chaos> )
+        IF !( <SRC.ISALIGNMENT_chaos> )
+            SAY We only serve members of Chaos here! Begone!
+            return 1
+		endif
+    SAY Hail my <SRC.SEX Lord/Lady>. Let Chaos rule the lands!
+	elseif strmatch("<GET_REGION_AFFILIATION>","ALIGNMENT_NONE")
+	elseif strmatch("<GET_REGION_AFFILIATION>","<SRC.ALIGNMENT>")
+		ALIGNMENT_NAME <GET_REGION_AFFILIATION>
+		SAY Welcome my <SRC.SEX Lord/Lady>. Let <VAR.ALIGNMENT_NAME> rule the lands!
+	elseif strmatch( "<SRC.ALIGNMENT>", "ALIGNMENT_NONE")
+		ALIGNMENT_NAME <GET_REGION_AFFILIATION>
+		SAY Welcome my <SRC.SEX Lord/Lady>. <VAR.ALIGNMENT_NAME> rules this town!
+	else
+	
+	endif
+  
+  if ( <vendor_restock> )
+     return 1
+  endif
+  vendor_reprice
+  SELL
+
+ON=*buy*
+ON=*supplies*
+ON=*wares*
+   IF (<SRC.FLAGS> & statf_dead)
+      SRC.SYSMESSAGE @025 The dead cannot buy, friend...
+      RETURN 1
+   ELSEIF (0<VAR.VENDOR_ESTOP>=1)
+     IF (<SRC.ACCOUNT.PLEVEL> <= 1)
+        SAY Temporarily Closed due to command of Lord British.
+        RETURN 1
+     ENDIF
+   ENDIF
+
+   if ( <region_order> )
+       IF !( <SRC.ISALIGNMENT_order> )
+          SAY We only serve members of Order here! Begone!
+          return 1
+       endif
+     SAY Hail my <SRC.SEX Lord/Lady>. Let Order rule the lands!
+      elseif ( <region_chaos> )
+         IF !( <SRC.ISALIGNMENT_chaos> )
+            SAY We only serve members of Chaos here! Begone!
+            return 1
+         endif
+     SAY Hail my <SRC.SEX Lord/Lady>. Let Chaos rule the lands!
+  elseif strmatch("<GET_REGION_AFFILIATION>","ALIGNMENT_NONE")
+  elseif strmatch("<GET_REGION_AFFILIATION>","<SRC.ALIGNMENT>")
+     ALIGNMENT_NAME <GET_REGION_AFFILIATION>
+     SAY Welcome my <SRC.SEX Lord/Lady>. Let <VAR.ALIGNMENT_NAME> rule the lands!
+  elseif strmatch( "<SRC.ALIGNMENT>", "ALIGNMENT_NONE")
+     ALIGNMENT_NAME <GET_REGION_AFFILIATION>
+     SAY Welcome my <SRC.SEX Lord/Lady>. <VAR.ALIGNMENT_NAME> rules this town!
+  else
+  
+  endif
+ 
+  if ( <vendor_restock> )
+     return 1
+  endif
+  vendor_reprice
+
+  ACT = <FINDLAYER.layer_vendor_stock.findtype(t_container).uid> 
+  REMOVE_COINS
+  SERV.LOG <SRC.ACCOUNT>-<SRC.NAME>[<SRC.UID>] Commands buy on <UID>.
+
+  //f_call_vendor 0
+  BUY
+  
+ON=Hi
+ON=Hello
+ON=Hail
+ON=Greet
+   if ( <region_order> )
+       IF !( <SRC.ISALIGNMENT_order> )
+          SAY We only serve members of Order here! Begone!
+          return 1
+       endif
+     SAY Hail my <SRC.SEX Lord/Lady>. Let Order rule the lands!
+      elseif ( <region_chaos> )
+         IF !( <SRC.ISALIGNMENT_chaos> )
+            SAY We only serve members of Chaos here! Begone!
+            return 1
+         endif
+     SAY Hail my <SRC.SEX Lord/Lady>. Let Chaos rule the lands!
+  elseif strmatch("<GET_REGION_AFFILIATION>","ALIGNMENT_NONE")
+  elseif strmatch("<GET_REGION_AFFILIATION>","<SRC.ALIGNMENT>")
+     ALIGNMENT_NAME <GET_REGION_AFFILIATION>
+     SAY Welcome my <SRC.SEX Lord/Lady>. Let <VAR.ALIGNMENT_NAME> rule the lands!
+  elseif strmatch( "<SRC.ALIGNMENT>", "ALIGNMENT_NONE")
+     ALIGNMENT_NAME <GET_REGION_AFFILIATION>
+     SAY Welcome my <SRC.SEX Lord/Lady>. <VAR.ALIGNMENT_NAME> rules this town!
+  else
+  
+  endif
+
+ON=Bye
+ON=Goodbye
+ON=Farewell
+  if ( <region_order> )
+       IF !( <SRC.ISALIGNMENT_order> )
+          SAY We only serve members of Order here! Begone!
+          return 1
+       endif
+     SAY Hail my <SRC.SEX Lord/Lady>. Let Order rule the lands!
+      elseif ( <region_chaos> )
+         IF !( <SRC.ISALIGNMENT_chaos> )
+            SAY We only serve members of Chaos here! Begone!
+            return 1
+         endif
+     SAY Hail my <SRC.SEX Lord/Lady>. Let Chaos rule the lands!
+  elseif strmatch("<GET_REGION_AFFILIATION>","ALIGNMENT_NONE")
+  elseif strmatch("<GET_REGION_AFFILIATION>","<SRC.ALIGNMENT>")
+     ALIGNMENT_NAME <GET_REGION_AFFILIATION>
+     SAY Welcome my <SRC.SEX Lord/Lady>. Let <VAR.ALIGNMENT_NAME> rule the lands!
+  elseif strmatch( "<SRC.ALIGNMENT>", "ALIGNMENT_NONE")
+     ALIGNMENT_NAME <GET_REGION_AFFILIATION>
+     SAY Welcome my <SRC.SEX Lord/Lady>. <VAR.ALIGNMENT_NAME> rules this town!
+  else
+   
+  endif
+  BYE
+  return 1
+
+
+
+ON=What do you do
+ON=Job
+ 
+  BYE
+
+
+
+
+[EOF]
+

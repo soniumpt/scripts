@@ -1,0 +1,1335 @@
+// Changelog
+// =========
+// 07-05-03 - Wigifer - Stronghold made wearable - Tested
+// 25/11/2019 - Wigifer - Updated all remaining <TIME> to <SERV.TIME> (56d update issue)
+
+[DEFNAME def_factions]
+faction_none		0
+faction_dk		1	// dark knights
+faction_hk		2	// holy knights
+
+[FUNCTION HKSAY]
+   MESSAGE @90 <args>
+
+[FUNCTION FACTION]
+   if ( strcmp( "<args>", "" ) )
+      TAG.FACTION	= <args>
+      return 0
+   endif
+
+   if ( <NPC> )
+      if ( 0<TAG.DK.RANK> )
+         return faction_dk
+      elseif ( 0<TAG.HK.RANK> )
+          return faction_hk
+      elseif ( strcmp( "<TAG.FACTION>", "" ) )
+          return <TAG.FACTION>
+      endif
+      return faction_none
+   endif
+
+   if ( !strcmp( "<TAG.FACTION>", "" ) )
+      return faction_none
+   endif
+   if ( !strcmp( "<TAG.FACTION>", "Chaos" ) )
+      return faction_none
+   endif   
+   return <TAG.FACTION>
+
+
+
+[FUNCTION HK_REGION]
+   if ( 0 )
+   elseif ( !strcmpi( "<REGION.NAME>", "Nujel'm" ) )
+      return 1
+   else
+      return 0
+   endif
+   return 0
+
+
+[FUNCTION hk_periodic]
+  if ( 0<TAG.HK.SUMMON> == 0 )
+     TAG.HK.SUMMON	= <SERV.TIME>
+  endif
+
+  if ( <REGION.GUARDED> || <HK_REGION> )
+     TAG.HK.SUMMON	= <eval (<TAG.HK.SUMMON> + timer_k_periodic)>
+     return 0
+  endif
+
+  VAR.MINS	= 90
+  if ( <P.X> > 4096 )
+     VAR.MINS	= 40
+  endif
+
+  if ( 0<TAG.HK.RANK> > 5 )
+     VAR.MINS	= <eval (<VAR.MINS> / 2)>
+  endif
+
+  if ( (<SERV.TIME> - <TAG.HK.SUMMON>) < (<VAR.MINS> * 60 * 10) )
+     return 0
+  endif
+
+  if ( <ISDEAD> )
+     TAG.HK.SUMMON	= <eval (<TAG.HK.SUMMON> + 600)>
+     return 0
+  endif
+
+  TAG.HK.SUMMON	= <SERV.TIME>
+
+
+
+
+[NAMES NAMES_HOLYKNIGHT]
+20
+Andreas
+Barsanuphius
+Basil
+Elijah
+Gregory
+John
+Lazarus
+Leonardo
+Mark
+Matheus
+Michael
+Patrick
+Paul
+Peter
+Photini
+Photios
+Rapheal
+Seraphim
+Steven
+Symeon
+
+
+
+
+
+[ITEMDEF i_hk_mark]
+ID	= i_rune_marker
+NAME	= daemonic mark
+TYPE	= t_normal
+ON=@Create
+   COLOR	= 023
+
+
+[TEMPLATE tp_full_plate_stronghold]
+CONTAINER	=	i_bag
+COLOR	=	color_o_stronghold
+ITEM	=	i_platemail_helm_stronghold
+QUALITY	=	150
+ITEM	=	i_platemail_gloves_stronghold
+QUALITY	=	150
+ITEM	=	i_platemail_arms_stronghold
+QUALITY	=	150
+ITEM	=	i_platemail_gorget_stronghold
+QUALITY	=	150
+ITEM	=	i_platemail_leggings_stronghold
+QUALITY	=	150
+ITEM	=	i_platemail_chest_stronghold
+QUALITY	=	150
+
+
+
+[TEMPLATE tp_full_chain_stronghold]
+CONTAINER=	i_bag
+COLOR	=	color_o_stronghold
+ITEM	=	i_chainmail_coif_stronghold
+QUALITY	=	150
+ITEM	=	i_ringmail_gloves_stronghold
+QUALITY	=	150
+ITEM	=	i_ringmail_sleeves_stronghold
+QUALITY	=	150
+ITEM	=	i_ringmail_leggings_stronghold
+QUALITY	=	150
+ITEM	=	i_ringmail_tunic_stronghold
+QUALITY	=	150
+
+
+[DIALOG d_hk_recruiter]
+100, 100
+
+PAGE 0
+  resizepghold
+QUALITY	=	150
+ITEM	=	i_ringmail_tunic_stronghold
+QUALITY	=	150
+
+
+[DIALOG d_hk_recruiter]
+100, 100
+
+PAGE 0
+  resizepic  0 0 5120 400 420
+  text 20 20 50 0
+  text 20 340 50 1
+
+  button 140 375 <eval bt_cancel_up> <eval bt_cancel_dn> 1 0 0
+  button 220 375 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+  htmlgump 20 60 360 260 2 1 1
+
+
+[DIALOG d_hk_recruiter TEXT]
+Joining the Holy Knights
+Are you sure you want to join the Holy Knights?
+To learn more about the <VAR.lt>B<var.gt>Holy Knights<var.lt>/B<var.gt>, visit their section in the <var.lt>A href="www.Imperialuo.com"<var.gt>main website<var.lt>/A<var.gt>. <VAR.BREAK>You should know that this is a choice for life - once you commit to the Holy Knights you won't be able to join any other faction in the game (with this character).
+
+[DIALOG d_hk_recruiter BUTTON]
+ON = 0
+ON = 1
+   SRC.ACT = <SRC.TAG.RECRUITER>
+   if ( <SRC.ACT.FACTION_CAN_ACCEPT> )
+      SRC.ACT.HKSAY <FACTION_ACCEPT>
+      return 1
+   endif
+
+   SRC.ACT.HKSAY So be it! Your name will be placed for voting. Return within two days and I shall let you know the results.
+   SRC.ACT.FACTION_VOTE_START	i_hk_accept
+   return 1
+
+
+[DIALOG d_hk_recruiter BUTTON]
+ON = 0
+ON = 1
+   SRC.ACT = <SRC.TAG.RECRUITER>
+   if ( <SRC.ACT.FACTION_CAN_ACCEPT> )
+      SRC.ACT.HKSAY <FACTION_ACCEPT>
+      return 1
+   endif
+
+   SRC.ACT.HKSAY So be it! Your name will be placed for voting. Return within two days and I shall let you know the results.
+   SRC.ACT.FACTION_VOTE_START	i_hk_accept
+   return 1
+
+
+[SPEECH spk_hk_recruiter]
+ON=hi
+ON=hello
+ON=hail
+ON=greeting
+ON=greetings
+   if ( <SRC.FACTION> == <TAG.FACTION> )
+      dorand 2
+         DKSAY Greetings.
+         DKSAY Hail.
+      enddo
+   else
+      dorand 2
+         DKSAY Greetings. I take care of those who wish to JOIN our cause. I also attend for those who have gained a RANK.
+         DKSAY Hail. I take care of those who wish to JOIN our cause. I also attend for those who have gained a RANK.
+      enddo
+   endif
+   return 1
+
+ON=council
+ON-counsil
+   DKSAY The council is currently Pete and Luthar.
+
+ON=join
+   if ( <FACTION_CAN_ACCEPT> )
+      HKSAY <VAR.FACTION_ACCEPT>
+      return 1
+   endif
+   if ( <SRC.TACTICS> < 90.0 )
+      DKSAY You do not have enough knowledge of Tactics to be of any use.
+      return 1
+   endif
+   if ( <SRC.FENCING> > <SRC.SWORDSMANSHIP> && (<SRC.FENCING> > <SRC.MACEFIGHTING>))
+         if ( <SRC.FENCING> < 90.0 )
+         DKSAY You do not have enough knowledge of Piercing Weapons to be of any use.
+      return 1
+      elseif ( <SRC.SWORDSMANSHIP> > <SRC.FENCING> && (<SRC.SWORDSMANSHIP> > <SRC.MACEFIGHTING>))
+         if ( <SRC.SWORDSMANSHIP> < 90.0 )
+         DKSAY You do not have enough knowledge of Blade Weapons to be of any use.
+      return 1
+      else
+         if ( <SRC.MACEFIGHTING> < 90.0 )
+         DKSAY You do not have enough knowledge of Blunt Weapons to be of any use.
+      return 1
+   if ( <SRC.MAGERY> < 30.0 )
+      DKSAY You do not have enough knowledge of Magery to be of any use.
+      return 1
+   endif
+   SRC.TAG.RECRUITER = <UID>
+   SRC.HTMLDIALOG d_hk_recruiter
+   return 1
+
+ON=vote
+   if ( !strcmpi( "<SRC.ACCOUNT>", "Vidar" ) )
+   elseif ( 0<SRC.TAG.HK.RANK> < 2 )
+       HKSAY Your opinion is of no importance.
+       return 1
+   endif
+   if ( !<FACTION_VOTE> )
+      HKSAY There is noone to vote.
+      return 1
+   endif
+   return 1
+
+ON=rank
+   if ( <SRC.ISDEAD> )
+      EMOTE I can help only the living.
+      return 1
+   endif
+
+   if !( <SRC.ISFACTION_HK> )
+      HKSAY Stop wasting my time.
+      return 1
+   endif
+
+   if ( 0<SRC.TAG.HK.GOT> == 0 )
+      SRC.TAG.HK.GOT	= 0
+   endif
+
+   if ( <SRC.TAG.HK.GOT> >= 0<SRC.TAG.HK.RANK> )
+      HKSAY You already received equipment for this rank.
+      return 1
+   endif
+
+   if ( 0<SRC.TAG.HK.RANK> > 10 )
+      HKSAY There isn't any equipment appointed for this rank.
+      return 1
+   endif
+   
+   HKSAY There you go...
+
+   if ( !(0<SRC.TAG.HK.RANK> < 2)  && (<SRC.TAG.HK.GOT> < 2) )
+      SRC.NEWITEM i_robe
+      src.act.COLOR = 07a1
+      SRC.ACT.BOUNCE
+   ENDIF
+   if ( !(0<SRC.TAG.HK.RANK> < 3)  && (<SRC.TAG.HK.GOT> < 3) )
+      if ( <SRC.FENCING> > <SRC.SWORDSMANSHIP> && (<SRC.FENCING> > <SRC.MACEFIGHTING>))
+         SRC.NEWITEM i_spear_stronghold
+      elseif ( <SRC.SWORDSMANSHIP> > <SRC.FENCING> && (<SRC.SWORDSMANSHIP> > <SRC.MACEFIGHTING>))
+         SRC.NEWITEM i_sword_katana_stronghold
+      else
+         SRC.NEWITEM i_hammer_war_stronghold
+      endif
+      SRC.ACT.QUALITY 150
+      SRC.ACT.BOUNCE
+   endif
+   if ( !(0<SRC.TAG.HK.RANK> < 4)  && (<SRC.TAG.HK.GOT> < 4) )
+      SRC.NEWITEM tp_full_chain_stronghold
+      SRC.ACT.BOUNCE
+   endif
+   if ( !(0<SRC.TAG.HK.RANK> < 5)  && (<SRC.TAG.HK.GOT> < 5) )
+      SRC.NEWITEM i_shield_kite_stronghold
+      SRC.ACT.QUALITY 150
+      SRC.ACT.BOUNCE
+   endif
+   if ( !(0<SRC.TAG.HK.RANK> < 6)  && (<SRC.TAG.HK.GOT> < 6) )
+      if ( <SRC.FENCING> > <SRC.SWORDSMANSHIP> && (<SRC.FENCING> > <SRC.MACEFIGHTING>))
+         SRC.NEWITEM i_war_fork_stronghold
+      elseif ( <SRC.SWORDSMANSHIP> > <SRC.FENCING> && (<SRC.SWORDSMANSHIP> > <SRC.MACEFIGHTING>))
+         SRC.NEWITEM i_sword_long_stronghold
+      else
+         SRC.NEWITEM i_axe_war_stronghold
+      endif
+      SRC.ACT.QUALITY 150
+      SRC.ACT.BOUNCE
+   endif
+   if ( !(0<SRC.TAG.HK.RANK> < 7)  && (<SRC.TAG.HK.GOT> < 7) )
+      SRC.NEWITEM tp_full_plate_stronghold
+      SRC.ACT.BOUNCE
+   endif
+   if ( !(0<SRC.TAG.HK.RANK> < 9)  && (<SRC.TAG.HK.GOT> < 9) )
+      SRC.SUMMONHERE c_horse_hk
+   endif
+   SRC.TAG.HK.GOT	= 0<SRC.TAG.HK.RANK>
+   return 1
+
+
+[FUNCTION ISFACTION_HK]
+   if ( <FACTION> == faction_hk )
+      return 1
+   endif
+   return 0
+
+
+[SPEECH spk_hk_angel]
+ON=hi
+ON=hello
+ON=hail
+ON=greeting
+ON=greetings
+   DORAND 2
+      HKSAY May Light shine upon you.
+      HKSAY Greetings.
+   ENDDO
+
+ON=*reward*
+ON=*gift*
+   HKSAY Hand me proof that thou hast slain evil, and I shall reward you.
+
+
+
+[EVENTS e_hk_recruiter]
+ON=@GetHit
+   return 1
+ON=@SpellEffect
+   return 1
+
+ON=@ReceiveItem
+   if !( 0<SRC.TAG.HK.RANK> )
+      HKSAY I can't accept that from you.
+      SRC.ACT.BOUNCE
+      return 1
+   endif
+
+   SRC.ACT	= <SRC.findlayer(layer_dragging).uid>
+
+   if ( <SRC.ACT.BASEID> == i_hk_mark )
+      LOCAL.AMOUNTDUST = <SRC.ACT.AMOUNT>
+      src.act.remove
+      HKSAY Here is a token of my appreciation.
+      SRC.NEWITEM i_angel_dust
+      src.act.amount = <LOCAL.amountdust>
+      SRC.SYSMESSAGE The <NAME> hands you <LOCAL.amountdust> <SRC.ACT.NAME>.
+      SRC.ACT.BOUNCE
+      return 1
+   endif
+
+   if ( <SRC.ACT.BASEID> == i_angel_dust )
+      if ( <SRC.ACT.AMOUNT> < 20 )
+         HKSAY You should get me some more of that...
+         SRC.ACT.BOUNCE
+         return 1
+      endif
+      LOCAL.AMOUNT	= <eval (<SRC.ACT.AMOUNT>/20)>
+      if ( (<LOCAL.AMOUNT> * 20) == <SRC.ACT.AMOUNT> )
+         SRC.ACT.REMOVE
+      else
+         SRC.ACT.AMOUNT	= (<SRC.ACT.AMOUNT> - (<LOCAL.AMOUNT> * 20))
+         SRC.ACT.BOUNCE
+      endif
+
+      HKSAY Here is a token of my appreciation.
+      SRC.NEWITEM i_gem_holy
+      SRC.SYSMESSAGE The <NAME> hands you a <SRC.ACT.NAME>.
+      SRC.ACT.BOUNCE
+      return 1
+   endif
+
+   HKSAY Thank you, but I have no use for that.
+   SRC.ACT.BOUNCE
+   return 1
+
+
+
+[CHARDEF c_hk_angel]
+ID=C_harpy
+NAME=Angel
+SOUND=snd_HUMAN_M_DIE_01
+DAM=20,40
+ARMOR=60
+AVERSIONS=t_TRAP,t_eerie_stuff
+TEVENTS=e_hk_recruiter
+
+TSPEECH=spk_hk_angel
+
+ON=@Create
+  TAG.FACTION	= faction_hk
+  TAG.FACTION.RANK	= 7
+  COLOR		= colors_skin
+  STR		= {250 300}
+  DEX		= {90 105}
+  INT		= {71 85}
+  NPC		= brain_human
+  PARRYING	= {75.0 80.0}
+  SWORDSMANSHIP	= {60.0 70.0}
+  MACEFIGHTING	= {60.0 70.0}
+  WRESTLING	= {67.0 90.0}
+  MAGICRESISTANCE={65.0 88.0}
+  TACTICS	= {60.0 80.0}
+  POISONING	= {90.0 100.0}
+  ANATOMY       = {40.0 50.0}
+  FAME		= 3000
+  KARMA		= 9000
+
+  COLOR		= color_o_stronghold
+
+
+CATEGORY=Imperial uo
+SUBSECTION=Holy Knights Npc's
+DESCRIPTION=Angel
+
+
+
+
+[CHARDEF c_hk_recruiter]
+ID=C_WOMAN
+NAME=Llarana
+SOUND=snd_HUMAN_M_DIE_01
+DAM=50,70
+ARMOR=90
+AVERSIONS=t_TRAP,t_eerie_stuff
+TSPEECH = spk_hk_recruiter
+TEVENTS	= e_hk_recruiter
+
+
+ON=@Create
+  TAG.NAME.SUFFIX	= ", the Recruitment Officer"
+  TAG.FACTION	= faction_hk
+  TAG.FACTION.RANK	= 6
+  COLOR		= colors_skin
+  STR		= {100 150}
+  DEX		= {80 95}
+  INT		= {71 85}
+  NPC		= brain_human
+  SWORDSMANSHIP	= {60.0 70.0}
+  WRESTLING	= {67.0 90.0}
+  MAGICRESISTANCE={65.0 88.0}
+  TACTICS	= {60.0 80.0}
+  POISONING	= {90.0 100.0}
+  DETECTION={40.0 50.0}
+  ANATOMY       = {40.0 50.0}
+  FAME		= 3000
+  KARMA		= 3000
+
+  ITEMNEWBIE=random_female_hair
+  COLOR=colors_hair
+
+  ITEMNEWBIE=i_platemail_gloves_stronghold
+  ITEMNEWBIE=i_platemail_arms_stronghold
+  ITEMNEWBIE=i_platemail_gorget_stronghold
+  ITEMNEWBIE=i_platemail_chest_stronghold
+  ITEMNEWBIE=i_platemail_leggings_stronghold
+  ITEMNEWBIE=i_halberd_stronghold
+  ITEMNEWBIE=i_CAPE
+  COLOR=color_o_stronghold
+  ITEMNEWBIE=i_SASH
+  COLOR=color_o_stronghold
+
+
+
+[ITEMDEF i_robe_faction_hk]
+NAME	= Holy Knight Elite robe
+ID	= i_deathshroud
+TYPE	= T_CLOTHING
+ARMOR	= 5
+DYE	= 0
+
+ON = @Create
+  HITPOINTS	= 150
+  COLOR		= color_o_stronghold
+
+[EVENTS e_holyknight]
+ON = @Click
+   KARMA	= 2000
+
+ON = @NPCSeeNewPlayer
+   if ( <SRC.ISFACTION_DK> == 1 )
+      SAY In the name of the gods I shall smite thee!
+      ATTACK
+      return 1
+   endif
+   
+   if ( (<SRC.KARMA> <= -1000) || (<SRC.KILLS> >= 4) )
+      SAY In the name of the gods I shall smite thee!
+      ATTACK
+      return 1
+   endif
+
+   if ( rand(100) > 20 )
+      return 0
+   endif
+
+   doswitch <EVAL (0<src.TAG.HK.RANK>)>
+      SAY_NOTHING
+      SAY_NOTHING
+      SAY_NOTHING
+      SAY_NOTHING
+      SAY_NOTHING
+      SAY_NOTHING 
+      SAY Paladin...
+      SAY Hail in the name of the gods...
+      SAY For the gods, honorable paladin!
+      SAY I bow to thee <SRC.NAME>
+      SAY We serve you in the name of the gods <SRC.NAME>
+      SAY My liege, what is your bidding?
+   enddo
+   return 0
+
+// Added by Wigifer for war purposes...
+
+ON=@NPCLOOKATCHAR
+   EVENTS +e_holyknight
+
+   if (<SRC.KARMA> <= -500)
+      SAY In the name of the gods I shall smite thee evildoer!
+      ATTACK
+      return 1
+   endif
+
+  ////////
+ //NPCs//
+////////
+
+[CHARDEF c_h_holywarrior]
+ID=C_MAN
+NAME=#NAMES_HOLYKNIGHT the Holy Warrior
+SOUND=snd_HUMAN_M_DIE_01
+DAM=10,20
+ARMOR=30
+AVERSIONS=t_TRAP,t_eerie_stuff
+TEVENTS	= e_holyknight
+
+
+ON=@Create
+  TAG.HK.RANK	= 1
+  COLOR		= colors_skin
+  STR		= {100 150}
+  DEX		= {80 95}
+  INT		= {71 85}
+  NPC		= brain_monster
+  PARRYING	= {75.0 80.0}
+  SWORDSMANSHIP	= {60.0 70.0}
+  WRESTLING	= {67.0 90.0}
+  MAGICRESISTANCE={65.0 88.0}
+  TACTICS	= {60.0 80.0}
+  POISONING	= {90.0 100.0}
+  DETECTION	={40.0 50.0}
+  ANATOMY       = {40.0 50.0}
+  FAME		= 3000
+     KARMA	= 2000
+
+  ITEMNEWBIE=random_male_hair
+  COLOR=colors_hair
+  ITEMNEWBIE=random_facial_hair
+  COLOR=match_hair
+
+  ITEM=m_posdef_army
+
+  ITEMNEWBIE=i_platemail_gloves_stronghold
+  ITEMNEWBIE=i_platemail_helm_stronghold
+  ITEMNEWBIE=i_platemail_arms_stronghold
+  ITEMNEWBIE=i_platemail_gorget_stronghold
+  ITEMNEWBIE=i_platemail_chest_stronghold
+  ITEMNEWBIE=i_platemail_leggings_stronghold
+  ITEMNEWBIE=i_sword_long_b_stronghold
+  ITEMNEWBIE=i_shield_heater_stronghold
+  ITEMNEWBIE=i_CAPE
+  COLOR=07a1
+  ITEMNEWBIE=i_SASH
+  COLOR=07a1
+  ITEM=i_gold,{300 400}
+
+
+CATEGORY=Imperial uo
+SUBSECTION=Holy Knights Npc's
+DESCRIPTION=Holy Warrior(Sword)
+
+
+[CHARDEF c_h_holywarriorm]
+ID=C_MAN
+NAME=#NAMES_HOLYKNIGHT the Holy Warrior
+SOUND=snd_HUMAN_M_DIE_01
+DAM=10,20
+ARMOR=30
+AVERSIONS=t_TRAP,t_eerie_stuff
+TEVENTS	= e_holyknight
+
+
+CATEGORY=Imperial uo
+SUBSECTION=Holy Knights Npc's
+DESCRIPTION=Holy Warrior(Mace)
+
+ON=@Create
+  TAG.HK.RANK	= 1
+  COLOR	= colors_skin
+  STR	= {100 150}
+  DEX	= {80 95}
+  INT	= {71 85}
+  NPC	= brain_monster
+  PARRYING	= {75.0 80.0}
+  SWORDSMANSHIP	= {60.0 70.0}
+  WRESTLING	= {67.0 90.0}
+  MAGICRESISTANCE={65.0 88.0}
+  TACTICS	= {60.0 80.0}
+  POISONING	= {90.0 100.0}
+  DETECTION	={40.0 50.0}
+  ANATOMY       = {40.0 50.0}
+  FAME=3000
+     KARMA	= 2000
+
+  ITEMNEWBIE=random_male_hair
+  COLOR=colors_hair
+  ITEMNEWBIE=random_facial_hair
+  COLOR=match_hair
+
+  ITEM=m_posdef_army
+
+  ITEMNEWBIE=i_platemail_gloves_stronghold
+  ITEMNEWBIE=i_platemail_helm_stronghold
+  ITEMNEWBIE=i_platemail_arms_stronghold
+  ITEMNEWBIE=i_platemail_gorget_stronghold
+  ITEMNEWBIE=i_platemail_chest_stronghold
+  ITEMNEWBIE=i_platemail_leggings_stronghold
+  ITEMNEWBIE=i_mace_stronghold
+  ITEMNEWBIE=i_shield_heater_stronghold
+  ITEMNEWBIE=i_CAPE
+  COLOR=07a1
+  ITEMNEWBIE=i_SASH
+  COLOR=07a1
+
+
+  ITEM= i_gold,{300 400}
+
+[CHARDEF c_h_holywarriorh]
+ID=C_MAN
+NAME=#NAMES_HOLYKNIGHT the Holy Warrior
+SOUND=snd_HUMAN_M_DIE_01
+DAM=10,20
+ARMOR=30
+AVERSIONS=t_TRAP,t_eerie_stuff
+TEVENTS	= e_holyknight
+
+
+CATEGORY=Imperial uo
+SUBSECTION=Holy Knights Npc's
+DESCRIPTION=Holy Warrior(Halberd)
+
+ON=@Create
+  TAG.HK.RANK	= 1
+  COLOR		= colors_skin
+  STR		= {100 150}
+  DEX		= {80 95}
+  INT		= {71 85}
+  NPC		= brain_monster
+  SWORDSMANSHIP	= {60.0 70.0}
+  WRESTLING	= {67.0 90.0}
+  MAGICRESISTANCE={65.0 88.0}
+  TACTICS	= {60.0 80.0}
+  POISONING	= {90.0 100.0}
+  DETECTION	={40.0 50.0}
+  ANATOMY       = {40.0 50.0}
+  FAME		= 3000
+     KARMA	= 2000
+
+  ITEMNEWBIE=random_male_hair
+  COLOR=colors_hair
+  ITEMNEWBIE=random_facial_hair
+  COLOR=match_hair
+
+  ITEM=m_posdef_army
+
+  ITEMNEWBIE=i_platemail_gloves_stronghold
+  ITEMNEWBIE=i_platemail_helm_stronghold
+  ITEMNEWBIE=i_platemail_arms_stronghold
+  ITEMNEWBIE=i_platemail_gorget_stronghold
+  ITEMNEWBIE=i_platemail_chest_stronghold
+  ITEMNEWBIE=i_platemail_leggings_stronghold
+  ITEMNEWBIE=i_halberd_stronghold
+  ITEMNEWBIE=i_CAPE
+  COLOR=07a1
+  ITEMNEWBIE=i_SASH
+  COLOR=07a1
+
+  ITEM= i_gold,{300 400}
+
+
+[CHARDEF c_h_holyknight]
+ID=C_MAN
+NAME=#NAMES_HOLYKNIGHT the Holy Knight
+SOUND=snd_HUMAN_M_DIE_01
+DAM=10,25
+ARMOR=35
+AVERSIONS=t_TRAP,t_eerie_stuff
+TEVENTS	= e_holyknight
+
+
+CATEGORY=Imperial uo
+SUBSECTION=Holy Knights Npc's
+DESCRIPTION=Holy Knight
+
+
+ON=@Create
+  TAG.HK.RANK	= 1
+  COLOR=colors_skin
+  STR={200 275}
+  DEX={90 100}
+  INT={80 100}
+  NPC=brain_monster
+  ANATOMY={60.0 80.0}
+  PARRYING={80.0 95.0}
+  SWORDSMANSHIP={80.0 92.0}
+  WRESTLING={67.0 90.0}
+  MAGICRESISTANCE={65.0 95.0}
+  TACTICS={80.0 96.0}
+  POISONING={90.0 100.0}
+  DETECTION	={80.0 90.0}
+  FAME=9999
+     KARMA	= 2000
+
+  ITEMNEWBIE=random_male_hair
+  COLOR=colors_hair
+  ITEMNEWBIE=random_facial_hair
+  COLOR=match_hair
+
+  ITEM=m_posdef_army
+
+  ITEMNEWBIE=i_platemail_gloves_stronghold
+  ITEMNEWBIE=i_platemail_helm_stronghold
+  ITEMNEWBIE=i_platemail_arms_stronghold
+  ITEMNEWBIE=i_platemail_gorget_stronghold
+  ITEMNEWBIE=i_platemail_chest_stronghold
+  ITEMNEWBIE=i_platemail_leggings_stronghold
+  ITEMNEWBIE=i_sword_long_b_stronghold
+  ITEMNEWBIE=i_shield_order
+  ITEMNEWBIE=i_CAPE
+  COLOR=07a1
+  ITEMNEWBIE=i_SASH
+  COLOR=07a1
+
+  ITEM=i_gold,{300 600}
+
+
+[CHARDEF c_h_holymage]
+NAME=#NAMES_HOLYKNIGHT the Holy Magi
+ID=C_MAN
+DAM=40,50
+ARMOR=15,20
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_MALE
+TEVENTS	= e_holyknight
+
+
+CATEGORY=Imperial uo
+SUBSECTION=Holy Knights Npc's
+DESCRIPTION=Holy Magi
+
+ON=@Create
+  TAG.HK.RANK	= 1
+  COLOR		= colors_skin
+  STR={100 100}
+  DEX={81 95}
+  INT={300 300}
+  MAGICRESISTANCE={70.0 80.0}
+  TACTICS={70.0 90.0}
+  EVALUATINGINTEL={70.0 90.0}
+  WRESTLING=900
+  MAGERY=800
+  NPC=BRAIN_MONSTER
+
+     KARMA	= 2000
+  FAME={2500 4000}
+
+  ITEM=m_posdef_army
+
+  ITEMNEWBIE=i_hair_long
+  COLOR=07a1
+  ITEM=i_robe
+  COLOR=07a1
+  ITEM=i_hat_wizards
+  COLOR=07a1
+  ITEM=i_boots_calf
+  COLOR=07a1
+  ITEM=random_scroll
+
+  CONTAINER=i_bag
+  ITEM=i_reag_black_pearl,{ 1 15 }
+  ITEM=i_reag_blood_moss,{ 1 15 }
+  ITEM=i_reag_garlic,{ 1 15 }
+  ITEM=i_reag_ginseng,{ 1 15 }
+  ITEM=i_reag_mandrake_root,{ 1 15 }
+  ITEM=i_reag_nightshade,{ 1 15 }
+  ITEM=i_reag_sulfur_ash,{ 1 15 }
+  ITEM=i_reag_spider_silk,{ 1 15 }
+
+  ITEM=i_spellbook
+  ADDSPELL=s_paralyze
+  ADDSPELL=s_mass_dispel
+  ADDSPELL=s_flamestrike
+  ADDSPELL=s_resurrection
+
+
+[CHARDEF c_h_holymagehigh]
+NAME=#NAMES_HOLYKNIGHT the Holy High Mage
+ID=C_MAN
+DAM=20,35
+ARMOR=30,40
+//ALIGNMENT=EVIL
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_MALE
+TEVENTS	= e_holyknight
+
+
+CATEGORY=Imperial uo
+SUBSECTION=Holy Knights Npc's
+DESCRIPTION=Holy High Mage
+
+ON=@Create
+  TAG.HK.RANK	= 1
+  COLOR		= colors_skin
+  STR={150 150}
+  DEX={80 95}
+  INT={400 500}
+  MAGICRESISTANCE={99.0 99.0}
+  EVALUATINGINTEL={70.0 90.0}
+  TACTICS={70.0 90.0}
+  WRESTLING=700
+  MAGERY=1000
+  NPC=BRAIN_MONSTER
+     KARMA	= -100
+  FAME={9998 9999}
+
+  ITEM=m_posdef_army
+
+  ITEMNEWBIE=i_hair_long
+  COLOR=07a1
+  ITEM=i_robe
+  COLOR=07a1
+  ITEM=i_hat_wizards
+  COLOR=07a1
+  ITEM=i_boots_calf
+  COLOR=07a1
+  ITEM=random_upper_scroll
+  
+  CONTAINER=i_bag
+  ITEM=i_reag_black_pearl,{ 1 15 }
+  ITEM=i_reag_blood_moss,{ 1 15 }
+  ITEM=i_reag_garlic,{ 1 15 }
+  ITEM=i_reag_ginseng,{ 1 15 }
+  ITEM=i_reag_mandrake_root,{ 1 15 }
+  ITEM=i_reag_nightshade,{ 1 15 }
+  ITEM=i_reag_sulfur_ash,{ 1 15 }
+  ITEM=i_reag_spider_silk,{ 1 15 }
+
+  ITEM=i_spellbook
+  ADDSPELL=s_paralyze
+  ADDSPELL=s_mass_dispel
+  ADDSPELL=s_flamestrike
+  ADDSPELL=s_resurrection
+
+
+
+[CHARDEF c_h_holyarcher]
+ID=C_MAN
+NAME=#NAMES_HOLYKNIGHT the Holy Archer
+SOUND=snd_HUMAN_M_DIE_01
+DAM=10,20
+ARMOR=30
+AVERSIONS=t_TRAP,t_eerie_stuff
+TEVENTS	= e_holyknight
+
+
+CATEGORY=Imperial uo
+SUBSECTION=Holy Knights Npc's
+DESCRIPTION=Holy Archer
+
+ON=@Create
+  TAG.HK.RANK	= 1
+  COLOR=colors_skin
+  STR={150 200}
+  DEX={60 90}
+  INT={71 85}
+  NPC=brain_monster
+  PARRYING={75.0 80.0}
+  ARCHERY={60.0 82.0}
+  MAGICRESISTANCE={65.0 88.0}
+  TACTICS={60.0 80.0}
+  ANATOMY={60.0 80.0}
+  DETECTION	={40.0 50.0}
+  FAME=3000
+     KARMA	= 2000
+
+  ITEM=m_posdef_army
+
+  ITEMNEWBIE=random_male_hair
+  COLOR=07a1
+  ITEMNEWBIE=random_facial_hair
+  COLOR=07a1
+  ITEMNEWBIE=i_RINGMAIL_TUNIC_stronghold
+  ITEMNEWBIE=i_RINGMAIL_GLOVES_stronghold
+  ITEMNEWBIE=i_RINGMAIL_SLEEVES_stronghold
+  ITEMNEWBIE=i_RINGMAIL_leggings_stronghold
+  ITEMNEWBIE=i_boots_calf
+  ITEMNEWBIE=i_bow
+  ITEMNEWBIE=i_CAPE
+  COLOR=07a1
+  ITEMNEWBIE=i_SASH
+  COLOR=07a1
+  ITEM=i_arrow,{20 45}
+  ITEM=i_gold,{300 500}
+
+
+[CHARDEF c_h_holycavalry]
+ID=C_MAN
+NAME=#NAMES_HOLYKNIGHT the Holy Cavalier
+SOUND=snd_HUMAN_M_DIE_01
+DAM=10,25
+ARMOR=35
+AVERSIONS=t_TRAP,t_eerie_stuff
+TEVENTS	= e_holyknight
+
+TSPEECH=jobMage
+
+CATEGORY=Imperial uo
+SUBSECTION=Holy Knights Npc's
+DESCRIPTION=Holy Cavalier
+
+ON=@Create
+  TAG.HK.RANK	= 1
+  COLOR=colors_skin
+  STR={200 275}
+  DEX={90 100}
+  INT={80 100}
+  ANATOMY={60.0 80.0}
+  PARRYING={80.0 95.0}
+  SWORDSMANSHIP={80.0 92.0}
+  WRESTLING={67.0 90.0}
+  MAGICRESISTANCE={65.0 95.0}
+  TACTICS={80.0 96.0}
+  POISONING={90.0 100.0}
+  DETECTION	={80.0 90.0}
+  NPC=brain_monster
+  FAME=9999
+     KARMA	= 2000
+
+  ITEM=m_posdef_army
+
+  ITEMNEWBIE=random_male_hair
+  COLOR=07a1
+  ITEMNEWBIE=random_facial_hair
+  COLOR=07a1
+  ITEMNEWBIE=i_platemail_gloves_stronghold
+  ITEMNEWBIE=i_platemail_helm_stronghold
+  ITEMNEWBIE=i_platemail_arms_stronghold
+  ITEMNEWBIE=i_platemail_gorget_stronghold
+  ITEMNEWBIE=i_platemail_chest_stronghold
+  ITEMNEWBIE=i_platemail_leggings_stronghold
+  ITEMNEWBIE=i_sword_long_b_stronghold
+  ITEMNEWBIE=i_shield_order
+  ITEMNEWBIE=i_CAPE
+  COLOR=07a1
+  ITEMNEWBIE=i_SASH
+
+ON=@Death
+  findlayer(layer_horse).remove
+ON=@NPCRestock
+  COLOR=07a1
+  ITEM=i_mt_horse_holy
+  COLOR=07a1
+  ITEM={ random_jewel 1 0 5 }
+  ITEM=i_gold,{450 550}
+
+
+[CHARDEF c_holy_guard]
+ID=C_MAN
+NAME=#NAMES_HOLYKNIGHT the Holy Guard
+SOUND=snd_HUMAN_M_DIE_01
+DAM=10,25
+ARMOR=35
+AVERSIONS=t_TRAP,t_eerie_stuff
+TEVENTS	= e_holyknight
+
+
+CATEGORY=Imperial uo
+SUBSECTION=Holy Knights Npc's
+DESCRIPTION=Holy Guard
+
+ON=@Create
+  TAG.HK.RANK	= 1
+  COLOR=colors_skin
+  STR={150 200}
+  DEX={100 120}
+  INT={100 200}
+  NPC=brain_monster
+
+  PARRYING={99.0 100.0}
+  SWORDSMANSHIP={99.0 100.0}
+  WRESTLING={99.0 100.0}
+  MAGICRESISTANCE={99.0 100.0}
+  TACTICS={99.0 100.0}
+  POISONING={99.0 100.0}
+  DETECTION	={99.0 100.0}
+
+  FAME=9999
+     KARMA	= 2000
+
+  ITEMNEWBIE=random_male_hair
+  COLOR=07a1
+  ITEMNEWBIE=random_facial_hair
+  COLOR=07a1
+  ITEM=m_posdef_army
+  ITEMNEWBIE=i_platemail_gloves_stronghold
+  ITEMNEWBIE=i_platemail_helm_stronghold
+  ITEMNEWBIE=i_platemail_arms_stronghold
+  ITEMNEWBIE=i_platemail_chest_stronghold
+  ITEMNEWBIE=i_platemail_gorget_stronghold
+  ITEMNEWBIE=i_platemail_leggings_stronghold
+  ITEMNEWBIE=i_sword_great_stronghold
+  ITEMNEWBIE=i_shield_order
+  ITEMNEWBIE=i_CAPE
+  COLOR=07a1
+  ITEMNEWBIE=i_SASH
+  COLOR=07a1
+
+
+
+[CHARDEF c_h_holyleetmage]
+NAME=#NAMES_HOLYKNIGHT the Holy Order Mage
+ID=C_MAN
+DAM=10,15
+ARMOR=30,40
+//ALIGNMENT=EVIL
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_MALE|MT_FIRE_IMMUNE|MT_RUN
+TEVENTS	= e_holyknight
+
+
+CATEGORY=Imperial uo
+SUBSECTION=Holy Knights Npc's
+DESCRIPTION=Elite Mage
+
+ON=@Create
+  TAG.HK.RANK	= 1
+  COLOR		= colors_skin
+  STR={170 200}
+  DEX={90 95}
+  INT={600 700}
+  MAGICRESISTANCE={99.0 100.0}
+  EVALUATINGINTEL={80.0 90.0}
+  TACTICS={80.0 90.0}
+  WRESTLING=900
+  MAGERY=1000
+  NPC=BRAIN_MONSTER
+     KARMA	= 2000
+  FAME={9998 9999}
+
+  ITEMNEWBIE=i_hair_long
+  COLOR=07a1
+  ITEMNEWBIE=i_robe
+  COLOR=07a1
+  ITEMNEWBIE=i_hat_wizards
+  COLOR=07a1
+  ITEMNEWBIE=i_boots_calf
+  COLOR=07a1
+  ITEM=random_upper_scroll
+  ITEM=m_posdef_army
+  ITEM=i_spellbook
+  ADDSPELL=s_flamestrike
+  ADDSPELL=s_resurrection
+
+ON=@NPCRestock
+  ITEM=i_robe, R50
+  COLOR=07a1
+  ITEM=i_hat_wizards, R50
+  COLOR=07a1
+  ITEM=i_boots_calf, R50
+  COLOR=07a1
+  ITEM=i_gold,{500 600}
+
+[CHARDEF c_h_holyleetarcher]
+ID=C_MAN
+NAME=#NAMES_DREAD_LORD the Holy Order Archer
+SOUND=snd_HUMAN_M_DIE_01
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_MALE|MT_FIRE_IMMUNE|MT_RUN
+DAM=10,20
+ARMOR=30
+AVERSIONS=t_spell,t_TRAP,t_eerie_stuff
+TEVENTS	= e_holyknight
+
+
+CATEGORY=Imperial uo
+SUBSECTION=Holy Knights Npc's
+DESCRIPTION=Elite Archer
+
+ON=@Create
+  TAG.HK.RANK	= 1
+  COLOR=colors_skin
+  STR={150 200}
+  DEX={90 100}
+  INT={71 85}
+  NPC=brain_monster
+  PARRYING={80.0 90.0}
+  ARCHERY={90.0 100.0}
+  MAGICRESISTANCE={80.0 90.0}
+  TACTICS={90.0 100.0}
+  ANATOMY={90.0 100.0}
+  DETECTION	={80.0 100.0}
+  FAME=5000
+     KARMA	= 2000
+
+ON=@NPCRestock
+  ITEMNEWBIE=random_male_hair
+  COLOR=colors_hair
+  ITEMNEWBIE=random_facial_hair
+  COLOR=match_hair
+  ITEM=m_posdef_army
+  ITEMNEWBIE=i_CHAINMAIL_TUNIC_stronghold
+  ITEMNEWBIE=i_RINGMAIL_GLOVES_stronghold
+  ITEMNEWBIE=i_RINGMAIL_SLEEVES_stronghold
+  ITEMNEWBIE=i_CHAINMAIL_leggings_stronghold
+  ITEMNEWBIE=i_chainmail_coif_stronghold
+  ITEMNEWBIE=i_boots_calf
+  ITEMNEWBIE=i_crossbow_heavy_composite
+  ITEMNEWBIE=i_CAPE
+  COLOR=07a1
+  ITEMNEWBIE=i_SASH
+  COLOR=07a1
+  ITEM=i_xbolt,{20 45}
+  ITEM=i_gold,{500 600}
+
+
+[CHARDEF c_h_holyleetcavalry]
+ID=C_MAN
+NAME=#NAMES_HOLYKNIGHT the Holy Order Cavalier
+SOUND=snd_HUMAN_M_DIE_01
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_RUN|MT_MALE|MT_FIRE_IMMUNE
+DAM=20,35
+ARMOR=45
+AVERSIONS=t_spell,t_TRAP,t_eerie_stuff
+TEVENTS	= e_holyknight
+
+TSPEECH=jobMage
+
+CATEGORY=Imperial uo
+SUBSECTION=Holy Knights Npc's
+DESCRIPTION=Elite Cavalier
+
+ON=@Create
+  TAG.HK.RANK	= 1
+  COLOR=colors_skin
+  STR={300 500}
+  DEX={100 120}
+  INT={80 100}
+  PARRYING={90.0 100.0}
+  SWORDSMANSHIP={90.0 100.0}
+  WRESTLING={80.0 90.0}
+  MAGICRESISTANCE={90.0 100.0}
+  TACTICS={95.0 100.0}
+  ANATOMY={95.0 100.0}
+  POISONING={90.0 100.0}
+  DETECTION	={90.0 100.0}
+  NPC=brain_monster
+  FAME=9999
+     KARMA	= 2000
+
+  ITEMNEWBIE=random_male_hair
+  COLOR=07a1
+  ITEMNEWBIE=random_facial_hair
+  COLOR=07a1
+  ITEM=m_posdef_army
+  ITEMNEWBIE=i_platemail_gloves_stronghold
+  ITEMNEWBIE=i_platemail_helm_stronghold
+  ITEMNEWBIE=i_platemail_arms_stronghold
+  ITEMNEWBIE=i_platemail_chest_stronghold
+  ITEMNEWBIE=i_platemail_gorget_stronghold
+  ITEMNEWBIE=i_platemail_leggings_stronghold
+  ITEMNEWBIE=i_sword_long_b_stronghold
+  ITEMNEWBIE=i_shield_order
+  ITEMNEWBIE=i_CAPE
+  COLOR=07a1
+  ITEMNEWBIE=i_SASH
+
+ON=@Death
+  findlayer(layer_horse).remove
+ON=@NPCRestock
+  ITEM=i_mt_dark_zost
+  COLOR=07a1
+  ITEM=i_gold,{700 800}
+
+[CHARDEF c_horse_hk]
+//HORSE,Gray,White
+ID	= c_horse_gray
+NAME	= Holy Steed
+SOUND	= snd_ANIMALS_HORSE1
+ICON	= i_pet_horse_gray
+CAN	= MT_WALK|MT_RUN
+ANIM	= 01fff
+DAM	= 3,4
+ARMOR	= 15
+DESIRES	= c_horse_gray,c_man,c_woman
+FOODTYPE= 55 t_crops, 55 t_fruit, 55 t_grain, 64 t_grass
+AVERSIONS = e_carnivores3
+RESOURCES = 15 i_ribs_raw,10 i_hide
+
+TEVENTS = e_steed_holy2
+TSPEECH = e_steed_holy
+
+//Colour is stronghold exHK colour
+ON=@Create
+  NPC=brain_animal
+  COLOR=07a1
+  STR=185
+  DEX=60
+  INT=0
+  PARRYING={35.0 45.0}
+  MAGICRESISTANCE={25.0 30.0}
+  TACTICS={29.0 44.0}
+  WRESTLING={29.0 44.0}
+  TAMING=90.0
+  ARMSLORE=40.0
+  FAME=0
+  KARMA	= 2000
+
+CATEGORY=Imperial uo
+SUBSECTION=Holy Knights Npc's
+DESCRIPTION=Holy Steed
+
+[SPEECH e_steed_holy]
+ON=*Hello*
+   IF ( <SRC.KARMA>>=9000)
+   FACE
+   DORAND 3
+   SAY=Hello...
+   SAY=Hail sir...
+   SAY=Hi
+   ENDIF
+   RETURN 1
+ON=*Talk*
+ON=*Speech*
+   IF ( <SRC.KARMA>>=9000)
+   FACE
+   SAY=Yes we can talk fair sir... It is a secret...
+   ENDIF
+   RETURN 1
+
+
+  //////////
+ //EVENTS//
+//////////
+
+[EVENTS e_steed_holy2] 
+ON=@NPCSeeNewPlayer
+   IF (<SRC.KARMA><=-100)
+   DORAND 2
+   SAY=Die Scum!
+   SAY=Death to evil!
+   ENDDO
+   ATTACK
+   ENDIF
+
+ON=@Hit
+   SAY Die!
+
+
+[EVENTS e_holy_guard] 
+ON=@NPCSeeNewPlayer
+   IF (<SRC.KARMA>>=2000)
+   FACE
+   BOW
+   DORAND 3
+   SAY=For the gods, yes?
+   SAY=Tis good to see a fellow member of holyness!
+   SAY=Welcome to the Holy Lands friend!
+   ENDDO
+
+ELSEIF (<SRC.KARMA><=-100)
+   DORAND 3
+   SAY=This is no place for followers of evil!
+   SAY=Your death will be a lesson to all evil!
+   SAY=Prepare for battle foul heathen!
+   ENDDO
+   ATTACK
+   ENDIF
+
+ON=@Hit
+   SAY Do not return here foul heathen!
+   SRC.DAMAGE={600 700}
+
+
+[EOF]

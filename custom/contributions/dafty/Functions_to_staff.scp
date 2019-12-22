@@ -1,0 +1,65 @@
+
+//mmove allows the staff to move a character multiple times.
+
+[FUNCTION mmove]
+IF !<ARGS>
+targetf mmove 1
+ELSE
+IF !<ARGV[1]>
+TRY UID.<ARGO.UID>.SAY @0480@ .
+targetfg mmove 1,<argo.uid>
+ELSE
+TRY UID.<ARGV[1]>.P <TARGP>
+TRY UID.<ARGV[1]>.UPDATE
+targetf mmove 1
+ENDIF
+ENDIF
+
+//mremove allows the staff to remove more than 1 item/command
+
+[FUNCTION mremove]
+IF !<ARGS>
+targetf mremove 1
+ELSE
+IF (<UID.<ARGO.UID>.ISITEM>)
+TRY UID.<ARGO.UID>.REMOVE
+ENDIF
+targetf mremove 1
+ENDIF
+
+//saveonbank function move everything the player have to the player bank account inside a bag.
+
+[FUNCTION saveonbank]
+SRC.FINDLAYER(1).UNEQUIP 
+SRC.FINDLAYER(2).UNEQUIP 
+SRC.FINDLAYER(3).UNEQUIP
+SRC.FINDLAYER(4).UNEQUIP 
+SRC.FINDLAYER(5).UNEQUIP
+SRC.FINDLAYER(6).UNEQUIP
+SRC.FINDLAYER(7).UNEQUIP
+SRC.FINDLAYER(8).UNEQUIP 
+SRC.FINDLAYER(10).UNEQUIP 
+SRC.FINDLAYER(12).UNEQUIP
+SRC.FINDLAYER(13).UNEQUIP
+SRC.FINDLAYER(17).UNEQUIP
+SRC.FINDLAYER(18).UNEQUIP
+SRC.FINDLAYER(19).UNEQUIP 
+SRC.FINDLAYER(20).UNEQUIP 
+SRC.FINDLAYER(22).UNEQUIP        
+SRC.FINDLAYER(23).UNEQUIP 
+SRC.FINDLAYER(24).UNEQUIP 
+
+IF (<SRC.FINDLAYER.21.COUNT> >= 1)
+    SRC.FINDLAYER.21.ATTR=0
+    SRC.FINDLAYER.21.COLOR=020
+    SRC.FINDLAYER.21.NAME=Your items
+    SRC.findlayer.21.cont=<SRC.findlayer.29>
+    SRC.BANKSELF
+    SRC.FIX
+    SERV.NEWITEM i_gold
+    NEW.ATTR=attr_invis
+    NEW.BOUNCE
+    SRC.CONSUME i_gold
+    SRC.MESSAGE @0480 Your items were moved to your bank account inside a red bag.
+
+ENDIF

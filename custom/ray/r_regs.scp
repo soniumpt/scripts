@@ -1,0 +1,284 @@
+[FUNCTION regscontrol]
+f_control_regs
+
+
+[FUNCTION new_regs]
+	DIALOGCLOSE d_new_reagents
+	DIALOGCLOSE d_new_reagents_small
+	DIALOG d_new_reagents
+
+[FUNCTION f_control_regs]
+	IF <RESTEST 1 i_reagents_controller>
+		CONSUME 99 i_reagents_controller
+	ELSE
+		SERV.NEWITEM i_reagents_controller
+		EQUIP <NEW.UID>
+	ENDIF
+	RETURN 0
+
+[ITEMDEF i_reagents_controller]
+ID=i_reag_mandrake_root
+NAME=Regents controller
+WEIGHT=0
+TYPE=T_EQ_SCRIPT
+
+ON=@CREATE
+	ATTR=attr_move_never|attr_invis
+	TIMER=2
+
+ON=@EQUIP
+	SRC.SYSMESSAGE Reagents control = ON
+
+ON=@UNEQUIP
+	SRC.SYSMESSAGE Reagents control = OFF
+
+ON=@TIMER
+	TRYSRC <CONT.UID> SRC.DIALOGCLOSE d_new_reagents
+	TRYSRC <CONT.UID> SRC.DIALOGCLOSE d_new_reagents_small
+	IF <MORE2> > 0
+		TRYSRC <CONT.UID> SRC.DIALOG d_new_reagents_small
+	ELSE
+		TRYSRC <CONT.UID> SRC.DIALOG d_new_reagents
+	ENDIF
+	TIMER 5
+	RETURN 1
+
+	//in case it breaks.
+	//TRYSRC <CONT.UID> SRC.DIALOGCLOSE d_new_reagents
+	//TRYSRC <CONT.UID> SRC.DIALOGCLOSE d_new_reagents_small
+	//IF <MORE2> > 0
+	//	TRYSRC <CONT.UID> SRC.DIALOG d_new_reagents_small
+	//ELSE
+	//	TRYSRC <CONT.UID> SRC.DIALOG d_new_reagents
+	//ENDIF
+	//TIMER 5
+	//RETURN 1
+
+[DIALOG d_new_reagents]
+0, 0
+RESIZEPIC 0 0 2620 160 190
+
+DORIGIN 5 5
+	DHTMLGUMP +0 *0 150 20 0 0 <def.bfont> color="#5555ff"<def.r1><def.BFONT_SIZE7><def.CENTER>Imperial UO
+	DHTMLGUMP +0 *15 150 20 0 0 <def.bfont_white><def.CENTER>reagents
+
+	LOCAL.AMOUNT=<RESCOUNT i_reag_spider_silk>
+	tilepic -5 *20 <EVAL 0f8d> // spider silk 
+	IF <LOCAL.AMOUNT> > 10
+		LOCAL.COLOR=#55ff55
+	ELSEIF <LOCAL.AMOUNT> > 0
+		LOCAL.COLOR=#ff5555
+	ELSE
+		LOCAL.COLOR=#ff0000
+	ENDIF
+	dhtmlgump +40 +0 80 20 0 0 <def.bfont_gray><def.small>spider silk
+	dhtmlgump +120 +0 30 20 0 0 <def.bfont> color="<LOCAL.COLOR>"<def.r1><def.small><EVAL <LOCAL.AMOUNT>>
+
+	LOCAL.AMOUNT=<RESCOUNT i_reag_sulfur_ash>
+	tilepic -5 *15 <EVAL 0f8c> // sulfurous ash 
+	IF <LOCAL.AMOUNT> > 10
+		LOCAL.COLOR=#55ff55
+	ELSEIF <LOCAL.AMOUNT> > 0
+		LOCAL.COLOR=#ff5555
+	ELSE
+		LOCAL.COLOR=#ff0000
+	ENDIF
+	dhtmlgump +40 +0 80 20 0 0 <def.bfont_gray><def.small>sulfurous ash
+	dhtmlgump +120 +0 30 20 0 0 <def.bfont> color="<LOCAL.COLOR>"<def.r1><def.small><EVAL <LOCAL.AMOUNT>>
+
+	LOCAL.AMOUNT=<RESCOUNT i_reag_nightshade>
+	tilepic -5 *15 <EVAL 0f88> // nightshade
+	IF <LOCAL.AMOUNT> > 10
+		LOCAL.COLOR=#55ff55
+	ELSEIF <LOCAL.AMOUNT> > 0
+		LOCAL.COLOR=#ff5555
+	ELSE
+		LOCAL.COLOR=#ff0000
+	ENDIF
+	dhtmlgump +40 +0 80 20 0 0 <def.bfont_gray><def.small>nightshade
+	dhtmlgump +120 +0 30 20 0 0 <def.bfont> color="<LOCAL.COLOR>"<def.r1><def.small><EVAL <LOCAL.AMOUNT>>
+
+	LOCAL.AMOUNT=<RESCOUNT i_reag_mandrake_root>
+	tilepic -5 *15 <EVAL 0f86> // mandrake root
+	IF <LOCAL.AMOUNT> > 10
+		LOCAL.COLOR=#55ff55
+	ELSEIF <LOCAL.AMOUNT> > 0
+		LOCAL.COLOR=#ff5555
+	ELSE
+		LOCAL.COLOR=#ff0000
+	ENDIF
+	dhtmlgump +40 +0 80 20 0 0 <def.bfont_gray><def.small>mandrake root
+	dhtmlgump +120 +0 30 20 0 0 <def.bfont> color="<LOCAL.COLOR>"<def.r1><def.small><EVAL <LOCAL.AMOUNT>>
+
+	LOCAL.AMOUNT=<RESCOUNT i_reag_ginseng>
+	tilepic -5 *15 <EVAL 0f85> // ginseng
+	IF <LOCAL.AMOUNT> > 10
+		LOCAL.COLOR=#55ff55
+	ELSEIF <LOCAL.AMOUNT> > 0
+		LOCAL.COLOR=#ff5555
+	ELSE
+		LOCAL.COLOR=#ff0000
+	ENDIF
+	dhtmlgump +40 +0 80 20 0 0 <def.bfont_gray><def.small>ginseng
+	dhtmlgump +120 +0 30 20 0 0 <def.bfont> color="<LOCAL.COLOR>"<def.r1><def.small><EVAL <LOCAL.AMOUNT>>
+
+	LOCAL.AMOUNT=<RESCOUNT i_reag_garlic>
+	tilepic -5 *15 <EVAL 0f84> // garlic
+	IF <LOCAL.AMOUNT> > 10
+		LOCAL.COLOR=#55ff55
+	ELSEIF <LOCAL.AMOUNT> > 0
+		LOCAL.COLOR=#ff5555
+	ELSE
+		LOCAL.COLOR=#ff0000
+	ENDIF
+	dhtmlgump +40 +0 80 20 0 0 <def.bfont_gray><def.small>garlic
+	dhtmlgump +120 +0 30 20 0 0 <def.bfont> color="<LOCAL.COLOR>"<def.r1><def.small><EVAL <LOCAL.AMOUNT>>
+
+	LOCAL.AMOUNT=<RESCOUNT i_reag_blood_moss>
+	tilepic -5 *15 <EVAL 0f7b> // blood moss
+	IF <LOCAL.AMOUNT> > 10
+		LOCAL.COLOR=#55ff55
+	ELSEIF <LOCAL.AMOUNT> > 0
+		LOCAL.COLOR=#ff5555
+	ELSE
+		LOCAL.COLOR=#ff0000
+	ENDIF
+	dhtmlgump +40 +0 80 20 0 0 <def.bfont_gray><def.small>blood moss
+	dhtmlgump +120 +0 30 20 0 0 <def.bfont> color="<LOCAL.COLOR>"<def.r1><def.small><EVAL <LOCAL.AMOUNT>>
+
+	LOCAL.AMOUNT=<RESCOUNT i_reag_black_pearl>
+	tilepic -5 *15 <EVAL 0f7a> // black pearl
+	IF <LOCAL.AMOUNT> > 10
+		LOCAL.COLOR=#55ff55
+	ELSEIF <LOCAL.AMOUNT> > 0
+		LOCAL.COLOR=#ff5555
+	ELSE
+		LOCAL.COLOR=#ff0000
+	ENDIF
+	dhtmlgump +40 +0 80 20 0 0 <def.bfont_gray><def.small>black pearl
+	dhtmlgump +120 +0 30 20 0 0 <def.bfont> color="<LOCAL.COLOR>"<def.r1><def.small><EVAL <LOCAL.AMOUNT>>
+
+	button +15 *20 2224 1210 1 0 1
+	dhtmlgump +40 +0 30 20 0 0 <def.bfont> color="#ff8888"<def.r1>close
+	IF <RESTEST 1 i_reagents_controller>
+		button +70 +0 2224 1210 1 0 2
+		dhtmlgump +90 +0 80 20 0 0 <def.bfont> color="#ff8888"<def.r1>small
+	ENDIF
+
+[DIALOG d_new_reagents TEXT]
+[DIALOG d_new_reagents BUTTON]
+ON=1
+	SRC.CONSUME 99 i_reagents_controller
+
+ON=2
+	SRC.FINDID.i_reagents_controller.MORE2=1
+	SRC.f_reagent_small_controll
+
+//SMALL DIALOG
+
+[FUNCTION f_reagent_small_controll]
+	DIALOG d_new_reagents_small
+
+[DIALOG d_new_reagents_small]
+0, 0
+resizepic 0 0 2620 80 150
+
+dorigin 5 5
+	LOCAL.AMOUNT=<RESCOUNT i_reag_spider_silk>
+	tilepic -5 *0 <EVAL 0f8d> // spider silk 
+	IF <LOCAL.AMOUNT> > 10
+		LOCAL.COLOR=#55ff55
+	ELSEIF <LOCAL.AMOUNT> > 0
+		LOCAL.COLOR=#ff5555
+	ELSE
+		LOCAL.COLOR=#ff0000
+	ENDIF
+	dhtmlgump +40 +0 30 20 0 0 <def.bfont> color="<LOCAL.COLOR>"<def.r1><def.small><EVAL <LOCAL.AMOUNT>>
+
+	LOCAL.AMOUNT=<RESCOUNT i_reag_sulfur_ash>
+	tilepic -5 *15 <EVAL 0f8c> // sulfurous ash 
+	IF <LOCAL.AMOUNT> > 10
+		LOCAL.COLOR=#55ff55
+	ELSEIF <LOCAL.AMOUNT> > 0
+		LOCAL.COLOR=#ff5555
+	ELSE
+		LOCAL.COLOR=#ff0000
+	ENDIF
+	dhtmlgump +40 +0 30 20 0 0 <def.bfont> color="<LOCAL.COLOR>"<def.r1><def.small><EVAL <LOCAL.AMOUNT>>
+
+	LOCAL.AMOUNT=<RESCOUNT i_reag_nightshade>
+	tilepic -5 *15 <EVAL 0f88> // nightshade
+	IF <LOCAL.AMOUNT> > 10
+		LOCAL.COLOR=#55ff55
+	ELSEIF <LOCAL.AMOUNT> > 0
+		LOCAL.COLOR=#ff5555
+	ELSE
+		LOCAL.COLOR=#ff0000
+	ENDIF
+	dhtmlgump +40 +0 30 20 0 0 <def.bfont> color="<LOCAL.COLOR>"<def.r1><def.small><EVAL <LOCAL.AMOUNT>>
+
+	LOCAL.AMOUNT=<RESCOUNT i_reag_mandrake_root>
+	tilepic -5 *15 <EVAL 0f86> // mandrake root
+	IF <LOCAL.AMOUNT> > 10
+		LOCAL.COLOR=#55ff55
+	ELSEIF <LOCAL.AMOUNT> > 0
+		LOCAL.COLOR=#ff5555
+	ELSE
+		LOCAL.COLOR=#ff0000
+	ENDIF
+	dhtmlgump +40 +0 30 20 0 0 <def.bfont> color="<LOCAL.COLOR>"<def.r1><def.small><EVAL <LOCAL.AMOUNT>>
+
+	LOCAL.AMOUNT=<RESCOUNT i_reag_ginseng>
+	tilepic -5 *15 <EVAL 0f85> // ginseng
+	IF <LOCAL.AMOUNT> > 10
+		LOCAL.COLOR=#55ff55
+	ELSEIF <LOCAL.AMOUNT> > 0
+		LOCAL.COLOR=#ff5555
+	ELSE
+		LOCAL.COLOR=#ff0000
+	ENDIF
+	dhtmlgump +40 +0 30 20 0 0 <def.bfont> color="<LOCAL.COLOR>"<def.r1><def.small><EVAL <LOCAL.AMOUNT>>
+
+	LOCAL.AMOUNT=<RESCOUNT i_reag_garlic>
+	tilepic -5 *15 <EVAL 0f84> // garlic
+	IF <LOCAL.AMOUNT> > 10
+		LOCAL.COLOR=#55ff55
+	ELSEIF <LOCAL.AMOUNT> > 0
+		LOCAL.COLOR=#ff5555
+	ELSE
+		LOCAL.COLOR=#ff0000
+	ENDIF
+	dhtmlgump +40 +0 30 20 0 0 <def.bfont> color="<LOCAL.COLOR>"<def.r1><def.small><EVAL <LOCAL.AMOUNT>>
+
+	LOCAL.AMOUNT=<RESCOUNT i_reag_blood_moss>
+	tilepic -5 *15 <EVAL 0f7b> // blood moss
+	IF <LOCAL.AMOUNT> > 10
+		LOCAL.COLOR=#55ff55
+	ELSEIF <LOCAL.AMOUNT> > 0
+		LOCAL.COLOR=#ff5555
+	ELSE
+		LOCAL.COLOR=#ff0000
+	ENDIF
+	dhtmlgump +40 +0 30 20 0 0 <def.bfont> color="<LOCAL.COLOR>"<def.r1><def.small><EVAL <LOCAL.AMOUNT>>
+
+	LOCAL.AMOUNT=<RESCOUNT i_reag_black_pearl>
+	tilepic -5 *15 <EVAL 0f7a> // black pearl
+	IF <LOCAL.AMOUNT> > 10
+		LOCAL.COLOR=#55ff55
+	ELSEIF <LOCAL.AMOUNT> > 0
+		LOCAL.COLOR=#ff5555
+	ELSE
+		LOCAL.COLOR=#ff0000
+	ENDIF
+	dhtmlgump +40 +0 30 20 0 0 <def.bfont> color="<LOCAL.COLOR>"<def.r1><def.small><EVAL <LOCAL.AMOUNT>>
+
+	button +0 *20 2224 1210 1 0 1	///close
+	dhtmlgump +20 -2 80 20 0 0 <def.bfont> color="#ff8888"<def.r1>full
+
+[DIALOG d_new_reagents_small TEXT]
+[DIALOG d_new_reagents_small BUTTON]
+ON=1
+	SRC.FINDID.i_reagents_controller.MORE2=0
+	SRC.new_regs
+
+[EOF]

@@ -1,0 +1,176 @@
+[DEFNAME ticket_stone_uid]
+master_ticket_stone	043e79cc8
+
+
+[itemdef i_ticket_commerce_stone]
+Name= Reward Ticket Commerce Stone
+ID=i_guildstone
+Type=T_Normal
+
+On=@Create
+color=004dc
+
+
+on=@dclick
+   SRC.ACT = master_ticket_stone
+   DIALOG d_Ticket_Stone
+   RETURN 1
+
+on=@targon_item
+if ( <SRC.TARG.TOPOBJ.UID> != <SRC.UID> )
+     SRC.SYSMESSAGE You must have it in your backpack.
+     return 1
+  endif
+IF <SRC.TARG.BASEID>=i_reward_ticket
+   SRC.ACT = master_ticket_stone
+   SRC.ACT.MORE1=<EVAL (<SRC.ACT.MORE1> + <SRC.TARG.AMOUNT>)>
+   
+   SERV.LOG <SRC.ACCOUNT> (<SRC.NAME>) sold <SRC.TARG.AMOUNT> tickets bringing the total to <EVAL <SRC.ACT.MORE1>>.
+
+   IF <EVAL ( (<SRC.TARG.AMOUNT>*2) <= 65535)>
+      SERV.NEWITEM i_gold, <EVAL (<SRC.TARG.AMOUNT> * 2) >, <SRC.FINDLAYER.LAYER_PACK.UID>
+   ELSE
+      VAR.PILES = 1
+      VAR.GOLD = <EVAL <SRC.TARG.AMOUNT> * 2 >
+      SRC.f_gold_divide125a
+   ENDIF
+   SRC.TARG.REMOVE
+
+ELSE
+   SRC.SYSMESSAGE You can only sell Reward Tickets.
+ENDIF
+RETURN 1
+
+[ITEMDEF i_rewardticket_targetter]
+NAME=Reward Targetter
+ID=i_memory
+TYPE=T_EQ_SCRIPT
+LAYER=30
+
+ON=@CREATE
+   ATTR=attr_decay
+   return 1
+
+on=@targon_item
+if ( <SRC.TARG.TOPOBJ.UID> != <SRC.UID> )
+     SRC.SYSMESSAGE You must have it in your backpack.
+     return 1
+  endif
+IF <SRC.TARG.BASEID>=i_reward_ticket
+   SRC.ACT = master_ticket_stone
+   SRC.ACT.MORE1=<EVAL (<SRC.ACT.MORE1> + <SRC.TARG.AMOUNT>)>
+   
+   SERV.LOG <SRC.ACCOUNT> (<SRC.NAME>) sold <SRC.TARG.AMOUNT> tickets bringing the total to <EVAL <SRC.ACT.MORE1>>.
+
+   IF <EVAL ( (<SRC.TARG.AMOUNT>*2) <= 65535)>
+      SERV.NEWITEM i_gold, <EVAL (<SRC.TARG.AMOUNT> * 2) >, <SRC.FINDLAYER.LAYER_PACK.UID>
+   ELSE
+      VAR.PILES = 1
+      VAR.GOLD = <EVAL <SRC.TARG.AMOUNT> * 2 >
+      SRC.f_gold_divide125a
+   ENDIF
+   SRC.TARG.REMOVE
+
+ELSE
+   SRC.SYSMESSAGE You can only sell Reward Tickets to this.
+ENDIF
+RETURN 1
+
+
+
+[FUNCTION f_gold_divide125a]
+//Divide gold into piles
+VAR.GOLD= (<VAR.GOLD> - 65535 )
+VAR.PILES = ( <VAR.PILES> + 1 )
+
+//See if piles are still too big
+IF (<VAR.GOLD> <= 65535 )
+   f_gold_creator125a
+ELSE
+   f_gold_divide125a
+ENDIF
+
+
+[FUNCTION f_gold_creator125a]
+IF (<VAR.PILES> = 0)
+   RETURN 1
+ELSEIF (<VAR.PILES> = 1)
+   SERV.NEWITEM i_gold, <VAR.GOLD>, <SRC.FINDLAYER.LAYER_PACK.UID>
+   VAR.PILES = (<VAR.PILES> - 1)
+   f_gold_creator125a
+ELSE
+   SERV.NEWITEM i_gold, 65535, <SRC.FINDLAYER.LAYER_PACK.UID>
+   VAR.PILES = (<VAR.PILES> - 1)
+   f_gold_creator125a
+ENDIF
+
+
+[DIALOG d_Ticket_Stone] 
+0,0 
+
+resizepic 190 175 5054 355 160 
+resizepic 200 185 3000 335 140 
+
+dtext 205 200 995 There are currently <EVAl <SRC.ACT.MORE1>> Ticket(s) Available. 
+
+dtext 220 230 0000 Enter the # of tickets to buy:
+resizepic 450 229 3000 50 22 
+textentry 455 229 253 25 0 1 0 
+ 
+dtext 255 260 0000 Buy Tickets (2gp a piece) 
+button 220 260 4005 4006 1 0 1 
+
+dtext 255 290 0000 Sell Tickets (2gp a piece) 
+button 220 290 4005 4006 1 0 2 
+
+
+[DIALOG d_Ticket_Stone TEXT] 
+<VAR.BLANKLINE>
+
+[DIALOG d_Ticket_Stone BUTTON] 
+ON=0
+//Cancel out
+
+ON=1    
+   IF <EVAL <ARGTXT[1]>> <= 0
+      IF <EVAL <ARGTXT[1]>> < 0
+         SERV.LOG <SRC.ACCOUNT> (<SRC.NAME>) is trying to buy <ARGTXT[1]> tickets.
+      ENDIF
+
+      SRC.SYSMESSAGE You must enter a positive number of tickets to buy.
+      RETURN 1
+   ENDIF
+
+   SRC.ACT = master_ticket_stone
+   IF (<EVAL <ARGTXT[1]>><=<EVAL <SRC.ACT.MORE1>>)
+
+      VAR.RETURN	= 0
+      VAR.GOLD		= <EVAL ( <EVAL <ARGTXT[1]>> * 2)>
+      VAR.TICKETS	= 0
+      VAR.RUN		= 0
+      VAR.ITEM	= i_reward_ticket
+      SRC.f_reward125a <EVAL <ARGTXT[1]>>
+ 
+      SRC.ACT = master_ticket_stone
+      IF ( <EVAL <VAR.RETURN>> = 0 )
+           SRC.ACT.MORE1 = <EVAL (<EVAL <SRC.ACT.MORE1>> - <EVAL <ARGTXT[1]>>) >
+      ENDIF
+
+      SERV.LOG <SRC.ACCOUNT> (<SRC.NAME>) bought <ARGTXT[1]> tickets bringing the total to <EVAL <SRC.ACT.MORE1>>.
+
+      return 1
+
+   ELSE
+	SRC.SYSMESSAGE You cannot buy that many tickets.
+   ENDIf
+   RETURN 1
+
+ON=2
+   SRC.ACT = master_ticket_stone
+   SRC.NEWITEM i_rewardticket_targetter
+   SRC.ACT.TARGET Target the Reward Tickets you would like to sell.
+   RETURN 1
+
+
+
+[EOF]

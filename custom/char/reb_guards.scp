@@ -1,0 +1,218 @@
+// #-----------#
+// # CHANGELOG #
+// #-----------#
+//
+// 18/08/18 - Wigifer - FILE NEEDS URGENT REVIEW - So many errors. No update required for loot table.
+
+
+//Script by Reb,AshChlor and Knuff to do the event (much obliged to Ash cause we have 0 knowledge of scripting^^).
+//for a small quest :0
+
+
+[EVENTS guard]
+ON=@Attack
+	say <src.id>
+	if (<src.id>!=qfarmer)
+		return 1
+	end if
+
+ON=@HIT
+	say <src.id>
+	if (<src.id>!=qfarmer)
+		return 1
+	end if
+
+[EVENTS Farmer]
+ON=@Attack
+	say <src.id>
+	if (<src.id>!=qguard)
+		return 1
+	end if
+ON=@HIT
+	say <src.id>
+	if (<src.id>!=qguard)
+		return 1
+	end if
+
+
+
+//**************Farmer****************
+
+[CHARDEF qfarmer]
+DEFNAME=C_H_riotfarmer
+NAME=NAME=#NAMES_HUMANMALE
+ID=C_MAN 
+DAM=15,20
+ARMOR=80
+DESIRES=i_gold
+
+CATEGORY=Civilized
+DESCRIPTION=Farmer
+
+TSPEECH=riotfarmer
+
+ON=@Create
+NPC=brain_human
+COLOR=colors_skin
+STR={100 110}
+DEX=80
+INT=5
+KARMA=-100
+
+DETECTION=200.0
+PARRYING=50.0
+FENCING=50.0
+MAGICRESISTANCE=50.0
+TACTICS=100.0
+
+ITEMNEWBIE=i_hat_wide_brim
+COLOR={}
+ITEMNEWBIE=i_plain_shirt
+COLOR={}
+ITEMNEWBIE=i_pants_short
+COLOR={}
+ITEMNEWBIE={i_boots_calf i_boots_calf}
+ITEMNEWBIE={i_war_fork i_pitchfork i_dagger}
+ITEMNEWBIE={i_beard_long_med i_beard_short_med}
+
+[SPEECH riotfarmer]
+on=*hello*
+on=*hi*
+on=*hail*
+on=*helo*
+SAYU Have you seen what they did to us? We'll starve! Please Help us kind soul.
+
+on=@hit
+SAYU Have it!
+
+on=@gethit
+SAYU Oh, so you're with them. I shall fight you to death!
+
+SAYs Down the tax raises! It shall be the death of us.
+
+SAYs Lord British thief!
+
+SAYs We want our bridge back!
+
+
+
+
+//**************Riot Guard****************
+[CHARDEF qguard]
+DEFNAME=C_H_RIOTGUARD
+NAME=Riot Guard
+ID=C_MAN
+DAM=15,20
+ARMOR=60
+DESIRES=i_gold
+
+CATEGORY=Civilized
+SUBSECTION=Guards & Law
+DESCRIPTION=Riot Guard
+
+TSPEECH=riotguard 
+
+ON=@Create
+NPC=brain_human
+COLOR=colors_skin
+STR={200 300}
+DEX=90
+INT=120
+
+DETECTION=50.0
+PARRYING=130.0
+SWORDSMANSHIP=130.0
+MACEFIGHTING=130.0
+MAGICRESISTANCE=130.0
+TACTICS=200.0
+
+ITEMNEWBIE=i_helm_open
+ITEMNEWBIE=i_shield_heater
+ITEMNEWBIE=i_platemail_arms
+ITEMNEWBIE=i_chainmail_tunic
+ITEMNEWBIE=i_platemail_leggings
+ITEMNEWBIE=i_platemail_gloves
+ITEMNEWBIE=i_club_ironwood
+ITEMNEWBIE=i_surcoat_army
+COLOR=090b 
+NAME=Riot Guard
+ITEMNEWBIE=i_mt_horse_brown_lt
+
+
+
+[SPEECH riotguard]
+on=*hello*
+on=*hi*
+on=*hail*
+on=*helo*
+SAYU Behave and we won't have a problem.
+
+on=@hit
+SAYU Have at thee!
+
+on=@gethit
+SAYU You asked for it! 
+
+SAYs Let's keep it civilized!
+
+
+//**************Royal Guard****************
+[CHARDEF ch_roygua]
+DEFNAME=C_H_ROYALGUARD
+NAME=Royal Guard
+ID=C_MAN
+DAM=150,200
+ARMOR=250
+DESIRES=i_gold
+
+
+CATEGORY=Civilized
+SUBSECTION=Guards & Law
+DESCRIPTION=Royal Guard
+
+TSPEECH=royalguard
+
+ON=@Create
+NPC=brain_guard
+COLOR=colors_skin
+STR={2000 2100}
+DEX=500
+INT=5
+
+DETECTION=200.0
+FENCING=200.0
+PARRYING=200.0
+SWORDSMANSHIP=200.0
+WRESTLING=200.0
+MACEFIGHTING=200.0
+MAGICRESISTANCE=200
+TACTICS=200.0
+
+ITEMNEWBIE=i_helm_closed_mytheril
+ITEMNEWBIE=i_shield_kite_mytheril
+ITEMNEWBIE=i_platemail_arms_mytheril
+ITEMNEWBIE=i_chainmail_chest_mytheril
+ITEMNEWBIE=i_platemail_leggings_mytheril
+ITEMNEWBIE=i_platemail_gloves_mytheril
+ITEMNEWBIE={i_sword_broad_bloodrock i_spear_bloodrock i_halberd_bloodrock}
+COLOR=0798
+ITEMNEWBIE=i_slash
+COLOR=07ab NAME=Royal Guard
+ITEMNEWBIE=i_cape
+COLOR=07ab NAME=Royal Guard Cloak
+ITEMNEWBIE=i_mt_ostard_zostrich
+
+[SPEECH riotguard]
+on=*hello*
+on=*hi*
+on=*hail*
+on=*helo*
+SAYU Behave and we won't have a problem.
+
+on=@hit
+SAYU You're no match for the Royal Guard
+
+on=@gethit
+SAYU I warned you, now DIE!
+
+[EOF]

@@ -1,0 +1,101 @@
+// #-----------#
+// # CHANGELOG #
+// #-----------#
+//
+// 18/08/18 - Wigifer - Removed random loot from these monsters, ready for conversion to the new f_central_loot table.
+
+/// Sqweaks Monster Booster Pack)
+
+////////////////////////////////////////////
+// New phoenix that rises from the ashes when killed
+// Makes obtaining feather harder
+////////////////////////////////////////////
+[CHARDEF c_m_phoenix1]
+DEFNAME=c_m_phoenix1
+NAME=Phoenix
+ID=c_EAGLE
+SOUND=snd_ANIMALS_EAGLE1
+ICON=i_pet_EAGLE
+CAN=MT_FLY|MT_WALK|MT_FIRE_IMMUNE
+
+DAM=10,30
+ARMOR=50
+RESOURCES=2 i_ribs_raw, 36 i_feather
+FOODTYPE=5 t_meat_raw
+
+ON=@Create
+COLOR=colors_lava
+STR={400 600}
+DEX={200 300}
+INT={150 165}
+//ALIGNMENT=NEUTRAL
+//SPELLCIRCLES=4,7
+
+MAGERY={90.0 100.0}
+MAGICRESISTANCE={85.0 100.0}
+TACTICS={80.0 90.0}
+WRESTLING={90.0 100.0}
+
+NPC=brain_monster
+
+FAME={1000 2000}
+KARMA={-5000 -5999}
+
+ON = @Death
+   SRC.EFFECT=3,i_fire_column,6,31,0
+   SRC.DAMAGE {50 70}
+   SOUND=snd_spell_flamestrike
+
+   SRC.ACT.EFFECT=3,i_fire_column,6,31,0
+   SRC.ACT.DAMAGE {30 50}
+   SOUND=snd_spell_flamestrike
+   SAY= The Phoenix Rises from the ashes in all its Glory
+   NEWNPC=c_m_phoenix2
+
+
+
+CATEGORY=Monsters
+SUBSECTION=Miscellaneous
+DESCRIPTION=Phoenix (unrisen)
+
+
+[CHARDEF c_m_phoenix2]
+DEFNAME=c_m_phoenix2
+NAME=Phoenix
+ID=c_EAGLE
+SOUND=snd_ANIMALS_EAGLE1
+ICON=i_pet_EAGLE
+CAN=MT_FLY|MT_WALK|MT_FIRE_IMMUNE
+
+DAM=20,45
+ARMOR=55
+RESOURCES=2 i_ribs_raw, 36 i_feather, 1 i_feather_phoenix
+FOODTYPE=5 t_meat_raw
+
+ON=@Create
+COLOR=07ad
+STR={700 1000}
+DEX={300 500}
+INT={250 365}
+//ALIGNMENT=NEUTRAL
+//SPELLCIRCLES=4,7
+
+MAGERY={100.0 130.0}
+MAGICRESISTANCE={100.0 150.0}
+TACTICS={80.0 90.0}
+WRESTLING={90.0 100.0}
+
+NPC=brain_monster
+
+FAME={1000 2000}
+KARMA={-5000 -5999}
+
+
+CATEGORY=Monsters
+SUBSECTION=Miscellaneous
+DESCRIPTION=Phoenix (risen)
+
+
+
+
+[eof]

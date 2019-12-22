@@ -1,0 +1,99 @@
+///////////////////////////////////// 
+// Script is by |SHS|Shaku, please // 
+// do not take credit for this,you // 
+// did not make it. So leave this  // 
+// tag at the top of this script.  // 
+/////////////////////////////////////////////// 
+// Static i_race_pad in a line (your         // 
+// finish line)... Static an i_race_crystal  // 
+// and link all the finish line pads to it.  // 
+// then static an i_race_switch and link it  // 
+// to the race crystal.  When you create the // 
+// crystal it will be off.  After you have   // 
+// everything linked just dbl click the race // 
+// switch to turn on the crystal... Then the // 
+// first person to step on the finish line   // 
+// will trip the crystal which will turn ICE // 
+// BLUE and record their name so that other  // 
+// racers can't say I CROSSED BEFOR THEM!!!! // 
+/////////////////////////////////////////////// 
+
+[Itemdef i_race_pad] 
+defname=i_race_pad 
+id=017bd
+Name=Finish Line 
+
+ON=@STEP 
+IF (<LINK.COLOR> === 0480) 
+RETURN 1 
+ELSEIF (<LINK.COLOR> === 01) && !(<LINK.MORE1> === 1) 
+LINK.COLOR=0480 
+LINK.NAME=<SRC.NAME> is the winner! 
+SRC.MESSAGE YOU WON! 
+LINK.SAY=<SRC.NAME> WON THE RACE! 
+RETURN 1 
+ENDIF
+
+CATEGORY       =Misery
+SUBSECTION     =RACE DAY 
+DESCRIPTION    =pad
+
+[Itemdef i_race_crystal] 
+defname=i_race_crustal 
+id=01ece 
+Name=Photo Finish Crystal 
+
+
+on=@click 
+If (<MORE1> = 0)  && (<COLOR> === 01) 
+message=Race Camera is ON! 
+else 
+message=Race Camera is OFF! 
+endif 
+
+ON=@DCLICK 
+IF (<SRC.ISGM>) 
+COLOR=01 
+NAME=Photo Finish Crystal 
+RETURN 1 
+ELSE 
+SRC.SYSMESSAGE Only GMs can use this! 
+RETURN 1 
+ENDIF 
+
+CATEGORY       =Misery
+SUBSECTION     =RACE DAY 
+DESCRIPTION    =crystal
+
+[itemdef i_race_switch] 
+id=i_lever 
+name=Camera Switch 
+type=t_eq_script 
+dupelist=0108e 
+
+on=@create 
+attr=attr_static|attr_invis 
+color=0480 
+
+on=@dclick 
+if (<LINK.MORE1> = 0 ) && (<SRC.ISGM>) 
+flip 
+LINK.MORE1=1 
+SRC.SYSMESSAGE You turn the camera off. 
+return 1 
+elseif (<LINK.MORE1> = 1 ) && (<SRC.ISGM>) 
+SRC.SYSMESSAGE You turn the camera on. 
+LINK.MORE1=0 
+flip 
+ELSEIF !(<SRC.ISGM>) 
+SRC.SYSMESSAGE YOU MUST BE A GM TO USE THIS YOU NEWB! 
+endif 
+
+CATEGORY       =Misery
+SUBSECTION     =RACE DAY 
+DESCRIPTION    =switch
+
+
+
+
+[eof]

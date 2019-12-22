@@ -1,0 +1,3514 @@
+//Changelog:
+//==========
+//25/04/2003 - Firefly - Added plants/cactus's back to reward board - Tested
+//25/04/2003 - Firefly - Readded Jewelry (with fix) - Tested
+//25/04/2003 - Wigifer - Jewelery fix was broken, new fix test - Untested
+//25/04/2003 - Wigifer - Jewelery fix was broken, bounce to pack - Untested
+//25/04/2003 - Wigifer - PvP stone bug - broken, bounce to pack - Tested
+//29/04/2003 - Wigifer - Jewellery Fix - Tested (And reuploaded again)
+//29/04/2003 - Wigifer - Jewelry Fix - Tested
+//02/05/2003 - Wigifer - Jewelry Disabled - Tested
+//02/05/2003 - Wigifer - Jewelry Test Def Uploaded again - Tested
+//18/06/2003 - Vidar   - Added PvP dye tubs - Tested
+//06/08/2003 - Wigifer - Jewelry Test - Tested
+//07/01/2004 - Wren    - Added Maps to reward board
+//21/02/2004 - Wren    - Fixed bracelets not being given out for jewelry
+//20/03/2004 - Wigifer - Changed fluxes into the new system format
+//09/04/2004 - Wren    - Added Penance Potion
+//28/05/2004 - Wren    - Added some logging for tickets
+//29/06/2004 - Wren    - Added Scrap Awards
+//16/08/2004 - Wren    - Modified steed pigment to not dye if color is 0
+
+// Scripted by Kell (kell@mail.pt) for MPZ UO Shard
+
+
+//
+//  NORMAL REWARD SYSTEM
+//
+[EVENTS e_dyed]
+ON=@spelleffect
+   color = <tag.color>
+
+// [DEFNAME replace_tickets]
+// i_reward_ticket   i_gold
+
+
+[ITEMDEF i_PVPTOKEN]
+ID=i_SCROLL_BLANK
+NAME=PvP Ticket
+TYPE=T_SCROLL_BLANK
+WEIGHT=1
+DUPELIST=0ef3
+VALUE=1500
+
+ON=@Create
+   attr=1
+   COLOR=009fd
+
+
+ON=@DCLICK 
+   SRC.MESSAGE Use these tickets at reward boards!
+   return 1
+
+CATEGORY=Imperial uo
+SUBSECTIONBUTTON=PVP
+DESCRIPTIONBUTTON=PVP Token SCROLL
+
+
+[ITEMDEF i_tradertoken]
+ID=i_SCROLL_BLANK
+NAME=Trader Ticket
+TYPE=T_SCROLL_BLANK
+WEIGHT=1
+DUPELIST=0ef3
+VALUE=1500
+
+ON=@Create
+   attr=1
+   COLOR=0157
+
+ON=@CLICK 
+   SRC.MESSAGE You feel a sense of achievement.
+   return 1
+
+ON=@DCLICK 
+   SRC.MESSAGE Use these tickets at reward boards!
+   return 1
+
+CATEGORY=Imperial uo
+SUBSECTIONBUTTON=Rewards
+DESCRIPTIONBUTTON=PVP Token SCROLL
+
+
+[ITEMDEF i_reward_ticket]
+ID	= i_gem_ruby
+TYPE	= t_normal
+NAME	= Reward ticket%s
+WEIGHT	= 0
+VALUE	= 2
+
+ON=@Create
+  COLOR=0527
+
+
+[ITEMDEF i_reward_system]
+NAME		= reward placard
+ID		= i_bulletin_board
+TYPE		= t_normal
+
+ON=@CREATE
+  COLOR		= 065f
+  ATTR		= attr_move_never | attr_static
+
+ON=@DCLICK
+  SRC.SOUND 555
+  DIALOG d_reward_system
+  RETURN 1
+
+ON=@TARGON_CHAR
+  SRC.MESSAGE They probably wouldn't agree on that...
+  RETURN 1
+
+ON=@TARGON_ITEM
+  if ( <SRC.TARG.TOPOBJ.UID> != <SRC.UID> )
+     SRC.SYSMESSAGE You must have it in your backpack.
+     return 1
+  endif
+  
+  if ( <SRC.TARG.ATTR> & attr_newbie )
+     SRC.SYSMESSAGE Unexplainably, the item reappears in your backpack.
+     SRC.TARG.BOUNCE
+     return 1
+  endif
+
+
+  if ( <SRC.TARG.TYPE> == t_container )
+  if !(<src.isgm>)
+    IF (<SRC.TARG.FINDCONT(75)>!=0)
+       SRC.SYSMESSAGE The maximum amount of items you can trade for tickets at the same time is 75. 
+       RETURN 1
+    EndIf
+ ENDIF   
+    if ( STRCMP( <SRC.TARG.NAME>, Reward ) )
+       SRC.SYSMESSAGE For your own safety, you must rename the container with the following command: .rename Reward
+       return 1
+    endif
+    SRC.TARG.NAME	= 
+    VAR.ticket_count	= 0
+    ticket_count_rec 0
+  else
+    SRC.ACT		= <SRC.TARG.UID>
+    VAR.ticket_count	= 0
+    IF (<EVAL <SRC.TAG.APPRAISE>>=1)
+       ticket_counter 0
+    ELSE
+       ticket_counter 1
+    ENDIF
+  endif
+
+  IF (<EVAL <SRC.TAG.APPRAISE>>=1) 
+     SRC.TAG.APPRAISE=
+     SRC.SYSMESSAGE That item is worth <EVAL <VAR.ticket_count>> tickets.
+     DIALOG d_reward_system
+     RETURN 1
+  ENDIF
+
+  if ( <VAR.ticket_count> == 0 )
+     if ( <SRC.TARG.type> != t_container )
+        src.sysmessage There is nothing worthy of a reward in it.
+     else	
+        src.sysmessage There is not worthy of a reward.
+     endif	
+     return 1
+  endif
+
+  If !(<EVAL <VAR.ticket_count>> < 500)
+     SERV.LOG <SRC.ACCOUNT> (<SRC.NAME>) trashed <SRC.TARG.NAME> for <EVAL <VAR.ticket_count>> tickets.
+  Endif
+
+  //Divide 
+  LOCAL.REWARD_AMT 	= <VAR.ticket_count>
+  VAR.Ticket_Bonus_Count = <EVAL (<LOCAL.REWARD_AMT> + <VAR.Ticket_Bonus_Count>)>
+  VAR.ITEM	= i_reward_ticket
+  IF ( <LOCAL.REWARD_AMT> <= 65535 )
+ 
+      IF (<LOCAL.REWARD_AMT> < 1)
+         LOCAL.REWARD_AMT = 1
+      ENDIF
+
+      SRC.NEWITEM <VAR.ITEM>
+      SRC.ACT.AMOUNT = <LOCAL.REWARD_AMT>
+      SRC.ACT.BOUNCE
+  ELSE
+      VAR.PILES = 1
+      SRC.f_amount_divide125a <LOCAL.REWARD_AMT>
+  ENDIF
+  SRC.SOUND 500
+
+  If (<VAR.Ticket_Bonus_Count> >= 600000)
+     SRC.SOUND 110
+     SRC.SOUND 112
+     SRC.SYSMESSAGE Congratulations! You have earned a scrap award!
+     SRC.ScrapAward
+     VAR.Ticket_Bonus_Count= <EVAL RAND(150000)>
+  ENDIF
+  DIALOG d_reward_system
+  return 1
+
+
+[FUNCTION ScrapAward]
+DOSWITCH <EVAL RAND(23)>
+   LOCAL.SCRAPAWARD	= i_gold
+   LOCAL.SCRAPAWARD	= i_gold
+   LOCAL.SCRAPAWARD	= i_gold
+   LOCAL.SCRAPAWARD	= i_gold
+   LOCAL.SCRAPAWARD	= Vegitation
+   LOCAL.SCRAPAWARD	= i_gold
+   LOCAL.SCRAPAWARD	= i_gold
+   LOCAL.SCRAPAWARD	= Light
+   LOCAL.SCRAPAWARD	= i_gold
+   LOCAL.SCRAPAWARD	= i_gold
+   LOCAL.SCRAPAWARD	= i_gold
+   LOCAL.SCRAPAWARD	= i_gold
+   LOCAL.SCRAPAWARD	= Vase
+   LOCAL.SCRAPAWARD	= i_gold
+   LOCAL.SCRAPAWARD	= i_gold
+   LOCAL.SCRAPAWARD	= Miscellaneous
+   LOCAL.SCRAPAWARD	= i_gold
+   LOCAL.SCRAPAWARD	= i_gold
+   LOCAL.SCRAPAWARD	= i_gold
+   LOCAL.SCRAPAWARD	= i_gold
+   LOCAL.SCRAPAWARD	= i_gold
+   LOCAL.SCRAPAWARD	= i_gold
+   LOCAL.SCRAPAWARD	= i_gold
+ENDDO
+
+IF ( strmatch( "i_gold", "<LOCAL.SCRAPAWARD>" ) )
+   DOSWITCH <EVAL RAND(10)>
+      LOCAL.SCRAPAMOUNT	= 5000
+      LOCAL.SCRAPAMOUNT	= 5000
+      LOCAL.SCRAPAMOUNT	= 5000
+      LOCAL.SCRAPAMOUNT	= 5000
+      LOCAL.SCRAPAMOUNT	= 5000
+      LOCAL.SCRAPAMOUNT	= 5000
+      LOCAL.SCRAPAMOUNT	= 10000
+      LOCAL.SCRAPAMOUNT	= 10000
+      LOCAL.SCRAPAMOUNT	= 10000
+      LOCAL.SCRAPAMOUNT	= 20000
+   ENDDO
+   SRC.NEWITEM <LOCAL.SCRAPAWARD>
+   SRC.ACT.AMOUNT=<EVAL <LOCAL.SCRAPAMOUNT>>
+   SRC.ACT.BOUNCE
+ELSEIF ( strmatch( "i_tradertoken", "<LOCAL.SCRAPAWARD>" ) )
+   DOSWITCH <EVAL RAND(10)>
+      LOCAL.SCRAPAMOUNT	= 1
+      LOCAL.SCRAPAMOUNT	= 1
+      LOCAL.SCRAPAMOUNT	= 1
+      LOCAL.SCRAPAMOUNT	= 1
+      LOCAL.SCRAPAMOUNT	= 1
+      LOCAL.SCRAPAMOUNT	= 1
+      LOCAL.SCRAPAMOUNT	= 2
+      LOCAL.SCRAPAMOUNT	= 2
+      LOCAL.SCRAPAMOUNT	= 2
+      LOCAL.SCRAPAMOUNT	= 3
+   ENDDO
+   SRC.NEWITEM <LOCAL.SCRAPAWARD>
+   SRC.ACT.AMOUNT=<EVAL <LOCAL.SCRAPAMOUNT>>
+   SRC.ACT.BOUNCE
+ELSEIF ( strmatch( "Vegitation", "<LOCAL.SCRAPAWARD>" ) )
+   DOSWITCH <EVAL RAND(6)>
+      LOCAL.SCRAPAWARD=i_flower_orfluer
+      LOCAL.SCRAPAWARD=i_crop_mushroom
+      LOCAL.SCRAPAWARD=i_crop_flax
+      LOCAL.SCRAPAWARD=i_plant_pampasgrass_2
+      LOCAL.SCRAPAWARD=i_plant_pampasgrass
+      LOCAL.SCRAPAWARD=i_plant_fern
+   ENDDO
+   SRC.NEWITEM <LOCAL.SCRAPAWARD>
+   SRC.ACT.ATTR=09
+   SRC.ACT.TYPE=T_NORMAL
+   SRC.ACT.BOUNCE
+ELSEIF ( strmatch( "Light", "<LOCAL.SCRAPAWARD>" ) )
+   DOSWITCH <EVAL RAND(6)>
+      LOCAL.SCRAPAWARD=i_sconce
+      LOCAL.SCRAPAWARD=i_candle_short
+      LOCAL.SCRAPAWARD=i_torch_wall2
+      LOCAL.SCRAPAWARD=i_sconce2
+      LOCAL.SCRAPAWARD=i_candle_lg
+      LOCAL.SCRAPAWARD=i_torch_wall
+   ENDDO
+   SRC.NEWITEM <LOCAL.SCRAPAWARD>
+   SRC.ACT.ATTR=09
+   SRC.ACT.TYPE=T_NORMAL
+   SRC.ACT.BOUNCE
+ELSEIF ( strmatch( "Vase", "<LOCAL.SCRAPAWARD>" ) )
+   DOSWITCH <EVAL RAND(4)>
+      LOCAL.SCRAPAWARD=0b47
+      LOCAL.SCRAPAWARD=0b48
+      LOCAL.SCRAPAWARD=0b45
+      LOCAL.SCRAPAWARD=0b46
+   ENDDO
+   SRC.NEWITEM <LOCAL.SCRAPAWARD>
+   SRC.ACT.ATTR=09
+   SRC.ACT.TYPE=T_NORMAL
+   SRC.ACT.BOUNCE
+ELSEIF ( strmatch( "Miscellaneous", "<LOCAL.SCRAPAWARD>" ) )
+   DOSWITCH <EVAL RAND(14)>
+      LOCAL.SCRAPAWARD=i_hourglass
+      LOCAL.SCRAPAWARD=i_anchor
+      LOCAL.SCRAPAWARD=0107a
+      LOCAL.SCRAPAWARD=i_post_hitching
+      LOCAL.SCRAPAWARD=i_net
+      LOCAL.SCRAPAWARD=i_horse_shoes
+      LOCAL.SCRAPAWARD=i_model_ship
+      LOCAL.SCRAPAWARD=i_chicken_plucked
+      LOCAL.SCRAPAWARD=i_dress_form
+      LOCAL.SCRAPAWARD=i_flour_bowl
+      LOCAL.SCRAPAWARD=i_curtain_banner_nw
+      LOCAL.SCRAPAWARD=i_scarecrow
+      LOCAL.SCRAPAWARD=i_water_bloody
+      LOCAL.SCRAPAWARD=i_music_stand
+   ENDDO
+   SRC.NEWITEM <LOCAL.SCRAPAWARD>
+   SRC.ACT.ATTR=09
+   SRC.ACT.TYPE=T_NORMAL
+   SRC.ACT.BOUNCE
+ENDIF
+SERV.LOG <SRC.ACCOUNT> (<SRC.NAME>) received a scrap award (<SRC.ACT.NAME>).
+RETURN 1
+
+
+[FUNCTION ticket_counter]
+  VAR.REMOVED	= 0
+  
+  if ( <SRC.ACT.VALUE> > 10000 )
+   VAR.TICKETS	= <eval ( (<SRC.ACT.VALUE> * <SRC.ACT.AMOUNT>) / 8)>
+  elseif ( <SRC.ACT.VALUE> > 5000 )
+     VAR.TICKETS	= <eval ( (<SRC.ACT.VALUE> * <SRC.ACT.AMOUNT>) / 5)>
+  else
+     VAR.TICKETS	= <eval ( (<SRC.ACT.VALUE> * <SRC.ACT.AMOUNT>) / 2)>
+  endif
+  
+  if ( 0 )
+  elseif ( !strcmpi( "<SRC.ACT.NAME>", "resurrection robe" ) )
+    VAR.TICKETS = 0
+  elseif ( <SRC.ACT.DISPID> == 019bb )
+    VAR.TICKETS = <eval (<SRC.ACT.VALUE> / 3)>
+  elseif ( <SRC.ACT.DISPID> == 0e31 )
+    VAR.TICKETS = <eval (<SRC.ACT.VALUE> / 3)>
+  elseif ( <SRC.ACT.DISPID> == 01509 )
+    VAR.TICKETS = <eval (<SRC.ACT.VALUE> / 3)>
+  elseif ( <SRC.ACT.DISPID> == 01512 )
+    VAR.TICKETS = <eval (<SRC.ACT.VALUE> / 3)>
+  elseif ( <SRC.ACT.DISPID> == 01513 )
+    VAR.TICKETS = <eval (<SRC.ACT.VALUE> / 3)>
+  elseif ( <SRC.ACT.BASEID> == i_key_darrell )
+    VAR.TICKETS = 500
+  elseif ( <SRC.ACT.BASEID> == i_magic_bag )
+    VAR.TICKETS = 500
+  elseif (<SRC.ACT.MORE1> == c_llama )
+    VAR.TICKETS = 500
+  elseif (<SRC.ACT.MORE1> == c_horse_tan )
+    VAR.TICKETS = 135
+  elseif (<SRC.ACT.MORE1> == c_horse_brown_dk )
+    VAR.TICKETS = 135
+  elseif (<SRC.ACT.MORE1> == c_horse_brown_lt )
+    VAR.TICKETS = 135
+  elseif (<SRC.ACT.MORE1> == c_horse_gray )
+    VAR.TICKETS = 135
+   elseif ( <SRC.ACT.BASEID> == i_silver_pestle_mortar )
+    VAR.TICKETS = 500
+  elseif ( <SRC.ACT.BASEID>==i_prize_fish )
+    VAR.TICKETS = 200
+  elseif ( <SRC.ACT.BASEID>==i_fish_prize )
+    VAR.TICKETS = 125
+  elseif ( <SRC.ACT.TYPE> == t_armor )
+  elseif ( <SRC.ACT.TYPE> == t_armor_leather )
+  elseif ( <SRC.ACT.TYPE> == t_weapon_mace_smith )
+  elseif ( <SRC.ACT.TYPE> == t_weapon_mace_sharp )
+  elseif ( <SRC.ACT.TYPE> == t_weapon_mace_staff )
+  elseif ( <SRC.ACT.TYPE> == t_weapon_mace_crook )
+  elseif ( <SRC.ACT.TYPE> == t_weapon_mace_pick )
+  elseif ( <SRC.ACT.TYPE> == t_weapon_sword )
+  elseif ( <SRC.ACT.TYPE> == t_weapon_fence )
+  elseif ( <SRC.ACT.TYPE> == t_weapon_axe )
+  elseif ( <SRC.ACT.TYPE> == t_weapon_bow )
+  elseif ( <SRC.ACT.TYPE> == t_weapon_xbow )
+  elseif ( <SRC.ACT.TYPE> == t_shield )
+  elseif ( <SRC.ACT.TYPE> == t_map )
+  elseif ( <SRC.ACT.TYPE> == t_mortar )
+  elseif ( <SRC.ACT.TYPE> == t_musical )
+  elseif ( <SRC.ACT.TYPE> == t_clothing )
+    IF <SRC.ACT.COLOR> == 0485		//Pitch Black
+       VAR.TICKETS = <EVAL (<VAR.TICKETS> + 100 )>
+    ELSEIF <SRC.ACT.COLOR> == 0480	//Ice
+       VAR.TICKETS = <EVAL (<VAR.TICKETS> + 200 )>
+    ELSEIF <SRC.ACT.COLOR> == 048f	//Angel
+       VAR.TICKETS = <EVAL (<VAR.TICKETS> + 200 )>
+    ELSEIF <SRC.ACT.COLOR> == 0481	//White
+       VAR.TICKETS = <EVAL (<VAR.TICKETS> + 200 )>
+    ELSEIF <SRC.ACT.COLOR> == 048c	//Passion Pink
+       VAR.TICKETS = <EVAL (<VAR.TICKETS> + 200 )>
+    ELSEIF <SRC.ACT.COLOR> == 0483	//Purple
+       VAR.TICKETS = <EVAL (<VAR.TICKETS> + 200 )>
+    ELSEIF <SRC.ACT.COLOR> == 0484	//Pure White
+       VAR.TICKETS = <EVAL (<VAR.TICKETS> + 200 )>
+    ELSEIF <SRC.ACT.COLOR> == 0486	//Fire
+       VAR.TICKETS = <EVAL (<VAR.TICKETS> + 200 )>
+    ELSEIF <SRC.ACT.COLOR> == 0487	//Green
+       VAR.TICKETS = <EVAL (<VAR.TICKETS> + 100 )>
+    ELSEIF <SRC.ACT.COLOR> == 048a	//Soft Green
+       VAR.TICKETS = <EVAL (<VAR.TICKETS> + 100 )>
+    ELSEIF <SRC.ACT.COLOR> == 079e	//Dark Bronze
+       VAR.TICKETS = <EVAL (<VAR.TICKETS> + 200 )>
+    ELSEIF <SRC.ACT.COLOR> == 0488	//Bronze
+       VAR.TICKETS = <EVAL (<VAR.TICKETS> + 100 )>
+    ELSEIF <SRC.ACT.COLOR> == 0489	//Blue
+       VAR.TICKETS = <EVAL (<VAR.TICKETS> + 100 )>
+    ELSEIF <SRC.ACT.COLOR> == 048d	//Soft Blue
+       VAR.TICKETS = <EVAL (<VAR.TICKETS> + 100 )>
+    ELSEIF <SRC.ACT.COLOR> == 048b	//Soft Purple
+       VAR.TICKETS = <EVAL (<VAR.TICKETS> + 100 )>
+    ELSEIF <SRC.ACT.COLOR> == 048e	//Strong Pink (old)
+       VAR.TICKETS = <EVAL (<VAR.TICKETS> + 200 )>
+    ELSEIF <SRC.ACT.COLOR> == 0a10	//Strong Pink (new)
+       VAR.TICKETS = <EVAL (<VAR.TICKETS> + 200 )>
+    ELSEIF <SRC.ACT.COLOR> == 0455	//Black
+       VAR.TICKETS = <EVAL (<VAR.TICKETS> + 200 )>
+    ENDIF
+  elseif ( <SRC.ACT.TYPE> == t_carpentry )
+  elseif ( <SRC.ACT.TYPE> == t_jewelry )
+  elseif ( <SRC.ACT.TYPE> == t_chair )
+  elseif ( <SRC.ACT.TYPE> == t_table )
+  elseif ( <SRC.ACT.TYPE> == t_s_mason_item)
+  elseif ( <SRC.ACT.TYPE> == t_shaft)
+  elseif ( <SRC.ACT.TYPE> == t_log)
+  elseif ( <SRC.ACT.TYPE> == t_hide)
+  elseif ( <SRC.ACT.TYPE> == t_skill_jewelry )
+  elseif ( <SRC.ACT.DISPID> == i_dec_armor2_iron)
+  elseif ( <SRC.ACT.DISPID> == i_dec_armor_iron)
+  elseif ( <SRC.ACT.DISPID> == i_dec_armor2_iron_d)
+    VAR.TICKETS = <eval (<SRC.ACT.VALUE> / 2)>
+  elseif ( <SRC.ACT.TYPE> == t_wand )
+    VAR.TICKETS	= <eval (<SRC.ACT.VALUE> / 3)>
+  elseif ( <SRC.ACT.TYPE> == t_potion )
+    VAR.TICKETS	= <EVAL (<eval (<SRC.ACT.VALUE> / 3)> * <SRC.ACT.AMOUNT>)>
+  elseif ( <SRC.ACT.TYPE> == t_ingot )
+    VAR.TICKETS = <eval (1+((<SRC.ACT.VALUE> * <SRC.ACT.AMOUNT> )/ 10))>
+  elseif ( <SRC.ACT.TYPE> == t_scroll )
+    VAR.TICKETS = <eval (1+((<SRC.ACT.VALUE> * <SRC.ACT.AMOUNT> )/ 10))>
+  elseif ( <SRC.ACT.TYPE> == t_gem )
+    VAR.TICKETS	= <eval (1+((<SRC.ACT.VALUE> * <SRC.ACT.AMOUNT> )/  5))>
+  elseif ( <SRC.ACT.TYPE> == t_weapon_arrow )
+    VAR.TICKETS = <eval (1+((<SRC.ACT.VALUE> * <SRC.ACT.AMOUNT> )/ 20))>
+  elseif ( <SRC.ACT.TYPE> == t_weapon_bolt )
+    VAR.TICKETS = <eval (1+((<SRC.ACT.VALUE> * <SRC.ACT.AMOUNT> )/ 20))>
+  elseif ( <SRC.ACT.BASEID> == i_rare_tub )
+    VAR.TICKETS = <eval ((7500 * <SRC.ACT.MOREX>) / 100)>
+  elseif ( <SRC.ACT.DISPID> == i_gears_iron )
+  elseif ( <SRC.ACT.DISPID> == i_hinge_iron )
+  elseif ( <SRC.ACT.DISPID> == i_springs_iron )
+  elseif ( <SRC.ACT.DISPID> == i_nails_iron )
+  elseif ( <SRC.ACT.DISPID> == i_wire_iron )
+  elseif ( <SRC.ACT.BASEID> == i_necro_book1 )
+  elseif ( <SRC.ACT.BASEID> == i_necro_book2 )
+  elseif ( <SRC.ACT.BASEID> == i_necro_book3 )
+  elseif ( <SRC.ACT.BASEID> == i_necro_book4 )
+  else
+    VAR.TICKETS = 0
+  endif
+
+  if ( <SRC.ACT.ATTR> & attr_magic )
+     VAR.TICKETS	= <eval ((<VAR.TICKETS>*3)/2)>
+  endif
+
+  if ( ( <argn> > 0 ) && ( <VAR.TICKETS> > 0 ) )
+     VAR.REMOVED	= 1
+     SRC.ACT.REMOVE
+  endif
+
+  VAR.ticket_count	= <eval (<var.ticket_count>+<var.tickets>)>
+
+
+[FUNCTION ticket_count_rec]
+  if ( !<SRC.TARG.findcont(<args>).uid> )
+     return 0
+  endif
+  VAR.REMOVED	= 0
+  SRC.ACT	= <SRC.TARG.findcont(<args>).uid>
+  if ( 0 )
+  elseif ( <SRC.ACT.ATTR> & attr_newbie )
+  elseif ( <SRC.ACT.type> == t_container )
+  else
+     IF (<EVAL <SRC.TAG.APPRAISE>>=1)
+        ticket_counter 0
+     ELSE
+        ticket_counter 1     
+     ENDIF
+  endif
+  if ( <VAR.REMOVED> )
+     ticket_count_rec <args>
+  else
+     ticket_count_rec <eval (<args>+1)>
+  endif
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+[DIALOG d_reward_system]
+100,60
+gumppic    0    0 <eval   0ce>			// top
+gumppic   44    0 <eval   0c9>
+gumppic  471    0 <eval   0cf>
+
+gumppic    0   44 <eval   0ca>			// middle
+gumppic   44   44 <eval  0a2c>
+gumppic  471   44 <eval   0cb>
+
+gumppic    0  360 <eval   0cc>			// bottom
+gumppic   44  360 <eval   0e9>
+gumppic  471  360 <eval   0cd>
+
+gumppic    0  250 <eval   0cc>			// bottom
+gumppic   44  250 <eval   0e9>
+gumppic  471  250 <eval   0cd>
+
+button    75  300 <eval 015cd> <eval 015ce> 1 0 1		// get tickets
+dtext     65  360 0 Obtain tickets
+
+button    390  300 <eval 015cd> <eval 015ce> 1 0 7		// get tickets
+dtext     395  360 0 Appraise
+
+button    230  300 <eval 015cd> <eval 015ce> 1 0 10		// get tickets
+dtext     210  360 0 Exchange Tickets
+
+  button  100   50  <eval 0868> <eval 0867> 1 0 2
+  button  100   85  <eval 0868> <eval 0867> 1 0 3
+  button  100  120  <eval 0868> <eval 0867> 1 0 4
+  button  100  155  <eval 0868> <eval 0867> 1 0 5
+  button  100  190  <eval 0868> <eval 0867> 1 0 6
+  //button  100  225  <eval 0868> <eval 0867> 1 0 8
+
+  //button  280  50  <eval 0868> <eval 0867> 1 0 9
+
+  dtext    160   20  0 Select a Reward Category
+  dtext    140   55  0 Magic
+  dtext    140   90  0 Fashion
+  dtext    140  125  0 Decoration
+  dtext    140  160  0 Waste
+  dtext    140  195  0 Challenge
+ // dtext    140  230  0 AFK Permits
+  
+  //dtext    320   55  0 Skill Replacement
+
+
+[DIALOG d_reward_system TEXT]
+
+
+[DIALOG d_reward_system BUTTON]
+ONBUTTON=1
+src.sysmessage (hint: place the items in a container)
+TARGET What do you want to hand in for reward?
+return 1
+
+ONBUTTON=2
+SRC.DIALOG D_REWARD_MAGIC
+return 1
+
+ONBUTTON=3
+SRC.DIALOG D_REWARD_FASHION
+return 1
+
+ONBUTTON=4
+SRC.DIALOG D_REWARD_DECORATION
+return 1
+
+ONBUTTON=5
+SRC.DIALOG D_REWARD_WASTE
+return 1
+
+ONBUTTON=6
+SRC.DIALOG D_REWARD_CHALLENGE
+return 1
+
+ONBUTTON=7
+SRC.TAG.APPRAISE=1
+src.sysmessage (hint: place the items in a container)
+TARGET What do you want to appraise?
+return 1
+
+//ONBUTTON=8
+//SRC.DIALOG d_reward_afk
+//RETURN 1
+
+//ONBUTTON=9
+//SRC.DIALOG d_reward_replacement
+//RETURN 1
+
+ONBUTTON=10
+SRC.ACT = master_ticket_stone
+SRC.DIALOG d_Ticket_Stone
+return 1
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+[DIALOG d_reward_Magic]
+100,60
+gumppic    0    0 <eval   0ce>			// top
+gumppic   44    0 <eval   0c9>
+gumppic  471    0 <eval   0cf>
+
+gumppic    0   44 <eval   0ca>			// middle
+gumppic   44   44 <eval  0a2c>
+gumppic  471   44 <eval   0cb>
+
+gumppic    0  360 <eval   0cc>			// bottom
+gumppic   44  360 <eval   0e9>
+gumppic  471  360 <eval   0cd>
+
+gumppic    0  250 <eval   0cc>			// bottom
+gumppic   44  250 <eval   0e9>
+gumppic  471  250 <eval   0cd>
+
+dtext    200   50  0  MAGIC:		// reward type
+dtext    200   70  0  REQUIRED:
+
+page 1
+  button   340  300 <eval 0119a> <eval 01199> 1 0 1		// Main Menu
+  dtext    340  340 0 Main
+  dtext    340  355 0 Menu
+  button   410  300 <eval 01196> <eval 01197> 0 2		// NEXT page
+  dtext    410  340 0 Next
+  dtext    410  355 0 Page
+  button   195  300 <eval 01581> <eval 01582> 1 0 2		// PICK REWARD
+  dtext    175  360 0 Pick Reward
+
+  //DESCRIPTION
+  dtext      320   49  <eval 0185> 		Flux of Might
+  dtext      320   70  <eval  036> 		140.000 gold pieces
+  dtext      320   91  <eval  036> 		30.000 reward tickets
+  dtext      200  150  0           		These rare potions yield 1 extra permanent
+  dtext      200  168  0           		Strength, provided you're at the stat
+  dtext      200  186  0           		cap, above 100 Strength and less than
+  dtext      200  204  0           		295 total stat points
+  
+  // DRAWING
+  tilepic    50   50 3676
+  tilepic    90  100 3679
+  tilepic   130   70 3682
+  tilepic   120  170 3685
+  tilepic    50  155 3688
+  tilepic    70   75 14190
+
+page 2
+  button   340  300 <eval 0119a> <eval 01199> 0 1		// PREVIOUS page
+  dtext    340  340 0 Previous
+  dtext    340  355 0 Page
+  button   410  300 <eval 01196> <eval 01197> 0 3		// NEXT page
+  dtext    410  340 0 Next
+  dtext    410  355 0 Page
+  button   195  300 <eval 01581> <eval 01582> 1 0 3		// PICK REWARD
+  dtext    175  360 0 Pick Reward
+
+  // DESCRIPTION
+  dtext      320   49  <eval 0185> 		Flux of Brilliance
+  dtext      320   70  <eval  036> 		140.000 gold pieces
+  dtext      320   91  <eval  036> 		30.000 reward tickets
+  dtext      200  150  0           		These rare potions yield 1 extra permanent
+  dtext      200  168  0           		Intelligence, provided you're at the stat
+  dtext      200  186  0           		cap, above 100 Intelligence and less than
+  dtext      200  204  0           		295 total stat points
+
+  // DRAWING
+  tilepic    50   50 3679
+  tilepic    90  100 3688
+  tilepic   130   70 3685
+  tilepic   120  170 3682
+  tilepic    50  155 3676
+  tilepic    70   75 14190
+  
+page 3
+  button   340  300 <eval 0119a> <eval 01199> 0 2		// PREVIOUS page
+  dtext    340  340 0 Previous
+  dtext    340  355 0 Page
+  button   410  300 <eval 01196> <eval 01197> 0 4		// NEXT page
+  dtext    410  340 0 Next
+  dtext    410  355 0 Page
+  button   195  300 <eval 01581> <eval 01582> 1 0 4		// PICK REWARD
+  dtext    175  360 0 Pick Reward
+
+  // DESCRIPTION
+  dtext      320   49  <eval 0185> 		Flux of Haste
+  dtext      320   70  <eval  036> 		140.000 gold pieces
+  dtext      320   91  <eval  036> 		30.000 reward tickets
+  dtext      200  150  0           		These rare potions yield 1 extra permanent
+  dtext      200  168  0           		Dexterity, provided you're at the stat
+  dtext      200  186  0           		cap, above 100 Dexterity and less than
+  dtext      200  204  0           		295 total stat points
+  
+  // DRAWING
+  tilepic    50   50 3676
+  tilepic    90  100 3685
+  tilepic   130   70 3682
+  tilepic   120  170 3688
+  tilepic    50  155 3679
+  tilepic    70   75 14190
+
+page 4
+  button   340  300 <eval 0119a> <eval 01199> 0 3		// PREVIOUS page
+  dtext    340  340 0 Previous
+  dtext    340  355 0 Page
+  button   410  300 <eval 01196> <eval 01197> 0 5		// NEXT page
+  dtext    410  340 0 Next
+  dtext    410  355 0 Page
+  button   150  300 <eval 01581> <eval 01582> 1 0 5		// New Jewel
+  dtext    145  360 0 New Jewel
+  
+  button   50  300 <eval 01581> <eval 01582> 1 0 10		// Skill Re-roll
+  dtext    45  360 0 Skill Re-roll
+  
+  button   250  300 <eval 01581> <eval 01582> 1 0 11		// Bonus Re-roll
+  dtext    245  360 0 Bonus Re-roll
+
+  // DESCRIPTION
+  dtext      320   49  <eval 0185> 		Magic Jewelry
+  dtext      320   70  <eval  036> 		32.500 gps (New jewel)
+  dtext      320   91  <eval  036> 		32.500 gps (Re-roll)
+  //dtext      320   91  <eval  036> 		5.000 reward tickets
+  dtext      200  150  0           		Get a jewel to boost your skills with fashionable
+  dtext      200  168  0           		necklaces, rings, bracelets and earrings by  
+  dtext      200  186  0           		picking a New Jewel, or Re-roll only the skill or 
+  dtext      200  204  0              only the skill bonus amount of a current owned 
+  dtext      200  222  0              piece of jewelry.
+  // DRAWING
+  tilepic    70   75 4050
+  gumppic     0   85 <eval 0c541>
+  tilepic    90  115 4233
+  tilepic   110  135 4232
+
+page 5
+  button   340  300 <eval 0119a> <eval 01199> 0 4		// PREVIOUS page
+  dtext    340  340 0 Previous
+  dtext    340  355 0 Page
+  button   410  300 <eval 01196> <eval 01197> 0 6		// NEXT page
+  dtext    410  340 0 Next
+  dtext    410  355 0 Page
+  button   195  300 <eval 01581> <eval 01582> 1 0 6		// PICK REWARD
+  dtext    175  360 0 Pick Reward
+
+  // DESCRIPTION
+  dtext      320   49  <eval 0185> 		Penance Potion
+  dtext      320   70  <eval  036> 		50.000 reward tickets
+  dtext      200  150  0           		Drink this potion if you have >= 100 
+  dtext      200  168  0           		kills to lose 20 kills.  Warning:
+  dtext      200  186  0           		Paying penance has life threatening
+  dtext      200  204  0           		effects.  Use with caution.
+
+  // DRAWING
+  tilepic    70  100 7575
+  tilepic    90  100 7576
+  tilepic    93  166 7427
+  tilepic    98  150 6188
+
+page 6
+  button   340  300 <eval 0119a> <eval 01199> 0 5		// PREVIOUS page
+  dtext    340  340 0 Previous
+  dtext    340  355 0 Page
+  button   410  300 <eval 01196> <eval 01197> 0 7		// NEXT page
+  dtext    410  340 0 Next
+  dtext    410  355 0 Page
+  button   195  300 <eval 01581> <eval 01582> 1 0 7		// PICK REWARD
+  dtext    175  360 0 Pick Reward
+
+  // DESCRIPTION
+  dtext      320   49  <eval 0185> 		Hair Growth Stunter
+  dtext      320   70  <eval  036> 		5000 gold pieces
+  dtext      200  132  0           		This newly discovered mixture slows 
+  dtext      200  150  0           		the growth of hair by 1 week! Top 
+  dtext      200  168  0          		scientists have deemed it safe to
+  dtext      200  186  0           		rinse 4-5 times for longer results.
+  dtext      200  204  0           		Cutting/Changing hair nulifies results.
+
+  // DRAWING
+  tilepic    91  142 4102
+  tilepic    50  140 3590
+  tilepic    59  138 3594
+  tilepic    120  140 3591
+  tilepic    133  138 3587
+
+page 7
+  button   340  300 <eval 0119a> <eval 01199> 0 6		// PREVIOUS page
+  dtext    340  340 0 Previous
+  dtext    340  355 0 Page
+ // button   410  300 <eval 01196> <eval 01197> 0 8		// NEXT page
+ // dtext    410  340 0 Next
+  //dtext    410  355 0 Page
+  button   195  300 <eval 01581> <eval 01582> 1 0 8		// PICK REWARD
+  dtext    175  360 0 Pick Reward
+
+  // DESCRIPTION
+  dtext      265   49  <eval 0185> 		Permanent Hair Growth Stunter
+  dtext      320   70  <eval  036> 		35.000 reward tickets
+  dtext      200  150  0           		This newly discovered mixture halts 
+  dtext      200  168  0           		the growth of hair completely!           		
+  dtext      200  186  0           		Cutting/Changing hair nulifies results.
+
+  // DRAWING
+  tilepic    100  142 3835
+  tilepic    50  140 3590
+  tilepic    59  138 3594
+  tilepic    120  140 3591
+  tilepic    133  138 3587
+
+page 8
+  button   340  300 <eval 0119a> <eval 01199> 0 7		// PREVIOUS page
+  dtext    340  340 0 Previous
+  dtext    340  355 0 Page
+  button   195  300 <eval 01581> <eval 01582> 1 0 9		// PICK REWARD
+  dtext    175  360 0 Pick Reward
+
+  // DESCRIPTION
+  dtext      265   49  <eval 0185> 		Mark Rune Blessing
+  dtext      320   70  <eval  036> 		15.000 Reward Tickets
+  dtext      200  150  0           		This magical deed seems to 
+  dtext      200  168  0           		make runes never leave your side!           		
+  dtext      200  186  0           		Ergo: Newbies Runes.
+
+  // DRAWING
+  tilepic    100  142 01f14
+
+[DIALOG d_reward_MAGIC TEXT]
+
+
+[DIALOG d_reward_MAGIC BUTTON]
+ONBUTTON=1
+   SRC.DIALOG D_REWARD_SYSTEM
+   RETURN 1
+
+ONBUTTON=2
+   VAR.RETURN	= 0
+   VAR.GOLD	= 140000
+   VAR.TICKETS	= 30000
+   VAR.RUN		= 0
+   VAR.ITEM	= i_flux_might
+   IF (<SRC.RESTEST 30000 i_reward_ticket>)
+      SRC.f_reward125a 1
+   ELSE
+      SRC.SYSMESSAGE You do not have enough reward tickets.
+   ENDIF
+   RETURN 1
+
+ONBUTTON=3
+   VAR.RETURN	= 0
+   VAR.GOLD	= 140000
+   VAR.TICKETS	= 30000
+   VAR.RUN		= 0
+   VAR.ITEM	= i_flux_brilliance
+   IF (<SRC.RESTEST 30000 i_reward_ticket>)
+      SRC.f_reward125a 1
+   ELSE
+      SRC.SYSMESSAGE You do not have enough reward tickets.
+   ENDIF
+   RETURN 1
+
+ONBUTTON=4
+   VAR.RETURN	= 0
+   VAR.GOLD	= 140000
+   VAR.TICKETS	= 30000
+   VAR.RUN		= 0
+   VAR.ITEM	= i_flux_haste
+   IF (<SRC.RESTEST 30000 i_reward_ticket>)
+      SRC.f_reward125a 1
+   ELSE
+      SRC.SYSMESSAGE You do not have enough reward tickets.
+   ENDIF
+   RETURN 1
+
+ONBUTTON=5
+   VAR.RETURN	= 0
+   VAR.GOLD	= 32500
+//   VAR.TICKETS	= 5000
+
+//   IF (<SRC.RESTEST 5000 i_reward_ticket>)
+      LOCAL.RAND	= <eval rand(4))>
+      if ( 0 )
+      elseif ( <LOCAL.RAND>	== 0 )
+         VAR.ITEM	= <EVAL { i_skill_necklace_1 1 i_skill_necklace_2 1 i_skill_necklace_3 1 }>
+         VAR.RUN	= 1
+         VAR.CALL	= f_finish_skill_item necklace
+      elseif ( <LOCAL.RAND>	== 1 )
+         VAR.ITEM	= i_skill_earrings
+         VAR.RUN	= 1
+         VAR.CALL	= f_finish_skill_item earrings
+      elseif ( <LOCAL.RAND>	== 2 )
+         VAR.ITEM	= i_skill_ring
+         VAR.RUN	= 1
+         VAR.CALL	= f_finish_skill_item ring
+      elseif ( <LOCAL.RAND>	== 3 )
+         VAR.ITEM	= i_skill_bracelet
+         VAR.RUN	= 1
+         VAR.CALL	= f_finish_skill_item bracelet
+      endif
+      SRC.f_reward125a 1
+//   ELSE
+//      SRC.SYSMESSAGE You do not have enough reward tickets.
+//   ENDIF
+   RETURN 1
+
+ONBUTTON=6
+   VAR.RETURN	= 0
+   VAR.GOLD	= 0
+   VAR.TICKETS	= 50000
+   VAR.RUN		= 0
+   VAR.ITEM	= i_penance_potion
+   IF (<SRC.RESTEST 50000 i_reward_ticket>)
+      SRC.f_reward125a 1
+   ELSE
+      SRC.SYSMESSAGE You do not have enough reward tickets
+   ENDIF
+   RETURN 1
+
+ONBUTTON=7
+   VAR.RETURN	= 0
+   VAR.GOLD	= 5000
+   VAR.TICKETS	= 0
+   VAR.RUN		= 0
+   VAR.ITEM	= i_hair_potion
+
+   SRC.f_reward125a 1
+   RETURN 1
+
+ONBUTTON=8
+   VAR.RETURN	= 0
+   VAR.GOLD	= 0
+   VAR.TICKETS	= 35000
+   VAR.RUN		= 0
+   VAR.ITEM	= i_perm_hair_potion
+   IF (<SRC.RESTEST 35000 i_reward_ticket>)
+      SRC.f_reward125a 1
+   ELSE
+      SRC.SYSMESSAGE You do not have enough reward tickets
+   ENDIF
+   RETURN 1
+   
+ONBUTTON=9
+   VAR.RETURN	= 0
+   VAR.GOLD	= 0
+   VAR.TICKETS	= 15000
+   VAR.RUN		= 0
+   VAR.ITEM	= i_mark_rune_newbie
+   IF (<SRC.RESTEST 15000 i_reward_ticket>)
+      SRC.f_reward125a 1
+   ELSE
+      SRC.SYSMESSAGE You do not have enough reward tickets
+   ENDIF
+   RETURN 1
+   
+ONBUTTON=10
+
+SRC.f_jewelry_skill_changer125a
+RETURN 1
+
+ONBUTTON=11
+
+SRC.f_jewelry_skillbonus_changer125a
+RETURN 1
+   
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+[DIALOG d_reward_FASHION]
+100,60
+gumppic    0    0 <eval   0ce>			// top
+gumppic   44    0 <eval   0c9>
+gumppic  471    0 <eval   0cf>
+
+gumppic    0   44 <eval   0ca>			// middle
+gumppic   44   44 <eval  0a2c>
+gumppic  471   44 <eval   0cb>
+
+gumppic    0  360 <eval   0cc>			// bottom
+gumppic   44  360 <eval   0e9>
+gumppic  471  360 <eval   0cd>
+
+gumppic    0  250 <eval   0cc>			// bottom
+gumppic   44  250 <eval   0e9>
+gumppic  471  250 <eval   0cd>
+
+dtext    200   50  0  FASHION:		//Reward Type
+dtext    200   70  0  REQUIRED:
+
+page 1
+  button    340  300  <eval 0119a> <eval 01199> 1 0 1		// Main Menu
+  dtext      340  340  0 Main
+  dtext      340  355  0 Menu
+  button    410  300  <eval 01196> <eval 01197> 0 2		// NEXT page
+  dtext      410  340  0 Next
+  dtext      410  355  0 Page
+  button   195  300 <eval 01581> <eval 01582> 1 0 2		// PICK REWARD
+  dtext     175  360 0 Pick Reward
+
+  // DESCRIPTION
+  dtext      320   49  <eval 0185> 		Steed Dying Pigment
+  dtext      320   70  <eval  036> 		100.000 gold pieces
+  dtext      200  150  0           		These pigment will change the colour of
+  dtext      200  168  0           		your steed. Just ride and use the tub to
+  dtext      200  186  0           		give it a brand new face (1 use).
+
+  // DRAWING
+  tilepic    70   75 14190
+  tilepic    80   60 14190
+  tilepic    70  100 16382
+  tilepic    85  205  4011
+
+page 2
+  button    340  300  <eval 0119a> <eval 01199> 0 1		// Previous Page
+  dtext      340  340  0 Previous
+  dtext      340  355  0 Page
+  button    410  300  <eval 01196> <eval 01197> 0 3		// NEXT page
+  dtext      410  340  0 Next
+  dtext      410  355  0 Page
+  button   195  300 <eval 01581> <eval 01582> 1 0 3		// PICK REWARD
+  dtext     175  360 0 Pick Reward
+
+  // DESCRIPTION
+  dtext      320   49  <eval 0185> 		Reward Dye tub
+  dtext      320   70  <eval  036> 		15 PvP tickets
+  dtext      200  150  0           		With this tub it is possible to
+  dtext      200  168  0           		dye armor, weapons, hair and 
+  dtext      200  186  0           		backpacks in rare colors.
+
+  // DRAWING
+  tilepic    70   75 14190
+  tilepic    80   60 14190
+  tilepic    60  100 5068
+  tilepic    80  150 3933
+  tilepic    110 120 7030
+  tilepic    85  205  4011
+  
+page 3
+  button    340  300  <eval 0119a> <eval 01199> 0 2		// Previous Page
+  dtext      340  340  0 Previous
+  dtext      340  355  0 Page
+  button    410  300  <eval 01196> <eval 01197> 0 4		// NEXT page
+  dtext      410  340  0 Next
+  dtext      410  355  0 Page
+  button   195  300 <eval 01581> <eval 01582> 1 0 4		// PICK REWARD
+  dtext     175  360 0 Pick Reward
+
+  // DESCRIPTION
+  dtext      320   49  <eval 0185> 		Reward Dye tub
+  dtext      320   70  <eval  036> 		70 PvP tickets
+  dtext      200  150  0           		With this tub it is possible to
+  dtext      200  168  0           		dye spellbook, faction shields and
+  dtext      200  186  0           		other blessed items in rare colors.
+
+  // DRAWING
+  tilepic    70   75 14190
+  tilepic    80   60 14190
+  tilepic    60  100 3643
+  //tilepic    80  150 2482
+  tilepic    110 120 7108
+  tilepic    85  205  4011
+
+page 4
+  button    340  300  <eval 0119a> <eval 01199> 0 3		// Previous Page
+  dtext      340  340  0 Previous
+  dtext      340  355  0 Page
+  button    410  300  <eval 01196> <eval 01197> 0 5		// NEXT page
+  dtext      410  340  0 Next
+  dtext      410  355  0 Page
+  button   195  300 <eval 01581> <eval 01582> 1 0 5		// PICK REWARD
+  dtext     175  360 0 Pick Reward
+
+  // DESCRIPTION
+  dtext      320   49  <eval 0185> 		Reward Dye tub
+  dtext      320   70  <eval  036> 		25 Trader tickets
+  dtext      200  150  0           		With this tub it is possible to
+  dtext      200  168  0           		dye armor, weapons, hair and
+  dtext      200  186  0           		backpacks in rare colors.
+
+  // DRAWING
+  tilepic    70   75 14190
+  tilepic    80   60 14190
+  tilepic    60  100 5068
+  tilepic    80  150 3933
+  tilepic    110 120 7030
+  tilepic    85  205  4011
+  
+page 5
+  button    340  300  <eval 0119a> <eval 01199> 0 4		// Previous Page
+  dtext      340  340  0 Previous
+  dtext      340  355  0 Page
+  button    410  300  <eval 01196> <eval 01197> 0 7		// NEXT page
+  dtext      410  340  0 Next
+  dtext      410  355  0 Page
+  button   195  300 <eval 01581> <eval 01582> 1 0 6		// PICK REWARD
+  dtext     175  360 0 Pick Reward
+
+  // DESCRIPTION
+  dtext      320   49  <eval 0185> 		Reward Dye tub
+  dtext      320   70  <eval  036> 		115 Trader tickets
+  dtext      200  150  0           		With this tub it is possible to
+  dtext      200  168  0           		dye spellbook, faction shields and
+  dtext      200  186  0           		other blessed items in rare colors.
+
+  // DRAWING
+  tilepic    70   75 14190
+  tilepic    80   60 14190
+  tilepic    60  100 3643
+  //tilepic    80  150 2482
+  tilepic    110 120 7108
+  tilepic    85  205  4011
+  
+page 7
+  button    340  300  <eval 0119a> <eval 01199> 0 5		// Previous Page
+  dtext      340  340  0 Previous
+  dtext      340  355  0 Page
+  button   195  300 <eval 01581> <eval 01582> 1 0 7		// PICK REWARD
+  dtext     175  360 0 Pick Reward
+
+  // DESCRIPTION
+  dtext      320   49  <eval 0185> 		Mysterious Box
+  dtext      320   70  <eval  036> 		30 PvP tickets
+  dtext      200  150  0           		If you are lucky enough you may
+  dtext      200  168  0           		get user items, magicals or fluxs.
+  dtext      200  186  0           		Else, you will be retrieved 10 PvP Tickets.
+
+  // DRAWING
+  tilepic    80   60 14190
+  tilepic 80 60 5912 
+  tilepic 60 100 5441 
+  tilepic 80 150 5099 
+  tilepic 110 120 5055 
+  tilepic    85  205  9003 
+
+//page 6
+//  button    340  300  <eval 0119a> <eval 01199> 0 5		// Previous Page
+//  dtext      340  340  0 Previous
+//  dtext      340  355  0 Page
+//  button   195  300 <eval 01581> <eval 01582> 1 0 7		// PICK REWARD
+//  dtext     175  360 0 Pick Reward
+
+//  // DESCRIPTION
+//  dtext      320   49  <eval 0185> 		Rare Colour Dye Tubs
+//  dtext      320   70  <eval  036> 		100.000 gold pieces
+//  dtext      200  150  0           		Make a difference, be colourful. These
+//  dtext      200  168  0           		dye tubs will give a new look to any
+//  dtext      200  186  0           		dyeable item (50-100 uses).
+
+//  // DRAWING
+//  tilepic    70   75 14190
+//  tilepic    80   60 14190
+//  tilepic    80   80  7933
+//  tilepic   100  130  7936
+//  tilepic    85  205  4011
+
+
+[DIALOG d_reward_FASHION TEXT]
+
+
+[DIALOG d_reward_FASHION BUTTON]
+ONBUTTON=1
+   SRC.DIALOG D_REWARD_SYSTEM
+   return 1
+
+ONBUTTON=2
+   VAR.RETURN	= 0
+   VAR.GOLD	= 100000
+   VAR.TICKETS	= 0
+   VAR.ITEM	= i_mount_tub
+   VAR.RUN		= 0
+   SRC.f_reward125a	1
+   return 1
+
+ONBUTTON=3
+   IF (<SRC.RESTEST 15 i_PVPTOKEN>)
+	SRC.CONSUME 15 i_PVPTOKEN
+	SRC.NEWITEM i_pvp_tub_15
+	SRC.ACT.BOUNCE
+   ELSE
+	SRC.SYSMESSAGE "You do not have enough PvP tickets for this item"
+   ENDIF
+   RETURN 1
+
+ONBUTTON=4
+   IF (<SRC.RESTEST 70 i_PVPTOKEN>)
+	SRC.CONSUME 70 i_PVPTOKEN
+	SRC.NEWITEM i_pvp_tub_70
+	SRC.ACT.BOUNCE
+   ELSE
+	SRC.SYSMESSAGE "You do not have enough PvP tickets for this item"
+   ENDIF
+   RETURN 1
+
+ONBUTTON=5
+   IF (<SRC.RESTEST 25 i_tradertoken>)
+	SRC.CONSUME 25 i_tradertoken
+	SRC.NEWITEM i_pvp_tub_15
+	SRC.ACT.BOUNCE
+   ELSE
+	SRC.SYSMESSAGE "You do not have enough Trader tickets for this item"
+   ENDIF
+   RETURN 1
+
+ONBUTTON=6
+   IF (<SRC.RESTEST 115 i_tradertoken>)
+	SRC.CONSUME 115 i_tradertoken
+	SRC.NEWITEM i_pvp_tub_70
+	SRC.ACT.BOUNCE
+   ELSE
+	SRC.SYSMESSAGE "You do not have enough Trader tickets for this item"
+   ENDIF
+   RETURN 1
+
+//ONBUTTON=7
+//VAR.RETURN	= 0
+//VAR.GOLD	= 100000
+//VAR.TICKETS	= 0
+//VAR.ITEM	= i_rare_tub
+//VAR.RUN		= 0
+//SRC.f_reward125a 1
+//return 1
+
+ONBUTTON=7
+    IF (<SRC.RESTEST 30 i_PVPTOKEN>)
+	SRC.CONSUME 30 i_PVPTOKEN
+	SRC.NEWITEM i_box_mysterious
+	SRC.ACT.BOUNCE
+	SRC.LOG <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> BOUGHT A MYSTERIOUS BOX FROM THE REWARD BOARD!
+	VAR0.MYSTERYBOXBOUGHT=<EVAL <VAR0.MYSTERYBOXBOUGHT> +1>
+   ELSE
+	SRC.SYSMESSAGE "You do not have enough PvP tickets for this item"
+   ENDIF
+   RETURN 1
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+[DIALOG d_reward_DECORATION]
+100,60
+gumppic    0    0 <eval   0ce>			// top
+gumppic   44    0 <eval   0c9>
+gumppic  471    0 <eval   0cf>
+
+gumppic    0   44 <eval   0ca>			// middle
+gumppic   44   44 <eval  0a2c>
+gumppic  471   44 <eval   0cb>
+
+gumppic    0  360 <eval   0cc>			// bottom
+gumppic   44  360 <eval   0e9>
+gumppic  471  360 <eval   0cd>
+
+gumppic    0  250 <eval   0cc>			// bottom
+gumppic   44  250 <eval   0e9>
+gumppic  471  250 <eval   0cd>
+
+dtext    200   50  0  DECORATION:		//Reward Type
+dtext    200   70  0  REQUIRED:
+
+
+page 1
+  button   340  300  <eval 0119a> <eval 01199> 1 0 1		// Main Menu
+  dtext    340  340  0 Main
+  dtext    340  355  0 Menu
+  button   410  300  <eval 01196> <eval 01197> 0 2		// next page
+  dtext    410  340  0 Next
+  dtext    410  355  0 Page
+  button   195  300 <eval 01581> <eval 01582> 1 0 2		// PICK REWARD
+  dtext    175  360 0 Pick Reward
+
+  // DESCRIPTION
+
+  dtext      320   49  <eval 0185> 		Potted Plants
+  dtext      320   70  <eval  036> 		40.000 gold pieces
+  dtext      200  150  0           		These attractive potted plants will
+  dtext      200  168  0           		bring beauty to your home, and give
+  dtext      200  186  0           		it a personal touch.
+
+  // DRAWING
+  tilepic    50   50 4552
+  tilepic    90  100 4554
+  tilepic   130   70 4555
+  tilepic   120  170 4556
+  tilepic    50  155 4553
+
+page 2
+  button   340  300  <eval 0119a> <eval 01199> 0 1		// PREVIOUS page
+  dtext    340  340  0 Previous
+  dtext    340  355  0 Page
+  button   410  300  <eval 01196> <eval 01197> 0 3 		// next page
+  dtext    410  340  0 Next
+  dtext    410  355  0 Page
+  button   195  300 <eval 01581> <eval 01582> 1 0 3		// PICK REWARD
+  dtext    175  360 0 Pick Reward
+
+  // DESCRIPTION
+  dtext      320   49  <eval 0185> 		Potted Cacti
+  dtext      320   70  <eval  036> 		40.000 gold pieces
+  dtext      200  150  0           		For those who love the desert,
+  dtext      200  168  0           		potted cacti. They require no
+  dtext      200  186  0           		water.
+
+  // DRAWING
+  tilepic    50   50 7695
+  tilepic    90  100 7696
+  tilepic   130   70 7698
+  tilepic   120  170 7699
+  tilepic    50  155 7700
+
+
+page 3
+  button   340  300  <eval 0119a> <eval 01199> 0 2		// PREVIOUS page
+  dtext    340  340  0 Previous
+  dtext    340  355  0 Page
+  button   410  300  <eval 01196> <eval 01197> 0 4		// next page
+  dtext    410  340  0 Next
+  dtext    410  355  0 Page
+  button   195  300 <eval 01581> <eval 01582> 1 0 4		// PICK REWARD
+  dtext    175  360 0 Pick Reward
+
+  // DESCRIPTION
+  dtext      320   49  <eval 0185> 		Paintings
+  dtext      320   70  <eval  036> 		200.000 gold pieces
+  dtext      200  150  0           		The adoration of art is a skill
+  dtext      200  168  0           		that all should have. Be a master
+  dtext      200  186  0           		of arts with this on your wall. 
+  dtext      200  204  0           		Page to have it renamed (only once).
+
+  // DRAWING
+  tilepic    50   50 3743
+  tilepic    90  100 3745
+  tilepic   130   70 3750
+
+//page 4
+//  button    340  300  <eval 0119a> <eval 01199> 0 4		// PREVIOUS page
+//  text      340  340  0 1
+//  text      340  355  0 3
+//  button   195  300 <eval 01581> <eval 01582> 1 0 40		// PICK REWARD
+//  text     175  360 0 4
+
+//  // DESCRIPTION
+//  dtext      320   49  <eval 0185> 		Miscellaneous Decor
+//  dtext      320   70  <eval  036> 		25.000 gold pieces
+//  dtext      200  150  0           		Give your house a personal touch
+//  dtext      200  168  0           		with these assorted decorative
+//  dtext      200  186  0           		items.
+
+//  // DRAWING
+//  tilepic    50   50 2599
+//  tilepic   115  190 5367
+//  tilepic   100   80 2601
+//  tilepic    50  135 6570
+
+page 4
+  button    340  300  <eval 0119a> <eval 01199> 0 3		// PREVIOUS page
+  dtext    340  340  0 Previous
+  dtext    340  355  0 Page
+ button   410  300  <eval 01196> <eval 01197> 0 5		// next page
+  dtext    410  340  0 Next
+  dtext    410  355  0 Page
+  button   195  300 <eval 01581> <eval 01582> 1 0 5		// PICK REWARD
+  dtext    175  360 0 Pick Reward
+
+  dtext      320   49  <eval 0185> 		Polar Bear Rug (Seasonal Item)
+  dtext      320   70  <eval  036> 		35.000 Reward Tickets
+  dtext      200  150  0           		Give your house a personal touch
+  dtext      200  168  0           		with these new decorative
+  dtext      200  186  0           		items.
+
+tilepic 57 132 7754
+tilepic 79 154 7753
+tilepic 35 116 7755
+tilepic 57 99 7756
+tilepic 79 109 7757
+tilepic 101 132 7758
+tilepic 123 119 7759
+tilepic 101 94 7760
+tilepic 79 84 7761
+
+
+page 5
+  button    340  300  <eval 0119a> <eval 01199> 0 4		// PREVIOUS page
+  dtext    340  340  0 Previous
+  dtext    340  355  0 Page
+  button   410  300  <eval 01196> <eval 01197> 0 6		// next page
+  dtext    410  340  0 Next
+  dtext    410  355  0 Page
+  button   195  300 <eval 01581> <eval 01582> 1 0 6     	// PICK REWARD
+  dtext    175  360 0 Pick Reward
+
+  dtext      320   49  <eval 0185> 		Bear Rug
+  dtext      320   70  <eval  036> 		25.000 Reward Tickets
+  dtext      200  150  0           		Give your house a personal touch
+  dtext      200  168  0           		with these new decorative
+  dtext      200  186  0           		items.
+
+tilepic 68 122 7735
+tilepic 91 144 7734
+tilepic 46 106 7736
+tilepic 68 91 7737
+tilepic 90 99 7738
+tilepic 113 121 7739
+tilepic 135 106 7740
+tilepic 113 85 7741
+tilepic 91 75 7742
+
+
+
+page 6
+  button    340  300  <eval 0119a> <eval 01199> 0 5		// PREVIOUS page
+  dtext    340  340  0 Previous
+  dtext    340  355  0 Page
+  button   410  300  <eval 01196> <eval 01197> 0 7		// next page
+  dtext    410  340  0 Next
+  dtext    410  355  0 Page
+  button   195  300 <eval 01581> <eval 01582> 1 0 7     	// PICK REWARD
+  dtext    175  360 0 Pick Reward
+
+  dtext      320   49  <eval 0185> 		Blue Carpet (1 Piece)
+  dtext      320   70  <eval  036> 		5.000 Reward Tickets
+  dtext      200  150  0           		Give your house a personal touch
+  dtext      200  168  0           		with these new decorative
+  dtext      200  186  0           		items.
+
+tilepic 59 112 2749
+tilepic 82 90 2749
+tilepic 37 99 2806
+tilepic 59 77 2806
+tilepic 35 134 2809
+tilepic 104 77 2807
+tilepic 104 113 2808
+tilepic 82 135 2808
+tilepic 58 156 2754
+tilepic 14 115 2756
+tilepic 127 94 2757
+tilepic 82 65 2755
+
+
+page 7
+  button    340  300  <eval 0119a> <eval 01199> 0 6		// PREVIOUS page
+  dtext    340  340  0 Previous
+  dtext    340  355  0 Page
+  button   410  300  <eval 01196> <eval 01197> 0 8		// next page
+  dtext    410  340  0 Next
+  dtext    410  355  0 Page
+  button   195  300 <eval 01581> <eval 01582> 1 0 8     	// PICK REWARD
+  dtext    175  360 0 Pick Reward
+
+  dtext      320   49  <eval 0185> 		Red Carpet (1 Piece)
+  dtext      320   70  <eval  036> 		6.000 Reward Tickets
+  dtext      200  150  0           		Give your house a personal touch
+  dtext      200  168  0           		with these new decorative
+  dtext      200  186  0           		items.
+
+tilepic 83 117 2759
+tilepic 105 95 2759
+tilepic 61 103 2765
+tilepic 83 81 2765
+tilepic 106 139 2767
+tilepic 127 118 2767
+tilepic 150 100 2764
+tilepic 37 120 2763
+tilepic 106 70 2762
+tilepic 84 161 2761
+tilepic 60 139 2768
+tilepic 128 83 2766
+
+
+page 8
+  button    340  300  <eval 0119a> <eval 01199> 0 7		// PREVIOUS page
+  dtext    340  340  0 Previous
+  dtext    340  355  0 Page
+  button   410  300  <eval 01196> <eval 01197> 0 9		// next page
+  dtext    410  340  0 Next
+  dtext    410  355  0 Page
+  button   195  300 <eval 01581> <eval 01582> 1 0 9    	// PICK REWARD
+  dtext    175  360 0 Pick Reward
+
+  dtext      320   49  <eval 0185> 		Brown Carpet (1 Piece)
+  dtext      320   70  <eval  036> 		7.000 Reward Tickets
+  dtext      200  150  0           		Give your house a personal touch
+  dtext      200  168  0           		with these new decorative
+  dtext      200  186  0           		items.
+
+tilepic 57 108 2769
+tilepic 79 86 2769
+tilepic 59 148 2770
+tilepic 79 52 2771
+tilepic 121 90 2773
+tilepic 15 112 2772
+tilepic 37 90 2774
+tilepic 57 70 2774
+tilepic 100 69 2775
+tilepic 102 105 2776
+tilepic 81 126 2776
+tilepic 37 126 2777
+
+
+page 9
+  button    340  300  <eval 0119a> <eval 01199> 0 8		// PREVIOUS page
+  dtext    340  340  0 Previous
+  dtext    340  355  0 Page
+  button   410  300  <eval 01196> <eval 01197> 0 10		// next page
+  dtext    410  340  0 Next
+  dtext    410  355  0 Page
+  button   195  300 <eval 01581> <eval 01582> 1 0 10    	// PICK REWARD
+  dtext    175  360 0 Pick Reward
+
+  dtext      320   49  <eval 0185> 		Bookcase of Death
+  dtext      320   70  <eval  036> 		20.000 Reward Tickets
+  dtext      200  150  0           		Give your house a personal touch
+  dtext      200  168  0           		with these new decorative
+  dtext      200  186  0           		items. (WARNING: This item does
+  dtext      200  204  0			objects)
+
+tilepic 103 66 15299
+tilepic 57 97 15300
+
+page 10
+  button    340  300  <eval 0119a> <eval 01199> 0 9		// PREVIOUS page
+  dtext    340  340  0 Previous
+  dtext    340  355  0 Page
+  button   410  300  <eval 01196> <eval 01197> 0 11		// next page
+  dtext    410  340  0 Next
+  dtext    410  355  0 Page
+  button   195  300 <eval 01581> <eval 01582> 1 0 11    	// PICK REWARD
+  dtext    175  360 0 Pick Reward
+
+  dtext      320   49  <eval 0185> 		Cauldron of Death
+  dtext      320   70  <eval  036> 		15.000 Reward Tickets
+  dtext      200  150  0           		Give your house a personal touch
+  dtext      200  168  0           		with these new decorative
+  dtext      200  186  0           		items.
+
+tilepic 103 66 03BC9
+tilepic 57 97 03BC9
+
+
+page 11
+  button    340  300  <eval 0119a> <eval 01199> 0 10		// PREVIOUS page
+  dtext    340  340  0 Previous
+  dtext    340  355  0 Page
+  button   410  300  <eval 01196> <eval 01197> 0 12		// next page
+  dtext    410  340  0 Next
+  dtext    410  355  0 Page
+  button   195  300 <eval 01581> <eval 01582> 1 0 12    	// PICK REWARD
+  dtext    175  360 0 Pick Reward
+
+  dtext      320   49  <eval 0185> 		Barrel with Bones
+  dtext      320   70  <eval  036> 		10.000 Reward Tickets
+  dtext      200  150  0           		Give your house a personal touch
+  dtext      200  168  0           		with these new decorative
+  dtext      200  186  0           		items.
+
+tilepic 103 66 15296
+tilepic 57 97 15297
+
+
+
+page 12
+  button    340  300  <eval 0119a> <eval 01199> 0 11		// PREVIOUS page
+  dtext    340  340  0 Previous
+  dtext    340  355  0 Page
+  button   410  300  <eval 01196> <eval 01197> 0 13		// next page
+  dtext    410  340  0 Next
+  dtext    410  355  0 Page
+  button   195  300 <eval 01581> <eval 01582> 1 0 13    	// PICK REWARD
+  dtext    175  360 0 Pick Reward
+
+  dtext      320   49  <eval 0185> 		Crate with Bones
+  dtext      320   70  <eval  036> 		10.000 Reward Tickets
+  dtext      200  150  0           		Give your house a personal touch
+  dtext      200  168  0           		with these new decorative
+  dtext      200  186  0           		items. (WARNING: This item does
+  dtext      200  204  0			objects)
+
+tilepic 103 66 15298
+tilepic 57 97 15298
+
+
+page 13
+  button    340  300  <eval 0119a> <eval 01199> 0 12		// PREVIOUS page
+  dtext    340  340  0 Previous
+  dtext    340  355  0 Page
+  button   410  300  <eval 01196> <eval 01197> 0 14		// next page
+  dtext    410  340  0 Next
+  dtext    410  355  0 Page
+  button   195  300 <eval 01581> <eval 01582> 1 0 14    	// PICK REWARD
+  dtext    175  360 0 Pick Reward
+
+  dtext      320   49  <eval 0185> 		Barrel with Body Parts
+  dtext      320   70  <eval  036> 		15.000 Reward Tickets
+  dtext      200  150  0           		Give your house a personal touch
+  dtext      200  168  0           		with these new decorative
+  dtext      200  186  0           		items.
+
+tilepic 103 66 15301
+tilepic 57 97 15302
+
+
+page 14
+  button    340  300  <eval 0119a> <eval 01199> 0 13		// PREVIOUS page
+  dtext    340  340  0 Previous
+  dtext    340  355  0 Page
+  button   410  300  <eval 01196> <eval 01197> 0 15		// next page
+  dtext    410  340  0 Next
+  dtext    410  355  0 Page
+  button   195  300 <eval 01581> <eval 01582> 1 0 15    	// PICK REWARD
+  dtext    175  360 0 Pick Reward
+
+  dtext      320   49  <eval 0185> 		Crate with Body Parts
+  dtext      320   70  <eval  036> 		15.000 Reward Tickets
+  dtext      200  150  0           		Give your house a personal touch
+  dtext      200  168  0           		with these new decorative
+  dtext      200  186  0           		items. (WARNING: This item does
+  dtext      200  204  0			objects)
+
+tilepic 103 66 15304
+tilepic 57 97 15303
+
+
+
+page 15
+  button    340  300  <eval 0119a> <eval 01199> 0 14		// PREVIOUS page
+  dtext    340  340  0 Previous
+  dtext    340  355  0 Page
+  button   410  300  <eval 01196> <eval 01197> 0 16		// next page
+  dtext    410  340  0 Next
+  dtext    410  355  0 Page
+  button   195  300 <eval 01581> <eval 01582> 1 0 16    	// PICK REWARD
+  dtext    175  360 0 Pick Reward
+
+  dtext      320   49  <eval 0185> 		Scarecrow
+  dtext      320   70  <eval  036> 		25.000 Reward Tickets
+  dtext      200  150  0           		Give your house a personal touch
+  dtext      200  168  0           		with these new decorative
+  dtext      200  186  0           		items.
+
+tilepic 103 66 15595
+tilepic 57 97 15596
+
+
+
+page 16
+  button    340  300  <eval 0119a> <eval 01199> 0 15		// PREVIOUS page
+  dtext    340  340  0 Previous
+  dtext    340  355  0 Page
+  button   410  300  <eval 01196> <eval 01197> 0 17		// next page
+  dtext    410  340  0 Next
+  dtext    410  355  0 Page
+  button   195  300 <eval 01581> <eval 01582> 1 0 17    	// PICK REWARD
+  dtext    175  360 0 Pick Reward
+
+  dtext      320   49  <eval 0185> 		Ruined Scarecrow
+  dtext      320   70  <eval  036> 		50.000 Reward Tickets
+  dtext      200  150  0           		Give your house a personal touch
+  dtext      200  168  0           		with these new decorative
+  dtext      200  186  0           		items.
+
+tilepic 103 66 7732
+tilepic 57 97 7733
+
+
+
+
+page 17
+  button    340  300  <eval 0119a> <eval 01199> 0 16		// PREVIOUS page
+  dtext    340  340  0 Previous
+  dtext    340  355  0 Page
+  button   410  300  <eval 01196> <eval 01197> 0 18		// next page
+  dtext    410  340  0 Next
+  dtext    410  355  0 Page
+  button   195  300 <eval 01581> <eval 01582> 1 0 18    	// PICK REWARD
+  dtext    175  360 0 Pick Reward
+
+  dtext      320   49  <eval 0185> 		Ruined Painting
+  dtext      320   70  <eval  036> 		45.000 Reward Tickets
+  dtext      200  150  0           		Give your house a personal touch
+  dtext      200  168  0           		with these new decorative
+  dtext      200  186  0           		items.
+
+tilepic 103 66 3116
+tilepic 57 97 3116
+
+
+page 18
+  button    340  300  <eval 0119a> <eval 01199> 0 17		// PREVIOUS page
+  dtext    340  340  0 Previous
+  dtext    340  355  0 Page
+  button   410  300  <eval 01196> <eval 01197> 0 19		// next page
+  dtext    410  340  0 Next
+  dtext    410  355  0 Page
+  button   195  300 <eval 01581> <eval 01582> 1 0 19    	// PICK REWARD
+  dtext    175  360 0 Pick Reward
+
+  dtext      320   49  <eval 0185> 		Ruined Dresser
+  dtext      320   70  <eval  036> 		15.000 Reward Tickets
+  dtext      200  150  0           		Give your house a personal touch
+  dtext      200  168  0           		with these new decorative
+  dtext      200  186  0           		items. (WARNING: This item does
+  dtext      200  204  0			objects)
+
+tilepic 103 66 3106
+tilepic 57 97 3104
+
+
+
+
+page 19
+  button    340  300  <eval 0119a> <eval 01199> 0 18		// PREVIOUS page
+  dtext    340  340  0 Previous
+  dtext    340  355  0 Page
+  button   410  300  <eval 01196> <eval 01197> 0 20		// next page
+  dtext    410  340  0 Next
+  dtext    410  355  0 Page
+  button   195  300 <eval 01581> <eval 01582> 1 0 20    	// PICK REWARD
+  dtext    175  360 0 Pick Reward
+
+  dtext      320   49  <eval 0185> 		Ruined Clock
+  dtext      320   70  <eval  036> 		15.000 Reward Tickets
+  dtext      200  150  0           		Give your house a personal touch
+  dtext      200  168  0           		with these new decorative
+  dtext      200  186  0           		items.
+
+tilepic 103 66 3103
+tilepic 57 97 3103
+
+
+
+page 20
+  button    340  300  <eval 0119a> <eval 01199> 0 19		// PREVIOUS page
+  dtext    340  340  0 Previous
+  dtext    340  355  0 Page
+  button   410  300  <eval 01196> <eval 01197> 0 21		// next page
+  dtext    410  340  0 Next
+  dtext    410  355  0 Page
+  button   195  300 <eval 01581> <eval 01582> 1 0 21    	// PICK REWARD
+  dtext    175  360 0 Pick Reward
+
+  dtext      320   49  <eval 0185> 		Ruined Bookcase
+  dtext      320   70  <eval  036> 		15.000 Reward Tickets
+  dtext      200  150  0           		Give your house a personal touch
+  dtext      200  168  0           		with these new decorative
+  dtext      200  186  0           		items. (WARNING: This item does
+  dtext      200  204  0			objects)
+
+tilepic 103 66 3092
+tilepic 57 97 3093
+
+
+page 21
+  button    340  300  <eval 0119a> <eval 01199> 0 20		// PREVIOUS page
+  dtext    340  340  0 Previous
+  dtext    340  355  0 Page
+//  button   410  300  <eval 01196> <eval 01197> 0 22		// next page
+//  dtext    410  340  0 Next
+//  dtext    410  355  0 Page
+  button   195  300 <eval 01581> <eval 01582> 1 0 22    	// PICK REWARD
+  dtext    175  360 0 Pick Reward
+
+  dtext      320   49  <eval 0185> 		Ruined Books
+  dtext      320   70  <eval  036> 		15.000 Reward Tickets
+  dtext      200  150  0           		Give your house a personal touch
+  dtext      200  168  0           		with these new decorative
+  dtext      200  186  0           		items.
+
+tilepic 103 66 3094
+tilepic 57 97 3094
+
+
+[DIALOG d_reward_DECORATION BUTTON]
+ONBUTTON=1
+   SRC.DIALOG D_REWARD_SYSTEM
+   return 1
+
+ONBUTTON=2
+   VAR.RETURN	= 0
+   VAR.TICKETS	= 0
+   VAR.GOLD	= 40000
+   VAR.RUN		= 0
+   VAR.ITEM	= <EVAL { 011ca 1 011cb 1 011cc 1 011c8 1 011c9 1 }>
+   SRC.f_reward125a 1
+   return 1
+
+ONBUTTON=3
+   VAR.RETURN	= 0
+   VAR.TICKETS	= 0
+   VAR.GOLD	= 40000
+   VAR.RUN		= 0
+   VAR.ITEM	= <EVAL { 01e0f 1 01e10 1 01e11 1 01e12 1 01e13 1 01e14 1 }>
+   SRC.f_reward125a	1
+   return 1
+
+ONBUTTON=4
+   VAR.RETURN	= 0
+   VAR.TICKETS	= 0
+   VAR.GOLD	= 200000
+   VAR.RUN	= 0
+   VAR.ITEM	= <EVAL { i_portrait_big 1 i_portrait_3 1 0ea6 1 i_portrait_5 1 i_portrait_1 1 i_portrait_7 1 }>
+   SRC.SYSMESSAGE <VAR.ITEM>
+   SRC.f_reward125a	1
+   return 1
+
+ONBUTTON=5
+   VAR.RETURN	= 0
+   VAR.GOLD	= 0
+   VAR.TICKETS	= 35000
+   VAR.ITEM	= reward_polar_bear
+   VAR.RUN	= 0
+   IF (<SRC.RESTEST 35000 i_reward_ticket>)
+      SRC.f_reward125a 1
+   ELSE
+      SRC.SYSMESSAGE You do not have enough reward tickets
+   ENDIF
+   RETURN 1
+
+ONBUTTON=6
+   VAR.RETURN	= 0
+   VAR.GOLD	= 0
+   VAR.TICKETS	= 25000
+   VAR.ITEM	= reward_bear
+   VAR.RUN	= 0
+   IF (<SRC.RESTEST 25000 i_reward_ticket>)
+      SRC.f_reward125a 1
+   ELSE
+      SRC.SYSMESSAGE You do not have enough reward tickets
+   ENDIF
+   RETURN 1
+
+ONBUTTON=7
+   VAR.RETURN	= 0
+   VAR.GOLD	= 0
+   VAR.TICKETS	= 5000
+   VAR.ITEM	= 2749
+   VAR.RUN	= 0
+   IF (<SRC.RESTEST 5000 i_reward_ticket>)
+      SRC.f_reward125a 1
+   ELSE
+      SRC.SYSMESSAGE You do not have enough reward tickets
+   ENDIF
+   RETURN 1
+
+ONBUTTON=8
+   VAR.RETURN	= 0
+   VAR.GOLD	= 0
+   VAR.TICKETS	= 6000
+   VAR.ITEM	= 2759
+   VAR.RUN	= 0
+   IF (<SRC.RESTEST 6000 i_reward_ticket>)
+      SRC.f_reward125a 1
+   ELSE
+      SRC.SYSMESSAGE You do not have enough reward tickets
+   ENDIF
+   RETURN 1
+
+ONBUTTON=9
+   VAR.RETURN	= 0
+   VAR.GOLD	= 0
+   VAR.TICKETS	= 7000
+   VAR.ITEM	= 2769
+   VAR.RUN	= 0
+   IF (<SRC.RESTEST 7000 i_reward_ticket>)
+      SRC.f_reward125a 1
+   ELSE
+      SRC.SYSMESSAGE You do not have enough reward tickets
+   ENDIF
+   RETURN 1
+
+ONBUTTON=10
+   VAR.RETURN	= 0
+   VAR.GOLD	= 0
+   VAR.TICKETS	= 20000
+   VAR.ITEM	= 03BC4
+   VAR.RUN	= 0
+   IF (<SRC.RESTEST 20000 i_reward_ticket>)
+      SRC.f_reward125a 1
+   ELSE
+      SRC.SYSMESSAGE You do not have enough reward tickets
+   ENDIF
+   RETURN 1
+
+ONBUTTON=11
+   VAR.RETURN	= 0
+   VAR.GOLD	= 0
+   VAR.TICKETS	= 15000
+   VAR.ITEM	= 03BC9
+   VAR.RUN	= 0
+   IF (<SRC.RESTEST 15000 i_reward_ticket>)
+      SRC.f_reward125a 1
+   ELSE
+      SRC.SYSMESSAGE You do not have enough reward tickets
+   ENDIF
+   RETURN 1
+
+ONBUTTON=12
+   VAR.RETURN	= 0
+   VAR.GOLD	= 0
+   VAR.TICKETS	= 10000
+   VAR.ITEM	= 15296
+   VAR.RUN	= 0
+   IF (<SRC.RESTEST 10000 i_reward_ticket>)
+      SRC.f_reward125a 1
+   ELSE
+      SRC.SYSMESSAGE You do not have enough reward tickets
+   ENDIF
+   RETURN 1
+
+ONBUTTON=13
+   VAR.RETURN	= 0
+   VAR.GOLD	= 0
+   VAR.TICKETS	= 10000
+   VAR.ITEM	= 15298
+   VAR.RUN	= 0
+   IF (<SRC.RESTEST 10000 i_reward_ticket>)
+      SRC.f_reward125a 1
+   ELSE
+      SRC.SYSMESSAGE You do not have enough reward tickets
+   ENDIF
+   RETURN 1
+
+ONBUTTON=14
+   VAR.RETURN	= 0
+   VAR.GOLD	= 0
+   VAR.TICKETS	= 15000
+   VAR.ITEM	= 15301
+   VAR.RUN	= 0
+   IF (<SRC.RESTEST 15000 i_reward_ticket>)
+      SRC.f_reward125a 1
+   ELSE
+      SRC.SYSMESSAGE You do not have enough reward tickets
+   ENDIF
+   RETURN 1
+
+ONBUTTON=15
+   VAR.RETURN	= 0
+   VAR.GOLD	= 0
+   VAR.TICKETS	= 15000
+   VAR.ITEM	= 15304
+   VAR.RUN	= 0
+   IF (<SRC.RESTEST 15000 i_reward_ticket>)
+      SRC.f_reward125a 1
+   ELSE
+      SRC.SYSMESSAGE You do not have enough reward tickets
+   ENDIF
+   RETURN 1
+
+ONBUTTON=16
+   VAR.RETURN	= 0
+   VAR.GOLD	= 0
+   VAR.TICKETS	= 25000
+   VAR.ITEM	= 15595
+   VAR.RUN	= 0
+   IF (<SRC.RESTEST 25000 i_reward_ticket>)
+      SRC.f_reward125a 1
+   ELSE
+      SRC.SYSMESSAGE You do not have enough reward tickets
+   ENDIF
+   RETURN 1
+
+ONBUTTON=17
+   VAR.RETURN	= 0
+   VAR.GOLD	= 0
+   VAR.TICKETS	= 50000
+   VAR.ITEM	= 7732
+   VAR.RUN	= 0
+   IF (<SRC.RESTEST 50000 i_reward_ticket>)
+      SRC.f_reward125a 1
+   ELSE
+      SRC.SYSMESSAGE You do not have enough reward tickets
+   ENDIF
+   RETURN 1
+
+ONBUTTON=18
+   VAR.RETURN	= 0
+   VAR.GOLD	= 0
+   VAR.TICKETS	= 45000
+   VAR.ITEM	= 3116
+   VAR.RUN	= 0
+   IF (<SRC.RESTEST 45000 i_reward_ticket>)
+      SRC.f_reward125a 1
+   ELSE
+      SRC.SYSMESSAGE You do not have enough reward tickets
+   ENDIF
+   RETURN 1
+
+ONBUTTON=19
+   VAR.RETURN	= 0
+   VAR.GOLD	= 0
+   VAR.TICKETS	= 15000
+   VAR.ITEM	= 3106
+   VAR.RUN	= 0
+   IF (<SRC.RESTEST 15000 i_reward_ticket>)
+      SRC.f_reward125a 1
+   ELSE
+      SRC.SYSMESSAGE You do not have enough reward tickets
+   ENDIF
+   RETURN 1
+
+ONBUTTON=20
+   VAR.RETURN	= 0
+   VAR.GOLD	= 0
+   VAR.TICKETS	= 15000
+   VAR.ITEM	= 3103
+   VAR.RUN	= 0
+   IF (<SRC.RESTEST 15000 i_reward_ticket>)
+      SRC.f_reward125a 1
+   ELSE
+      SRC.SYSMESSAGE You do not have enough reward tickets
+   ENDIF
+   RETURN 1
+
+ONBUTTON=21
+   VAR.RETURN	= 0
+   VAR.GOLD	= 0
+   VAR.TICKETS	= 15000
+   VAR.ITEM	= 3092
+   VAR.RUN	= 0
+   IF (<SRC.RESTEST 15000 i_reward_ticket>)
+      SRC.f_reward125a 1
+   ELSE
+      SRC.SYSMESSAGE You do not have enough reward tickets
+   ENDIF
+   RETURN 1
+
+ONBUTTON=22
+   VAR.RETURN	= 0
+   VAR.GOLD	= 0
+   VAR.TICKETS	= 15000
+   VAR.ITEM	= 3094
+   VAR.RUN	= 0
+   IF (<SRC.RESTEST 15000 i_reward_ticket>)
+      SRC.f_reward125a 1
+   ELSE
+      SRC.SYSMESSAGE You do not have enough reward tickets
+   ENDIF
+   RETURN 1
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+[DIALOG d_reward_WASTE]
+100,60
+gumppic    0    0 <eval   0ce>			// top
+gumppic   44    0 <eval   0c9>
+gumppic  471    0 <eval   0cf>
+
+gumppic    0   44 <eval   0ca>			// middle
+gumppic   44   44 <eval  0a2c>
+gumppic  471   44 <eval   0cb>
+
+gumppic    0  360 <eval   0cc>			// bottom
+gumppic   44  360 <eval   0e9>
+gumppic  471  360 <eval   0cd>
+
+gumppic    0  250 <eval   0cc>			// bottom
+gumppic   44  250 <eval   0e9>
+gumppic  471  250 <eval   0cd>
+
+dtext    200   50  0  WASTE:			// reward type
+dtext    200   70  0  REQUIRED:
+
+
+page 1
+  button   340  300  <eval 0119a> <eval 01199> 1 0 1		// Main Menu
+  dtext    340  340  0 Main
+  dtext    340  355  0 Menu
+  button   410  300  <eval 01196> <eval 01197> 0 2		// next page
+  dtext    410  340  0 Next
+  dtext    410  355  0 Page
+  button   195  300 <eval 01581> <eval 01582> 1 0 2		// PICK REWARD
+  dtext    175  360 0 Pick Reward
+
+  // DESCRIPTION
+  dtext      320   49  <eval 0185> 		Trash Barrel
+  dtext      320   70  <eval  036> 		20,000 gold pieces	
+  dtext      200  150  0           		This trash barrel can be taken
+  dtext      200  168  0           		absolutely anywhere, and locked
+  dtext      200  186  0           		at home. Merely disposes all items.
+
+  // DRAWING
+  tilepic    60   70 4413
+  tilepic    90   90 4523 
+  tilepic    75  155 4014 
+  tilepic    80  140 3787
+  tilepic    80  115 4523  
+  tilepic    75  155 3616
+  tilepic    85  150 7404
+
+  
+page 2
+  button   340  300  <eval 0119a> <eval 01199> 0 1		// PREVIOUS page
+  dtext    340  340  0 Previous
+  dtext    340  355  0 Page
+  button   195  300 <eval 01581> <eval 01582> 1 0 3		// PICK REWARD
+  dtext    175  360 0 Pick Reward
+
+  // DESCRIPTION
+  dtext      320   49  <eval 0185> 		Deluxe Recycler
+  dtext      320   70  <eval  036> 		50,000 gold pieces
+  dtext      200  150  0           		Your own personal mini-reward
+  dtext      200  168  0           		trasher! Lord British pays equal
+  dtext      200  186  0           		from these as reward board rates.
+
+  // DRAWING
+  tilepic    70   75 14190
+  tilepic    80   60 14190
+  tilepic    60  100 5068
+  tilepic    80  150 3933
+  tilepic    110 120 7030
+  tilepic    80  175 4014
+  tilepic    75  210 3823
+  tilepic    100 215 3823
+
+[DIALOG d_reward_WASTE TEXT]
+
+
+[DIALOG d_reward_WASTE BUTTON]
+ONBUTTON=1
+   SRC.DIALOG D_REWARD_SYSTEM
+   return 1
+
+ONBUTTON=2
+   VAR.RETURN	= 0
+   VAR.GOLD	= 20000
+   VAR.TICKETS	= 0
+   VAR.RUN		= 0
+   VAR.ITEM	= i_trash_bin
+   SRC.f_reward125a 1
+   return 1
+
+ONBUTTON=3
+   VAR.RETURN	= 0
+   VAR.GOLD	= 50000
+   VAR.TICKETS	= 0
+   VAR.RUN		= 0
+   VAR.ITEM	= i_reward_mini
+   SRC.f_reward125a 1
+   return 1
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+[DIALOG d_reward_CHALLENGE]
+100,60
+gumppic    0    0 <eval   0ce>			// top
+gumppic   44    0 <eval   0c9>
+gumppic  471    0 <eval   0cf>
+
+gumppic    0   44 <eval   0ca>			// middle
+gumppic   44   44 <eval  0a2c>
+gumppic  471   44 <eval   0cb>
+
+gumppic    0  360 <eval   0cc>			// bottom
+gumppic   44  360 <eval   0e9>
+gumppic  471  360 <eval   0cd>
+
+gumppic    0  250 <eval   0cc>			// bottom
+gumppic   44  250 <eval   0e9>
+gumppic  471  250 <eval   0cd>
+
+dtext    200   50  0  CHALLENGE:		// reward type
+dtext    200   70  0  REQUIRED:
+
+page 1
+  button   340  300 <eval 0119a> <eval 01199> 1 0 1		// Main Menu
+  dtext    340  340 0 Main
+  dtext    340  355 0 Menu
+  button   195  300 <eval 01581> <eval 01582> 1 0 2		// PICK REWARD
+  dtext    175  360 0 Pick Reward
+  button   410  300  <eval 01196> <eval 01197> 0 2		// next page
+  dtext    410  340  0 Next
+  dtext    410  355  0 Page
+
+
+  // DESCRIPTION
+  dtext      320   49  <eval 0185> 		Smithy Production Deed
+  dtext      320   70  <eval  036> 		8,000 gold pieces
+  dtext      200  150  0           		Calling all Blacksmiths...
+  dtext      200  168  0           		Fill out these orders to earn cash! 
+  dtext      200  186  0           		Full deeds earn a trader ticket!
+  dtext      200  204  0           		Note: Deed expires/rewards 1 hour
+  dtext      200  222  0			after the first time it is opened.
+
+  // DRAWING
+  tilepic    70   75 14190
+  tilepic    80   60 14190
+  tilepic    60   80 5060
+  tilepic    110  60 5359
+  tilepic    90  130 5114
+  tilepic    60  160 5134
+  tilepic    110 170 7030
+  tilepic    75  210 3823
+  tilepic    100 215 3823
+
+page2
+  button   340  300  <eval 0119a> <eval 01199> 0 1		// PREVIOUS page
+  dtext    340  340  0 Previous
+  dtext    340  355  0 Page
+  button   195  300 <eval 01581> <eval 01582> 1 0 3		// PICK REWARD
+  dtext    175  360 0 Pick Reward
+  button   410  300  <eval 01196> <eval 01197> 0 3		// next page
+  dtext    410  340  0 Next
+  dtext    410  355  0 Page
+
+  // DESCRIPTION
+  dtext      320   49  <eval 0185> 		Wooden Production Deed
+  dtext      320   70  <eval  036> 		8,000 gold pieces
+  dtext      200  150  0           		Calling all Carpenters and Bowyers...
+  dtext      200  168  0           		Fill out these orders to earn cash! 
+  dtext      200  186  0           		Full deeds earn a trader ticket!
+  dtext      200  204  0           		Note: Deed expires/rewards 1 hour
+  dtext      200  222  0			after the first time it is opened.
+
+  // DRAWING
+  tilepic    70   75 14190
+  tilepic    80   60 14190
+  tilepic    60   80 2616
+  tilepic    110  60 5359
+  tilepic    100  140 3920
+  tilepic    60  160 7138
+  tilepic    110 170 7032
+  tilepic    75  210 3823
+  tilepic    100 215 3823
+  
+page3
+  button   340  300  <eval 0119a> <eval 01199> 0 2		// PREVIOUS page
+  dtext    340  340  0 Previous
+  dtext    340  355  0 Page
+  button   195  300 <eval 01581> <eval 01582> 1 0 4		// PICK REWARD
+  dtext    175  360 0 Pick Reward
+
+  // DESCRIPTION
+  dtext      320   49  <eval 0185>              Tailoring Production Deed
+  dtext      320   70  <eval  036>              8,000 gold pieces
+  dtext      200  150  0                        Calling all Tailors...
+  dtext      200  168  0                        Fill out these orders to earn cash! 
+  dtext      200  186  0                        Full deeds earn a trader ticket!
+  dtext      200  204  0                        Note: Deed expires/rewards 1 hour
+  dtext      200  222  0                        after the first time it is opened.
+
+  // DRAWING
+  tilepic    70   75 14190 // effect
+  tilepic    80   60 14190 // effect
+  tilepic    60   80 7939 // robe or 7940 for flipped robe
+  tilepic    110  60 5359 // deed
+  tilepic    100  140 5075 // leather tunic
+  tilepic    60  160 3997 // sewing kit 
+  tilepic    110 170 4117 // spinning wheel
+  tilepic    75  210 3823 // gold
+  tilepic    100 215 3823 // gold 
+
+
+[DIALOG d_reward_CHALLENGE TEXT]
+
+
+[DIALOG d_reward_CHALLENGE BUTTON]
+ONBUTTON=1
+   SRC.DIALOG D_REWARD_SYSTEM
+   return 1
+
+ONBUTTON=2
+   VAR.RETURN	= 0
+   VAR.GOLD	= 8000
+   VAR.TICKETS	= 0
+   VAR.RUN		= 0
+   VAR.ITEM	= i_deed_production_blacksmithy
+   SRC.f_reward125a 1
+   return 1
+
+ONBUTTON=3
+   VAR.RETURN	= 0
+   VAR.GOLD	= 8000
+   VAR.TICKETS	= 0
+   VAR.RUN		= 0
+   VAR.ITEM	= i_deed_production_carpentry
+   SRC.f_reward125a 1
+   return 1
+   
+ONBUTTON=4
+   VAR.RETURN   = 0
+   VAR.GOLD     = 8000
+   VAR.TICKETS  = 0
+   VAR.RUN              = 0
+   VAR.ITEM     = i_deed_production_tailor
+   SRC.f_reward125a 1
+   RETURN 1
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+[DIALOG d_reward_afk]
+100,60
+gumppic    0    0 <eval   0ce>			// top
+gumppic   44    0 <eval   0c9>
+gumppic  471    0 <eval   0cf>
+
+gumppic    0   44 <eval   0ca>			// middle
+gumppic   44   44 <eval  0a2c>
+gumppic  471   44 <eval   0cb>
+
+gumppic    0  360 <eval   0cc>			// bottom
+gumppic   44  360 <eval   0e9>
+gumppic  471  360 <eval   0cd>
+
+gumppic    0  250 <eval   0cc>			// bottom
+gumppic   44  250 <eval   0e9>
+gumppic  471  250 <eval   0cd>
+
+dtext    200   50  0  MAGIC:		// reward type
+dtext    200   70  0  REQUIRED:
+
+page 1
+  button   340  300 <eval 0119a> <eval 01199> 1 0 1		// Main Menu
+  dtext    340  340 0 Main
+  dtext    340  355 0 Menu
+  button   410  300 <eval 01196> <eval 01197> 0 2		// NEXT page
+  dtext    410  340 0 Next
+  dtext    410  355 0 Page
+  button   195  300 <eval 01581> <eval 01582> 1 0 2		// PICK REWARD
+  dtext    175  360 0 Pick Reward
+
+  //DESCRIPTION
+  dtext      320   49  <eval 0185> 		AFK Permit (1 hour)
+  dtext      320   70  <eval  036> 		6,000 gold pieces
+  dtext      320   91  <eval  036> 		500 reward tickets
+  dtext      200  150  0           		This permit allows you to legally afk
+  dtext      200  168  0           		macro for up to 1 hour. Please note
+  dtext      200  186  0           		that any macroing beyond this will
+  dtext      200  204  0           		be punishable under normal rules.
+  
+  // DRAWING
+  tilepichue 90  120   3636   <EVAL 0851>
+  tilepichue 90  125   3636   <EVAL 0851>
+  tilepichue 90  130   3636   <EVAL 0851>
+  tilepichue 90  135   3636   <EVAL 0851>
+  tilepichue 75  125   3717   0
+  tilepichue 112 137   3739   0
+  tilepichue 105 115   3720   0
+
+
+page 2
+  button   340  300 <eval 0119a> <eval 01199> 0 1		// PREVIOUS page
+  dtext    340  340 0 Previous
+  dtext    340  355 0 Page
+  button   410  300 <eval 01196> <eval 01197> 0 3		// NEXT page
+  dtext    410  340 0 Next
+  dtext    410  355 0 Page
+  button   195  300 <eval 01581> <eval 01582> 1 0 3		// PICK REWARD
+  dtext    175  360 0 Pick Reward
+
+  // DESCRIPTION
+  dtext      320   49  <eval 0185> 		AFK Permit (2 hours)
+  dtext      320   70  <eval  036> 		12,000 gold pieces
+  dtext      320   91  <eval  036> 		1000 reward tickets
+  dtext      200  150  0           		This permit allows you to legally afk
+  dtext      200  168  0           		macro for up to 2 hours. Please note
+  dtext      200  186  0           		that any macroing beyond this will
+  dtext      200  204  0           		be punishable under normal rules.
+  
+  // DRAWING
+  tilepichue 90  120   3636   <EVAL 0851>
+  tilepichue 90  125   3636   <EVAL 0851>
+  tilepichue 90  130   3636   <EVAL 0851>
+  tilepichue 90  135   3636   <EVAL 0851>
+  tilepichue 75  125   3717   0
+  tilepichue 112 137   3739   0
+  tilepichue 105 115   3720   0
+  
+page 3
+  button   340  300 <eval 0119a> <eval 01199> 0 2		// PREVIOUS page
+  dtext    340  340 0 Previous
+  dtext    340  355 0 Page
+  button   410  300 <eval 01196> <eval 01197> 0 4		// NEXT page
+  dtext    410  340 0 Next
+  dtext    410  355 0 Page
+  button   195  300 <eval 01581> <eval 01582> 1 0 4		// PICK REWARD
+  dtext    175  360 0 Pick Reward
+
+  // DESCRIPTION
+  dtext      320   49  <eval 0185> 		AFK Permit (4 hours)
+  dtext      320   70  <eval  036> 		24,000 gold pieces
+  dtext      320   91  <eval  036> 		2000 reward tickets
+  dtext      200  150  0           		This permit allows you to legally afk
+  dtext      200  168  0           		macro for up to 4 hours. Please note
+  dtext      200  186  0           		that any macroing beyond this will
+  dtext      200  204  0           		be punishable under normal rules.
+  
+  // DRAWING
+  tilepichue 90  120   3636   <EVAL 0851>
+  tilepichue 90  125   3636   <EVAL 0851>
+  tilepichue 90  130   3636   <EVAL 0851>
+  tilepichue 90  135   3636   <EVAL 0851>
+  tilepichue 75  125   3717   0
+  tilepichue 112 137   3739   0
+  tilepichue 105 115   3720   0
+
+page 4
+  button   340  300 <eval 0119a> <eval 01199> 0 3		// PREVIOUS page
+  dtext    340  340 0 Previous
+  dtext    340  355 0 Page
+  button   195  300 <eval 01581> <eval 01582> 1 0 5		// PICK REWARD
+  dtext    175  360 0 Pick Reward
+
+  // DESCRIPTION
+  dtext      320   49  <eval 0185> 		AFK Permit (8 hours)
+  dtext      320   70  <eval  036> 		48,000 gold pieces
+  dtext      320   91  <eval  036> 		4000 reward tickets
+  dtext      200  150  0           		This permit allows you to legally afk
+  dtext      200  168  0           		macro for up to 8 hours. Please note
+  dtext      200  186  0           		that any macroing beyond this will
+  dtext      200  204  0           		be punishable under normal rules.
+
+  // DRAWING
+  tilepichue 90  120   3636   <EVAL 0851>
+  tilepichue 90  125   3636   <EVAL 0851>
+  tilepichue 90  130   3636   <EVAL 0851>
+  tilepichue 90  135   3636   <EVAL 0851>
+  tilepichue 75  125   3717   0
+  tilepichue 112 137   3739   0
+  tilepichue 105 115   3720   0
+
+
+[DIALOG d_reward_afk TEXT]
+
+
+[DIALOG d_reward_afk BUTTON]
+ONBUTTON=1
+   SRC.DIALOG D_REWARD_SYSTEM
+   RETURN 1
+
+ONBUTTON=2
+   VAR.RETURN	= 0
+   VAR.GOLD	= 6000
+   VAR.TICKETS	= 500
+   VAR.RUN		= 0
+   VAR.ITEM	= i_afk_permit_1
+   IF (<SRC.RESTEST 500 i_reward_ticket>)
+      SRC.f_reward125a 1
+   ELSE
+      SRC.SYSMESSAGE You do not have enough reward tickets.
+   ENDIF
+   RETURN 1
+
+ONBUTTON=3
+   VAR.RETURN	= 0
+   VAR.GOLD	= 12000
+   VAR.TICKETS	= 1000
+   VAR.RUN		= 0
+   VAR.ITEM	= i_afk_permit_2
+   IF (<SRC.RESTEST 1000 i_reward_ticket>)
+      SRC.f_reward125a 1
+   ELSE
+      SRC.SYSMESSAGE You do not have enough reward tickets.
+   ENDIF
+   RETURN 1
+
+ONBUTTON=4
+   VAR.RETURN	= 0
+   VAR.GOLD	= 24000
+   VAR.TICKETS	= 2000
+   VAR.RUN		= 0
+   VAR.ITEM	= i_afk_permit_4
+   IF (<SRC.RESTEST 2000 i_reward_ticket>)
+      SRC.f_reward125a 1
+   ELSE
+      SRC.SYSMESSAGE You do not have enough reward tickets.
+   ENDIF
+   RETURN 1
+
+ONBUTTON=5
+   VAR.RETURN	= 0
+   VAR.GOLD	= 48000
+   VAR.TICKETS	= 4000
+   VAR.RUN		= 0
+   VAR.ITEM	= i_afk_permit_8
+   IF (<SRC.RESTEST 4000 i_reward_ticket>)
+      SRC.f_reward125a 1
+   ELSE
+      SRC.SYSMESSAGE You do not have enough reward tickets.
+   ENDIF
+   RETURN 1
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+[DIALOG d_reward_replacement]
+100,60
+gumppic    0    0 <eval   0ce>			// top
+gumppic   44    0 <eval   0c9>
+gumppic  471    0 <eval   0cf>
+
+gumppic    0   44 <eval   0ca>			// middle
+gumppic   44   44 <eval  0a2c>
+gumppic  471   44 <eval   0cb>
+
+gumppic    0  360 <eval   0cc>			// bottom
+gumppic   44  360 <eval   0e9>
+gumppic  471  360 <eval   0cd>
+
+gumppic    0  250 <eval   0cc>			// bottom
+gumppic   44  250 <eval   0e9>
+gumppic  471  250 <eval   0cd>
+
+dtext    200   50  0  MAGIC:		// reward type
+dtext    200   70  0  REQUIRED:
+
+page 1
+  button   340  300 <eval 0119a> <eval 01199> 1 0 1		// Main Menu
+  dtext    340  340 0 Main
+  dtext    340  355 0 Menu
+  button   410  300 <eval 01196> <eval 01197> 0 2		// NEXT page
+  dtext    410  340 0 Next
+  dtext    410  355 0 Page
+  button   195  300 <eval 01581> <eval 01582> 1 0 2		// PICK REWARD
+  dtext    175  360 0 Pick Reward
+
+  //DESCRIPTION
+//  dtext      320   49  <eval 0185> 		Necromancy Skill Refund
+//  dtext      320   70  <eval  036> 		Any amount of skill in
+//  dtext      320   91  <eval  036> 		Necromancy
+//  dtext      200  150  0           		This refund will allow you to
+//  dtext      200  168  0           		place 5% of your previous amount
+//  dtext      200  186  0           		of Necromancy into any other skill
+//  dtext      200  204  0           		on this character. The new skill
+//  dtext      200  222  0                        can be claimed with ".claimskill".
+  
+  // DRAWING
+  tilepichue 90  120   3636   <EVAL 0851>
+  tilepichue 90  125   3636   <EVAL 0851>
+  tilepichue 90  130   3636   <EVAL 0851>
+  tilepichue 90  135   3636   <EVAL 0851>
+  tilepichue 75  125   3717   0
+  tilepichue 112 137   3739   0
+  tilepichue 105 115   3720   0
+
+page 2
+  button   340  300 <eval 0119a> <eval 01199> 0 1		// PREVIOUS page
+  dtext    340  340 0 Previous
+  dtext    340  355 0 Page
+  button   195  300 <eval 01581> <eval 01582> 1 0 3		// PICK REWARD
+  dtext    175  360 0 Pick Reward
+
+  // DESCRIPTION
+  dtext      320   49  <eval 0185> 		Poisoning Skill Refund
+  dtext      320   70  <eval  036> 		Any amount of skill in
+  dtext      320   91  <eval  036> 		Poisoning
+  dtext      200  150  0           		This refund will allow you to
+  dtext      200  168  0           		place 5% of your previous amount
+  dtext      200  186  0           		of Poisoning into any other skill
+  dtext      200  204  0           		on this character. The new skill
+  dtext      200  222  0                        can be claimed with ".claimskill".
+  
+  // DRAWING
+  tilepichue 90  120   3636   <EVAL 0851>
+  tilepichue 90  125   3636   <EVAL 0851>
+  tilepichue 90  130   3636   <EVAL 0851>
+  tilepichue 90  135   3636   <EVAL 0851>
+  tilepichue 75  125   3717   0
+  tilepichue 112 137   3739   0
+  tilepichue 105 115   3720   0
+
+
+[DIALOG d_reward_replacement TEXT]
+
+
+[DIALOG d_reward_replacement BUTTON]
+ONBUTTON=1
+   SRC.DIALOG D_REWARD_SYSTEM
+   RETURN 1
+
+ONBUTTON=2
+//   IF (<SRC.NECROMANCY> < 50)
+//      SRC,SYSMESSAGE You do not have enough Necromancy skill to exchange. You need a minimum of 5.0%.
+//      RETURN 1
+//   ELSEIF (<SRC.FINDTYPE.t_skill_jewelry.UID>)
+//      SRC.SYSMESSAGE You cannot exchange skill whilst you wear or carry magic jewelry...
+//      RETURN 1
+//   ELSE
+//      SERV.LOG <SRC.NAME> : <SRC.ACCOUNT> : <SRC.NECROMANCY> Necromancy : <SRC.ACCOUNT.TAG.ALLOCATEDSKILL> Whole Skill Points Previously Allocated : Pre-Skill Refund
+//      SRC.NECROMANCY=<SRC.NECROMANCY> - 50
+//      SRC.ACCOUNT.TAG.ELIGIBLEFORSKILL=1
+//      SRC.ACCOUNT.TAG.ALLOCATEDSKILL=<EVAL <SRC.ACCOUNT.TAG0.ALLOCATEDSKILL> + 5>
+//      SERV.LOG <SRC.NAME> : <SRC.ACCOUNT> : <SRC.NECROMANCY> Necromancy : <SRC.ACCOUNT.TAG.ALLOCATEDSKILL> Whole Skill Points Previously Allocated : Post-Skill Refund
+//      SRC.SYSMESSAGE @631 5% Necromancy exchanged. Please check your skill allocation in your travel papers.
+//      SRC.SYSMESSAGE @331 If there is a glitch, please page for a GM to request a log check.
+//      RETURN 1
+//   ENDIF
+
+ONBUTTON=3
+   IF (<SRC.POISONING> < 50)
+      SRC,SYSMESSAGE You do not have enough Poisoning skill to exchange. You need a minimum of 5.0%.
+      RETURN 1
+   ELSEIF (<SRC.FINDTYPE.t_skill_jewelry.UID>)
+      SRC.SYSMESSAGE You cannot exchange skill whilst you wear or carry magic jewelry...
+      RETURN 1
+   ELSE
+      SERV.LOG <SRC.NAME> : <SRC.ACCOUNT> : <SRC.POISONING> Poisoning : <SRC.ACCOUNT.TAG.ALLOCATEDSKILL> Whole Skill Points Previously Allocated : Pre-Skill Refund
+      SRC.POISONING=<SRC.POISONING> - 50
+      SRC.ACCOUNT.TAG.ELIGIBLEFORSKILL=1
+      SRC.ACCOUNT.TAG.ALLOCATEDSKILL=<EVAL <SRC.ACCOUNT.TAG0.ALLOCATEDSKILL> + 5>
+      SERV.LOG <SRC.NAME> : <SRC.ACCOUNT> : <SRC.POISONING> Poisoning : <SRC.ACCOUNT.TAG.ALLOCATEDSKILL> Whole Skill Points Previously Allocated : Post-Skill Refund
+      SRC.SYSMESSAGE @631 5% Poisoning exchanged. Please check your skill allocation in your travel papers.
+      SRC.SYSMESSAGE @331 If there is a glitch, please page for a GM to request a log check.
+      RETURN 1
+   ENDIF
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+[FUNCTION f_finish_skill_item]
+LOCAL.INT		= <eval (<ACT.more2>/10)>
+LOCAL.DEC		= <eval (<ACT.MORE2> - (<LOCAL.INT>*10))>
+ACT.NAME <args> of +<eval <LOCAL.INT>>.<eval <LOCAL.DEC>> <SKILL_NAME <eval <act.more1>>>
+//ACT.TAG.SECS	= <eval (80000 + rand(20000))>
+
+[FUNCTION f_reward125a]
+if ( !<ISGM> )
+  consumegold_everywhere <eval (<var.gold>)>
+  if ( <VAR.consumegold> > 0 )
+     SYSMESSAGE You are <eval <VAR.consumegold>>gp short.
+     VAR.RETURN	= 1
+     return 1
+  endif
+
+  if ( <VAR.TICKETS> > 0 )
+     SRC.CONSUME <eval <VAR.TICKETS>> i_reward_ticket
+  ENDIF
+
+   IF ( <argn1> <= 65535 )
+ 
+
+      NEWITEM <VAR.ITEM>
+      IF (<argn1> > 1)
+         ACT.AMOUNT = <argn1>      
+      ENDIF
+
+      if ( <VAR.run> != 0 )
+         TRY <VAR.CALL>
+      endif
+
+      SRC.ACT.BOUNCE
+   ELSE
+      VAR.PILES = 1
+      SRC.f_amount_divide125a <argn1>
+   ENDIF
+endif
+
+[FUNCTION f_amount_divide125a]
+//Divide into piles
+LOCAL.REWARD_AMT= (<ARGN1> - 65535 )
+VAR.PILES = ( <VAR.PILES> + 1 )
+
+//See if piles are still too big
+IF (<LOCAL.REWARD_AMT> <= 65535 )
+   f_amount_creator125a <LOCAL.REWARD_AMT>
+ELSE
+   f_amount_divide125a <LOCAL.REWARD_AMT>
+ENDIF
+
+
+[FUNCTION f_amount_creator125a]
+IF (<VAR.PILES> = 0)
+   RETURN 1
+ELSEIF (<VAR.PILES> = 1)
+   SERV.NEWITEM <VAR.ITEM>, <ARGN1>
+   NEW.BOUNCE
+   VAR.PILES = (<VAR.PILES> - 1)
+   f_gold_creator125a
+ELSE
+   SERV.NEWITEM <VAR.ITEM>, 65535
+   NEW.BOUNCE
+   VAR.PILES = (<VAR.PILES> - 1)
+   f_amount_creator125a <ARGN1>
+ENDIF
+
+
+
+//
+//  REWARD ITEMS
+//
+[ITEMDEF i_mount_tub]
+ID	= 0fab
+NAME	= mount dying pigment
+ON=@Create
+   COLOR = 0
+
+ON=@DClick
+   IF ( !<SRC.findlayer(layer_horse).uid> )
+      SRC.SYSMESSAGE You are not mounted.
+      RETURN 1
+   ENDIF
+
+   IF (<COLOR>=0)
+      SRC.SYSMESSAGE Use a dye tub to add color to this tub before using.
+      RETURN 1
+   ENDIF
+
+   SRC.ACT	= <SRC.findlayer(layer_horse).uid>
+   SRC.ACT.COLOR	= <COLOR>
+   SRC.ACT	= <SRC.ACT.MORE2>
+   SRC.ACT.COLOR	= <COLOR>
+   SRC.ACT.TAG.COLOR	= <COLOR>
+   src.act.events +e_dyed
+   src.sysmessage You spread the pigment over the <SRC.ACT.NAME>.
+   IF ( !<SRC.ISGM> )
+      REMOVE
+   ENDIF
+   RETURN 1
+
+
+[ITEMDEF i_rare_tub]
+ID	= 0fab
+NAME	= rare colour dying tub
+
+ON=@Create
+   MOREX	= { 90 110 }
+   COLOR	= { 0480 1 0481 1 0483 2 0485 2 0486 3 0487 4 0488 4 0489 2 0490 1 0491 2 }
+
+ON=@Click
+   if ( <MOREX> == 0 )
+      COLOR	= 0
+      return 0
+   endif
+   MESSAGE <NAME> (<EVAL <MOREX>> uses)
+   return 1
+   
+ON=@Targon_char
+   SRC.SYSMESSAGE This can only be used to dye objects.
+   return 1
+   
+ON=@Targon_item
+   if ( !<SRC.ISGM> )
+      if ( <SRC.TARG.TOPOBJ.UID> != <SRC.UID> )
+         src.sysmessage You must have that on your backpack.
+         return 1
+      endif
+      IF ( !<SRC.TARG.DYE> == 1 )
+         SRC.SYSMESSAGE The dye just drips off.
+         return 1
+      endif
+   endif
+   if ( <MOREX> > 0 )
+      MOREX	= <eval (<MOREX> - 1)>
+   endif
+
+   SRC.TARG.COLOR	= <COLOR>
+   if ( <MOREX> == 0 )
+      COLOR = 0
+      SRC.message The rare colour fades and the dying tub melts.
+      REMOVE
+   endif  
+   return 1 
+
+[ITEMDEF i_mark_rune_newbie]
+ID	= 01f6e
+NAME	= rune blessing deed
+
+ON=@Create
+   COLOR	= 0480
+   
+ON=@Targon_char
+   SRC.SYSMESSAGE This can only be used on runes.
+   return 1
+ON=@DClick
+   TARGET What rune would you like to bless?
+   RETURN 1  
+ON=@Targon_item
+   if ( !<SRC.ISGM> )
+      if ( <SRC.TARG.TOPOBJ.UID> != <SRC.UID> )
+         src.sysmessage You must have that on your backpack.
+         return 1
+      endif
+   endif
+   IF !(<src.targ.baseid> = i_rune_marker)
+   src.sysmessage You cannot use this on anything but a recall rune
+   ENDIF
+   IF (<src.targ.baseid> = i_rune_marker)
+   SRC.TARG.ATTR=attr_newbie
+   src.sysmessage @0480 The Lord Hath Blessed thy mighty rune
+   src.color 0480
+   serv.log <src.name> <src.account> blessed rune <src.targ.uid> <src.targ.name> <eval <more1>> charges
+   REMOVE
+   ENDIF
+   return 1 
+
+[FUNCTION a]
+serv.log wtf why is this being used by <src.name>
+act.remove
+NEWITEM i_skill_necklace_1
+f_finish_skill_item necklace
+act.bounce
+
+[DEFNAME params_skill_jewelry]
+color_skill_jewelry	{ 20 300 }
+
+[TYPEDEF t_skill_jewelry]
+ON=@Click
+   //LOCAL.POWER	= <eval (<TAG.SECS>/1000)>
+   //if ( 0 )
+   //elseif ( <LOCAL.POWER> < 5 )
+    //  LOCAL.STATE	= vanishing
+   //elseif ( <LOCAL.POWER> < 10 )
+    //  LOCAL.STATE	= glowing poorly
+   //elseif ( <LOCAL.POWER> < 30 )
+     // LOCAL.STATE	= glowing softly
+  // elseif ( <LOCAL.POWER> < 60 )
+    //  LOCAL.STATE	= glowing
+   //elseif ( <LOCAL.POWER> < 90 )
+    //  LOCAL.STATE	= glowing brightly
+   //else
+    //  LOCAL.STATE	= shimmering bright
+   //endif
+   MESSAGE Magic <NAME> //(<LOCAL.STATE>)
+   return 1
+ON=@DClick
+   EQUIP
+   return 1
+ON=@Equip
+   try SRC.<eval <more1>>	= <eval (<SRC.<eval <more1>>> + <MORE2>)>
+   return 0
+ON=@Unequip
+   try SRC.<eval <more1>>	= <eval (<SRC.<eval <more1>>> - <MORE2>)>
+   return 0   
+ON=@Death
+   UNEQUIP
+   return 0
+
+//This is a test def, which a GM must add manually to jewelery - Testing purposes only
+[TYPEDEF t_skill_jewelry_test]
+ON=@Click
+   LOCAL.POWER	= <eval (<TAG.SECS>/1000)>
+   if ( 0 )
+   elseif ( <LOCAL.POWER> < 5 )
+      LOCAL.STATE	= vanishing
+   elseif ( <LOCAL.POWER> < 10 )
+      LOCAL.STATE	= glowing poorly
+   elseif ( <LOCAL.POWER> < 30 )
+      LOCAL.STATE	= glowing softly
+   elseif ( <LOCAL.POWER> < 60 )
+      LOCAL.STATE	= glowing
+   elseif ( <LOCAL.POWER> < 90 )
+      LOCAL.STATE	= glowing brightly
+   else
+      LOCAL.STATE	= shimmering bright
+   endif
+   MESSAGE Magic <NAME> (<LOCAL.STATE>)
+   return 1
+ON=@DClick
+   EQUIP
+   return 1
+ON=@Equip
+  try SRC.<eval <more1>>	= <eval (<SRC.<eval <more1>>> + <MORE2>)>
+  return 0
+ON=@Unequip
+  try SRC.<eval <more1>>	= <eval (<SRC.<eval <more1>>> - <MORE2>)>
+  return 0
+ON=@Death
+  UNEQUIP
+  return 0
+
+
+
+[ITEMDEF i_skill_necklace_1]
+ID	= 01089
+TYPE	= t_eq_script
+NAME	= necklace of skill
+LAYER	= layer_collar
+VALUE	= 5000
+ON=@Create
+   ATTR		= attr_magic
+   DORAND 37
+      MORE1 = 0
+      MORE1 = 1
+      MORE1 = 2
+      MORE1 = 3
+      MORE1 = 4
+      MORE1 = 5
+      MORE1 = 7
+      MORE1 = 8
+      MORE1 = 11
+      MORE1 = 12
+      MORE1 = 13
+      MORE1 = 14
+      MORE1 = 16
+      MORE1 = 17
+      MORE1 = 18
+      MORE1 = 21
+      MORE1 = 22
+      MORE1 = 23
+      MORE1 = 25
+      MORE1 = 26
+      MORE1 = 27
+      MORE1 = 29
+      MORE1 = 30
+      MORE1 = 31
+      MORE1 = 32
+      MORE1 = 34
+      MORE1 = 35
+      MORE1 = 37
+      MORE1 = 39
+      MORE1 = 40
+      MORE1 = 41
+      MORE1 = 42
+      MORE1 = 43
+      MORE1 = 44
+      MORE1 = 45
+      MORE1 = 46
+      MORE1 = 47
+   ENDDO
+   MORE2	= { 40 60 }
+   COLOR	= color_skill_jewelry
+   TYPE		= t_skill_jewelry
+
+
+[ITEMDEF i_skill_necklace_2]
+ID	= 01f05
+TYPE	= t_eq_script
+NAME	= necklace of skill
+LAYER	= layer_collar
+VALUE	= 5000
+ON=@Create
+   ATTR		= attr_magic
+   DORAND 37
+      MORE1 = 0
+      MORE1 = 1
+      MORE1 = 2
+      MORE1 = 3
+      MORE1 = 4
+      MORE1 = 5
+      MORE1 = 7
+      MORE1 = 8
+      MORE1 = 11
+      MORE1 = 12
+      MORE1 = 13
+      MORE1 = 14
+      MORE1 = 16
+      MORE1 = 17
+      MORE1 = 18
+      MORE1 = 21
+      MORE1 = 22
+      MORE1 = 23
+      MORE1 = 25
+      MORE1 = 26
+      MORE1 = 27
+      MORE1 = 29
+      MORE1 = 30
+      MORE1 = 31
+      MORE1 = 32
+      MORE1 = 34
+      MORE1 = 35
+      MORE1 = 37
+      MORE1 = 39
+      MORE1 = 40
+      MORE1 = 41
+      MORE1 = 42
+      MORE1 = 43
+      MORE1 = 44
+      MORE1 = 45
+      MORE1 = 46
+      MORE1 = 47
+   ENDDO
+   MORE2	= { 40 60 }
+   COLOR	= color_skill_jewelry
+   TYPE		= t_skill_jewelry
+
+[ITEMDEF i_skill_necklace_3]
+ID	= 01088
+TYPE	= t_eq_script
+NAME	= necklace of skill
+LAYER	= layer_collar
+VALUE	= 5000
+ON=@Create
+   ATTR		= attr_magic
+   DORAND 37
+      MORE1 = 0
+      MORE1 = 1
+      MORE1 = 2
+      MORE1 = 3
+      MORE1 = 4
+      MORE1 = 5
+      MORE1 = 7
+      MORE1 = 8
+      MORE1 = 11
+      MORE1 = 12
+      MORE1 = 13
+      MORE1 = 14
+      MORE1 = 16
+      MORE1 = 17
+      MORE1 = 18
+      MORE1 = 21
+      MORE1 = 22
+      MORE1 = 23
+      MORE1 = 25
+      MORE1 = 26
+      MORE1 = 27
+      MORE1 = 29
+      MORE1 = 30
+      MORE1 = 31
+      MORE1 = 32
+      MORE1 = 34
+      MORE1 = 35
+      MORE1 = 37
+      MORE1 = 39
+      MORE1 = 40
+      MORE1 = 41
+      MORE1 = 42
+      MORE1 = 43
+      MORE1 = 44
+      MORE1 = 45
+      MORE1 = 46
+      MORE1 = 47
+   ENDDO
+   MORE2	= { 40 60 }
+   COLOR	= color_skill_jewelry
+   TYPE		= t_skill_jewelry
+
+[ITEMDEF i_skill_ring]
+ID	= 0108a
+TYPE	= t_eq_script
+NAME	= ring of skill
+LAYER	= layer_ring
+VALUE	= 5000
+ON=@Create
+   ATTR		= attr_magic
+   DORAND 37
+      MORE1 = 0
+      MORE1 = 1
+      MORE1 = 2
+      MORE1 = 3
+      MORE1 = 4
+      MORE1 = 5
+      MORE1 = 7
+      MORE1 = 8
+      MORE1 = 11
+      MORE1 = 12
+      MORE1 = 13
+      MORE1 = 14
+      MORE1 = 16
+      MORE1 = 17
+      MORE1 = 18
+      MORE1 = 21
+      MORE1 = 22
+      MORE1 = 23
+      MORE1 = 25
+      MORE1 = 26
+      MORE1 = 27
+      MORE1 = 29
+      MORE1 = 30
+      MORE1 = 31
+      MORE1 = 32
+      MORE1 = 34
+      MORE1 = 35
+      MORE1 = 37
+      MORE1 = 39
+      MORE1 = 40
+      MORE1 = 41
+      MORE1 = 42
+      MORE1 = 43
+      MORE1 = 44
+      MORE1 = 45
+      MORE1 = 46
+      MORE1 = 47
+   ENDDO
+   MORE2	= { 20 30 }
+   COLOR	= color_skill_jewelry
+   TYPE		= t_skill_jewelry
+
+[ITEMDEF i_skill_earrings]
+ID	= 01087
+TYPE	= t_eq_script
+NAME	= earrings of skill
+LAYER	= layer_ears
+VALUE	= 5000
+ON=@Create
+   ATTR		= attr_magic
+   DORAND 37
+      MORE1 = 0
+      MORE1 = 1
+      MORE1 = 2
+      MORE1 = 3
+      MORE1 = 4
+      MORE1 = 5
+      MORE1 = 7
+      MORE1 = 8
+      MORE1 = 11
+      MORE1 = 12
+      MORE1 = 13
+      MORE1 = 14
+      MORE1 = 16
+      MORE1 = 17
+      MORE1 = 18
+      MORE1 = 21
+      MORE1 = 22
+      MORE1 = 23
+      MORE1 = 25
+      MORE1 = 26
+      MORE1 = 27
+      MORE1 = 29
+      MORE1 = 30
+      MORE1 = 31
+      MORE1 = 32
+      MORE1 = 34
+      MORE1 = 35
+      MORE1 = 37
+      MORE1 = 39
+      MORE1 = 40
+      MORE1 = 41
+      MORE1 = 42
+      MORE1 = 43
+      MORE1 = 44
+      MORE1 = 45
+      MORE1 = 46
+      MORE1 = 47
+   ENDDO
+   MORE2	= { 20 30 }
+   COLOR	= color_skill_jewelry
+   TYPE		= t_skill_jewelry
+
+[ITEMDEF i_skill_bracelet]
+ID	= 01086
+TYPE	= t_eq_script
+NAME	= bracelet of skill
+LAYER	= layer_wrist
+VALUE	= 5000
+ON=@Create
+   ATTR		= attr_magic
+   DORAND 37
+      MORE1 = 0
+      MORE1 = 1
+      MORE1 = 2
+      MORE1 = 3
+      MORE1 = 4
+      MORE1 = 5
+      MORE1 = 7
+      MORE1 = 8
+      MORE1 = 11
+      MORE1 = 12
+      MORE1 = 13
+      MORE1 = 14
+      MORE1 = 16
+      MORE1 = 17
+      MORE1 = 18
+      MORE1 = 21
+      MORE1 = 22
+      MORE1 = 23
+      MORE1 = 25
+      MORE1 = 26
+      MORE1 = 27
+      MORE1 = 29
+      MORE1 = 30
+      MORE1 = 31
+      MORE1 = 32
+      MORE1 = 34
+      MORE1 = 35
+      MORE1 = 37
+      MORE1 = 39
+      MORE1 = 40
+      MORE1 = 41
+      MORE1 = 42
+      MORE1 = 43
+      MORE1 = 44
+      MORE1 = 45
+      MORE1 = 46
+      MORE1 = 47
+   ENDDO
+   MORE2	= { 20 30 }
+   COLOR	= color_skill_jewelry
+   TYPE		= t_skill_jewelry
+
+[FUNCTION remove_stat_spells]
+   if ( <SRC.findlayer.32.uid> )
+      SRC.findlayer.32.remove
+   endif
+   if ( <SRC.findlayer.44.uid> )
+      SRC.findlayer.44.remove
+   endif
+
+
+[ITEMDEF i_flux_might]
+ID	= 0efe
+TYPE	= t_normal
+NAME	= flux of might
+
+ON = @Create
+   COLOR	= 026
+
+ON = @DClick
+   remove_stat_spells
+   if ( <SRC.STATTOTAL> < 275 )
+      src.sysmessage You must develop yourself a bit more, before this will take any effect.
+      return 1
+   endif
+   
+   if ( <SRC.STR> < 100 )
+      SRC.SYSMESSAGE You're not strong enough for the flux of might.
+      return 1
+   endif
+   if !( <SRC.STATTOTAL> < 295 )
+      SRC.SYSMESSAGE You're too developed for the flux of might.
+      return 1
+   endif
+
+   SRC.SOUND 01f7
+   SRC.OSTR		= <eval (<SRC.OSTR> + 1)>
+   SRC.findlayer(layer_k_control).TAG.OSTR	= <eval (<SRC.findlayer(layer_k_control).TAG.OSTR> + 1)>
+   SRC.findlayer(layer_k_control).TAG.CAPSTR = <eval (<SRC.findlayer(layer_k_control).TAG.CAPSTR> + 1)>
+   IF (0<SRC.TAG.FLUX> > 0>
+   SRC.TAG.FLUX = <eval (<SRC.TAG.FLUX> + 1)>
+   ELSE
+   SRC.TAG.FLUX = 1
+   ENDIF
+   REMOVE
+   return 1
+
+
+[ITEMDEF i_flux_brilliance]
+ID	= 0efe
+TYPE	= t_normal
+NAME	= flux of brilliance
+
+ON = @Create
+   COLOR	= 0c1
+
+ON = @DClick
+   remove_stat_spells
+   if ( <SRC.STATTOTAL> < 275 )
+      src.sysmessage You must develop yourself a bit more, before this will take any effect.
+      return 1
+   endif
+
+   if ( <SRC.INT> < 100 )
+      SRC.SYSMESSAGE You're not bright enough for the flux of brilliance.
+      return 1
+   endif
+
+   if !( <SRC.STATTOTAL> < 295 )
+      SRC.SYSMESSAGE You're too developed for the flux of brilliance.
+      return 1
+   endif
+
+   SRC.SOUND 01f7
+   SRC.OINT		= <eval (<SRC.OINT> + 1)>
+   SRC.findlayer(layer_k_control).TAG.OINT	= <eval (<SRC.findlayer(layer_k_control).TAG.OINT> + 1)>
+   SRC.findlayer(layer_k_control).TAG.CAPINT = <eval (<SRC.findlayer(layer_k_control).TAG.CAPINT> + 1)>
+   IF (0<SRC.TAG.FLUX> > 0>
+		SRC.TAG.FLUX = <eval (<SRC.TAG.FLUX> + 1)>
+   ELSE
+		SRC.TAG.FLUX = 1
+   ENDIF
+   REMOVE
+   return 1
+
+
+[ITEMDEF i_flux_haste]
+ID	= 0efe
+TYPE	= t_normal
+NAME	= flux of haste
+
+ON = @Create
+   COLOR	= 037
+
+ON = @DClick
+   remove_stat_spells
+   if ( <SRC.STATTOTAL> < 275 )
+      src.sysmessage You must develop yourself a bit more, before this will take any effect.
+      return 1
+   endif
+
+   if ( <SRC.DEX> < 100 )
+      SRC.SYSMESSAGE You're not agile enough for the flux of haste.
+      return 1
+   endif
+
+   if !( <SRC.STATTOTAL> < 295 )
+      SRC.SYSMESSAGE You're too developed for the flux of haste.
+      return 1
+   endif
+
+   SRC.SOUND 01f7
+   SRC.ODEX		= <eval (<SRC.ODEX> + 1)>
+   SRC.findlayer(layer_k_control).TAG.ODEX	= <eval (<SRC.findlayer(layer_k_control).TAG.ODEX> + 1)>
+   SRC.findlayer(layer_k_control).TAG.CAPDEX = <eval (<SRC.findlayer(layer_k_control).TAG.CAPDEX> + 1)>
+   IF (0<SRC.TAG.FLUX> > 0>
+   SRC.TAG.FLUX = <eval (<SRC.TAG.FLUX> + 1)>
+   ELSE
+   SRC.TAG.FLUX = 1
+   ENDIF
+   REMOVE
+   return 1
+
+
+
+[ITEMDEF i_reward_mini]
+NAME		= Deluxe Recycler
+ID		= i_barrel_open
+TYPE		= t_normal
+
+ON=@CREATE
+  COLOR		= 038
+  ATTR		= 05
+
+ON=@DCLICK
+  SRC.SOUND 555
+  SRC.TAG.APPRAISE=
+  
+  SRC.MESSAGE Please select the item to trash
+  TARGET
+  RETURN 1
+
+ON=@TARGON_CHAR
+  SRC.MESSAGE They probably wouldn't agree on that...
+  RETURN 1
+
+ON=@TARGON_ITEM
+  if ( <SRC.TARG.TOPOBJ.UID> != <SRC.UID> )
+     SRC.SYSMESSAGE You must have it in your backpack.
+     return 1
+  endif
+
+  if ( <SRC.TARG.ATTR> & attr_newbie )
+     SRC.SYSMESSAGE Unexplainably, the item reappears in your backpack.
+     SRC.TARG.BOUNCE
+     return 1
+  endif
+
+  if ( <SRC.TARG.TYPE> == t_container )
+    IF (<SRC.TARG.FINDCONT(75)>!=0)
+       SRC.SYSMESSAGE The maximum amount of items you can trade for tickets at the same time is 75. 
+       RETURN 1
+    EndIf
+  
+    if ( STRCMP( <SRC.TARG.NAME>, Reward ) )
+       SRC.SYSMESSAGE For your own safety, you must rename the container with the following command: .rename Reward
+       return 1
+    endif
+    
+    SRC.TARG.NAME	= 
+    VAR.ticket_count	= 0
+    ticket_count_rec 0
+  else
+    SRC.ACT		= <SRC.TARG.UID>
+    VAR.ticket_count	= 0
+    ticket_counter 1
+  endif
+  
+  if ( <VAR.ticket_count> == 0 )
+     if ( <SRC.TARG.type> != t_container )
+        src.sysmessage There is nothing worthy of a reward in it.
+     else	
+        src.sysmessage There is not worthy of a reward.
+     endif	
+     return 1
+  endif
+
+  SRC.NEWITEM		= i_reward_ticket
+  SRC.ACT.AMOUNT	= <VAR.ticket_count>
+  SRC.ACT.BOUNCE
+  SRC.SOUND 500
+  return 1
+
+[ITEMDEF i_trash_bin]
+NAME		= Trash Can
+ID		= i_barrel_open
+TYPE		= t_trash_can
+
+ON=@CREATE
+   COLOR=034a
+
+
+[ITEMDEF M_penance]	
+ID	= i_memory
+NAME	= Penance effect
+type	= t_eq_script
+
+ON=@Create
+   TIMER=1
+
+ON=@TIMER
+   CONT.SPELLEFFECT s_mana_vampire, 120.0
+   CONT.SPELLEFFECT s_curse, 120.0
+   CONT.SPELLEFFECT s_poison, 120.0
+   CONT.SPELLEFFECT s_Hallucination, 120.0
+   REMOVE
+   RETURN 1
+
+[ITEMDEF i_penance_potion]
+NAME		= Penance Potion
+ID		= i_flask1_red
+TYPE		= t_script
+ON=@DClick
+   IF ( <SRC.KILLS> < 100 )
+      SRC.SYSMESSAGE You cannot use this potion.   
+   ELSE
+      SRC.NEWITEM m_penance
+      SRC.ACT.EQUIP 
+
+      SRC.SYSMESSAGE You feel the burdens of your crimes easing as you pay penance.
+      SRC.KILLS=(<SRC.KILLS>-20)
+      REMOVE
+   ENDIF
+   RETURN 1
+
+
+[ITEMDEF i_hair_potion]
+NAME=Hair Growth Stunter
+ID=i_jar_full
+TYPE=t_script
+VALUE=5000
+ON=@DClick
+   
+   IF (<SRC.FINDLAYER(layer_hair).UID>||<SRC.FINDLAYER(layer_beard).UID>)
+
+      
+      //If they have hair and beard set them equal for ease of script
+      IF (<SRC.FINDLAYER(layer_hair).UID>&&<SRC.FINDLAYER(layer_beard).UID>)
+         SRC.FINDLAYER(layer_beard).TIMER=<SRC.FINDLAYER(layer_hair).TIMER>
+      ENDIF
+
+      //Set time for hair
+      IF <SRC.FINDLAYER(layer_hair).UID>
+         IF ( <SRC.FINDLAYER(layer_hair).TIMER> < 2550000 )
+            SRC.FINDLAYER(layer_hair).TIMER=(<SRC.FINDLAYER(layer_hair).TIMER>+604800)
+         ELSE
+            SRC.SYSMESSAGE You cannot use any more of this mixture at this time.
+            RETURN 1
+         ENDIF
+      ENDIF
+
+      //Set time for beard
+      IF <SRC.FINDLAYER(layer_beard).UID>
+         IF ( <SRC.FINDLAYER(layer_beard).TIMER> < 2550000 )
+            SRC.FINDLAYER(layer_beard).TIMER=(<SRC.FINDLAYER(layer_beard).TIMER>+604800)
+         ELSE
+            SRC.SYSMESSAGE You cannot use any more of this mixture at this time.
+            RETURN 1
+         ENDIF
+      ENDIF
+
+      SRC.EMOTE rub in the hair growth stunter.
+      REMOVE
+   ELSE
+      SRC.SYSMESSAGE You have no hair...
+   ENDIF
+   RETURN 1
+
+
+[ITEMDEF i_perm_hair_potion]
+NAME=Permanent Hair Growth Stunter
+ID=i_bottle_8
+TYPE=t_script
+VALUE=100000
+ON=@DClick
+   
+   IF (<SRC.FINDLAYER(layer_hair).UID>||<SRC.FINDLAYER(layer_beard).UID>)
+
+      //See if they need the potion
+      IF (<SRC.FINDLAYER(layer_hair).UID>&&<SRC.FINDLAYER(layer_beard).UID>)
+         IF ((<SRC.FINDLAYER(layer_hair).TIMER>=-1)&&(<SRC.FINDLAYER(layer_beard).TIMER>=-1))
+            SRC.SYSMESSAGE You have already used a permanent hair growth stunter.
+            RETURN 1
+         ENDIF
+      ELSEIF <SRC.FINDLAYER(layer_hair).UID>
+         IF (<SRC.FINDLAYER(layer_hair).TIMER>=-1)
+            SRC.SYSMESSAGE You have already used a permanent hair growth stunter.
+            RETURN 1
+         ENDIF
+      ELSEIF <SRC.FINDLAYER(layer_beard).UID>
+         IF (<SRC.FINDLAYER(layer_beard).TIMER>=-1)
+            SRC.SYSMESSAGE You have already used a permanent hair growth stunter.
+            RETURN 1
+         ENDIF
+      ENDIF
+
+      //Set timers
+      IF <SRC.FINDLAYER(layer_hair).UID>
+         SRC.FINDLAYER(layer_hair).TIMER=-1
+      ENDIF
+
+      IF <SRC.FINDLAYER(layer_beard).UID>
+         SRC.FINDLAYER(layer_beard).TIMER=-1
+      ENDIF
+
+      SRC.EMOTE rub in the permanent hair growth stunter.
+      REMOVE
+   ELSE
+      SRC.SYSMESSAGE You have no hair...
+   ENDIF
+   RETURN 1
+
+[TEMPLATE reward_polar_bear]
+CONTAINER=i_bag
+ITEM=7753
+ITEM=7754
+ITEM=7755
+ITEM=7756
+ITEM=7757
+ITEM=7758
+ITEM=7759
+ITEM=7760
+ITEM=7761
+
+[TEMPLATE reward_bear]
+CONTAINER=i_bag
+ITEM=7734
+ITEM=7735
+ITEM=7736
+ITEM=7737
+ITEM=7738
+ITEM=7739
+ITEM=7740
+ITEM=7741
+ITEM=7742
+
+[EOF]

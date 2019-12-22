@@ -1,0 +1,876 @@
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+                                                                        +
+//+ [CHANGELOG]                                                            +
+//+                                                                        +
+//+ 06/02/19 - Wigifer - Changed REQSTR on all tools to 10.                +
+//+                      Added @DCLICK to force existing items to use new  +
+//+                      reqstr.                                           +
+//+                                                                        +
+//+                                                                        +
+//+                                                                        +
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+//
+//  First, functions that are called for all weapons, then some weapons recoded
+//
+
+//
+// AXE
+//
+
+// AXE: @DClick
+[FUNCTION wpn_dclick_axe]
+return 0
+
+// AXE: @Targon_Ground
+[FUNCTION wpn_targon_ground_axe]
+return 1
+
+// AXE: @Targon_Item
+[FUNCTION wpn_targon_item_axe]
+if ( (<SRC.TARG.TYPE> == t_corpse) && ( (<SRC.TARG.AMOUNT> == 400) || (<SRC.TARG.AMOUNT> == 401) ) )
+if ( strmatch(  "headless*", "<SRC.TARG.NAME>") )
+src.sysmessage That corpse has no head.
+ else
+src.sysmessage You can't carve the head out of the body.
+       // src.sysmessage You carve the head out of the body.
+       // SRC.TARG.NAME	= headless body of <SRC.TARG.LINK.NAME>
+       // SRC.NEWITEM i_flesh_head
+        //SRC.ACT.NAME head of <SRC.TARG.LINK.NAME>
+        //SRC.ACT.BOUNCE
+endif
+return 1
+endif
+return 0
+
+// AXE: @Targon_Char
+[FUNCTION wpn_targon_char_axe]
+  return 0
+
+
+//
+// BLADED
+//
+
+// BLADED: @DClick
+[FUNCTION wpn_dclick_bladed]
+return 0
+
+// BLADED: @Targon_Ground
+[FUNCTION wpn_targon_ground_bladed]
+  if ( <TYPE> == t_weapon_fence )
+     return 0
+  endif
+  src.sysmessage You can't think of a way to use that item.
+  return 1
+
+// BLADED: @Targon_Item
+[FUNCTION wpn_targon_item_bladed]
+if ( (<SRC.TARG.TYPE> == t_corpse) && ( (<SRC.TARG.AMOUNT> == 400) || (<SRC.TARG.AMOUNT> == 401) ) )
+   if ( strmatch(  "headless*", "<SRC.TARG.NAME>") )
+     src.sysmessage That corpse has no head.
+   else
+      src.sysmessage You can't carve the head out of the body.
+    // src.sysmessage You carve the head out of the body.
+     //  SRC.TARG.NAME	= headless body of <SRC.TARG.LINK.NAME>
+    //    SRC.NEWITEM i_flesh_head
+    //          SRC.ACT.NAME head of <SRC.TARG.LINK.NAME>
+     //         SRC.ACT.BOUNCE
+   endif
+   return 1
+endif
+IF (<SRC.TARG.TYPE>==t_fruit)
+   SRC.SYSMESSAGE You must use a proper corer on this!
+   RETURN 1
+ENDIF
+IF (<SRC.TARG.MORE1>==s_explosion)
+   SRC.SYSMESSAGE You doubt that would do anything
+   RETURN 1
+ENDIF
+return 0
+
+
+// BLADED: @Targon_Char
+[FUNCTION wpn_targon_char_bladed]
+  return 0
+
+
+//
+// BLUNT
+//
+
+// BLUNT: @DClick
+[FUNCTION wpn_dclick_blunt]
+  return 0
+  
+// BLUNT: @Targon_Ground
+[FUNCTION wpn_targon_ground_blunt]
+  src.sysmessage You can't think of a way to use that item.
+  return 1
+  
+// BLUNT: @Targon_Item
+[FUNCTION wpn_targon_item_blunt]
+  return 0
+  
+// BLUNT: @Targon_Char
+[FUNCTION wpn_targon_char_blunt]
+  return 0
+
+
+//
+// POLE
+//
+
+// POLE: @DClick
+[FUNCTION wpn_dclick_pole]
+  return 0
+  
+// POLE: @Targon_Ground
+[FUNCTION wpn_targon_ground_pole]
+  return 0
+  
+// POLE: @Targon_Item
+[FUNCTION wpn_targon_item_pole]
+if ( (<SRC.TARG.TYPE> == t_corpse) && ( (<SRC.TARG.AMOUNT> == 400) || (<SRC.TARG.AMOUNT> == 401) ) )
+if ( strmatch(  "headless*", "<SRC.TARG.NAME>") )
+src.sysmessage That corpse has no head.
+else
+       // src.sysmessage You carve the head out of the body.
+       // SRC.TARG.NAME	= headless body of <SRC.TARG.LINK.NAME>
+       // SRC.NEWITEM i_flesh_head
+       // SRC.ACT.NAME head of <SRC.TARG.LINK.NAME>
+      //  SRC.ACT.BOUNCE
+src.sysmessage You can't carve the head out of the body.
+endif
+return 1
+endif
+return 0
+
+  
+// POLE: @Targon_Char
+[FUNCTION wpn_targon_char_pole]
+  return 0
+
+
+//
+// STAFF
+//
+
+// STAFF: @DClick
+[FUNCTION wpn_dclick_staff]
+return 0
+
+// STAFF: @Targon_Ground
+[FUNCTION wpn_targon_ground_staff]
+return 0
+
+// STAFF: @Targon_Item
+[FUNCTION wpn_targon_item_staff]
+return 1
+
+// STAFF: @Targon_Char
+[FUNCTION wpn_targon_char_staff]
+  return 0
+
+
+//
+// WEAPONS
+//
+
+[ITEMDEF 0ec2]
+//Cleaver
+//Used for fighting?
+//Shouldn't this be also a non-fighting action type?
+DEFNAME=i_cleaver_meat
+TYPE=T_WEAPON_SWORD
+FLIP=1
+RESOURCES=3 i_ingot_iron
+DAM=8,15
+//SPEED=70
+SKILL=Swordsmanship
+REQSTR=10
+TWOHANDS=N
+WEIGHT=6
+CATEGORY=Provisions - Weapons
+SUBSECTION=Knives & Daggers
+DESCRIPTION=Cleaver
+DUPELIST=0ec3
+ON=@Create
+HITPOINTS={31 50}
+ON = @DClick
+return = <wpn_dclick_bladed>
+ON = @Targon_ground
+return = <wpn_targon_ground_bladed>
+ON = @Targon_char
+return = <wpn_targon_char_bladed>
+ON = @Targon_item
+return = <wpn_targon_item_bladed>
+
+
+
+
+[ITEMDEF 0ec4]
+//Used for Fencing?
+// Skinning Knife
+//Shouldn't this be also a non-fighting action type?
+DEFNAME=i_knife_skinning
+TYPE=T_WEAPON_FENCE
+FLIP=1
+RESOURCES=2 i_ingot_iron
+SKILLMAKE=BLACKSMITHING 15.0
+DAM=1,3
+//SPEED=80
+SKILL=Fencing
+REQSTR=5
+TWOHANDS=N
+WEIGHT=1
+CATEGORY=Provisions - Weapons
+SUBSECTION=Knives & Daggers
+DESCRIPTION=Skinning Knife
+DUPELIST=0ec5
+ON=@Create
+HITPOINTS={31 40}
+ON = @DClick
+return = <wpn_dclick_bladed>
+ON = @Targon_ground
+return = <wpn_targon_ground_bladed>
+ON = @Targon_char
+return = <wpn_targon_char_bladed>
+ON = @Targon_item
+return = <wpn_targon_item_bladed>
+
+
+
+
+[ITEMDEF 0102a]
+//Hammer
+DEFNAME=i_hammer
+RESOURCES=4 i_ingot_iron
+DAM=1,5
+WEIGHT=4
+TYPE=T_WEAPON_MACE_SMITH
+FLIP=1
+CATEGORY=Items by Professions
+SUBSECTION=Carpenter
+DESCRIPTION=Hammer
+DUPELIST=0102b
+//ON = @DClick
+//return = <wpn_dclick_blunt>
+ON = @Targon_ground
+return = <wpn_targon_ground_blunt>
+ON = @Targon_char
+return = <wpn_targon_char_blunt>
+ON = @Targon_item
+return = <wpn_targon_item_blunt>
+
+
+[ITEMDEF 010e4]
+DEFNAME=i_knife_draw
+RESOURCES=2 i_ingot_iron
+WEIGHT=4
+DAM=1,5
+TYPE=T_WEAPON_FENCE
+FLIP=1
+CATEGORY=Items by Professions
+SUBSECTION=Carpenter
+DESCRIPTION=Draw Knife
+ON = @DClick
+return = <wpn_dclick_bladed>
+ON = @Targon_ground
+return = <wpn_targon_ground_bladed>
+ON = @Targon_char
+return = <wpn_targon_char_bladed>
+ON = @Targon_item
+return = <wpn_targon_item_bladed>
+
+
+[ITEMDEF 013e3]
+DEFNAME=i_hammer_smith
+WEIGHT=4
+TYPE=T_WEAPON_MACE_SMITH
+FLIP=1
+RESOURCES=6 i_ingot_iron
+SKILLMAKE	= TINKERING 42.1,t_tinker_tools
+DAM=4,16
+//SPEED=60
+SKILL=Mace Fighting
+REQSTR=10
+TWOHANDS=N
+CATEGORY=Provisions - Weapons
+SUBSECTION=Maces & Hammers
+DESCRIPTION=Smith's Hammer
+DUPELIST=013e4
+ON=@Create
+HITPOINTS={31 60}
+ON=@DClick
+// Fixed due to changing REQSTR
+IF (<REQSTR> > 10)
+   REQSTR = 10
+ENDIF
+ON=@Targon_item
+IF (<SRC.TARG.TDATA1> = mat_copper)
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_copper> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_copper 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 copper ingots and 6 tin ingots to repair this...
+      RETURN 1
+   ENDIF
+ELSEIF (<SRC.TARG.TDATA1> = mat_iron)
+   IF (<SRC.BLACKSMITHING> < 20.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_iron> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_iron 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 iron ingots and 6 tin ingots to repair this...
+      RETURN 1
+   ENDIF	
+ELSEIF (<SRC.TARG.TDATA1> = mat_steel)
+   IF (<SRC.BLACKSMITHING> < 40.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_steel> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_steel 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 steel ingots and 6 tin ingots to repair this...
+      RETURN 1
+   ENDIF	
+ELSEIF (<SRC.TARG.TDATA1> = mat_titanium)
+   IF (<SRC.BLACKSMITHING> < 60.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+      SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+      RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_titanium> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_titanium 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 titanium ingots and 6 tin ingots to repair this...
+      RETURN 1
+   ENDIF	
+ELSEIF (<SRC.TARG.TDATA1> = mat_adamantine)
+   IF (<SRC.BLACKSMITHING> < 80.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+      SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+      RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_adamantine> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_adamantine 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 adamantine ingots and 6 tin ingots to repair this...
+      RETURN 1
+   ENDIF	
+ELSEIF (<SRC.TARG.TDATA1> = mat_silver)
+   IF (<SRC.BLACKSMITHING> < 50.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_silver> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_silver 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 silver ingots and 6 tin ingots to repair this...
+      RETURN 1
+   ENDIF	
+ELSEIF (<SRC.TARG.TDATA1> = mat_gold)
+      IF (<SRC.BLACKSMITHING> < 50.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_gold> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_gold 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 gold ingots and 6 tin ingots to repair this...
+      RETURN 1
+   ENDIF		
+ELSEIF (<SRC.TARG.TDATA1> = mat_phoenix)
+   IF (<SRC.BLACKSMITHING> < 100.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_phoenix> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_phoenix 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 phoenix ingots and 6 tin ingots to repair this...
+      RETURN 1
+   ENDIF	
+ELSEIF (<SRC.TARG.TDATA1> = mat_celestium)
+   IF (<SRC.BLACKSMITHING> < 95.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_celestium> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_celestium 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 celestium ingots and 6 tin ingots to repair this...
+      RETURN 1
+   ENDIF	
+ELSEIF (<SRC.TARG.TDATA1> = mat_terathane)
+   IF (<SRC.BLACKSMITHING> < 60.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_terathane> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_terathane 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 terathane ingots and 6 tin ingots to repair this...
+      RETURN 1
+   ENDIF	
+ELSEIF (<SRC.TARG.TDATA1> = mat_skargard)
+   IF (<SRC.BLACKSMITHING> < 90.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_skargard> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_skargard 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 skargard ingots and 6 tin ingots to repair this...
+      RETURN 1
+   ENDIF	
+ELSEIF (<SRC.TARG.TDATA1> = mat_bloodrock)
+   IF (<SRC.BLACKSMITHING> < 95.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_bloodrock> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_bloodrock 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 bloodrock ingots and 6 tin ingots to repair this...
+      RETURN 1
+   ENDIF	
+ELSEIF (<SRC.TARG.TDATA1> = mat_blackrock)
+   IF (<SRC.BLACKSMITHING> < 80.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_blackrock> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_blackrock 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 blackrock ingots and 6 tin ingots to repair this...
+      RETURN 1
+   ENDIF	
+ELSEIF (<SRC.TARG.TDATA1> = mat_verminard)
+   IF (<SRC.BLACKSMITHING> < 75.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_verminard> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_verminard 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 verminard ingots and 6 tin ingots to repair this...
+      RETURN 1
+   ENDIF	
+ELSEIF (<SRC.TARG.TDATA1> = mat_stronghold)
+   IF (<SRC.BLACKSMITHING> < 75.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_stronghold> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_stronghold 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 stronghold ingots and 6 tin ingots to repair this...
+      RETURN 1
+   ENDIF	
+ELSEIF (<SRC.TARG.TDATA1> = mat_pure_copper)
+   IF (<SRC.BLACKSMITHING> < 30.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_pure_copper> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_pure copper 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 pure copper ingots and 6 tin ingots to repair this...
+      RETURN 1
+   ENDIF	
+ELSEIF (<SRC.TARG.TDATA1> = mat_ferrum)
+   IF (<SRC.BLACKSMITHING> < 45.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_ferrum> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_ferrum 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 ferrum ingots and 6 tin ingots to repair this...
+      RETURN 1
+   ENDIF	
+ELSEIF (<SRC.TARG.TDATA1> = mat_brass)
+   IF (<SRC.BLACKSMITHING> < 40.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_brass> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_brass 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 brass ingots and 6 tin ingots to repair this...
+      RETURN 1
+   ENDIF	
+ELSEIF (<SRC.TARG.TDATA1> = mat_chrome)
+   IF (<SRC.BLACKSMITHING> < 50.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_chrome> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_chrome 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 chrome ingots and 6 tin ingots to repair this...
+      RETURN 1      
+   ENDIF	
+ELSEIF (<SRC.TARG.TDATA1> = mat_agapite)
+   IF (<SRC.BLACKSMITHING> < 85.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_agapite> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_agapite 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 agapite ingots and 6 tin ingots to repair this...
+      RETURN 1
+   ENDIF	
+ELSEIF (<SRC.TARG.TDATA1> = mat_bloodrk)
+   IF (<SRC.BLACKSMITHING> < 95.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_bloodrk> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_bloodrock 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 bloodrock ingots and 6 tin ingots to repair this...
+      RETURN 1
+   ENDIF	
+ELSEIF (<SRC.TARG.TDATA1> = mat_shadow)
+   IF (<SRC.BLACKSMITHING> < 85.0)
+         SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+         RETURN 1
+      ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_shadow> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_shadow 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 shadow ingots and 6 tin ingots to repair this...
+      RETURN 1
+   ENDIF	
+ELSEIF (<SRC.TARG.TDATA1> = mat_verite)
+   IF (<SRC.BLACKSMITHING> < 90.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_verite> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_verite 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 verite ingots and 6 tin ingots to repair this...
+      RETURN 1
+   ENDIF	 
+ELSEIF (<SRC.TARG.TDATA1> = mat_valorite)
+   IF (<SRC.BLACKSMITHING> < 90.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_valorite> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_valorite 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 valorite ingots and 6 tin ingots to repair this...
+      RETURN 1
+   ENDIF	
+ELSEIF (<SRC.TARG.TDATA1> = mat_entit)
+   IF (<SRC.BLACKSMITHING> < 85.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_entit> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_entit 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 enriched titanium ingots and 6 tin ingots to repair this...
+      RETURN 1
+   ENDIF
+ELSEIF (<SRC.TARG.BASEID> = i_gauntlets_might)
+   IF (<SRC.BLACKSMITHING> < 100.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_adamantine> && <SRC.RESTEST 1 i_ingot_blackrock>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_adamantine 3
+      SRC.CONSUME i_ingot_blackrock 1
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 adamantine ingots and 1 blackrock ingot to repair this...
+      RETURN 1
+   ENDIF
+ELSEIF (<SRC.TARG.TYPE> = t_ingot )
+   RETURN 0
+ELSE
+   SRC.SYSMESSAGE You cannot craft or repair this
+   RETURN 1
+ENDIF
+
+ON=@Targon_char
+   SRC.SYSMESSAGE You go to repair <SRC.TARG.NAME> but then decide they wouldn't like that...
+   RETURN 1
+   
+ON=@Targon_ground
+   SRC.SYSMESSAGE The ground is always in full repair, thanks to your taxes...
+   RETURN 1
+
+[ITEMDEF 013f6]
+DEFNAME=i_knife_butcher
+RESOURCES=1 i_BOARD, 1 i_ingot_iron
+WEIGHT=4
+TYPE=T_WEAPON_FENCE
+FLIP=1
+DAM=2,8
+//SPEED=80
+SKILL=Fencing
+REQSTR=5
+TWOHANDS=N
+CATEGORY=Provisions - Weapons
+SUBSECTION=Knives & Daggers
+DESCRIPTION=Butchers Knife
+DUPELIST=013f7
+ON=@Create
+HITPOINTS={31 40}
+ON = @DClick
+return = <wpn_dclick_bladed>
+ON = @Targon_ground
+return = <wpn_targon_ground_bladed>
+ON = @Targon_char
+return = <wpn_targon_char_bladed>
+ON = @Targon_item
+return = <wpn_targon_item_bladed>
+
+
+
+[ITEMDEF 0e81]
+//miniature shepherd's crook (picture for backpack only?)
+// This is different from i_shepherds_crook
+DEFNAME=i_crook_thin
+NAME = wood shepherd's crook
+TDATA1 = mat_pine
+RESOURCES=7 i_log
+TYPE=T_WEAPON_MACE_CROOK
+FLIP=1
+DAM=3,12
+//SPEED=70
+REQSTR=10
+TWOHANDS=Y
+WEIGHT=2
+CATEGORY=Provisions - Weapons
+SUBSECTION=Maces & Hammers
+DESCRIPTION=wood sheperds crook
+SKILLMAKE=CARPENTRY 48.9, t_carpentry
+DUPELIST=0e82
+ON=@Create
+HITPOINTS={31 50}
+COLOR = color_o_wood
+ON = @DClick
+return = <wpn_dclick_staff>
+ON = @Targon_ground
+return = <wpn_targon_ground_staff>
+ON = @Targon_char
+return = <wpn_targon_char_staff>
+ON = @Targon_item
+return = <wpn_targon_item_staff>
+
+[EOF]
+

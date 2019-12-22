@@ -1,0 +1,138 @@
+//
+// Fix to lock the plevels of staff members
+//
+//                                   
+// Changelog
+// =========
+// 11-08-03 - Wigifer - Protected account lock added - Tested
+
+[DEFNAME def_accounts_locked]
+dafty *.*.*.*
+olbrien *.*.*.*
+
+
+[DEFNAME def_plevel_locks]
+
+// Admin accounts
+LOCK-remoteadmin 6
+LOCK-dafty 7
+LOCK-olbrien 7
+
+
+
+
+
+// Dev GM accounts
+//LOCK-Vidar 5
+//LOCK-boo_test 6
+
+// GM accounts
+//LOCK-a_staff 4
+
+
+// Seer accounts
+//LOCK-Luci_staff 3
+
+// Counselor accounts
+//LOCK-Ferris_staff 2 
+
+
+// Protected accounts
+//LOCK-mondain 1
+
+// Ex-Staff accounts
+
+
+[DEFNAME def_bans]
+ban1 first.ip.ban.here
+ban2 second.ip.ban.here
+
+
+
+[EVENTS e_ip_lock]
+//ON=@LOGIN
+//IF (0<VAR.<ACCOUNT>>)
+//    IF !(STRMATCH(<VAR.<ACCOUNT>>,<ACCOUNT.LASTIP>))
+//        SECUREDISCONN 1
+//    ENDIF
+//ENDIF
+
+
+[EVENTS e_plevel_lock]
+//ON=@LOGIN
+//IF (0<VAR.LOCK-<ACCOUNT>>)
+//    IF (<ACCOUNT.PLEVEL> > <VAR.LOCK-<ACCOUNT>>)
+//        SECUREDISCONN 0
+//    ENDIF
+//ELSEIF !(0<VAR.LOCK-<ACCOUNT>>) && (<ACCOUNT.PLEVEL> > 1)
+//    SECUREDISCONN 0
+//ENDIF
+
+
+[EVENTS e_ban_dynamic]
+//ON=@LOGIN
+//IF (<CHECKBANLIST>)
+//    DIALOG d_crash
+//ENDIF
+
+
+
+[FUNCTION CHECKBANLIST]
+//VAR.N <EVAL 0<VAR.N> + 1>
+//IF (STRMATCH(<VAR.BAN<EVAL <VAR.N>>>,<ACCOUNT.LASTIP>))
+//    VAR.N
+//    RETURN 1
+//ELSEIF !(STRCMPI("","<VAR.BAN<EVAL <VAR.N> + 1>>"))
+//    VAR.N
+//    RETURN 0
+//ENDIF
+//RETURN <CHECKBANLIST>
+
+
+[FUNCTION SECUREDISCONN]
+//NEWITEM i_disconnect_delay
+//ACT.LINK <UID>
+//IF (<ARGS>)
+//    ACT.TAG.LOCKIP <VAR.<ACCOUNT>>
+//    MESSAGE Your IP does not match the IP designated for this account. You will be disconnected in 3 seconds.
+//ELSE
+//    ACT.TAG.LOCKPLEVEL <VAR.LOCK-<ACCOUNT>>
+//    MESSAGE This account is not authorised to use this PLEVEL. You will be disconnected in 3 seconds.
+//ENDIF
+//ACT.TIMER 3
+//ACT.P <EVAL RAND(6144)>,<EVAL RAND(4096)>,<EVAL RAND(250) - 125>,<EVAL RAND(255)>
+//P <ACT.P>
+//GO JAIL
+//ACT
+//MUTE 3
+
+
+
+//[DIALOG d_crash]
+//0,0
+//text
+//[DIALOG d_crash TEXT]
+//[DIALOG d_crash BUTTON]
+
+
+
+[ITEMDEF i_disconnect_delay]
+//ID=i_memory
+//TYPE=t_eq_script
+
+//ON=@EQUIP
+//DIALOG d_crash
+//REMOVE
+
+//ON=@TIMER
+//IF (<MORE>)
+//    TRY VAR.<ACCOUNT> <TAG.LOCKIP>
+//ELSE
+//    TRY VAR.LOCK-<ACCOUNT> <TAG.LOCKPLEVEL>
+//ENDIF
+//LINK.EVENTS +e_ip_lock
+//LINK.EVENTS +e_plevel_lock
+//LINK.EQUIP <UID>
+//RETURN 1
+   
+[EOF]

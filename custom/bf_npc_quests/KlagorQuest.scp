@@ -1,0 +1,209 @@
+///////////////////////////
+//Zaks Klagor Quest V.1.0//
+///////////////////////////
+
+[CHARDEF c_h_Klagor]
+   Name=Klagor
+   ID=c_man
+   ARMOR=80
+   DAM={200 250}
+   TSPEECH=spk_klagor_quest
+
+ON=@NPCSeeNewPlayer
+   SAY *psst*
+   SAY <SRC.NAME> , come here *psst*, I have a favour to ask of you.
+
+ON=@Create
+   NPC=brain_human
+   COLOR=colors_skin
+  
+   STR=100
+   DEX=100
+   INT=100
+   
+   FENCING=75.0
+   PARRYING=75.0
+   SWORDSMANSHIP=75.0
+   WRESTLING=75.0
+   MACEFIGHTING=75.0
+   TACTICS=75.0
+  
+   ITEMNEWBIE=random_male_hair
+   COLOR=colors_hair
+   ITEMNEWBIE=random_facial_hair
+   COLOR=match_hair
+   ITEM=i_candle
+   ITEM=i_shirt_plain
+   COLOR=colors_all
+   ITEM=random_pants
+   COLOR=colors_all
+   ITEM=random_shoes
+   COLOR=colors_neutral
+   ITEM=i_lantern
+   ITEM=random_coin_purse
+
+ON=@NPCRestock
+   ITEM=i_candle
+   ITEM=i_shirt_plain
+   COLOR=colors_all
+   ITEM=random_pants
+   COLOR=colors_all
+   ITEM=random_shoes
+   COLOR=colors_neutral
+   ITEM=i_lantern
+   ITEM=random_coin_purse
+
+CATEGORY=Imperial uo
+SUBSECTION=Klagor Quest
+DESCRIPTION=Klagor
+
+
+[CHARDEF c_m_klagor_wyrm]
+   NAME=Klagor's Wyrm
+   ID=c_DRAGON_GREEN
+   SOUND=snd_MONSTER_DRAGON1
+   ICON=i_pet_dragon
+   DAM=11,53
+   ARMOR=35
+   RESOURCES=99 i_ribs_raw,20 i_hide,8 i_reag_dragon_blood
+   CAN=MT_WALK|MT_FLY
+   FOODTYPE=80 t_meat_raw
+   DESIRES=i_gold
+   AVERSIONS=r_civilization,r_water
+
+ON=@Create
+   COLOR=colors_wyrm
+   STR={1095 1185}
+   DEX={86 175}
+   INT={685 775}
+
+   PARRYING={55.0 95.0}
+   MAGERY=99.0
+   MAGICRESISTANCE={99.0 100.0}
+   TACTICS={98.0 100.0}
+   WRESTLING={90.0 93.0}
+   NPC=brain_dragon
+
+   FAME={3000 9000}
+   KARMA={-6000 -6999}
+
+ON=@NPCRestock
+   ITEM=tm_blade_armour
+
+ON=@DEATH
+   y_region_loot_death
+   y_region_loot_calculator
+   loot_DRAGON
+   loot_dragonrares_Med
+
+CATEGORY=Imperial uo
+SUBSECTION=Klagor Quest
+DESCRIPTION=Klagor's Wyrm
+
+
+[SPEECH spk_klagor_quest]
+ON=*what*
+ON=*hello*
+ON=*favour*
+   IF ( 0<SRC.TAG.NPC_QUEST_START> & NPCQ_Klagor )
+      SAY You are already supposed to be helping me...
+   ELSE
+      SAY Can you get me some items from all over brittania?
+      SAY It may take some time to complete but if you get them for me. 
+      SAY I will give you a special set of armour. 
+      SAY If you will help me, say "Agree" , or be on your way.
+   ENDIF
+   RETURN 1
+   
+ON=*Agree*
+   IF ( 0<SRC.TAG.NPC_QUEST_START> & NPCQ_Klagor )
+      SAY You are already supposed to be helping me...
+   ELSE
+      SRC.TAG.NPC_QUEST_START = <eval ( 0<SRC.TAG.NPC_QUEST_START> | NPCQ_Klagor )>
+      SAY I require a number of items, please get one of each and I shall reward you. 
+      SAY There are 6 items. Say a number, between 1 and 6 for information on that item. 
+      SAY When you have all 6 items, say "Reward" to recieve what you have comming to you...
+   ENDIF
+   RETURN 1
+   
+ON=*1*
+ON=*ONE*
+   IF !( 0<SRC.TAG.NPC_QUEST_START> & NPCQ_Klagor )
+      SAY Agree to help me or leave me be!
+   ELSE
+      SAY The first item I require is a key that belongs to a man named "Darrell".
+   ENDIF
+   RETURN 1
+   
+ON=*2*
+ON=*two*
+   IF !( 0<SRC.TAG.NPC_QUEST_START> & NPCQ_Klagor )
+      SAY Agree to help me or leave me be!
+   ELSE
+      SAY The second Item I need is a Magically Locked Bag.
+   ENDIF
+   RETURN 1
+
+ON=*3*
+ON=*Three*
+   IF !( 0<SRC.TAG.NPC_QUEST_START> & NPCQ_Klagor )
+      SAY Agree to help me or leave me be!
+   ELSE
+      SAY The third item I need is Paddy's Lucky Hat.
+   ENDIF
+   RETURN 1
+
+ON=*4*
+ON=*four*
+   IF !( 0<SRC.TAG.NPC_QUEST_START> & NPCQ_Klagor )
+      SAY Agree to help me or leave me be!
+   ELSE
+      SAY For the fourth item, I require a Rock of Desire
+   ENDIF
+   RETURN 1
+
+ON=*5*
+ON=*five*
+   IF !( 0<SRC.TAG.NPC_QUEST_START> & NPCQ_Klagor )
+      SAY Agree to help me or leave me be!
+   ELSE
+      SAY Get me a Minotor's head for the fith item
+   ENDIF
+   RETURN 1
+
+ON=*6*
+ON=*six*
+   IF !( 0<SRC.TAG.NPC_QUEST_START> & NPCQ_Klagor )
+      SAY Agree to help me or leave me be!
+   ELSE
+      SAY The sixth and final item I require is Travis' Sewing Kit.
+   ENDIF
+   RETURN 1
+
+ON=*reward*
+   IF !( 0<SRC.TAG.NPC_QUEST_START> & NPCQ_Klagor )
+      SAY Agree to help or GO AWAY!
+   ELSEIF (( 0<SRC.TAG.NPC_QUEST_START> & NPCQ_Klagor ) && !<SRC.RESTEST 1 i_stone_desire>)
+      SAY You need all six items before I can give you whats comming to you...
+   ELSEIF (( 0<SRC.TAG.NPC_QUEST_START> & NPCQ_Klagor ) && !<SRC.RESTEST 1 i_key_darrell>)
+      SAY You need all six items before I can give you whats comming to you...
+   ELSEIF (( 0<SRC.TAG.NPC_QUEST_START> & NPCQ_Klagor ) && !<SRC.RESTEST 1 i_magic_bag>)
+      SAY You need all six items before I can give you whats comming to you...
+   ELSEIF (( 0<SRC.TAG.NPC_QUEST_START> & NPCQ_Klagor ) && !<SRC.RESTEST 1 i_lucky_hat>)
+      SAY You need all six items before I can give you whats comming to you...
+   ELSEIF (( 0<SRC.TAG.NPC_QUEST_START> & NPCQ_Klagor ) && !<SRC.RESTEST 1 i_minotaur_head>)
+      SAY You need all six items before I can give you whats comming to you...
+   ELSEIF (( 0<SRC.TAG.NPC_QUEST_START> & NPCQ_Klagor ) && !<SRC.RESTEST 1 i_sewing_kit_travis>)
+      SAY You need all six items before I can give you whats comming to you...
+   ELSE
+      SRC.CONSUME 1 i_stone_desire,1 i_key_darrell,1 i_magic_bag,1 i_lucky_hat,1 i_minotaur_head,1 i_sewing_kit_travis
+      SRC.ACT.BOUNCE
+      SRC.TAG.NPC_QUEST_START = <eval ( 0<SRC.TAG.NPC_QUEST_START> &~ NPCQ_Klagor )>
+      SRC.TAG.NPC_QUEST_DONE = <eval ( 0<SRC.TAG.NPC_QUEST_DONE> | NPCQ_Klagor )>            
+      SRC.EMOTE watches Klagor reveal his true form!!!
+      NEWNPC=c_m_klagor_wyrm
+      REMOVE
+   ENDIF
+   RETURN 1
+		
+[EOF]

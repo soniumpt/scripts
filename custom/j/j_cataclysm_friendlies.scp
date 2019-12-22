@@ -1,0 +1,681 @@
+// CHANGELOG
+// =========
+//
+// 18/08/18 - Wigifer - Removed references to e_all_npc 
+//
+
+//**********************************************
+//*           Cataclysm: Friendlies            *
+//**********************************************
+
+[ITEMDEF i_memory_follow_basic]
+ID=i_memory 
+NAME=Basic Follow Memory
+TYPE=t_eq_script
+
+ON=@CREATE
+   TIMER=1
+
+ON=@TIMER
+   CONT.ACT=<LINK>
+   CONT.ACTION=100
+   TIMER=2
+   RETURN 1
+
+[ITEMDEF i_memory_follow_advanced]
+ID=i_memory 
+NAME=Advanced Follow Memory
+TYPE=t_eq_script
+
+ON=@CREATE
+   TIMER=1
+
+ON=@TIMER
+   IF (<CONT.MEMORYFINDTYPE.memory_fight.UID>)
+      TIMER=2
+   ELSEIF ((<CONT.ACTION> = 100) && !(<CONT.MEMORYFINDTYPE.memory_fight.UID>))
+      CONT.ACTION=-1
+      TIMER=2
+   ELSEIF (!(<CONT.MEMORYFINDTYPE.memory_fight.UID>) && (<UID.<CONT.FINDID.i_memory_follow_advanced.LINK>.DISTANCE <CONT>> > 15))
+      CONT.GO <UID.<CONT.FINDID.i_memory_follow_advanced.LINK>.P>
+      CONT.ACT=<LINK>
+      CONT.ACTION=100
+      TIMER=4
+   ELSE
+      CONT.ACT=<LINK>
+      CONT.ACTION=100
+      TIMER=2
+   ENDIF
+   RETURN 1
+
+[FUNCTION addfollowmemory_advanced]
+SERV.NEWITEM i_memory_follow_advanced
+NEW.LINK = <UID>
+NEW.CONT <UID.<ARGS>>
+
+[FUNCTION addfollowmemory_basic]
+SERV.NEWITEM i_memory_follow_advanced
+NEW.LINK = <UID>
+NEW.CONT <UID.<ARGS>>
+
+
+[FUNCTION f_followtest]
+SERV.NEWNPC c_cataclysm_biggs
+NEW.P = <P>
+NEW.ACT = <UID>
+NEW.ACTION = 100
+ADDFOLLOWMEMORY_ADVANCED <NEW.UID>
+SERV.NEWNPC c_cataclysm_wedge
+NEW.P = <P>
+NEW.ACT = <UID>
+NEW.ACTION = 100
+ADDFOLLOWMEMORY_ADVANCED <NEW.UID>
+
+[FUNCTION f_followtest2]
+SERV.NEWNPC c_cataclysm_biggs
+NEW.P = <P>
+NEW.ACT = <UID>
+NEW.ACTION = 100
+ADDFOLLOWMEMORY_ADVANCED <NEW.UID>
+
+[ITEMDEF i_test_mercenary]
+NAME=Monster Killer Mercenary
+ID=i_scroll_blank
+
+ON=@CREATE
+   COLOR=066
+   
+ON=@DCLICK
+   f_followtest2
+   IF (<AMOUNT> > 1)
+      AMOUNT=<AMOUNT> - 1
+   ELSE
+      REMOVE
+   ENDIF
+   RETURN 1
+
+// *** NPC's ***
+
+[CHARDEF c_cataclysm_aaron]
+NAME = Aaron
+ID = c_man
+TSPEECH = s_cataclysmaaron
+
+ON=@CREATE
+  COLOR = 0333
+  KARMA = {5000 5999}
+  FAME = {2000 4000}
+  HITS = {1500 1700}
+  STR = {800 900}
+  DEX = {100 120}
+  INT = {200 300}
+  PARRYING = {80.0 100.0}
+  MAGICRESISTANCE = {100.0 120.0}
+  TACTICS = 100.0
+  WRESTLING = 100.0
+  MACEFIGHTING = 100.0
+  FENCING = 100.0
+  SWORDSMANSHIP = 100.0
+  
+  ITEMNEWBIE = i_platemail_chest_titanium
+  ITEMNEWBIE = i_platemail_gloves_titanium
+  ITEMNEWBIE = i_platemail_leggings_titanium
+  ITEMNEWBIE = i_platemail_arms_titanium
+  ITEMNEWBIE = i_platemail_gorget_titanium
+  ITEMNEWBIE = i_staff_quarter_cherry
+  ITEMNEWBIE = random_male_hair
+  
+  
+ON=@NPCRestock
+  ITEM=i_gold,{100 250}
+
+ON=@CLICK
+  MESSAGE [Quest Giver]
+  
+ON=@DCLICK
+  IF !(<SRC.TAG0.NPC_QUEST_START_3> & NPCQ_Order81_part1)
+     SRC.f_order81_part_1
+  ELSEIF ( !(<SRC.TAG0.NPC_QUEST_DONE_3> & NPCQ_Order81_part1) &! (<SRC.FINDID.i_order81.UID>) )
+     SAY You don't have a copy of Order 81 yet <SRC.NAME>!
+  ELSEIF ( !(<SRC.TAG0.NPC_QUEST_DONE_3> & NPCQ_Order81_part1) && (<SRC.FINDID.i_order81.UID>) )
+     SRC.f_order81_part_1_conclusion
+  ELSEIF !(<SRC.TAG0.NPC_QUEST_START_3> & NPCQ_Order81_part2)
+     SRC.f_order81_part_2
+  ELSEIF ( !(<SRC.TAG0.NPC_QUEST_DONE_3> & NPCQ_Order81_part2) &! (<SRC.FINDID.i_book_order81_diary.UID>) )
+     SAY You haven't brought me any proof yet!
+  ELSEIF ( !(<SRC.TAG0.NPC_QUEST_DONE_3> & NPCQ_Order81_part2) && (<SRC.FINDID.i_book_order81_diary.UID>) )
+     SRC.f_order81_part_2_conclusion     
+  ELSE
+     SRC.SYSMESSAGE You have already completed all quests available from this NPC
+  ENDIF
+     
+
+CATEGORY=Cataclysm
+SUBSECTION=Vesper Quests
+DESCRIPTION=Aaron
+
+
+[CHARDEF c_cataclysm_biggs]
+NAME = Biggs
+ID = c_man
+
+ON=@CREATE
+  COLOR = 0333
+  KARMA = {5000 5999}
+  FAME = {2000 4000}
+  HITS = {1500 1700}
+  STR = {200 300}
+  DEX = {100 120}
+  INT = {200 300}
+  PARRYING = {80.0 100.0}
+  MAGICRESISTANCE = {100.0 120.0}
+  TACTICS = 100.0
+  WRESTLING = 100.0
+  MACEFIGHTING = 100.0
+  FENCING = 100.0
+  SWORDSMANSHIP = 100.0
+  
+  ITEMNEWBIE = i_platemail_chest_titanium
+  ITEMNEWBIE = i_platemail_gloves_titanium
+  ITEMNEWBIE = i_platemail_leggings_titanium
+  ITEMNEWBIE = i_platemail_arms_titanium
+  ITEMNEWBIE = i_platemail_gorget_titanium
+  ITEMNEWBIE = i_staff_quarter_cherry
+  ITEMNEWBIE = random_male_hair
+  
+  
+ON=@NPCRestock
+  ITEM=i_gold,{100 250}
+
+ON=@CLICK
+  MESSAGE [Basic Monster Hunter]
+
+ON=@NPCLookAtChar
+   IF (!(<MEMORYFINDTYPE.memory_fight.UID>) && (<SRC.KARMA> < 1000) && (<SRC.ISNPC>))
+      SAY Die!
+      SERV.NEWITEM i_damager
+      NEW.MORE1	= <UID>
+      NEW.LINK	= <SRC.UID>
+      NEW.P	= <P>
+      NEW.UPDATE
+      ATTACK
+      ATTACK
+   ENDIF
+
+CATEGORY=Cataclysm
+SUBSECTION=Trinsic Quests
+DESCRIPTION=Biggs
+
+
+[CHARDEF c_cataclysm_wedge]
+NAME = Wedge
+ID = c_man
+
+ON=@CREATE
+  COLOR = 0333
+  KARMA = {5000 5999}
+  FAME = {2000 4000}
+  HITS = {1500 1700}
+  STR = {200 300}
+  DEX = {100 120}
+  INT = {200 300}
+  PARRYING = {80.0 100.0}
+  MAGICRESISTANCE = {100.0 120.0}
+  TACTICS = 100.0
+  WRESTLING = 100.0
+  MACEFIGHTING = 100.0
+  FENCING = 100.0
+  SWORDSMANSHIP = 100.0
+  
+  ITEMNEWBIE = i_platemail_chest_titanium
+  ITEMNEWBIE = i_platemail_gloves_titanium
+  ITEMNEWBIE = i_platemail_leggings_titanium
+  ITEMNEWBIE = i_platemail_arms_titanium
+  ITEMNEWBIE = i_platemail_gorget_titanium
+  ITEMNEWBIE = i_staff_quarter_cherry
+  ITEMNEWBIE = random_male_hair
+  
+  
+ON=@NPCRestock
+  ITEM=i_gold,{100 250}
+
+ON=@CLICK
+  MESSAGE [Basic Monster Hunter]
+
+ON=@NPCLookAtChar
+   IF (!(<MEMORYFINDTYPE.memory_fight.UID>) && (<SRC.KARMA> < 1000) && (<SRC.ISNPC>))
+      SAY Die!
+      SERV.NEWITEM i_damager
+      NEW.MORE1	= <UID>
+      NEW.LINK	= <SRC.UID>
+      NEW.P	= <P>
+      NEW.UPDATE
+      ATTACK
+      ATTACK
+   ENDIF
+
+     
+
+CATEGORY=Cataclysm
+SUBSECTION=Trinsic Quests
+DESCRIPTION=Wedge
+
+
+
+
+[SPEECH s_cataclysmaaron]
+ON=*hello*
+ON=*hi*
+ON=*quest*
+ON=*reward*
+ON=*salut*
+ON=*bonjour*
+  IF !(<SRC.TAG0.NPC_QUEST_START_3> & NPCQ_Order81_part1)
+     SRC.f_order81_part_1
+  ELSEIF ( !(<SRC.TAG0.NPC_QUEST_DONE_3> & NPCQ_Order81_part1) &! (<SRC.FINDID.i_order81.UID>) )
+     SAY You don't have a copy of Order 81 yet <SRC.NAME>!
+  ELSEIF ( !(<SRC.TAG0.NPC_QUEST_DONE_3> & NPCQ_Order81_part1) && (<SRC.FINDID.i_order81.UID>) )
+     SRC.f_order81_part_1_conclusion
+  ELSEIF !(<SRC.TAG0.NPC_QUEST_START_3> & NPCQ_Order81_part2)
+     SRC.f_order81_part_2
+  ELSEIF ( !(<SRC.TAG0.NPC_QUEST_DONE_3> & NPCQ_Order81_part2) &! (<SRC.FINDID.i_book_order81_diary.UID>) )
+     SAY You haven't brought me any proof yet!
+  ELSEIF ( !(<SRC.TAG0.NPC_QUEST_DONE_3> & NPCQ_Order81_part2) && (<SRC.FINDID.i_book_order81_diary.UID>) )
+     SRC.f_order81_part_2_conclusion     
+  ELSE
+     SAY I got nuffin fer ya a'ta moment <SRC.NAME>!
+  ENDIF 
+
+
+// *** Quest ***
+
+// *** Order 81 - Part 1 ***
+// *** Note: Part is in j_gm_gump under f_getquestsituations ***
+
+[FUNCTION f_order81_part_1]
+   VAR.QUESTHASOPTIONS=1
+   VAR.QUESTOPTION1=I shall do as you ask!
+   VAR.QUESTOPTION2=Sorry, not interested.
+   TAG.QUESTOPTION1.SELECTION=f_order81_part_1_confirm
+   TAG.QUESTOPTION2.SELECTION=
+   TAG.QUESTCONFIRM.SELECTION=f_order81_part_1_confirm
+   VAR.QUESTTITLE=Order 81 - Part 1: The Discovery
+   VAR.QUESTPICTURE=6227
+   VAR.QUESTLINE1=Hey you! Get over here! Whadda ya think you're doin' tearin' in ta
+   VAR.QUESTLINE2=Vesp' like that? Ain't ya seen whass goin' on in there? It's
+   VAR.QUESTLINE3=absolute chaos!
+   VAR.QUESTLINE4=
+   VAR.QUESTLINE5=Look, okay, if you really wanna go in there, ya can do somethin'
+   VAR.QUESTLINE6=useful while ya gettin' yaself killed. I'm with the Britannian Guards an' I'm needin'
+   VAR.QUESTLINE7=ta get hold o'a document called [ORDER 81]. One o'them zombie things will be havin'
+   VAR.QUESTLINE8=it on them. No idea which one mind. Heck, if you get it back here an' manage ta live
+   VAR.QUESTLINE9=long enough, yer can enjoy a small reward I'll be givin' ya in return!
+   VAR.QUESTOBJECTIVE=Find [ORDER 81] and return it to Aaron!
+   VAR.QUESTREWARD=5,000 Gold, 500 Reward Tickets
+   VAR.QUESTCONFIRMSECTION=I shall do as you ask!
+   DIALOG d_quest_postwipe
+
+[FUNCTION f_order81_part_1_conclusion]
+   VAR.QUESTHASOPTIONS=0
+   VAR.QUESTOPTION1=
+   VAR.QUESTOPTION2=
+   TAG.QUESTOPTION1.SELECTION=
+   TAG.QUESTOPTION2.SELECTION=
+   TAG.QUESTCONFIRM.SELECTION=f_order81_part_1_complete
+   VAR.QUESTTITLE=Order 81 - Part 1: The Discovery
+   VAR.QUESTPICTURE=6227
+   VAR.QUESTLINE1=So yer not entirely useless eh? Thass good ta see... Need some
+   VAR.QUESTLINE2=people who won't die easy 'round 'ere. Might even ha' some work
+   VAR.QUESTLINE3=fer ya later on if yer still alive fer it...
+   VAR.QUESTLINE4=
+   VAR.QUESTLINE5=Thanks fer yer help for now though...
+   VAR.QUESTLINE6=
+   VAR.QUESTLINE7=
+   VAR.QUESTLINE8=
+   VAR.QUESTLINE9=
+   VAR.QUESTOBJECTIVE=Claim your reward by clicking below.
+   VAR.QUESTREWARD=5,000 Gold, 500 Reward Tickets
+   VAR.QUESTCONFIRMSECTION=Not a problem. Glad to help.
+   DIALOG d_quest_postwipe
+   
+[FUNCTION f_order81_part_1_confirm]
+   SRC.TAG.NPC_QUEST_START_3 = <EVAL (<SRC.TAG.NPC_QUEST_START_3> | NPCQ_Order81_part1)>
+   SRC.SYSMESSAGE You have accepted this quest.
+
+[FUNCTION f_order81_part_1_complete]
+   SRC.TAG.NPC_QUEST_DONE_3 = <EVAL (<SRC.TAG.NPC_QUEST_DONE_3> | NPCQ_Order81_part1)>
+   SRC.FINDID.i_order81.REMOVE
+   SERV.NEWITEM i_gold
+   NEW.AMOUNT 5000
+   NEW.BOUNCE <SRC.UID>
+   SERV.NEWITEM i_reward_ticket
+   NEW.AMOUNT 500
+   NEW.BOUNCE <SRC.UID>
+   SRC.SYSMESSAGE You have complete Order 81: Part 1. You have been rewarded 5,000 gold and 500 reward tickets.
+   
+[FUNCTION f_order81_part_1_reset]   
+   TAG.NPC_QUEST_START_3 = <EVAL (<TAG.NPC_QUEST_START_3> &~ NPCQ_Order81_part1)>
+   TAG.NPC_QUEST_DONE_3 = <EVAL (<TAG.NPC_QUEST_DONE_3> &~ NPCQ_Order81_part1)>
+   SYSMESSAGE Order 81: Part 1 - Reset
+
+   
+[ITEMDEF i_order81]
+ID=i_deed
+NAME=Order 81
+
+ON=@CREATE
+   COLOR=0
+   ATTR=014
+  
+ON=@DCLICK
+   DIALOG d_order81
+   RETURN 1
+   
+[DIALOG d_order81]
+50,50
+
+resizepic 0 0 09D8 600 400
+dtext 260 30 010 ORDER 81
+dtext 250 40 05 -------------
+
+dtext 40 70 030 IMPORTANT COMMUNICATION FROM BR##A#N#AN M###S:
+
+dtext 45 90 030 All ###ta#ni#n g##r#s a#e her#by or#ered to clo#e t#eir to#ns
+dtext 45 105 030 to a#y and all v##itors. ##l #hose whom ven##re out of the t##ns
+dtext 45 120 030 a## to b# po##o#ed and declared tainted by the bli##t of sh#d#ws.
+dtext 45 135 030 This is to e#s#re th#t th##e is no #ecret con####nation by age##s
+dtext 45 150 030 from any exter##l force acting within towns. Furth###ore, all #uards
+dtext 45 165 030 are or##red to ##tack any and all former adve####ers on s#ght.
+dtext 45 180 030 Many are acting as age### of the Kn##hts or Sh##ows, and as a result
+dtext 45 205 030 we cannot take a c###ce.
+
+dtext 45 235 030 We und####and that #hat we are as#ing of you may s#em comp##tely
+dtext 45 250 030 amoral, particu###ly as we have not #e#rd word from any of the w##lds
+dtext 45 265 030 ov#rs#ers... However we b###eve this to be th# ##st cou#se of act#on
+dtext 45 280 030 and o## ####h might yet see all si#es destr##ing each #t#er.
+ 
+dtext 45 310 030 - B##ta##ian M##es
+
+
+[DIALOG d_order81 BUTTON]
+
+[DIALOG d_order81 TEXT]
+
+
+// *** Order 81 - Part 2 ***
+// *** Note: Part is in j_gm_gump under f_getquestsituations ***
+
+[FUNCTION f_order81_part_2]
+   VAR.QUESTHASOPTIONS=1
+   VAR.QUESTOPTION1=I'll get right on it!
+   VAR.QUESTOPTION2=How the hell am I meant to do that? No way.
+   TAG.QUESTOPTION1.SELECTION=f_order81_part_2_confirm
+   TAG.QUESTOPTION2.SELECTION=
+   TAG.QUESTCONFIRM.SELECTION=f_order81_part_2_confirm
+   VAR.QUESTTITLE=Order 81 - Part 2: Retribution
+   VAR.QUESTPICTURE=02080
+   VAR.QUESTLINE1=So ya back fer more eh? S'what I like ta see in ya adventurer
+   VAR.QUESTLINE2=types, a thirst fer excitement an' a death wish we can take
+   VAR.QUESTLINE3=advantage ah. Ya know I always wondered... Ne'er mind fae now.
+   VAR.QUESTLINE4=
+   VAR.QUESTLINE5=I read ya copy ah Order 81 ya found. Is nae quite like what the
+   VAR.QUESTLINE6=head chaps back at Brit were after, but ya can ne'er quite satisfy 'em. Still,
+   VAR.QUESTLINE7=they were wond'rin' if ya might mind another little errand. They think they know
+   VAR.QUESTLINE8=what it's sayin', but it makes no sense. They wan' ya tae find out some more
+   VAR.QUESTLINE9=info 'bout what happ'n'd. Find some evidence in Vesper! Try them monsters again!
+   VAR.QUESTOBJECTIVE=Search Vesper for information on Order 81!
+   VAR.QUESTREWARD=5,000 Gold, 1000 Reward Tickets
+   VAR.QUESTCONFIRMSECTION=I shall do as you ask!
+   DIALOG d_quest_postwipe
+
+[FUNCTION f_order81_part_2_conclusion]
+   VAR.QUESTHASOPTIONS=0
+   VAR.QUESTOPTION1=
+   VAR.QUESTOPTION2=
+   TAG.QUESTOPTION1.SELECTION=
+   TAG.QUESTOPTION2.SELECTION=
+   TAG.QUESTCONFIRM.SELECTION=f_order81_part_2_complete
+   VAR.QUESTTITLE=Order 81 - Part 2: Retribution
+   VAR.QUESTPICTURE=02080
+   VAR.QUESTLINE1=Hmm, wha? Ya foun' a diary? There's lots a copies o' tha same
+   VAR.QUESTLINE2=one fer some reason in Ve... Issa different one? Well stone
+   VAR.QUESTLINE3=me, iss completely diff'rent...
+   VAR.QUESTLINE4=
+   VAR.QUESTLINE5=...I'll be sendin' this back tae Brit ASAP... Ya can come back
+   VAR.QUESTLINE6=again, ne'er know when I might be able tae make more use o'ya...
+   VAR.QUESTLINE7=
+   VAR.QUESTLINE8=
+   VAR.QUESTLINE9=
+   VAR.QUESTOBJECTIVE=Claim your reward by clicking below.
+   VAR.QUESTREWARD=5,000 Gold, 1000 Reward Tickets
+   VAR.QUESTCONFIRMSECTION=If you have anything else later, I'll help.
+   DIALOG d_quest_postwipe
+   
+[FUNCTION f_order81_part_2_confirm]
+   SRC.TAG.NPC_QUEST_START_3 = <EVAL (<SRC.TAG.NPC_QUEST_START_3> | NPCQ_Order81_part2)>
+   SRC.SYSMESSAGE You have accepted this quest.
+
+[FUNCTION f_order81_part_2_complete]
+   SRC.TAG.NPC_QUEST_DONE_3 = <EVAL (<SRC.TAG.NPC_QUEST_DONE_3> | NPCQ_Order81_part2)>
+   SRC.FINDID.i_book_order81_diary.REMOVE
+   SERV.NEWITEM i_gold
+   NEW.AMOUNT 5000
+   NEW.BOUNCE <SRC.UID>
+   SERV.NEWITEM i_reward_ticket
+   NEW.AMOUNT 1000
+   NEW.BOUNCE <SRC.UID>
+   SRC.SYSMESSAGE You have complete Order 81: Part 2. You have been rewarded 5,000 gold and 1000 reward tickets.
+   
+[FUNCTION f_order81_part_2_reset]   
+   TAG.NPC_QUEST_START_3 = <EVAL (<TAG.NPC_QUEST_START_3> &~ NPCQ_Order81_part2)>
+   TAG.NPC_QUEST_DONE_3 = <EVAL (<TAG.NPC_QUEST_DONE_3> &~ NPCQ_Order81_part2)>
+   SYSMESSAGE Order 81: Part 2 - Reset
+
+
+[ITEMDEF i_book_order81_diary]
+NAME=Diary Part II
+ID=i_BOOK_OPEN
+
+CATEGORY=Cataclysm
+SUBSECTION=Vesper Quests
+DESCRIPTION=Diary - Order 81
+
+ON=@Create
+MORE=b_order81_diary
+ATTR=014
+
+ON=@CLICK
+MORE=b_order81_diary
+
+ON=@DCLICk
+MORE=b_order81_diary
+
+
+[BOOK b_order81_diary]
+PAGES=10
+TITLE=Diary Part Ii
+AUTHOR=Unknown
+
+[BOOK b_order81_diary 1]
+Day 11
+Having to write in a
+new book as I lost
+the old one...
+Everything is getting
+worse now. The Town
+Healer said he found
+no evidence of any
+
+[BOOK b_order81_diary 2]
+blight in Paul, but
+he was scared to go
+to the guards. He
+says they told him
+not to risk checking
+the body... Something
+doesn't seem right
+though, I agree...
+
+[BOOK b_order81_diary 3]
+Day 13
+Vesper's only healer
+was killed today.
+Apparently he was
+contaminated by
+Paul's blight. Not
+that it matters...
+After all, it seems
+
+[BOOK b_order81_diary 4]
+The Battle of West
+Bridge is spilling
+over into all the
+surrounding lands.
+Wonder how long til
+it gets as far as
+Vesper...
+
+
+[BOOK b_order81_diary 5]
+Day 14
+Something seems
+wrong. An injured man
+ventured into the
+town only to be
+executed on sight.
+Strange thing was,
+he was carrying a
+
+[BOOK b_order81_diary 6]
+Phoenix katana. I
+haven't seen anyone
+carry one of those
+around since that
+chap Sephiroth from
+outside town went
+missing... I hope
+for his sake that
+
+[BOOK b_order81_diary 7]
+it's just some 
+horrible coincidence.
+
+
+
+
+
+
+
+[BOOK b_order81_diary 8]
+Day 15
+The Britannian Mages
+sent out a new healer.
+He seems rather...
+Strange... Very cut
+off from us all.
+Unusual to send a
+guard healer too...
+
+[BOOK b_order81_diary 9]
+Day 17
+Overheard a guard
+talking about some
+instruction called
+Order 81. Sounds
+like it might have
+to do with Paul.
+Britannian Guards are
+
+[BOOK b_order81_diary 10]
+becoming less trustworthy
+day after day, and I'm
+getting scared...
+They say that the
+all life on this
+planet might vanish
+i#####
+~The rest is ruined~
+
+
+
+// *** Order 81 - Part 3 ***
+// *** Note: Part is in j_gm_gump under f_getquestsituations ***
+
+[FUNCTION f_order81_part_3]
+   VAR.QUESTHASOPTIONS=1
+   VAR.QUESTOPTION1=Bring it on!
+   VAR.QUESTOPTION2=Err... No thanks.
+   TAG.QUESTOPTION1.SELECTION=f_order81_part_3_confirm
+   TAG.QUESTOPTION2.SELECTION=
+   TAG.QUESTCONFIRM.SELECTION=f_order81_part_3_confirm
+   VAR.QUESTTITLE=Order 81 - Part 3: Restoration
+   VAR.QUESTPICTURE=02080
+   VAR.QUESTLINE1=Right-o, good to see yer back fer some mer death an'
+   VAR.QUESTLINE2=destruction! Basically the mages foun' out tha' these guys are
+   VAR.QUESTLINE3=from some kinda past or future or somethin'... Not sure quite
+   VAR.QUESTLINE4=what. Def'nitely evil an' stuff though, somethin' about an
+   VAR.QUESTLINE5=order ta kill innocent civilians...
+   VAR.QUESTLINE6=
+   VAR.QUESTLINE7=SO! Good news is they wan' us to kill a whole load of 'em. I got ye a small
+   VAR.QUESTLINE8=consignment o' guards to go in with an' kill 25 o'them zombie bastards. Fancy
+   VAR.QUESTLINE9=a bunch o'killin? They want this town for us, fast!
+   VAR.QUESTOBJECTIVE=Kill 25 of the Remnant Zombies.
+   VAR.QUESTREWARD=15,000 Gold, 2000 Reward Tickets, Unlock Biggs and Wedge
+   VAR.QUESTCONFIRMSECTION=Bring it on!
+   DIALOG d_quest_postwipe
+
+[FUNCTION f_order81_part_3_conclusion]
+   VAR.QUESTHASOPTIONS=0
+   VAR.QUESTOPTION1=
+   VAR.QUESTOPTION2=
+   TAG.QUESTOPTION1.SELECTION=
+   TAG.QUESTOPTION2.SELECTION=
+   TAG.QUESTCONFIRM.SELECTION=f_order81_part_3_complete
+   VAR.QUESTTITLE=Order 81 - Part 3: Restoration
+   VAR.QUESTPICTURE=02080
+   VAR.QUESTLINE1=Yer say they keep on coming back? Yer killed 25 though, right?
+   VAR.QUESTLINE2=Well, is what I promised ya... Next time might need a more
+   VAR.QUESTLINE3=permanent solution eh?
+   VAR.QUESTLINE4=
+   VAR.QUESTLINE5=Tell
+   VAR.QUESTLINE6=
+   VAR.QUESTLINE7=
+   VAR.QUESTLINE8=
+   VAR.QUESTLINE9=
+   VAR.QUESTOBJECTIVE=Claim your reward by clicking below.
+   VAR.QUESTREWARD=15,000 Gold, 2000 Reward Tickets, Unlock Biggs and Wedge
+   VAR.QUESTCONFIRMSECTION=I rather enjoyed that!
+   DIALOG d_quest_postwipe
+   
+[FUNCTION f_order81_part_3_confirm]
+   SRC.TAG.NPC_QUEST_START_3 = <EVAL (<SRC.TAG.NPC_QUEST_START_3> | NPCQ_Order81_part3)>
+   SRC.SYSMESSAGE You have accepted this quest.
+
+[FUNCTION f_order81_part_3_complete]
+   SRC.TAG.NPC_QUEST_DONE_3 = <EVAL (<SRC.TAG.NPC_QUEST_DONE_3> | NPCQ_Order81_part3)>
+   SRC.TAG.REMNANTZOMBIESKILLED=
+   SERV.NEWITEM i_gold
+   NEW.AMOUNT 15000
+   NEW.BOUNCE <SRC.UID>
+   SERV.NEWITEM i_reward_ticket
+   NEW.AMOUNT 2000
+   NEW.BOUNCE <SRC.UID>
+   SRC.SYSMESSAGE You have complete Order 81: Part 3. You have been rewarded 15,000 gold and 2000 reward tickets.
+   
+[FUNCTION f_order81_part_3_reset]   
+   TAG.NPC_QUEST_START_3 = <EVAL (<TAG.NPC_QUEST_START_3> &~ NPCQ_Order81_part3)>
+   TAG.NPC_QUEST_DONE_3 = <EVAL (<TAG.NPC_QUEST_DONE_3> &~ NPCQ_Order81_part3)>
+   SYSMESSAGE Order 81: Part 3 - Reset
+   
+[FUNCTION f_order81_part_3_summonbiggswedge]
+SERV.NEWNPC c_cataclysm_biggs
+NEW.P = <SRC.P>
+NEW.ACT = <SRC.UID>
+NEW.ACTION = 100
+ADDFOLLOWMEMORY_ADVANCED <NEW.UID>
+SERV.NEWNPC c_cataclysm_wedge
+NEW.P = <SRC.P>
+NEW.ACT = <SRC.UID>
+NEW.ACTION = 100
+ADDFOLLOWMEMORY_ADVANCED <NEW.UID>
+   

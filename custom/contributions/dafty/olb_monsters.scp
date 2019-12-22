@@ -1,0 +1,8626 @@
+[CHARDEF c_OLB_orc]
+ID=c_orc
+DEFNAME=c_OLB_orc
+NAME=#NAMES_ORC the Orc
+SOUND=snd_MONSTER_ORC1
+ICON=i_pet_ORC
+ANIM=078c7f
+DAM=3,9
+ARMOR=14
+CAN=MT_WALK|MT_RUN|MT_USEHANDS|MT_EQUIP
+
+TEVENTS=e_despise_todd
+RESOURCES=8 i_ribs_raw, 1 i_Orc_spine
+FOODTYPE=15 t_meat_raw
+DESIRES=i_gold,spk_orc
+CATEGORY=Monsters
+SUBSECTION=Orcs
+DESCRIPTION=Orc
+
+ON=@Create
+  NPC=brain_monster
+  FAME={100 1000}
+  KARMA={-1000 -5000}
+  STR={76 100}
+  DEX={81 105}
+  INT={55 72}
+  PARRYING={50.0 75.0}
+  MAGICRESISTANCE={50.0 75.0}
+  TACTICS={55.0 80.0}
+  WRESTLING={50.0 70.0}
+  
+ON=@NPCRESTOCK
+ITEM=i_fig_bogthing,R35
+
+on=@Death
+  y_region_loot_death
+  y_region_loot_calculator
+  IF (RAND(100) < 3) // Chance de Dropar. Assim ж 5%
+  SERV.NEWITEM=i_imperial_DESPISE_key  // ID da chave que vai dropar
+  NEW.CONT=<SRC.UID>
+  ENDIF
+  addlootgold ,350
+  addlootitem ,i_boots_thigh,1
+  addlootitem ,loot_newrares_Easy,1
+addlootrandom ,20,25, 1, random_LOWER_MERC
+
+
+[CHARDEF c_OLB_orc_captain]
+DEFNAME=c_OLB_orc_captain
+NAME=Orc Captain
+ID=c_orc_lord
+DAM=2,18
+ARMOR=17
+RESOURCES=8 i_ribs_raw,1 i_Orc_spine //, ORCCAMP
+FOODTYPE=15 t_meat_raw
+DESIRES=i_gold,spk_orc
+
+ON=@Create
+  STR={90 125}
+  DEX={100 135}
+  INT={68 81}
+  SWORDSMANSHIP={70.0 85.0}
+  PARRYING={70.0 95.0}
+  MAGICRESISTANCE={70.0 85.0}
+  TACTICS={85.0 100.0}
+  MACEFIGHTING={50.0 70.0}
+  NPC=brain_monster
+  FAME={100 2000}
+  KARMA={-2000 -2999}
+
+ON=@NPCRESTOCK
+ITEM=i_fig_bogthing,R25
+  
+on=@Death
+  y_region_loot_death
+  y_region_loot_calculator
+  IF (RAND(100) < 5) // Chance de Dropar. Assim ж 5%
+  SERV.NEWITEM=i_imperial_DESPISE_key  // ID da chave que vai dropar
+  NEW.CONT=<SRC.UID>
+  ENDIF
+  loot_ORC_CAPTAIN
+  addlootitem ,loot_newrares_Easy,1
+addlootrandom ,20,25, 1, random_LOWER_MERC
+
+CATEGORY=Monsters
+SUBSECTION=Orcs
+DESCRIPTION=Orc Captain
+ 
+ 
+ 
+[CHARDEF c_OLB_orc_club]
+DEFNAME=c_OLB_orc_club
+ID=c_orc
+NAME=#NAMES_ORC the Orc
+SOUND=snd_MONSTER_ORC1
+ICON=i_pet_ORC
+ANIM=078c7f
+DAM=5,12
+ARMOR=14
+CAN=MT_WALK|MT_RUN|MT_USEHANDS|MT_EQUIP
+
+TEVENTS=e_despise_todd
+RESOURCES=8 i_ribs_raw,1 i_Orc_spine
+FOODTYPE=15 t_meat_raw
+DESIRES=i_gold,spk_orc
+TSPEECH=spk_orc
+
+CATEGORY=Monsters
+SUBSECTION=Orcs
+DESCRIPTION=Orc (Club)
+
+ON=@Create
+  NPC=brain_monster
+  FAME={100 1000}
+  KARMA={-1000 -4999}
+  STR={76 100}
+  DEX={81 105}
+  INT={55 72}
+  MACEFIGHTING={55.0 65.0}
+  PARRYING={50.0 75.0}
+  MAGICRESISTANCE={50.0 75.0}
+  TACTICS={55.0 80.0}
+  WRESTLING={50.0 70.0}
+  
+ON=@NPCRESTOCK
+ITEM=i_fig_bogthing,R25
+
+on=@Death
+  y_region_loot_death
+  y_region_loot_calculator
+  IF (RAND(100) < 3) // Chance de Dropar. Assim ж 5%
+  SERV.NEWITEM=i_imperial_DESPISE_key  // ID da chave que vai dropar
+  NEW.CONT=<SRC.UID>
+  ENDIF
+  loot_ORC
+addlootrandom ,20,25, 1, random_LOWER_MERC
+  addlootitem ,loot_newrares_Easy,1
+  addlootitem ,I_CLUB,1
+  
+  
+[CHARDEF c_OLB_orc_lord]
+DEFNAME=c_OLB_orc_lord
+ID=c_orc_lord
+NAME=#NAMES_ORC the Orc Lord
+SOUND=snd_MONSTER_ORC1
+ICON=i_pet_ORC
+ANIM=078c7f
+CAN=MT_WALK|MT_RUN|MT_USEHANDS|MT_EQUIP
+
+DAM=2,16
+ARMOR=15
+RESOURCES=8 i_ribs_raw,1 i_Orc_spine
+FOODTYPE=15 t_meat_raw
+DESIRES=i_gold,spk_orc
+CATEGORY=Monsters
+SUBSECTION=Orcs
+DESCRIPTION=Orc Lord
+
+ON=@Create
+  NPC=brain_monster
+  FAME={2000 4000}
+  KARMA={-2000 -2999}
+  STR={120 200}
+  DEX={65 160}
+  INT={74 83}
+  PARRYING={60.0 85.0}
+  MAGICRESISTANCE={70.0 85.0}
+  TACTICS={75.0 90.0}
+  SWORDSMANSHIP={60.0 85.0}
+  MACEFIGHTING={50.0 70.0}
+  ITEMNEWBIE=i_boots_thigh
+
+ON=@NPCRESTOCK
+ITEM=i_fig_bogthing,R25  
+  
+on=@Death
+  y_region_loot_death
+  y_region_loot_calculator
+  IF (RAND(100) < 5) // Chance de Dropar. Assim ж 5%
+  SERV.NEWITEM=i_imperial_DESPISE_key  // ID da chave que vai dropar
+  NEW.CONT=<SRC.UID>
+  ENDIF
+  loot_ORCISH_LORD
+  addlootitem ,loot_newrares_Easy,1
+addlootrandom ,20,25, 1, random_LOWER_MERC
+
+
+
+[CHARDEF c_OLB_orc_bomber] 
+DEFNAME=c_OLB_orc_bomber 
+ID=C_ORC 
+NAME=#NAMES_ORC 
+SOUND=SND_MONSTER_ORC1 
+ICON=I_PET_ORC 
+CAN=MT_WALK|MT_RUN|MT_USEHANDS|MT_EQUIP 
+DAM=9,21 
+ARMOR=20 
+RESOURCES=8 I_RIBS_RAW 
+FOODTYPE=15 T_MEAT_RAW 
+DESIRES=I_GOLD,C_ORC 
+
+TSPEECH=SPK_ORC 
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=ORCS 
+DESCRIPTION=ORC BOMBER 
+
+ON=@CREATE 
+NPC=BRAIN_MONSTER 
+FAME={3000 4999} 
+KARMA={-3000 -4999} 
+
+STR={155 205} 
+DEX={40 60} 
+INT={1 2} 
+
+COLOR=021
+
+WRESTLING={25.0 50.0}
+MAGICRESISTANCE={50.0 75.0} 
+TACTICS={55.0 79.0} 
+ARCHERY={70.0 95.0} 
+
+// 
+ITEMNEWBIE=I_FLASK_LAUNCHER //MAKE SURE PLAYERS DONT GET IT! 
+// 
+
+ON=@NPCRESTOCK 
+ITEM=I_GOLD,{80 120}
+ITEM=I_POTION_EXPLOSIONGREAT,{0 3}
+ITEM=i_fig_bogthing,R35
+
+ON=@DEATH
+IF (RAND(100) < 5) // Chance de Dropar. Assim ж 5%
+SERV.NEWITEM=i_imperial_DESPISE_key  // ID da chave que vai dropar
+NEW.CONT=<SRC.UID>
+ENDIF
+
+ON=@HIT
+SRC.EFFECT 3,036B0,6,15,1
+SRC.DAMAGE <EVAL RAND(10)+ <EVAL 35>>
+IF (<SRC.STAMINA><10)
+SRC.STAMINA=0
+ELSE
+SRC.STAMINA=<SRC.STAMINA>+-5
+END IF
+
+ON=@GETHIT
+FLEE
+RETURN 0
+
+ON=@NPCSEENEWPLAYER
+ATTACK
+IF <EVAL RAND(30)> = 1 
+	DORAND 7 
+	SAY GIB URKS TRIBUTE TU WARGOD!		
+	SAY YU NUB STOP URKS! 
+	SAY URKS DURB DA UZG!
+	SAY HOOWAH!
+	SAY PUSHDUG HUMIE. GIB URKS SHINIES!
+	SAY PUSHDUG HUMIE BE GUD SNAGA! HAR HAR!
+	SAY YU BRATUG!
+        ENDDO
+END IF
+RETURN 0
+
+
+[CHARDEF c_OLB_orc_mage]
+DEFNAME=c_OLB_orc_mage
+NAME=#NAMES_ORC the Orc Mage
+ID=c_ORC
+DAM=2,16
+ARMOR=15
+RESOURCES=8 i_ribs_raw,1 i_Orc_spine
+FOODTYPE=15 t_meat_raw
+DESIRES=i_gold,spk_orc
+
+ON=@Create
+  COLOR=colors_green
+  STR={105 110}
+  DEX={91 115}
+  INT={60 75}
+  PARRYING={60.0 85.0}
+  MAGERY={70.0 95.0}
+  MAGICRESISTANCE={70.0 85.0}
+  TACTICS={75.0 90.0}
+  NPC=BRAIN_MONSTER
+  FAME={100 2000}
+  KARMA={-3000 -3999}
+  ITEMNEWBIE=i_spellbook
+  MORE1=06c0a0895
+  MORE2=00000000
+
+  
+ON=@NPCRESTOCK
+ITEM=i_fig_bogthing,R35  
+  
+on=@Death
+  y_region_loot_death
+  y_region_loot_calculator
+  IF (RAND(100) < 4) // Chance de Dropar. Assim ж 5%
+  SERV.NEWITEM=i_imperial_DESPISE_key  // ID da chave que vai dropar
+  NEW.CONT=<SRC.UID>
+  ENDIF
+  loot_ORCISH_MAGE
+  addlootitem ,loot_newrares_Easy,1
+addlootrandom ,20,25, 1, random_LOWER_MERC
+
+CATEGORY=Monsters
+SUBSECTION=Orcs
+DESCRIPTION=Orc Mage
+
+
+
+
+[CHARDEF c_OLB_elem_blood]
+DEFNAME=c_OLB_elem_blood
+NAME=Blood Elemental
+ID=c_elem_water
+SOUND=snd_ELEMENTL_WATREL1
+DAM=4,43
+ARMOR=50
+RESOURCES=
+CAN=MT_WALK|MT_RUN
+DESIRES=r_dungeon_rock
+
+CATEGORY=Monsters
+SUBSECTION=Elementals
+DESCRIPTION=Blood Elemental
+
+ON=@Create
+   NPC=BRAIN_MONSTER
+   COLOR=colors_blood
+
+   STR={900 1000}
+   DEX={80 185}
+   INT={143 153}
+   FAME={1000 2000}
+   KARMA={-5000 -5999}
+
+   PARRYING={85.0 95.0}
+   MAGERY={85.0 100.0}
+   MAGICRESISTANCE={80.0 95.0}
+   TACTICS={80.0 100.0}
+   WRESTLING={80.0 100.0}
+
+   ITEMNEWBIE=i_spellbook	// knows fire type spells.
+   ADDSPELL=s_weaken
+   ADDSPELL=s_clumsy
+
+ON=@NPCRestock
+   ITEM=i_reag_blood_vial
+   ITEM=i_reag_blood_vial
+   ITEM=i_fig_bogling,R15
+
+ON=@Death
+   y_region_loot_death
+   y_region_loot_calculator
+   loot_elem_blood
+   IF (RAND(100) < 14) // Chance de Dropar. Assim ж 5%
+   SERV.NEWITEM=i_imperial_DESPISE_key  // ID da chave que vai dropar
+   NEW.CONT=<SRC.UID>
+   ENDIF
+   
+[FUNCTION loot_elem_blood]
+   addlootgold ,1800
+   addlootitem ,loot_newrares_Easy,1
+   addlootitem ,random_scroll,1
+   addlootrandom ,200,300,1,random_rare_1
+   addlootmisc 8,RANDOM_REAGENT
+   addlootmisc 8,RANDOM_REAGENT
+   addlootrandom ,10,15, 1, random_MERC
+   
+   
+   
+   
+   
+//
+//
+//
+//
+//
+//
+
+[CHARDEF c_OLB_balron]
+DEFNAME=c_OLB_balron
+ID=c_DAEMON_W_SWORD
+NAME=Balron
+SOUND=snd_MONSTER_DAEMON1
+ICON=i_pet_dragon
+DAM=40,55
+ARMOR=100
+RESOURCES=9 i_ribs_raw, 1 i_Balron_Bones
+CAN=MT_WALK|MT_FLY
+TEVENTS=e_npc_daemon
+
+
+DESIRES=c_DAEMON,i_gold,t_wand
+AVERSIONS=r_water,r_mountains
+
+CATEGORY=Monsters
+SUBSECTION=Daemons & Gargoyles
+DESCRIPTION=Balron
+
+ ON=@NPCRESTOCK
+ITEM=i_fig_gorefiend,R5
+
+ON=@Create
+   COLOR=0794
+   STR={1985 2185}
+   DEX={175 255}
+   INT={300 325}
+
+   PARRYING={90.0 100.0}
+   MAGERY={90.0 100.0}
+   MAGICRESISTANCE={150.0 200.0}
+   TACTICS={190.0 200.0}
+   WRESTLING={90.0 100.0}
+   TAMING={298.0 299.0}
+   DETECTION=200.0
+   NPC=brain_monster
+  
+   FAME={4000 8000}
+   KARMA={-6000 -6999}
+ON = @Hit
+   IF !(<SRC.ACT.BASEID>=m_kell_control)
+      IF ( <SRC.ACT.ICON> == 020D6 )
+         
+            VAR.FORGIVER = <UID>
+            SRC.FOR_MEMORY f_peace
+            VAR.FORGIVER = <SRC.UID>
+            FOR_MEMORY f_peace
+            RETURN 1
+         
+      ENDIF   
+   ENDIF
+   
+
+
+ON=@GetHit
+   IF ( <SRC.ICON> == 020D6 )
+         VAR.FORGIVER = <SRC.UID>
+         FOR_MEMORY f_peace
+   ENDIF
+
+
+ON=@SPELLEFFECT
+   IF (<ARGN> == 28)
+      IF RAND(15)
+         EMOTE summon the aid of an undead brother as the fire engulfs it
+         BALRONSUMMON c_daemon
+         VAR.PLAYERP = <ACT.P>
+         RETURN 1
+      ENDIF
+   ELSEIF ((<argn> == 20) || (<argn> == 39))
+      SAY The poison is absorbed into the Balrons blood...
+      RETURN 1
+   ENDIF
+
+ON=@Death
+   y_region_loot_death
+   y_region_loot_calculator
+   loot_BALRON
+   IF (RAND(100) < 17) // Chance de Dropar. Assim ж 5%
+   SERV.NEWITEM=i_imperial_HYTHLOTH_key  // ID da chave que vai dropar
+   NEW.CONT=<SRC.UID>
+   ENDIF
+   addlootitem ,loot_newrares_hard,1
+   addlootrandom ,15,30,1,random_rare_3  
+   addlootrandom ,2,2, 1, random_UPPER_MERC
+   
+ON = @EnvironChange
+  if ( <FLAGS> & statf_conjured )
+     BODY	= c_balron_summoned
+     OBODY	= c_balron_summoned
+  endif   
+  
+  
+  
+  
+[CHARDEF c_OLB_daemon]
+DEFNAME=c_OLB_daemon
+ID=c_daemon
+NAME=#NAMES_DAEMON the Daemon
+SOUND=snd_MONSTER_DAEMON1
+ICON=i_pet_DAEMON
+ANIM=03fbc7f
+CAN=MT_WALK|MT_FLY|MT_USEHANDS
+TEVENTS=e_npc_daemon
+
+DAM=20,35
+ARMOR=65
+RESOURCES=9 i_ribs_raw, 8 i_reag_daemon_bone
+FOODTYPE=
+DESIRES=i_gold
+AVERSIONS=r_civilization
+
+CATEGORY=Monsters
+SUBSECTION=Daemons & Gargoyles
+DESCRIPTION=Daemon
+
+ ON=@NPCRESTOCK
+ITEM=i_fig_gorefiend,R25
+
+ON=@Create
+   TITLE=the Daemon
+
+   NPC=brain_monster
+   FAME={4000 8000}
+   KARMA={-5000 -5999}
+   STR={675 705}
+   DEX={96 106}
+   INT={125 130}
+
+   PARRYING={65.0 75.0}
+   MAGERY={70.0 85.0}
+   MAGICRESISTANCE={70.0 80.0}
+   TACTICS={70.0 80.0}
+   WRESTLING={60.0 80.0}
+   TAMING={260.0 270.0}
+
+ON = @Hit
+   IF !(<SRC.ACT.BASEID>=m_kell_control)
+      IF ( <SRC.ACT.ICON> == 020D6 )
+         
+            VAR.FORGIVER = <UID>
+            SRC.FOR_MEMORY f_peace
+            VAR.FORGIVER = <SRC.UID>
+            FOR_MEMORY f_peace
+            RETURN 1
+         
+      ENDIF   
+   ENDIF
+   
+
+
+ON=@GetHit
+   IF ( <SRC.ICON> == 020D6 )
+         VAR.FORGIVER = <SRC.UID>
+         FOR_MEMORY f_peace
+   ENDIF
+   
+ON=@Death
+   y_region_loot_death
+   y_region_loot_calculator
+   addlootrandom ,5,10, 1, random_MERC
+   loot_DAEMON
+   IF (RAND(100) < 3) // Chance de Dropar. Assim ж 5%
+   SERV.NEWITEM=i_imperial_HYTHLOTH_key  // ID da chave que vai dropar
+   NEW.CONT=<SRC.UID>
+   ENDIF
+
+ON = @EnvironChange
+  if ( <FLAGS> & statf_conjured )
+     BODY	= c_daemon_summoned
+     OBODY	= c_daemon_summoned
+  endif
+     
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+// /////////////////////////////	 
+// //////////////
+// ////////////// Dye Books 
+// //////////////
+// /////////////////////////////
+
+
+
+
+[ITEMDEF I_book_ADAMANTINE]
+NAME=@0524 Adamantine Dye Formula
+ID=0fbd
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Dye
+DESCRIPTION=Dye Book
+
+ON=@DClick
+src.DIALOG d_B_book_ADAMANTINE  // Mudar nome
+return 1
+
+[dialog d_B_book_ADAMANTINE]
+150,266
+resizepic 0 0 3500 190 259
+text 30 3 455 0
+text 24 30 455 1
+text 24 50 455 2
+text 24 70 455 3
+text 24 90 455 4
+text 24 110 455 5
+text 24 130 455 6
+text 24 150 455 7
+text 24 170 455 8
+text 24 190 455 9
+text 24 210 455 10
+text 24 230 455 11
+
+button 75 220 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+[dialog d_B_book_ADAMANTINE text]  
+  
+How to make Adamantine 
+Dye:
+ 
+5 Adamantine Ingots
+20 Eye of Newts
+20 Wyrm's Heart
+1 Empty Bottle
+ 
+75% Alchemy
+
+
+[ITEMDEF I_book_ACID] // Mudar nome
+NAME=@0a43 Acid Dye Formula // Mudar Cor e Nome
+ID=0fbd
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Dye
+DESCRIPTION=Dye Book
+
+ON=@DClick
+src.DIALOG d_B_book_ACID  // Mudar nome
+return 1
+
+[dialog d_B_book_ACID]
+150,266
+resizepic 0 0 3500 190 259
+text 30 3 455 0
+text 24 30 455 1
+text 24 50 455 2
+text 24 70 455 3
+text 24 90 455 4
+text 24 110 455 5
+text 24 130 455 6
+text 24 150 455 7
+text 24 170 455 8
+text 24 190 455 9
+text 24 210 455 10
+text 24 230 455 11
+
+button 75 220 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+[dialog d_B_book_ACID text] 
+  
+How to make Acid Dye:
+ 
+20 Poisonous Eye's 
+20 Acid Demon's Blood
+5 Venomous Tooth
+40 Infected Spines
+1 Empty Bottle
+ 
+100% Alchemy
+
+
+
+[ITEMDEF I_book_AGAPITE] // Mudar nome
+NAME=@0400 Agapite Dye Formula // Mudar Cor e Nome
+ID=0fbd
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Dye
+DESCRIPTION=Dye Book
+
+ON=@DClick
+src.DIALOG d_B_book_AGAPITE  // Mudar nome
+return 1
+
+[dialog d_B_book_AGAPITE]
+150,266
+resizepic 0 0 3500 190 259
+text 30 3 455 0
+text 24 30 455 1
+text 24 50 455 2
+text 24 70 455 3
+text 24 90 455 4
+text 24 110 455 5
+text 24 130 455 6
+text 24 150 455 7
+text 24 170 455 8
+text 24 190 455 9
+text 24 210 455 10
+text 24 230 455 11
+
+button 75 220 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+[dialog d_B_book_AGAPITE text] 
+ 
+How to make Agapite 
+Dye:
+ 
+20 Agapite Ingots 
+20 Mandrake Roots
+20 Blackmoor
+1 Empty Bottle
+ 
+60% Alchemy
+
+
+
+[ITEMDEF I_book_BLACKROCK] // Mudar nome
+NAME=@0455 Blackrock Dye Formula // Mudar Cor e Nome
+ID=0fbd
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Dye
+DESCRIPTION=Dye Book
+
+ON=@DClick
+src.DIALOG d_B_book_BLACKROCK  // Mudar nome
+return 1
+
+[dialog d_B_book_BLACKROCK]
+150,266
+resizepic 0 0 3500 190 259
+text 30 3 455 0
+text 24 30 455 1
+text 24 50 455 2
+text 24 70 455 3
+text 24 90 455 4
+text 24 110 455 5
+text 24 130 455 6
+text 24 150 455 7
+text 24 170 455 8
+text 24 190 455 9
+text 24 210 455 10
+text 24 230 455 11
+
+button 75 220 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+[dialog d_B_book_BLACKROCK text]
+    
+How to make Blackrock 
+Dye:
+ 
+1 Blackrock Ingot
+20 Black Gems
+20 Blackmoor
+1 Empty Bottle
+ 
+85% Alchemy
+
+
+
+[ITEMDEF I_book_BLOODROCK] // Mudar nome
+NAME=@04c2 Bloodrock Dye Formula // Mudar Cor e Nome
+ID=0fbd
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Dye
+DESCRIPTION=Dye Book
+
+ON=@DClick
+src.DIALOG d_B_book_BLOODROCK  // Mudar nome
+return 1
+
+[dialog d_B_book_BLOODROCK]
+150,266
+resizepic 0 0 3500 190 259
+text 30 3 455 0
+text 24 30 455 1
+text 24 50 455 2
+text 24 70 455 3
+text 24 90 455 4
+text 24 110 455 5
+text 24 130 455 6
+text 24 150 455 7
+text 24 170 455 8
+text 24 190 455 9
+text 24 210 455 10
+text 24 230 455 11
+
+button 75 220 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+[dialog d_B_book_BLOODROCK text]  
+ 
+How to make Bloodrock 
+Dye:
+ 
+1 Bloodrock Ingot
+5 Blood Vials
+5 Blood Spawns
+1 Empty Bottle
+ 
+85% Alchemy
+
+
+
+[ITEMDEF I_book_BRONZE2] // Mudar nome
+NAME=@03ec Bronze Second Dye Formula // Mudar Cor e Nome
+ID=0fbd
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Dye
+DESCRIPTION=Dye Book
+
+ON=@DClick
+src.DIALOG d_B_book_BRONZE2  // Mudar nome
+return 1
+
+[dialog d_B_book_BRONZE2]
+150,266
+resizepic 0 0 3500 190 259
+text 30 3 455 0
+text 24 30 455 1
+text 24 50 455 2
+text 24 70 455 3
+text 24 90 455 4
+text 24 110 455 5
+text 24 130 455 6
+text 24 150 455 7
+text 24 170 455 8
+text 24 190 455 9
+text 24 210 455 10
+text 24 230 455 11
+
+button 75 220 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+[dialog d_B_book_BRONZE2 text]  
+ 
+How to make Bronze 
+Second Dye:
+ 
+5 Bronze Ingot
+10 Mandrake Roots
+10 Blood Moss
+1 Empty Bottle
+ 
+50% Alchemy
+
+
+
+[ITEMDEF I_book_CHERRY] // Mudar nome
+NAME=@0151 Cherry Dye Formula // Mudar Cor e Nome
+ID=0fbd
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Dye
+DESCRIPTION=Dye Book
+
+ON=@DClick
+src.DIALOG d_B_book_CHERRY  // Mudar nome
+return 1
+
+[dialog d_B_book_CHERRY]
+150,266
+resizepic 0 0 3500 190 259
+text 30 3 455 0
+text 24 30 455 1
+text 24 50 455 2
+text 24 70 455 3
+text 24 90 455 4
+text 24 110 455 5
+text 24 130 455 6
+text 24 150 455 7
+text 24 170 455 8
+text 24 190 455 9
+text 24 210 455 10
+text 24 230 455 11
+
+button 75 220 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+[dialog d_B_book_CHERRY text] 
+ 
+How to make Cherry Dye:
+ 
+2 Logs Cherry
+5 Dragons Blood
+20 Vials of Ectoplasm
+1 Empty Bottle
+ 
+80% Alchemy
+
+
+
+[ITEMDEF I_book_COMPOSITE] // Mudar nome
+NAME=@0488 Composite Dye Formula // Mudar Cor e Nome
+ID=0fbd
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Dye
+DESCRIPTION=Dye Book
+
+ON=@DClick
+src.DIALOG d_B_book_COMPOSITE  // Mudar nome
+return 1
+
+[dialog d_B_book_COMPOSITE]
+150,266
+resizepic 0 0 3500 190 259
+text 30 3 455 0
+text 24 30 455 1
+text 24 50 455 2
+text 24 70 455 3
+text 24 90 455 4
+text 24 110 455 5
+text 24 130 455 6
+text 24 150 455 7
+text 24 170 455 8
+text 24 190 455 9
+text 24 210 455 10
+text 24 230 455 11
+
+button 75 220 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+[dialog d_B_book_COMPOSITE text]  
+ 
+How to make Composite 
+Dye:
+5 Logs Composite
+25 Dark Woods
+1 Balron Bone
+1 Bronze Second Dye
+1 Empty Bottle
+ 
+90% Alchemy
+
+
+
+[ITEMDEF I_book_ET] // Mudar nome
+NAME=@0798 Enriched Titanium Dye Formula // Mudar Cor e Nome
+ID=0fbd
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Dye
+DESCRIPTION=Dye Book
+
+ON=@DClick
+src.DIALOG d_B_book_ET  // Mudar nome
+return 1
+
+[dialog d_B_book_ET]
+150,266
+resizepic 0 0 3500 190 259
+text 30 3 455 0
+text 24 30 455 1
+text 24 50 455 2
+text 24 70 455 3
+text 24 90 455 4
+text 24 110 455 5
+text 24 130 455 6
+text 24 150 455 7
+text 24 170 455 8
+text 24 190 455 9
+text 24 210 455 10
+text 24 230 455 11
+
+button 75 220 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+[dialog d_B_book_ET text] 
+ 
+How to make Enriched 
+Titanium Dye:
+5 Enriched Titanium Ingots
+100 Gold Ingots
+1 Verite Dye
+1 Titanium Dye
+1 Empty Bottle
+ 
+95% Alchemy
+
+
+
+[ITEMDEF I_book_IRON] // Mudar nome
+NAME=@0763 Iron Dye Formula // Mudar Cor e Nome
+ID=0fbd
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Dye
+DESCRIPTION=Dye Book
+
+ON=@DClick
+src.DIALOG d_B_book_IRON  // Mudar nome
+return 1
+
+[dialog d_B_book_IRON]
+150,266
+resizepic 0 0 3500 190 259
+text 30 3 455 0
+text 24 30 455 1
+text 24 50 455 2
+text 24 70 455 3
+text 24 90 455 4
+text 24 110 455 5
+text 24 130 455 6
+text 24 150 455 7
+text 24 170 455 8
+text 24 190 455 9
+text 24 210 455 10
+text 24 230 455 11
+
+button 75 220 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+[dialog d_B_book_IRON text] 
+ 
+How to make Iron Dye:
+ 
+10 Iron Ingots
+5 Bones
+10 Garlic
+1 Empty Bottle
+ 
+50% Alchemy
+
+
+
+[ITEMDEF I_book_MAHOGANY] // Mudar nome
+NAME=@0608 Mahogany Dye Formula // Mudar Cor e Nome
+ID=0fbd
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Dye
+DESCRIPTION=Dye Book
+
+ON=@DClick
+src.DIALOG d_B_book_MAHOGANY  // Mudar nome
+return 1
+
+[dialog d_B_book_MAHOGANY]
+150,266
+resizepic 0 0 3500 190 259
+text 30 3 455 0
+text 24 30 455 1
+text 24 50 455 2
+text 24 70 455 3
+text 24 90 455 4
+text 24 110 455 5
+text 24 130 455 6
+text 24 150 455 7
+text 24 170 455 8
+text 24 190 455 9
+text 24 210 455 10
+text 24 230 455 11
+
+button 75 220 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+[dialog d_B_book_MAHOGANY text] 
+ 
+How to make Mahogany Dye:
+ 
+10 Mahogany Logs
+10 Oak Logs
+20 Batwings
+1 Empty Bottle
+ 
+75% Alchemy
+
+
+
+[ITEMDEF I_book_MYST] // Mudar nome
+NAME=@07a0 Myst Dye Formula // Mudar Cor e Nome
+ID=0fbd
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Dye
+DESCRIPTION=Dye Book
+
+ON=@DClick
+src.DIALOG d_B_book_MYST  // Mudar nome
+return 1
+
+[dialog d_B_book_MYST]
+150,266
+resizepic 0 0 3500 190 259
+text 30 3 455 0
+text 24 30 455 1
+text 24 50 455 2
+text 24 70 455 3
+text 24 90 455 4
+text 24 110 455 5
+text 24 130 455 6
+text 24 150 455 7
+text 24 170 455 8
+text 24 190 455 9
+text 24 210 455 10
+text 24 230 455 11
+
+button 75 220 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+[dialog d_B_book_MYST text] 
+ 
+How to make Myst Dye:
+ 
+3 Myst Logs
+1 Adamantine Dye
+1 Valorite Dye
+1 Empty Bottle
+ 
+95% Alchemy
+
+
+
+[ITEMDEF I_book_NEWFIRE] // Mudar nome
+NAME=@077a New Fire Dye Formula // Mudar Cor e Nome
+ID=0fbd
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Dye
+DESCRIPTION=Dye Book
+
+ON=@DClick
+src.DIALOG d_B_book_NEWFIRE  // Mudar nome
+return 1
+
+[dialog d_B_book_NEWFIRE]
+150,266
+resizepic 0 0 3500 190 259
+text 30 3 455 0
+text 24 30 455 1
+text 24 50 455 2
+text 24 70 455 3
+text 24 90 455 4
+text 24 110 455 5
+text 24 130 455 6
+text 24 150 455 7
+text 24 170 455 8
+text 24 190 455 9
+text 24 210 455 10
+text 24 230 455 11
+
+button 75 220 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+[dialog d_B_book_NEWFIRE text]   
+ 
+How to make New Fire
+Dye:
+100 Volcanic Ash
+10 Brimstone
+10 Blood Vials
+10 Bloodspawns
+1 Balron Bone
+1 Empty Bottle
+95% Alchemy
+
+
+
+[ITEMDEF I_book_NEWICE] // Mudar nome
+NAME=@077b New Ice Dye Formula // Mudar Cor e Nome
+ID=0fbd
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Dye
+DESCRIPTION=Dye Book
+
+ON=@DClick
+src.DIALOG d_B_book_NEWICE  // Mudar nome
+return 1
+
+[dialog d_B_book_NEWICE]
+150,266
+resizepic 0 0 3500 190 259
+text 30 3 455 0
+text 24 30 455 1
+text 24 50 455 2
+text 24 70 455 3
+text 24 90 455 4
+text 24 110 455 5
+text 24 130 455 6
+text 24 150 455 7
+text 24 170 455 8
+text 24 190 455 9
+text 24 210 455 10
+text 24 230 455 11
+
+button 75 220 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+[dialog d_B_book_NEWICE text]
+How to make New Ice 
+Dye:
+50 Frost Lizard Scale
+20 Gold Ingot
+10 Ice Titan Eyes
+10 Bloodspawns
+20 Angel Dust
+1 Balron Bones
+1 Empty Bottle
+100% Alchemy
+
+
+
+[ITEMDEF I_book_PHOENIX] // Mudar nome
+NAME=@032 Phoenix Dye Formula // Mudar Cor e Nome
+ID=0fbd
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Dye
+DESCRIPTION=Dye Book
+
+ON=@DClick
+src.DIALOG d_B_book_PHOENIX  // Mudar nome
+return 1
+
+[dialog d_B_book_PHOENIX]
+150,266
+resizepic 0 0 3500 190 259
+text 30 3 455 0
+text 24 30 455 1
+text 24 50 455 2
+text 24 70 455 3
+text 24 90 455 4
+text 24 110 455 5
+text 24 130 455 6
+text 24 150 455 7
+text 24 170 455 8
+text 24 190 455 9
+text 24 210 455 10
+text 24 230 455 11
+
+button 75 220 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+[dialog d_B_book_PHOENIX text]   
+ 
+How to make Phoenix Dye:
+ 
+1 Phoenix Ingot
+20 Gold Ingots
+1 Sulfurous Ash
+1 Empty Bottle
+ 
+85% Alchemy
+
+
+
+[ITEMDEF I_book_SHADOW] // Mudar nome
+NAME=@0770 Shadow Dye Formula // Mudar Cor e Nome
+ID=0fbd
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Dye
+DESCRIPTION=Dye Book
+
+ON=@DClick
+src.DIALOG d_B_book_SHADOW  // Mudar nome
+return 1
+
+[dialog d_B_book_SHADOW]
+150,266
+resizepic 0 0 3500 190 259
+text 30 3 455 0
+text 24 30 455 1
+text 24 50 455 2
+text 24 70 455 3
+text 24 90 455 4
+text 24 110 455 5
+text 24 130 455 6
+text 24 150 455 7
+text 24 170 455 8
+text 24 190 455 9
+text 24 210 455 10
+text 24 230 455 11
+
+button 75 220 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+[dialog d_B_book_SHADOW text] 
+ 
+How to make Shadow Dye:
+ 
+20 Shadow Ingots
+20 Nightshades
+20 Blackpearls
+1 Empty Bottle
+ 
+60% Alchemy
+
+
+
+[ITEMDEF I_book_SKARGARD] // Mudar nome
+NAME=@060 Skargard Dye Formula // Mudar Cor e Nome
+ID=0fbd
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Dye
+DESCRIPTION=Dye Book
+
+ON=@DClick
+src.DIALOG d_B_book_SKARGARD  // Mudar nome
+return 1
+
+[dialog d_B_book_SKARGARD]
+150,266
+resizepic 0 0 3500 190 259
+text 30 3 455 0
+text 24 30 455 1
+text 24 50 455 2
+text 24 70 455 3
+text 24 90 455 4
+text 24 110 455 5
+text 24 130 455 6
+text 24 150 455 7
+text 24 170 455 8
+text 24 190 455 9
+text 24 210 455 10
+text 24 230 455 11
+
+button 75 220 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+[dialog d_B_book_SKARGARD text] 
+ 
+How to make Skargard
+Dye:
+ 
+5 Skargard Ingots
+20 Wyrm's Hearts
+20 Pumice
+1 Empty Bottle
+ 
+80% Alchemy
+
+
+[ITEMDEF I_book_STEEL] // Mudar nome
+NAME=@0835 Steel Dye Formula // Mudar Cor e Nome
+ID=0fbd
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Dye
+DESCRIPTION=Dye Book
+
+ON=@DClick
+src.DIALOG d_B_book_STEEL  // Mudar nome
+return 1
+
+[dialog d_B_book_STEEL]
+150,266
+resizepic 0 0 3500 190 259
+text 30 3 455 0
+text 24 30 455 1
+text 24 50 455 2
+text 24 70 455 3
+text 24 90 455 4
+text 24 110 455 5
+text 24 130 455 6
+text 24 150 455 7
+text 24 170 455 8
+text 24 190 455 9
+text 24 210 455 10
+text 24 230 455 11
+
+button 75 220 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+[dialog d_B_book_STEEL text] 
+ 
+How to make Steel
+Dye:
+ 
+5 Steel Ingots
+5 Bones
+10 Garlic
+1 Empty Bottle
+ 
+50% Alchemy
+
+
+
+[ITEMDEF I_book_STRONGHOLD] // Mudar nome
+NAME=@07a1 Stronghold Dye Formula // Mudar Cor e Nome
+ID=0fbd
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Dye
+DESCRIPTION=Dye Book
+
+ON=@DClick
+src.DIALOG d_B_book_STRONGHOLD  // Mudar nome
+return 1
+
+[dialog d_B_book_STRONGHOLD]
+150,266
+resizepic 0 0 3500 190 259
+text 30 3 455 0
+text 24 30 455 1
+text 24 50 455 2
+text 24 70 455 3
+text 24 90 455 4
+text 24 110 455 5
+text 24 130 455 6
+text 24 150 455 7
+text 24 170 455 8
+text 24 190 455 9
+text 24 210 455 10
+text 24 230 455 11
+
+button 75 220 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+[dialog d_B_book_STRONGHOLD text] 
+   
+How to make Stronghold
+Dye:
+ 
+25 Stronghold Ingots
+25 Angel Dust
+25 Daemon Bones
+1 Empty Bottle
+ 
+95% Alchemy
+
+
+[ITEMDEF I_book_TERATHAN] // Mudar nome
+NAME=@05a5 Terathan Dye Formula // Mudar Cor e Nome
+ID=0fbd
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Dye
+DESCRIPTION=Dye Book
+
+ON=@DClick
+src.DIALOG d_B_book_TERATHAN  // Mudar nome
+return 1
+
+[dialog d_B_book_TERATHAN]
+150,266
+resizepic 0 0 3500 190 259
+text 30 3 455 0
+text 24 30 455 1
+text 24 50 455 2
+text 24 70 455 3
+text 24 90 455 4
+text 24 110 455 5
+text 24 130 455 6
+text 24 150 455 7
+text 24 170 455 8
+text 24 190 455 9
+text 24 210 455 10
+text 24 230 455 11
+
+button 75 220 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+[dialog d_B_book_TERATHAN text] 
+ 
+How to make Terathan
+Dye:
+ 
+20 Terathan Ingots
+20 Spider Silk
+10 Serpent Scales
+1 Empty Bottle
+ 
+65% Alchemy
+
+
+
+[ITEMDEF I_book_TITANIUM] // Mudar nome
+NAME=@04de Titanium Dye Formula // Mudar Cor e Nome
+ID=0fbd
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Dye
+DESCRIPTION=Dye Book
+
+ON=@DClick
+src.DIALOG d_B_book_TITANIUM  // Mudar nome
+return 1
+
+[dialog d_B_book_TITANIUM]
+150,266
+resizepic 0 0 3500 190 259
+text 30 3 455 0
+text 24 30 455 1
+text 24 50 455 2
+text 24 70 455 3
+text 24 90 455 4
+text 24 110 455 5
+text 24 130 455 6
+text 24 150 455 7
+text 24 170 455 8
+text 24 190 455 9
+text 24 210 455 10
+text 24 230 455 11
+
+button 75 220 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+[dialog d_B_book_TITANIUM text]  
+ 
+How to make Titanium
+Dye:
+ 
+10 Titanium Ingots
+10 Batwings
+10 Obsidian
+1 Empty Bottle
+ 
+55% Alchemy
+
+
+
+[ITEMDEF I_book_VALORITE] // Mudar nome
+NAME=@0515 Valorite Dye Formula // Mudar Cor e Nome
+ID=0fbd
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Dye
+DESCRIPTION=Dye Book
+
+ON=@DClick
+src.DIALOG d_B_book_VALORITE  // Mudar nome
+return 1
+
+[dialog d_B_book_VALORITE]
+150,266
+resizepic 0 0 3500 190 259
+text 30 3 455 0
+text 24 30 455 1
+text 24 50 455 2
+text 24 70 455 3
+text 24 90 455 4
+text 24 110 455 5
+text 24 130 455 6
+text 24 150 455 7
+text 24 170 455 8
+text 24 190 455 9
+text 24 210 455 10
+text 24 230 455 11
+
+button 75 220 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+[dialog d_B_book_VALORITE text]
+  
+How to make Valorite
+Dye:
+ 
+20 Valorite Ingots
+20 Fertile Dirt
+20 Wyrm's Heart
+1 Empty Bottle
+ 
+70% Alchemy
+
+
+[ITEMDEF I_book_VERITE] // Mudar nome
+NAME=@07d1 Verite Dye Formula // Mudar Cor e Nome
+ID=0fbd
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Dye
+DESCRIPTION=Dye Book
+
+ON=@DClick
+src.DIALOG d_B_book_VERITE  // Mudar nome
+return 1
+
+[dialog d_B_book_VERITE]
+150,266
+resizepic 0 0 3500 190 259
+text 30 3 455 0
+text 24 30 455 1
+text 24 50 455 2
+text 24 70 455 3
+text 24 90 455 4
+text 24 110 455 5
+text 24 130 455 6
+text 24 150 455 7
+text 24 170 455 8
+text 24 190 455 9
+text 24 210 455 10
+text 24 230 455 11
+
+button 75 220 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+[dialog d_B_book_VERITE text]  
+ 
+How to make Verite
+Dye:
+ 
+20 Verite Ingots
+20 Fertile Dirt
+20 Eye of Newt
+1 Empty Bottle
+ 
+70% Alchemy
+
+
+[ITEMDEF I_book_VERMINARD] // Mudar nome
+NAME=@079b Verminard Dye Formula // Mudar Cor e Nome
+ID=0fbd
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Dye
+DESCRIPTION=Dye Book
+
+ON=@DClick
+src.DIALOG d_B_book_VERMINARD  // Mudar nome
+return 1
+
+[dialog d_B_book_VERMINARD]
+150,266
+resizepic 0 0 3500 190 259
+text 30 3 455 0
+text 24 30 455 1
+text 24 50 455 2
+text 24 70 455 3
+text 24 90 455 4
+text 24 110 455 5
+text 24 130 455 6
+text 24 150 455 7
+text 24 170 455 8
+text 24 190 455 9
+text 24 210 455 10
+text 24 230 455 11
+
+button 75 220 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+[dialog d_B_book_VERMINARD text] 
+   
+How to make Verminard
+Dye:
+ 
+25 Verminard Ingots
+25 Black Gems
+25 Dragon Blood
+1 Empty Bottle
+ 
+95% Alchemy
+
+
+
+[ITEMDEF I_book_WHITEOAK] // Mudar nome
+NAME=@07b5 White Oak Dye Formula // Mudar Cor e Nome
+ID=0fbd
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Dye
+DESCRIPTION=Dye Book
+
+ON=@DClick
+src.DIALOG d_B_book_WHITEOAK  // Mudar nome
+return 1
+
+[dialog d_B_book_WHITEOAK]
+150,266
+resizepic 0 0 3500 190 259
+text 30 3 455 0
+text 24 30 455 1
+text 24 50 455 2
+text 24 70 455 3
+text 24 90 455 4
+text 24 110 455 5
+text 24 130 455 6
+text 24 150 455 7
+text 24 170 455 8
+text 24 190 455 9
+text 24 210 455 10
+text 24 230 455 11
+
+button 75 220 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+[dialog d_B_book_WHITEOAK text] 
+ 
+How to make White Oak
+Dye:
+ 
+3 White Oak Logs
+50 Angel dust
+100 Silver Ingots
+1 Empty Bottle
+ 
+95% Alchemy
+
+
+
+
+// ///////////////////////
+// ///////////////////////
+// //////////
+// ////////// Dyes
+// //////////
+// ///////////////////////
+// ///////////////////////
+
+
+[ITEMDEF I_FIREBRICK_DYE]
+  ID=I_BOTTLE_2
+  WEIGHT=4
+  VALUE=150
+  NAME=Firebrick
+  
+  
+  CATEGORY=IMPERIAL UO
+  SUBSECTION=ULTRA RARE DYES
+  DESCRIPTION=Firebrick
+
+ON=@CREATE
+   COLOR=0BB0
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+ON=@TARGON_ITEM
+F_ALCHEMY_DYES
+
+
+
+[ITEMDEF I_YOLLORD_DYE]
+  ID=I_BOTTLE_2
+  WEIGHT=4
+  VALUE=150
+  NAME=Yollord
+  
+  
+  CATEGORY=IMPERIAL UO
+  SUBSECTION=ULTRA RARE DYES
+  DESCRIPTION=Yollord
+
+ON=@CREATE
+   COLOR=0B52
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+ON=@TARGON_ITEM
+F_ALCHEMY_DYES
+
+
+
+[ITEMDEF I_PINKY_DYE]
+  ID=I_BOTTLE_2
+  WEIGHT=4
+  VALUE=150
+  NAME=Pinky
+  
+  
+  CATEGORY=IMPERIAL UO
+  SUBSECTION=ULTRA RARE DYES
+  DESCRIPTION=Pinky
+
+ON=@CREATE
+   COLOR=05cf
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+ON=@TARGON_ITEM
+F_ALCHEMY_DYES
+
+
+
+[ITEMDEF I_SALMON_DYE]
+  ID=I_BOTTLE_2
+  WEIGHT=4
+  VALUE=150
+  NAME=Salmon
+  
+  
+  CATEGORY=IMPERIAL UO
+  SUBSECTION=ULTRA RARE DYES
+  DESCRIPTION=Salmon
+
+ON=@CREATE
+   COLOR=09ed
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+ON=@TARGON_ITEM
+F_ALCHEMY_DYES
+
+
+[ITEMDEF I_PROUDLY_DYE]
+  ID=I_BOTTLE_2
+  WEIGHT=4
+  VALUE=150
+  NAME=Proudly
+  
+  
+  CATEGORY=IMPERIAL UO
+  SUBSECTION=ULTRA RARE DYES
+  DESCRIPTION=Proudly
+
+ON=@CREATE
+   COLOR=0ac0
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+ON=@TARGON_ITEM
+F_ALCHEMY_DYES
+
+
+
+[ITEMDEF I_BUBBLEGUM_DYE]
+  ID=I_BOTTLE_2
+  WEIGHT=4
+  VALUE=150
+  NAME=Bubblegum
+  
+  
+  CATEGORY=IMPERIAL UO
+  SUBSECTION=ULTRA RARE DYES
+  DESCRIPTION=Bubblegum
+
+ON=@CREATE
+   COLOR=0683
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+ON=@TARGON_ITEM
+F_ALCHEMY_DYES
+
+
+
+[ITEMDEF I_AZURE_DYE]
+  ID=I_BOTTLE_2
+  WEIGHT=4
+  VALUE=150
+  NAME=Azure
+  
+  
+  CATEGORY=IMPERIAL UO
+  SUBSECTION=ULTRA RARE DYES
+  DESCRIPTION=Azure
+
+ON=@CREATE
+   COLOR=0b4e
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+ON=@TARGON_ITEM
+F_ALCHEMY_DYES
+
+
+
+[ITEMDEF I_WAYCOOL_DYE]
+  ID=I_BOTTLE_2
+  WEIGHT=4
+  VALUE=150
+  NAME=Waycool
+  
+  
+  CATEGORY=IMPERIAL UO
+  SUBSECTION=ULTRA RARE DYES
+  DESCRIPTION=Waycool
+
+ON=@CREATE
+   COLOR=0a57
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+ON=@TARGON_ITEM
+F_ALCHEMY_DYES
+
+
+[ITEMDEF I_TERROR_DYE]
+  ID=I_BOTTLE_2
+  WEIGHT=4
+  VALUE=150
+  NAME=Terror
+  
+  
+  CATEGORY=IMPERIAL UO
+  SUBSECTION=ULTRA RARE DYES
+  DESCRIPTION=Terror
+
+ON=@CREATE
+   COLOR=0a37
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+ON=@TARGON_ITEM
+F_ALCHEMY_DYES
+
+
+[ITEMDEF I_NOTPINK_DYE]
+  ID=I_BOTTLE_2
+  WEIGHT=4
+  VALUE=150
+  NAME=Not Pink
+  
+  
+  CATEGORY=IMPERIAL UO
+  SUBSECTION=ULTRA RARE DYES
+  DESCRIPTION=Not Pink
+
+ON=@CREATE
+   COLOR=0a34
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+ON=@TARGON_ITEM
+F_ALCHEMY_DYES
+
+
+
+
+
+// ///////////////////////////////////	 
+// //////////////
+// ////////////// Unique Chest Items
+// //////////////
+// ///////////////////////////////////
+
+
+[ITEMDEF i_unique_SHAMEORC]
+DEFNAME=i_unique_SHAMEORC
+NAME=@07b5 Soulstone
+ID=02ADC
+TYPE=0//T_SOULSTONE
+CATEGORY=Uniques
+SUBSECTION=Imperial Chest
+DESCRIPTION=SOULSTONE
+DUPELIST=02ADD,02ADE,02ADF,02AE0,02AEC,02AED,02AEE,02AEF,02AF0
+
+ON=@CREATE
+   COLOR=07b5
+   ATTR=08
+   
+ON=@Click
+   Message=@00ae5 [Imperial Unique]
+
+
+
+[ITEMDEF i_unique_CHIKEN]
+DEFNAME=I_unique_CHICKEN
+NAME=@07b5 Music Box
+ID=i_dawns_music_box
+TYPE=T_NORMAL
+CATEGORY=Uniques
+SUBSECTION=Imperial Chest
+DESCRIPTION=MUSIC BOX
+DUPELIST=02AFA,02AFB,02AFC,02AFD,02AFE,02AFF,02B00
+
+ON=@CREATE
+   COLOR=092
+   ATTR=08
+   
+ON=@Click
+   Message=@00ae5 [Imperial Unique]
+
+
+   
+[ITEMDEF i_unique_TITAN]
+DEFNAME		= i_unique_TITAN
+NAME=@07b5 The Box
+ID=i_box_brass
+TYPE		= T_CONTAINER
+TDATA2		= 04B
+//TDATA2=043	// NO LOCK?
+FLIP		= 1
+WEIGHT		= 5
+DUPELIST	= 0E80
+CATEGORY	= Uniques
+SUBSECTION	= Imperial Chest
+DESCRIPTION	= BRASS BOX  (N)
+
+ON=@CREATE
+   COLOR=00ae5
+   ATTR=08
+   
+ON=@Click
+   Message=@00ae5 [Imperial Unique]
+   
+   
+   
+[ITEMDEF i_unique_NEWBIE]
+DEFNAME=i_unique_NEWBIE
+ID=03AF9
+NAME=@07b5 Ill-Fated
+TYPE=T_NORMAL
+CATEGORY	= Uniques
+SUBSECTION	= Imperial Chest
+DESCRIPTION	= Coral
+
+ON=@CREATE
+   COLOR=01b9
+   ATTR=08
+   
+ON=@Click
+   Message=@00ae5 [Imperial Unique]
+
+
+   
+[ITEMDEF i_unique_SWAMP]
+DEFNAME=i_unique_SWAMP
+ID=03C48
+NAME=@07b5 This Thing
+TYPE=T_NORMAL
+CATEGORY	= Uniques
+SUBSECTION	= Imperial Chest
+DESCRIPTION	= Frog
+
+ON=@CREATE
+   COLOR=00ac9
+   ATTR=08
+   
+ON=@Click
+   Message=@00ae5 [Imperial Unique]
+   
+   
+   
+[ITEMDEF i_unique_CYCLOPS]
+DEFNAME=i_unique_CYCLOPS
+ID=03FF8
+NAME=@07b5 Cyclop Killer
+TYPE=T_NORMAL
+CATEGORY	= Uniques
+SUBSECTION	= Imperial Chest
+DESCRIPTION	= Totem
+DUPELIST=03FF9
+
+
+ON=@CREATE
+   COLOR=048f
+   ATTR=08
+   
+ON=@Click
+   Message=@00ae5 [Imperial Unique]
+   
+   
+[ITEMDEF i_unique_SUPPLIES]
+DEFNAME=i_unique_SUPPLIES
+NAME=@07b5 The Champions Chair
+ID=02DEB
+FLIP=1
+CATEGORY	= Uniques
+SUBSECTION	= Imperial Chest
+DESCRIPTION	= Elven
+DUPELIST=02DEC,02DED,02DEE
+   
+ON=@CREATE
+   COLOR=0798
+   ATTR=08
+   
+ON=@Click
+   Message=@00ae5 [Imperial Unique]   
+   
+   
+[ITEMDEF i_unique_SCULPTURE]
+DEFNAME=i_unique_SCULPTURE
+TYPE=T_NORMAL
+Name=@07b5 Shell of the Deep
+ID=03B12
+CATEGORY	= Uniques
+SUBSECTION	= Imperial Chest
+DESCRIPTION	= Skargard One
+DUPELIST=03B13
+
+    
+ON=@CREATE
+   COLOR=0794
+   ATTR=08
+   
+ON=@Click
+   Message=@00ae5 [Imperial Unique]     
+   
+
+[ITEMDEF i_unique_STATUE]
+DEFNAME=i_unique_STATUE
+ID=01228
+Name=@07b5 Phoenix Lord
+CATEGORY	= Uniques
+SUBSECTION	= Imperial Chest
+DESCRIPTION	= Phoenix
+DUPELIST=0139d
+
+ON=@CREATE
+   COLOR=07ad
+   ATTR=08
+   
+ON=@Click
+   Message=@00ae5 [Imperial Unique]  
+   
+   
+[ITEMDEF i_unique_REAPER]
+DEFNAME=i_unique_REAPER
+ID=01f18
+Name=@07b5 Multiti
+CATEGORY	= Uniques
+SUBSECTION	= Imperial Chest
+DESCRIPTION	= Reaper
+
+ON=@CREATE
+   COLOR=0048b
+   ATTR=08
+   
+ON=@Click
+   Message=@00ae5 [Imperial Unique] 
+   
+   
+
+[ITEMDEF i_unique_DESTARD]
+DEFNAME=i_unique_DESTARD
+ID=03c9c
+WEIGHT=8
+Name=@07b5 The Mailbox
+CATEGORY	= Uniques
+SUBSECTION	= Imperial Chest
+DESCRIPTION	= Destard
+Dupelist=03c9b,03c9d,03c9e
+
+ON=@CREATE
+   COLOR=079b
+   ATTR=08
+   
+ON=@Click
+   Message=@00ae5 [Imperial Unique] 
+   
+   
+[ITEMDEF i_unique_ICEDRAGON]
+DEFNAME=i_unique_ICEDRAGON
+ID=03C94
+WEIGHT=35
+Name=@07b5 A Legend
+CATEGORY	= Uniques
+SUBSECTION	= Imperial Chest
+DESCRIPTION	= Ice Dragon
+DUPELIST=03C93
+
+ON=@CREATE
+   COLOR=0079c
+   ATTR=08
+   
+ON=@Click
+   Message=@00ae5 [Imperial Unique] 
+   
+   
+[ITEMDEF i_unique_SHAME22]
+DEFNAME=i_unique_SHAME22
+Name=@07b5 Tower of Champions
+TYPE=T_LIGHT_OUT
+ID=024C0
+DUPELIST=024BF   
+CATEGORY	= Uniques
+SUBSECTION	= Imperial Chest
+DESCRIPTION	= Shame 2
+
+ON=@CREATE
+   COLOR=04c2
+   ATTR=08
+   
+ON=@Click
+   Message=@00ae5 [Imperial Unique] 
+
+   
+[ITEMDEF i_unique_WRONG1]
+DEFNAME=i_unique_WRONG1
+ID=03DE4
+Name=@07b5 End of Time
+DUPELIST=03DE3
+CATEGORY	= Uniques
+SUBSECTION	= Imperial Chest
+DESCRIPTION	= Wrong
+
+ON=@CREATE
+COLOR=0079a
+ATTR=08
+   
+ON=@Click
+   Message=@00ae5 [Imperial Unique] 
+
+
+[ITEMDEF i_unique_CATTLE1]
+DEFNAME=i_unique_CATTLE1
+Name=@07b5 Cow Latern
+ID=024bb
+TYPE=T_LIGHT_LIT
+CATEGORY	= Uniques
+SUBSECTION	= Imperial Chest
+DESCRIPTION	= Cattle
+DUPELIST=024BC
+
+ON=@CREATE
+COLOR=07ef
+ATTR=08
+   
+ON=@Click
+   Message=@00ae5 [Imperial Unique] 
+
+
+
+[ITEMDEF i_unique_DESPISE1]
+DEFNAME=i_unique_DESPISE1
+ID=11534
+NAME=@07b5 Arcanist Statue
+CATEGORY	= Uniques
+SUBSECTION	= Imperial Chest
+DESCRIPTION	= Arcanist
+DUPELIST=11535
+
+ON=@CREATE
+COLOR=0063b
+ATTR=08
+   
+ON=@Click
+   Message=@00ae5 [Imperial Unique] 
+
+
+[ITEMDEF i_unique_CORAL3]
+DEFNAME=i_unique_CORAL3
+ID=0C16
+NAME=@07b5 Neir Blo Books
+TYPE=T_NORMAL
+CATEGORY	= Uniques
+SUBSECTION	= Imperial Chest
+DESCRIPTION	= Coral 3
+
+ON=@CREATE
+COLOR=00798
+ATTR=08
+   
+ON=@Click
+   Message=@00ae5 [Imperial Unique] 
+
+
+[ITEMDEF i_unique_ACIDSTATUE]
+DEFNAME=i_unique_ACIDSTATUE
+NAME=@07b5 Brave Statue
+ID=11538
+CATEGORY	= Uniques
+SUBSECTION	= Imperial Chest
+DESCRIPTION	= Warrior Statue
+DUPELIST=11539
+
+ON=@CREATE
+COLOR=0627
+ATTR=08
+   
+ON=@Click
+   Message=@00ae5 [Imperial Unique]
+   
+   
+[ITEMDEF i_unique_SH1]
+DEFNAME=i_unique_SH1
+ID=11523
+TYPE=T_NORMAL
+NAME=@07b5 Beetlejuice
+CATEGORY	= Uniques
+SUBSECTION	= Imperial Chest
+DESCRIPTION	= Beetle Statue
+DUPELIST=11521
+
+ON=@CREATE
+COLOR=07b5
+ATTR=08
+   
+ON=@Click
+   Message=@00ae5 [Imperial Unique]
+
+
+[ITEMDEF i_unique_QUIVER1]
+DEFNAME=i_unique_QUIVER1
+NAME=@07b5 Quiver of Braveness 
+ID=02B02
+TYPE=T_CONTAINER
+FLIP=1
+LAYER=17
+WEIGHT=5
+RESDISPDNID=I_SASH
+RESLEVEL=2
+RESDISPDNHUE=0482
+TDATA2=03C
+CATEGORY	= Uniques
+SUBSECTION	= Imperial Chest
+DESCRIPTION	= Quiver
+DUPELIST=02B03
+
+ON=@CREATE
+COLOR=00786
+ATTR=08
+   
+ON=@Click
+   Message=@00ae5 [Imperial Unique]
+   
+   
+[ITEMDEF i_unique_GUILLOTINE]
+DEFNAME=i_unique_GUILLOTINE
+ID=I_GUILLOTINE
+NAME=@07b5 Guillotine of the Major
+CATEGORY	= Uniques
+SUBSECTION	= Imperial Chest
+DESCRIPTION	= Guillotine
+
+ON=@CREATE
+COLOR=015f
+ATTR=08
+   
+ON=@Click
+   Message=@00ae5 [Imperial Unique]
+   
+   
+   
+[ITEMDEF i_unique_DISPLAY3]
+DEFNAME=i_unique_DISPLAY3
+ID=0291f  
+NAME=@07b5 Sword Display
+CATEGORY	= Uniques
+SUBSECTION	= Imperial Chest
+DESCRIPTION	= Display 1
+DUPELIST=0291E 
+
+ON=@CREATE
+COLOR=0154
+ATTR=08
+   
+ON=@Click
+   Message=@00ae5 [Imperial Unique]
+
+   
+[ITEMDEF i_unique_ANT1]
+DEFNAME=i_unique_ANT1
+NAME=@07b5 Maddow Weapons
+ID=03D59
+TYPE=T_NORMAL
+CATEGORY	= Uniques
+SUBSECTION	= Imperial Chest
+DESCRIPTION	= Ant
+
+ON=@CREATE
+COLOR=07a1
+ATTR=08
+   
+ON=@Click
+   Message=@00ae5 [Imperial Unique]
+
+
+[ITEMDEF i_unique_CRYSTAL2]
+DEFNAME=i_unique_CRYSTAL2
+NAME=@07b5 Crystal
+ID=02206
+TYPE=T_normal
+CATEGORY	= Uniques
+SUBSECTION	= Imperial Chest
+DESCRIPTION	= Crystal 2
+
+ON=@CREATE
+COLOR=00787
+ATTR=08
+   
+ON=@Click
+   Message=@00ae5 [Imperial Unique]
+
+
+
+[ITEMDEF i_unique_MUSH2]
+DEFNAME=i_unique_MUSH2
+NAME=@07b5 Aquarium
+ID=03FE8
+TYPE=T_normal
+CATEGORY	= Uniques
+SUBSECTION	= Imperial Chest
+DESCRIPTION	= Mush
+
+ON=@CREATE
+ATTR=08
+   
+ON=@Click
+   Message=@00ae5 [Imperial Unique]
+   
+   
+   
+   
+[ITEMDEF i_unique_Paint5]
+DEFNAME= i_unique_Paint5
+TYPE=T_NORMAL
+NAME=@07b5 Squirrel Statue
+ID=11536
+CATEGORY	= Uniques
+SUBSECTION	= Imperial Chest
+DESCRIPTION	= Paint 5
+DUPELIST=11537  
+
+ON=@CREATE
+COLOR=00ae0
+ATTR=08
+   
+ON=@Click
+   Message=@00ae5 [Imperial Unique]
+
+
+[ITEMDEF i_unique_ROPE3]
+DEFNAME=i_unique_ROPE3
+ID=01EA3
+NAME=@07b5 Zimmerman Net
+CATEGORY	= Uniques
+SUBSECTION	= Imperial Chest
+DESCRIPTION	= Rope 3
+DUPELIST=01EA4,01EA5,01EA6
+
+ON=@CREATE
+COLOR=03a3
+ATTR=08
+   
+ON=@Click
+   Message=@00ae5 [Imperial Unique]
+   
+   
+[ITEMDEF i_unique_CAD1]
+DEFNAME=i_unique_CAD1
+ID=03D2E
+NAME=@07b5 Pegasus 
+CATEGORY	= Uniques
+SUBSECTION	= Imperial Chest
+DESCRIPTION	= CAD 1
+
+ON=@CREATE
+COLOR=00482
+ATTR=08
+   
+ON=@Click
+   Message=@00ae5 [Imperial Unique]
+
+   
+   
+   
+   
+   
+   
+   
+     
+
+// /////////////////////////////	 
+// //////////////
+// ////////////// Figurines 
+// //////////////
+// /////////////////////////////
+
+
+[ITEMDEF 9772]
+DEFNAME=I_FIG_ABYSMALLHORROR
+NAME=@00a20 Abysmall Horror
+CATEGORY	= Figurines
+SUBSECTION	= Figurines Uniques
+DESCRIPTION	= Abysmal Horror
+
+ON=@CREATE
+ATTR=08
+
+ON=@Click
+Message=@00ae5 [Figurine]
+
+
+
+[ITEMDEF 9733]
+DEFNAME=I_FIG_ARCANEDAEMON  // Mudar para FIG
+NAME=@00a20 Arcane Daemon	// Meter a Cor e o nome bem 
+CATEGORY	= Figurines
+SUBSECTION	= Figurines Uniques
+DESCRIPTION	= Arcane Daemon	// Mudar o nome
+
+ON=@CREATE
+ATTR=08
+
+ON=@Click
+Message=@00ae5 [Figurine]
+
+
+[ITEMDEF 10083]
+DEFNAME=I_FIG_BAKEKITSUNE
+NAME=@00a20 Bake Kitsune
+CATEGORY	= Figurines
+SUBSECTION	= Figurines Uniques
+DESCRIPTION	= Bake Kitsune	// Mudar o nome
+
+ON=@CREATE
+ATTR=08
+
+ON=@Click
+Message=@00ae5 [Figurine]
+
+
+[ITEMDEF 9735]
+DEFNAME=I_FIG_BOGLING
+NAME=@00a20 Bogling
+CATEGORY	= Figurines
+SUBSECTION	= Figurines Uniques
+DESCRIPTION	= Bogling	// Mudar o nome
+
+ON=@CREATE
+ATTR=08
+
+ON=@Click
+Message=@00ae5 [Figurine]
+
+
+
+[ITEMDEF 9736]
+DEFNAME=I_FIG_BOGTHING
+NAME=@00a20 Bog Thing
+CATEGORY	= Figurines
+SUBSECTION	= Figurines Uniques
+DESCRIPTION	= Bog Thing	// Mudar o nome
+
+ON=@CREATE
+ATTR=08
+
+ON=@Click
+Message=@00ae5 [Figurine]
+
+
+[ITEMDEF 9768]
+DEFNAME=I_FIG_BONEDAEMON
+NAME=@00a20 Bone Daemon
+CATEGORY	= Figurines
+SUBSECTION	= Figurines Uniques
+DESCRIPTION	= Bone Daemon	// Mudar o nome
+
+ON=@CREATE
+ATTR=08
+
+ON=@Click
+Message=@00ae5 [Figurine]
+
+
+[ITEMDEF 9601]
+DEFNAME=I_FIG_CENTAUR
+NAME=@00a20 Centaur
+CATEGORY	= Figurines
+SUBSECTION	= Figurines Uniques
+DESCRIPTION	= Centaur	// Mudar o nome
+
+ON=@CREATE
+ATTR=08
+
+ON=@Click
+Message=@00ae5 [Figurine]
+
+
+[ITEMDEF 9737]
+DEFNAME=I_FIG_CHAOSDAEMON
+NAME=@00a20 Chaos Daemon
+CATEGORY	= Figurines
+SUBSECTION	= Figurines Uniques
+DESCRIPTION	= Chaos Daemon	// Mudar o nome
+
+ON=@CREATE
+ATTR=08
+
+ON=@Click
+Message=@00ae5 [Figurine]
+
+
+[ITEMDEF 10084]
+DEFNAME=I_FIG_CRANE
+NAME=@00a20 Crane
+CATEGORY	= Figurines
+SUBSECTION	= Figurines Uniques
+DESCRIPTION	= Crane	// Mudar o nome
+
+ON=@CREATE
+ATTR=08
+
+ON=@Click
+Message=@00ae5 [Figurine]
+
+
+
+[ITEMDEF 9778]
+DEFNAME=I_FIG_DAEMONKNIGHT
+NAME=@00a20 Daemon Knight
+CATEGORY	= Figurines
+SUBSECTION	= Figurines Uniques
+DESCRIPTION	= Daemon Knight	// Mudar o nome
+
+ON=@CREATE
+ATTR=08
+
+ON=@Click
+Message=@00ae5 [Figurine]
+
+
+
+
+[ITEMDEF 9773]
+DEFNAME=I_FIG_DARKNIGHTCREEPER
+NAME=@00a20 Darknight Creeper
+CATEGORY	= Figurines
+SUBSECTION	= Figurines Uniques
+DESCRIPTION	= Darknight Creeper	// Mudar o nome
+
+ON=@CREATE
+ATTR=08
+
+ON=@Click
+Message=@00ae5 [Figurine]
+
+
+
+[ITEMDEF 9763]
+DEFNAME=I_Fig_DEVOURER_SOULS
+NAME=@00a20 Devourer of Souls
+CATEGORY	= Figurines
+SUBSECTION	= Figurines Uniques
+DESCRIPTION	= Devourer of Souls	// Mudar o nome
+
+ON=@CREATE
+ATTR=08
+
+ON=@Click
+Message=@00ae5 [Figurine]
+
+
+
+[ITEMDEF I_FIG_DREADSPIDER]
+DEFNAME=I_FIG_DREADSPIDER
+ID=9760
+NAME=@00a20 Crystal Elemental
+CATEGORY	= Figurines
+SUBSECTION	= Figurines Uniques
+DESCRIPTION	= Crystal Elemental	// Mudar o nome
+
+ON=@CREATE
+ATTR=08
+
+ON=@Click
+Message=@00ae5 [Figurine]
+
+
+[ITEMDEF 9741]
+DEFNAME=I_FIG_DROPPELGANGER
+NAME=@00a20 Droppelganger
+CATEGORY	= Figurines
+SUBSECTION	= Figurines Uniques
+DESCRIPTION	= Droppelganger	// Mudar o nome
+
+ON=@CREATE
+ATTR=08
+
+ON=@Click
+Message=@00ae5 [Figurine]
+
+
+[ITEMDEF 10087]
+DEFNAME=I_FIG_FANDANCER
+NAME=@00a20 Fan Dancer
+CATEGORY	= Figurines
+SUBSECTION	= Figurines Uniques
+DESCRIPTION	= Fan Dancer	// Mudar o nome
+
+ON=@CREATE
+ATTR=08
+
+ON=@Click
+Message=@00ae5 [Figurine]
+
+
+
+[ITEMDEF 9732]
+DEFNAME=I_FIG_FIREANT_WORKER
+NAME=@00a20 Fire Ant Worker
+CATEGORY	= Figurines
+SUBSECTION	= Figurines Uniques
+DESCRIPTION	= Fireant Worker	// Mudar o nome
+
+ON=@CREATE
+ATTR=08
+
+ON=@Click
+Message=@00ae5 [Figurine]
+
+
+
+[ITEMDEF 9764]
+DEFNAME=I_FIG_FLESHGOLEM
+NAME=@00a20 Flesh Golem
+CATEGORY	= Figurines
+SUBSECTION	= Figurines Uniques
+DESCRIPTION	= Flesh Golem	// Mudar o nome
+
+ON=@CREATE
+ATTR=08
+
+ON=@Click
+Message=@00ae5 [Figurine]
+
+
+
+[ITEMDEF 9775]
+DEFNAME=I_FIG_FLESHRENDERER
+NAME=@00a20 Flesh Renderer
+CATEGORY	= Figurines
+SUBSECTION	= Figurines Uniques
+DESCRIPTION	= Flesh Renderer	// Mudar o nome
+
+ON=@CREATE
+ATTR=08
+
+ON=@Click
+Message=@00ae5 [Figurine]
+
+
+
+[ITEMDEF 9609]
+DEFNAME=I_FIG_FORESTLORD
+NAME=@00a20 Forest Lord
+CATEGORY	= Figurines
+SUBSECTION	= Figurines Uniques
+DESCRIPTION	= Forest Lord	// Mudar o nome
+
+ON=@CREATE
+ATTR=08
+
+ON=@Click
+Message=@00ae5 [Figurine]
+
+
+
+[ITEMDEF 9742]
+DEFNAME=I_FIG_FOURARMED_DAEMON
+NAME=@00a20 Four Armed Daemon
+CATEGORY	= Figurines
+SUBSECTION	= Figurines Uniques
+DESCRIPTION	= Four Armed Daemon	// Mudar o nome
+
+ON=@CREATE
+ATTR=08
+
+ON=@Click
+Message=@00ae5 [Figurine]
+
+
+
+[ITEMDEF 9767]
+DEFNAME=I_FIG_GIBBERLING
+NAME=@00a20 Gibberling
+CATEGORY	= Figurines
+SUBSECTION	= Figurines Uniques
+DESCRIPTION	= Gibberling	// Mudar o nome
+
+ON=@CREATE
+ATTR=08
+
+ON=@Click
+Message=@00ae5 [Figurine]
+
+
+
+
+[ITEMDEF 9765]
+DEFNAME=I_FIG_GOREFIEND
+NAME=@00a20 Gore Fiend
+CATEGORY	= Figurines
+SUBSECTION	= Figurines Uniques
+DESCRIPTION	= Gore Fiend	// Mudar o nome
+
+ON=@CREATE
+ATTR=08
+
+ON=@Click
+Message=@00ae5 [Figurine]
+
+
+
+[ITEMDEF 9745]
+DEFNAME=I_FIG_HORDEDAEMON
+NAME=@00a20 Horde Daemon
+CATEGORY	= Figurines
+SUBSECTION	= Figurines Uniques
+DESCRIPTION	= Horde Daemon	// Mudar o nome
+
+ON=@CREATE
+ATTR=08
+
+ON=@Click
+Message=@00ae5 [Figurine]
+
+
+
+[ITEMDEF 9744]
+DEFNAME=I_FIG_IRONGOLEM
+NAME=@00a20 Iron Golem
+CATEGORY	= Figurines
+SUBSECTION	= Figurines Uniques
+DESCRIPTION	= Iron Golem	// Mudar o nome
+
+ON=@CREATE
+ATTR=08
+
+ON=@Click
+Message=@00ae5 [Figurine]
+
+
+
+[ITEMDEF 9746]
+DEFNAME=I_FIG_JUGGERNAUGHT
+NAME=@00a20 Juggernaught
+CATEGORY	= Figurines
+SUBSECTION	= Figurines Uniques
+DESCRIPTION	= Juggernaught	// Mudar o nome
+
+ON=@CREATE
+ATTR=08
+
+ON=@Click
+Message=@00ae5 [Figurine]
+
+
+
+
+[ITEMDEF 10089]
+DEFNAME=I_FIG_KAZEKEMONO
+NAME=@00a20 Kaze Kemono
+CATEGORY	= Figurines
+SUBSECTION	= Figurines Uniques
+DESCRIPTION	= Kaze Kemono	// Mudar o nome
+
+ON=@CREATE
+ATTR=08
+
+ON=@Click
+Message=@00ae5 [Figurine]
+
+
+
+[ITEMDEF 10092]
+DEFNAME=I_FIG_LADYSNOW
+NAME=@00a20 Lady of Snow
+CATEGORY	= Figurines
+SUBSECTION	= Figurines Uniques
+DESCRIPTION	= Lady of Snow	// Mudar o nome
+
+ON=@CREATE
+ATTR=08
+
+ON=@Click
+Message=@00ae5 [Figurine]
+
+
+
+[ITEMDEF 9779]
+DEFNAME=I_FIG_MOUND_MAGGOTS
+NAME=@00a20 Mound of Maggots
+CATEGORY	= Figurines
+SUBSECTION	= Figurines Uniques
+DESCRIPTION	= Mound of Maggots	// Mudar o nome
+
+ON=@CREATE
+ATTR=08
+
+ON=@Click
+Message=@00ae5 [Figurine]
+
+
+[ITEMDEF 9685]
+DEFNAME=I_FIG_MUMMY
+NAME=@00a20 Mummy
+CATEGORY	= Figurines
+SUBSECTION	= Figurines Uniques
+DESCRIPTION	= Mummy	// Mudar o nome
+
+ON=@CREATE
+ATTR=08
+
+ON=@Click
+Message=@00ae5 [Figurine]
+
+
+[ITEMDEF 10093]
+DEFNAME=I_FIG_ONI
+NAME=@00a20 Oni
+CATEGORY	= Figurines
+SUBSECTION	= Figurines Uniques
+DESCRIPTION	= Oni	// Mudar o nome
+
+ON=@CREATE
+ATTR=08
+
+ON=@Click
+Message=@00ae5 [Figurine]
+
+
+
+[ITEMDEF 9769]
+DEFNAME=I_FIG_PATCHWORK_SKLT
+NAME=@00a20 Patchwork Skeleton
+CATEGORY	= Figurines
+SUBSECTION	= Figurines Uniques
+DESCRIPTION	= Patchwork Skeleton	// Mudar o nome
+
+ON=@CREATE
+ATTR=08
+
+ON=@Click
+Message=@00ae5 [Figurine]
+
+
+[ITEMDEF 9654]
+DEFNAME=I_FIG_PIXIE
+NAME=@00a20 Pixie
+CATEGORY	= Figurines
+SUBSECTION	= Figurines Uniques
+DESCRIPTION	= Pixie	// Mudar o nome
+
+ON=@CREATE
+ATTR=08
+
+ON=@Click
+Message=@00ae5 [Figurine]
+
+
+[ITEMDEF 9747]
+DEFNAME=I_FIG_PLAGUEBEAST
+NAME=@00a20 Plague Beast
+CATEGORY	= Figurines
+SUBSECTION	= Figurines Uniques
+DESCRIPTION	= Plague Beast	// Mudar o nome
+
+ON=@CREATE
+ATTR=08
+
+ON=@Click
+Message=@00ae5 [Figurine]
+
+
+[ITEMDEF 9748]
+DEFNAME=I_FIG_QUAGMIRE
+NAME=@00a20 Quagmire
+CATEGORY	= Figurines
+SUBSECTION	= Figurines Uniques
+DESCRIPTION	= Quagmire	// Mudar o nome
+
+ON=@CREATE
+ATTR=08
+
+ON=@Click
+Message=@00ae5 [Figurine]
+
+
+
+
+[ITEMDEF 10086]
+DEFNAME=I_FIG_RAIJU
+NAME=@00a20 Rai-Ju
+CATEGORY	= Figurines
+SUBSECTION	= Figurines Uniques
+DESCRIPTION	= Rai-Ju	// Mudar o nome
+
+ON=@CREATE
+ATTR=08
+
+ON=@Click
+Message=@00ae5 [Figurine]
+
+
+
+[ITEMDEF 9774]
+DEFNAME=I_FIG_RAVAGER
+NAME=@00a20 Ravager
+CATEGORY	= Figurines
+SUBSECTION	= Figurines Uniques
+DESCRIPTION	= Ravager	// Mudar o nome
+
+ON=@CREATE
+ATTR=08
+
+ON=@Click
+Message=@00ae5 [Figurine]
+
+
+[ITEMDEF 9771]
+DEFNAME=I_FIG_SHADOWKNIGHT
+NAME=@00a20 Shadow Knight
+CATEGORY	= Figurines
+SUBSECTION	= Figurines Uniques
+DESCRIPTION	= Shadow Knight	// Mudar o nome
+
+ON=@CREATE
+ATTR=08
+
+ON=@Click
+Message=@00ae5 [Figurine]
+
+
+
+[ITEMDEF 9762]
+DEFNAME=I_FIG_SKITHOPPER
+NAME=@00a20 Skittering Hopper
+CATEGORY	= Figurines
+SUBSECTION	= Figurines Uniques
+DESCRIPTION	= Skittering Hopper	// Mudar o nome
+
+ON=@CREATE
+ATTR=08
+
+ON=@Click
+Message=@00ae5 [Figurine]
+
+
+
+[ITEMDEF 9752]
+DEFNAME=I_FIG_SPHYNX
+NAME=@00a20 Sphynx
+CATEGORY	= Figurines
+SUBSECTION	= Figurines Uniques
+DESCRIPTION	= Sphynx	// Mudar o nome
+
+ON=@CREATE
+ATTR=08
+
+ON=@Click
+Message=@00ae5 [Figurine]
+
+
+
+[ITEMDEF 9674]
+DEFNAME=I_FIG_TERATHANAVENGER
+NAME=@00a20 Terathan Avenger
+CATEGORY	= Figurines
+SUBSECTION	= Figurines Uniques
+DESCRIPTION	= Terathan Avenger	// Mudar o nome
+
+ON=@CREATE
+ATTR=08
+
+ON=@Click
+Message=@00ae5 [Figurine]
+
+
+
+[ITEMDEF 9761]
+DEFNAME=I_FIG_TREEFELLOW
+NAME=@00a20 Treefellow
+CATEGORY	= Figurines
+SUBSECTION	= Figurines Uniques
+DESCRIPTION	= Treefellow	// Mudar o nome
+
+ON=@CREATE
+ATTR=08
+
+ON=@Click
+Message=@00ae5 [Figurine]
+
+
+
+[ITEMDEF 9770]
+DEFNAME=I_FIG_WAILINGBANSHEE
+NAME=@00a20 Wailing Banshee
+CATEGORY	= Figurines
+SUBSECTION	= Figurines Uniques
+DESCRIPTION	= Wailing Banshee	// Mudar o nome
+
+ON=@CREATE
+ATTR=08
+
+ON=@Click
+Message=@00ae5 [Figurine]
+
+
+
+[ITEMDEF 9776]
+DEFNAME=I_FIG_WANDERERVOID
+NAME=@00a20 Wanderer of the Void
+CATEGORY	= Figurines
+SUBSECTION	= Figurines Uniques
+DESCRIPTION	= Wanderer of the Void	// Mudar o nome
+
+ON=@CREATE
+ATTR=08
+
+ON=@Click
+Message=@00ae5 [Figurine]
+
+
+
+
+
+// /////////////////////////
+// /////////////////////////
+// 
+//  Random Stuff
+//
+// 
+// /////////////////////////
+// /////////////////////////
+
+[ITEMDEF I_book_Ferries] // Mudar nome
+NAME=Diary // Mudar Cor e Nome
+ID=0fbd
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Dye
+DESCRIPTION=Dye Book
+
+ON=@DClick
+src.DIALOG d_B_book_Ferries  // Mudar nome
+return 1
+
+[dialog d_B_book_Ferries]
+150,266
+resizepic 0 0 3500 190 259
+text 30 3 455 0
+text 24 30 455 1
+text 24 50 455 2
+text 24 70 455 3
+text 24 90 455 4
+text 24 110 455 5
+text 24 130 455 6
+text 24 150 455 7
+text 24 170 455 8
+text 24 190 455 9
+text 24 210 455 10
+text 24 230 455 11
+
+button 75 220 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+[dialog d_B_book_Ferries text] 
+ 
+I've heard there is a 
+hidden chest around 
+here somewhere. 
+ 
+I just can't find it... 
+Is it in the walls? 
+ 
+They say the chest is
+like the ones in Occlo...
+
+
+
+
+
+[ITEMDEF i_rock_silver]
+NAME	= Silver Rock
+ID	= 01772
+TYPE	= t_rock
+
+ON = @Create
+  COLOR		= color_o_silver
+  MORE1		= mr_silver
+  DISPID	= { 0177a 1  0177b 2 0177c 3 }
+  ATTR		= attr_move_never
+
+
+[ITEMDEF i_rock_gold]
+NAME	= Gold Rock
+ID	= 01772
+TYPE	= t_rock
+
+ON = @Create
+  COLOR		= color_o_gold
+  MORE1		= mr_gold
+  DISPID	= { 0177a 1  0177b 2 0177c 3 }
+  ATTR		= attr_move_never
+
+  
+[ITEMDEF i_rock_tin]
+NAME	= Tin Rock
+ID	= 01772
+TYPE	= t_rock
+
+ON = @Create
+  COLOR		= color_o_tin
+  MORE1		= mr_tin
+  DISPID	= { 0177a 1  0177b 2 0177c 3 }
+  ATTR		= attr_move_never
+  
+  
+
+[ITEMDEF i_rock_pcopper]
+NAME	= Pure Copper Rock
+ID	= 01772
+TYPE	= t_rock
+
+ON = @Create
+  COLOR		= color_o_copper
+  MORE1		= mr_pure_copper
+  DISPID	= { 0177a 1  0177b 2 0177c 3 }
+  ATTR		= attr_move_never
+  
+
+
+  
+  
+  
+// //////////////////////
+// //////////////////////
+// 
+// Guardas Trinsic
+//
+// ///////////////////////
+
+
+[CHARDEF C_Trinsic_Shadow_Guard] 
+DEFNAME=C_Trinsic_Shadow_Guard
+NAME=Holy Knight
+ID=C_MAN 
+CAN=MT_EQUIP|MT_USEHANDS 
+TSPEECH=SPK_Shadow_Guard
+TEVENTS=e_stripper22
+TEVENTS=e_Human_Scavenge
+
+ON=@NPCSEENEWPLAYER 
+Please sir it's very dangerous to come here. Please LEAVE! 
+
+ON=@CREATE 
+TITLE=Survivor
+FLAGS=00005 
+STR={41 55} 
+DEX={41 55} 
+INT={41 55} 
+
+FAME=5000 
+KARMA=5000 
+NPC=BRAIN_HUMAN 
+
+  ITEMNEWBIE=RANDOM_MALE_HAIR
+  COLOR=07A1
+  ITEMNEWBIE=RANDOM_FACIAL_HAIR
+  COLOR=07A1
+  ITEM=M_POSDEF_ARMY
+  ITEMNEWBIE=I_PLATEMAIL_GLOVES_STRONGHOLD
+  ITEMNEWBIE=I_PLATEMAIL_HELM_STRONGHOLD
+  ITEMNEWBIE=I_PLATEMAIL_ARMS_STRONGHOLD
+  ITEMNEWBIE=I_PLATEMAIL_CHEST_STRONGHOLD
+  ITEMNEWBIE=I_PLATEMAIL_GORGET_STRONGHOLD
+  ITEMNEWBIE=I_PLATEMAIL_LEGGINGS_STRONGHOLD
+  ITEMNEWBIE=I_SWORD_GREAT_STRONGHOLD
+  ITEMNEWBIE=I_SHIELD_ORDER
+  ITEMNEWBIE=I_CAPE
+  COLOR=07A1
+  ITEMNEWBIE=I_SASH
+  COLOR=07A1
+
+ON=@TIMER 
+CONT.SAY @04b Hear Ye! Hear Ye!
+TIMER 2
+
+ON=@DCLICK 
+SAY Please don't touch me.
+
+ON=@GETHIT 
+FLAGS=00005 
+RETURN 1 
+
+ON=@HIT 
+FLAGS=00005 
+RETURN 1 
+
+ON=@DAMAGE 
+FLAGS=00005 
+RETURN 1 
+
+CATEGORY=IMPERIAL UO 
+SUBSECTION=XMAS 
+DESCRIPTION=TOWN CRYER 
+
+
+[SPEECH SPK_Shadow_Guard]
+ON=*Leave*
+  SAY Please sir leave now! The shadows are very strong!
+
+ON=*Shadow*
+  SAY The Shadows killed everyone. Please leave now.
+  
+ON=*Shadow*
+  SAY The Shadows killed everyone. Please leave now.
+ 
+ON=NPCSEENEWPLAYER 
+  SAY JIIOI
+
+
+ON=HI
+ON=HELLO*
+ON=GREETINGS*
+ON=GOOD*SEE*THEE*
+ON=HAIL*
+ON=GREET
+     SAY Sir you don't understand. These creatures are strong.
+
+ON=*What Happened*
+    SAY A lot of shit happened. Please leave NOW.
+
+ON=*What Happened?*
+    SAY A lot of shit happened. Please leave NOW.	
+
+[EVENTS e_stripper22]
+
+ON=@NPCSeeNewPlayer
+   DORAND 3
+   SAY Please leave immediately! These are the strongest monsters!
+   SAY Turn back at once! These monsters killed the entire city!
+   SAY DON'T ENTER. LEAVE NOW. Shadows took over the city!
+   ENDDO
+  
+  
+  
+[ITEMDEF i_bag_1234_circle]
+CATEGORY=Item Templates
+SUBSECTION=Scrolls
+DESCRIPTION=1st to 4th Circle Scrolls
+NAME=1st to 4th Circle Scrolls
+ID=i_bag
+
+ON=@Create
+COLOR=0048f
+	SERV.NEWITEM=i_scroll_reactive_armor
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_clumsy
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_feeblemind
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_heal
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_magic_arrow
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_night_sight
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_weaken
+	NEW.CONT = <UID>
+    SERV.NEWITEM=i_scroll_agility
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_cunning
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_cure
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_harm
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_magic_trap
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_magic_untrap
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_protection
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_strength
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_bless
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_fireball
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_magic_lock
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_poison
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_teleport
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_unlock
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_wall_of_stone
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_archcure
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_archprotection
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_curse
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_fire_field
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_greater_heal
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_lightning
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_mana_drain
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_recall
+	NEW.CONT = <UID>
+	
+  
+  
+
+
+  
+// //////////////////////
+// //////////////////////
+// 
+// Vendedor de Capas
+//
+// ///////////////////////  
+// //////////////////////
+
+
+[TEMPLATE VENDOR_S_CAPER]
+SELL=i_cape_cape,{20 30}
+SELL=i_cape_cape,{20 30}
+COLOR=02
+SELL=i_cape_cape,{20 30}
+COLOR=03
+SELL=i_cape_cape,{20 30}
+COLOR=04
+SELL=i_cape_cape,{20 30}
+COLOR=05
+SELL=i_cape_cape,{20 30}
+COLOR=06
+SELL=i_cape_cape,{20 30}
+COLOR=07
+SELL=i_cape_cape,{20 30}
+COLOR=08
+SELL=i_cape_cape,{20 30}
+COLOR=09
+SELL=i_cape_cape,{20 30}
+COLOR=010
+SELL=i_cape_cape,{20 30}
+COLOR=011
+SELL=i_cape_cape,{20 30}
+COLOR=012
+SELL=i_cape_cape,{20 30}
+COLOR=013
+SELL=i_cape_cape,{20 30}
+COLOR=014
+SELL=i_cape_cape,{20 30}
+COLOR=015
+SELL=i_cape_cape,{20 30}
+COLOR=016
+SELL=i_cape_cape,{20 30}
+COLOR=017
+SELL=i_cape_cape,{20 30}
+COLOR=018
+SELL=i_cape_cape,{20 30}
+COLOR=019
+SELL=i_cape_cape,{20 30}
+COLOR=020
+SELL=i_cape_cape,{20 30}
+COLOR=021
+SELL=i_cape_cape,{20 30}
+COLOR=022
+SELL=i_cape_cape,{20 30}
+COLOR=023
+SELL=i_cape_cape,{20 30}
+COLOR=024
+SELL=i_cape_cape,{20 30}
+COLOR=025
+SELL=i_cape_cape,{20 30}
+COLOR=026
+SELL=i_cape_cape,{20 30}
+COLOR=027
+SELL=i_cape_cape,{20 30}
+COLOR=028
+SELL=i_cape_cape,{20 30}
+COLOR=029
+SELL=i_cape_cape,{20 30}
+COLOR=030
+SELL=i_cape_cape,{20 30}
+COLOR=031
+SELL=i_cape_cape,{20 30}
+COLOR=032
+SELL=i_cape_cape,{20 30}
+COLOR=033
+SELL=i_cape_cape,{20 30}
+COLOR=034
+SELL=i_cape_cape,{20 30}
+COLOR=034
+SELL=i_cape_cape,{20 30}
+COLOR=035
+SELL=i_cape_cape,{20 30}
+COLOR=036
+SELL=i_cape_cape,{20 30}
+COLOR=037
+SELL=i_cape_cape,{20 30}
+COLOR=038
+SELL=i_cape_cape,{20 30}
+COLOR=039
+SELL=i_cape_cape,{20 30}
+COLOR=040
+SELL=i_cape_cape,{20 30}
+COLOR=041
+SELL=i_cape_cape,{20 30}
+COLOR=042
+SELL=i_cape_cape,{20 30}
+COLOR=043
+SELL=i_cape_cape,{20 30}
+COLOR=044
+SELL=i_cape_cape,{20 30}
+COLOR=045
+SELL=i_cape_cape,{20 30}
+COLOR=046
+SELL=i_cape_cape,{20 30}
+COLOR=047
+SELL=i_cape_cape,{20 30}
+COLOR=048
+SELL=i_cape_cape,{20 30}
+COLOR=049
+SELL=i_cape_cape,{20 30}
+COLOR=050
+SELL=i_cape_cape,{20 30}
+COLOR=051
+SELL=i_cape_cape,{20 30}
+COLOR=052
+SELL=i_cape_cape,{20 30}
+COLOR=053
+SELL=i_cape_cape,{20 30}
+COLOR=054
+SELL=i_cape_cape,{20 30}
+COLOR=055
+SELL=i_cape_cape,{20 30}
+COLOR=056
+SELL=i_cape_cape,{20 30}
+COLOR=057
+SELL=i_cape_cape,{20 30}
+COLOR=058
+SELL=i_cape_cape,{20 30}
+COLOR=059
+SELL=i_cape_cape,{20 30}
+COLOR=060
+SELL=i_cape_cape,{20 30}
+COLOR=061
+SELL=i_cape_cape,{20 30}
+COLOR=062
+SELL=i_cape_cape,{20 30}
+COLOR=063
+SELL=i_cape_cape,{20 30}
+COLOR=064
+SELL=i_cape_cape,{20 30}
+COLOR=065
+SELL=i_cape_cape,{20 30}
+COLOR=066
+SELL=i_cape_cape,{20 30}
+COLOR=067
+SELL=i_cape_cape,{20 30}
+COLOR=068
+SELL=i_cape_cape,{20 30}
+COLOR=069
+SELL=i_cape_cape,{20 30}
+COLOR=070
+SELL=i_cape_cape,{20 30}
+COLOR=071
+SELL=i_cape_cape,{20 30}
+COLOR=072
+SELL=i_cape_cape,{20 30}
+COLOR=073
+SELL=i_cape_cape,{20 30}
+COLOR=074
+SELL=i_cape_cape,{20 30}
+COLOR=075
+SELL=i_cape_cape,{20 30}
+COLOR=076
+SELL=i_cape_cape,{20 30}
+COLOR=077
+SELL=i_cape_cape,{20 30}
+COLOR=078
+SELL=i_cape_cape,{20 30}
+COLOR=079
+SELL=i_cape_cape,{20 30}
+COLOR=080
+SELL=i_cape_cape,{20 30}
+COLOR=081
+SELL=i_cape_cape,{20 30}
+COLOR=082
+SELL=i_cape_cape,{20 30}
+COLOR=083
+SELL=i_cape_cape,{20 30}
+COLOR=084
+SELL=i_cape_cape,{20 30}
+COLOR=085
+SELL=i_cape_cape,{20 30}
+COLOR=086
+SELL=i_cape_cape,{20 30}
+COLOR=087
+SELL=i_cape_cape,{20 30}
+COLOR=088
+SELL=i_cape_cape,{20 30}
+COLOR=089
+SELL=i_cape_cape,{20 30}
+COLOR=090
+SELL=i_cape_cape,{20 30}
+COLOR=091
+SELL=i_cape_cape,{20 30}
+COLOR=092
+SELL=i_cape_cape,{20 30}
+COLOR=093
+SELL=i_cape_cape,{20 30}
+COLOR=094
+SELL=i_cape_cape,{20 30}
+COLOR=095
+SELL=i_cape_cape,{20 30}
+COLOR=096
+SELL=i_cape_cape,{20 30}
+COLOR=097
+SELL=i_cape_cape,{20 30}
+COLOR=098
+SELL=i_cape_cape,{20 30}
+COLOR=099
+SELL=i_cape_cape,{20 30}
+COLOR=0100
+SELL=i_cape_cape,{20 30}
+COLOR=0101
+SELL=i_cape_cape,{20 30}
+COLOR=0102
+SELL=i_cape_cape,{20 30}
+COLOR=0103
+SELL=i_cape_cape,{20 30}
+COLOR=0104
+SELL=i_cape_cape,{20 30}
+COLOR=0105
+SELL=i_cape_cape,{20 30}
+COLOR=0106
+SELL=i_cape_cape,{20 30}
+COLOR=0107
+SELL=i_cape_cape,{20 30}
+COLOR=0108
+SELL=i_cape_cape,{20 30}
+COLOR=0109
+SELL=i_cape_cape,{20 30}
+COLOR=0110
+SELL=i_cape_cape,{20 30}
+COLOR=0111
+SELL=i_cape_cape,{20 30}
+COLOR=0112
+SELL=i_cape_cape,{20 30}
+COLOR=0113
+
+
+
+
+
+
+
+[ITEMDEF i_cape_cape]
+ID=i_cape
+NAME=Cape
+ARMOR=0
+WEIGHT=1
+VALUE=500
+
+ON=@CREATE
+   ATTR=0d
+   COLOR=00
+   HITPOINTS=100000
+
+ON=@CLICK
+   MESSAGE=@07a1 [Newbied]
+   
+
+   
+//
+// 
+// 
+// 
+// 
+   
+   
+[CHARDEF C_caperrr_caperrr]
+CATEGORY	= IMPERIAL UO
+SUBSECTION	= NEWBIE DUNGEON
+DESCRIPTION	= ARMORER
+ID		= C_MAN
+NAME		= Clark Kent
+DESIRES		= I_GOLD,E_NOTORIETY,T_INGOT
+AVERSIONS	= T_TRAP,T_EERIE_STUFF
+TSPEECH		= SPK_HUMAN_PRIME
+TSPEECH		= SPK_TRAINER
+TSPEECH		= JOBARMOURER
+TSPEECH		= SPK_SHOPKEEP
+TSPEECH		= SPK_NEEDS
+TSPEECH		= SPK_REHELLO
+TSPEECH		= SPK_HUMAN_DEFAULT
+
+TEVENTS		= E_HUMAN_HEARUNK
+TEVENTS		= E_HUMAN_NEEDS
+TEVENTS		= E_HUMAN_CONVINIT
+TEVENTS		= E_HUMAN_GREET
+TEVENTS		= E_HUMAN_SPACE
+TEVENTS		= E_HUMAN_REFUSE
+TEVENTS		= E_HUMAN_ENVIRON
+ON = @CREATE
+  TAG.VENDMARKUP_FIXED	= 5
+  NPC		= BRAIN_VENDOR
+  COLOR		= COLORS_SKIN
+  STR		= {86 100}
+  DEX		= {76 90}
+  INT		= {61 75}
+  MINING	= {35.0 55.0}
+  ARMSLORE	= {65.0 88.0}
+  BLACKSMITHING	= {55.0 78.0}
+  FENCING	= {35.0 55.0}
+  PARRYING	= {35.0 50.0}
+  SWORDSMANSHIP	= {35.0 50.0}
+  WRESTLING	= {45.0 68.0}
+  MACEFIGHTING	= {35.0 50.0}
+  TACTICS	= {35.0 55.0}
+  FLAGS=00005 
+ON = @NPCRESTOCK
+ITEMNEWBIE=I_BOOTS_CALF
+ITEMNEWBIE=I_PANTS_LONG
+COLOR=0026 
+ITEMNEWBIE=I_TUNIC 
+COLOR=0026 
+ITEMNEWBIE=I_GLOVES_LEATHER 
+COLOR=0026 
+ITEMNEWBIE=I_ROBE
+COLOR=07a1
+ITEMNEWBIE=I_CAPE
+COLOR=0026
+ITEMNEWBIE=I_BEARD_LONG
+COLOR=00481 
+ITEMNEWBIE=I_HAIR_LONG
+COLOR=00481 
+  ITEM		= RANDOM_LIGHT
+  ITEM		= RANDOM_COIN_PURSE
+  
+  SELL		= VENDOR_S_CAPER
+  BUY		= VENDOR_B_ARMORER
+  
+ON=@NPCSEENEWPLAYER 
+SAY HO! HO! HO! BUY MY CAPES! THEY ARE NEWBIED!  
+
+ON=@CLICK
+MESSAGE=@07a1 [Newbied Capes]
+
+ON=@DCLICK 
+EMOTE GIGGLE
+Buy my capes!
+
+ON=@GETHIT 
+FLAGS=00005 
+RETURN 1 
+
+ON=@HIT 
+FLAGS=00005 
+RETURN 1 
+
+ON=@DAMAGE 
+FLAGS=00005 
+RETURN 1 
+
+
+
+
+
+
+
+
+[CHARDEF C_caperrr_caperrr2]
+CATEGORY	= IMPERIAL UO
+SUBSECTION	= NEWBIE DUNGEON
+DESCRIPTION	= ARMORER
+ID		= C_MAN
+NAME		= Bruce Wayne
+DESIRES		= I_GOLD,E_NOTORIETY,T_INGOT
+AVERSIONS	= T_TRAP,T_EERIE_STUFF
+TSPEECH		= SPK_HUMAN_PRIME
+TSPEECH		= SPK_TRAINER
+TSPEECH		= JOBARMOURER
+TSPEECH		= SPK_SHOPKEEP
+TSPEECH		= SPK_NEEDS
+TSPEECH		= SPK_REHELLO
+TSPEECH		= SPK_HUMAN_DEFAULT
+
+TEVENTS		= E_HUMAN_HEARUNK
+TEVENTS		= E_HUMAN_NEEDS
+TEVENTS		= E_HUMAN_CONVINIT
+TEVENTS		= E_HUMAN_GREET
+TEVENTS		= E_HUMAN_SPACE
+TEVENTS		= E_HUMAN_REFUSE
+TEVENTS		= E_HUMAN_ENVIRON
+ON = @CREATE
+  TAG.VENDMARKUP_FIXED	= 5
+  NPC		= BRAIN_VENDOR
+  COLOR		= COLORS_SKIN
+  STR		= {86 100}
+  DEX		= {76 90}
+  INT		= {61 75}
+  MINING	= {35.0 55.0}
+  ARMSLORE	= {65.0 88.0}
+  BLACKSMITHING	= {55.0 78.0}
+  FENCING	= {35.0 55.0}
+  PARRYING	= {35.0 50.0}
+  SWORDSMANSHIP	= {35.0 50.0}
+  WRESTLING	= {45.0 68.0}
+  MACEFIGHTING	= {35.0 50.0}
+  TACTICS	= {35.0 55.0}
+  FLAGS=00005 
+ON = @NPCRESTOCK
+ITEMNEWBIE=I_BOOTS_CALF
+ITEMNEWBIE=I_PANTS_LONG
+COLOR=0026 
+ITEMNEWBIE=I_TUNIC 
+COLOR=0026 
+ITEMNEWBIE=I_GLOVES_LEATHER 
+COLOR=0026 
+ITEMNEWBIE=I_ROBE
+COLOR=07a1
+ITEMNEWBIE=I_CAPE
+COLOR=01
+ITEMNEWBIE=I_BEARD_LONG
+COLOR=00481 
+ITEMNEWBIE=I_HAIR_LONG
+COLOR=00481 
+  ITEM		= RANDOM_LIGHT
+  ITEM		= RANDOM_COIN_PURSE
+  
+  SELL		= VENDOR_S_CAPER2
+  BUY		= VENDOR_B_ARMORER
+  
+ON=@NPCSEENEWPLAYER 
+SAY HO! HO! HO! BUY MY CAPES! THEY ARE NEWBIED!  
+
+ON=@CLICK
+MESSAGE=@07a1 [Rare Newbied Capes]
+
+ON=@DCLICK 
+EMOTE GIGGLE
+Buy my capes!
+
+ON=@GETHIT 
+FLAGS=00005 
+RETURN 1 
+
+ON=@HIT 
+FLAGS=00005 
+RETURN 1 
+
+ON=@DAMAGE 
+FLAGS=00005 
+RETURN 1 
+
+
+[ITEMDEF i_cape_capes]
+ID=i_cape
+NAME=Cape
+ARMOR=0
+WEIGHT=1
+VALUE=40000
+
+ON=@CREATE
+   ATTR=0d
+   COLOR=00
+   HITPOINTS=100000
+
+ON=@CLICK
+   MESSAGE=@07a1 [Newbied]
+
+
+
+[TEMPLATE VENDOR_S_CAPER2]
+SELL=i_cape_capes,{20 30}
+COLOR=048f
+SELL=i_cape_capes,{20 30}
+COLOR=0486
+SELL=i_cape_capes,{20 30}
+COLOR=09b1
+SELL=i_cape_capes,{20 30}
+COLOR=0a10
+SELL=i_cape_capes,{20 30}
+COLOR=0483
+SELL=i_cape_capes,{20 30}
+COLOR=0ac9
+SELL=i_cape_capes,{20 30}
+COLOR=048b
+SELL=i_cape_capes,{20 30}
+COLOR=048d
+SELL=i_cape_capes,{20 30}
+COLOR=0ae6
+SELL=i_cape_capes,{20 30}
+COLOR=099d
+SELL=i_cape_capes,{20 30}
+COLOR=0b4d
+SELL=i_cape_capes,{20 30}
+COLOR=0489
+SELL=i_cape_capes,{20 30}
+COLOR=048c
+SELL=i_cape_capes,{20 30}
+COLOR=0490
+SELL=i_cape_capes,{20 30}
+COLOR=0ae4
+SELL=i_cape_capes,{20 30}
+COLOR=0b87
+SELL=i_cape_capes,{20 30}
+COLOR=0b3b
+SELL=i_cape_capes,{20 30}
+COLOR=0aa8
+SELL=i_cape_capes,{20 30}
+COLOR=0b8a
+SELL=i_cape_capes,{20 30}
+COLOR=03f7
+SELL=i_cape_capes,{20 30}
+COLOR=0af1
+SELL=i_cape_capes,{20 30}
+COLOR=0480
+SELL=i_cape_capes,{20 30}
+COLOR=0487
+SELL=i_cape_capes,{20 30}
+COLOR=0481
+SELL=i_cape_capes,{20 30}
+COLOR=0484
+SELL=i_cape_capes,{20 30}
+COLOR=0ae3
+SELL=i_cape_capes,{20 30}
+COLOR=0485
+SELL=i_cape_capes,{20 30}
+COLOR=077b
+SELL=i_cape_capes,{20 30}
+COLOR=077a
+SELL=i_cape_capes,{20 30}
+COLOR=07a0
+SELL=i_cape_capes,{20 30}
+COLOR=077b
+SELL=i_cape_capes,{20 30}
+COLOR=0a43
+SELL=i_cape_capes,{20 30}
+COLOR=0488
+SELL=i_cape_capes,{20 30}
+COLOR=0798
+SELL=i_cape_capes,{20 30}
+COLOR=07a1
+SELL=i_cape_capes,{20 30}
+COLOR=079b
+SELL=i_cape_capes,{20 30}
+COLOR=0ae0
+SELL=i_cape_capes,{20 30}
+COLOR=07ad
+SELL=i_cape_capes,{20 30}
+COLOR=0799
+SELL=i_cape_capes,{20 30}
+COLOR=0783
+SELL=i_cape_capes,{20 30}
+COLOR=079a
+
+
+
+
+
+// /////////////////////
+// /////////////////////
+// Llama Race
+// /////////////////////
+// /////////////////////
+
+
+[CHARDEF c_llama_mastertimerOlbrien]
+ID = c_man
+NAME = Llama Race Master
+TSPEECH = spk_llama_mastertimer1
+
+ON = @Create
+STR= 10000
+DEX= 10000
+INT= 10000
+ITEMNEWBIE= random_male_hair
+COLOR= colors_hair
+ITEMNEWBIE= random_facial_hair
+COLOR= match_hair
+ITEMNEWBIE= i_CAPE
+COLOR= 07a0
+ITEMNEWBIE= i_robe
+COLOR= 07a0
+
+
+
+[SPEECH spk_llama_mastertimer1]
+
+on=*start*
+
+IF !(<SRC.ACCOUNT.PLEVEL> >= 2)
+SAY You cant do that
+RETURN 1
+ENDIF
+
+If (<tag.gatesopen>==01)
+Say Gates are already open
+Else
+MESSAGEua 00085,0,0,eng, TIMER ACTIVATED
+serv.newitem m_llamaracetimer_delayA
+EQUIP <NEW.UID>
+serv.newitem m_llamaracetimer_delay2A
+EQUIP <NEW.UID>
+Return 1
+ENDIF
+
+
+on=*close*
+
+IF !(<SRC.ACCOUNT.PLEVEL> >= 2)
+SAY You cant do that
+return 1
+endif
+
+if (<tag.gatesopen>==00)
+Say Gates are already closed
+else
+Say Gates closed
+ACT = <UID.0438d1f28> 
+act.nudgeup 20
+ACT = <UID.0438d1f27> 
+act.nudgeup 20
+ACT = <UID.0438d1f31> 
+act.nudgeup 20
+ACT = <UID.0438d1f29> 
+act.nudgeup 20
+ACT = <UID.0438d1f2b> 
+act.nudgeup 20
+
+
+tag.gatesopen =
+tag.gatesclosed = 1
+return 1
+
+else
+
+SAY Gates are already closed
+return 1
+endif
+
+
+[ItemDef M_llamaracetimer_DelayA]
+id=i_memory
+Name=Llama Race Timer DelayA
+type=t_eq_script
+
+ON=@Create
+TIMER = 1
+MORE1 = 6
+
+ON=@Timer
+If (<more1> == 6)
+cont.sayua 00085,0,0,eng, 5
+timer = 1
+more1 = 5
+elseif (<more1> == 5)
+cont.sayua 00085,0,0,eng, 4
+timer = 1
+more1 = 4
+elseif (<more1> == 4)
+cont.sayua 00085,0,0,eng, 3
+timer = 1
+more1 = 3
+elseif (<more1> == 3)
+cont.sayua 00085,0,0,eng, 2
+timer = 1
+more1 = 2
+elseif (<more1> == 2)
+cont.sayua 00085,0,0,eng, 1
+timer = 1
+more1 = 1
+elseif (<more1> == 1)
+cont.sayua 00085,0,0,eng, START THE RACE!!!!!!!!
+remove
+endif
+return 1
+
+ON=@UNEQUIP
+
+CONT.TAG.gatesopen=1
+CONT.tag.gatesclosed=
+
+OBJ = <UID.0438d1f28> 
+OBJ.nudgedown 20
+OBJ = <UID.0438d1f27> 
+OBJ.nudgedown 20
+OBJ = <UID.0438d1f31> 
+OBJ.nudgedown 20
+OBJ = <UID.0438d1f29> 
+OBJ.nudgedown 20
+OBJ = <UID.0438d1f2b> 
+OBJ.nudgedown 20
+
+
+[ItemDef M_llamaracetimer_Delay2A]
+id=i_memory
+Name=Llama Race Timer Delay 2
+type=t_eq_script
+
+ON=@Create
+TIMER = 10
+
+ON=@Timer
+
+IF (<CONT.TAG0.GATESOPEN>==1)
+CONT.TAG.gatesopen=
+CONT.tag.gatesclosed=1
+OBJ = <UID.0438d1f28> 
+OBJ.nudgeup 20
+OBJ = <UID.0438d1f27> 
+OBJ.nudgeup 20
+OBJ = <UID.0438d1f31> 
+OBJ.nudgeup 20
+OBJ = <UID.0438d1f29> 
+OBJ.nudgeup 20
+OBJ = <UID.0438d1f2b> 
+OBJ.nudgeup 20
+CONT.SAY Gates Closed.
+ENDIF
+REMOVE
+RETURN 1
+
+
+
+
+// /////////////////////
+// /////////////////////
+// Llama Race  2
+// /////////////////////
+// /////////////////////
+
+
+[CHARDEF c_llama_mastertimerOlbrienA]
+ID = c_man
+NAME = Llama Race Master
+TSPEECH = spk_llama_mastertimer1a
+
+ON = @Create
+STR= 10000
+DEX= 10000
+INT= 10000
+ITEMNEWBIE= random_male_hair
+COLOR= colors_hair
+ITEMNEWBIE= random_facial_hair
+COLOR= match_hair
+ITEMNEWBIE= i_CAPE
+COLOR= 07a0
+ITEMNEWBIE= i_robe
+COLOR= 07a0
+
+
+
+[SPEECH spk_llama_mastertimer1a]
+
+on=*start*
+
+IF !(<SRC.ACCOUNT.PLEVEL> >= 2)
+SAY You cant do that
+RETURN 1
+ENDIF
+
+If (<tag.gatesopen>==01)
+Say Gates are already open
+Else
+MESSAGEua 00085,0,0,eng, TIMER ACTIVATED
+serv.newitem m_llamaracetimer_delayAa
+EQUIP <NEW.UID>
+serv.newitem m_llamaracetimer_delay2Aa
+EQUIP <NEW.UID>
+Return 1
+ENDIF
+
+
+on=*close*
+
+IF !(<SRC.ACCOUNT.PLEVEL> >= 2)
+SAY You cant do that
+return 1
+endif
+
+if (<tag.gatesopen>==00)
+Say Gates are already closed
+else
+Say Gates closed
+ACT = <UID.0438d1e53> 
+act.nudgeup 20
+ACT = <UID.0438d1e51> 
+act.nudgeup 20
+ACT = <UID.0438d1e4f> 
+act.nudgeup 20
+ACT = <UID.0438d1e4c> 
+act.nudgeup 20
+
+
+
+tag.gatesopen =
+tag.gatesclosed = 1
+return 1
+
+else
+
+SAY Gates are already closed
+return 1
+endif
+
+
+[ItemDef M_llamaracetimer_DelayAa]
+id=i_memory
+Name=Llama Race Timer DelayA
+type=t_eq_script
+
+ON=@Create
+TIMER = 1
+MORE1 = 6
+
+ON=@Timer
+If (<more1> == 6)
+cont.sayua 00085,0,0,eng, 5
+timer = 1
+more1 = 5
+elseif (<more1> == 5)
+cont.sayua 00085,0,0,eng, 4
+timer = 1
+more1 = 4
+elseif (<more1> == 4)
+cont.sayua 00085,0,0,eng, 3
+timer = 1
+more1 = 3
+elseif (<more1> == 3)
+cont.sayua 00085,0,0,eng, 2
+timer = 1
+more1 = 2
+elseif (<more1> == 2)
+cont.sayua 00085,0,0,eng, 1
+timer = 1
+more1 = 1
+elseif (<more1> == 1)
+cont.sayua 00085,0,0,eng, START THE RACE!!!!!!!!
+remove
+endif
+return 1
+
+ON=@UNEQUIP
+
+CONT.TAG.gatesopen=1
+CONT.tag.gatesclosed=
+
+OBJ = <UID.0438d1e53> 
+OBJ.nudgedown 20
+OBJ = <UID.0438d1e51> 
+OBJ.nudgedown 20
+OBJ = <UID.0438d1e4f> 
+OBJ.nudgedown 20
+OBJ = <UID.0438d1e4c> 
+OBJ.nudgedown 20
+
+
+[ItemDef M_llamaracetimer_Delay2Aa]
+id=i_memory
+Name=Llama Race Timer Delay 2
+type=t_eq_script
+
+ON=@Create
+TIMER = 10
+
+ON=@Timer
+
+IF (<CONT.TAG0.GATESOPEN>==1)
+CONT.TAG.gatesopen=
+CONT.tag.gatesclosed=1
+OBJ = <UID.0438d1e53> 
+OBJ.nudgeup 20
+OBJ = <UID.0438d1e51> 
+OBJ.nudgeup 20
+OBJ = <UID.0438d1e4f> 
+OBJ.nudgeup 20
+OBJ = <UID.0438d1e4c> 
+OBJ.nudgeup 20
+CONT.SAY Gates Closed.
+ENDIF
+REMOVE
+RETURN 1
+
+
+
+// /////////////////////
+// /////////////////////
+// Llama Race  3
+// /////////////////////
+// /////////////////////
+
+
+
+[CHARDEF c_llama_mastertimerOlbrienAxx]
+ID = c_man
+NAME = Llama Race Master
+TSPEECH = spk_llama_mastertimer1axx
+
+ON = @Create
+STR= 10000
+DEX= 10000
+INT= 10000
+ITEMNEWBIE= random_male_hair
+COLOR= colors_hair
+ITEMNEWBIE= random_facial_hair
+COLOR= match_hair
+ITEMNEWBIE= i_CAPE
+COLOR= 07a0
+ITEMNEWBIE= i_robe
+COLOR= 07a0
+
+
+
+[SPEECH spk_llama_mastertimer1axx]
+
+on=*start*
+
+IF !(<SRC.ACCOUNT.PLEVEL> >= 2)
+SAY You cant do that
+RETURN 1
+ENDIF
+
+If (<tag.gatesopen>==01)
+Say Gates are already open
+Else
+MESSAGEua 00085,0,0,eng, TIMER ACTIVATED
+serv.newitem m_llamaracetimer_delayAaxx
+EQUIP <NEW.UID>
+serv.newitem m_llamaracetimer_delay2Aaxx
+EQUIP <NEW.UID>
+Return 1
+ENDIF
+
+
+on=*close*
+
+IF !(<SRC.ACCOUNT.PLEVEL> >= 2)
+SAY You cant do that
+return 1
+endif
+
+if (<tag.gatesopen>==00)
+Say Gates are already closed
+else
+Say Gates closed
+ACT = <UID.0438d0e1e> 
+act.nudgeup 20
+ACT = <UID.0438d0e1b> 
+act.nudgeup 20
+ACT = <UID.0438d0e19> 
+act.nudgeup 20
+ACT = <UID.0438d0e18> 
+act.nudgeup 20
+
+
+
+tag.gatesopen =
+tag.gatesclosed = 1
+return 1
+
+else
+
+SAY Gates are already closed
+return 1
+endif
+
+
+[ItemDef M_llamaracetimer_DelayAaxx]
+id=i_memory
+Name=Llama Race Timer DelayAxx
+type=t_eq_script
+
+ON=@Create
+TIMER = 1
+MORE1 = 6
+
+ON=@Timer
+If (<more1> == 6)
+cont.sayua 00085,0,0,eng, 5
+timer = 1
+more1 = 5
+elseif (<more1> == 5)
+cont.sayua 00085,0,0,eng, 4
+timer = 1
+more1 = 4
+elseif (<more1> == 4)
+cont.sayua 00085,0,0,eng, 3
+timer = 1
+more1 = 3
+elseif (<more1> == 3)
+cont.sayua 00085,0,0,eng, 2
+timer = 1
+more1 = 2
+elseif (<more1> == 2)
+cont.sayua 00085,0,0,eng, 1
+timer = 1
+more1 = 1
+elseif (<more1> == 1)
+cont.sayua 00085,0,0,eng, START THE RACE!!!!!!!!
+remove
+endif
+return 1
+
+ON=@UNEQUIP
+
+CONT.TAG.gatesopen=1
+CONT.tag.gatesclosed=
+
+OBJ = <UID.0438d0e1e> 
+OBJ.nudgedown 20
+OBJ = <UID.0438d0e1b> 
+OBJ.nudgedown 20
+OBJ = <UID.0438d0e19> 
+OBJ.nudgedown 20
+OBJ = <UID.0438d0e18> 
+OBJ.nudgedown 20
+
+
+[ItemDef M_llamaracetimer_Delay2Aaxx]
+id=i_memory
+Name=Llama Race Timer Delay 2
+type=t_eq_script
+
+ON=@Create
+TIMER = 10
+
+ON=@Timer
+
+IF (<CONT.TAG0.GATESOPEN>==1)
+CONT.TAG.gatesopen=
+CONT.tag.gatesclosed=1
+OBJ = <UID.0438d0e1e> 
+OBJ.nudgeup 20
+OBJ = <UID.0438d0e1b> 
+OBJ.nudgeup 20
+OBJ = <UID.0438d0e19> 
+OBJ.nudgeup 20
+OBJ = <UID.0438d0e18> 
+OBJ.nudgeup 20
+CONT.SAY Gates Closed.
+ENDIF
+REMOVE
+RETURN 1
+
+
+// //////////////////
+// //////////
+// BOOKS
+// //////////
+// //////////////////
+
+
+
+[ITEMDEF I_book_Fig1] // Mudar nome
+NAME=Figurine Diary Volume 1  // Mudar Cor e Nome
+ID=0fbd
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Figurine
+DESCRIPTION=Figurine Book
+
+ON=@DClick
+src.DIALOG d_B_book_Fig1  // Mudar nome
+return 1
+
+[dialog d_B_book_Fig1]
+150,266
+resizepic 0 0 3500 190 259
+text 30 3 455 0
+text 24 30 455 1
+text 24 50 455 2
+text 24 70 455 3
+text 24 90 455 4
+text 24 110 455 5
+text 24 130 455 6
+text 24 150 455 7
+text 24 170 455 8
+text 24 190 455 9
+text 24 210 455 10
+text 24 230 455 11
+
+button 75 220 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+[dialog d_B_book_Fig1 text] 
+ 
+I'm the first one to  
+collect all 42 figurines 
+and now I will share.
+ 
+Abysmall Horror, Arcane 
+Daemon and Bakekitsune.
+ 
+The monsters in the Newb
+Dungeon have them.
+
+
+
+
+[ITEMDEF I_book_Fig2] // Mudar nome
+NAME=Figurine Diary Volume 2  // Mudar Cor e Nome
+ID=0fbd
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Figurine
+DESCRIPTION=Figurine Book
+
+ON=@DClick
+src.DIALOG d_B_book_Fig2  // Mudar nome
+return 1
+
+[dialog d_B_book_Fig2]
+150,266
+resizepic 0 0 3500 190 259
+text 30 3 455 0
+text 24 30 455 1
+text 24 50 455 2
+text 24 70 455 3
+text 24 90 455 4
+text 24 110 455 5
+text 24 130 455 6
+text 24 150 455 7
+text 24 170 455 8
+text 24 190 455 9
+text 24 210 455 10
+text 24 230 455 11
+
+button 75 220 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+[dialog d_B_book_Fig2 text]
+ 
+I'm the first one to  
+collect all 42 figurines 
+and now I will share.
+ 
+Bogthing, Bogling and
+Bonedaemon.
+ 
+The monsters in Despise
+Dungeon have them.
+
+
+
+
+[ITEMDEF I_book_Fig3] // Mudar nome
+NAME=Figurine Diary Volume 3  // Mudar Cor e Nome
+ID=0fbd
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Figurine
+DESCRIPTION=Figurine Book
+
+ON=@DClick
+src.DIALOG d_B_book_Fig3  // Mudar nome
+return 1
+
+[dialog d_B_book_Fig3]
+150,266
+resizepic 0 0 3500 190 259
+text 30 3 455 0
+text 24 30 455 1
+text 24 50 455 2
+text 24 70 455 3
+text 24 90 455 4
+text 24 110 455 5
+text 24 130 455 6
+text 24 150 455 7
+text 24 170 455 8
+text 24 190 455 9
+text 24 210 455 10
+text 24 230 455 11
+
+button 75 220 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+[dialog d_B_book_Fig3 text]
+ 
+I'm the first one to  
+collect all 42 figurines 
+and now I will share.
+ 
+Centaur and ChaosDaemon.
+ 
+The Evil Shadow Monsters
+have them.
+
+
+
+
+[ITEMDEF I_book_Fig4] // Mudar nome
+NAME=Figurine Diary Volume 4  // Mudar Cor e Nome
+ID=0fbd
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Figurine
+DESCRIPTION=Figurine Book
+
+ON=@DClick
+src.DIALOG d_B_book_Fig4  // Mudar nome
+return 1
+
+[dialog d_B_book_Fig4]
+150,266
+resizepic 0 0 3500 190 259
+text 30 3 455 0
+text 24 30 455 1
+text 24 50 455 2
+text 24 70 455 3
+text 24 90 455 4
+text 24 110 455 5
+text 24 130 455 6
+text 24 150 455 7
+text 24 170 455 8
+text 24 190 455 9
+text 24 210 455 10
+text 24 230 455 11
+
+button 75 220 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+[dialog d_B_book_Fig4 text]
+ 
+I'm the first one to  
+collect all 42 figurines 
+and now I will share.
+ 
+Droppelganger, Fleshgolem,
+FireAntWorker, Fandancer 
+and Fleshrenderer.
+ 
+Acid Dungeon Monsters.
+
+
+[ITEMDEF I_book_Fig5] // Mudar nome
+NAME=Figurine Diary Volume 5  // Mudar Cor e Nome
+ID=0fbd
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Figurine
+DESCRIPTION=Figurine Book
+
+ON=@DClick
+src.DIALOG d_B_book_Fig5  // Mudar nome
+return 1
+
+[dialog d_B_book_Fig5]
+150,266
+resizepic 0 0 3500 190 259
+text 30 3 455 0
+text 24 30 455 1
+text 24 50 455 2
+text 24 70 455 3
+text 24 90 455 4
+text 24 110 455 5
+text 24 130 455 6
+text 24 150 455 7
+text 24 170 455 8
+text 24 190 455 9
+text 24 210 455 10
+text 24 230 455 11
+
+button 75 220 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+[dialog d_B_book_Fig5 text]
+ 
+I'm the first one to  
+collect all 42 figurines 
+and now I will share.
+ 
+ForestLord, Gorefiend
+FourArmedDaemon and
+Gibberling.
+ 
+Hythloth Dungeon Monsters.
+
+
+
+
+[ITEMDEF I_book_Fig6] // Mudar nome
+NAME=Figurine Diary Volume 6  // Mudar Cor e Nome
+ID=0fbd
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Figurine
+DESCRIPTION=Figurine Book
+
+ON=@DClick
+src.DIALOG d_B_book_Fig6  // Mudar nome
+return 1
+
+[dialog d_B_book_Fig6]
+150,266
+resizepic 0 0 3500 190 259
+text 30 3 455 0
+text 24 30 455 1
+text 24 50 455 2
+text 24 70 455 3
+text 24 90 455 4
+text 24 110 455 5
+text 24 130 455 6
+text 24 150 455 7
+text 24 170 455 8
+text 24 190 455 9
+text 24 210 455 10
+text 24 230 455 11
+
+button 75 220 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+[dialog d_B_book_Fig6 text]
+ 
+I'm the first one to  
+collect all 42 figurines 
+and now I will share.
+ 
+Hordedaemon and
+Irongolem.
+ 
+Monsters in Wrong have
+them.
+
+
+
+[ITEMDEF I_book_Fig7] // Mudar nome
+NAME=Figurine Diary Volume 7  // Mudar Cor e Nome
+ID=0fbd
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Figurine
+DESCRIPTION=Figurine Book
+
+ON=@DClick
+src.DIALOG d_B_book_Fig7  // Mudar nome
+return 1
+
+[dialog d_B_book_Fig7]
+150,266
+resizepic 0 0 3500 190 259
+text 30 3 455 0
+text 24 30 455 1
+text 24 50 455 2
+text 24 70 455 3
+text 24 90 455 4
+text 24 110 455 5
+text 24 130 455 6
+text 24 150 455 7
+text 24 170 455 8
+text 24 190 455 9
+text 24 210 455 10
+text 24 230 455 11
+
+button 75 220 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+[dialog d_B_book_Fig7 text]
+ 
+I'm the first one to  
+collect all 42 figurines 
+and now I will share.
+ 
+Juggernaught, Kazekemono,
+Ladysnow.
+ 
+Monsters in Fire have
+them.
+
+
+
+[ITEMDEF I_book_Fig8] // Mudar nome
+NAME=Figurine Diary Volume 8  // Mudar Cor e Nome
+ID=0fbd
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Figurine
+DESCRIPTION=Figurine Book
+
+ON=@DClick
+src.DIALOG d_B_book_Fig8  // Mudar nome
+return 1
+
+[dialog d_B_book_Fig8]
+150,266
+resizepic 0 0 3500 190 259
+text 30 3 455 0
+text 24 30 455 1
+text 24 50 455 2
+text 24 70 455 3
+text 24 90 455 4
+text 24 110 455 5
+text 24 130 455 6
+text 24 150 455 7
+text 24 170 455 8
+text 24 190 455 9
+text 24 210 455 10
+text 24 230 455 11
+
+button 75 220 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+[dialog d_B_book_Fig8 text]
+ 
+I'm the first one to  
+collect all 42 figurines 
+and now I will share.
+ 
+Mound Maggots and 
+Mummy.
+ 
+Monsters in Ice 
+Dungeon have them.
+
+
+
+[ITEMDEF I_book_Fig9] // Mudar nome
+NAME=Figurine Diary Volume 9  // Mudar Cor e Nome
+ID=0fbd
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Figurine
+DESCRIPTION=Figurine Book
+
+ON=@DClick
+src.DIALOG d_B_book_Fig9  // Mudar nome
+return 1
+
+[dialog d_B_book_Fig9]
+150,266
+resizepic 0 0 3500 190 259
+text 30 3 455 0
+text 24 30 455 1
+text 24 50 455 2
+text 24 70 455 3
+text 24 90 455 4
+text 24 110 455 5
+text 24 130 455 6
+text 24 150 455 7
+text 24 170 455 8
+text 24 190 455 9
+text 24 210 455 10
+text 24 230 455 11
+
+button 75 220 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+[dialog d_B_book_Fig9 text]
+ 
+I'm the first one to  
+collect all 42 figurines 
+and now I will share.
+ 
+Oni and Patchwork 
+Skeleton.
+ 
+Monsters in Destard 
+Dungeon have them.
+
+
+
+
+[ITEMDEF I_book_Fig10] // Mudar nome
+NAME=Figurine Diary Volume 10  // Mudar Cor e Nome
+ID=0fbd
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Figurine
+DESCRIPTION=Figurine Book
+
+ON=@DClick
+src.DIALOG d_B_book_Fig10  // Mudar nome
+return 1
+
+[dialog d_B_book_Fig10]
+150,266
+resizepic 0 0 3500 190 259
+text 30 3 455 0
+text 24 30 455 1
+text 24 50 455 2
+text 24 70 455 3
+text 24 90 455 4
+text 24 110 455 5
+text 24 130 455 6
+text 24 150 455 7
+text 24 170 455 8
+text 24 190 455 9
+text 24 210 455 10
+text 24 230 455 11
+
+button 75 220 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+[dialog d_B_book_Fig10 text]
+ 
+I'm the first one to  
+collect all 42 figurines 
+and now I will share.
+ 
+Pixie.
+ 
+ 
+Monsters in Therathan 
+Dungeon have them.
+
+
+[ITEMDEF I_book_Fig11] // Mudar nome
+id=0fbd
+NAME=Figurine Diary Volume 11  // Mudar Cor e Nome
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Figurine
+DESCRIPTION=Figurine Book
+
+ON=@DClick
+src.DIALOG d_B_book_Fig11  // Mudar nome
+return 1
+
+[dialog d_B_book_Fig11]
+150,266
+resizepic 0 0 3500 190 259
+text 30 3 455 0
+text 24 30 455 1
+text 24 50 455 2
+text 24 70 455 3
+text 24 90 455 4
+text 24 110 455 5
+text 24 130 455 6
+text 24 150 455 7
+text 24 170 455 8
+text 24 190 455 9
+text 24 210 455 10
+text 24 230 455 11
+
+button 75 220 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+[dialog d_B_book_Fig11 text]
+   
+I'm the first one to  
+collect all 42 figurines 
+and now I will share.
+ 
+Plaguebeast, Quagmire
+and Raiju.
+ 
+Monsters in Shame 
+Dungeon have them.
+
+
+
+[ITEMDEF I_book_Fig12] // Mudar nome
+id=0fbd
+NAME=Figurine Diary Volume 12  // Mudar Cor e Nome
+
+
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Figurine
+DESCRIPTION=Figurine Book
+
+ON=@DClick
+src.DIALOG d_B_book_Fig12  // Mudar nome
+return 1
+
+[dialog d_B_book_Fig12]
+150,266
+resizepic 0 0 3500 190 259
+text 30 3 455 0
+text 24 30 455 1
+text 24 50 455 2
+text 24 70 455 3
+text 24 90 455 4
+text 24 110 455 5
+text 24 130 455 6
+text 24 150 455 7
+text 24 170 455 8
+text 24 190 455 9
+text 24 210 455 10
+text 24 230 455 11
+
+button 75 220 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+[dialog d_B_book_Fig12 text]
+ 
+I'm the first one to  
+collect all 42 figurines 
+and now I will share.
+ 
+Shadowknight, Sphynx,
+Skithopper and 
+Treefellow.
+ 
+Bosses in Shame. 
+
+
+
+[ITEMDEF I_book_Fig13] // Mudar nome
+NAME=Figurine Diary Volume 13  // Mudar Cor e Nome
+ID=0fbd
+
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Figurine
+DESCRIPTION=Figurine Book
+
+ON=@DClick
+src.DIALOG d_B_book_Fig13  // Mudar nome
+return 1
+
+[dialog d_B_book_Fig13]
+150,266
+resizepic 0 0 3500 190 259
+text 30 3 455 0
+text 24 30 455 1
+text 24 50 455 2
+text 24 70 455 3
+text 24 90 455 4
+text 24 110 455 5
+text 24 130 455 6
+text 24 150 455 7
+text 24 170 455 8
+text 24 190 455 9
+text 24 210 455 10
+text 24 230 455 11
+
+button 75 220 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+[dialog d_B_book_Fig13 text] 
+  
+I'm the first one to  
+collect all 42 figurines 
+and now I will share.
+ 
+ 
+Wailingbanshee.
+ 
+ 
+Angels in Nujel'm.
+
+
+
+[ITEMDEF I_book_Fig14] // Mudar nome
+NAME=Figurine Diary Volume 14  // Mudar Cor e Nome
+ID=0fbd
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Figurine
+DESCRIPTION=Figurine Book
+
+ON=@DClick
+src.DIALOG d_B_book_Fig14  // Mudar nome
+return 1
+
+[dialog d_B_book_Fig14]
+150,266
+resizepic 0 0 3500 190 259
+text 30 3 455 0
+text 24 30 455 1
+text 24 50 455 2
+text 24 70 455 3
+text 24 90 455 4
+text 24 110 455 5
+text 24 130 455 6
+text 24 150 455 7
+text 24 170 455 8
+text 24 190 455 9
+text 24 210 455 10
+text 24 230 455 11
+
+button 75 220 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+[dialog d_B_book_Fig14 text] 
+   
+I'm the first one to  
+collect all 42 figurines 
+and now I will share.
+ 
+  
+Wanderervoid.
+ 
+ 
+Jhelom Monsters.
+
+
+[ITEMDEF I_book_Fig15] // Mudar nome
+NAME=Figurine Diary Volume 15  // Mudar Cor e Nome
+ID=0fbd
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Figurine
+DESCRIPTION=Figurine Book
+
+ON=@DClick
+src.DIALOG d_B_book_Fig15  // Mudar nome
+return 1
+
+[dialog d_B_book_Fig15]
+150,266
+resizepic 0 0 3500 190 259
+text 30 3 455 0
+text 24 30 455 1
+text 24 50 455 2
+text 24 70 455 3
+text 24 90 455 4
+text 24 110 455 5
+text 24 130 455 6
+text 24 150 455 7
+text 24 170 455 8
+text 24 190 455 9
+text 24 210 455 10
+text 24 230 455 11
+
+button 75 220 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+[dialog d_B_book_Fig15 text] 
+  
+I'm the first one to  
+collect all 42 figurines 
+and now I will share.
+ 
+ 
+Terathanavenger.
+ 
+ 
+Ice Dragons have them.
+
+
+[ITEMDEF I_book_Fig16] // Mudar nome
+NAME=Figurine Diary Volume 16  // Mudar Cor e Nome
+ID=0fbd
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Figurine
+DESCRIPTION=Figurine Book
+
+ON=@DClick
+src.DIALOG d_B_book_Fig16  // Mudar nome
+return 1
+
+[dialog d_B_book_Fig16]
+150,266
+resizepic 0 0 3500 190 259
+text 30 3 455 0
+text 24 30 455 1
+text 24 50 455 2
+text 24 70 455 3
+text 24 90 455 4
+text 24 110 455 5
+text 24 130 455 6
+text 24 150 455 7
+text 24 170 455 8
+text 24 190 455 9
+text 24 210 455 10
+text 24 230 455 11
+
+button 75 220 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+[dialog d_B_book_Fig16 text] 
+  
+I'm the first one to  
+collect all 42 figurines 
+and now I will share.
+ 
+ 
+Crane.
+ 
+ 
+Giant Spiders have them.
+
+
+
+[ITEMDEF I_book_Fig17] // Mudar nome
+NAME=Figurine Diary Volume 17  // Mudar Cor e Nome
+ID=0fbd
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Figurine
+DESCRIPTION=Figurine Book
+
+ON=@DClick
+src.DIALOG d_B_book_Fig17  // Mudar nome
+return 1
+
+[dialog d_B_book_Fig17]
+150,266
+resizepic 0 0 3500 190 259
+text 30 3 455 0
+text 24 30 455 1
+text 24 50 455 2
+text 24 70 455 3
+text 24 90 455 4
+text 24 110 455 5
+text 24 130 455 6
+text 24 150 455 7
+text 24 170 455 8
+text 24 190 455 9
+text 24 210 455 10
+text 24 230 455 11
+
+button 75 220 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+[dialog d_B_book_Fig17 text] 
+  
+I'm the first one to  
+collect all 42 figurines 
+and now I will share.
+ 
+ 
+Daemonknight.
+ 
+ 
+Lizardman have them.
+
+
+
+[ITEMDEF I_book_Fig18] // Mudar nome
+NAME=Figurine Diary Volume 18  // Mudar Cor e Nome
+ID=0fbd
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Figurine
+DESCRIPTION=Figurine Book
+
+ON=@DClick
+src.DIALOG d_B_book_Fig18  // Mudar nome
+return 1
+
+[dialog d_B_book_Fig18]
+150,266
+resizepic 0 0 3500 190 259
+text 30 3 455 0
+text 24 30 455 1
+text 24 50 455 2
+text 24 70 455 3
+text 24 90 455 4
+text 24 110 455 5
+text 24 130 455 6
+text 24 150 455 7
+text 24 170 455 8
+text 24 190 455 9
+text 24 210 455 10
+text 24 230 455 11
+
+button 75 220 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+[dialog d_B_book_Fig18 text] 
+  
+I'm the first one to  
+collect all 42 figurines 
+and now I will share.
+ 
+ 
+Darknightcreeper.
+ 
+ 
+Ettins have them.
+
+
+
+[ITEMDEF I_book_Fig19] // Mudar nome
+NAME=Figurine Diary Volume 19  // Mudar Cor e Nome
+ID=0fbd
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Figurine
+DESCRIPTION=Figurine Book
+
+ON=@DClick
+src.DIALOG d_B_book_Fig19  // Mudar nome
+return 1
+
+[dialog d_B_book_Fig19]
+150,266
+resizepic 0 0 3500 190 259
+text 30 3 455 0
+text 24 30 455 1
+text 24 50 455 2
+text 24 70 455 3
+text 24 90 455 4
+text 24 110 455 5
+text 24 130 455 6
+text 24 150 455 7
+text 24 170 455 8
+text 24 190 455 9
+text 24 210 455 10
+text 24 230 455 11
+
+button 75 220 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+[dialog d_B_book_Fig19 text] 
+   
+I'm the first one to  
+collect all 42 figurines 
+and now I will share.
+ 
+ 
+Devourer Souls.
+ 
+ 
+Cyclops have them.
+
+
+
+[ITEMDEF I_book_Fig20] // Mudar nome
+NAME=Figurine Diary Volume 20  // Mudar Cor e Nome
+ID=0fbd
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Figurine
+DESCRIPTION=Figurine Book
+
+ON=@DClick
+src.DIALOG d_B_book_Fig20  // Mudar nome
+return 1
+
+[dialog d_B_book_Fig20]
+150,266
+resizepic 0 0 3500 190 259
+text 30 3 455 0
+text 24 30 455 1
+text 24 50 455 2
+text 24 70 455 3
+text 24 90 455 4
+text 24 110 455 5
+text 24 130 455 6
+text 24 150 455 7
+text 24 170 455 8
+text 24 190 455 9
+text 24 210 455 10
+text 24 230 455 11
+
+button 75 220 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+[dialog d_B_book_Fig20 text] 
+  
+I'm the first one to  
+collect all 42 figurines 
+and now I will share.
+ 
+ 
+Crystal Elementals.
+ 
+ 
+Zombies have them.
+
+
+
+[ITEMDEF I_book_Fig21] // Mudar nome
+NAME=Figurine Diary Volume Tips  // Mudar Cor e Nome
+ID=0fbd
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Figurine
+DESCRIPTION=Figurine Book
+
+ON=@DClick
+src.DIALOG d_B_book_Fig21  // Mudar nome
+return 1
+
+[dialog d_B_book_Fig21]
+150,266
+resizepic 0 0 3500 190 259
+text 30 3 455 0
+text 24 30 455 1
+text 24 50 455 2
+text 24 70 455 3
+text 24 90 455 4
+text 24 110 455 5
+text 24 130 455 6
+text 24 150 455 7
+text 24 170 455 8
+text 24 190 455 9
+text 24 210 455 10
+text 24 230 455 11
+
+button 75 220 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+[dialog d_B_book_Fig21 text] 
+  
+Only Shadows drop more
+than one Figurine.
+ 
+Every other monster
+only drops one 
+Figurine.
+ 
+Shame Boss Figurines 
+droprate are 100%
+
+
+
+
+// //////////////
+// //////////////
+// Facушes 1100 e 1200 pontos
+// ////////////// 
+// //////////////
+
+
+
+[ITEMDEF i_bag_Faction1100]
+CATEGORY=Item Templates
+SUBSECTION=Faction Prize 1100
+DESCRIPTION=@0079c Reward Keys 
+NAME=@0079c Reward Keys 
+ID=i_bag
+
+ON=@Create
+COLOR=0079c
+	SERV.NEWITEM=i_rare_chest_newbie_dungeon_key
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_rare_chest_newbie_dungeon_key 
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_rare_chest_newbie_dungeon_key 
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_bird_key   
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_bird_key   
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_bird_key   
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_cattle_key    
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_cattle_key    
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_cattle_key    
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_chicken_key   
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_chicken_key   
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_chicken_key   
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_imperial_sheep_key   
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_sheep_key   
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_sheep_key   
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_swine_key   
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_imperial_swine_key   
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_imperial_swine_key   
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_imperial_shc_key   
+	NEW.CONT = <UID>		
+	SERV.NEWITEM=i_imperial_shc_key   
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_shc_key   
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_cyclops_key   
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_cyclops_key   
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_cyclops_key   
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_titan_key   
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_imperial_titan_key   
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_imperial_titan_key   
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_imperial_scorpion_key   
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_imperial_scorpion_key   
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_imperial_scorpion_key   
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_imperial_COVETOUS_key   
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_imperial_COVETOUS_key   
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_COVETOUS_key   
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_swamp_key  
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_imperial_swamp_key  
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_imperial_swamp_key  
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_imperial_acid_key  
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_acid_key  
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_imperial_acid_key  
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_imperial_despise_key  
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_despise_key  
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_despise_key  
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_hythloth_key  
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_imperial_hythloth_key  
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_imperial_hythloth_key  
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_imperial_wrong_key  
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_wrong_key  
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_imperial_wrong_key  
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_imperial_fire_key 
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_fire_key 
+	NEW.CONT = <UID>		
+	SERV.NEWITEM=i_imperial_fire_key 
+	NEW.CONT = <UID>		
+	SERV.NEWITEM=i_imperial_ID_key 
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_ID_key 
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_imperial_ID_key 
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_imperial_DESTARD_key 
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_DESTARD_key 
+	NEW.CONT = <UID>		
+	SERV.NEWITEM=i_imperial_DESTARD_key 
+	NEW.CONT = <UID>		
+	SERV.NEWITEM=i_imperial_terathan_key
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_terathan_key
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_terathan_key
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_s1_key
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_s1_key
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_s1_key
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_shambling_key
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_shambling_key
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_shambling_key
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_nujelm_key
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_imperial_nujelm_key
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_nujelm_key
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_shadow_key
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_imperial_shadow_key
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_imperial_shadow_key
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_imperial_IDC_key
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_IDC_key
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_IDC_key
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_reaper_key
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_reaper_key
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_reaper_key
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_supply_key
+	NEW.CONT = <UID>
+	
+
+	
+[ITEMDEF i_bag_Faction1200]
+CATEGORY=Item Templates
+SUBSECTION=Faction Prize 1200
+DESCRIPTION=Reward Keys to Shame
+NAME=@0079c Reward Keys to Shame
+ID=i_bag
+
+ON=@Create
+COLOR=0079c
+	SERV.NEWITEM=i_imperial_s2_key
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_imperial_s2_key
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_s2_key
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_s2_key
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_s2_key
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_imperial_s2_key
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_imperial_s2_key
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_s2_key
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_s2_key
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_imperial_s2_key
+	NEW.CONT = <UID>	
+		
+	
+
+
+[ITEMDEF i_bag_Faction1100synd]
+CATEGORY=Item Templates
+SUBSECTION=Faction Prize 1100
+DESCRIPTION=30 White Oak Logs
+NAME=@07d1 30 White Oak Logs
+ID=i_bag
+
+ON=@Create
+COLOR=07d1
+	SERV.NEWITEM=I_LOG_WHITEOAK
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=I_LOG_WHITEOAK
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=I_LOG_WHITEOAK
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=I_LOG_WHITEOAK
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=I_LOG_WHITEOAK
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=I_LOG_WHITEOAK
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=I_LOG_WHITEOAK
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=I_LOG_WHITEOAK
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=I_LOG_WHITEOAK
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=I_LOG_WHITEOAK
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=I_LOG_WHITEOAK
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=I_LOG_WHITEOAK
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=I_LOG_WHITEOAK
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=I_LOG_WHITEOAK
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=I_LOG_WHITEOAK
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=I_LOG_WHITEOAK
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=I_LOG_WHITEOAK
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=I_LOG_WHITEOAK
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=I_LOG_WHITEOAK
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=I_LOG_WHITEOAK
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=I_LOG_WHITEOAK
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=I_LOG_WHITEOAK
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=I_LOG_WHITEOAK
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=I_LOG_WHITEOAK
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=I_LOG_WHITEOAK
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=I_LOG_WHITEOAK
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=I_LOG_WHITEOAK
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=I_LOG_WHITEOAK
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=I_LOG_WHITEOAK
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=I_LOG_WHITEOAK
+	NEW.CONT = <UID>	
+	
+	
+[ITEMDEF i_bag_Faction1200synd]
+CATEGORY=Item Templates
+SUBSECTION=Faction Prize 1200
+DESCRIPTION=20 Bloodrock and 25 Blackrock Ingots
+NAME=@07d1 20 Bloodrock and 25 Blackrock Ingots
+ID=i_bag
+
+ON=@Create
+COLOR=07d1
+	SERV.NEWITEM=i_ingot_bloodrock
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_ingot_bloodrock
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_ingot_bloodrock
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_ingot_bloodrock
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_ingot_bloodrock
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_ingot_bloodrock
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_ingot_bloodrock
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_ingot_bloodrock
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_ingot_bloodrock
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_ingot_bloodrock
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_ingot_bloodrock
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_ingot_bloodrock
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_ingot_bloodrock
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_ingot_bloodrock
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_ingot_bloodrock
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_ingot_bloodrock
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_ingot_bloodrock
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_ingot_bloodrock
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_ingot_bloodrock
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_ingot_bloodrock
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=I_INGOT_BLACKROCK
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=I_INGOT_BLACKROCK
+	NEW.CONT = <UID>
+	SERV.NEWITEM=I_INGOT_BLACKROCK
+	NEW.CONT = <UID>
+	SERV.NEWITEM=I_INGOT_BLACKROCK
+	NEW.CONT = <UID>
+	SERV.NEWITEM=I_INGOT_BLACKROCK
+	NEW.CONT = <UID>
+	SERV.NEWITEM=I_INGOT_BLACKROCK
+	NEW.CONT = <UID>
+	SERV.NEWITEM=I_INGOT_BLACKROCK
+	NEW.CONT = <UID>
+	SERV.NEWITEM=I_INGOT_BLACKROCK
+	NEW.CONT = <UID>
+	SERV.NEWITEM=I_INGOT_BLACKROCK
+	NEW.CONT = <UID>
+	SERV.NEWITEM=I_INGOT_BLACKROCK
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=I_INGOT_BLACKROCK
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=I_INGOT_BLACKROCK
+	NEW.CONT = <UID>
+	SERV.NEWITEM=I_INGOT_BLACKROCK
+	NEW.CONT = <UID>
+	SERV.NEWITEM=I_INGOT_BLACKROCK
+	NEW.CONT = <UID>
+	SERV.NEWITEM=I_INGOT_BLACKROCK
+	NEW.CONT = <UID>
+	SERV.NEWITEM=I_INGOT_BLACKROCK
+	NEW.CONT = <UID>
+	SERV.NEWITEM=I_INGOT_BLACKROCK
+	NEW.CONT = <UID>
+	SERV.NEWITEM=I_INGOT_BLACKROCK
+	NEW.CONT = <UID>
+	SERV.NEWITEM=I_INGOT_BLACKROCK
+	NEW.CONT = <UID>
+	SERV.NEWITEM=I_INGOT_BLACKROCK
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=I_INGOT_BLACKROCK
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=I_INGOT_BLACKROCK
+	NEW.CONT = <UID>
+	SERV.NEWITEM=I_INGOT_BLACKROCK
+	NEW.CONT = <UID>
+	SERV.NEWITEM=I_INGOT_BLACKROCK
+	NEW.CONT = <UID>
+	SERV.NEWITEM=I_INGOT_BLACKROCK
+	NEW.CONT = <UID>
+
+
+	
+	
+
+
+
+[ITEMDEF i_bag_Faction1100order]
+CATEGORY=Item Templates
+SUBSECTION=Faction Prize 1200
+DESCRIPTION=Order Money 1100
+NAME=@005a Order Money
+ID=i_bag
+
+ON=@Create
+COLOR=005a
+	SERV.NEWITEM=i_gold,{60000 60001}
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_gold,{60000 60001}
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_gold,{60000 60001}
+	NEW.CONT = <UID>		
+	SERV.NEWITEM=i_gold,{30000 30001}
+	NEW.CONT = <UID>		
+	
+
+[ITEMDEF i_bag_Faction1100chaos]
+CATEGORY=Item Templates
+SUBSECTION=Faction Prize 1200
+DESCRIPTION=Chaos Money 1100
+NAME=@015d Chaos Money
+ID=i_bag
+
+ON=@Create
+COLOR=015d
+	SERV.NEWITEM=i_gold,{60000 60001}
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_gold,{60000 60001}
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_gold,{60000 60001}
+	NEW.CONT = <UID>		
+	SERV.NEWITEM=i_gold,{30000 30001}
+	NEW.CONT = <UID>		
+
+
+[ITEMDEF i_bag_Faction1100bro]
+CATEGORY=Item Templates
+SUBSECTION=Faction Prize 1200
+DESCRIPTION=Brotherhood Money 1100
+NAME=@0455 Brotherhood Money
+ID=i_bag
+
+ON=@Create
+COLOR=0455
+	SERV.NEWITEM=i_gold,{60000 60001}
+	NEW.CONT = <UID>	
+	SERV.NEWITEM=i_gold,{60000 60001}
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_gold,{60000 60001}
+	NEW.CONT = <UID>		
+	SERV.NEWITEM=i_gold,{30000 30001}
+	NEW.CONT = <UID>		
+
+
+	
+	
+// ///////////////
+// /////////////
+// Shiny Steeds
+// /////////////
+// //////////////	
+
+
+[CHARDEF c_chicken_shiny]
+DEFNAME=c_chicken_shiny
+ID=0D0
+NAME=Chicken
+SOUND=snd_ANIMALS_CHICKEN1
+ICON=i_pet_CHICKEN
+ANIM=01fff
+DAM=1
+ARMOR=1
+RESOURCES=20 i_feather, 2 I_BIRD_RAW, 2 i_chicken_leg_raw
+CAN=MT_WALK|MT_RUN
+FOODTYPE=5 t_grain
+DESIRES=c_chicken
+AVERSIONS=e_carnivores2
+DESCRIPTION=Chicken Shiny
+SUBSECTION=Air (Domestic)
+CATEGORY=Animals
+TEVENTS=e_npc_shiny
+
+ON=@Create
+NPC=brain_animal
+Color=00b9a
+
+STR=100
+DEX=15
+INT=5
+
+PARRYING=2.0
+MAGICRESISTANCE=5000.0
+TACTICS=5.0
+WRESTLING=5.0
+TAMING=110.0
+
+FAME=9000
+KARMA={8000 9000}
+//ALIGNMENT=NEUTRAL
+
+ON=@DEATH
+IF (RAND(100) < 99) // Chance de Dropar. Assim é 5%
+SERV.NEWITEM=i_imperial_CHICKEN_key  // ID da chave que vai dropar
+NEW.CONT=<SRC.UID>
+ENDIF
+
+
+// //////////////
+// //////////////
+
+
+[EVENTS e_npc_shiny]
+ON = @HitTry
+   return <try_dispel>
+
+ON = @SpellEffect
+  if ( (<argn1> == 20) || (<argn1> == 39) )
+     emote resist your spell
+     return 1
+  endif
+  
+// //////////////
+// //////////////
+  
+
+[CHARDEF C_COW_shiny]
+DEFNAME=C_COW_shiny
+NAME=Cow
+ID=0D8
+SOUND=SND_ANIMALS_COW1
+ICON=I_PET_COW
+ANIM=017FF
+DAM=1,4
+ARMOR=5
+RESOURCES=20 I_RIBS_RAW, 10 I_HIDE
+CAN=MT_WALK|MT_RUN|MT_FEMALE
+FOODTYPE=64 T_GRASS,25 T_GRAIN, 25 I_HAY
+DESIRES=C_COW_BW,C_COW_BROWN,C_BULL_BROWN_LT,C_BULL_BROWN_DK
+AVERSIONS=E_CARNIVORES3
+DESCRIPTION=COW (BLACK AND WHITE)
+SUBSECTION=LAND (DOMESTIC)
+CATEGORY=ANIMALS
+TEVENTS=e_npc_shiny
+
+
+ON=@CREATE
+NPC=BRAIN_ANIMAL
+Color=0079c
+STR=100
+DEX=15
+INT=5
+
+PARRYING=2.0
+MAGICRESISTANCE=5000.0
+TACTICS=5.0
+WRESTLING=5.0
+TAMING=110.0
+
+FAME=9000
+KARMA={8000 9000}
+//ALIGNMENT=NEUTRAL
+
+ON=@DEATH
+IF (RAND(100) < 99) // CHANCE DE DROPAR. ASSIM Ã© 5%
+SERV.NEWITEM=I_IMPERIAL_CATTLE_KEY  // ID DA CHAVE QUE VAI DROPAR
+NEW.CONT=<SRC.UID>
+ENDIF
+
+
+// //////////////
+// //////////////
+
+
+[CHARDEF c_pig_shiny]
+ID=0CB
+DEFNAME=c_pig_shiny
+NAME=Pig
+SOUND=snd_ANIMALS_PIG1
+ICON=i_pet_PIG
+CAN=MT_WALK|MT_RUN
+DAM=2,4
+ARMOR=6
+RESOURCES=6 i_ribs_raw, 2 i_hide
+FOODTYPE=55 t_fruit, 55 t_crops, 55 t_grain, 55 t_garbage
+DESIRES=c_pig,c_pig_big
+ANIM=01fff
+DESCRIPTION=Pig
+SUBSECTION=Land (Domestic)
+CATEGORY=Animals
+TEVENTS=e_npc_shiny
+
+ON=@Create
+NPC=brain_animal
+FAME=9000
+KARMA={8000 9000}
+//ALIGNMENT=NEUTRAL
+COLOR=00ae0
+
+STR=100
+DEX=20
+INT=5
+
+PARRYING=2.0
+MAGICRESISTANCE=5000.0
+TACTICS=5.0
+WRESTLING=5.0
+TAMING=110.0
+
+ON=@DEATH
+IF (RAND(100) < 99) // Chance de Dropar. Assim é 5%
+SERV.NEWITEM=i_imperial_SWINE_key  // ID da chave que vai dropar
+NEW.CONT=<SRC.UID>
+ENDIF  
+
+
+// //////////////
+// //////////////
+
+
+[CHARDEF c_sheep_shiny]
+DEFNAME=c_sheep_shiny
+NAME=Lamb
+ID=0df
+SOUND=snd_ANIMALS_SHEEP1
+ICON=i_pet_SHEEP
+ANIM=01fff
+DAM=1,2
+ARMOR=3
+RESOURCES=15 i_ribs_raw, 2 i_hide, 2 i_lamb_leg_raw
+CAN=MT_WALK|MT_RUN
+FOODTYPE=5 t_crops, 5 t_grain, 64 t_grass
+DESIRES=c_SHEEP_WOOLLY,c_SHEEP_SHORN,c_man,c_woman
+AVERSIONS=e_carnivores3
+DESCRIPTION=Lamb
+SUBSECTION=Land (Domestic)
+CATEGORY=Animals
+TEVENTS=e_npc_shiny
+
+ON=@Create
+NPC=brain_animal
+COLOR=00a1b
+FAME=9000
+KARMA={8000 9000}
+//ALIGNMENT=NEUTRAL
+
+
+
+STR=100
+DEX=25
+INT=5
+PARRYING=5.0
+MAGICRESISTANCE=5000.0
+TACTICS=6.0
+WRESTLING=5.0
+TAMING=110.0
+
+
+// //////////////
+// //////////////
+
+
+[CHARDEF C_BIRD_shiny]
+DEFNAME=C_BIRD_shiny
+NAME=Magpie
+ID=c_BIRD
+SOUND=snd_ANIMALS_FRSTBRD1
+ICON=i_pet_BIRD
+
+DAM=1
+ARMOR=1
+RESOURCES=10 i_feather, 1 I_BIRD_RAW
+
+CAN=MT_WALK|MT_FLY
+FOODTYPE=25 t_fruit,25 t_crops, 25 t_grain
+DESIRES=c_BIRD,c_bird_magpie,T_GEM
+AVERSIONS=e_carnivores,r_water
+DESCRIPTION=Magpie
+SUBSECTION=Air (Wild)
+CATEGORY=Animals
+TEVENTS=e_npc_shiny
+
+ON=@Create
+COLOR=00b7f
+STR=100
+DEX=20
+INT=5
+
+PARRYING=2.0
+MAGICRESISTANCE=5000.0
+TACTICS=5.0
+WRESTLING=5.0
+TAMING=110.0
+
+NPC=brain_animal
+
+FAME=9000
+KARMA={8000 9000}
+
+ON=@DEATH
+IF (RAND(100) < 99) // Chance de Dropar. Assim é 1%
+SERV.NEWITEM=i_imperial_BIRD_key  // ID da chave que vai dropar
+NEW.CONT=<SRC.UID>
+ENDIF
+
+
+// //////////////
+// //////////////
+
+
+[CHARDEF c_dog_shiny]
+ID=0D9
+DEFNAME=c_dog_shiny
+NAME=Dog
+SOUND=snd_ANIMALS_DOG1
+ICON=i_pet_DOG
+CAN=MT_WALK|MT_RUN
+ANIM=017ff
+DAM=2,5
+ARMOR=3
+RESOURCES=3 i_ribs_raw
+FOODTYPE=5 t_meat_raw
+DESIRES=c_man,c_woman,c_DOG
+DESCRIPTION=Dog
+SUBSECTION=Land (Domestic)
+CATEGORY=Animals
+TEVENTS=e_npc_shiny
+
+ON=@Create
+NPC=brain_animal
+FAME=9000
+KARMA={8000 9000}
+//ALIGNMENT=NEUTRAL
+COLOR=009ed
+
+STR=100
+DEX={28 43}
+INT={29 37}
+
+PARRYING=2.0
+MAGICRESISTANCE=5000.0
+TACTICS=5.0
+WRESTLING=5.0
+TAMING=110.0
+
+
+// //////////////
+// //////////////
+ 
+
+[CHARDEF c_alligator_shiny]
+ID=0CA
+DEFNAME=c_alligator_shiny
+NAME=Alligator
+SOUND=snd_ANIMALS_ALIGATR1
+ANIM=01fff
+ICON=i_pet_CROC
+DAM=2,18
+ARMOR=15
+RESOURCES=6 i_ribs_raw, 6 i_hide
+CAN=MT_WALK|MT_RUN|MT_SWIM
+FOODTYPE=5 t_meat_raw,t_fish
+DESIRES=c_alligator
+AVERSIONS=r_civilization,c_man,c_woman,e_carnivores3
+DESCRIPTION=Alligator
+SUBSECTION=Land (Wild)
+CATEGORY=Animals
+TEVENTS=e_npc_shiny
+
+ON=@Create
+NPC=brain_animal
+COLOR=00a2a
+STR=100
+DEX={6 25}
+INT={11 20}
+
+PARRYING=2.0
+MAGICRESISTANCE=5000.0
+TACTICS=5.0
+WRESTLING=5.0
+TAMING=110.0
+
+FAME=9000
+KARMA={8000 9000}
+//ALIGNMENT=EVIL
+
+
+// //////////////
+// //////////////
+
+[CHARDEF c_bear_shiny]
+DEFNAME=c_bear_shiny
+NAME=Black Bear
+ID=c_Bear_Brown
+SOUND=snd_ANIMALS_BEAR1
+ICON=i_pet_bear_black
+
+DAM=2,12
+ARMOR=8
+RESOURCES=10 i_ribs_raw, 4 i_fur_dark
+FOODTYPE=5 t_FISH, 5 t_fruit, 15 t_meat_raw
+CAN=MT_WALK
+AVERSIONS=r_civilization
+
+DESCRIPTION=Black Bear
+SUBSECTION=Land (Wild)
+CATEGORY=Animals
+TEVENTS=e_npc_shiny
+
+ON=@Create
+COLOR=07a1
+STR=100
+DEX=20
+INT=5
+
+PARRYING=2.0
+MAGICRESISTANCE=5000.0
+TACTICS=5.0
+WRESTLING=5.0
+TAMING=110.0
+
+NPC=brain_animal
+
+FAME=9000
+KARMA={8000 9000}
+
+
+// //////////////
+// //////////////
+
+
+[CHARDEF c_bullfrog_shiny]
+ID=051
+DEFNAME=c_bullfrog_shiny
+NAME=Bull Frog
+SOUND=snd_MONSTER_BULLFROG1
+ICON=i_pet_bullfrog
+ANIM=078c7f
+CAN=MT_WALK
+DAM=1,2
+ARMOR=8
+RESOURCES=2 i_ribs_raw
+FOODTYPE=5 t_meat_raw
+AVERSIONS=r_civilization
+CATEGORY=Animals
+SUBSECTION=Land (Wild)
+DESCRIPTION=Bull Frog
+TEVENTS=e_npc_shiny
+
+ON=@Create
+NPC=brain_animal
+FAME=150
+KARMA=-1
+STR=100
+DEX=20
+INT=5
+COLOR=00ae3
+
+FAME=9000
+KARMA={8000 9000}
+
+PARRYING=2.0
+MAGICRESISTANCE=5000.0
+TACTICS=5.0
+WRESTLING=5.0
+TAMING=110.0
+
+// //////////////
+// //////////////
+
+[CHARDEF c_cougar_shiny]
+DEFNAME=c_cougar_shiny
+ID=c_PANTHER
+NAME=Cougar
+SOUND=snd_ANIMALS_COUGAR1
+ICON=i_pet_PANTHER
+CAN=MT_WALK|MT_RUN
+TEVENTS=e_npc_shiny
+DAM=2,12
+ARMOR=8
+RESOURCES=6 i_ribs_raw,2 i_fur_dark
+FOODTYPE=15 t_meat_raw
+DESIRES=C_A_COUGAR,r_foliage
+AVERSIONS=r_civilization,r_water
+DESCRIPTION=Cougar
+SUBSECTION=Land (Wild)
+CATEGORY=Animals
+
+ON=@Create
+STR=100
+DEX=20
+INT=5
+COLOR=0067a
+
+PARRYING=2.0
+MAGICRESISTANCE=5000.0
+TACTICS=5.0
+WRESTLING=5.0
+TAMING=110.0
+
+NPC=brain_animal
+
+FAME=9000
+KARMA={8000 9000}
+
+// //////////////
+// //////////////
+
+[CHARDEF c_direwolf_shiny]
+DEFNAME=c_direwolf_shiny
+NAME=Dire Wolf
+ID=c_wolf
+DAM=6,22
+ARMOR=11
+RESOURCES=6 i_ribs_raw, 4 i_fur_dark
+//ALIGNMENT=EVIL
+CAN=MT_WALK
+TEVENTS=e_npc_shiny
+
+FOODTYPE=15 t_meat_raw
+DESIRES=C_A_DIREWOLF
+AVERSIONS=r_civilization
+
+DESCRIPTION=Dire Wolf
+SUBSECTION=Land (Wild)
+CATEGORY=Animals
+
+ON=@Create
+NPC=brain_animal
+STR=100
+DEX=20
+INT=5
+COLOR=007c9
+
+PARRYING=2.0
+MAGICRESISTANCE=5000.0
+TACTICS=5.0
+WRESTLING=5.0
+TAMING=110.0
+
+FAME=9000
+KARMA={8000 9000}
+
+
+// //////////////
+// //////////////
+
+
+[CHARDEF c_rat_shiny]
+DEFNAME=c_rat_shiny
+ID=0D7
+NAME=Giant Rat
+SOUND=snd_MONSTER_GRAT1
+ICON=i_pet_RAT_2
+ANIM=01fff
+DAM=3,9
+ARMOR=9
+RESOURCES=3 i_ribs_raw, 1 i_fur_dark
+CAN=MT_WALK|MT_RUN
+FOODTYPE=9 t_meat_raw
+DESIRES=c_rat,c_a_rat_sewer,c_rat_giant
+AVERSIONS=t_TRAP
+DESCRIPTION=Giant Rat
+SUBSECTION=Land (Wild)
+CATEGORY=Animals
+TEVENTS=e_npc_shiny
+
+ON=@Create
+NPC=brain_monster
+COLOR=0062d
+STR=100
+DEX=20
+INT=5
+
+PARRYING=2.0
+MAGICRESISTANCE=5000.0
+TACTICS=5.0
+WRESTLING=5.0
+TAMING=110.0
+
+FAME=9000
+KARMA={8000 9000}
+
+
+// //////////////
+// //////////////
+
+
+[CHARDEF c_goat_shiny]
+ID=0d1
+DEFNAME=c_goat_shiny
+NAME=Goat
+ANIM=01fff
+SOUND=snd_ANIMALS_GOAT1
+ICON=i_pet_GOAT
+DAM=3,4
+ARMOR=5
+RESOURCES=14 i_ribs_raw, 3 i_hide
+CAN=MT_WALK|MT_RUN
+FOODTYPE=5 t_fruit, 5 t_leather, 64 t_grass, 5 t_garbage
+DESIRES=c_man,c_woman,c_goat
+AVERSIONS=e_carnivores3
+DESCRIPTION=Goat
+SUBSECTION=Land (Wild)
+CATEGORY=Animals
+TEVENTS=e_npc_shiny
+
+ON=@Create
+NPC=brain_animal
+COLOR=007a0
+STR=100
+DEX=20
+INT=5
+
+PARRYING=2.0
+MAGICRESISTANCE=5000.0
+TACTICS=5.0
+WRESTLING=5.0
+TAMING=110.0
+
+FAME=9000
+KARMA={8000 9000}
+
+// //////////////
+// //////////////
+
+[CHARDEF c_gorilla_shiny]
+ID=01d
+DEFNAME=c_gorilla_shiny
+NAME=Gorilla
+SOUND=snd_ANIMALS_GORILLA1
+ICON=i_pet_GORILLA
+ANIM=079c7f
+DAM=2,12
+ARMOR=10
+RESOURCES=6 i_ribs_raw, 1 i_fur_dark
+CAN=MT_WALK
+FOODTYPE=25 t_crops,25 t_fruit, 25 t_grain
+//DESIRES=r_jungle,GORILLAS
+AVERSIONS=r_civilization
+DESCRIPTION=Gorilla
+SUBSECTION=Land (Wild)
+CATEGORY=Animals
+TEVENTS=e_npc_shiny
+
+ON=@Create
+NPC=brain_animal
+FAME=9000
+KARMA={8000 9000}
+STR=100
+DEX=20
+INT=5
+COLOR=0062f
+
+PARRYING=2.0
+MAGICRESISTANCE=5000.0
+TACTICS=5.0
+WRESTLING=5.0
+TAMING=110.0
+
+
+// //////////////
+// //////////////
+
+
+[CHARDEF c_doe_shiny]
+ID=0ED
+DEFNAME=c_doe_shiny
+NAME=Hind
+SOUND=snd_ANIMALS_DEER3
+ICON=i_pet_DEER
+ANIM=01fff
+DAM=4
+ARMOR=4
+RESOURCES=25 i_ribs_raw, 7 i_hide
+CAN=MT_WALK|MT_RUN
+FOODTYPE=25 t_crops, 64 t_grass
+DESIRES=c_stag,c_doe,r_foliage
+AVERSIONS=r_civilization,e_carnivores3
+DESCRIPTION=Hind
+SUBSECTION=Land (Wild)
+CATEGORY=Animals
+TEVENTS=e_npc_shiny
+
+ON=@Create
+NPC=brain_animal
+COLOR=0079b
+STR=100
+DEX=20
+INT=5
+
+PARRYING=2.0
+MAGICRESISTANCE=5000.0
+TACTICS=5.0
+WRESTLING=5.0
+TAMING=110.0
+
+FAME=9000
+KARMA={8000 9000}
+//ALIGNMENT=NEUTRAL
+
+
+
+// //////////////
+// //////////////
+
+[CHARDEF c_bear_polar_shiny]
+ID=0D5
+DEFNAME=c_bear_polar_shiny
+NAME=Polar Bear
+ANIM=01fff
+SOUND=snd_ANIMALS_BEAR1
+ICON=i_pet_bear_polar
+DAM=5,14
+ARMOR=9
+RESOURCES=12 i_ribs_raw, 6 i_fur_light
+CAN=MT_WALK|MT_RUN
+FOODTYPE=6 t_FISH,5 t_fruit, 15 t_meat_raw
+DESIRES=r_snow
+AVERSIONS=r_civilization
+DESCRIPTION=Polar Bear
+SUBSECTION=Land (Wild)
+CATEGORY=Animals
+TEVENTS=e_npc_shiny
+
+ON=@Create
+NPC=brain_animal
+COLOR=00623
+STR=100
+DEX=20
+INT=5
+
+
+PARRYING=2.0
+MAGICRESISTANCE=5000.0
+TACTICS=5.0
+WRESTLING=5.0
+TAMING=110.0
+
+FAME=9000
+KARMA={8000 9000}
+
+
+
+// //////////////
+// //////////////
+
+[CHARDEF c_walrus_shiny]
+ID=0dd
+DEFNAME=c_walrus_shiny
+NAME=Walrus
+SOUND=snd_ANIMALS_WALRUS1
+ICON=i_pet_walrus
+CAN=MT_WALK|MT_RUN
+ANIM=01fff
+DAM=3,6
+ARMOR=9
+RESOURCES=23 i_ribs_raw, 5 i_hide
+FOODTYPE=5 t_FISH
+DESIRES=r_snow,c_WALRUS
+AVERSIONS=r_civilization
+DESCRIPTION=Walrus
+SUBSECTION=Land (Wild)
+CATEGORY=Animals
+TEVENTS=e_npc_shiny
+
+ON=@Create
+NPC=brain_animal
+COLOR=00623
+
+STR=100
+DEX=20
+INT=5
+
+PARRYING=2.0
+MAGICRESISTANCE=5000.0
+TACTICS=5.0
+WRESTLING=5.0
+TAMING=110.0
+
+
+FAME=9000
+KARMA={8000 9000}
+//ALIGNMENT=NEUTRAL
+
+
+
+// //////////////
+// /////////////
+// Steps
+// /////////////
+// //////////////
+
+[ITEMDEF I_book_intro1]
+NAME=@07a1 Imperial UO Welcome
+ID=0fbd
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Intro
+DESCRIPTION=Intro Book
+TYPE=t_BOOK
+
+ON=@DClick
+SRC.HTMLDIALOG d_imperialwelcome
+//SRC.SYSMESSAGE = @07a1 Welcome to Imperial UO.
+//SRC.SYSMESSAGE = @000c8 You've arrived to the Imperial Newbie Dungeon. The Imperial Newbie Dungeon is divided in two zones, one the Training Zone and the other the Newbie Dungeon.
+//SRC.SYSMESSAGE = @000c8 In both Zones you can't be attacked by other players or attack other players. Here you are safe.
+//SRC.SYSMESSAGE = @000c8 In the Training Zone you have available most things you need to train your skills. Training skills here have no restriction.
+//SRC.SYSMESSAGE = @000c8 In the Training Zone and in the Newbie Dungeon you will always be resurrected if killed. If you get below 1hp, you will be teleported to the center of the Training Zone.
+return 1
+endif
+
+
+[ITEMDEF I_book_intro2]
+NAME=@07a1 First Things First
+ID=0fbd
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Intro
+DESCRIPTION=Intro Book
+TYPE=T_NORMAL
+
+ON=@DClick
+SRC.HTMLDIALOG d_imperialwelcome1
+//SRC.SYSMESSAGE = @07a1 First Things First.
+//SRC.SYSMESSAGE = @000c8 The first thing you should do as a player is to set your Stats. To do so you type .stats and a new window will appear.
+//SRC.SYSMESSAGE = @000c8 You should know the max total stats you can have is 275. The max any stat can be is 120.
+//SRC.SYSMESSAGE = @000c8 A Higher STR means you can do better damage and have more HP, making you harder to kill.
+//SRC.SYSMESSAGE = @000c8 A Higher INT means you have more mana to cast spells and have a better chance to craft items with Higher Quality. Tip: If you go too low on INT, you can't cast some spells without buffing your character.
+//SRC.SYSMESSAGE = @000c8 A Higher DEX means you can hit faster, heal with bandages faster and have a higher chance to dodge physical attacks. Tip: You should never have less than 90dex if your character uses Weapons.
+//SRC.SYSMESSAGE = @000c8 A Standard Warrior has 110 STR / 90 DEX / 75 INT. Tip: Warriors have Magery Skill too. Unless you're going a Pure Tank.
+//SRC.SYSMESSAGE = @000c8 A Standard Pure Mage has 110 STR / 45 DEX / 120 INT. Tip: Pure Mage don't use Combat Skills, only skills like Bard, Necro and Mage.
+//SRC.SYSMESSAGE = @000c8 A Standard Trader has 120 STR / 35 DEX / 120 INT. Tip: A Trader need High INT to craft better items.
+//SRC.SYSMESSAGE = You can always customize your character the way you want!
+return 1
+endif
+
+
+
+[ITEMDEF I_book_intro3]
+NAME=@07a1 What does Imperial UO offer
+ID=0fbd
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Intro
+DESCRIPTION=Intro Book
+TYPE=T_NORMAL
+
+ON=@DClick
+SRC.HTMLDIALOG d_imperialwelcome2
+//SRC.SYSMESSAGE = @07a1 What does Imperial UO offer.
+//SRC.SYSMESSAGE = In Imperial UO you have a limit of 1200 percent of skill total to raise.
+//SRC.SYSMESSAGE = The max you can raise in any skill is 100 percent. Although with some Very Rare items you can temporary or permenantly increase it.
+//SRC.SYSMESSAGE = You can only have 2 accounts per IP. Exception if you share an IP with another person you can have more than 2 account.
+//SRC.SYSMESSAGE = You can have only 3 characters in one account. The reason for this is so you have to be dependent on other players besides only yourself.
+return 1
+endif
+
+[DIALOG d_imperialwelcome2]
+100, 100
+
+PAGE 0
+  resizepic  0 0 3500 530 450
+  text 174 20 50 0
+
+
+  button 240 390 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+  htmlgump 20 60 490 320 2 1 1
+
+[DIALOG d_imperialwelcome2 TEXT]
+What does Imperial UO offer
+Okay
+<VAR.BREAK><VAR.BREAK>In Imperial UO you have a limit of 1200 percent of skill total to raise.<VAR.BREAK>The max you can raise in any skill is 100 percent. Although with some Very Rare items you can temporary or permenantly increase it.<VAR.BREAK><VAR.BREAK>You can only have 1 account per IP. Exception if you share an IP with another person you can have more than 1 account.<VAR.BREAK><VAR.BREAK>The maximum stats you can have is 275. But with Fluxes you can permenantly increase to 295.
+
+//<VAR.BREAK><VAR.BREAK>
+
+
+[DIALOG d_imperialwelcome2 BUTTON]
+ON = 1
+   return 1
+
+
+[ITEMDEF I_book_intro4]
+NAME=@07a1 Events in Imperial UO
+ID=0fbd
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Intro
+DESCRIPTION=Intro Book
+TYPE=T_NORMAL
+
+ON=@DClick
+SRC.HTMLDIALOG d_imperialwelcome3
+//SRC.SYSMESSAGE = @07a1 Events in Imperial UO
+//SRC.SYSMESSAGE = In Imperial UO you have daily events from Quizzes to PvP's.
+//SRC.SYSMESSAGE = Every 2 hours a Quiz will start and everyone can participate in the Quiz. If you are the first player to answer all questions you'll get a Prize.
+//SRC.SYSMESSAGE = Every Day a GM will host at least one PvP Event. There are several events and anyone can join them. 
+//SRC.SYSMESSAGE = PvP Events are 1vs1, 2vs2, Team PvPs, Deathmatches, Team Monster Bashes, Survival Monster Bashes, Llama Races, Foot Races, Castle Invasores, Team Xpot, Xpot Deathmatch, Vortex Survival and many others.
+return 1
+endif
+
+
+[DIALOG d_imperialwelcome3]
+100, 100
+
+PAGE 0
+  resizepic  0 0 3500 530 450
+  text 194 20 50 0
+
+
+  button 240 390 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+  htmlgump 20 60 490 320 2 1 1
+
+[DIALOG d_imperialwelcome3 TEXT]
+Events in Imperial UO
+Okay
+<VAR.BREAK><VAR.BREAK>In Imperial UO you have daily events.<VAR.BREAK><VAR.BREAK>Every 2 hours a Quiz will start and everyone can participate in the Quiz. If you are the first player to answer all questions you'll get a Prize.<VAR.BREAK><VAR.BREAK>Every Day a GM will host at least one PvP Event. There are several events and anyone can join them. <VAR.BREAK><VAR.BREAK>PvP Events are 1vs1, 2vs2, Team PvPs, Deathmatches, Team Monster Bashes, Survival Monster Bashes, Llama Races, Foot Races, Castle Invasores, Team Xpot, Xpot Deathmatch, Vortex Survival and many others.
+
+//<VAR.BREAK><VAR.BREAK>
+
+
+[DIALOG d_imperialwelcome3 BUTTON]
+ON = 1
+   return 1
+
+
+
+[ITEMDEF I_book_intro5]
+NAME=@07a1 Useful Stuff
+ID=0fbd
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Intro
+DESCRIPTION=Intro Book
+TYPE=T_NORMAL
+
+ON=@DClick
+SRC.HTMLDIALOG d_imperialwelcome5
+//SRC.SYSMESSAGE = @07a1 Useful Stuff
+//SRC.SYSMESSAGE = To use the World Chat you just use ! and say your message.
+//SRC.SYSMESSAGE = .papers one of the most important commands in this game. You have almost everything you need and want to know about your character and others. Get to know this command, it is very useful.
+//SRC.SYSMESSAGE = .online you have a list of online players. Besides having a list of online players you can also use it to send messages.
+//SRC.SYSMESSAGE = .regs is a useful command to know what Regs you have on you.
+//SRC.SYSMESSAGE = .escape is a useful command to use in case you are stuck, lost or dead.
+//SRC.SYSMESSAGE = .potion is a useful command to use if you want to use potions without manually clicking on them.
+//SRC.SYSMESSAGE = .commands is a list of other commands not listed here.
+return 1
+endif
+
+[DIALOG d_imperialwelcome5]
+100, 100
+
+PAGE 0
+  resizepic  0 0 3500 530 450
+  text 224 20 50 0
+
+
+  button 240 390 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+  htmlgump 20 60 490 320 2 1 1
+
+[DIALOG d_imperialwelcome5 TEXT]
+Useful Stuff
+Okay
+<VAR.BREAK><VAR.BREAK>To use the World Chat you just use ! and say your message.<VAR.BREAK><VAR.BREAK>.papers one of the most important commands in this game. You have almost everything you need and want to know about your character and others. Get to know this command, it is very useful.<VAR.BREAK><VAR.BREAK>.online you have a list of online players. Besides having a list of online players you can also use it to send messages.<VAR.BREAK><VAR.BREAK>.regs is a useful command to know what Regs you have on you.<VAR.BREAK><VAR.BREAK>.stuck is a useful command to use in case you are stuck, lost or dead.<VAR.BREAK><VAR.BREAK>.potion is a useful command to use if you want to use potions without manually clicking on them.<VAR.BREAK><VAR.BREAK>.commands is a list of other commands not listed here.
+
+//<VAR.BREAK><VAR.BREAK>
+
+
+[DIALOG d_imperialwelcome5 BUTTON]
+ON = 1
+   return 1
+
+
+[ITEMDEF I_book_intro7]
+NAME=@07a1 Moonglow
+ID=0fbd
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Intro
+DESCRIPTION=Intro Book
+TYPE=T_NORMAL
+
+ON=@DClick
+SRC.HTMLDIALOG d_imperialwelcome7
+//SRC.SYSMESSAGE = @07a1 Moonglow.
+//SRC.SYSMESSAGE = When walking on the teleport you will leave the Imperial Newbie Dungeon and you'll go to Moonglow.
+//SRC.SYSMESSAGE = Moonglow is the main city in Imperial UO.
+//SRC.SYSMESSAGE = Moonglow is a Safe Zone where you can't attack or be attacked. It's where every players goes to meet.
+//SRC.SYSMESSAGE = Moonglow is the only Town where you have Player Vendors. Players Vendors are Vendors controlled by Players that want to sell their items. 
+//SRC.SYSMESSAGE = Moonglow is also the only Town where you have Teleports to other places in the middle of Moonglow.
+return 1
+endif
+
+[DIALOG d_imperialwelcome7]
+100, 100
+
+PAGE 0
+  resizepic  0 0 3500 530 450
+  text 224 20 50 0
+
+
+  button 224 390 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+  htmlgump 20 60 490 320 2 1 1
+
+[DIALOG d_imperialwelcome7 TEXT]
+Moonglow
+Okay
+<VAR.BREAK><VAR.BREAK>When walking on the teleport you will leave the Imperial Newbie Dungeon and you'll go to Moonglow.<VAR.BREAK><VAR.BREAK>Moonglow is the main city in Imperial UO.<VAR.BREAK>Moonglow is a Safe Zone where you can't attack or be attacked. It's where every players goes to meet.<VAR.BREAK>Moonglow is the only Town where you have Player Vendors. Players Vendors are Vendors controlled by Players that want to sell their items. <VAR.BREAK>Moonglow is also the only Town where you have Teleports to other places in the middle of Moonglow.
+
+//<VAR.BREAK><VAR.BREAK>
+
+
+[DIALOG d_imperialwelcome7 BUTTON]
+ON = 1
+   return 1
+
+
+[ITEMDEF I_book_intro8]
+NAME=@07a1 Despise Outpost
+ID=0fbd
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Intro
+DESCRIPTION=Intro Book
+TYPE=T_NORMAL
+
+ON=@DClick
+SRC.HTMLDIALOG d_imperialwelcome8
+//SRC.SYSMESSAGE = @07a1 Despise Outpost.
+//SRC.SYSMESSAGE = Despise Outpost is a Outpost leading to the Despise Dungeon.
+//SRC.SYSMESSAGE = Despise Outpost is Safe Zone where you can't attack or be attacked. 
+//SRC.SYSMESSAGE = Despise Dungeon is also a Newbie Dungeon but slightly harder than the Imperial Newbie Dungeon.
+//SRC.SYSMESSAGE = The Despise Dungeon has the same features the Imperial Newbie Dungeon has.
+return 1
+endif
+
+[DIALOG d_imperialwelcome8]
+100, 100
+
+PAGE 0
+  resizepic  0 0 3500 530 450
+  text 204 20 50 0
+
+
+  button 224 390 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+  htmlgump 20 60 490 320 2 1 1
+
+[DIALOG d_imperialwelcome8 TEXT]
+Despise Outpost
+Okay
+<VAR.BREAK><VAR.BREAK>Despise Outpost is a Outpost leading to the Despise Dungeon.<VAR.BREAK>Despise Outpost is Safe Zone where you can't attack or be attacked.<VAR.BREAK><VAR.BREAK>Despise Dungeon is also a Newbie Dungeon but slightly harder than the Imperial Newbie Dungeon.<VAR.BREAK>Despise Dungeon has the same features the Imperial Newbie Dungeon has.
+
+//<VAR.BREAK><VAR.BREAK>
+
+
+[DIALOG d_imperialwelcome8 BUTTON]
+ON = 1
+   return 1
+
+
+
+[ITEMDEF I_book_intro9]
+NAME=@07a1 Main Cities
+ID=0fbd
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Intro
+DESCRIPTION=Intro Book
+TYPE=T_NORMAL
+
+ON=@DClick
+SRC.HTMLDIALOG d_imperialwelcome9
+//SRC.SYSMESSAGE = @07a1 Main Cities
+//SRC.SYSMESSAGE = Moonglow is the Main City of Imperial UO. It's a Safe Zone where you can't be attacked or attack other players. It's where every player meets.
+//SRC.SYSMESSAGE = Minoc is the Traders Main City. It's a Guarded Zone where if you get attacked you can call Guards to kill the attacker. 
+//SRC.SYSMESSAGE = Britain is a City for Blue Karma Players. It's a Guarded Zone.
+//SRC.SYSMESSAGE = Buccaneer's Den is a City for Red Karma Players. It's a Unguarded Zone.
+return 1
+endif
+
+[DIALOG d_imperialwelcome9]
+100, 100
+
+PAGE 0
+  resizepic  0 0 3500 530 450
+  text 214 20 50 0
+
+
+  button 224 390 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+  htmlgump 20 60 490 320 2 1 1
+
+[DIALOG d_imperialwelcome9 TEXT]
+Main Cities
+Okay
+<VAR.BREAK><VAR.BREAK>Moonglow is the Main City of Imperial UO. It's a Safe Zone where you can't be attacked or attack other players. It's where every player meets.<VAR.BREAK><VAR.BREAK>Minoc is the Traders Main City. It's a Guarded Zone where if you get attacked you can call Guards to kill the attacker. <VAR.BREAK><VAR.BREAK>Britain is a City for Blue Karma Players. It's a Guarded Zone.<VAR.BREAK><VAR.BREAK>Buccaneer's Den is a City for Red Karma Players. It's a Unguarded Zone.
+
+//<VAR.BREAK><VAR.BREAK>
+
+
+[DIALOG d_imperialwelcome9 BUTTON]
+ON = 1
+   return 1
+
+
+
+[ITEMDEF I_book_intro10]
+NAME=@07a1 Imperial Chests
+ID=0fbd
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Intro
+DESCRIPTION=Intro Book
+TYPE=T_NORMAL
+
+ON=@DClick
+SRC.HTMLDIALOG d_imperialwelcome10
+//SRC.SYSMESSAGE = @07a1 Imperial Chests.
+//SRC.SYSMESSAGE = Imperial Chests are Chests scattered around the world that can only be opened with their respective keys.
+//SRC.SYSMESSAGE = Every chest is different and contain different items besides some obvious ones.
+//SRC.SYSMESSAGE = Every chest has a chance to drop a Unique Item.
+//SRC.SYSMESSAGE = Tip: The Newbie Dungeon has Imperial Chests and they might drop 8th Circle Scrolls.
+return 1
+endif
+
+[DIALOG d_imperialwelcome10]
+100, 100
+
+PAGE 0
+  resizepic  0 0 3500 530 450
+  text 209 20 50 0
+
+
+  button 224 390 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+  htmlgump 20 60 490 320 2 1 1
+
+[DIALOG d_imperialwelcome10 TEXT]
+Imperial Chests
+Okay
+<VAR.BREAK><VAR.BREAK>Imperial Chests are Chests scattered around the world that can only be opened with their respective keys.<VAR.BREAK><VAR.BREAK>Every chest is different and contain different items besides some obvious ones.<VAR.BREAK>Every chest has a chance to drop a Unique Item.<VAR.BREAK><VAR.BREAK>Tip: The Newbie Dungeon has Imperial Chests and they might drop 8th Circle Scrolls.
+
+//<VAR.BREAK><VAR.BREAK>
+
+
+[DIALOG d_imperialwelcome10 BUTTON]
+ON = 1
+   return 1
+
+
+[ITEMDEF I_book_intro11]
+NAME=@07a1 Quests
+ID=0fbd
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Intro
+DESCRIPTION=Intro Book
+TYPE=T_NORMAL
+
+ON=@DClick
+SRC.HTMLDIALOG d_imperialwelcome11
+//SRC.SYSMESSAGE = @07a1 Quests
+//SRC.SYSMESSAGE = There are a few Quests around the world. None of them are mandatory but some of them have Rewards that you might like.
+//SRC.SYSMESSAGE = You should do Imperial Newbie Dungeon Quests. If you do them, you will get scrolls to complete your Spellbook up to the 7th Circle.
+//SRC.SYSMESSAGE = Tip: To add scrolls to your Spellbook, simple just drag them to the Spellbook. Don't double click the scrolls.
+return 1
+endif
+
+
+[DIALOG d_imperialwelcome11]
+100, 100
+
+PAGE 0
+  resizepic  0 0 3500 530 450
+  text 220 20 50 0
+
+
+  button 224 390 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+  htmlgump 20 60 490 320 2 1 1
+
+[DIALOG d_imperialwelcome11 TEXT]
+Quests
+Okay
+<VAR.BREAK><VAR.BREAK>There are a few Quests around the world. None of them are mandatory but some of them have Rewards that you might like.<VAR.BREAK><VAR.BREAK>You should do Imperial Newbie Dungeon Quests. If you do them, you will get scrolls to complete your Spellbook up to the 7th Circle.<VAR.BREAK><VAR.BREAK>Tip: To add scrolls to your Spellbook, simple just drag them to the Spellbook. Don't double click the scrolls.
+
+//<VAR.BREAK><VAR.BREAK>
+
+
+[DIALOG d_imperialwelcome11 BUTTON]
+ON = 1
+   return 1
+
+
+[ITEMDEF I_book_intro12]
+NAME=@07a1 Imperial Uniques
+ID=0fbd
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Intro
+DESCRIPTION=Intro Book
+TYPE=T_NORMAL
+
+ON=@DClick
+SRC.HTMLDIALOG d_imperialwelcome12
+//SRC.SYSMESSAGE = @07a1 Imperial Uniques.
+//SRC.SYSMESSAGE = Every different Imperial Chest has a Imperial Unique.
+//SRC.SYSMESSAGE = Imperial Uniques are Unique Items that have a low chance to appear in Imperial Chests.
+//SRC.SYSMESSAGE = Imperial Uniques are great decorations items. But if you collect all Imperial Uniques you can trade them for a Very Special Prize.
+return 1
+endif
+
+
+[DIALOG d_imperialwelcome12]
+100, 100
+
+PAGE 0
+  resizepic  0 0 3500 530 450
+  text 202 20 50 0
+
+
+  button 224 390 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+  htmlgump 20 60 490 320 2 1 1
+
+[DIALOG d_imperialwelcome12 TEXT]
+Imperial Uniques
+Okay
+<VAR.BREAK><VAR.BREAK>Every different Imperial Chest has a Imperial Unique.<VAR.BREAK><VAR.BREAK>Imperial Uniques are Unique Items that have a low chance to appear in Imperial Chests.<VAR.BREAK>Imperial Uniques are great decorations items. But if you collect all Imperial Uniques you can trade them for a Very Special Prize.
+
+//<VAR.BREAK><VAR.BREAK>
+
+
+[DIALOG d_imperialwelcome12 BUTTON]
+ON = 1
+   return 1
+
+
+[ITEMDEF I_book_intro13]
+NAME=@07a1 Figurines
+ID=0fbd
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Intro
+DESCRIPTION=Intro Book
+TYPE=T_NORMAL
+
+ON=@DClick
+SRC.HTMLDIALOG d_imperialwelcome13
+//SRC.SYSMESSAGE = @07a1 Figurines.
+//SRC.SYSMESSAGE = Most monsters in Imperial UO drop diferent items. Some drop also Figurines.
+//SRC.SYSMESSAGE = Figurines are items that have a very low chance to appear when killing a monster.
+//SRC.SYSMESSAGE = Figurines are great decorations items. But if you collect all Figurines you can trade them for a Very Special Prize.
+return 1
+endif
+
+
+[DIALOG d_imperialwelcome13]
+100, 100
+
+PAGE 0
+  resizepic  0 0 3500 530 450
+  text 219 20 50 0
+
+
+  button 224 390 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+  htmlgump 20 60 490 320 2 1 1
+
+[DIALOG d_imperialwelcome13 TEXT]
+Figurines
+Okay
+<VAR.BREAK><VAR.BREAK>Most monsters in Imperial UO drop diferent items. Some also drop Figurines.<VAR.BREAK><VAR.BREAK>Figurines are items that have a very low chance to appear when killing a monster.<VAR.BREAK>Figurines are great decorations items. But if you collect all Figurines you can trade them for a Very Special Prize.
+
+//<VAR.BREAK><VAR.BREAK>
+
+
+[DIALOG d_imperialwelcome13 BUTTON]
+ON = 1
+   return 1
+
+
+[ITEMDEF I_book_intro14]
+NAME=@07a1 Important Skills
+ID=0fbd
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Intro
+DESCRIPTION=Intro Book
+TYPE=T_NORMAL
+
+ON=@DClick
+SRC.HTMLDIALOG d_imperialwelcome14
+//SRC.SYSMESSAGE = @07a1 Important Skills.
+//SRC.SYSMESSAGE = Most Skills are Self-Explanatory, but some may not be that obvious.
+//SRC.SYSMESSAGE = Assessment.
+//SRC.SYSMESSAGE = It's a necessary skill for every player that uses Combat Skills. It adds bonuses in combat by increasing the chance to score critical hits. It can improve your attack damage by as much as 20 percent as well as improve the amount of health healed using bandages.
+//SRC.SYSMESSAGE = Tactics.
+//SRC.SYSMESSAGE = It's a necessary skill for every player that uses Combat Skills. It increases the chance to hit the target.
+//SRC.SYSMESSAGE = Musicianship.
+//SRC.SYSMESSAGE = It's a necessary skill to use with Songs of War to become a Bard. 
+//SRC.SYSMESSAGE = Songs of War.
+//SRC.SYSMESSAGE = It's a necessary skill to use with Musicianship to become a Bard. 
+//SRC.SYSMESSAGE = Arms Lore.
+//SRC.SYSMESSAGE = It's a necessary skill for all traders. It increases the Quality Rate and decreases the Fail Rate.
+//SRC.SYSMESSAGE = Mystic Lore.
+//SRC.SYSMESSAGE = It's a necessary skill for Magery. It increases the Damage done by spells and decreases the Fail Rate.
+return 1
+endif
+
+
+[DIALOG d_imperialwelcome14]
+100, 100
+
+PAGE 0
+  resizepic  0 0 3500 530 450
+  text 205 20 50 0
+
+
+  button 224 390 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+  htmlgump 20 60 490 320 2 1 1
+
+[DIALOG d_imperialwelcome14 TEXT]
+Important Skills
+Okay
+<VAR.BREAK><VAR.BREAK>Most Skills are Self-Explanatory, but some may not be that obvious.<VAR.BREAK><VAR.BREAK>Assessment<VAR.BREAK>It's a necessary skill for every player that uses Combat Skills. It adds bonuses in combat by increasing the chance to score critical hits. It can improve your attack damage by as much as 20 percent as well as improve the amount of health healed using bandages.<VAR.BREAK><VAR.BREAK>Tactics<VAR.BREAK>It's a necessary skill for every player that uses Combat Skills. It increases the chance to hit the target.<VAR.BREAK><VAR.BREAK>Musicianship<VAR.BREAK>It's a necessary skill to use with Songs of War to become a Bard.<VAR.BREAK><VAR.BREAK>Songs of War<VAR.BREAK>It's a necessary skill to use with Musicianship to become a Bard.<VAR.BREAK><VAR.BREAK>Arms Lore<VAR.BREAK>It's a necessary skill for all traders. It increases the Quality Rate and decreases the Fail Rate.<VAR.BREAK><VAR.BREAK>Mystic Lore<VAR.BREAK>It's a necessary skill for Magery. It increases the Damage done by spells and decreases the Fail Rate.
+
+//<VAR.BREAK><VAR.BREAK>
+
+[DIALOG d_imperialwelcome14 BUTTON]
+ON = 1
+   return 1
+
+
+
+// ///////////////////////
+// ///////////////////////
+
+
+
+[DIALOG d_imperialwelcome]
+100, 100
+
+PAGE 0
+  resizepic  0 0 3500 530 450
+  text 190 20 50 0
+
+
+  button 240 390 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+  htmlgump 20 60 490 320 2 1 1
+
+
+// /////////////////  
+// /////////////////
+  
+[DIALOG d_imperialwelcome TEXT]
+Welcome to Imperial UO.
+Okay
+<VAR.BREAK><VAR.BREAK>You've arrived to the Imperial Newbie Dungeon. The Imperial Newbie Dungeon is divided in two zones, one the Training Zone and the other the Newbie Dungeon.<VAR.BREAK><VAR.BREAK>In both Zones you can't be attacked by other players or attack other players. Here you are safe.<VAR.BREAK><VAR.BREAK>In the Training Zone you have available most things you need to use in order train your skills. Training skills here have no restriction.<VAR.BREAK><VAR.BREAK>In the Training Zone and in the Newbie Dungeon you will always be resurrected if killed. If you get killed, you will be teleported to the center of the Training Zone.<VAR.BREAK><VAR.BREAK>Don't forget to read the other books! 
+
+//<VAR.BREAK><VAR.BREAK>
+
+
+[DIALOG d_imperialwelcome BUTTON]
+ON = 1
+   return 1
+   
+// //////////////////
+// //////////////////
+
+[DIALOG d_imperialwelcome1]
+100, 100
+
+PAGE 0
+  resizepic  0 0 3500 530 450
+  text 210 20 50 0
+
+
+  button 240 390 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+  htmlgump 20 60 490 320 2 1 1
+
+[DIALOG d_imperialwelcome1 TEXT]
+First Things First
+Okay
+<VAR.BREAK><VAR.BREAK>The first thing you should do as a player is to set your Stats. To do so you type .stats and a new window will appear.<VAR.BREAK><VAR.BREAK>You should know the max total stats you can have is 275. The max any stat can be is 120.<VAR.BREAK><VAR.BREAK>A Higher STR means you can do better damage and have more HP, making you harder to kill.<VAR.BREAK>A Higher INT means you have more mana to cast spells and have a better chance to craft items with Higher Quality. Tip: If you go too low on INT, you can't cast some spells without buffing your character.<VAR.BREAK>A Higher DEX means you can hit faster, heal with bandages faster and have a higher chance to dodge physical attacks. Tip: You should never have less than 90dex if your character uses Weapons.<VAR.BREAK><VAR.BREAK>A Standard Warrior has 110 STR / 90 DEX / 75 INT. Tip: Warriors have Magery Skill too. Unless you're going a Pure Tank. <VAR.BREAK>A Standard Pure Mage has 110 STR / 45 DEX / 120 INT. Tip: Pure Mage don't use Combat Skills, the only use skills like Bard, Necro and Mage. <VAR.BREAK>A Standard Trader has 120 STR / 35 DEX / 120 INT. Tip: A Trader need High INT to craft better items.<VAR.BREAK><VAR.BREAK>You can always customize your character the way you want!
+
+//<VAR.BREAK><VAR.BREAK>
+
+
+[DIALOG d_imperialwelcome1 BUTTON]
+ON = 1
+   return 1
+   
+  
+
+
+
+// //////////////
+// //////////////
+
+[ITEMDEF I_book_intro15]
+NAME=@07a1 Power Hour
+ID=0fbd
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Intro
+DESCRIPTION=Intro Book
+TYPE=T_NORMAL
+
+ON=@DClick
+SRC.HTMLDIALOG d_imperialwelcome15
+return 1
+endif
+
+
+[DIALOG d_imperialwelcome15]
+100, 100
+
+PAGE 0
+  resizepic  0 0 3500 530 450
+  text 220 20 50 0
+
+
+  button 224 390 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+  htmlgump 20 60 490 320 2 1 1
+
+[DIALOG d_imperialwelcome15 TEXT]
+Power Hour
+Okay
+<VAR.BREAK><VAR.BREAK>Power Hour is a skill related Special Event that happens every 2 hours.<VAR.BREAK><VAR.BREAK>Every 2 hours a message will appear with a password where you have to type .power (password) <var.break>When you type the correct password you will have the Power Hour activated for 1 hour.<var.break><var.break>When you activate the Power Hour for 1 hour your chance to raise a skill increases 20 times. Making it very easy to raise skills.
+
+//<VAR.BREAK><VAR.BREAK>
+
+[DIALOG d_imperialwelcome15 BUTTON]
+ON = 1
+   return 1
+
+
+
+   
+   
+   
+[ITEMDEF I_book_intro16]
+NAME=@07a1 Loyalty
+ID=0fbd
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Intro
+DESCRIPTION=Intro Book
+TYPE=T_NORMAL
+
+ON=@DClick
+SRC.HTMLDIALOG d_imperialwelcome16
+return 1
+endif
+
+
+[DIALOG d_imperialwelcome16]
+100, 100
+
+PAGE 0
+  resizepic  0 0 3500 530 450
+  text 230 20 50 0
+
+
+  button 224 390 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+  htmlgump 20 60 490 320 2 1 1
+
+[DIALOG d_imperialwelcome16 TEXT]
+Loyalty
+Okay
+<VAR.BREAK><VAR.BREAK>Loyalty is a Point based System that with each 15 minutes in game time you get a Loyalty Point. <VAR.BREAK><VAR.BREAK>To access the Loyalty Menu you type .loyalty.<VAR.BREAK><VAR.BREAK>For every 15 minutes you can redeem one Loyalty Point.<VAR.BREAK>Loyalty Points are used in the Loyalty Point Shop. When buying from the Loyalty Point Shop your points spent will be converted to  Loyalty Spent Points.<VAR.BREAK><VAR.BREAK> Loyalty Spent Points are points that were converted from Loyalty Points when using the Loyalty Shop. These points can only be used in the Loyalty Milestone Rewards.<VAR.BREAK>The Loyalty Milestone Rewards can only be purchased with Loyalty Spent Points and can only obtain the items in order. And you can't obtain more than one of the same items. Order are the first to last item. <VAR.BREAK><VAR.BREAK>Tip: The Minutes left to redeem only refreshes when you log out of the game and log back in.<VAR.BREAK><VAR.BREAK>You can also get points by voting every 24 hours. To vote go to .papers and go to the Loyalty System.
+
+//<VAR.BREAK><VAR.BREAK>
+
+[DIALOG d_imperialwelcome16 BUTTON]
+ON = 1
+   return 1
+   
+// //////////////
+// //////////////
+
+[ITEMDEF I_book_Impchest] // Mudar nome
+NAME=Imperial Chests  // Mudar Cor e Nome
+ID=0fbd
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Figurine
+DESCRIPTION=Figurine Book
+
+ON=@DClick
+src.DIALOG d_B_book_Impchest  // Mudar nome
+return 1
+
+[dialog d_B_book_Impchest]
+150,266
+resizepic 0 0 3500 190 259
+text 30 3 455 0
+text 24 30 455 1
+text 24 50 455 2
+text 24 70 455 3
+text 24 90 455 4
+text 24 110 455 5
+text 24 130 455 6
+text 24 150 455 7
+text 24 170 455 8
+text 24 190 455 9
+text 24 210 455 10
+text 24 230 455 11
+
+button 75 220 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+[dialog d_B_book_Impchest text] 
+  
+I don't remember where
+the Imperial Chests
+are located.
+I've wasted all my 
+memory on the figurines.
+ 
+But one thing I remember.
+There are 28 different 
+ones.
+
+// //////////////
+// //////////////
+
+[PLEVEL 1]
+map
+
+[FUNCTION MAP]
+
+SRC.DIALOG d_playertravel21
+RETURN 1
+
+
+[DIALOG d_playertravel21]
+
+0,0
+dialogclose d_playertravel21
+PAGE 0
+NODISPOSE
+gumppic 160 65 <qval 1<src.tag.tempmap> ? 5528 : 474>
+gumppic <MAPPOS_x> <MAPPOS_y> <qval 1<src.tag.tempmap> ? <eval 01199> : 474> 
+
+
+dtext 263 201 455 Britain // done
+button 273 218 2117 2118 1 0 1
+
+dtext 344 99 455 Minoc // done
+button 353 115 2117 2118 1 0 2
+
+dtext 364 129 455 Vesper // done
+button 377 146 2117 2118 1 0 3
+
+dtext 203 140 455 Yew // done
+button 209 156 2117 2118 1 0 4
+
+dtext 421 241 455 Magincia // Done
+button 435 260 2117 2118 1 0 5
+
+dtext 427 280 455 Ocllo // done
+button 433 297 2117 2118 1 0 6
+
+dtext 178 248 455 Skara Brae // done
+button 200 265 2117 2118 1 0 7
+
+dtext 249 397 0151 Jhelom // done
+button 261 414 2117 2118 1 0 8 
+
+dtext 350 402 455 Serpent's Hold // done
+button 384 393 2117 2118 1 0 9
+
+dtext 292 305 0151 Trinsic  // done
+button 305 322 2117 2118 1 0 10
+
+dtext 421 168 0151 Nujel'm  // done
+button 435 186 2117 2118 1 0 11
+
+dtext 474 159 455 Moonglow // done
+button 494 176 2117 2118 1 0 12
+
+dtext 323 163 455 Cove // done
+button 328 180 2117 2118 1 0 13
+
+dtext 342 251 455 Buc's Den // done
+button 361 267 2117 2118 1 0 14
+
+dtext 277 89 020 Wrong // done
+button 315 93 2117 2118 1 0 16
+
+dtext 233 300 020 Destard // done
+button 248 317 2117 2118 1 0 17
+
+dtext 191 200 020 Shame // done
+button 202 217 2117 2118 1 0 19
+
+dtext 458 97 020 Deceit // done
+button 467 114 2117 2118 1 0 20
+
+dtext 245 148 020 Despise // done
+button 260 166 2117 2118 1 0 21
+
+dtext 323 138 020 Covetous // done
+button 345 156 2117 2118 1 0 22
+
+dtext 493 405 020 Hythloth // done 
+button 513 422 2117 2118 1 0 27
+
+dtext 268 332 020 Terathan  // done
+button 285 348 2117 2118 1 0 10
+
+dtext 294 72 020 Ice // done
+button 312 75 2117 2118 1 0 16
+
+dtext 377 365 020 Fire // done
+button 382 382 2117 2118 1 0 9
+
+
+dtext 162 445 455 Type .map to refresh your position. Same for .map1 .// done
+dtext 162 460 455 (Red are Dungeons, Orange are Cities with Monsters, Yellow // done
+dtext 162 474 455 are Friendly Cities) // done
+dtext 162 488 455 Type .map1 for just the map. // done
+
+
+
+
+[PLEVEL 1]
+map1
+
+[FUNCTION MAP1]
+SRC.DIALOG d_playertravel22
+RETURN 1
+
+
+
+[DIALOG d_playertravel22]
+
+0,0
+dialogclose d_playertravel22
+PAGE 0
+NODISPOSE
+gumppic 160 65 <qval 1<src.tag.tempmap> ? 5528 : 474>
+gumppic <MAPPOS_x> <MAPPOS_y> <qval 1<src.tag.tempmap> ? <eval 01199> : 474> 
+
+
+dtext 263 201 455 Britain // done
+button 273 218 2117 2118 1 0 1
+
+dtext 344 99 455 Minoc // done
+button 353 115 2117 2118 1 0 2
+
+dtext 364 129 455 Vesper // done
+button 377 146 2117 2118 1 0 3
+
+dtext 203 140 455 Yew // done
+button 209 156 2117 2118 1 0 4
+
+dtext 421 241 455 Magincia // Done
+button 435 260 2117 2118 1 0 5
+
+dtext 427 280 455 Ocllo // done
+button 433 297 2117 2118 1 0 6
+
+dtext 178 248 455 Skara Brae // done
+button 200 265 2117 2118 1 0 7
+
+dtext 249 397 0151 Jhelom // done
+button 261 414 2117 2118 1 0 8 
+
+dtext 350 402 455 Serpent's Hold // done
+button 384 393 2117 2118 1 0 9
+
+dtext 292 305 0151 Trinsic  // done
+button 305 322 2117 2118 1 0 10
+
+dtext 421 168 0151 Nujel'm  // done
+button 435 186 2117 2118 1 0 11
+
+dtext 474 159 455 Moonglow // done
+button 494 176 2117 2118 1 0 12
+
+dtext 323 163 455 Cove // done
+button 328 180 2117 2118 1 0 13
+
+dtext 342 251 455 Buc's Den // done
+button 361 267 2117 2118 1 0 14
+
+dtext 277 89 020 Wrong // done
+button 315 93 2117 2118 1 0 16
+
+dtext 233 300 020 Destard // done
+button 248 317 2117 2118 1 0 17
+
+dtext 191 200 020 Shame // done
+button 202 217 2117 2118 1 0 19
+
+dtext 458 97 020 Deceit // done
+button 467 114 2117 2118 1 0 20
+
+dtext 245 148 020 Despise // done
+button 260 166 2117 2118 1 0 21
+
+dtext 323 138 020 Covetous // done
+button 345 156 2117 2118 1 0 22
+
+dtext 493 405 020 Hythloth // done 
+button 513 422 2117 2118 1 0 27
+
+dtext 268 332 020 Terathan  // done
+button 285 348 2117 2118 1 0 10
+
+dtext 294 72 020 Ice // done
+button 312 75 2117 2118 1 0 16
+
+dtext 377 365 020 Fire // done
+button 382 382 2117 2118 1 0 9
+
+
+///////////////////////////////
+///////////////////////////////
+///
+///    Random
+///
+///////////////////////////////
+///////////////////////////////
+
+[ITEMDEF i_kos_qt]
+ID	= 0495
+NAME	= kos qt
+TYPE	= T_NORMAL
+ARMOR	= 5
+DYE	= 0
+
+ON = @Create
+COLOR=08a5
+ATTR= 0090
+
+ON=@Step
+if ( <SRC.NPC> )
+     return 0
+else
+SRC.SYSMESSAGE = KOS graveyard... You have a sense you shouldn't be here. It's very dangerous.
+SRC.EMOTE Fear for Your Life!
+return 1
+endif
+
+CATEGORY=Imperial uo
+SUBSECTION=Coventous Items
+DESCRIPTION=QT executioner
+
+
+//////////////////////////////////
+//////////////////////////////////
+
+
+[ITEMDEF i_donator_stone]
+NAME		=@00b46 Donator Stone
+ID		= i_guildstone
+TYPE		= t_normal
+
+
+ON=@CREATE
+  COLOR		= 00b46
+  ATTR		= attr_move_never | attr_static
+  timer=60
+
+ON=@DCLICK
+  SRC.SOUND 555
+  SRC.WEBLINK www.Imperialuo.com/donate
+  RETURN 1
+  
+ON=@Timer
+   MESSAGE @00b46 Click on the pink stone to donate to the shard! By doing so you're helping the shard to grow.
+   timer = 60
+   RETURN 1
+   
+   
+/////////////////////////////////////
+/////////////////////////////////////
+
+[ITEMDEF I_donator1_book]
+NAME=@07a1 Craftable Colors
+ID=0fbd
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Intro
+DESCRIPTION=Intro Book
+TYPE=T_NORMAL
+
+ON=@DClick
+SRC.HTMLDIALOG d_donator1_book
+return 1
+endif
+
+
+[DIALOG d_donator1_book]
+100, 100
+
+PAGE 0
+  resizepic  0 0 3500 530 450
+  text 210 20 50 0
+
+
+  button 224 390 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+  htmlgump 20 60 490 320 2 1 1
+
+[DIALOG d_donator1_book TEXT]
+Craftable Colors
+Okay
+<VAR.BREAK><VAR.BREAK>All of these colors can be crafted by skilled alchemists.<VAR.BREAK><VAR.BREAK>Some of these dyes can also be found on Imperial Chests.<VAR.BREAK><VAR.BREAK><VAR.BREAK>The formulas to craft Normal Colors can be found at www.imperialuo.com/alchemy<VAR.BREAK><VAR.BREAK>For Rare Colors you have to find Formula Books that are scattered on all Imperial Chests. 
+
+//<VAR.BREAK><VAR.BREAK>
+
+[DIALOG d_donator1_book BUTTON]
+ON = 1
+   return 1   
+   
+/////
+/////
+
+[ITEMDEF I_donator2_book]
+NAME=@07a1 Donator Colors
+ID=0fbd
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Intro
+DESCRIPTION=Intro Book
+TYPE=T_NORMAL
+
+ON=@DClick
+SRC.HTMLDIALOG d_donator2_book
+return 1
+endif
+
+
+[DIALOG d_donator2_book]
+100, 100
+
+PAGE 0
+  resizepic  0 0 3500 530 450
+  text 210 20 50 0
+
+
+  button 224 390 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+  htmlgump 20 60 490 320 2 1 1
+
+[DIALOG d_donator2_book TEXT]
+Donator Colors
+Okay
+<VAR.BREAK><VAR.BREAK>None of these colors can be crafted by alchemists. Although some of these dyes can be found on Imperial Chests<VAR.BREAK><VAR.BREAK>If you purchase Dye Tubs on the Reward Stones they have some of these colors. The colors are:<VAR.BREAK><VAR.BREAK>Marine<VAR.BREAK>Bubblegum<VAR.BREAK>Purple Haze<VAR.BREAK>Flamingo<VAR.BREAK>Blueberry<VAR.BREAK>Magenta<VAR.BREAK>Sun<VAR.BREAK>Midnight<VAR.BREAK>Salmon<VAR.BREAK>Onyx<VAR.BREAK>Lime<VAR.BREAK>Orange Haze<VAR.BREAK>Indigo<VAR.BREAK>Azure<VAR.BREAK>Sunfire<VAR.BREAK>Neon<VAR.BREAK>Vermillion<VAR.BREAK>Pitch Black<VAR.BREAK>Anthrax<VAR.BREAK>Blood<VAR.BREAK>Vorpal<VAR.BREAK>Jupiter<VAR.BREAK>Cyanide<VAR.BREAK>Butterscotch<VAR.BREAK>Firebrick<VAR.BREAK><VAR.BREAK>All other colors can only be obtainable by donating.
+
+//<VAR.BREAK><VAR.BREAK>
+
+[DIALOG d_donator2_book BUTTON]
+ON = 1
+   return 1   
+   
+   
+   
+////////
+////////
+
+[ITEMDEF I_donator3_book]
+NAME=@07a1 Donator Steeds
+ID=0fbd
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Intro
+DESCRIPTION=Intro Book
+TYPE=T_NORMAL
+
+ON=@DClick
+SRC.HTMLDIALOG d_donator3_book
+return 1
+endif
+
+
+[DIALOG d_donator3_book]
+100, 100
+
+PAGE 0
+  resizepic  0 0 3500 530 450
+  text 210 20 50 0
+
+
+  button 224 390 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+  htmlgump 20 60 490 320 2 1 1
+
+[DIALOG d_donator3_book TEXT]
+Donator Steeds
+Okay
+<VAR.BREAK><VAR.BREAK>These steeds can only be purchased via Donation.<VAR.BREAK><VAR.BREAK>They are invunerable and can change colors any time you want. You control the steeds with a wand. If you lose your steed you can use your wand to automatically ride your lost steed.<VAR.BREAK>To shrink your steed say .donatorshrink<VAR.BREAK><VAR.BREAK>To change colors you have to unmount the steed and say Change Color.<VAR.BREAK>Donator Steeds can change to any color you see in the Donator Showroom.<VAR.BREAK><VAR.BREAK>
+
+//<VAR.BREAK><VAR.BREAK>
+
+[DIALOG d_donator3_book BUTTON]
+ON = 1
+   return 1   
+   
+   
+   
+////////
+////////
+
+[ITEMDEF I_donator4_book]
+NAME=@07a1 Donations
+ID=0fbd
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Intro
+DESCRIPTION=Intro Book
+TYPE=T_NORMAL
+
+ON=@DClick
+SRC.HTMLDIALOG d_donator4_book
+return 1
+endif
+
+
+[DIALOG d_donator4_book]
+100, 100
+
+PAGE 0
+  resizepic  0 0 3500 530 450
+  text 220 20 50 0
+
+
+  button 224 390 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+  htmlgump 20 60 490 320 2 1 1
+
+[DIALOG d_donator4_book TEXT]
+Donations
+Okay
+<VAR.BREAK><VAR.BREAK>To donate you have to go to our website www.imperialuo.com/donate or click the pink stone.<VAR.BREAK>You can expect your item as soon as we get the money. Keep in touch with the GM.<VAR.BREAK><VAR.BREAK>Once you've donated, the items are of your responsability. Unless you lost your item due to a bug we can't retrieve it.<VAR.BREAK><VAR.BREAK>All items can be traded in game by yourself with the exception of Donator Shrouds/Robes, Donator Steeds and Donator Capes. To sell those you have to page a GM. Don't be fool and buy one of those items without a GM. You won't be able to use it!<VAR.BREAK><VAR.BREAK>Selling Donator Shrouds/Robes, Donator Steeds or Donator Capes without the assistance of a GM is illegal!
+
+//<VAR.BREAK><VAR.BREAK>
+
+[DIALOG d_donator4_book BUTTON]
+ON = 1
+   return 1   
+   
+/////////
+/////////
+
+[ITEMDEF I_donator5_book]
+NAME=@07a1 Zoo
+ID=0fbd
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Intro
+DESCRIPTION=Intro Book
+TYPE=T_NORMAL
+
+ON=@DClick
+SRC.HTMLDIALOG d_donator5_book
+return 1
+endif
+
+
+[DIALOG d_donator5_book]
+100, 100
+
+PAGE 0
+  resizepic  0 0 3500 530 450
+  text 240 20 50 0
+
+
+  button 224 390 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+  htmlgump 20 60 490 320 2 1 1
+
+[DIALOG d_donator5_book TEXT]
+Zoo
+Okay
+<VAR.BREAK><VAR.BREAK>All of these animals can be found in the wild. Their locations are unknown. It's up to you to discover them!<VAR.BREAK><VAR.BREAK>If you find one of these animals in the wild make sure you take a note where it spawns!<VAR.BREAK><VAR.BREAK>Some of these animals are more common than others.
+
+//<VAR.BREAK><VAR.BREAK>
+
+[DIALOG d_donator5_book BUTTON]
+ON = 1
+   return 1   
+   
+
+
+//////////////////////////////////////
+//////////////////////////////////////
+
+[ITEMDEF I_donator6_book]
+NAME=@07a1 Traders
+ID=0fbd
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Intro
+DESCRIPTION=Intro Book
+TYPE=T_NORMAL
+
+ON=@DClick
+SRC.HTMLDIALOG d_donator6_book
+return 1
+endif
+
+
+[DIALOG d_donator6_book]
+100, 100
+
+PAGE 0
+  resizepic  0 0 3500 530 450
+  text 240 20 50 0
+
+
+  button 224 390 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+  htmlgump 20 60 490 320 2 1 1
+
+[DIALOG d_donator6_book TEXT]
+Traders
+Okay
+<VAR.BREAK><VAR.BREAK>If you are a trader and not a Warrior, this Newbie Dungeon is not for you. You should head to Minoc.<VAR.BREAK><VAR.BREAK>To go to Minoc you should leave this place to Moonglow (Using this telepad) and head to the Moonglow Telepads. Moonglow Telepads are in the middle of Moonglow and it has Telepads to all Major Cities. Simple just choose the Minoc Telepad.<VAR.BREAK><VAR.BREAK>Once there you have a Guarded Cave where you can mine protected from the guards and you also have all needed vendors for your trading skills.
+
+//<VAR.BREAK><VAR.BREAK>
+
+[DIALOG d_donator6_book BUTTON]
+ON = 1
+   return 1   
+      
+
+
+//////////////////////////////////////
+//////////////////////////////////////
+
+[ITEMDEF I_donator7_book]
+NAME=@07a1 A Book for Traders
+ID=0fbd
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Intro
+DESCRIPTION=Intro Book
+TYPE=T_NORMAL
+
+ON=@DClick
+SRC.HTMLDIALOG d_donator7_book
+return 1
+endif
+
+
+[DIALOG d_donator7_book]
+100, 100
+
+PAGE 0
+  resizepic  0 0 3500 530 450
+  text 200 20 50 0
+
+
+  button 224 390 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+  htmlgump 20 60 490 320 2 1 1
+
+[DIALOG d_donator7_book TEXT]
+A Book for Traders
+Okay
+<VAR.BREAK><VAR.BREAK>Welcome to Minoc. In this town you have everything you need as a trader. You have every vendor you need and you also have a Newbie Mine called Mt. Kendall.<VAR.BREAK><VAR.BREAK>Mt. Kendall is a mine for unskilled miners to train their skill in peace. It's a guarded zone.<VAR.BREAK>There you can only mine Copper and Iron, and some times other ores. If you want to mine better ores you have to leave Mt. Kendall.
+
+//<VAR.BREAK><VAR.BREAK>
+
+[DIALOG d_donator7_book BUTTON]
+ON = 1
+   return 1   
+
+
+//////////////////////////////////////
+//////////////////////////////////////
+
+[ITEMDEF I_donator8_book]
+NAME=@07a1 Thank You
+ID=0fbd
+CATEGORY=IMPERIAL UO
+SUBSECTION=Books Intro
+DESCRIPTION=Intro Book
+TYPE=T_NORMAL
+
+ON=@DClick
+SRC.HTMLDIALOG d_donator8_book
+return 1
+endif
+
+
+[DIALOG d_donator8_book]
+100, 100
+
+PAGE 0
+  resizepic  0 0 3500 530 450
+  text 225 20 50 0
+
+
+  button 224 390 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+  htmlgump 20 60 490 320 2 1 1
+
+[DIALOG d_donator8_book TEXT]
+Thank You
+Okay
+<VAR.BREAK><VAR.BREAK>I want to thank everyone that helped me on the shard.<VAR.BREAK><VAR.BREAK>Without you guys this couldn't be possible. I'd like to thank for the help on the server, with the scripts, help on the website, help on moral support everything.<VAR.BREAK><VAR.BREAK>Thanks to Dafty for hosting my server, thanks to Ray and Panther for the Support they give me costantly, thanks to Spitfire, Kenzo and Ribeiro for their initial help and moral support, thanks to Charm on helping me with the website, thanks to Dragon for his support and thanks to Dethrone for being a loveable prick! <VAR.BREAK><VAR.BREAK>Much love,<VAR.BREAK>Olbrien
+
+//<VAR.BREAK><VAR.BREAK>
+
+[DIALOG d_donator8_book BUTTON]
+ON = 1
+   return 1      
+   
+   
+////////////////////////////////
+////////////////////////////////
+
+[ITEMDEF i_moongate_llama]
+ID=i_moongate_blue
+NAME=Snuggle Entrance Gate
+TYPE=T_telepad
+
+on=@create
+Color=077f
+ATTR=010
+
+on=@step
+  if (<src.obody>=c_man)
+  src.tag.oldbody=c_man
+  else
+    if (<src.obody>=c_woman)
+    src.tag.oldbody=c_woman
+    endif
+  endif
+src.obody=c_llama
+src.body=c_llama
+src.update
+Return 0   
+
+////////////////////////////////
+////////////////////////////////
+
+[ITEMDEF i_moongate_ostard]
+ID=i_moongate_blue
+NAME=Snuggle Entrance Gate
+TYPE=T_telepad
+
+on=@create
+Color=077f
+ATTR=010
+
+on=@step
+  if (<src.obody>=c_man)
+  src.tag.oldbody=c_man
+  else
+    if (<src.obody>=c_woman)
+    src.tag.oldbody=c_woman
+    endif
+  endif
+src.obody=c_ostard_desert
+src.body=c_ostard_desert
+src.update
+Return 0   
+
+
+////////////////////////////////
+////////////////////////////////
+
+[ITEMDEF i_moongate_horse]
+ID=i_moongate_blue
+NAME=Snuggle Entrance Gate
+TYPE=T_telepad
+
+on=@create
+Color=077f
+ATTR=010
+
+on=@step
+  if (<src.obody>=c_man)
+  src.tag.oldbody=c_man
+  else
+    if (<src.obody>=c_woman)
+    src.tag.oldbody=c_woman
+    endif
+  endif
+src.obody=c_horse_tan
+src.body=c_horse_tan
+src.update
+Return 0   
+
+
+////////////////////////////////
+////////////////////////////////
+
+[ITEMDEF i_moongate_walrus]
+ID=i_moongate_blue
+NAME=Snuggle Entrance Gate
+TYPE=T_telepad
+
+on=@create
+Color=077f
+ATTR=010
+
+on=@step
+  if (<src.obody>=c_man)
+  src.tag.oldbody=c_man
+  else
+    if (<src.obody>=c_woman)
+    src.tag.oldbody=c_woman
+    endif
+  endif
+src.obody=c_walrus
+src.body=c_walrus
+src.update
+Return 0   
+
+
+////////////////////////////////
+////////////////////////////////
+
+[ITEMDEF i_moongate_chicken]
+ID=i_moongate_blue
+NAME=Snuggle Entrance Gate
+TYPE=T_telepad
+
+on=@create
+Color=077f
+ATTR=010
+
+on=@step
+  if (<src.obody>=c_man)
+  src.tag.oldbody=c_man
+  else
+    if (<src.obody>=c_woman)
+    src.tag.oldbody=c_woman
+    endif
+  endif
+src.obody=c_chicken
+src.body=c_chicken
+src.update
+Return 0   
+
+
+////////////////////////////////
+////////////////////////////////
+
+[ITEMDEF i_moongate_alligator]
+ID=i_moongate_blue
+NAME=Snuggle Entrance Gate
+TYPE=T_telepad
+
+on=@create
+Color=077f
+ATTR=010
+
+on=@step
+  if (<src.obody>=c_man)
+  src.tag.oldbody=c_man
+  else
+    if (<src.obody>=c_woman)
+    src.tag.oldbody=c_woman
+    endif
+  endif
+src.obody=c_alligator
+src.body=c_alligator
+src.update
+Return 0   
+
+
+////////////////////////////////
+////////////////////////////////
+
+[ITEMDEF i_moongate_pig]
+ID=i_moongate_blue
+NAME=Snuggle Entrance Gate
+TYPE=T_telepad
+
+on=@create
+Color=077f
+ATTR=010
+
+on=@step
+  if (<src.obody>=c_man)
+  src.tag.oldbody=c_man
+  else
+    if (<src.obody>=c_woman)
+    src.tag.oldbody=c_woman
+    endif
+  endif
+src.obody=c_pig
+src.body=c_pig
+src.update
+Return 0   
+
+
+////////////////////////////////
+////////////////////////////////
+
+[ITEMDEF i_moongate_gorilla]
+ID=i_moongate_blue
+NAME=Snuggle Entrance Gate
+TYPE=T_telepad
+
+on=@create
+Color=077f
+ATTR=010
+
+on=@step
+  if (<src.obody>=c_man)
+  src.tag.oldbody=c_man
+  else
+    if (<src.obody>=c_woman)
+    src.tag.oldbody=c_woman
+    endif
+  endif
+src.obody=c_gorilla
+src.body=c_gorilla
+src.update
+Return 0   
+
+
+////////////////////////////////
+////////////////////////////////
+
+[ITEMDEF i_moongate_doe]
+ID=i_moongate_blue
+NAME=Snuggle Entrance Gate
+TYPE=T_telepad
+
+on=@create
+Color=077f
+ATTR=010
+
+on=@step
+  if (<src.obody>=c_man)
+  src.tag.oldbody=c_man
+  else
+    if (<src.obody>=c_woman)
+    src.tag.oldbody=c_woman
+    endif
+  endif
+src.obody=c_doe
+src.body=c_doe
+src.update
+Return 0  
+
+////////////////////////////////
+////////////////////////////////
+
+[ITEMDEF i_moongate_rat]
+ID=i_moongate_blue
+NAME=Snuggle Entrance Gate
+TYPE=T_telepad
+
+on=@create
+Color=077f
+ATTR=010
+
+on=@step
+  if (<src.obody>=c_man)
+  src.tag.oldbody=c_man
+  else
+    if (<src.obody>=c_woman)
+    src.tag.oldbody=c_woman
+    endif
+  endif
+src.obody=c_rat_giant
+src.body=c_rat_giant
+src.update
+Return 0    
+
+////////////////////////////////
+////////////////////////////////
+
+[ITEMDEF i_moongate_bullfrog]
+ID=i_moongate_blue
+NAME=Snuggle Entrance Gate
+TYPE=T_telepad
+
+on=@create
+Color=077f
+ATTR=010
+
+on=@step
+  if (<src.obody>=c_man)
+  src.tag.oldbody=c_man
+  else
+    if (<src.obody>=c_woman)
+    src.tag.oldbody=c_woman
+    endif
+  endif
+src.obody=c_bullfrog
+src.body=c_bullfrog
+src.update
+Return 0    
+
+////////////////////////////////
+////////////////////////////////
+
+[ITEMDEF i_moongate_dog]
+ID=i_moongate_blue
+NAME=Snuggle Entrance Gate
+TYPE=T_telepad
+
+on=@create
+Color=077f
+ATTR=010
+
+on=@step
+  if (<src.obody>=c_man)
+  src.tag.oldbody=c_man
+  else
+    if (<src.obody>=c_woman)
+    src.tag.oldbody=c_woman
+    endif
+  endif
+src.obody=c_dog
+src.body=c_dog
+src.update
+Return 0    
+
+
+
+////////////////////////////////
+////////////////////////////////
+////
+//// Items for events
+////
+////////////////////////////////
+////////////////////////////////
+
+
+[ITEMDEF I_pants_of_strintdex]
+NAME=@07d1 Illegal Pants
+ID=01539
+TYPE=T_CLOTHING
+WEIGHT=3
+ARMOR=10
+REQSTR=20
+
+
+ON=@CREATE
+COLOR=07b2
+HITPOINTS={26 30 }
+
+ON=@EQUIP 
+SRC.STR=(<SRC.STR> + 400) 
+SRC.DEX=(<SRC.DEX> + 400) 
+SRC.INT=(<SRC.INT> + 400) 
+SRC.MESSAGE @07d1 You feel something big in your pants.
+ON=@UNEQUIP 
+SRC.STR=(<SRC.STR> + -400) 
+SRC.DEX=(<SRC.DEX> + -400) 
+SRC.INT=(<SRC.INT> + -400) 
+
+CATEGORY=IMPERIAL UO
+SUBSECTION=RARE
+DESCRIPTION=MAGICAL CLOAK OF THE WIND 
+
+
+
+//////////////////////////////////////
+//////////////////////////////////////
+
+[ITEMDEF i_moongate_Moloch]
+ID=i_moongate_blue
+NAME=Snuggle Entrance Gate
+TYPE=T_telepad
+
+on=@create
+Color=077f
+ATTR=010
+
+on=@step
+  if (<src.obody>=c_man)
+  src.tag.oldbody=c_man
+  else
+    if (<src.obody>=c_woman)
+    src.tag.oldbody=c_woman
+    endif
+	  if (<src.obody>=c_moloch)
+	  return 1
+	  endif
+  endif
+src.obody=c_Moloch
+src.body=c_Moloch
+SRC.STR=(<SRC.STR> + 300) 
+SRC.DEX=(<SRC.DEX> + 300) 
+SRC.INT=(<SRC.INT> + 300) 
+SRC.HITS=<SRC.STR>
+SRC.STAM=<SRC.DEX>
+SRC.MANA=<SRC.INT>
+src.update
+Return 0    
+
+
+
+[ITEMDEF i_moongate_Moloch_exit]
+ID=i_moongate_blue
+NAME=Snuggle Exit Gate
+
+on=@create
+Color=0778
+ATTR=010
+
+on=@step
+  if !strmatch("<src.tag.oldbody>", "c_man")
+     if !strmatch("<src.tag.oldbody>", "c_woman")
+        Return 0
+     Endif
+  Endif
+src.body=<src.tag.oldbody>
+src.obody=<src.tag.oldbody>
+SRC.STR=(<SRC.STR> + -300) 
+SRC.DEX=(<SRC.DEX> + -300) 
+SRC.INT=(<SRC.INT> + -300) 
+SRC.HITS=<SRC.STR>
+SRC.STAM=<SRC.DEX>
+SRC.MANA=<SRC.INT>
+src.update
+src.tag.oldbody=
+Return 0
+
+
+//////////////////////////////
+//////////////////////////////
+//
+// Traitor
+//
+//////////////////////////////
+//////////////////////////////
+
+
+[CHARDEF c_traitor1]
+ID = c_man
+NAME = Traitor
+TSPEECH = spk_traitor1
+
+ 
+ON = @Create
+STR= 10000
+DEX= 10000
+INT= 10000
+FLAGS=00005
+ITEMNEWBIE= random_male_hair
+COLOR= colors_hair
+ITEMNEWBIE= random_facial_hair
+COLOR= match_hair
+ITEMNEWBIE= i_CAPE
+COLOR= 07a0
+ITEMNEWBIE= i_robe
+COLOR= 07a0
+ 
+[SPEECH spk_traitor1]
+On=*hi*
+say You want to come inside? These walls are almost cracked. Say Open and I'll crack them down!
+
+On=*hello*
+say You want to come inside? These walls are almost cracked. Say Open and I'll crack them down!
+
+On=*pixies*
+say Trymmi is a cheater!
+
+On=*kos*
+say KOS suck!
+
+on=*open*
+ 
+if (<findid.m_traitor_wall_delay.uid>)             //search for the memory. i suppose the NPC is the CONT.
+say You must wait <eval (<findid.m_traitor_wall_delay.timer>/60)> minutes before I can crack the walls again.          // if it exists, you wait.
+return 1
+else
+serv.newitem m_traitorA1            //creates the item to lower the doors.
+equip <new.uid>
+serv.newitem m_traitor_wall_delay
+equip <new.uid>
+say It's open! Get in before they find out!
+return 1
+endif
+ 
+on=*time* 
+say You must wait <eval (<findid.m_traitor_wall_delay.timer>/60)> minutes before I can crack the walls again.          // if it exists, you wait. 
+ 
+[ITEMDEF M_traitorA1]
+ID=i_memory
+NAME=Traitor Time Delay A1
+type=t_eq_script
+ 
+on=@create
+timer=120                    //time the gate stays open
+ 
+on=@equip                   // gates go down
+cont.tag.gatesopen=1
+cont.tag.gatesclosed=
+obj=<uid.0438eb675>
+obj.nudgedown 25
+ 
+on=@timer                   //after that time, gates go up.
+cont.tag.gatesopen=
+cont.tag.gatesclosed=1
+obj=<uid.0438eb675>
+obj.nudgeup 25
+remove
+Return 1
+ 
+[ITEMDEF m_traitor_wall_delay]
+id=i_memory
+name=Wall Delay
+type=t_eq_script
+ 
+ON=@Create              //cooldown to open gates again
+timer=18000
+ 
+ON=@Timer
+remove
+return 1
+
+
+/////////////////////////////////////////////
+/////////////////////////////////////////////
+
+
+[CHARDEF c_traitor2]
+ID = c_man
+NAME = Traitor
+TSPEECH = spk_traitor2
+
+ 
+ON = @Create
+STR= 10000
+DEX= 10000
+INT= 10000
+FLAGS=00005
+ITEMNEWBIE= random_male_hair
+COLOR= colors_hair
+ITEMNEWBIE= random_facial_hair
+COLOR= match_hair
+ITEMNEWBIE= i_CAPE
+COLOR= 07a0
+ITEMNEWBIE= i_robe
+COLOR= 07a0
+ 
+[SPEECH spk_traitor2]
+On=*hi*
+say You want to come inside? These walls are almost cracked. Say Open and I'll crack them down!
+
+On=*hello*
+say You want to come inside? These walls are almost cracked. Say Open and I'll crack them down!
+
+On=*pixies*
+say Trymmi is a cheater!
+
+On=*kos*
+say KOS suck!
+
+on=*open*
+ 
+if (<findid.m_traitor_wall_delay2.uid>)             //search for the memory. i suppose the NPC is the CONT.
+say You must wait <eval (<findid.m_traitor_wall_delay2.timer>/60)> minutes before I can crack the walls again.          // if it exists, you wait.
+return 1
+else
+serv.newitem m_traitorA2            //creates the item to lower the doors.
+equip <new.uid>
+serv.newitem m_traitor_wall_delay2
+equip <new.uid>
+say It's open! Get in before they find out!
+return 1
+endif
+ 
+on=*time* 
+say You must wait <eval (<findid.m_traitor_wall_delay2.timer>/60)> minutes before I can crack the walls again.          // if it exists, you wait. 
+ 
+[ITEMDEF M_traitorA2]
+ID=i_memory
+NAME=Traitor Time Delay A1
+type=t_eq_script
+ 
+on=@create
+timer=120                  //time the gate stays open
+ 
+on=@equip                   // gates go down
+cont.tag.gatesopen=1
+cont.tag.gatesclosed=
+obj=<uid.0438eb602>
+obj.nudgedown 25
+ 
+on=@timer                   //after that time, gates go up.
+cont.tag.gatesopen=
+cont.tag.gatesclosed=1
+obj=<uid.0438eb602>
+obj.nudgeup 25
+remove
+Return 1
+ 
+[ITEMDEF m_traitor_wall_delay2]
+id=i_memory
+name=Wall Delay
+type=t_eq_script
+ 
+ON=@Create              //cooldown to open gates again
+timer=18000
+ 
+ON=@Timer
+remove
+return 1
+
+
+/////////////////////////////////////////////
+/////////////////////////////////////////////
+
+
+[CHARDEF c_traitor3]
+ID = c_man
+NAME = Traitor
+TSPEECH = spk_traitor3
+
+ 
+ON = @Create
+STR= 10000
+DEX= 10000
+INT= 10000
+FLAGS=00005
+ITEMNEWBIE= random_male_hair
+COLOR= colors_hair
+ITEMNEWBIE= random_facial_hair
+COLOR= match_hair
+ITEMNEWBIE= i_CAPE
+COLOR= 07a0
+ITEMNEWBIE= i_robe
+COLOR= 07a0
+ 
+[SPEECH spk_traitor3]
+On=*hi*
+say You want to come inside? These walls are almost cracked. Say Open and I'll crack them down!
+
+On=*hello*
+say You want to come inside? These walls are almost cracked. Say Open and I'll crack them down!
+
+On=*pixies*
+say Trymmi is a cheater!
+
+On=*kos*
+say KOS suck!
+
+on=*open*
+ 
+if (<findid.m_traitor_wall_delay3.uid>)             //search for the memory. i suppose the NPC is the CONT.
+say You must wait <eval (<findid.m_traitor_wall_delay3.timer>/60)> minutes before I can crack the walls again.          // if it exists, you wait.
+return 1
+else
+serv.newitem m_traitorA3            //creates the item to lower the doors.
+equip <new.uid>
+serv.newitem m_traitor_wall_delay3
+equip <new.uid>
+say It's open! Get in before they find out!
+return 1
+endif
+ 
+on=*time* 
+say You must wait <eval (<findid.m_traitor_wall_delay3.timer>/60)> minutes before I can crack the walls again.          // if it exists, you wait. 
+ 
+[ITEMDEF M_traitorA3]
+ID=i_memory
+NAME=Traitor Time Delay A1
+type=t_eq_script
+ 
+on=@create
+timer=120                  //time the gate stays open
+ 
+on=@equip                   // gates go down
+cont.tag.gatesopen=1
+cont.tag.gatesclosed=
+obj=<uid.0438eb5af>
+obj.nudgedown 25
+ 
+on=@timer                   //after that time, gates go up.
+cont.tag.gatesopen=
+cont.tag.gatesclosed=1
+obj=<uid.0438eb5af>
+obj.nudgeup 25
+remove
+Return 1
+ 
+[ITEMDEF m_traitor_wall_delay3]
+id=i_memory
+name=Wall Delay
+type=t_eq_script
+ 
+ON=@Create              //cooldown to open gates again
+timer=18000
+ 
+ON=@Timer
+remove
+return 1
+
+
+/////////////////////////////////////////////
+/////////////////////////////////////////////
+//////
+////// Expel 
+//////
+/////////////////////////////////////////////
+/////////////////////////////////////////////
+
+
+[FUNCTION expel]
+IF !<ISEMPTY <TAG.GUILDTOWN>> && !<FINDID.i_raider> //HAS GUILDTOWN TAG
+SYSMESSAGE @,,1 Who do you want to expel?
+TARGETF f_expel
+RETURN 1
+ENDIF
+SYSMESSAGE @,,1 You need to be in your own Guild Town to use this command.
+RETURN 1
+
+[FUNCTION f_expel]
+IF !<ARGO.ISPLAYER> //TARGET MUST BE A PLAYER
+SRC.SYSMESSAGE @,,1 You can only use this on players.
+RETURN 1
+ELIF <ARGO.FINDID.i_rune_incognito> //PLAYER IS INCOGNITO
+SRC.SYSMESSAGE @,,1 That player is incognito and cannot be expelled.
+RETURN 1
+ELIF <ARGO.FINDID.i_raider> //IS PLAYER //IS RAIDER //NOT INCOGNITO
+IF <ARGO.FINDID.i_raider_immune> //HAS IMMUNITY
+SRC.SYSMESSAGE @,,1 They are still immune from being expelled.
+RETURN 1
+ENDIF
+ARGO.GO 2569,185
+ARGO.SYSMESSAGE @,,1 You have been expelled from the guild town raid by <SRC.NAME>.
+SRC.SYSMESSAGE @,,1 You have expelled <ARGO.NAME>.
+ARGO.FINDID.i_raider.REMOVE //REMOVE RAIDER TAG
+RETURN 1
+ENDIF
+RETURN 1
+
+
+[ITEMDEF t_guildtown_telepad1]
+ID		= i_teleporter
+
+ON=@CREATE
+  ATTR      = 090
+
+ON=@STEP
+IF <SRC.ISPLAYER> //MAKE SURE IT IS A PLAYER
+IF !<SRC.FINDID.i_raider> //NOT ALREADY RAIDING
+SERV.NEWITEM i_raider_immune
+NEW.CONT <SRC>
+SERV.NEWITEM i_raider
+NEW.CONT <SRC>
+ENDIF
+ENDIF
+SRC.GO 2577,185
+ENDIF
+
+[ITEMDEF i_raider_immune]
+ID=i_memory
+NAME=Raider Immunity
+WEIGHT=0
+TYPE=t_eq_script
+
+ON=@CREATE
+TIMER = 1800 //30 mins ALTERA DEPOIS PARA 30M
+ATTR=attr_invis|attr_decay
+
+ON=@TIMER
+CONT.SYSMESSAGE @,,1 You are no longer immune from being expelled.
+CONT.SYSMESSAGE @,,1 You can use Incognito Spell to Immune yourself from being expelled.
+CONT.SYSMESSAGE @,,1 To leave the town you have to use Recall or .stuck 
+REMOVE
+RETURN 1
+
+[ITEMDEF i_raider]
+ID=i_memory
+NAME=Raider
+WEIGHT=0
+TYPE=t_eq_script
+
+ON=@CREATE
+TIMER = 172800 //48 hours ALTERA DEPOIS PARA 30M
+ATTR=attr_invis|attr_decay
+
+ON=@TIMER
+REMOVE
+RETURN 1 
+
+
+
+///////////////////////////////////
+///////////////////////////////////
+
+
+
+[ITEMDEF t_guildtown_telepad2]
+ID		= i_teleporter
+
+ON=@CREATE
+  ATTR      = 090
+
+ON=@STEP
+IF <SRC.ISPLAYER> //MAKE SURE IT IS A PLAYER
+IF !<SRC.FINDID.i_raider> //NOT ALREADY RAIDING
+SERV.NEWITEM i_raider_immune
+NEW.CONT <SRC>
+SERV.NEWITEM i_raider
+NEW.CONT <SRC>
+ENDIF
+ENDIF
+SRC.GO 1971,2080
+ENDIF

@@ -1,0 +1,138 @@
+//coded by Yin for BFUO at 13.06.2006. Script announcing players death/kills to all players with this function enabled. Add  "public" function to paperdoll or as allowed command. 
+
+[PLEVEL 1]
+public
+
+[PLEVEL 3]
+Clear_PvP_List
+
+[Function public] 
+   OBJ=<uid>
+   OBJ.dialog d_public_announcements
+
+[Function f_public_death]
+   VAR.public_kill_20 = <VAR.public_kill_19>
+   VAR.public_kill_19 = <VAR.public_kill_18>
+   VAR.public_kill_18 = <VAR.public_kill_17>
+   VAR.public_kill_17 = <VAR.public_kill_16>
+   VAR.public_kill_16 = <VAR.public_kill_15>
+   VAR.public_kill_15 = <VAR.public_kill_14>
+   VAR.public_kill_14 = <VAR.public_kill_13>
+   VAR.public_kill_13 = <VAR.public_kill_12>
+   VAR.public_kill_12 = <VAR.public_kill_11>
+   VAR.public_kill_11 = <VAR.public_kill_10>
+   VAR.public_kill_10 = <VAR.public_kill_9>
+   VAR.public_kill_9 = <VAR.public_kill_8>
+   VAR.public_kill_8 = <VAR.public_kill_7>
+   VAR.public_kill_7 = <VAR.public_kill_6>
+   VAR.public_kill_6 = <VAR.public_kill_5>
+   VAR.public_kill_5 = <VAR.public_kill_4>
+   VAR.public_kill_4 = <VAR.public_kill_3>
+   VAR.public_kill_3 = <VAR.public_kill_2>
+   VAR.public_kill_2 = <VAR.public_kill_1>
+   VAR.public_kill_1 = <argv0> killed by <argv1>
+   
+[Function f_public_announce]
+   OBJ=<uid>
+  
+   IF (<obj.tag0.public> == 1)	 
+      IF (<argv4> == 2)
+         OBJ.sysmessage @70 Public announcement: Another uncautious adventurer was slayed by the monster. <argv0> was killed by <argv1> at <argv5>!.
+         return 1
+      ENDIF
+
+      IF (<argv2> >= 4 ) && (<argv3> <= 4)
+         OBJ.sysmessage @70 Public announcement: Evil <argv0> was slayed by the righteous hand of <argv1> at <argv5>!
+         return 1
+      ENDIF
+
+      IF (<argv2> <= 4 ) && (<argv3> >= 4)
+         OBJ.sysmessage @70 Public announcement: The Dead gather another victim. <argv0> was murdered by the dark <argv1> at <argv5>!
+         return 1
+      ENDIF
+
+      IF (<argv2> >= 4 ) && (<argv3> >= 4)
+         OBJ.sysmessage @70 Public announcement: A murderer <argv0> was slaughtered by the villian <argv1> at <argv5>! 
+         return 1
+      ENDIF
+
+      IF (<argv2> <= 4 ) && (<argv3> <= 4)
+         OBJ.sysmessage @70 Public announcement: A tragic moment! Another good soul travelled to heaven. Good <argv0> was executed by the enraged <argv1> at <argv5>! 
+         return 1
+      ENDIF
+  endif 
+
+[DIALOG d_public_announcements]
+0,0
+page 0
+resizepic 0 0 2620 700 430
+dtext 30 30 044e For participating players, this function displays the names of killer and victim of a battle.
+dtext 30 45 044e Participating players will also receive a message about any changes in this list.
+
+dtext 30 60 044e Status:
+if (<src.tag0.public> == 1)
+   local.status = enabled
+else
+   local.status = disabled
+endif
+dtext 85 60 70 <local.status>
+button 140 65 2104 2104 1 0 1
+dtext 155 60 044e (Click to Turn function On/Off)
+
+dtext 30 90 34 Last kills:
+dtext 30 105 70 <VAR.public_kill_1>
+dtext 30 120 70 <VAR.public_kill_2>
+dtext 30 135 70 <VAR.public_kill_3>
+dtext 30 150 70 <VAR.public_kill_4>
+dtext 30 165 70 <VAR.public_kill_5>
+dtext 30 180 70 <VAR.public_kill_6>
+dtext 30 195 70 <VAR.public_kill_7>
+dtext 30 210 70 <VAR.public_kill_8>
+dtext 30 225 70 <VAR.public_kill_9>
+dtext 30 240 70 <VAR.public_kill_10>
+dtext 30 255 70 <VAR.public_kill_11>
+dtext 30 270 70 <VAR.public_kill_12>
+dtext 30 285 70 <VAR.public_kill_13>
+dtext 30 300 70 <VAR.public_kill_14>
+dtext 30 315 70 <VAR.public_kill_15>
+dtext 30 330 70 <VAR.public_kill_16>
+dtext 30 345 70 <VAR.public_kill_17>
+dtext 30 360 70 <VAR.public_kill_18>
+dtext 30 375 70 <VAR.public_kill_19>
+dtext 30 390 70 <VAR.public_kill_20>
+
+[DIALOG d_public_announcements BUTTON]
+on=1
+   If (<tag0.public> == 0)
+      obj.tag.public = 1
+      dialog d_public_announcements
+   else
+      message Public announcment option is disabled.
+      tag.public = 
+      dialog d_public_announcements
+   endif
+
+[Function Clear_PvP_List]
+   VAR.public_kill_20 =
+   VAR.public_kill_19 =
+   VAR.public_kill_18 =
+   VAR.public_kill_17 =
+   VAR.public_kill_16 =
+   VAR.public_kill_15 =
+   VAR.public_kill_14 =
+   VAR.public_kill_13 =
+   VAR.public_kill_12 =
+   VAR.public_kill_11 =
+   VAR.public_kill_10 =
+   VAR.public_kill_9 =
+   VAR.public_kill_8 =
+   VAR.public_kill_7 =
+   VAR.public_kill_6 =
+   VAR.public_kill_5 =
+   VAR.public_kill_4 =
+   VAR.public_kill_3 =
+   VAR.public_kill_2 =
+   VAR.public_kill_1 =
+
+
+[eof]

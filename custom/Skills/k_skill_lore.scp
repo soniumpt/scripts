@@ -1,0 +1,251 @@
+// 08-06-2004 - Raist - Added a check on the identifier function to exclude res stones as it wasn't allowing players to res
+//25/11/2019 - Wigifer - Updated all remaining <TIME> to <SERV.TIME> (56d update issue)
+
+[FUNCTION INSPECT_BAG]
+   if ( <RESCOUNT> == 0 )
+     SRC.SYSMESSAGE @0 The <NAME> is empty!!!
+     return 1
+   elseif ( <RESCOUNT> > 75 )
+     SRC.SYSMESSAGE @0 The <NAME> is too full to see the individual items clearly.
+     RETURN 1
+   endif
+
+   SRC.SYSMESSAGE @0 The <NAME> has <RESCOUNT> items.
+   INSPECT_BAG_ 0
+
+
+[FUNCTION INSPECT_BAG_]
+  SRC.ACT = <findcont(<args>).uid>
+  if !( 0<SRC.ACT.UID> )
+     return
+  endif
+
+  if ( (<SRC.ACT.BASEID> == i_bag) && strcmp( "<SRC.ACT.NAME>", "bag" ) )
+     SRC.SYSMESSAGE " - A bag entitled: <SRC.ACT.NAME>"
+  elseif ( <SRC.ACT.ISWEAPON> || <SRC.ACT.ISARMOUR> || <SRC.ACT.ISSHIELD> || (<SRC.ACT.TYPE> == t_clothing) )
+     SRC.SYSMESSAGE "@<eval <SRC.ACT.COLOR>>  * <SRC.ACT.NAME>"
+  else
+     SRC.SYSMESSAGE " - <SRC.ACT.NAME>"
+  endif
+  INSPECT_BAG_ <eval (<args>+1)>
+
+
+
+[FUNCTION Netherlore_Identify]
+  LOCAL.M	= 0
+  LOCAL.S	= <eval ((<SERV.TIME> - <SRC.ACT.MORE1>)/10)>
+  LOCAL.S	= <eval ( { <eval ((<LOCAL.S> * 3000) / (<SRC.NETHERLORE> + 2000))> <LOCAL.S> } )>
+
+  IF ( <LOCAL.S> > 60 )
+     LOCAL.M	= <eval (<LOCAL.S> / 60)>
+     LOCAL.S	= <eval (<LOCAL.S> - (<LOCAL.M> * 60))>
+     LOCAL.S	= <eval ( (<LOCAL.S> / 5) * 5 )>
+  ENDIF
+
+  IF ( <SRC.NETHERLORE> <= 30.0 )
+     if ( <LOCAL.M> )
+        SRC.SYSMESSAGE This is <SRC.ACT.NAME> and it is about <eval <LOCAL.M>> minutes, <eval <LOCAL.S>> seconds old.
+     else
+        SRC.SYSMESSAGE This is <SRC.ACT.NAME> and it is about <eval <LOCAL.S>> seconds old.
+     endif
+  ELSE
+     if ( <LOCAL.M> )
+        SRC.SYSMESSAGE This is <SRC.ACT.NAME> and it is about <eval <LOCAL.M>> minutes, <eval <LOCAL.S>> seconds old.
+     else
+        SRC.SYSMESSAGE This is <SRC.ACT.NAME> and it is about <eval <LOCAL.S>> seconds old.
+     endif
+     if ( <SRC.ACT.MORE2> > 0 )
+        SRC.SYSMESSAGE It appears to have been killed by <SRC.UID.<SRC.ACT.MORE2>.NAME>.
+     endif
+  ENDIF
+  RETURN 1
+  
+
+
+[FUNCTION ItemLore_Identify]  
+   ACT.MAKE_NAME
+   ACT.ATTR	= <ACT.ATTR> | attr_identified
+   ACT.TRIGGER @Identify
+
+   IF ( <ACT.ISARMOUR> || <ACT.ISSHIELD> )
+      ACT.ARMOUR_UPDATE
+   ENDIF
+      
+   IF ( <ACT.VALUE> == 0 )
+      LOCAL.MSG1	= After careful consideration, you believe <ACT.NAME> to be priceless.
+   ELSE
+      LOCAL.MSG1	= You estimate about <ACT.VALUE>gp for <ACT.NAME>.
+   ENDIF
+   IF ( !strcmp( "<ACT.RESMAKE>", "" ) )
+      IF !<NPC>
+         SYSMESSAGE <LOCAL.MSG1>
+      ENDIF
+   ELSE
+      IF !<NPC>
+            IF (<ACT.DEFNAME> == i_potion_hope)
+                  SYSMESSAGE <LOCAL.MSG1> It is made of 1 hope, 3 dreams and a little bit of magic.
+            ELSE
+                  SYSMESSAGE <LOCAL.MSG1> It is made of <ACT.RESMAKE>.
+            ENDIF
+      ENDIF
+   ENDIF
+
+   MSG_EFFECT_CLEAR
+   VAR.MSG_EFFECT_ADD	= 0
+   IF ( 0 )
+   ELSEIF ( <ACT.ISWEAPON> )
+      ACT.MSG_EFFECT_WEAPON
+   ELSEIF ( <ACT.ISARMOUR> || <ACT.ISSHIELD> )
+      ACT.MSG_EFFECT_ARMOUR
+   ELSEIF ( <ACT.TYPE> == t_scroll )
+     IF !( <ACT.ISNECROSCROLL> )
+	     IF ( <var.item.skillmin_magery> )
+		MSG_EFFECT_ADD <eval (<var.item.skillmin_magery>/10)>% Magery to recite
+	     ELSE
+		MSG_EFFECT_ADD no Magery to recite
+	     ENDIF
+     ENDIF
+   ENDIF
+
+   VAR.ITEM.IDENTIFY.MSG	= ""
+   ACT.TRIGGER @IdentifyMsg
+   IF ( strcmp( "<VAR.ITEM.IDENTIFY.MSG>", "" ) )
+      MSG_EFFECT_ADD <VAR.ITEM.IDENTIFY.MSG>
+   ENDIF
+
+   IF ( strcmp( "<VAR.MSG_EFFECT>", "" ) )
+      IF <NPC>
+         SAY @70 Properties: <VAR.MSG_EFFECT>
+      ELSE
+         SYSMESSAGE Properties: <VAR.MSG_EFFECT>
+      ENDIF
+   ENDIF
+   RETURN 1
+
+
+
+[FUNCTION AnimalLore_Identify]
+
+IF !strmatch("<SRC.ACT.NAME>","war cry trigger timer")
+
+   SRC.ACT.TRIGGER @GetItemVars
+   SRC.ACT.TRIGGER @Identify
+
+   //Taming and Animal Lore Requirements **Moved Message 2 above message one because ACT disappears**
+   LOCAL.MSG2	= ""
+   IF ( (<SRC.ANIMALLORE> < 50.0) )
+   ELSEIF ( (<SRC.ACT.NPC> == brain_animal) && <SRC.ACT.TAMING> > 0 )
+      IF ( <SRC.ACT.ISHORSE> || <SRC.ACT.ISZOST> )
+         LOCAL.MSG2 = "You would need about <eval ((<SRC.ACT.TAMING>+5)/10)>% Taming to tame them, <eval ((<SRC.ACT.ARMSLORE>+5)/10)>% Animal Lore to control them. "
+      ELSE
+         LOCAL.MSG2 = "You would need about <eval ((<SRC.ACT.TAMING>+5)/10)>% Taming to tame them. "
+      ENDIF
+   ENDIF
+
+   IF ( <SRC.ACT.ISHORSE> )
+      LOCAL.MSG2 = Need <eval (<SRC.ACT.ArmsLore>/10)>% Creature lore to control them fully, amplifying +<eval ((5+<SRC.ACT.ArmsLore>)/50)>% damage in combat, +<eval ((5+<SRC.ACT.ArmsLore>)/30)>% chance to dodge.
+   ELSEIF ( <SRC.ACT.ISZOST> )
+      LOCAL.MSG2 = Need <eval (<SRC.ACT.ArmsLore>/10)>% Creature lore to control them fully, amplifying +<eval ((5+<SRC.ACT.ArmsLore>)/30)>% damage in combat, +<eval ((<SRC.ACT.ArmsLore>)/50)>% chance to dodge.
+   ENDIF
+
+   VAR.NAME	= <SRC.ACT.NAME>
+   SRC.ACT.NAME	=   
+   
+   LOCAL.MSG	= ""
+   IF ( strcmp( "<VAR.NAME>", "<SRC.ACT.NAME>" ) && !strmatch( "#*", "<SRC.ACT.NAME>" ) )
+      LOCAL.MSG = "<VAR.NAME> is a <SRC.ACT.NAME>. "
+   ENDIF
+   SRC.ACT.NAME	= <VAR.NAME>
+
+
+   //Check loyalty
+   LOCAL.ACT	= <SRC.ACT.UID>
+   SRC.ACT	= <SRC.ACT.memoryfindtype(memory_ipet).LINK.uid>
+   IF ( 0 )
+   ELSEIF ( 0<SRC.ACT> )
+      IF ( <SRC.ACT.UID> == <SRC.UID> )
+         LOCAL.MSG	= "They are loyal to you"
+      ELSE
+         LOCAL.MSG	= "They are loyal to <SRC.ACT.NAME>"
+      ENDIF
+   ELSE
+      LOCAL.MSG	= "They are their own master"
+   ENDIF 
+
+   //Check hunger status
+   SRC.ACT=<LOCAL.ACT>
+   LOCAL.MSG	= <LOCAL.MSG>, and they are <SRC.ACT.status_hunger>.
+
+
+   //Send the message
+   IF ( strcmp( "<LOCAL.MSG2>", "" ) )
+      SRC.SYSMESSAGE @73 <LOCAL.MSG>
+      SRC.SYSMESSAGE @74 <LOCAL.MSG2>
+   ENDIF
+   RETURN 1
+ENDIF
+
+
+
+[FUNCTION ArmsLore_Identify]
+   SRC.ACT.ATTR	= <SRC.ACT.ATTR> | attr_identified
+   SRC.ACT.MAKE_NAME
+
+   IF ( <SRC.ACT.ISARMOUR> || <SRC.ACT.ISSHIELD> )
+      SRC.ACT.ARMOUR_UPDATE
+   ENDIF
+
+   MSG_EFFECT_CLEAR
+   VAR.MSG_EFFECT_ADD	= 0
+   
+   VAR.MOREP	= <SRC.ACT.MOREP>
+   SRC.ACT.MOREP	= <SRC.ACT.DAM>
+   LOCAL.MIN	= <SRC.ACT.MOREx>
+   LOCAL.MAX	= <SRC.ACT.MOREy>
+   SRC.ACT.MOREp	= <VAR.MOREp>
+
+   IF ( <SRC.ACT.MORE1h> == 0 )
+      VAR.COND		= 100
+   ELSE
+      VAR.COND	= <eval ((<SRC.ACT.MORE1l> * 100)/<SRC.ACT.MORE1h>)>
+   ENDIF
+
+   IF ( 0 )
+   ELSEIF ( <SRC.ACT.ISWEAPON> )
+      IF ( <LOCAL.MIN> == <LOCAL.MAX> )
+         SRC.SYSMESSAGE The <SRC.ACT.NAME> is at <eval <var.cond>>% condition. Damage is <eval <LOCAL.MIN>>.
+      ELSE
+         SRC.SYSMESSAGE The <SRC.ACT.NAME> is at <eval <var.cond>>% condition. Damage is from <eval <LOCAL.MIN>> to <eval <LOCAL.MAX>>.
+      ENDIF
+      SRC.ACT.MSG_EFFECT_WEAPON
+   ELSEIF ( <SRC.ACT.ISARMOUR> || <SRC.ACT.ISSHIELD> )
+      LOCAL.MIN		= <eval (<LOCAL.MIN> + ((<SRC.ACT.MOREy> * <LOCAL.MIN>) / 1000))>
+      LOCAL.MAX		= <eval (<LOCAL.MAX> + ((<SRC.ACT.MOREy> * <LOCAL.MAX>) / 1000))>
+      LOCAL.MIN		= <eval ((<LOCAL.MAX> * <VAR.COND>) / 100)>
+      IF ( <LOCAL.MIN> == <LOCAL.MAX> )
+         SRC.SYSMESSAGE The <SRC.ACT.NAME> is at <eval <var.cond>>% condition. Defense value is <eval <LOCAL.MIN>>.
+      ELSE
+         SRC.SYSMESSAGE The <SRC.ACT.NAME> is at <eval <var.cond>>% condition. Defense value is <eval <LOCAL.MIN>> of <eval <LOCAL.MAX>>.
+      ENDIF
+      SRC.ACT.MSG_EFFECT_ARMOUR
+   ENDIF
+
+   LOCAL.REQ	= 
+   IF ( <SRC.ACT.ISSHIELD> )
+      VAR.SHIELD_MIN	= <eval ((<SRC.ACT.REQSTR>*1)-5)>
+      IF ( <VAR.SHIELD_MIN> < 0 )
+         LOCAL.REQ = " Base chance to parry is <eval (( 500-((<SRC.ACT.REQSTR> + 50)*3))/10)>%"
+      ELSE
+         LOCAL.REQ = ", <eval <var.shield_min>>% Parrying to use properly. Base chance to parry is <eval (( 500-((<SRC.ACT.REQSTR> + 50)*3))/10)>%"
+      ENDIF
+   ENDIF
+   SRC.SYSMESSAGE Need <SRC.ACT.REQSTR> Strength to use<LOCAL.REQ>.
+   
+   IF ( strcmp( "<VAR.MSG_EFFECT>", "" ) )
+      SRC.SYSMESSAGE Effects: <VAR.MSG_EFFECT>
+   ENDIF
+   
+   RETURN 1
+
+
+[EOF]

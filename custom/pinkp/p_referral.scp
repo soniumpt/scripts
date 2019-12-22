@@ -1,0 +1,146 @@
+//*********************************************************************************************************//
+//                              Referral System Created by Pink Panther                                    //
+//*********************************************************************************************************//
+
+[PLEVEL 1]
+referral
+
+[FUNCTION referral]
+
+IF (<SRC.TAG0.REFERRALMENU>==1)
+SRC.SYSMESSAGE You can't open another referral menu at the moment.
+RETURN 1
+ENDIF
+
+IF (<SRC.ACCOUNT.TOTALCONNECTTIME> > 5000) 
+SRC.SYSMESSAGE You can no longer select the player who introduced us to you.
+RETURN 1
+ENDIF
+
+IF !(<SRC.ACCOUNT.TAG0.INVITEDBY>==0)
+SRC.SYSMESSAGE You have already selected the player who introduced us to you.
+RETURN 1
+ENDIF
+
+
+SRC.DIALOG d_referral
+SRC.TAG0.REFERRALMENU=1
+
+
+[DIALOG d_referral]
+page 0
+
+resizepic  0 0 5120 400 400
+resizepic 35 35 3000 330 330
+
+dtext 150 15 50  Referral System
+dtext 50 50 0 Welcome to the referral system.
+dtext 50 70 0 Through this system you are able to select one 
+dtext 50 90 0 player as the one who introduced us to you.
+dtext 50 110 0 Please note you only have 5000 online account
+dtext 50 130 0 minutes after your first login to do so.
+dtext 50 150 0 Once you achieve 750.0 Total Skill Points and
+dtext 50 170 0 10000 online account minutes, both the player 
+dtext 50 190 0 you targetted and you will be rewarded with
+dtext 50 210 0 500 and 250 Loyalty Points, respectively.
+dtext 50 250 0 Type .loyalty to know more about the Loyalty 
+dtext 50 270 0 Points System and win even more points!
+dtext 50 310 0 Please click the "Okay" button below and target  
+dtext 50 330 0 the player who introduced us to you!
+
+button 120 370 247 248 1 0 1
+button 220 370 241 242 1 0 2
+
+[DIALOG d_referral button]
+ON=0
+SRC.TAG.REFERRALMENU=
+
+ON=1
+SRC.TAG0.REFERRALMENU=
+SRC.NEWITEM i_referral_targetter
+SRC.ACT.TARGET Please target the player who introduced us to you.
+RETURN 1
+	   
+ON=2
+SRC.TAG.REFERRALMENU=
+
+  
+  
+[ITEMDEF i_referral_targetter]
+NAME=Referral Targetter
+ID=i_memory
+TYPE=T_EQ_SCRIPT
+LAYER=30
+
+ON=@CREATE
+  ATTR=attr_decay
+  TIMER=10
+
+ON=@TARGON_CHAR	
+      IF !(<SRC.UID>=<SRC.TARG.UID>)
+			IF !(<SRC.TARG.ISGM> || <SRC.TARG.ISCOUNS>)
+				IF !(<SRC.TARG.ISNPC>)
+					src.sysmessage  @07a1 Congratualitons! You successfully selected <SRC.TARG.NAME> as the one who introduced us to you.
+					src.sysmessage  @07a1 Once you achieve 750.0 Total Skill Points and 10000 online account minutes, both of you will be rewarded with Loyalty Points.
+					src.account.tag0.invitedby=<src.targ.uid>
+					src.events +e_referral_system
+					SERV.LOG :REFERRAL: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> targetted <SRC.TARG.UID> <SRC.TARG.ACCOUNT> <SRC.TARG.NAME> has the one who introduced us to him.
+	  	  
+					src.targ.sysmessage @07a1 <SRC.NAME> selected you as the one who introduced us to him.
+					src.targ.sysmessage  @07a1 Once he achieves 750.0 Total Skill Points and 10000 online account minutes, both of you will be rewarded with Loyalty Points.
+					src.targ.account.tag.referral=<eval <src.targ.account.tag.referral>+1>
+					SERV.LOG :REFERRAL: <SRC.TARG.UID> <SRC.TARG.ACCOUNT> <SRC.TARG.NAME> now have <eval <src.targ.account.tag.referral>> referrals.
+					return 1
+				ELSE
+					SRC.SYSMESSAGE You can't target a NPC.
+					RETURN 1
+				ENDIF
+			ELSE
+				SRC.SYSMESSAGE You can't target a staff member.
+				return 1
+			ENDIF
+		ELSE
+				SRC.SYSMESSAGE You can't target yourself.
+			RETURN 1
+	    ENDIF
+		REMOVE
+
+
+ON=@TARGON_ITEM
+  SRC.SYSMESSAGE You can't target an item!
+  TIMER=1
+  REMOVE
+  RETURN 1
+
+ON=@TARGON_GROUND
+  SRC.SYSMESSAGE You can't target the ground!
+  TIMER=1
+  REMOVE
+  RETURN 1
+  
+On=@Timer
+   Remove 
+   
+[EVENTS e_referral_system]
+ON=@LOGIN
+IF  ((<src.account.totalconnecttime> > 10000) && (<SRC.SKILLTOTAL> > 749.9))
+	IF !(<SRC.ACCOUNT.TAG0.CLAIMEDREFERRALPRIZE>==1)
+		SRC.SYSMESSAGE @07a1 Congratulations! You have 10000 online account minutes and 750.0 Total Skill Points.
+		SRC.SYSMESSAGE @07a1 Both you and the player who introduced us to you have been rewarded with Loyalty Points!
+		SRC.ACCOUNT.TAG.CLAIMEDREFERRALPRIZE=1
+		SERV.LOG :REFERRAL: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> had <SRC.ACCOUNT.TAG.VOTEPOINS> Loyalty Points.
+		SRC.ACCOUNT.TAG.VOTEPOINTS=<EVAL <EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS>>+250>
+		SERV.LOG :REFERRAL: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> now have <SRC.ACCOUNT.TAG.VOTEPOINS> Loyalty Points.
+		SRC.EVENTS -e_referral_system
+		SRC.ACT=<EVAL <SRC.ACCOUNT.TAG.INVITEDBY>>
+		SERV.LOG :REFERRAL: <SRC.ACT.UID> <SRC.ACT.ACCOUNT> <SRC.ACT.NAME> had <SRC.ACT.ACCOUNT.TAG.VOTEPOINS> Loyalty Points.
+		SRC.ACT.ACCOUNT.TAG.VOTEPOINTS=<EVAL <SRC.ACT.ACCOUNT.TAG0.VOTEPOINTS>+500>
+		SERV.LOG :REFERRAL: <SRC.ACT.UID> <SRC.ACT.ACCOUNT> <SRC.ACT.NAME> now have <SRC.ACT.ACCOUNT.TAG.VOTEPOINS> Loyalty Points.
+        SRC.ACT.SYSMESSAGE @07a1 Congratulations! You won 500 Loyalty Points thanks to <SRC.NAME>!
+	ENDIF
+ENDIF
+
+
+
+
+[EOF]

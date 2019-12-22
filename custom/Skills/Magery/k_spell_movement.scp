@@ -1,0 +1,798 @@
+// * mark pad
+// * recall rune
+// * moongate
+
+[FUNCTION pad]
+add i_multi_markpad
+
+[FUNCTION pad2]
+add i_multi_markpad2
+
+[FUNCTION pad3]
+add i_multi_markpad3
+
+
+[ITEMDEF i_multi_markpad2]
+NAME		= mark zone
+TYPE		= t_multi
+MULTIREGION	= -1,-1, 1, 1
+COMPONENT	= 01216,  0,  0, 1
+COMPONENT	= 01214, -1,  1, 1
+COMPONENT	= 01210,  1, -1, 1
+COMPONENT	= 0120f,  0, -1, 1
+COMPONENT	= 01211,  1,  0, 1
+COMPONENT	= 01213,  0,  1, 1
+COMPONENT	= 01215, -1,  0, 1
+COMPONENT	= 01212,  1,  1, 1
+COMPONENT	= 0120e, -1, -1, 1
+//DUPELIST	= 0fea,0fe9,0feb,0fe6,0fee,0fec,0fe8,0fed,0fe7
+ON=@Create
+  ATTR	= attr_move_never
+  REGIONFLAGS	= region_flag_nobuilding | region_flag_guarded
+  COLOR	= 03c1
+
+
+[ITEMDEF i_multi_markpad]
+NAME		= mark zone
+TYPE		= t_multi
+MULTIREGION	= -1, -1, 1, 1
+REGIONFLAGS	= region_flag_nobuilding | region_flag_guarded
+COMPONENT	= 0fea,  0,  0, 1
+COMPONENT	= 0fe9, -1,  1, 1
+COMPONENT	= 0feb,  1, -1, 1
+COMPONENT	= 0fe6, -1,  0, 1
+COMPONENT	= 0fee,  1,  0, 1
+COMPONENT	= 0fec,  0,  1, 1
+COMPONENT	= 0fe8,  0, -1, 1
+COMPONENT	= 0fed,  1,  1, 1
+COMPONENT	= 0fe7, -1, -1, 1
+ON=@Create
+  ATTR	= attr_move_never
+  COLOR	= 03c1
+  
+
+[ITEMDEF i_multi_markpad3]
+NAME		= mark zone
+TYPE		= t_multi
+MULTIREGION	= -1, -1, 1, 1
+REGIONFLAGS	= region_flag_nobuilding
+COMPONENT	= 0fea,  0,  0, 1
+COMPONENT	= 0fe9, -1,  1, 1
+COMPONENT	= 0feb,  1, -1, 1
+COMPONENT	= 0fe6, -1,  0, 1
+COMPONENT	= 0fee,  1,  0, 1
+COMPONENT	= 0fec,  0,  1, 1
+COMPONENT	= 0fe8,  0, -1, 1
+COMPONENT	= 0fed,  1,  1, 1
+COMPONENT	= 0fe7, -1, -1, 1
+ON=@Create
+  ATTR	= attr_move_never
+  COLOR	= 03c1
+
+
+[TYPEDEF t_fire_out]
+ON = @Click
+   MESSAGE a burnout <name>
+   return 1
+ON = @DClick
+   MESSAGE The fire is out of logs.
+   return 1
+
+[FUNCTION f_fire_timer]
+  TIMER		= 600
+  if ( <LINK.TAG.FIRE> > 1 )
+     LINK.TAG.FIRE	= <eval (<LINK.TAG.FIRE> - 1)>
+     SAY *the log burns in the fire*
+  elseif ( <TYPE> != t_fire_out )
+     SAY *the fire burns out*
+     LINK.REMOVE
+  endif
+  return 1
+
+[FUNCTION f_fire_click]
+  MESSAGE <name> ( <eval <LINK.TAG.FIRE>> logs )
+  return 1
+  
+[FUNCTION f_fire_dclick]
+  if ( <LINK.TAG.FIRE> < 1 )
+     LINK.REMOVE   
+     return 1
+  endif
+  TARGET What log would you like to add?
+  return 1
+  
+[FUNCTION f_fire_targon_item]
+  if (<SRC.TARG.TYPE> == t_log )
+    if !( <SRC.TARG.TOPOBJ.UID> == <SRC.UID> )
+       src.sysmessage You must have the log in your pack.
+       return 1
+    endif
+  LOCAL.LOGAMOUNT = <SRC.TARG.AMOUNT>
+  LOCAL.LOGTYPE = <SRC.TARG.BASEID>
+  SRC.EMOTE add some logs to the fire
+  LINK.TAG.FIRE	= <eval (<LINK.TAG.FIRE> + <LOCAL.LOGAMOUNT>)>
+  SRC.CONSUME= <LOCAL.LOGAMOUNT> <LOCAL.LOGTYPE>
+RETURN 1
+  endif
+  
+[ITEMDEF i_fire_pt1]	// fire
+NAME		= fireplace
+DEFNAME		= i_fire_pt1
+ID		= 094a
+TYPE		= T_FIRE
+RESOURCES	= 50 i_rock_plain, 50 i_coal, 5 i_log
+WEIGHT		= 10500
+VALUE		= 5000
+ON=@Create
+  ATTR		= attr_move_never
+  LINK = <region.uid>
+  SAY LINK SET TO <region.name>
+ON=@Timer
+  return <f_fire_timer>
+ON=@Click
+  return <f_fire_click>
+ON=@DClick
+IF ( <LINK> == 04fffffff ) || ( <LINK> == 00 )
+IF <src.isgm>
+  LINK = <region.uid>
+  SAY LINK SET TO <region.name>
+  LINK.TAG.FIRE = 12
+ENDIF
+ENDIF
+  return <f_fire_dclick>
+ON=@Targon_item
+  return <f_fire_targon_item>
+  
+[ITEMDEF i_fire_pt2]	// forge
+NAME		= fireplace
+DEFNAME		= i_fire_pt2
+ID		= 094b
+TYPE		= T_FIRE
+RESOURCES	= 50 i_rock_plain, 50 i_coal, 5 i_log
+WEIGHT		= 10500
+VALUE		= 5000
+ON=@Create
+  ATTR		= attr_move_never
+ON=@Timer
+  return <f_fire_timer>
+ON=@Click
+  return <f_fire_click>
+ON=@DClick
+IF ( <LINK> == 04fffffff ) || ( <LINK> == 00 )
+IF <src.isgm>
+  LINK = <region.uid>
+  SAY LINK SET TO <region.name>
+  LINK.TAG.FIRE = 12
+ENDIF
+ENDIF
+  return <f_fire_dclick>
+ON=@Targon_item
+  return <f_fire_targon_item>  
+
+[ITEMDEF 01f14]	//recall rune
+DEFNAME	= i_rune_marker
+TYPE	= T_RUNE
+VALUE	= 250
+WEIGHT	= 1
+
+DUPELIST=01f15,01f16,01f17
+
+ON=@Click
+  if ( (<MOREX>==0) && (<MOREY>==0) )
+    MESSAGE blank <name>
+    return 1
+  endif
+  IF (<MOREM>=4)
+     REMOVE
+     MESSAGE You shouldn't be recalling there! Your rune fades away...
+  ENDIF
+  if ( <MORE1> == 0 )
+    MESSAGE <name> (faded)
+  elseif ( (<SRC.ITEMID> > 30.0) || <SRC.ISGM> )
+    MESSAGE <name> (<eval <more1>> charges)
+  elseif ( <MORE1> < 3 )
+    MESSAGE <name> (nearly faded)
+  elseif ( <MORE1> < 5 )
+    MESSAGE <name> (fading)
+  else
+    MESSAGE <name> (shimmering)
+  endif
+  IF (<ATTR>  &  attr_newbie)
+  MESSAGE (Newbied)
+  ENDIF
+  return 1
+
+ON=@SpellEffect
+  src.consume 1000 i_ore_skargard
+  if ( <argn> != 45 )
+     return 0
+  endif
+
+  if ( <SRC.isgm> )
+     return 0
+  endif
+
+  if ( !(<MOREX>==0) || !(<MOREY>==0) )
+     if ( <MORE1> )
+        src.sysmessage The rune is already marked.
+     else
+        src.sysmessage The rune has exhausted all its magic.
+     endif
+     return 1
+  endif
+ 
+//  IF (<SRC.P.M> == 2)
+//       	if !( strmatch( "Ilshenar*", "<SRC.REGION.NAME>" ) )    
+//	     src.sysmessage You can't mark runes in this place, find a proper location. <Ilshenar>
+//	     return 1
+//	ENDIF
+//  ENDIF
+  if ((<src.uid.<src.region.uid>.baseid> == i_multi_markpad) || (<src.uid.<src.region.uid>.baseid> == i_multi_markpad2))
+     return 0
+  endif
+  if (<src.uid.<src.region.uid>.baseid> == i_Floating_Dock )
+     src.sysmessage You can't mark runes in this place, find a proper location.
+     return 1
+  endif     
+  if ( <region.flags> & region_flag_nobuilding )
+     src.sysmessage You can't mark runes in this place, find a proper location.
+     return 1
+  endif
+
+  if ( <region.flags> & region_flag_safe )
+     src.sysmessage You can't mark runes in this place, find a proper location.
+     return 1
+  endif
+
+  if ( <region.flags> & region_flag_insta_logout )
+     src.sysmessage You can't mark runes in this place, find a proper location.
+     return 1
+  endif
+
+  if ( <region.flags> & region_flag_guarded )
+     src.sysmessage You can't mark runes in a guarded area, find a proper location.
+     return 1
+  endif
+
+  if ( <region.flags> & region_antimagic_recall_in )
+     src.sysmessage This area has an anti magic field blocking your Mark spell.
+     return 1
+  endif
+
+  if ( <region.flags> & region_antimagic_gate )
+     src.sysmessage An anti magic field seems to block your spell.
+     return 1
+  endif
+
+  if ( <region.flags> & region_flag_underground )
+     src.sysmessage Tons of earth and rock block your spell.
+     return 1
+  endif
+
+
+
+[ITEMDEF 01f15]	//recall rune
+DUPEITEM=01f14
+
+[ITEMDEF 01f16]	//recall rune
+DUPEITEM=01f14
+
+[ITEMDEF 01f17]	//recall Rune
+DUPEITEM=01f14
+
+
+
+//
+//  TELEPORT
+//
+[ITEMDEF i_stone_steps_no_tp]
+ID		= 0915
+RESOURCES	= 40 i_rock_plain
+CATEGORY	= Buildings - Stairs
+SUBSECTION	= Stone Step
+DESCRIPTION	= stone steps (no teleport)
+DUPELIST=0916,0917,0918
+
+ON=@SpellEffect
+  return 1
+
+[ITEMDEF b_teleport]
+ID=01f29
+NAME=teleport Timer
+TYPE=t_eq_script
+
+ON=@EQUIP
+   TIMER=10
+
+ON=@TIMER
+    REMOVE
+    RETURN 1
+    
+[FUNCTION f_spell_teleport]
+   VAR.RETURN	= 0
+   	IF ( !<SRC.FINDID(b_teleport)> )
+      		SERV.NEWITEM 	b_teleport
+		new.EQUIP <SRC.UID>
+	endif
+   if ( <src.ACT.BASEID> == 0 )			// ground
+      return 0
+   endif
+   
+   if ( <src.act.baseid> == i_stone_steps_no_tp )	// 
+      VAR.RETURN = 1
+      src.sysmessage You can't teleport there.
+      return 0
+   endif
+
+   if ( !( <src.act.uid> & 040000000 ) )
+      VAR.RETURN = 1
+      src.sysmessage You can't teleport to living things.
+      return 0
+   endif
+
+
+[ITEMDEF i_stone_steps_no_tp]
+ID		= 0915
+RESOURCES	= 40 i_rock_plain
+CATEGORY	= Buildings - Stairs
+SUBSECTION	= Stone Step
+DESCRIPTION	= stone steps (no teleport)
+DUPELIST=0916,0917,0918
+
+ON=@SpellEffect
+  return 1
+
+
+//
+//  GATE
+//
+
+[ITEMDEF 0f6c]	//blue moongate
+DEFNAME		= i_moongate_blue
+TYPE		= t_telepad
+DUPELIST	= 0f6d,0f6e,0f6f,0f70
+
+ON = @Step
+  src.consume 1000 i_ore_skargard
+  if ( <SRC.findid(i_ctt_townkey).uid> )
+     SRC.SYSMESSAGE Thou will have to travel the land to take <src.findid(i_ctt_townkey).name>.
+     return 1
+  endif
+
+  if ( (<SRC.REGION.GUARDED>) && (<SRC.FLAGS> & statf_criminal) && (<SRC.KILLS> < 4))
+     SRC.SYSMESSAGE A magic force holds your passage through the gate.
+     return 1
+  endif
+
+  //If gate was cast by an npc
+  IF (<SRC.NPC> = 0) && (<MORE1>=1)
+     LOCAL.X = <MOREX> + 1
+     LOCAL.Y = <MOREY> + 1
+     LOCAL.Z = <MOREZ>
+     SRC.GO <EVAL <LOCAL.X>>,<EVAL <LOCAL.Y>>,<EVAL <LOCAL.Z>>,0
+     RETURN 1  
+  ENDIF
+
+  if ( <SRC.NPC> == 0 )
+     return 0
+  ELSE 
+     SRC.SYSMESSAGE A magic force holds your passage through the gate.
+     return 1
+  endif
+
+
+  if ( 0<SRC.TAG.NOGATE> ) 
+     SRC.SYSMESSAGE You cannot pass through this gate.
+     return 1
+  endif
+
+ON=@SpellEffect
+  if ( <timer> == -1 )
+     RETURN 1
+  endif
+
+  if ( <argn> == 41 )
+     LINK.TIMER	= 0
+     TIMER	= 0
+  endif
+  
+on=@click
+IF !( <LINK> = 04fffffff )
+  if (<SRC.EVALUATINGINTEL> > 90.0) 
+     MESSAGE a blue moongate to <link.region.name>.
+     return 1
+  endif
+ENDIF
+
+[FUNCTION f_spell_gate_travel]
+   VAR.RETURN = 1
+   if ( 0 )
+   elseif ( <ACT.BASEID> == i_rune_marker )
+      if ( <ACT.MORE1> == 0 )
+      else
+         ACT.MORE1		= <eval(<ACT.MORE1> - 1)>
+      endif
+      IF ((<ACT.MOREX> >= 5121) && (<ACT.MOREY> >= 2304))
+         ACT.REMOVE
+         MESSAGE You shouldn't be recalling there! Your rune fades away...
+         RETURN 1
+      ENDIF
+      IF (<ACT.MOREM>=1)
+         ACT.REMOVE
+         MESSAGE You shouldn't be recalling there! Your rune fades away...
+         RETURN 1
+      ENDIF
+      IF (<ACT.MOREM>=2)
+         SRC.MESSAGE You can't open a gate to there...
+         RETURN 1
+      ENDIF  
+      IF (<ACT.MOREM>=3)
+         ACT.REMOVE
+         MESSAGE You shouldn't be recalling there! Your rune fades away...
+         RETURN 1
+      ENDIF
+      IF (<ACT.MOREM>=4)
+         ACT.REMOVE
+         MESSAGE You shouldn't be recalling there! Your rune fades away...
+         RETURN 1
+      ENDIF
+      IF (<ACT.MOREM> > 4)
+         ACT.REMOVE
+         MESSAGE You DEFINITELY shouldn't be recalling there! Your rune fades away...
+         RETURN 1
+      ENDIF
+      if ( <act.more1> == 0 )
+         SYSMESSAGE The recall rune fades.
+      elseif ( <act.more1> == 1 )
+         SYSMESSAGE The recall rune is nearly faded.
+      elseif ( <act.more1> < (3 + rand(2)) )
+         SYSMESSAGE The recall rune is starting to fade.
+      endif
+      VAR.POS_X	= <ACT.MOREx>
+      VAR.POS_Y	= <ACT.MOREy>
+      VAR.POS_Z	= <ACT.MOREz>
+      VAR.POS_M	= <ACT.MOREm>
+   elseif ( <ACT.TYPE> == t_runebook )
+      if ( <ACT.MOREx> < 2 )
+         SYSMESSAGE The rune book hasn't got enough charges left.
+         f_spell_fizzle The spell fizzles. (Gate)
+	 return 1
+      endif
+      IF  ( <ACT.TAG.SLOT<eval <ACT.TAG.SLOT>>_m> = 4 )
+         SYSMESSAGE You Cant go there!
+         RETURN 1
+      ENDIF
+      
+      ACT.MOREx	= <eval (<ACT.MOREx> - 2)>
+      VAR.POS_X	= <ACT.TAG.SLOT<eval <ACT.TAG.SLOT>>_X>
+      VAR.POS_Y	= <ACT.TAG.SLOT<eval <ACT.TAG.SLOT>>_y>
+      VAR.POS_Z	= <ACT.TAG.SLOT<eval <ACT.TAG.SLOT>>_z>
+      VAR.POS_M	= <ACT.TAG.SLOT<eval <ACT.TAG.SLOT>>_m>
+   else
+      SYSMESSAGE You can't gate off that!
+      return 1
+   endif
+
+   f_gate_travel_start
+
+
+[FUNCTION f_gate_travel_start]
+   if !<src.isgm> //Skip all the BS tests for GM's
+      IF (<serv.REAGENTSREQUIRED>=01) &! (<SRC.RESTEST 1 i_reag_mandrake_root>) |! (<SRC.RESTEST 1 i_reag_sulfur_ash>) |! (<SRC.RESTEST 1 i_reag_black_pearl>)
+         SRC.SOUND=0108
+         SRC.MESSAGE You failed to gate!
+         SRC.SYSMESSAGE You dont have required reagents.
+         SRC.SOUND=85
+         RETURN 1
+      ENDIF
+      IF (<SRC.MANA><40)
+         SRC.SOUND=0108
+         SRC.SYSMESSAGE You do not have enough mana to attempt to Gate!
+         RETURN 1
+      ENDIF
+      
+      IF ( <SRC.REGION.FLAGS> & 0E )
+        SRC.SYSMESSAGE A magic field blocks your spell!
+        SRC.SOUND=85
+        RETURN 1
+      ENDIF
+      
+      IF !(<src.cancast s_gate_travel>)
+         SRC.SOUND=0108
+         SRC.SYSMESSAGE You do not know how to cast the Gate spell.
+         SRC.SOUND=85
+         RETURN 1
+      ENDIF
+         IF ( <SRC.P.M> == 2 )   
+               	SRC.SYSMESSAGE A magic field seems to be blocking your spell.
+               	return 1
+        ENDIF
+      
+      SRC.say Vas Rel Por
+      SRC.ANIM=17
+      SRC.MANA=(<SRC.MANA>+-15)
+
+      src.newitem i_gold
+      src.act.attr	= attr_invis | attr_decay | attr_move_never | attr_can_decay
+      SRC.ACT.TIMER	= 1
+      SRC.ACT.P=<EVAL <VAR.POS_X>> <EVAL <VAR.POS_Y>> <EVAL <VAR.POS_Z>> <EVAL <VAR.POS_M>>
+      VAR.research=<SRC.ACT.REGION.flags>
+      if ( (<VAR.research> & region_antimagic_recall_in) )
+         SRC.SYSMESSAGE A magic field seems to be blocking your spell.
+         return 1
+      endif
+
+      if ( (<VAR.research> & region_antimagic_gate) )
+         SRC.SYSMESSAGE A magic field seems to be blocking your spell.
+         return 1
+      endif
+
+      SRC.MANA=(<SRC.MANA>+-25)
+      IF <serv.REAGENTSREQUIRED>=01
+        SRC.CONSUME=1 i_reag_black_pearl
+        SRC.CONSUME=1 i_reag_mandrake_root
+        SRC.CONSUME=1 i_reag_sulfur_ash
+      ENDIF
+   endif // end tests for non-GMs
+
+
+   SRC.EVENTS	= +e_breakspell//add interuption event
+   src.newitem	m_gate_delay
+   src.act.morep= <EVAL <VAR.POS_X>> <EVAL <VAR.POS_Y>> <EVAL <VAR.POS_Z>> <EVAL <VAR.POS_M>>
+   src.act.cont	= <src.uid>
+   src.act.equip
+   src.act.timer=3
+   SRC.SOUND=85
+   return 0
+
+
+[ITEMDEF m_recall_delay] //Xeno's Recall delay!
+NAME	= Recall Spell Delay
+ID	= i_handr_1
+TYPE	= T_EQ_SCRIPT
+WEIGHT	= 0
+LAYER	= layer_special
+
+ON=@Create
+  ATTR=attr_invis|attr_decay
+ON=@Timer
+  CONT.SOUND	= snd_spell_recall
+  cont.GO <morep>
+  CONT.EVENTS= -e_breakspell	// didnt get hit - remove event
+  CONT.CONSUME 1000 i_ore_skargard
+  REMOVE
+  RETURN 1
+
+  
+[ITEMDEF m_gate_delay]
+NAME	= Gate Spell Delay
+ID	= i_handr_1
+TYPE	= T_EQ_SCRIPT
+WEIGHT	= 0
+LAYER	= layer_special
+
+ON=@Create
+  ATTR=attr_invis|attr_decay
+
+ON=@Timer
+  CONT.ACT		= <UID>
+  CONT.ACT.MORE1	= 10
+  CONT.f_spell_gate_travel_end
+  CONT.EVENTS		= -e_breakspell//didnt get hit - remove event
+  REMOVE
+  RETURN 1
+
+
+// GATE TRAVEL - USED BY RUNEBOOK TOO
+[FUNCTION f_spell_gate_travel_end]
+   VAR.DEST		= <ACT.MOREP>
+   VAR.ORIG		= <P>
+   
+   if ( <KARMA> > 3000 )
+      VAR.COLOR		= 032
+   elseif ( <KARMA> < 3000 )
+      VAR.COLOR		= 022
+   else
+      VAR.COLOR		= 0
+   endif
+   VAR.COLOR		= 032
+   LOCAL.TIMER		= <eval (55 + RAND(10))>
+   NEWITEM		= 0f6c
+   ACT.ATTR		= attr_decay
+   ACT.TIMER		= <LOCAL.TIMER>
+   ACT.P		= <VAR.ORIG>
+   ACT.MOREP		= <VAR.DEST>
+   ACT.NAME		= a gate
+   ACT.COLOR		= <VAR.COLOR>
+   IF <NPC>=0
+      ACT.MORE1		= 0
+   ELSE
+      ACT.MORE1		= 1
+   ENDIF
+   VAR.GATE1		= <ACT.UID>
+   
+   NEWITEM		= 0f6c
+   ACT.ATTR		= attr_decay
+   ACT.TIMER		= <LOCAL.TIMER>
+   ACT.P		= <VAR.DEST>
+   ACT.MOREP		= <VAR.ORIG>
+   ACT.NAME		= a gate
+   ACT.COLOR		= <VAR.COLOR>   
+   IF <NPC>=0
+      ACT.MORE1		= 0
+   ELSE
+      ACT.MORE1		= 1
+   ENDIF
+   VAR.GATE2		= <ACT.UID>
+   
+   ACT.LINK		= <VAR.GATE1>
+   ACT			= <VAR.GATE1>
+   ACT.LINK		= <VAR.GATE2>
+   SOUND		= snd_spell_gate_travel
+
+
+[FUNCTION f_spell_recall]
+   VAR.RETURN = 1
+   if ( 0 )
+   elseif ( <ACT.BASEID> == i_rune_marker )
+      if ( <ACT.MORE1> == 0 )
+      else
+         ACT.MORE1		= <eval(<ACT.MORE1> - 1)>
+      endif
+      MESSAGE HELLO! <ACT.MOREX> <ACT.MOREY>
+      IF ((<ACT.MOREX> >= 5121) && (<ACT.MOREY> >= 2304))
+         ACT.REMOVE
+         MESSAGE You shouldn't be recalling there! Your rune fades away...
+         RETURN 1
+      ENDIF
+      IF (<ACT.MOREM>=1)
+         ACT.REMOVE
+         MESSAGE You shouldn't be recalling there! Your rune fades away...
+         RETURN 1
+      ENDIF 
+      IF (<ACT.MOREM>=2)
+      		
+      ENDIF
+      IF (<ACT.MOREM>=3)
+         ACT.REMOVE
+         MESSAGE You shouldn't be recalling there! Your rune fades away...
+         RETURN 1
+      ENDIF
+      IF (<ACT.MOREM>=4)
+         ACT.REMOVE
+         MESSAGE You shouldn't be recalling there! Your rune fades away...
+         RETURN 1
+      ENDIF
+      IF (<ACT.MOREM> > 4)
+         ACT.REMOVE
+         MESSAGE You DEFINITELY shouldn't be recalling there! Your rune fades away...
+         RETURN 1
+      ENDIF
+      if ( <act.more1> == 0 )
+         SYSMESSAGE The recall rune fades.
+      elseif ( <act.more1> == 1 )
+         SYSMESSAGE The recall rune is nearly faded.
+      elseif ( <act.more1> < (3 + rand(2)) )
+         SYSMESSAGE The recall rune is starting to fade.
+      endif
+      VAR.POS_X	= <ACT.MOREx>
+      VAR.POS_Y	= <ACT.MOREy>
+      VAR.POS_Z	= <ACT.MOREz>
+      VAR.POS_M	= <ACT.MOREm>
+   elseif ( <ACT.TYPE> == t_runebook )
+      if ( <ACT.MOREx> < 1 )
+         SYSMESSAGE The rune book hasn't got enough charges left.
+         f_spell_fizzle The spell fizzles. (recall)
+	 return 1
+      endif
+      ACT.MOREx	= <eval (<ACT.MOREx> - 1)>
+      VAR.POS_X	= <ACT.TAG.SLOT<eval <ACT.TAG.SLOT>>_X>
+      VAR.POS_Y	= <ACT.TAG.SLOT<eval <ACT.TAG.SLOT>>_y>
+      VAR.POS_Z	= <ACT.TAG.SLOT<eval <ACT.TAG.SLOT>>_z>
+      VAR.POS_M	= <ACT.TAG.SLOT<eval <ACT.TAG.SLOT>>_m>
+   else
+      SYSMESSAGE You can't recall off that!
+      return 1
+   endif
+
+   f_recall_start
+
+   
+[FUNCTION f_recall_start]
+   if !<src.isgm> //Skip all the BS tests for GM's
+      IF (<serv.REAGENTSREQUIRED>=01) &! (<SRC.RESTEST 1 i_reag_black_pearl>) |! (<SRC.RESTEST 1 i_reag_mandrake_root>) |! (<SRC.RESTEST 1 i_reag_blood_moss>)
+         SRC.SOUND=0108
+         SRC.MESSAGE You failed to recall!
+         SRC.SYSMESSAGE You dont have required reagents.
+         SRC.SOUND=85
+         RETURN 1
+      ENDIF
+      IF (<SRC.MANA><11)
+         SRC.SOUND=0108
+         SRC.SYSMESSAGE You do not have enough mana to attempt to Recall!
+         RETURN 1
+      ENDIF
+      
+      IF ( <SRC.REGION.FLAGS> & 0E )
+        SRC.SYSMESSAGE A magic field blocks your spell!
+        SRC.SOUND=85
+        RETURN 1
+      ENDIF
+         IF ( <SRC.P.M> == 2 )
+             if !( strmatch( "Ilshenar*", "<SRC.REGION.NAME>" ) )    
+               	SRC.SYSMESSAGE A magic field seems to be blocking your spell.
+               	return 1
+      	     ENDIF
+        ENDIF
+      IF !(<src.cancast s_recall>)
+         SRC.SOUND=0108
+         SRC.SYSMESSAGE You do not know how to cast the Recall spell.
+         SRC.SOUND=85
+         RETURN 1
+      ENDIF
+      
+      SRC.say Kal Ort Por
+      SRC.ANIM=17
+      SRC.MANA=(<SRC.MANA>+-5)
+
+      src.newitem i_gold
+      src.act.attr	= attr_invis | attr_decay | attr_move_never | attr_can_decay
+      SRC.ACT.TIMER	= 1
+      SRC.ACT.P=<EVAL <VAR.POS_X>> <EVAL <VAR.POS_Y>> <EVAL <VAR.POS_Z>> <EVAL <VAR.POS_M>>
+      VAR.research=<SRC.ACT.REGION.flags>
+      VAR.research2=<SRC.ACT.REGION.name>
+      if ( (<VAR.research> & region_antimagic_recall_in) )
+         SRC.SYSMESSAGE A magic field seems to be blocking your spell.
+         return 1
+      endif 
+       	IF (<EVAL <VAR.POS_M>>=2)
+       		if !( strmatch( "Ilshenar*", "<var.research2>" ) )    
+         	SRC.SYSMESSAGE A magic field seems to be blocking your spell.
+         	return 1
+		ENDIF
+        ENDIF
+      SRC.MANA=(<SRC.MANA>+-6)
+      IF <serv.REAGENTSREQUIRED>=01
+        SRC.CONSUME=1 i_reag_black_pearl
+        SRC.CONSUME=1 i_reag_blood_moss
+        SRC.CONSUME=1 i_reag_mandrake_root
+      ENDIF
+   endif // end tests for non-GMs
+
+
+   SRC.EVENTS	= +e_breakspell //add interuption event
+   src.newitem	m_recall_delay
+   src.act.morep= <EVAL <VAR.POS_X>> <EVAL <VAR.POS_Y>> <EVAL <VAR.POS_Z>> <EVAL <VAR.POS_M>>
+   src.act.cont	= <src.uid>
+   src.act.equip
+   src.act.timer={ 6 8 }
+   SRC.SOUND=85
+   return 0
+
+[EVENTS e_breakspell]
+ON = @SpellCast
+   CONSUME m_gate_delay
+   CONSUME m_recall_delay
+   EVENTS -e_breakspell
+   f_spell_fizzle The spell fizzles. (Breakspell - Cast)
+   RETURN 1
+
+ON = @SpellEffect
+   f_spell_is_aggressive <argn>
+   if ( <var.f_spell_is_aggressive> )
+      CONSUME m_gate_delay
+      CONSUME m_recall_delay
+      EVENTS -e_breakspell
+      f_spell_fizzle The spell fizzles. (Breakspell - Effect)
+      RETURN 0
+   endif
+
+ON = @GetHit
+   CONSUME m_gate_delay
+   CONSUME m_recall_delay
+   EVENTS -e_breakspell
+   f_spell_fizzle The spell fizzles. (Breakspell - GetHit)
+   RETURN 0
+
+
+[EOF]

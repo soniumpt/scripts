@@ -1,0 +1,188 @@
+[CHARDEF c_newbie_trainer]
+ID=c_man
+NAME=Talir, Academy Trainer
+DEFNAME=c_newbie_trainer
+CAN=MT_NONMOVER
+
+CATEGORY=Imperial uo
+SUBSECTION=Academy 
+DESCRIPTION=Talir Academy Trainer
+
+TSPEECH = spk_newbie_trainer
+
+on=@create
+NPC=Brain_Human
+FLAGS |= statf_invul
+title=the Trainer
+str=100
+dex=100
+int=100
+ITEMNEWBIE=i_robe
+COLOR=089
+ITEMNEWBIE=i_hair_long
+COLOR=063
+
+
+[SPEECH spk_newbie_trainer]
+	ON=*
+	SAY Welcome to our world <src.name>!
+	say Here at Trinsic cademy, we will train you. Soon enough you will be ready to explore the world.
+	say As a new adventurer here, the Academy will grant you an additional skill. Please use the gate in the next room to claim it.
+	say Farewell, brave new adventurer...
+	
+	
+
+[ITEMDEF tile_random_item]
+DEFNAME = tile_random_item
+ID = i_platform
+
+ON=@Create
+	ATTR = 090
+
+ON=@Step
+	SERV.LOG <SRC.P>
+	REMOVE
+	DORAND 13
+		VAR.RANDOMITEM = i_potion_ManaGreat
+		VAR.RANDOMITEM = i_potion_CureGreat
+		VAR.RANDOMITEM =  i_potion_RefreshGreat
+		VAR.RANDOMITEM = i_gold
+		VAR.RANDOMITEM = i_potion_Invisibility
+		VAR.RANDOMITEM = i_reward_ticket
+		VAR.RANDOMITEM=i_reag
+		VAR.RANDOMITEM=i_reag
+		VAR.RANDOMITEM=i_reag
+		VAR.RANDOMITEM=i_reag
+		VAR.RANDOMITEM=i_reag
+		VAR.RANDOMITEM=i_reag
+		VAR.RANDOMITEM =stat
+	ENDDO
+	IF (STRMATCH("<VAR.RANDOMITEM>", "stat"))
+		DORAND 9
+			VAR.STATHEAL = mana
+			VAR.STATHEAL = mana
+			VAR.STATHEAL = mana
+			VAR.STATHEAL = stam
+			VAR.STATHEAL = stam
+			VAR.STATHEAL = stam
+			VAR.STATHEAL = stam
+			VAR.STATHEAL = stam
+			VAR.STATHEAL = hits
+		ENDDO
+		SRC.<VAR.STATHEAL> = <SRC.MAX<VAR.STATHEAL>>
+		SRC.EMOTE get healed of <VAR.STATHEAL> loss.
+			VAR.RANDOMAMOUNT =
+			VAR.RANDOMITEM = 
+		RETURN 1
+	ELSEIF (STRMATCH("<VAR.RANDOMITEM>", "i_gold"))
+		VAR.RANDOMAMOUNT = 5000
+	ELSEIF (STRMATCH("<VAR.RANDOMITEM>", "i_reward_ticket"))
+		VAR.RANDOMAMOUNT = 3000
+	ELSEIF (STRMATCH("<VAR.RANDOMITEM>", "i_reag"))
+		DORAND 8
+			VAR.RANDOMITEM=i_reag_black_pearl
+			VAR.RANDOMITEM=i_reag_spider_silk
+			VAR.RANDOMITEM=i_reag_ginseng
+			VAR.RANDOMITEM=i_reag_blood_moss
+			VAR.RANDOMITEM=i_reag_garlic
+			VAR.RANDOMITEM=i_reag_nightshade
+			VAR.RANDOMITEM=i_reag_mandrake_root
+			VAR.RANDOMITEM=i_reag_sulfur_ash
+		ENDDO
+		VAR.RANDOMAMOUNT = 50
+	ELSE
+		DORAND 10
+			VAR.RANDOMAMOUNT = 1
+			VAR.RANDOMAMOUNT = 2
+			VAR.RANDOMAMOUNT = 3
+			VAR.RANDOMAMOUNT = 4
+			VAR.RANDOMAMOUNT = 5
+			VAR.RANDOMAMOUNT = 6
+			VAR.RANDOMAMOUNT = 7
+			VAR.RANDOMAMOUNT = 8
+			VAR.RANDOMAMOUNT = 9
+			VAR.RANDOMAMOUNT = 10
+		ENDDO
+	ENDIF
+	SERV.LOG FFA PvP Prize: <SRC.NAME> found <EVAL <VAR.RANDOMAMOUNT>> <VAR.RANDOMITEM>
+    SERV.NEWITEM = <VAR.RANDOMITEM>
+	NEW.AMOUNT = <VAR.RANDOMAMOUNT>
+	SRC.NEW.BOUNCE
+	SRC.EMOTE stumble upon <EVAL <VAR.RANDOMAMOUNT>> <NEW.NAME>
+	VAR.RANDOMAMOUNT =
+	VAR.RANDOMITEM = 
+	RETURN 1
+
+[ITEMDEF tile_random_mob]
+DEFNAME = tile_random_mob
+ID = i_platform
+
+ON=@Create
+	ATTR = 090
+
+ON=@Step
+	SERV.LOG <SRC.P>
+	REMOVE
+	DORAND 5
+		VAR.RANDOMITEM = c_m_orc_captain
+		VAR.RANDOMITEM = c_harpy
+		VAR.RANDOMITEM = c_liche
+		VAR.RANDOMITEM = c_ettin
+		VAR.RANDOMITEM = c_cyclops
+	ENDDO
+	DORAND 3
+		VAR.NEWSAY = Who dares awake me, you shall perish!
+		VAR.NEWSAY = Who dares disturb my island!
+		VAR.NEWSAY = Ahahahaha, you are all doomed now!
+	ENDDO
+	
+	SERV.LOG FFA PvP Spawn: <SRC.NAME> spawned a <VAR.RANDOMITEM>
+	NEWNPC= <VAR.RANDOMITEM>
+	NEW.SAY <VAR.NEWSAY>
+	
+	VAR.NEWSAY =
+	VAR.RANDOMAMOUNT =
+	VAR.RANDOMITEM = 
+	RETURN 1
+	
+	
+	
+	
+/**
+DPS Meter
+**/
+[function dps]
+if (<src.tag.dps> == 1)
+src.sysmessage DPS Meter disabled and reset.
+src.sysmessage Dealt <local.dpsdmg> damage over <eval <local.cycles>*5> seconds. Averaging <local.dps> damage per second.
+local.dpsdmg =
+local.dps =
+src.tag.dps = 0
+src.events -e_dps
+else
+src.sysmessage DPS Meter enabled.
+src.tag.dps = 0
+src.events +e_dps
+endif
+
+[events e_dps]
+on=@hit
+//only start dps timer on first damage done.
+if !(<tag.dps> == 1)
+tag.dps = 1
+local.cycles = 0
+timer = 5 //refresh meter every 5 seconds
+endif
+local.dpsdmg = <local.dpsdmg> + <dam>
+sysmessage <eval <var.wpn.dam>>
+
+//add pet and dot damage too.
+
+on=@timer
+local.cycles = <local.cycles>+1
+local.dps = (<local.dpsdmg>/<local.cycles>)/5
+src.sysmessage DPS Meter: <local.dps> damage per second. 
+
+
+
+[eof]

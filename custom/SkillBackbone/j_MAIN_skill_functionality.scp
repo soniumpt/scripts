@@ -1,0 +1,229 @@
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+                                                                        +
+//+                   MEMORY SHARD SKILL FUNCTIONALITY                     +
+//+                                                                        +
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+                                                                        +
+//+                           AUTHOR: WIGIFER                              +
+//+                         CREATED: 02/09/2018                            +
+//+                     LATEST REVISION: 02/09/2018                        +
+//+                                                                        +
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+                                                                        +
+//+ This script contains the functions which override skills.              +
+//+                                                                        +
+//+ f_skillsuccess_override will attempt to override the normal function   +
+//+ of any skill on success (For example, Arms Lore does not normally set  +
+//+ an objects attribute to identified, but it will if scripted here).     +
+//+                                                                        +
+//+ All skills will return LOCAL.ENDTRIGGER to e_all_pc.                   +
+//+ 0 = Do NOT stop hardcode functionality, TRIGGER @SKILLGAIN             +
+//+ 1 = STOP hardcode functionality, call stat/skill rolls.                +
+//+ 2 = STOP hardcode functionality, do not call stat/skill rolls.         +
+//+                                                                        +
+//+ As usage examples:                                                     +
+//+ - If a skill needs to have EXTRA functionality on top, we would use    +
+//+   LOCAL.ENDTRIGGER = 0                                                 +
+//+ - If a skill is to be ONLY softcoded and SUCCEEDS, we would use        +
+//+   LOCAL.ENDTRIGGER = 1                                                 +
+//+ - If a skill is to be ONLY softcoded and FAILS, we would use           +
+//+   LOCAL.ENDTRIGGER = 2                                                 +
+//+                                                                        +
+//+ Note that e_all_pc does all the leg work when it comes to calling      +
+//+ f_skillsuccess_rollstat and f_skillsuccess_rollskill, so please do     +
+//+ not call it from this script - This is why we have LOCAL.ENDTRIGGER.   +
+//+                                                                        +
+//+ Note also that, technically, ALL skill successes will pass to this     +
+//+ file, so any amends should by nature be made here.                     +
+//+ Please ensure any amendments are isolated into their own functions,    +
+//+ in order to maintain a certain level of ease of use/amendment.         +
+//+                                                                        +
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+                                                                        +
+//+ [CROSS DEPENDENCIES]                                                   +
+//+                                                                        +
+//+ j_MAIN_skill_system.scp    - Skill rolls, stat rolls, etc, etc.        +
+//+ k_MAIN_events.scp          - e_all_pc calls the skill functions here.  +
+//+                                                                        +
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+                                                                        +
+//+ [CHANGELOG]                                                            +
+//+                                                                        +
+//+ 02/09/18 - Wigifer - Basic functionality added.                        +
+//+                      Added the code for Arms Lore and Item Lore.       +
+//+                                                                        +
+//+                                                                        +
+//+                                                                        +
+//+                                                                        +
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+                                                                        +
+//+ [TO DO]                                                                +
+//+                                                                        +
+//+ -                                                                      +
+//+                                                                        +
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+// ====================
+// =     FUNCTION     =
+// = Success Override =
+// ====================
+
+// IMPORTANT NOTE: This must be called *AFTER* any skillroll check, as any
+//                 "RETURN 1" to prevent default functionality here will
+//                 then end the @SKILLSUCCESS trigger process.
+//
+// USAGE: f_skillsuccess_overrides <ARGN1>
+// ARGN1 = Skill ID number
+// UID.<LOCAL.CHARMANAGERUID> = Character Manager item
+
+// Retrieves:
+// LOCAL.ENDTRIGGER = 0: Hardcoded skill behaviour continues, @SKILLGAIN triggers automatically (SUCCEED)
+//                  = 1: Hardcoded skill behaviour stops, @SKILLGAIN triggers manually (SUCCEED)
+//                  = 2: Hardcoded skill behaviour stops, @SKILLGAIN does not trigger (FAIL)
+//
+// Note: If you use LOCAL.ENDTRIGGER = 1, this prevents @SKILLGAIN triggering, and so
+//       the skillrolls are manually called. The @SKILLGAIN trigger *is* manually
+//       called at this point, so you can resume any @SKILLGAIN functionality
+//       as normal.
+//
+// Skills such as Arms Lore, by default, do not have the same functionality
+// as was intended to exist on the variants of KAWSP.
+//
+// This function checks to see if the skill has succeeded and, if so, will
+// call the function *specific to a skill*.
+//
+// @SKILLSUCCESS will *always* call "f_skillsuccess_overrides <SKILLID>" to check and
+// process any skill override.
+//
+// For clarity, the functionality of each skill is then CALLed in a FURTHER function below.
+
+
+[FUNCTION f_skillsuccess_overrides]
+LOCAL.ENDTRIGGER = 0
+IF (<ARGN1> == 3) // Item Lore
+   // LOCAL.ENDTRIGGER = 1 automatically set to succeed, only over-ridden on failure by function
+   LOCAL.ENDTRIGGER = 1
+   CALL f_skillsuccess_itemlore
+ELSEIF (<ARGN1> == 4) // Arms Lore
+   // LOCAL.ENDTRIGGER = 1 automatically set to succeed, only over-ridden on failure by function   
+   LOCAL.ENDTRIGGER = 1
+   CALL f_skillsuccess_armslore
+ENDIF
+
+
+// =====================
+// =     FUNCTION      =
+// = ItemLore Override =
+// =     [SKILL 3]     =
+// =====================
+
+// USAGE: f_skillsuccess_itemlore
+// SRC: Skill user
+// ACT: Object to identify
+//
+// What we're going to do here is check to see if the item in question is
+// a weapon or armour first.
+// If it IS a weapon or armour, we're going to give information based on
+// the Arms Lore skill and the Arms Lore required by the item.
+// If the Arms Lore of the item is too high for the user, the skill returns
+// no pertinent information.
+// If the Arms Lore of the item is the same or lower than the users level, or
+// it has no Arms Lore value, the user can identify the damage and traits. The
+// weapon/armour is then also identified.
+
+[FUNCTION f_skillsuccess_itemlore]
+// Check if it is a weapon, armour, or clothing first, by checking if the item type
+// contains weapon, armour, or clothing in the type.
+IF ((STRMATCH(*weapon*,<ACT.TYPE>)) || (STRMATCH(*armor*,<ACT.TYPE>)) || (STRMATCH(*armour*,<ACT.TYPE>)) || (STRMATCH(*clothing*,<ACT.TYPE>)) )
+   // A weapon, armour or clothing.
+   SRC.SYSMESSAGE @044 [Item Lore] You determine that this item actually requires Arms Lore to understand.
+   LOCAL.ENDTRIGGER = 2
+   RETURN 1
+ELSE
+   // If the users Item Lore is too low for the items skillmake, cannot ID. Checking Skillmake 1.
+   IF (STRMATCH(*itemid*,<ACT.SKILLMAKE.1.KEY>) )
+      IF (<SRC.ITEMID> < <ACT.SKILLMAKE.1.VALUE>)
+         SRC.SYSMESSAGE @044 [Item Lore] Your skill is not high enough to determine anything about this.
+         LOCAL.ENDTRIGGER = 2         
+         RETURN 1
+      ENDIF
+   // If the users Item Lore is too low for the items skillmake, cannot ID. Checking Skillmake 2.
+   ELSEIF (STRMATCH(*itemid*,<ACT.SKILLMAKE.2.KEY>) )
+      IF (<SRC.ITEMID> < <ACT.SKILLMAKE.2.VALUE>)
+         SRC.SYSMESSAGE @044 [Item Lore] Your skill is not high enough to determine anything about this.
+         LOCAL.ENDTRIGGER = 2
+         RETURN 1
+      ENDIF
+   // If the users Item Lore is too low for the items skillmake, cannot ID. Checking Skillmake 3.      
+   ELSEIF (STRMATCH(*itemid*,<ACT.SKILLMAKE.3.KEY>) )
+      IF (<SRC.ITEMID> < <ACT.SKILLMAKE.3.VALUE>)
+         SRC.SYSMESSAGE @044 [Item Lore] Your skill is not high enough to determine anything about this.
+         LOCAL.ENDTRIGGER = 2
+         RETURN 1
+      ENDIF
+   ENDIF      
+   SRC.SYSMESSAGE @055 [Item Lore] You determine that the <ACT.NAME> is valued at <ACT.VALUE> and weighs <ACT.WEIGHT> pounds.
+   ACT.ATTR = <ACT.ATTR> | attr_identified
+ENDIF
+
+
+// =====================
+// =     FUNCTION      =
+// = ArmsLore Override =
+// =     [SKILL 4]     =
+// =====================
+
+// USAGE: f_skillsuccess_armslore
+// SRC: Skill user
+// ACT: Object to identify
+//
+// What we're going to do here is check to see if the item in question is
+// a weapon or armour first.
+// If it IS a weapon or armour, we're going to give information based on
+// the Arms Lore skill and the Arms Lore required by the item.
+// If the Arms Lore of the item is too high for the user, the skill returns
+// no pertinent information.
+// If the Arms Lore of the item is the same or lower than the users level, or
+// it has no Arms Lore value, the user can identify the damage and traits. The
+// weapon/armour is then also identified.
+
+[FUNCTION f_skillsuccess_armslore]
+// Check if it is a weapon, armour, or clothing first, by checking if the weapon type
+// contains weapon, armour, or clothing in the type.
+IF !((STRMATCH(*weapon*,<ACT.TYPE>)) || (STRMATCH(*armor*,<ACT.TYPE>)) || (STRMATCH(*armour*,<ACT.TYPE>)) || (STRMATCH(*clothing*,<ACT.TYPE>)) || (STRMATCH(*shield*,<ACT.TYPE>)))
+   // Not a weapon, armour or clothing.
+   SRC.SYSMESSAGE @044 [Arms Lore] You determine that this is *not* a weapon or piece of armour.
+   LOCAL.ENDTRIGGER = 2
+   RETURN 1
+ELSE
+   // If the users Arms Lore is too low for the items skillmake, cannot ID. Checking Skillmake 1.
+   IF (STRMATCH(*armslore*,<ACT.SKILLMAKE.1.KEY>) )
+      IF (<SRC.ARMSLORE> < <ACT.SKILLMAKE.1.VALUE>)
+         SRC.SYSMESSAGE @044 [Arms Lore] Your skill is not high enough to determine anything about this.
+         LOCAL.ENDTRIGGER = 2
+         RETURN 1
+      ENDIF
+   // If the users Arms Lore is too low for the items skillmake, cannot ID. Checking Skillmake 2.
+   ELSEIF (STRMATCH(*armslore*,<ACT.SKILLMAKE.2.KEY>) )
+      IF (<SRC.ARMSLORE> < <ACT.SKILLMAKE.2.VALUE>)
+         SRC.SYSMESSAGE @044 [Arms Lore] Your skill is not high enough to determine anything about this.
+         LOCAL.ENDTRIGGER = 2
+         RETURN 1
+      ENDIF
+   // If the users Arms Lore is too low for the items skillmake, cannot ID. Checking Skillmake 3.      
+   ELSEIF (STRMATCH(*armslore*,<ACT.SKILLMAKE.3.KEY>) )
+      IF (<SRC.ARMSLORE> < <ACT.SKILLMAKE.3.VALUE>)
+         SRC.SYSMESSAGE @044 [Arms Lore] Your skill is not high enough to determine anything about this.
+         LOCAL.ENDTRIGGER = 2
+         RETURN 1
+      ENDIF
+   ENDIF      
+   // Armour and clothing returns the armour.
+   IF ( (STRMATCH(*armor*,<ACT.TYPE>)) || (STRMATCH(*armour*,<ACT.TYPE>)) || (STRMATCH(*clothing*,<ACT.TYPE>)) || (STRMATCH(*shield*,<ACT.TYPE>)) )
+      SRC.SYSMESSAGE @055 [Arms Lore] You determine that the <ACT.NAME> offers <ACT.ARMOR> armour, and weighs <ACT.WEIGHT> pounds.
+      ACT.ATTR = <ACT.ATTR> | attr_identified
+   ELSE
+      SRC.SYSMESSAGE @055 [Arms Lore] You determine that the <ACT.NAME> will do between <ACT.DAM.LO> and <ACT.DAM.HI> damage, and weighs <ACT.WEIGHT> pounds.
+      ACT.ATTR = <ACT.ATTR> | attr_identified
+   ENDIF
+ENDIF

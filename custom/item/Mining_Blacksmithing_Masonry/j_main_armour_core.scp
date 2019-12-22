@@ -1,0 +1,176 @@
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+                                                                        +
+//+                MEMORY SHARD CORE ARMOUR FUNCTIONALITY                  +
+//+                                                                        +
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+                                                                        +
+//+                           AUTHOR: WIGIFER                              +
+//+                         CREATED: 03/09/2018                            +
+//+                     LATEST REVISION: 03/09/2018                        +
+//+                                                                        +
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+                                                                        +
+//+ This file is where all armour functions now reside.                    +
+//+                                                                        +
+//+ Areas covered by this script, in order:                                +
+//+ - Armour Values Per Set                                                +
+//+ - Armour Raw Defense Percentages                                       +
+//+ - Armour Element Defense Percentages                                   +
+//+                                                                        +
+//+ Some areas which this script requires are not included. This is        +
+//+ because these effects impact weapons, armour, and NPC's.               +
+//+ Areas NOT covered by this script include:                              +
+//+ - Damage Types                                                         +
+//+ - Status Types                                                         +
+//+                                                                        +
+//+                                                                        +
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+                                                                        +
+//+ [CROSS DEPENDENCIES]                                                   +
+//+                                                                        +
+//+ j_MAIN_combat.scp          - Damage Types, Status Types.               +
+//+                                                                        +
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+                                                                        +
+//+ [CHANGELOG]                                                            +
+//+                                                                        +
+//+ 02/09/18 - Wigifer - Basic functionality added.                        +
+//+                      Added the code for Arms Lore and Item Lore.       +
+//+                                                                        +
+//+                                                                        +
+//+                                                                        +
+//+                                                                        +
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+                                                                        +
+//+ [TO DO]                                                                +
+//+                                                                        +
+//+ -                                                                      +
+//+                                                                        +
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+// ======================================
+// = Armour Element Defense Percentages =
+// ======================================
+//
+// The percentage each armour piece will reduce elemental damage by.
+// For example:
+// - "CAED_gloves 10" would mean it will reduce elemental damage by 10%.
+
+[DEFNAME combat_armour_elem_defense]
+CAED_gloves 		10
+CAED_collar		10
+CAED_arms		15
+CAED_helm		15
+CAED_chest		25
+CAED_legs		25
+
+//
+[DEFNAME def_armour_values]
+// == TIER 0 ARMOUR ==
+// Range: 0-9
+arval_mat_default    	0	// Nothing
+arval_mat_flesh    	0	// Flesh
+arval_mat_tin        	4	// Metal
+arval_mat_oldcopper   	6	// Metal
+
+
+// == TIER 1 ARMOUR ==
+// Range: 10-29
+arval_mat_pine    	10	// Wood
+arval_mat_copper    	14	// Metal
+arval_mat_iron    	19	// Metal
+arval_mat_pure_copper   16	// Metal
+arval_mat_bronze    	20	// Metal
+arval_mat_eucalyptus    21	// Wood
+arval_mat_ferrum    	22	// Metal
+arval_mat_brass    	25	// Metal
+arval_mat_drake       	29	// Leather
+
+
+// == TIER 2 ARMOUR ==
+// Range: 30-49
+arval_mat_holly    	31	// Wood
+arval_mat_rose    	33	// Wood
+arval_mat_silver   	35	// Metal
+arval_mat_gold    	31	// Metal
+arval_mat_red         	33	// Leather
+arval_mat_green       	33	// Leather
+arval_mat_oak        	34	// Wood
+arval_mat_steel   	39	// Metal
+arval_mat_chrome    	41	// Metal
+arval_mat_ironwood    	42	// Wood
+arval_mat_cobalt    	44	// Metal
+arval_mat_mahogany    	45	// Wood
+arval_mat_terathane    	46	// Metal
+arval_mat_titanium    	46	// Metal
+arval_mat_onyx    	49	// Metal/Wood Alloy
+	
+
+// == TIER 3 ARMOUR ==
+// Range: 50-69
+arval_mat_shakudo    	51	// Metal
+arval_mat_interleaved   52	// Wood
+arval_mat_billon    	53	// Metal
+arval_mat_manganese   	54	// Metal
+arval_mat_agapite     	54	// Metal
+arval_mat_shadow      	54	// Metal
+arval_mat_ice         	36	// Leather
+arval_mat_cherry    	55	// Wood
+arval_mat_entit       	59	// Metal
+arval_mat_verminard    	63	// Metal
+arval_mat_stronghold   	63	// Metal
+arval_mat_crystal     	63	// Leather
+arval_mat_imbued      	63      // Imbued Cherry
+arval_mat_verite      	66	// Metal
+arval_mat_valorite    	66	// Metal
+arval_mat_composite    	66	// Wood
+arval_mat_skargard    	69	// Metal
+arval_mat_blackrock    	69	// Metal
+arval_mat_myst   	69	// Wood
+
+
+// == TIER 4 ARMOUR ==
+// Range: 70-89
+arval_mat_bloodrk     	73	// Metal
+arval_mat_bloodrock    	73	// Metal
+arval_mat_whiteoak    	73	// Wood
+arval_mat_enhanced    	74	// Metal
+arval_mat_adamantine    76	// Metal
+arval_mat_bloodoak    	77	// Wood
+arval_mat_phoenix    	79	// Metal
+arval_mat_mytheril    	79	// Metal
+arval_mat_melancholy    84	// Metal
+arval_mat_electrum    	84	// Metal
+arval_mat_deathrock    	88	// Metal
+
+
+// == TIER 5 ARMOUR ==
+// Range: 90-109
+arval_mat_stellite    	90	// Metal
+arval_mat_celestium    	92	// Metal
+arval_mat_phoenicia    	96	// Metal
+arval_mat_ascension    	101	// Metal
+arval_mat_romancer    	104	// Metal
+arval_mat_mysticite   	104	// Metal
+arval_mat_legendary   	109	// Metal
+
+
+// == TIER 6 ARMOUR ==
+// Range: 110-129
+arval_mat_memory      	111	// Metal
+arval_mat_stellar    	116	// Metal
+arval_mat_deity    	119	// Metal
+arval_mat_ultimatum    	129	// Metal
+
+
+
+
+
+
+
+
+
+
+
+
+

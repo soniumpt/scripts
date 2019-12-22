@@ -1,0 +1,1081 @@
+//Changelog:
+//==========
+// 18/08/18 - Wigifer - Fishing now has RANGE=10
+// 21/08/18 - Wigifer - Added a skill check function for debug...
+
+[FUNCTION f_wig_skillcheck]
+OBJ = <UID>
+OBJ.SAY <OBJ.<SERV.SKILL(<FINDLAYER(1).SKILL>).NAME>>
+
+[FUNCTION f_wig_steedskillcheck]
+SAY <UID.<FINDLAYER(25).MORE2>.NAME>: <UID.<FINDLAYER(25).MORE2>.ARMSLORE>
+
+[COMMENT SKILL x]
+ADV_RATE=10.0,200.0,800.0 // 10.0 successes at 0% to gain .1, 800.0 successes at 100% to gain .1 skill, 200.0 successes at 50% to gain .1, 
+VALUES=0,100	// The amount of value an item created with the skill gets at skill levels.
+STAT_STR=80		// You will tend toward these stat vals if you use this skill a lot.
+BONUS_STATS=10	// What percent of the skill success is based on stat levels. = 10%
+BONUS_STR=80 // % of each stat toward success at skill
+
+[SKILL 0]
+DEFNAME=SKILL_ALCHEMY
+KEY=Alchemy
+TITLE=Alchemist
+FLAGS=skf_craft
+DELAY=3.0,1.5 // per stroke.
+EFFECT=0.0,100.0
+ADV_RATE=0,0,0
+VALUES=1,20,50
+
+BONUS_STATS=10
+BONUS_STR=0
+BONUS_DEX=10
+BONUS_INT=80
+
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+
+//ON=@Fail
+	//SRC.MESSAGE You toss the failed mixture from the mortar, unable to create a potion from it.
+
+[SKILL 1]
+DEFNAME=SKILL_ANATOMY
+KEY=Anatomy
+TITLE=Scholar
+PROMPT_MSG=Whom shall I examine?
+
+DELAY=3.0,1.5
+ADV_RATE=0,0,0
+
+BONUS_STATS=50
+BONUS_STR=0
+BONUS_DEX=0
+BONUS_INT=100
+
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+
+//ON=@SKILLSTART
+//   SRC.SYSMESSAGE Assessment is disabled at this time...
+//   RETURN 1
+
+ON=@Fail
+	SRC.MESSAGE You can't think of anything about this creature.
+
+[SKILL 2]
+DEFNAME=SKILL_ANIMALLORE
+KEY=AnimalLore
+TITLE=Scholar
+PROMPT_MSG=What animal should I look at?
+DELAY=3.0,1.5
+ADV_RATE=0,0,0
+
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+BONUS_STR=0
+BONUS_DEX=0
+BONUS_INT=100
+BONUS_STATS=50
+
+//ON=@SKILLSTART
+//   SRC.SYSMESSAGE Animal Lore is disabled at this time...
+//   RETURN 1
+
+ON=@Fail
+	SRC.MESSAGE You can't think of anything off hand.
+
+[SKILL 3]
+DEFNAME=SKILL_ItemLore
+KEY=ItemID
+TITLE=Merchant
+PROMPT_MSG=What non-weapon or non-armour item do you wish to appraise and identify?
+DELAY=1.0
+ADV_RATE=0,0,0
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+BONUS_STR=0
+BONUS_DEX=0
+BONUS_INT=100
+BONUS_STATS=25
+
+ON=@Fail
+	SRC.MESSAGE You can't think of anything off hand.
+
+[SKILL 4]
+DEFNAME=SKILL_ARMSLORE
+KEY=ArmsLore
+TITLE=Armorer
+PROMPT_MSG=What weapon or armour would you like to evaluate?
+DELAY=1.5
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+BONUS_STR=33
+BONUS_DEX=33
+BONUS_INT=34
+BONUS_STATS=25
+ADV_RATE=0,0,0
+
+ON=@Fail
+	SRC.MESSAGE You are uncertain about this item.
+
+[SKILL 5]
+DEFNAME=SKILL_Parrying
+KEY=Parrying
+TITLE=Shieldfighter
+ADV_RATE=0,0,0
+EFFECT=0.0,90.0
+FLAGS=skf_fight
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+BONUS_STR=50
+BONUS_DEX=50
+BONUS_INT=0
+BONUS_STATS=10
+
+[SKILL 6]
+DEFNAME=SKILL_unused
+KEY=unused
+TITLE=nothing
+//PROMPT_MSG=To whom do you wish to grovel?
+DELAY=2.0
+ADV_RATE=0,0,0
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+BONUS_STR=0
+BONUS_DEX=50
+BONUS_INT=50
+BONUS_STATS=10
+
+[SKILL 7]
+DEFNAME=SKILL_Blacksmith
+KEY=Blacksmithing
+TITLE=Blacksmith
+FLAGS=skf_craft
+PROMPT_MSG=
+DELAY=1.8
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+BONUS_STR=75
+BONUS_DEX=20
+BONUS_INT=5
+BONUS_STATS=10
+ADV_RATE=0,0,0
+VALUES=1,15,35
+
+ON=@Fail
+	SRC.MESSAGE You have failed to make anything.
+
+[SKILL 8]
+DEFNAME=Skill_Bowery
+KEY=Bowcraft
+TITLE=Bowyer
+FLAGS=skf_craft
+PROMPT_MSG=
+DELAY=5.5
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+BONUS_STR=15
+BONUS_DEX=70
+BONUS_INT=15
+BONUS_STATS=20
+ADV_RATE=0,0,0
+VALUES=1,25,50
+
+ON=@Fail
+	SRC.MESSAGE You fail to create the item.
+
+[SKILL 9]
+DEFNAME=SKILL_PEACEMAKING
+KEY=Peacemaking
+TITLE=Bard
+//PROMPT_MSG=
+DELAY=2.0
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+BONUS_STR=0
+BONUS_DEX=50
+BONUS_INT=50
+BONUS_STATS=5
+ADV_RATE=0,0,0
+
+ON=@Fail
+	SRC.MESSAGE You attempt to calm everyone, but fail.
+
+[SKILL 10]
+DEFNAME=Skill_Survival
+KEY=Survival
+TITLE=Survivor
+PROMPT_MSG=
+DELAY=6.0
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+BONUS_STR=33
+BONUS_DEX=33
+BONUS_INT=34
+BONUS_STATS=50
+ADV_RATE=0,0,0
+
+ON=@Fail
+	SRC.MESSAGE You fail to ignite the campfire.
+
+[SKILL 11]
+DEFNAME=Skill_Carpentry
+KEY=Carpentry
+TITLE=Carpenter
+FLAGS=skf_craft
+PROMPT_MSG=
+DELAY=5.5
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+BONUS_STR=50
+BONUS_DEX=30
+BONUS_INT=20
+BONUS_STATS=25
+ADV_RATE=0,0,0
+VALUES=1,20,40
+FLAGS=0008
+
+ON=@Fail
+	SRC.MESSAGE You fail to create the item.
+
+[SKILL 12]
+DEFNAME=SKILL_CARTOGRAPHY
+KEY=Cartography
+TITLE=Cartographer
+FLAGS=skf_craft
+PROMPT_MSG=
+DELAY=2.0
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+BONUS_STR=0
+BONUS_DEX=20
+BONUS_INT=80
+BONUS_STATS=15
+ADV_RATE=0,0,0
+VALUES=1,20,40
+
+ON=@Fail
+	SRC.MESSAGE You have failed to create a map.
+
+[SKILL 13]
+DEFNAME=Skill_Cooking
+KEY=Cooking
+TITLE=Chef
+PROMPT_MSG=What would you like to cook?
+FLAGS=skf_craft
+DELAY=5.0
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+BONUS_STR=0
+BONUS_DEX=40
+BONUS_INT=60
+BONUS_STATS=50
+ADV_RATE=0,0,0
+VALUES=1,30,40
+
+ON=@Fail
+	SRC.MESSAGE You burn the food to a crisp! It's ruined.
+
+[SKILL 14]
+DEFNAME=Skill_Detection
+KEY=Detection
+TITLE=Detector
+PROMPT_MSG=
+DELAY=3.0,2.0
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+BONUS_STR=0
+BONUS_DEX=20
+BONUS_INT=25
+BONUS_STATS=25
+ADV_RATE=0,0,0
+
+ON=@Fail
+	//SRC.MESSAGE You can see nothing hidden there.
+
+[SKILL 15]
+DEFNAME=Skill_Enticement
+KEY=Enticement
+TITLE=Bard
+//PROMPT_MSG=Whom do you wish to entice?
+DELAY=2.0
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+BONUS_STR=0
+BONUS_DEX=50
+BONUS_INT=50
+BONUS_STATS=5
+ADV_RATE=0,0,0
+
+ON=@Fail
+	SRC.MESSAGE Your music fails to attract anyone.
+
+[SKILL 16]
+DEFNAME=Skill_EvalInt
+KEY=EvaluatingIntel
+TITLE=Scholar
+PROMPT_MSG=Who would you like to observe?
+DELAY=1.5
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+BONUS_STR=0
+BONUS_DEX=0
+BONUS_INT=100
+BONUS_STATS=50
+ADV_RATE=0,0,0
+
+//ON=@SKILLSTART
+//   SRC.SYSMESSAGE Mystic Lore is disabled at this time...
+//   RETURN 1
+
+ON=@Fail
+	SRC.MESSAGE You cannot seem to judge the creature correctly.
+
+[SKILL 17]
+DEFNAME=Skill_Healing
+KEY=Healing
+TITLE=Healer
+PROMPT_MSG=Who will you use the bandages on?
+DELAY=3.0,1.5
+EFFECT=2.0,20.0
+ADV_RATE=0,0,0
+
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+
+BONUS_STATS=20
+BONUS_STR=0
+BONUS_DEX=30
+BONUS_INT=70
+
+ON=@Fail
+	SRC.MESSAGE You apply the bandages, but they barely help.
+
+[SKILL 18]
+DEFNAME=Skill_Fishing
+KEY=Fishing
+FLAGS=SKF_NOMINDIST|SKF_GATHER
+TITLE=Fisher%s
+PROMPT_MSG=What water do you want to fish in?
+DELAY=4.0
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+BONUS_STR=10
+BONUS_DEX=90
+BONUS_INT=0
+BONUS_STATS=25
+ADV_RATE=0,0,0
+VALUES=1,20,40
+RANGE=10
+
+ON=@Fail
+	SRC.MESSAGE You fish a while, but fail to catch anything.
+
+[SKILL 19]
+DEFNAME=Skill_Netherlore
+KEY=Netherlore
+TITLE=Nether scholar
+PROMPT_MSG=What would you like to examine?
+DELAY=1.5
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+BONUS_STR=0
+BONUS_DEX=0
+BONUS_INT=100
+BONUS_STATS=25
+ADV_RATE=0,0,0
+
+ON=@Fail
+	SRC.MESSAGE You can tell nothing about that.
+
+[SKILL 20]
+DEFNAME=Skill_Herding
+KEY=Herding
+TITLE=Shepherd
+PROMPT_MSG=
+DELAY=2.0
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+BONUS_STR=25
+BONUS_DEX=45
+BONUS_INT=30
+BONUS_STATS=25
+ADV_RATE=0,0,0
+
+ON=@Fail
+	SRC.MESSAGE You don't seem to be able to persuade that to move.
+
+[SKILL 21]
+DEFNAME=Skill_Hiding
+KEY=Hiding
+TITLE=Rogue
+PROMPT_MSG=
+DELAY=2.0
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+BONUS_STR=0
+BONUS_DEX=80
+BONUS_INT=20
+BONUS_STATS=25
+ADV_RATE=0,0,0
+
+ON=@Fail
+	SRC.MESSAGE You don't seem to be able to hide here.
+
+[SKILL 22]
+DEFNAME=SKILL_PROVOCATION
+KEY=Provocation
+TITLE=Bard
+PROMPT_MSG=Whom do you wish to incite?
+DELAY=3.0
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+BONUS_STR=0
+BONUS_DEX=90
+BONUS_INT=10
+BONUS_STATS=5
+ADV_RATE=0,0,0
+
+ON=@Fail
+   MESSAGE Your music fails to incite enough anger.
+
+[SKILL 23]
+DEFNAME=Skill_Inscription
+KEY=Inscription
+TITLE=Scribe
+FLAGS=skf_craft
+PROMPT_MSG=
+DELAY=5.5
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+BONUS_STR=0
+BONUS_DEX=0
+BONUS_INT=100
+BONUS_STATS=10
+ADV_RATE=0,0,0
+VALUES=1,20,40
+
+ON=@Fail
+   MESSAGE You fail to inscribe the scroll, and the scroll is ruined.
+
+[SKILL 24]
+DEFNAME=Skill_LockPick
+KEY=LockPicking
+TITLE=Locksmith
+PROMPT_MSG=What do you want to pick?
+DELAY=3.0
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+BONUS_STR=0
+BONUS_DEX=80
+BONUS_INT=20
+BONUS_STATS=25
+ADV_RATE=0,0,0
+
+ON=@Fail
+   MESSAGE You are unable to pick the lock.
+   RETURN 1
+
+[SKILL 25]
+DEFNAME=Skill_Magery
+KEY=Magery
+TITLE=Mage
+FLAGS=skf_magic
+PROMPT_MSG=
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+BONUS_STR=0
+BONUS_DEX=0
+BONUS_INT=110
+BONUS_STATS=15
+ADV_RATE=0,0,0
+VALUES=1,20,40
+//DELAY=1.0 // based on skill and difficulty.
+
+ON=@Fail
+   MESSAGE The spell fizzles.
+
+[SKILL 26]
+DEFNAME=Skill_MagicResist
+KEY=MagicResistance
+TITLE=Resistor
+PROMPT_MSG=
+EFFECT=0.0,90.0
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+BONUS_STR=0
+BONUS_DEX=0
+BONUS_INT=100
+BONUS_STATS=50
+ADV_RATE=0,0,0
+
+[SKILL 27]
+DEFNAME=Skill_Tactics
+KEY=Tactics
+TITLE=Warrior
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+BONUS_STR=50
+BONUS_DEX=50
+BONUS_INT=0
+BONUS_STATS=10
+ADV_RATE=0,0,0
+
+[SKILL 28]
+DEFNAME=Skill_Snooping
+KEY=Snooping
+TITLE=Pickpocket
+PROMPT_MSG=
+DELAY=2.0
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+BONUS_STR=0
+BONUS_DEX=100
+BONUS_INT=0
+BONUS_STATS=25
+ADV_RATE=0,0,0
+
+ON=@Fail
+	SRC.MESSAGE You fail to peek into the container.
+
+[SKILL 29]
+DEFNAME=Skill_Musicianship
+KEY=Musicianship
+TITLE=Bard
+PROMPT_MSG=
+DELAY=2.0
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+BONUS_STR=0
+BONUS_DEX=80
+BONUS_INT=20
+BONUS_STATS=10
+ADV_RATE=0,0,0
+
+ON=@Fail
+	SRC.MESSAGE You play poorly, and there is no effect.
+
+[SKILL 30]
+DEFNAME=SKILL_POISONING
+KEY=Poisoning
+TITLE=Assassin
+//PROMPT_MSG=To what do you wish to apply the poison?
+DELAY=2.0
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+BONUS_STR=0
+BONUS_DEX=20
+BONUS_INT=80
+BONUS_STATS=20
+ADV_RATE=0,0,0
+VALUES=1,20,40
+
+ON=@Fail
+	SRC.MESSAGE You fail to apply a sufficient dose of poison to it.
+
+[SKILL 31]
+DEFNAME=Skill_Archery
+KEY=Archery
+TITLE=Archer
+FLAGS=skf_fight|skf_ranged
+PROMPT_MSG=
+DELAY=2.0,0.8
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+BONUS_STR=0
+BONUS_DEX=95
+BONUS_INT=5
+BONUS_STATS=10
+ADV_RATE=0,0,0
+
+[SKILL 32]
+DEFNAME=SKILL_Necromancy
+KEY=Necromancy
+TITLE=Necromancer
+PROMPT_MSG=
+DELAY=2.0
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+BONUS_STR=0
+BONUS_DEX=0
+BONUS_INT=100
+BONUS_STATS=50
+ADV_RATE=0,0,0
+
+ON=@Fail
+	SRC.MESSAGE You fail your attempt at contacting the netherworld.
+
+[SKILL 33]
+DEFNAME=Skill_Stealing
+KEY=Stealing
+TITLE=Thief
+PROMPT_MSG=Which item will you attempt to steal?
+DELAY=3.0
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+BONUS_STR=0
+BONUS_DEX=100
+BONUS_INT=0
+BONUS_STATS=10
+ADV_RATE=0,0,0
+
+ON=@Fail
+   SRC.MESSAGE You fail to steal the item.
+   RETURN 1
+
+[SKILL 34]
+DEFNAME=Skill_Tailoring
+KEY=Tailoring
+TITLE=Tailor
+FLAGS=skf_craft
+PROMPT_MSG=
+DELAY=5.5
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+BONUS_STR=5
+BONUS_DEX=75
+BONUS_INT=20
+BONUS_STATS=25
+ADV_RATE=0,0,0
+VALUES=1,25,50
+
+ON=@Fail
+	SRC.MESSAGE Tailoring failed. Some of the cloth is ruined.
+
+[SKILL 35]
+DEFNAME=Skill_Taming
+KEY=Taming
+TITLE=Animal Tamer
+PROMPT_MSG=Tame which animal?
+DELAY=2.0
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+BONUS_STR=30
+BONUS_DEX=10
+BONUS_INT=60
+BONUS_STATS=20
+ADV_RATE=0,0,0
+
+ON=@Fail
+	SRC.MESSAGE You fail to tame the creature.
+
+[SKILL 36]
+DEFNAME=skill_HerbLore
+KEY=Herblore
+TITLE=Herbalist
+PROMPT_MSG=What would you like to observe?
+DELAY=1.5
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+BONUS_STR=20
+BONUS_DEX=0
+BONUS_INT=80
+BONUS_STATS=50
+ADV_RATE=0,0,0
+
+ON=@Fail
+	SRC.MESSAGE You cannot discern anything about this substance.
+
+[SKILL 37]
+DEFNAME=Skill_Tinkering
+KEY=Tinkering
+TITLE=Tinker
+PROMPT_MSG=
+FLAGS=skf_craft
+DELAY=5.5
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+BONUS_STR=20
+BONUS_DEX=20
+BONUS_INT=60
+BONUS_STATS=10
+ADV_RATE=0,0,0
+VALUES=1,25,50
+
+ON=@Fail
+	SRC.MESSAGE Tinkering failed.
+
+[SKILL 38]
+DEFNAME=Skill_Tracking
+KEY=Tracking
+TITLE=Ranger
+PROMPT_MSG=
+DELAY=4.0
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+BONUS_STR=0
+BONUS_DEX=50
+BONUS_INT=50
+BONUS_STATS=25
+ADV_RATE=0,0,0
+
+ON=@Fail
+	SRC.MESSAGE Tracking failed.
+
+[SKILL 39]
+DEFNAME=Skill_Masonry
+KEY=Masonry
+TITLE=Mason
+//PROMPT_MSG=What animal would you like to heal?
+DELAY=2.0
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+BONUS_STR=20
+BONUS_DEX=20
+BONUS_INT=60
+BONUS_STATS=20
+ADV_RATE=0,0,0
+
+ON=@Fail
+	SRC.MESSAGE You fail.
+
+[SKILL 40]
+DEFNAME=Skill_Swordsmanship
+KEY=Swordsmanship
+TITLE=Swords%s
+FLAGS=skf_fight
+PROMPT_MSG=
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+BONUS_STR=50
+BONUS_DEX=50
+BONUS_INT=0
+BONUS_STATS=10
+ADV_RATE=0,0,0
+
+[SKILL 41]
+DEFNAME=Skill_Macefighting
+KEY=Macefighting
+TITLE=Macefighter
+FLAGS=skf_fight
+PROMPT_MSG=
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+BONUS_STR=80
+BONUS_DEX=20
+BONUS_INT=0
+BONUS_STATS=10
+ADV_RATE=0,0,0
+
+[SKILL 42]
+DEFNAME=Skill_Fencing
+KEY=Fencing
+TITLE=Fencer
+FLAGS=skf_fight
+PROMPT_MSG=
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+BONUS_STR=20
+BONUS_DEX=80
+BONUS_INT=0
+BONUS_STATS=10
+ADV_RATE=0,0,0
+
+[SKILL 43]
+DEFNAME=Skill_Wrestling
+KEY=Wrestling
+TITLE=Wrestler
+FLAGS=skf_fight
+PROMPT_MSG=
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+BONUS_STR=50
+BONUS_DEX=50
+BONUS_INT=0
+BONUS_STATS=10
+ADV_RATE=0,0,0
+
+[SKILL 44]
+DEFNAME=SKILL_LUMBERJACK
+KEY=Lumberjacking
+FLAGS=SKF_NOMINDIST|SKF_GATHER
+TITLE=Lumberjack
+PROMPT_MSG=
+DELAY=1.5
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+BONUS_STR=90
+BONUS_DEX=10
+BONUS_INT=0
+BONUS_STATS=20
+ADV_RATE=0,0,0
+VALUES=1,10,50
+RANGE=6
+
+//ON=@Fail
+//	SRC.MESSAGE You hack at the tree for a while, but fail to produce any useable wood.
+
+[SKILL 45]
+DEFNAME=SKILL_MINING
+KEY=Mining
+//FLAGS=040
+FLAGS=SKF_NOMINDIST|SKF_GATHER
+TITLE=Miner
+PROMPT_MSG=Where would you like to mine?
+DELAY=1.5
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+BONUS_STR=70
+BONUS_DEX=30
+BONUS_INT=0
+BONUS_STATS=20
+ADV_RATE=0,0,0
+VALUES=1,10,50
+RANGE=6
+
+//ON=@Fail
+//	SRC.MESSAGE You loosen some rocks but fail to find any useable ore.
+
+[SKILL 46]
+DEFNAME=SKILL_MEDITATION
+KEY=Meditation
+TITLE=Stoic
+DELAY=2.0,1.0
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+BONUS_STR=5
+BONUS_DEX=90
+BONUS_INT=5
+BONUS_STATS=20
+ADV_RATE=0,0,0
+
+ON=@Fail
+	SRC.MESSAGE You lose your concentration.
+
+[SKILL 47]
+DEFNAME=SKILL_STEALTH
+KEY=Stealth
+TITLE=Rogue
+PROMPT_MSG=
+DELAY=2.0
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+BONUS_STR=0
+BONUS_DEX=80
+BONUS_INT=20
+BONUS_STATS=25
+ADV_RATE=0,0,0
+
+ON=@Fail
+	SRC.MESSAGE You can't seem to hide here.
+
+[SKILL 48]
+DEFNAME=SKILL_unused1
+KEY=unused1
+TITLE=unused1
+// PROMPT_MSG=Select the trap to disarm
+DELAY=7.0,3.0,2.0
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+BONUS_STR=0
+BONUS_DEX=80
+BONUS_INT=20
+BONUS_STATS=25
+ADV_RATE=0,0,0
+
+ON=@Fail
+	SRC.MESSAGE You fail to disarm the trap.
+
+[SKILL 49]
+DEFNAME=SKILL_unused2
+KEY=unused2
+TITLE=unused2
+FLAGS=skf_magic
+STAT_STR=0
+STAT_INT=0
+STAT_DEX=0
+BONUS_STR=0
+BONUS_DEX=0
+BONUS_INT=100
+BONUS_STATS=15
+ADV_RATE=0,0,0
+VALUES=1,10,80
+
+ON=@Fail
+	SRC.MESSAGE The spell fizzles.
+
+[SKILL 50]
+DEFNAME=SKILL_FOCUS
+KEY=Focus
+TITLE=Stoic
+DELAY=2.0
+STAT_STR=10
+STAT_INT=100
+STAT_DEX=10
+BONUS_STR=5
+BONUS_DEX=5
+BONUS_INT=20
+ADV_RATE=0,0,0
+
+[SKILL 51]
+DEFNAME=SKILL_CHIVALRY
+KEY=Chivalry
+TITLE=Paladin
+FLAGS=skf_magic
+STAT_STR=100
+STAT_INT=35
+STAT_DEX=55
+BONUS_STR=80
+BONUS_DEX=20
+BONUS_INT=0
+BONUS_STATS=10
+ADV_RATE=0,0,0
+
+[SKILL 52]
+DEFNAME=SKILL_BUSHIDO
+KEY=Bushido
+TITLE=Samurai
+FLAGS=skf_fight
+STAT_STR=55
+STAT_INT=60
+STAT_DEX=95
+BONUS_STR=20
+BONUS_DEX=80
+BONUS_INT=0
+BONUS_STATS=10
+ADV_RATE=0,0,0
+
+[SKILL 53]
+DEFNAME=SKILL_NINJITSU
+KEY=Ninjitsu
+TITLE=Ninja
+FLAGS=skf_fight
+STAT_STR=55
+STAT_INT=60
+STAT_DEX=95
+BONUS_STR=20
+BONUS_DEX=80
+BONUS_INT=0
+BONUS_STATS=10
+ADV_RATE=0,0,0
+
+[SKILL 54]
+DEFNAME=SKILL_SPELLWEAVING
+KEY=Spellweaving
+TITLE=Arcanist
+FLAGS=skf_magic
+STAT_STR=20
+STAT_INT=70
+STAT_DEX=30
+BONUS_STR=0
+BONUS_DEX=0
+BONUS_INT=100
+BONUS_STATS=50
+ADV_RATE=0,0,0
+
+[SKILLCLASS 0]
+DEFNAME=Class_undeclared
+NAME=undeclared
+STATSUM=275
+SKILLSUM=1200.0
+STR=150
+INT=150
+DEX=150
+Alchemy=120.0
+Anatomy=120.0
+AnimalLore=120.0
+ItemId=120.0
+ArmsLore=120.0
+Parrying=120.0
+unused=0.0
+Blacksmithing=120.0
+Bowcraft=120.0
+Peacemaking=0.0
+Survival=0.0
+Carpentry=120.0
+Cartography=120.0
+Cooking=120.0
+Detection=120.0
+Enticement=0.0
+EvaluatingIntel=120.0
+Healing=120.0
+Fishing=120.0
+Netherlore=120.0
+Herding=120.0
+Hiding=120.0
+Provocation=120.0
+Inscription=120.0
+LockPicking=120.0
+Magery=120.0
+MagicResistance=120.0
+Tactics=120.0
+Snooping=120.0
+Musicianship=120.0
+Poisoning=120.0
+Archery=120.0
+Necromancy=120.0
+Stealing=120.0
+Tailoring=120.0
+Taming=120.0
+Herblore=120.0
+Tinkering=120.0
+Tracking=120.0
+Masonry=120.0
+Swordsmanship=120.0
+Macefighting=120.0
+Fencing=120.0
+Wrestling=120.0
+Lumberjacking=120.0
+Mining=120.0
+Meditation=120.0
+Stealth=120.0
+unused1=0.0
+unused2=0.0
+Focus=0.0
+Chivalry=0.0
+Bushido=0.0
+Ninjitsu=0.0
+Spellweaving=0.0
+
+ON=@Login
+   SRC.EVENTS +e_plevel_lock
+   SRC.EVENTS -e_fame_karma_gain

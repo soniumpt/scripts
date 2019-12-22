@@ -1,0 +1,91 @@
+[FUNCTION HATECLEAR]
+   SRC.TAG.SEEN.elf_wood	= 
+   SRC.TAG.SEEN.elf_dark	= 
+
+
+[CHARDEF c_elf_dark]
+ID		= c_man
+NAME		= dark elf
+TEVENTS		= e_hated_race
+
+ON = @Create
+   TAG.RACE.THIS	= elf_dark		// * The race of this character
+   TAG.RACE.HATE1	= elf_wood		// * The hated race
+   STR			= 50
+   DEX			= 50
+   INT			= 50
+
+
+[CHARDEF c_elf_wood]
+ID		= c_man
+NAME		= wood elf
+TEVENTS		= e_hated_race
+
+ON = @Create
+   TAG.RACE.THIS	= elf_wood		// * The race of this character
+   TAG.RACE.HATE1	= elf_dark		// * The hated race
+   STR			= 50
+   DEX			= 50
+   INT			= 50
+
+
+[EVENTS e_hated_race]
+ON = @Click
+   if ( <FLAGS> & statf_war )
+      // if already fighting then ignore
+      return 0
+   endif
+
+   // keep this as the last seen of this race
+   SRC.TRY SRC.TAG.SEEN.<tag.race.this>	= <UID>
+
+   HATE_RACE <tag.race.HATE1>
+   //HATE_RACE <tag.race.HATE2>
+   //HATE_RACE <tag.race.HATE3>
+   //HATE_RACE <tag.race.HATE4>
+
+
+[FUNCTION HATE_RACE]
+   if ( !strcmp( "<args>", "" ) )
+      return 0
+   endif
+
+   say <NAME> looking for <args>
+   ACT		= <SRC.TAG.SEEN.<args>>
+   if !( 0<ACT.NPC> )	// already deleted or none seen
+      SRC.TRY SRC.TAG.SEEN.<args>	=
+      return 0
+   endif
+
+   // if the other is close enough to the character, meaning that they're both
+   // likely to be on screen...
+   if ( <ACT.DISTANCE> < 10 )
+      // we'll create the item on the other, to save the ACT
+      ACT.NEWITEM	= i_memory
+      ACT.ACT.COLOR	= memory_fight | memory_war_targ
+      ACT.ACT.LINK	= <ACT.UID>	// link it to the target
+      ACT.ACT.CONT	= <UID>		// place it on this npc
+      FLAGS		= <FLAGS> | statf_war
+      EMOTE attacking <ACT.NAME>
+
+      // and if they're not fighting, make them fight us
+      if !( <ACT.FLAGS> & statf_war )
+         ACT.NEWITEM	= i_memory
+	 ACT.ACT.COLOR	= memory_fight | memory_war_targ
+	 ACT.ACT.LINK	= <UID>		// link it to this NPC
+	 ACT.ACT.CONT	= <ACT.UID>	// place it on the target
+	 ACT.FLAGS	= <ACT.FLAGS> | statf_war
+	 ACT.EMOTE attacking <NAME>
+	 ACT.ACT	= <UID>
+      endif
+   endif
+
+
+[function sayrunic] 
+var.font=<src.font> 
+src.font=8
+src.say <strtoupper <args> >
+src.font=<var.font> 
+
+
+[EOF]

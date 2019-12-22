@@ -1,0 +1,324 @@
+// Swindlers Boat fix - Boat fall apart when you turn them.
+// Edited by Rolypoly to make it a more smooth action 06/09/03
+
+[FUNCTION shipfix]
+   LOCAL.LEFTOK=0
+   LOCAL.TMP=<OBJ>
+   OBJ=<UID>
+   
+   FORITEMS 18
+      IF (<TYPE>==t_ship_plank) && (<REGION.UID>==<OBJ>)
+         DCLICK
+      ENDIF
+   ENDFOR
+   
+   IF (<OBJ.BASEID>==i_multi_ship_small_n) || (<OBJ.BASEID>==i_multi_ship_dragon_small_n)
+      LOCAL.HATCH 0 -4 0
+      LOCAL.TILLERMAN 1 4 0
+      LOCAL.LEFTSIDE -2 0 0
+      LOCAL.RIGHTSIDE 2 0 0
+   ELSEIF (<OBJ.BASEID>==i_multi_ship_small_w) || (<OBJ.BASEID>==i_multi_ship_dragon_small_w)
+      LOCAL.HATCH -4 0 0
+      LOCAL.TILLERMAN 4 0 0
+      LOCAL.LEFTSIDE 0 2 0
+      LOCAL.RIGHTSIDE 0 -2 0
+   ELSEIF (<OBJ.BASEID>==i_multi_ship_small_s) || (<OBJ.BASEID>==i_multi_ship_dragon_small_s)
+      LOCAL.HATCH 0 4 0
+      LOCAL.TILLERMAN 0 -4 0
+      LOCAL.LEFTSIDE 2 0 0
+      LOCAL.RIGHTSIDE -2 0 0
+   ELSEIF (<OBJ.BASEID>==i_multi_ship_small_e) || (<OBJ.BASEID>==i_multi_ship_dragon_small_e)
+      LOCAL.HATCH 4 0 0
+      LOCAL.TILLERMAN -4 0 0
+      LOCAL.LEFTSIDE 0 -2 0
+      LOCAL.RIGHTSIDE 0 2 0
+   ELSEIF (<OBJ.BASEID>==i_multi_ship_medium_n) || (<OBJ.BASEID>==i_multi_ship_dragon_medium_n)
+      LOCAL.HATCH 0 -4 0
+      LOCAL.TILLERMAN 1 5 0
+      LOCAL.LEFTSIDE -2 0 0
+      LOCAL.RIGHTSIDE 2 0 0
+   ELSEIF (<OBJ.BASEID>==i_multi_ship_medium_w) || (<OBJ.BASEID>==i_multi_ship_dragon_medium_w)
+      LOCAL.HATCH -4 0 0
+      LOCAL.TILLERMAN 5 0 0
+      LOCAL.LEFTSIDE 0 2 0
+      LOCAL.RIGHTSIDE 0 -2 0
+   ELSEIF (<OBJ.BASEID>==i_multi_ship_medium_s) || (<OBJ.BASEID>==i_multi_ship_dragon_medium_s)
+      LOCAL.HATCH 0 4 0
+      LOCAL.TILLERMAN 0 -5 0
+      LOCAL.LEFTSIDE 2 0 0
+      LOCAL.RIGHTSIDE -2 0 0
+   ELSEIF (<OBJ.BASEID>==i_multi_ship_medium_e) || (<OBJ.BASEID>==i_multi_ship_dragon_medium_e)
+      LOCAL.HATCH 4 0 0
+      LOCAL.TILLERMAN -5 0 0
+      LOCAL.LEFTSIDE 0 -2 0
+      LOCAL.RIGHTSIDE 0 2 0
+   // Long Ships
+   ELSEIF (<OBJ.BASEID>==i_multi_ship_long_n) || (<OBJ.BASEID>==i_multi_ship_dragon_long_n)
+      LOCAL.HATCH 0 -5 0
+      LOCAL.TILLERMAN 1 5 0
+      LOCAL.LEFTSIDE -2 -1 0
+      LOCAL.RIGHTSIDE 2 -1 0
+   ELSEIF (<OBJ.BASEID>==i_multi_ship_long_w) || (<OBJ.BASEID>==i_multi_ship_dragon_long_w)
+      LOCAL.HATCH -5 0 0
+      LOCAL.TILLERMAN 5 0 0
+      LOCAL.LEFTSIDE -1 2 0
+      LOCAL.RIGHTSIDE -1 -2 0
+   ELSEIF (<OBJ.BASEID>==i_multi_ship_long_s) || (<OBJ.BASEID>==i_multi_ship_dragon_long_s)
+      LOCAL.HATCH 0 5 0
+      LOCAL.TILLERMAN 0 -5 0
+      LOCAL.LEFTSIDE 2 1 0
+      LOCAL.RIGHTSIDE -2 1 0
+   ELSEIF (<OBJ.BASEID>==i_multi_ship_long_e) || (<OBJ.BASEID>==i_multi_ship_dragon_long_e)
+      LOCAL.HATCH 5 0 0
+      LOCAL.TILLERMAN -5 0 0
+      LOCAL.LEFTSIDE 1 -2 0
+      LOCAL.RIGHTSIDE 1 2 0
+   ENDIF
+   
+   FORITEMS 18
+      IF (<BASEID>==i_ship_hatch_e) && (<REGION.UID>==<OBJ>)
+         IF (<LINK.MORE2>==00) || (<LINK.MORE2>==01) || (<LINK.MORE2>==02) //N
+            DISPID 03eae
+         ELSEIF (<LINK.MORE2>==02020000) || (<LINK.MORE2>==02020001) || (<LINK.MORE2>==02020002) // E
+            DISPID i_ship_hatch_e
+         ELSEIF (<LINK.MORE2>==04040000) || (<LINK.MORE2>==04040001) || (<LINK.MORE2>==04040002) // S
+            DISPID 03eb9
+         ELSEIF (<LINK.MORE2>==06060000) || (<LINK.MORE2>==06060001) || (<LINK.MORE2>==06060002) // W
+            DISPID 03e93
+         ENDIF
+
+         P=<LINK.P>
+         MOVE=<LOCAL.HATCH>
+      ENDIF
+      
+      IF (<REGION.UID>==<OBJ>) && (<TYPE>==t_ship_tiller)
+         IF (<LINK.MORE2>==00) || (<LINK.MORE2>==01) || (<LINK.MORE2>==02) // N
+            DISPID 03e4e
+         ELSEIF (<LINK.MORE2>==02020000) || (<LINK.MORE2>==02020001) || (<LINK.MORE2>==02020002) // E
+            DISPID 03e55
+         ELIF (<LINK.MORE2>==04040000) || (<LINK.MORE2>==04040001) || (<LINK.MORE2>==04040002) // S
+            DISPID 03e4b
+         ELIF (<LINK.MORE2>==06060000) || (<LINK.MORE2>==06060001) || (<LINK.MORE2>==06060002) // W
+            DISPID 03e50
+         ENDIF
+
+         P=<LINK.P>
+         MOVE <LOCAL.TILLERMAN>
+      ENDIF
+      
+      IF (<REGION.UID>==<OBJ>) && (<UID>!=<LOCAL.LEFTSIDEUID>) && (<id>==03eb2) || (<ID>==03e85) || (<ID>==03ed4)
+         IF (<TYPE>==t_ship_plank) && (<REGION.UID>==<OBJ>)
+            DCLICK
+         ENDIF
+
+         IF (<LINK.MORE2>==00) || (<LINK.MORE2>==01) || (<LINK.MORE2>==02) // N
+            ID=03eb2
+         ELSEIF (<LINK.MORE2>==02020000) || (<LINK.MORE2>==02020001) || (<LINK.MORE2>==02020002) // E
+            ID=03e85
+         ELSEIF (<LINK.MORE2>==04040000) || (<LINK.MORE2>==04040001) || (<LINK.MORE2>==04040002) // S
+            ID=03eb2
+         ELSEIF (<LINK.MORE2>==06060000) || (<LINK.MORE2>==06060001) || (<LINK.MORE2>==06060002) // W
+            ID=03e85
+         ENDIF
+
+         P=<LINK.P>
+         MOVE <LOCAL.RIGHTSIDE>
+         LOCAL.RIGHTSIDEUID=<UID>
+         TIMER -1
+         UPDATE
+      ENDIF
+      
+      IF (<REGION.UID>==<OBJ>) && (<UID>!=<LOCAL.RIGHTSIDEUID>) && (<ID>==03eb1) || (<ID>==03e8a) || (<ID>==03ed4)
+         IF (<TYPE>==t_ship_plank) && (<REGION.UID>==<OBJ>)
+            DCLICK
+         ENDIF
+
+         IF (<LINK.MORE2>==00) || (<LINK.MORE2>==01) || (<LINK.MORE2>==02) // N
+            ID=03eb1
+         ELSEIF (<LINK.MORE2>==02020000) || (<LINK.MORE2>==02020001) || (<LINK.MORE2>==02020002) // E
+            ID=03e8a
+         ELSEIF (<LINK.MORE2>==04040000) || (<LINK.MORE2>==04040001) || (<LINK.MORE2>==04040002) // S
+            ID=03eb1
+         ELSEIF (<LINK.MORE2>==06060000) || (<LINK.MORE2>==06060001) || (<LINK.MORE2>==06060002) // W
+            ID=03e8a
+         ENDIF
+      
+         P=<LINK.P>
+         MOVE <LOCAL.LEFTSIDE>
+         LOCAL.LEFTSIDEUID=<UID>
+         TIMER -1
+         UPDATE
+      ENDIF
+   ENDFOR
+   OBJ=<LOCAL.TMP>
+
+
+[SPEECH spk_ship_cmds]
+ON=Stop
+   SHIPSTOP
+
+ON=Turn Left
+ON=Port
+   LOCAL.TMP=<OBJ>
+   OBJ=<UID>
+   FORITEMS 8
+      IF (<TYPE>==t_ship)
+         IF (<UID>!=<OBJ>)
+            SRC.SYSMESSAGE There's a boat too next to you.
+            return 1
+         ENDIF
+      ENDIF
+   ENDFOR
+   OBJ.SHIPTURNLEFT
+   OBJ.shipfix
+   OBJ=<LOCAL.TMP>
+
+ON=Turn Right
+ON=Starboard	
+   LOCAL.TMP=<OBJ>
+   OBJ=<UID>
+   FORITEMS 8
+      IF (<TYPE>==t_ship)
+         IF (<UID>!=<OBJ>)
+            SRC.SYSMESSAGE There's a boat too next to you.
+            return 1
+         ENDIF
+      ENDIF
+   ENDFOR
+   OBJ.SHIPTURNRIGHT
+   OBJ.shipfix
+   OBJ=<LOCAL.TMP>
+
+ON=Left			
+ON=Drift Left
+   SHIPDRIFTLEFT
+
+ON=Right		
+ON=Drift Right
+   SHIPDRIFTRIGHT
+
+ON=Back		
+ON=Backward		
+ON=Backwards	
+   SHIPBACK
+
+ON=Forward
+ON=Foreward		
+ON=Unfurl sail	
+   SHIPFORE
+
+ON=Forward left
+   SHIPFORELEFT
+
+ON=forward right
+   SHIPFORERIGHT
+
+ON=backward left
+ON=back left
+   SHIPBACKLEFT
+
+ON=backward right
+ON=back right
+   SHIPBACKRIGHT
+
+ON=Raise Anchor
+   SHIPANCHORRAISE
+
+ON=Drop Anchor
+   SHIPANCHORDROP
+
+ON=Turn around	
+ON=Come about	
+   SHIPTURN
+   shipfix
+
+ON=Up
+   SHIPUP
+
+ON=Down
+   SHIPDOWN
+
+ON=Land
+   SHIPLAND
+
+
+///////////////////////////////////////////////SCRAP SHIP FUNCTION///////////////////////////////////////////////////////
+
+[Plevel 1]
+scrapship
+locateship
+
+[FUNCTION scrapship]
+NEWITEM i_scrapship_item
+ACT.CONT <UID>
+ACT.TARGET Select the ship you would like to scrap.
+
+
+[ITEMDEF i_scrapship_item]
+ID=i_memory
+TYPE=t_eq_script
+NAME=Scrap Ship
+
+ON=@Create
+ATTR=attr_decay
+TIMER=60
+
+ON=@Targon_ITEM
+IF (<CONT.TARG.TYPE>=t_ship)
+   IF (<CONT.UID>=<CONT.TARG.MORE1>)
+      MENU mnu_boat_scrap
+   ELSE
+      CONT.SYSMESSAGE You do not own that ship.
+   ENDIF
+ELSE
+   CONT.SYSMESSAGE That does not appear to be a ship.
+ENDIF
+REMOVE
+RETURN 1
+
+ON=@Timer
+REMOVE
+RETURN 1
+
+
+[MENU mnu_boat_scrap]
+Demolishing this ship and scraping its parts will generate <eval ((<SRC.TARG.VALUE>*3)/4)>gp of income. All items locked to it will be destroyed. Are you sure you want to demolish the ship?
+
+ON = 0 Yes!
+   SERV.NEWITEM	i_check
+   NEW.MORE2	= <eval ((<SRC.TARG.VALUE>*3)/4)>
+   NEW.CONT		= <SRC.findlayer(layer_bankbox).uid>
+   SRC.SYSMESSAGE A cheque worth <eval ((<SRC.TARG.VALUE>*3)/4)>gp has been issued to your bank.
+   SRC.TARG.REMOVE
+   return 1
+
+
+
+///////////////////////////////////////////////LOCATE SHIP FUNCTION///////////////////////////////////////////////////////
+[FUNCTION locateship]
+NEWITEM i_locateship_item
+ACT.CONT <UID>
+ACT.TARGET Select the key of the ship you would like to locate.
+
+
+[ITEMDEF i_locateship_item]
+ID=i_memory
+TYPE=t_eq_script
+NAME=Locate Ship
+
+ON=@Create
+ATTR=attr_decay
+TIMER=60
+
+ON=@Targon_ITEM
+IF (<CONT.TARG.LINK.TYPE>=t_ship)
+   CONT.SYSMESSAGE That ship is located at <CONT.TARG.LINK.P> in <CONT.TARG.LINK.REGION.NAME>
+ELSE
+   CONT.SYSMESSAGE That is not a key for a ship or the ship no longer exists.
+ENDIF
+REMOVE
+RETURN 1
+
+ON=@Timer
+REMOVE
+RETURN 1

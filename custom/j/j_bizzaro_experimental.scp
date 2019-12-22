@@ -1,0 +1,676 @@
+// *****************************************************************
+//                       Bizzaro Experimental Entry Items
+// *****************************************************************
+
+
+//[ITEMDEF i_steedunequipper]
+//ID=i_gravestone
+//NAME=Steed Unequipper (Wig Test)
+
+//ON=@DCLICK
+//   SRC.UNEQUIPSTEED
+//   RETURN 1
+   
+[ITEMDEF i_bizzaro_experimental_entrance]
+ID=0edc
+NAME=Bizzaro Experimental Room Entrance Stone
+
+ON=@CREATE
+   COLOR=0aeb
+   
+ON=@DCLICK
+   DIALOG d_bizzaro_experimental_entry
+   RETURN 1
+
+[ITEMDEF i_bizzaro_experimental_nomonster]
+ID=i_floor_wood
+NAME=Players Only Past This Point!
+   
+ON=@STEP
+   IF (<SRC.ISPC>)
+      RETURN 0
+   ELSE
+      RETURN 1
+   ENDIF
+
+
+[ITEMDEF i_bizzaro_experimental_dispenser]
+ID=0edc
+NAME=Bizzaro Experimental Room Reagent Dispenser
+
+ON=@CREATE
+   COLOR=0aec
+   
+ON=@DCLICK
+   MENU M_BIZEXPERIMENTALDISPENSER
+   RETURN 1
+
+[ITEMDEF i_bizzaro_experimental_spawner]
+ID=0edc
+NAME=Bizzaro Experimental Room Monster Spawner
+
+ON=@CREATE
+   COLOR=0aed
+   
+ON=@DCLICK
+   MENU M_BIZEXPERIMENTALSPAWNER
+   RETURN 1
+
+[ITEMDEF i_bizzaro_experimental_exit]
+ID=0edc
+NAME=Bizzaro Experimental Room Exit
+
+ON=@CREATE
+   COLOR=0aeb
+
+ON=@DCLICK
+//   IF (<SRC.ISGM>)
+//      SRC.SYSMESSAGE This is not for GM usage. You'll just wipe your pack.
+//      RETURN 1
+//   ENDIF
+   SRC.MENU M_BIZEXPERIMENTALEXIT
+   RETURN 1
+ 
+[MENU M_BIZEXPERIMENTALEXIT]
+Are you sure you would like to quit?
+ON=0 Yes
+f_exitbizexperimentalwin
+ON=0 No
+SRC.SYSMESSAGE Good luck then! Exits can be found at the entrance to every floor!
+
+[MENU M_BIZEXPERIMENTALSPAWNER]
+What do you want to fight?
+ON=0 Daemon
+SERV.NEWNPC c_daemon
+NEW.GO 5261,1764,0,100
+ON=0 Balron
+SERV.NEWNPC c_m_balron
+NEW.GO 5261,1764,0,100
+ON=0 Arboreal Mongbat
+SERV.NEWNPC c_m_mongbat_arboreal
+NEW.GO 5261,1764,0,100
+ON=0 Neo Headless
+SERV.NEWNPC c_headless_neo
+NEW.GO 5261,1764,0,100
+ON=0 Harpy
+SERV.NEWNPC c_harpy
+NEW.GO 5261,1764,0,100
+ON=0 Fallen Angel
+SERV.NEWNPC c_fallen_angel
+NEW.GO 5261,1764,0,100
+ON=0 Angel of the Moon
+SERV.NEWNPC c_angel_of_the_moon
+NEW.GO 5261,1764,0,100
+ON=0 CLEAR ROOM OF ALL NPC'S
+FORCHARS 40
+   IF (<ISNPC>)
+      REMOVE
+   ENDIF
+ENDFOR
+
+
+[MENU M_BIZEXPERIMENTALDISPENSER]
+What do you need?
+ON=0 Reagents (Mage, Necro, 100 of each)
+BIZZAROEXPERIMENTALDISPENSER_REG
+ON=0 Cherry Bows, Crossbows, Staves (With arrows and bolts)
+BIZZAROEXPERIMENTALDISPENSER_CHERRY
+ON=0 Myst Bows, Crossbows, Staves (With arrows and bolts)
+BIZZAROEXPERIMENTALDISPENSER_MYST
+ON=0 Nothing
+SRC.SYSMESSAGE Good luck then! Exits can be found at the entrance to every floor!
+
+[FUNCTION f_exitbizexperimentalwin]
+   SRC.UNEQUIPALL
+   SRC.UNEQUIPSTEED
+   SRC.REVERTBACKPACK
+   SRC.BIZZARORESTORESKILLS
+   SRC.GO <SRC.TAG.BIZZARO.ORIGIN>
+   SRC.EVENTS -e_bizzaro_experimental
+   SERV.LOG :: BIZZARO LOG :: <SRC.NAME>:<SRC.ACCOUNT>:<SRC.UID> has left BIZZARO EXPERIMENTAL!
+   SRC.SYSMESSAGE @51 <SRC.NAME>, you have left the Bizzaro Experimental Room!
+   RETURN 1
+ 
+// *****************************************************************
+//                       Bizzaro Shame Event
+// *****************************************************************
+
+[EVENTS e_bizzaro_experimental]
+
+ON=@DEATH
+   IF !(<NPC>)
+      SRC.UNEQUIPALL
+      SRC.UNEQUIPSTEED
+      SRC.REVERTBACKPACK
+      SRC.BIZZARORESTORESKILLS
+      SRC.GO <SRC.TAG.BIZZARO.ORIGIN>
+      SRC.EVENTS -e_bizzaro_experimental
+      SRC.RESURRECT
+      SRC.HITS=<SRC.STR>
+      SERV.LOG :: BIZZARO LOG :: <SRC.NAME>:<SRC.ACCOUNT>:<SRC.UID>:<SRC.P>:<SRC.REGION.NAME> died in BIZZARO EXPERIMENTAL and was warped out!
+      SRC.SYSMESSAGE @51 Unlucky <SRC.NAME>!
+   ENDIF
+   RETURN 1
+   
+// *****************************************************************
+//                       Bizzaro Experimental Gump
+// *****************************************************************
+
+[DIALOG d_bizzaro_experimental_entry]
+50,50
+page 0
+resizepic 0 0 9250 500 450 // -Main Background-
+dtext 115 10 65 Welcome to the Bizzaro Experimental Room!
+button 500 20 9741 9741 0 1 0 //------------ 
+button 508 20 9741 9741 0 1 0 //Go to Page 1
+button 516 20 9741 9741 0 1 0 //------------
+resizepic 500 20 9200 24 100  //Fake Button 1
+
+button 500 120 9741 9741 0 2 0 //------------ 
+button 508 120 9741 9741 0 2 0 //Go to Page 2
+button 516 120 9741 9741 0 2 0 //------------
+resizepic 500 120 9200 24 100   //Fake Button 2
+
+button 500 220 9741 9741 0 3 0 //------------ 
+button 508 220 9741 9741 0 3 0 //Go to Page 3
+button 516 220 9741 9741 0 3 0 //------------
+resizepic 500 220 9200 24 100   //Fake Button 3
+
+button 500 320 9741 9741 0 4 0 //------------ 
+button 508 320 9741 9741 0 4 0 //Go to Page 4
+button 516 320 9741 9741 0 4 0 //------------
+resizepic 500 320 9200 24 100   //Fake Button 4
+
+page 1
+
+dtext 510 30 025 I
+dtext 508 45 025 N
+dtext 508 60 025 F
+dtext 508 75 025 O
+
+dtext 508 130 05 E
+dtext 508 145 05 Q
+dtext 508 160 05 U
+dtext 510 175 05 I
+dtext 508 190 05 P
+
+dtext 508 230 05 S
+dtext 508 245 05 P
+dtext 508 260 05 E
+dtext 508 275 05 L
+dtext 508 290 05 L
+
+dtext 508 330 05 S
+dtext 508 345 05 T
+dtext 508 360 05 A
+dtext 508 375 05 R
+dtext 508 390 05 T
+
+dtext 150 40 025 Information about Bizzaro World
+
+dtext 30 70 07a0 Bizzaro World is a series of dungeons and areas where your character
+dtext 30 90 07a0 build is unimportant. Suitable for both casual and hardcore gamers,
+dtext 30 110 07a0 Bizzaro World sends you into a dungeon especially created for a certain
+dtext 30 130 07a0 difficulty level. All stats, skills and equipment are set prior to entry.
+dtext 30 150 07a0 All equipment and any steeds you have are transferred to your bank.
+dtext 30 170 07a0 All skills and stats you have are restored upon exit.
+
+dtext 150 220 025 Information about Bizzaro Experimental
+
+dtext 30 250 07a3 Difficulty: 0/5  ---  Reccomended Party: None  ---  Prizes: None
+
+dtext 30 290 07a0 Bizzaro Experimental Room is just that: An experimental room.
+dtext 30 310 07a0 New additions to the server may appear here before anywhere!
+dtext 30 330 07a0 Also, you can play with all skills and stats at 100.
+dtext 30 350 07a0 You are given a variety of combat weaponry to play with.
+dtext 30 370 07a0 ...maybe you might want to find someone else to...
+dtext 30 410 07a4 "Experiment" on...
+
+
+page 2
+
+dtext 510 30 05 I
+dtext 508 45 05 N
+dtext 508 60 05 F
+dtext 508 75 05 O
+
+dtext 508 130 025 E
+dtext 508 145 025 Q
+dtext 508 160 025 U
+dtext 510 175 025 I
+dtext 508 190 025 P
+
+dtext 508 230 05 S
+dtext 508 245 05 P
+dtext 508 260 05 E
+dtext 508 275 05 L
+dtext 508 290 05 L
+
+dtext 508 330 05 S
+dtext 508 345 05 T
+dtext 508 360 05 A
+dtext 508 375 05 R
+dtext 508 390 05 T
+
+dtext 70 50 07a1 Skill Setup
+
+dtext 20 80 07a0 Archery // Skill 1
+dtext 170 80 07a3 95.0%
+dtext 20 100 07a0 Fencing // Skill 2
+dtext 170 100 07a3 95.0%
+dtext 20 120 07a0 Parrying // Skill 3
+dtext 170 120 07a3 95.0%
+dtext 20 140 07a0 Anatomy // Skill 4
+dtext 170 140 07a3 95.0%
+dtext 20 160 07a0 Magery // Skill 5
+dtext 170 160 07a3 95.0%
+dtext 20 180 07a0 Magic Resistance // Skill 6
+dtext 170 180 07a3 125.0%
+dtext 20 200 07a0 Alchemy // Skill 7
+dtext 170 200 07a3 125.0%
+dtext 20 220 07a0 Evaluating Intelligence // Skill 8
+dtext 170 220 07a3 95.0%
+
+
+dtext 70 280 07a1 Stats Setup
+
+dtext 20 310 07a0 Strength // OSTR
+dtext 170 310 07a3 100
+dtext 20 330 07a0 Intelligence // OINT
+dtext 170 330 07a3 100
+dtext 20 350 07a0 Dexterity // ODEX
+dtext 170 350 07a3 100
+dtext 20 370 07a0 Hit Points // MAXHITS
+dtext 170 370 07a3 100
+dtext 20 390 07a0 Mana // MAXMANA
+dtext 170 390 07a3 100
+dtext 20 410 07a0 Stamina // MAXSTAM
+dtext 170 410 07a3 100
+
+
+dtext 300 50 07a1 Equip Setup
+
+dtext 250 80 07a0 Adamantine Platemail Breastplate
+dtext 250 100 07a0 Valorite Platemail Leggings
+dtext 250 120 07a0 Verite Platemail Armplates
+dtext 250 140 07a0 Adamantine Platemail Gloves
+dtext 250 160 07a0 Adamantine Platemail Gorget
+dtext 250 180 07a0 Adamantine Platemail Nose Helm
+dtext 250 200 07a0 Bloodrock Kite Shield
+dtext 250 220 07a0 Stronghold War Fork\Katana\Maul
+
+
+dtext 300 280 07a1 Items Setup
+
+dtext 250 310 07a0 Spellbook
+dtext 250 330 07a0 Bizzaro Orn
+dtext 250 350 07a0 (Bag) Full Magery Equipment
+dtext 250 370 07a0 (Bag) Full Necro Equipment
+dtext 250 390 07a0 (Bag) Full Songs of War Equipment
+
+page 3
+
+dtext 510 30 05 I
+dtext 508 45 05 N
+dtext 508 60 05 F
+dtext 508 75 05 O
+
+dtext 508 130 05 E
+dtext 508 145 05 Q
+dtext 508 160 05 U
+dtext 510 175 05 I
+dtext 508 190 05 P
+
+dtext 508 230 025 S
+dtext 508 245 025 P
+dtext 508 260 025 E
+dtext 508 275 025 L
+dtext 508 290 025 L
+
+dtext 508 330 05 S
+dtext 508 345 05 T
+dtext 508 360 05 A
+dtext 508 375 05 R
+dtext 508 390 05 T
+
+dtext 20 50 07a1 First Circle
+
+dtext 20 80 07a0 All Spells
+
+dtext 140 50 07a1 Second Circle
+
+dtext 140 80 07a0 All Spells
+
+dtext 260 50 07a1 Third Circle
+
+dtext 260 80 07a0 All Spells
+
+dtext 380 50 07a1 Fourth Circle
+
+dtext 380 80 07a0 All Spells
+
+dtext 20 250 07a1 Fifth Circle
+
+dtext 20 280 07a0 All Spells
+
+dtext 140 250 07a1 Sixth Circle
+
+dtext 140 280 07a0 All Spells
+
+dtext 260 250 07a1 Seventh Circle
+
+dtext 260 280 07a0 All Spells
+
+dtext 380 250 07a1 Eighth Circle
+
+dtext 380 280 07a0 All Spells
+
+page 4
+
+dtext 510 30 05 I
+dtext 508 45 05 N
+dtext 508 60 05 F
+dtext 508 75 05 O
+
+dtext 508 130 05 E
+dtext 508 145 05 Q
+dtext 508 160 05 U
+dtext 510 175 05 I
+dtext 508 190 05 P
+
+dtext 508 230 05 S
+dtext 508 245 05 P
+dtext 508 260 05 E
+dtext 508 275 05 L
+dtext 508 290 05 L
+
+dtext 508 330 025 S
+dtext 508 345 025 T
+dtext 508 360 025 A
+dtext 508 375 025 R
+dtext 508 390 025 T
+
+dtext 185 60 085 **WARNING**
+dtext 30 80 0125 You will only exit this instance by doing one of the following:
+dtext 30 100 0125 # Dying.
+dtext 30 120 0125 # Exit through the exit stone on each floor.
+dtext 130 180 035 **You can be PK'd in this instance**
+dtext 185 220 085 **REWARDS**
+dtext 30 240 0125 None
+dtext 30 330 035 Click ENTER and you will be taken to Bizzaro Experimental Room immediately.
+
+button 235 370 248 247 1 0 100 // ENTER BUTTON
+
+[DIALOG d_bizzaro_experimental_entry TEXT]
+
+[DIALOG d_bizzaro_experimental_entry BUTTON]
+ONBUTTON=100
+   IF (<SRC.HITS> < <SRC.STR>)
+      SRC.SYSMESSAGE You must be at full health to enter Bizzaro Experimental Area
+      RETURN 1
+   ENDIF
+   IF (<DISTANCE> > 4)
+      SRC.SYSMESSAGE You are standing too far away...
+      RETURN 1
+   ENDIF
+   SERV.LOG :: BIZZARO LOG :: <SRC.NAME>:<SRC.ACCOUNT>:<SRC.UID> has entered BIZZARO EXPERIMENTAL AREA!
+   SRC.UNEQUIPALL
+   SRC.UNEQUIPSTEED
+   SRC.BACKPACKTOBANK
+   SRC.BIZZAROSTORESKILLS
+   SRC.BIZZAROEXPERIMENTALSETUP
+   SRC.EVENTS +e_bizzaro_experimental
+   SRC.SYSMESSAGE @42 Welcome to Bizzaro Experimental Area! Have fun!
+   SRC.TAG.BIZZARO.ORIGIN=<SRC.P>
+   SRC.GO 5246,1755,0,100
+
+
+// *****************************************************************
+//                        Bizzaro Equip Layout
+// *****************************************************************
+
+[FUNCTION BIZZAROEXPERIMENTALDISPENSER_CHERRY]
+SERV.NEWITEM i_bag
+NEW.BOUNCE <UID>
+OBJ=<NEW.UID>
+SERV.NEWITEM i_arrow
+NEW.CONT <OBJ.UID>
+NEW.AMOUNT=200
+SERV.NEWITEM i_xbolt
+NEW.CONT <OBJ.UID>
+NEW.AMOUNT=200
+SERV.NEWITEM i_bow_cherry
+NEW.CONT <OBJ.UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+SERV.NEWITEM i_crossbow_cherry
+NEW.CONT <OBJ.UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+SERV.NEWITEM i_crossbow_heavy_cherry
+NEW.CONT <OBJ.UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+SERV.NEWITEM i_staff_black_cherry
+NEW.CONT <OBJ.UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+SERV.NEWITEM i_staff_quarter_cherry
+NEW.CONT <OBJ.UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+SERV.NEWITEM i_staff_gnarled_cherry
+NEW.CONT <OBJ.UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+SERV.NEWITEM i_shepherds_crook_cherry
+NEW.CONT <OBJ.UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+SERV.NEWITEM i_club_cherry
+NEW.CONT <OBJ.UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+
+[FUNCTION BIZZAROEXPERIMENTALDISPENSER_MYST]
+SERV.NEWITEM i_bag
+NEW.BOUNCE <UID>
+OBJ=<NEW.UID>
+SERV.NEWITEM i_arrow
+NEW.CONT <OBJ.UID>
+NEW.AMOUNT=200
+SERV.NEWITEM i_xbolt
+NEW.CONT <OBJ.UID>
+NEW.AMOUNT=200
+SERV.NEWITEM i_bow_myst
+NEW.CONT <OBJ.UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+SERV.NEWITEM i_crossbow_myst
+NEW.CONT <OBJ.UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+SERV.NEWITEM i_crossbow_heavy_myst
+NEW.CONT <OBJ.UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+SERV.NEWITEM i_staff_black_myst
+NEW.CONT <OBJ.UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+SERV.NEWITEM i_staff_quarter_myst
+NEW.CONT <OBJ.UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+SERV.NEWITEM i_staff_gnarled_myst
+NEW.CONT <OBJ.UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+SERV.NEWITEM i_shepherds_crook_myst
+NEW.CONT <OBJ.UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+SERV.NEWITEM i_club_myst
+NEW.CONT <OBJ.UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+
+[FUNCTION BIZZAROEXPERIMENTALDISPENSER_REG]
+SERV.NEWITEM i_bag
+NEW.BOUNCE <UID>
+OBJ=<NEW.UID>
+SERV.NEWITEM i_reag_black_pearl
+NEW.CONT <OBJ.UID>
+NEW.AMOUNT=100
+SERV.NEWITEM i_reag_blood_moss
+NEW.CONT <OBJ.UID>
+NEW.AMOUNT=100
+SERV.NEWITEM i_reag_garlic
+NEW.CONT <OBJ.UID>
+NEW.AMOUNT=100
+SERV.NEWITEM i_reag_ginseng
+NEW.CONT <OBJ.UID>
+NEW.AMOUNT=100
+SERV.NEWITEM i_reag_mandrake_root
+NEW.CONT <OBJ.UID>
+NEW.AMOUNT=100
+SERV.NEWITEM i_reag_nightshade
+NEW.CONT <OBJ.UID>
+NEW.AMOUNT=100
+SERV.NEWITEM i_reag_spider_silk
+NEW.CONT <OBJ.UID>
+NEW.AMOUNT=100
+SERV.NEWITEM i_reag_sulfur_ash
+NEW.CONT <OBJ.UID>
+NEW.AMOUNT=100
+SERV.NEWITEM i_bag
+NEW.BOUNCE <UID>
+OBJ=<NEW.UID>
+SERV.NEWITEM i_lyre
+NEW.CONT <OBJ.UID>
+SERV.NEWITEM i_lyre
+NEW.CONT <OBJ.UID>
+SERV.NEWITEM i_lyre
+NEW.CONT <OBJ.UID>
+SERV.NEWITEM i_lyre
+NEW.CONT <OBJ.UID>
+SERV.NEWITEM i_book_songs_war
+NEW.CONT <OBJ.UID>
+SERV.NEWITEM i_bag
+NEW.BOUNCE <UID>
+OBJ=<NEW.UID>
+SERV.NEWITEM i_necro_bomb
+NEW.CONT <OBJ.UID>
+SERV.NEWITEM i_wand_necro
+NEW.CONT <OBJ.UID>
+SERV.NEWITEM i_necro_skeletons
+NEW.CONT <OBJ.UID>
+SERV.NEWITEM i_necro_zombies
+NEW.CONT <OBJ.UID>
+SERV.NEWITEM i_reag_ectoplasm_vial
+NEW.CONT <OBJ.UID>
+NEW.AMOUNT=100
+SERV.NEWITEM i_book_necro
+NEW.CONT <OBJ.UID>
+SERV.NEWITEM i_reag_heart_zombie
+NEW.CONT <OBJ.UID>
+NEW.AMOUNT=100
+SERV.NEWITEM i_reag_bone
+NEW.CONT <OBJ.UID>
+NEW.AMOUNT=100
+
+[FUNCTION BIZZAROEXPERIMENTALSETUP]
+ALLSKILLS=1000
+OSTR=100
+OINT=100
+ODEX=100
+MANA=100
+HITS=100
+STAM=100
+SERV.NEWITEM i_platemail_gorget_adamantine
+NEW.EQUIP <UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+SERV.NEWITEM i_helm_nose_adamantine
+NEW.EQUIP <UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+SERV.NEWITEM i_platemail_gloves_adamantine
+NEW.EQUIP <UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+SERV.NEWITEM i_platemail_arms_verite
+NEW.EQUIP <UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+SERV.NEWITEM i_platemail_leggings_valorite
+NEW.EQUIP <UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+SERV.NEWITEM i_platemail_chest_adamantine
+NEW.EQUIP <UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+SERV.NEWITEM i_shield_kite_bloodrock
+NEW.EQUIP <UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+SERV.NEWITEM i_war_fork_stronghold
+NEW.EQUIP <UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+SERV.NEWITEM i_maul_stronghold
+NEW.EQUIP <UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+SERV.NEWITEM i_katana_stronghold
+NEW.EQUIP <UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+SERV.NEWITEM i_spellbook
+NEW.TAG.ILLEGALBIZZAROITEM=1
+NEW.MORE1=0ffffffff
+NEW.MORE2=0ffffffff
+NEW.BOUNCE <UID>
+SERV.NEWITEM i_pet_OSTARD_Forest
+NEW.TAG.ILLEGALBIZZAROITEM=1
+NEW.MORE1 c_orn_bizzaro
+NEW.COLOR 0aea
+NEW.NAME Bizzaro Orn
+NEW.BOUNCE <UID>
+SERV.NEWITEM i_bag
+NEW.BOUNCE <UID>
+OBJ=<NEW.UID>
+SERV.NEWITEM i_reag_black_pearl
+NEW.CONT <OBJ.UID>
+NEW.AMOUNT=100
+SERV.NEWITEM i_reag_blood_moss
+NEW.CONT <OBJ.UID>
+NEW.AMOUNT=100
+SERV.NEWITEM i_reag_garlic
+NEW.CONT <OBJ.UID>
+NEW.AMOUNT=100
+SERV.NEWITEM i_reag_ginseng
+NEW.CONT <OBJ.UID>
+NEW.AMOUNT=100
+SERV.NEWITEM i_reag_mandrake_root
+NEW.CONT <OBJ.UID>
+NEW.AMOUNT=100
+SERV.NEWITEM i_reag_nightshade
+NEW.CONT <OBJ.UID>
+NEW.AMOUNT=100
+SERV.NEWITEM i_reag_spider_silk
+NEW.CONT <OBJ.UID>
+NEW.AMOUNT=100
+SERV.NEWITEM i_reag_sulfur_ash
+NEW.CONT <OBJ.UID>
+NEW.AMOUNT=100
+SERV.NEWITEM i_bag
+NEW.BOUNCE <UID>
+OBJ=<NEW.UID>
+SERV.NEWITEM i_lyre
+NEW.CONT <OBJ.UID>
+SERV.NEWITEM i_lyre
+NEW.CONT <OBJ.UID>
+SERV.NEWITEM i_lyre
+NEW.CONT <OBJ.UID>
+SERV.NEWITEM i_lyre
+NEW.CONT <OBJ.UID>
+SERV.NEWITEM i_book_songs_war
+NEW.CONT <OBJ.UID>
+SERV.NEWITEM i_bag
+NEW.BOUNCE <UID>
+OBJ=<NEW.UID>
+SERV.NEWITEM i_necro_bomb
+NEW.CONT <OBJ.UID>
+SERV.NEWITEM i_wand_necro
+NEW.CONT <OBJ.UID>
+SERV.NEWITEM i_book_necro
+NEW.CONT <OBJ.UID>
+SERV.NEWITEM i_reag_bone
+NEW.CONT <OBJ.UID>
+NEW.AMOUNT=100
+SERV.NEWITEM i_necro_skeletons
+NEW.CONT <OBJ.UID>
+SERV.NEWITEM i_necro_zombies
+NEW.CONT <OBJ.UID>
+SERV.NEWITEM i_reag_ectoplasm_vial
+NEW.CONT <OBJ.UID>
+NEW.AMOUNT=100
+SERV.NEWITEM i_reag_heart_zombie
+NEW.CONT <OBJ.UID>
+NEW.AMOUNT=100

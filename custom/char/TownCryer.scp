@@ -1,0 +1,152 @@
+// #-----------#
+// # CHANGELOG #
+// #-----------#
+//
+// 19/08/18 - Wigifer - No need for f_central_loot update but DO REVIEW.
+
+//
+// Script is by |SHS|Shaku, please
+// do not take credit for this,you
+// did not make it. So leave this 
+// tag at the top of this script. 
+//
+//Editted and rejiged by Davyb :) 
+//Added Web Browser launching to Vote pages.
+//
+
+//Changelog:
+//10/10/2003 - Updated vote URL - Tested - Firefly
+//Jan/9/2004 - Modded so news is shouted along with Hear Ye, add Top200 for vote, changed so councellors can set news
+//March/19/2013 - Arkos - Removed auto removal of npc when summoned + changed vote message. Also colored message.
+
+[CHARDEF c_town_cryer] 
+DEFNAME=c_town_cryer 
+NAME=#NAMES_HUMANMALE the Town Cryer 
+ID=C_MAN 
+CAN=MT_EQUIP|MT_USEHANDS 
+TSPEECH=JOBCRYER 
+TEVENTS=e_Human_Environ 
+
+ON=@Create 
+TAG.NNEWS=No new news. 
+TAG.NGOSSIP=Do I look like a gossip?!?
+FLAGS=00005 
+COLOR=083ea 
+STR={41 55} 
+DEX={41 55} 
+INT={41 55} 
+
+FAME=5000 
+KARMA=5000 
+
+NPC=brain_human 
+ITEM=I_CRYER_TIMER 
+
+ON=@NPCRestock 
+ITEMNEWBIE=01efd 
+COLOR=07a1
+ITEMNEWBIE=0170b 
+COLOR=07a1 
+ITEMNEWBIE=0171a 
+COLOR=07a1 
+ITEMNEWBIE=01539 
+COLOR=07a1 
+
+ON=@DCLICK 
+IF (<SRC.ACCOUNT.PLEVEL> > 1)
+DIALOG d_cryermessage 
+RETURN 0 
+ENDIF 
+
+ON=@GETHIT 
+FLAGS=00005 
+RETURN 1 
+
+ON=@HIT 
+FLAGS=00005 
+RETURN 1 
+
+ON=@DAMAGE 
+FLAGS=00005 
+RETURN 1 
+
+CATEGORY=Other 
+SUBSECTION=Human 
+DESCRIPTION=Town Cryer 
+
+ON=@NPCSeeNewPlayer 
+SAY @04b Hear Ye! Hear Ye!
+//SAY You can also vote for this Shard through me.
+
+[SPEECH JOBCRYER] 
+
+ON=*hello* 
+ON=*hey* 
+ON=*hi* 
+ON=*hail* 
+ON=*g'day* 
+SAY @04b Greetings, Say News to see the current News, Say .vote to vote for us.
+
+// Should launch the web browser on the word Vote by a player
+// Will wait for 1 then Launch the Browser,
+// This is not forcing the players to Vote just reminding them ingame :)
+
+ON=*VOTE*
+SAY @04b Please click the links on our main page to vote!
+SAY @04b Simply write .vote to launch the votepage in your browser!
+
+ON=*NEWS* 
+SAY @04b <TAG.NNEWS> 
+
+ON=*gossip*
+SAY @04b <TAG.NGOSSIP>
+
+[ITEMDEF I_cryer_TIMER] 
+NAME=cryer TIMER 
+ID=i_worldgem_bit 
+TYPE=T_EQ_SCRIPT 
+WEIGHT=0 
+LAYER=layer_special 
+
+ON=@Create 
+ATTR=00090 
+TIMER 150 
+
+ON=@TIMER 
+CONT.SAY @04b Hear Ye! Hear Ye!
+CONT.SAY @04b <CONT.TAG.NNEWS>
+TIMER 70
+RETURN 1 
+
+[DIALOG d_cryermessage] 
+0,0 
+nodispose 
+resizepic 190 175 5054 435 150 
+resizepic 200 185 3000 415 130 
+resizepic 220 215 3000 370 22 
+resizepic 220 250 3000 370 22 
+text 215 190 995 0 
+text 305 285 0000 1 
+button 270 285 4005 4006 1 0 1 
+text 485 285 0000 2 
+button 450 285 4005 4006 1 0 0 
+textentry 225 217 350 25 0 0 3 
+textentry 225 252 350 25 0 1 4 
+
+[DIALOG d_cryermessage TEXT] 
+Enter the news and gossip below: 
+Accept 
+Cancel 
+<TAG.NNEWS> 
+<TAG.NGOSSIP>
+
+[DIALOG d_cryermessage BUTTON] 
+ON=0 
+SRC.SYSMESSAGE News/Gossip Entry Aborted 
+ON=1 
+SRC.SYSMESSAGE Cryer news has changed. 
+TAG.NNEWS=<ARGTXT[0]> 
+TAG.NGOSSIP=<ARGTXT[1]> 
+RETURN 1 
+
+[EOF]

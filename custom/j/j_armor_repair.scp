@@ -1,0 +1,1226 @@
+// I own repair. This script has Repair Deeds.
+// Smith Hammer repairs are in item_k_weaponfix.
+// Sweing Kit repairs are in w_fix_tailoring.
+// My repair scripts own...
+// I'm egotisticlal. Sue me. :D
+
+[SKILLMENU sm_repair_deeds]
+Repair Deeds
+
+ON=i_repair_deed_copper <name> (<resmake>)
+MAKEITEM=i_repair_deed_copper
+TAG.MAKEITEM.LEVEL	= 5.0
+
+ON=i_repair_deed_iron <name> (<resmake>)
+MAKEITEM=i_repair_deed_iron
+TAG.MAKEITEM.LEVEL	= 25.0
+
+ON=i_repair_deed_steel <name> (<resmake>)
+MAKEITEM=i_repair_deed_steel
+TAG.MAKEITEM.LEVEL	= 45.0
+
+ON=i_repair_deed_titanium <name> (<resmake>)
+MAKEITEM=i_repair_deed_titanium
+TAG.MAKEITEM.LEVEL	= 65.0
+
+ON=i_repair_deed_adamantine <name> (<resmake>)
+MAKEITEM=i_repair_deed_adamantine
+TAG.MAKEITEM.LEVEL	= 85.0
+
+ON=i_repair_deed_silver <name> (<resmake>)
+MAKEITEM=i_repair_deed_silver
+TAG.MAKEITEM.LEVEL	= 55.0
+
+ON=i_repair_deed_gold <name> (<resmake>)
+MAKEITEM=i_repair_deed_gold
+TAG.MAKEITEM.LEVEL	= 55.0
+
+ON=i_repair_deed_phoenix <name> (<resmake>)
+MAKEITEM=i_repair_deed_phoenix
+TAG.MAKEITEM.LEVEL	= 100.0
+
+// ON=i_repair_deed_celestium <name> (<resmake>)
+// MAKEITEM=i_repair_deed_celestium
+// TAG.MAKEITEM.LEVEL	= 100.0
+
+ON=i_repair_deed_terathane <name> (<resmake>)
+MAKEITEM=i_repair_deed_terathane
+TAG.MAKEITEM.LEVEL	= 65.0
+
+ON=i_repair_deed_skargard <name> (<resmake>)
+MAKEITEM=i_repair_deed_skargard
+TAG.MAKEITEM.LEVEL	= 95.0
+
+ON=i_repair_deed_bloodrock <name> (<resmake>)
+MAKEITEM=i_repair_deed_bloodrock
+TAG.MAKEITEM.LEVEL	= 100.0
+
+ON=i_repair_deed_blackrock <name> (<resmake>)
+MAKEITEM=i_repair_deed_blackrock
+TAG.MAKEITEM.LEVEL	= 85.0
+
+ON=i_repair_deed_verminard <name> (<resmake>)
+MAKEITEM=i_repair_deed_verminard
+TAG.MAKEITEM.LEVEL	= 80.0
+
+ON=i_repair_deed_stronghold <name> (<resmake>)
+MAKEITEM=i_repair_deed_stronghold
+TAG.MAKEITEM.LEVEL	= 80.0
+
+ON=i_repair_deed_pure_copper <name> (<resmake>)
+MAKEITEM=i_repair_deed_pure_copper
+TAG.MAKEITEM.LEVEL	= 50.0
+
+ON=i_repair_deed_ferrum <name> (<resmake>)
+MAKEITEM=i_repair_deed_ferrum
+TAG.MAKEITEM.LEVEL	= 50.0
+
+ON=i_repair_deed_brass <name> (<resmake>)
+MAKEITEM=i_repair_deed_brass
+TAG.MAKEITEM.LEVEL	= 45.0
+
+ON=i_repair_deed_chrome <name> (<resmake>)
+MAKEITEM=i_repair_deed_chrome
+TAG.MAKEITEM.LEVEL	= 55.0
+
+ON=i_repair_deed_agapite <name> (<resmake>)
+MAKEITEM=i_repair_deed_agapite
+TAG.MAKEITEM.LEVEL	= 95.0
+
+ON=i_repair_deed_shadow <name> (<resmake>)
+MAKEITEM=i_repair_deed_shadow
+TAG.MAKEITEM.LEVEL	= 90.0
+
+ON=i_repair_deed_verite <name> (<resmake>)
+MAKEITEM=i_repair_deed_verite
+TAG.MAKEITEM.LEVEL	= 95.0
+
+ON=i_repair_deed_valorite <name> (<resmake>)
+MAKEITEM=i_repair_deed_valorite
+TAG.MAKEITEM.LEVEL	= 95.0
+
+ON=i_repair_deed_entit <name> (<resmake>)
+MAKEITEM=i_repair_deed_entit
+TAG.MAKEITEM.LEVEL	= 90.0
+
+ON=i_repair_deed_ocshield <name> (<resmake>)
+MAKEITEM=i_repair_deed_ocshield
+TAG.MAKEITEM.LEVEL	= 95.0
+
+
+
+[ITEMDEF i_repair_deed_copper]
+ID	= i_deed
+TYPE	= t_script
+NAME	= Copper Repair Deed
+WEIGHT = 2
+VALUE = 500
+RESOURCES = 10 i_scroll_blank, 3 i_ingot_copper, 6 i_ingot_tin
+SKILLMAKE = Blacksmithing 5.0
+
+ON=@CREATE
+   COLOR=color_o_copper
+
+ON=@DCLICK
+   TARGET Target the item to repair...
+   RETURN 1
+   
+ON=@TARGON_ITEM
+IF (<CONT.TOPOBJ.UID> != <SRC.UID>)
+   SRC.SYSMESSAGE The item to repair must be in your backpack...
+   RETURN 1
+ENDIF
+IF (<SRC.TARG.TDATA1> = mat_copper)
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+   SRC.EMOTE repair the <SRC.TARG.NAME>
+   REMOVE
+   RETURN 1
+ELSE
+   SRC.SYSMESSAGE This deed cannot repair that!
+   RETURN 1
+ENDIF
+   
+ON=@TARGON_CHAR
+   SRC.SYSMESSAGE You feel <SRC.TARG.NAME> would object...
+   RETURN 1
+
+ON=@TARGON_GROUND
+   SRC.SYSMESSAGE The ground is always in full repair, thanks to your taxes...
+   RETURN 1
+
+[ITEMDEF i_repair_deed_iron]
+ID	= i_deed
+TYPE	= t_script
+NAME	= Iron Repair Deed
+WEIGHT = 2
+VALUE = 500
+RESOURCES = 10 i_scroll_blank, 3 i_ingot_iron, 6 i_ingot_tin
+SKILLMAKE = Blacksmithing 25.0
+
+ON=@CREATE
+   COLOR=color_o_iron
+
+ON=@DCLICK
+   TARGET Target the item to repair...
+   RETURN 1
+   
+ON=@TARGON_ITEM
+IF (<CONT.TOPOBJ.UID> != <SRC.UID>)
+   SRC.SYSMESSAGE The item to repair must be in your backpack...
+   RETURN 1
+ENDIF
+IF (<SRC.TARG.TDATA1> = mat_iron)
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+   SRC.EMOTE repair the <SRC.TARG.NAME>
+   REMOVE
+   RETURN 1
+ELSE
+   SRC.SYSMESSAGE This deed cannot repair that!
+   RETURN 1
+ENDIF
+   
+ON=@TARGON_CHAR
+   SRC.SYSMESSAGE You feel <SRC.TARG.NAME> would object...
+   RETURN 1
+
+ON=@TARGON_GROUND
+   SRC.SYSMESSAGE The ground is always in full repair, thanks to your taxes...
+   RETURN 1
+
+[ITEMDEF i_repair_deed_steel]
+ID	= i_deed
+TYPE	= t_script
+NAME	= Steel Repair Deed
+WEIGHT = 2
+VALUE = 500
+RESOURCES = 10 i_scroll_blank, 3 i_ingot_steel, 6 i_ingot_tin
+SKILLMAKE = Blacksmithing 45.0
+
+ON=@CREATE
+   COLOR=color_o_steel
+
+ON=@DCLICK
+   TARGET Target the item to repair...
+   RETURN 1
+   
+ON=@TARGON_ITEM
+IF (<CONT.TOPOBJ.UID> != <SRC.UID>)
+   SRC.SYSMESSAGE The item to repair must be in your backpack...
+   RETURN 1
+ENDIF
+IF (<SRC.TARG.TDATA1> = mat_steel)
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+   SRC.EMOTE repair the <SRC.TARG.NAME>
+   REMOVE
+   RETURN 1
+ELSE
+   SRC.SYSMESSAGE This deed cannot repair that!
+   RETURN 1
+ENDIF
+   
+ON=@TARGON_CHAR
+   SRC.SYSMESSAGE You feel <SRC.TARG.NAME> would object...
+   RETURN 1
+
+ON=@TARGON_GROUND
+   SRC.SYSMESSAGE The ground is always in full repair, thanks to your taxes...
+   RETURN 1
+
+[ITEMDEF i_repair_deed_titanium]
+ID	= i_deed
+TYPE	= t_script
+NAME	= Titanium Repair Deed
+WEIGHT = 2
+VALUE = 500
+RESOURCES = 10 i_scroll_blank, 3 i_ingot_titanium, 6 i_ingot_tin
+SKILLMAKE = Blacksmithing 65.0
+
+ON=@CREATE
+   COLOR=color_o_titanium
+
+ON=@DCLICK
+   TARGET Target the item to repair...
+   RETURN 1
+   
+ON=@TARGON_ITEM
+IF (<CONT.TOPOBJ.UID> != <SRC.UID>)
+   SRC.SYSMESSAGE The item to repair must be in your backpack...
+   RETURN 1
+ENDIF
+IF (<SRC.TARG.TDATA1> = mat_titanium)
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+   SRC.EMOTE repair the <SRC.TARG.NAME>
+   REMOVE
+   RETURN 1
+ELSE
+   SRC.SYSMESSAGE This deed cannot repair that!
+   RETURN 1
+ENDIF
+   
+ON=@TARGON_CHAR
+   SRC.SYSMESSAGE You feel <SRC.TARG.NAME> would object...
+   RETURN 1
+
+ON=@TARGON_GROUND
+   SRC.SYSMESSAGE The ground is always in full repair, thanks to your taxes...
+   RETURN 1
+
+[ITEMDEF i_repair_deed_adamantine]
+ID	= i_deed
+TYPE	= t_script
+NAME	= Adamantine Repair Deed
+WEIGHT = 2
+VALUE = 500
+RESOURCES = 10 i_scroll_blank, 3 i_ingot_adamantine, 6 i_ingot_tin
+SKILLMAKE = Blacksmithing 85.0
+
+ON=@CREATE
+   COLOR=color_o_adamantine
+
+ON=@DCLICK
+   TARGET Target the item to repair...
+   RETURN 1
+   
+ON=@TARGON_ITEM
+IF (<CONT.TOPOBJ.UID> != <SRC.UID>)
+   SRC.SYSMESSAGE The item to repair must be in your backpack...
+   RETURN 1
+ENDIF
+IF (<SRC.TARG.TDATA1> = mat_adamantine)
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+   SRC.EMOTE repair the <SRC.TARG.NAME>
+   REMOVE
+   RETURN 1
+ELSE
+   SRC.SYSMESSAGE This deed cannot repair that!
+   RETURN 1
+ENDIF
+   
+ON=@TARGON_CHAR
+   SRC.SYSMESSAGE You feel <SRC.TARG.NAME> would object...
+   RETURN 1
+
+ON=@TARGON_GROUND
+   SRC.SYSMESSAGE The ground is always in full repair, thanks to your taxes...
+   RETURN 1
+
+[ITEMDEF i_repair_deed_Silver]
+ID	= i_deed
+TYPE	= t_script
+NAME	= Silver Repair Deed
+WEIGHT = 2
+VALUE = 500
+RESOURCES = 10 i_scroll_blank, 3 i_ingot_silver, 6 i_ingot_tin
+SKILLMAKE = Blacksmithing 55.0
+
+ON=@CREATE
+   COLOR=color_o_Silver
+
+ON=@DCLICK
+   TARGET Target the item to repair...
+   RETURN 1
+   
+ON=@TARGON_ITEM
+IF (<CONT.TOPOBJ.UID> != <SRC.UID>)
+   SRC.SYSMESSAGE The item to repair must be in your backpack...
+   RETURN 1
+ENDIF
+IF (<SRC.TARG.TDATA1> = mat_Silver)
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+   SRC.EMOTE repair the <SRC.TARG.NAME>
+   REMOVE
+   RETURN 1
+ELSE
+   SRC.SYSMESSAGE This deed cannot repair that!
+   RETURN 1
+ENDIF
+   
+ON=@TARGON_CHAR
+   SRC.SYSMESSAGE You feel <SRC.TARG.NAME> would object...
+   RETURN 1
+
+ON=@TARGON_GROUND
+   SRC.SYSMESSAGE The ground is always in full repair, thanks to your taxes...
+   RETURN 1
+
+[ITEMDEF i_repair_deed_Gold]
+ID	= i_deed
+TYPE	= t_script
+NAME	= Gold Repair Deed
+WEIGHT = 2
+VALUE = 500
+RESOURCES = 10 i_scroll_blank, 3 i_ingot_gold, 6 i_ingot_tin
+SKILLMAKE = Blacksmithing 55.0
+
+ON=@CREATE
+   COLOR=color_o_Gold
+
+ON=@DCLICK
+   TARGET Target the item to repair...
+   RETURN 1
+   
+ON=@TARGON_ITEM
+IF (<CONT.TOPOBJ.UID> != <SRC.UID>)
+   SRC.SYSMESSAGE The item to repair must be in your backpack...
+   RETURN 1
+ENDIF
+IF (<SRC.TARG.TDATA1> = mat_Gold)
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+   SRC.EMOTE repair the <SRC.TARG.NAME>
+   REMOVE
+   RETURN 1
+ELSE
+   SRC.SYSMESSAGE This deed cannot repair that!
+   RETURN 1
+ENDIF
+   
+ON=@TARGON_CHAR
+   SRC.SYSMESSAGE You feel <SRC.TARG.NAME> would object...
+   RETURN 1
+
+ON=@TARGON_GROUND
+   SRC.SYSMESSAGE The ground is always in full repair, thanks to your taxes...
+   RETURN 1
+
+[ITEMDEF i_repair_deed_Phoenix]
+ID	= i_deed
+TYPE	= t_script
+NAME	= Phoenix Repair Deed
+WEIGHT = 2
+VALUE = 500
+RESOURCES = 10 i_scroll_blank, 3 i_ingot_phoenix, 6 i_ingot_tin
+SKILLMAKE = Blacksmithing 100.0
+
+ON=@CREATE
+   COLOR=color_o_Phoenix
+
+ON=@DCLICK
+   TARGET Target the item to repair...
+   RETURN 1
+   
+ON=@TARGON_ITEM
+IF (<CONT.TOPOBJ.UID> != <SRC.UID>)
+   SRC.SYSMESSAGE The item to repair must be in your backpack...
+   RETURN 1
+ENDIF
+IF (<SRC.TARG.TDATA1> = mat_Phoenix)
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+   SRC.EMOTE repair the <SRC.TARG.NAME>
+   REMOVE
+   RETURN 1
+ELSE
+   SRC.SYSMESSAGE This deed cannot repair that!
+   RETURN 1
+ENDIF
+   
+ON=@TARGON_CHAR
+   SRC.SYSMESSAGE You feel <SRC.TARG.NAME> would object...
+   RETURN 1
+
+ON=@TARGON_GROUND
+   SRC.SYSMESSAGE The ground is always in full repair, thanks to your taxes...
+   RETURN 1
+
+// [ITEMDEF i_repair_deed_Celestium]
+// ID	= i_deed
+// TYPE	= t_script
+// NAME	= Celestium Repair Deed
+// WEIGHT = 2
+// VALUE = 500
+// RESOURCES = 10 i_scroll_blank, 3 i_ingot_celestium, 6 i_ingot_tin
+// SKILLMAKE = Blacksmithing 100.0
+
+// ON=@CREATE
+//    COLOR=color_o_Celestium
+// 
+// ON=@DCLICK
+//    TARGET Target the item to repair...
+//    RETURN 1
+//    
+// ON=@TARGON_ITEM
+// IF (<CONT.TOPOBJ.UID> != <SRC.UID>)
+//    SRC.SYSMESSAGE The item to repair must be in your backpack...
+//    RETURN 1
+// ENDIF
+// IF (<SRC.TARG.TDATA1> = mat_Celestium)
+//    IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+//       SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+//       RETURN 1
+//    ENDIF
+//    SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+//    SRC.EMOTE repair the <SRC.TARG.NAME>
+//    REMOVE
+//    RETURN 1
+// ELSE
+//    SRC.SYSMESSAGE This deed cannot repair that!
+//    RETURN 1
+// ENDIF
+//    
+// ON=@TARGON_CHAR
+//    SRC.SYSMESSAGE You feel <SRC.TARG.NAME> would object...
+//    RETURN 1
+// 
+// ON=@TARGON_GROUND
+//    SRC.SYSMESSAGE The ground is always in full repair, thanks to your taxes...
+//    RETURN 1
+
+[ITEMDEF i_repair_deed_Terathane]
+ID	= i_deed
+TYPE	= t_script
+NAME	= Terathane Repair Deed
+WEIGHT = 2
+VALUE = 500
+RESOURCES = 10 i_scroll_blank, 3 i_ingot_terathane, 6 i_ingot_tin
+SKILLMAKE = Blacksmithing 65.0
+
+ON=@CREATE
+   COLOR=color_o_Terathane
+
+ON=@DCLICK
+   TARGET Target the item to repair...
+   RETURN 1
+   
+ON=@TARGON_ITEM
+IF (<CONT.TOPOBJ.UID> != <SRC.UID>)
+   SRC.SYSMESSAGE The item to repair must be in your backpack...
+   RETURN 1
+ENDIF
+IF (<SRC.TARG.TDATA1> = mat_Terathane)
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+   SRC.EMOTE repair the <SRC.TARG.NAME>
+   REMOVE
+   RETURN 1
+ELSE
+   SRC.SYSMESSAGE This deed cannot repair that!
+   RETURN 1
+ENDIF
+   
+ON=@TARGON_CHAR
+   SRC.SYSMESSAGE You feel <SRC.TARG.NAME> would object...
+   RETURN 1
+
+ON=@TARGON_GROUND
+   SRC.SYSMESSAGE The ground is always in full repair, thanks to your taxes...
+   RETURN 1
+
+[ITEMDEF i_repair_deed_Skargard]
+ID	= i_deed
+TYPE	= t_script
+NAME	= Skargard Repair Deed
+WEIGHT = 2
+VALUE = 500
+RESOURCES = 10 i_scroll_blank, 3 i_ingot_skargard, 6 i_ingot_tin
+SKILLMAKE = Blacksmithing 95.0
+
+ON=@CREATE
+   COLOR=color_o_Skargard
+
+ON=@DCLICK
+   TARGET Target the item to repair...
+   RETURN 1
+   
+ON=@TARGON_ITEM
+IF (<CONT.TOPOBJ.UID> != <SRC.UID>)
+   SRC.SYSMESSAGE The item to repair must be in your backpack...
+   RETURN 1
+ENDIF
+IF (<SRC.TARG.TDATA1> = mat_Skargard)
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+   SRC.EMOTE repair the <SRC.TARG.NAME>
+   REMOVE
+   RETURN 1
+ELSE
+   SRC.SYSMESSAGE This deed cannot repair that!
+   RETURN 1
+ENDIF
+   
+ON=@TARGON_CHAR
+   SRC.SYSMESSAGE You feel <SRC.TARG.NAME> would object...
+   RETURN 1
+
+ON=@TARGON_GROUND
+   SRC.SYSMESSAGE The ground is always in full repair, thanks to your taxes...
+   RETURN 1
+
+[ITEMDEF i_repair_deed_Bloodrock]
+ID	= i_deed
+TYPE	= t_script
+NAME	= Bloodrock Repair Deed
+WEIGHT = 2
+VALUE = 500
+RESOURCES = 10 i_scroll_blank, 3 i_ingot_bloodrock, 6 i_ingot_tin
+SKILLMAKE = Blacksmithing 100.0
+
+ON=@CREATE
+   COLOR=color_o_Bloodrock
+
+ON=@DCLICK
+   TARGET Target the item to repair...
+   RETURN 1
+   
+ON=@TARGON_ITEM
+IF (<CONT.TOPOBJ.UID> != <SRC.UID>)
+   SRC.SYSMESSAGE The item to repair must be in your backpack...
+   RETURN 1
+ENDIF
+IF (<SRC.TARG.TDATA1> = mat_Bloodrock)
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+   SRC.EMOTE repair the <SRC.TARG.NAME>
+   REMOVE
+   RETURN 1
+ELSE
+   SRC.SYSMESSAGE This deed cannot repair that!
+   RETURN 1
+ENDIF
+   
+ON=@TARGON_CHAR
+   SRC.SYSMESSAGE You feel <SRC.TARG.NAME> would object...
+   RETURN 1
+
+ON=@TARGON_GROUND
+   SRC.SYSMESSAGE The ground is always in full repair, thanks to your taxes...
+   RETURN 1
+
+[ITEMDEF i_repair_deed_Blackrock]
+ID	= i_deed
+TYPE	= t_script
+NAME	= Blackrock Repair Deed
+WEIGHT = 2
+VALUE = 500
+RESOURCES = 10 i_scroll_blank, 3 i_ingot_blackrock, 6 i_ingot_tin
+SKILLMAKE = Blacksmithing 85.0
+
+ON=@CREATE
+   COLOR=color_o_Blackrock
+
+ON=@DCLICK
+   TARGET Target the item to repair...
+   RETURN 1
+   
+ON=@TARGON_ITEM
+IF (<CONT.TOPOBJ.UID> != <SRC.UID>)
+   SRC.SYSMESSAGE The item to repair must be in your backpack...
+   RETURN 1
+ENDIF
+IF (<SRC.TARG.TDATA1> = mat_Blackrock)
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+   SRC.EMOTE repair the <SRC.TARG.NAME>
+   REMOVE
+   RETURN 1
+ELSE
+   SRC.SYSMESSAGE This deed cannot repair that!
+   RETURN 1
+ENDIF
+   
+ON=@TARGON_CHAR
+   SRC.SYSMESSAGE You feel <SRC.TARG.NAME> would object...
+   RETURN 1
+
+ON=@TARGON_GROUND
+   SRC.SYSMESSAGE The ground is always in full repair, thanks to your taxes...
+   RETURN 1
+
+[ITEMDEF i_repair_deed_Verminard]
+ID	= i_deed
+TYPE	= t_script
+NAME	= Verminard Repair Deed
+WEIGHT = 2
+VALUE = 500
+RESOURCES = 10 i_scroll_blank, 3 i_ingot_verminard, 6 i_ingot_tin
+SKILLMAKE = Blacksmithing 80.0
+
+ON=@CREATE
+   COLOR=color_o_Verminard
+
+ON=@DCLICK
+   TARGET Target the item to repair...
+   RETURN 1
+   
+ON=@TARGON_ITEM
+IF (<CONT.TOPOBJ.UID> != <SRC.UID>)
+   SRC.SYSMESSAGE The item to repair must be in your backpack...
+   RETURN 1
+ENDIF
+IF (<SRC.TARG.TDATA1> = mat_Verminard)
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+   SRC.EMOTE repair the <SRC.TARG.NAME>
+   REMOVE
+   RETURN 1
+ELSE
+   SRC.SYSMESSAGE This deed cannot repair that!
+   RETURN 1
+ENDIF
+   
+ON=@TARGON_CHAR
+   SRC.SYSMESSAGE You feel <SRC.TARG.NAME> would object...
+   RETURN 1
+
+ON=@TARGON_GROUND
+   SRC.SYSMESSAGE The ground is always in full repair, thanks to your taxes...
+   RETURN 1
+
+[ITEMDEF i_repair_deed_Stronghold]
+ID	= i_deed
+TYPE	= t_script
+NAME	= Stronghold Repair Deed
+WEIGHT = 2
+VALUE = 500
+RESOURCES = 10 i_scroll_blank, 3 i_ingot_stronghold, 6 i_ingot_tin
+SKILLMAKE = Blacksmithing 80.0
+
+ON=@CREATE
+   COLOR=color_o_Stronghold
+
+ON=@DCLICK
+   TARGET Target the item to repair...
+   RETURN 1
+   
+ON=@TARGON_ITEM
+IF (<CONT.TOPOBJ.UID> != <SRC.UID>)
+   SRC.SYSMESSAGE The item to repair must be in your backpack...
+   RETURN 1
+ENDIF
+IF (<SRC.TARG.TDATA1> = mat_Stronghold)
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+   SRC.EMOTE repair the <SRC.TARG.NAME>
+   REMOVE
+   RETURN 1
+ELSE
+   SRC.SYSMESSAGE This deed cannot repair that!
+   RETURN 1
+ENDIF
+   
+ON=@TARGON_CHAR
+   SRC.SYSMESSAGE You feel <SRC.TARG.NAME> would object...
+   RETURN 1
+
+ON=@TARGON_GROUND
+   SRC.SYSMESSAGE The ground is always in full repair, thanks to your taxes...
+   RETURN 1
+
+[ITEMDEF i_repair_deed_Pure_Copper]
+ID	= i_deed
+TYPE	= t_script
+NAME	= Pure Copper Repair Deed
+WEIGHT = 2
+VALUE = 500
+RESOURCES = 10 i_scroll_blank, 3 i_ingot_pure_copper, 6 i_ingot_tin
+SKILLMAKE = Blacksmithing 50.0
+
+ON=@CREATE
+   COLOR=color_o_Pure Copper
+
+ON=@DCLICK
+   TARGET Target the item to repair...
+   RETURN 1
+   
+ON=@TARGON_ITEM
+IF (<CONT.TOPOBJ.UID> != <SRC.UID>)
+   SRC.SYSMESSAGE The item to repair must be in your backpack...
+   RETURN 1
+ENDIF
+IF (<SRC.TARG.TDATA1> = mat_Pure_Copper)
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+   SRC.EMOTE repair the <SRC.TARG.NAME>
+   REMOVE
+   RETURN 1
+ELSE
+   SRC.SYSMESSAGE This deed cannot repair that!
+   RETURN 1
+ENDIF
+   
+ON=@TARGON_CHAR
+   SRC.SYSMESSAGE You feel <SRC.TARG.NAME> would object...
+   RETURN 1
+
+ON=@TARGON_GROUND
+   SRC.SYSMESSAGE The ground is always in full repair, thanks to your taxes...
+   RETURN 1
+
+[ITEMDEF i_repair_deed_Ferrum]
+ID	= i_deed
+TYPE	= t_script
+NAME	= Ferrum Repair Deed
+WEIGHT = 2
+VALUE = 500
+RESOURCES = 10 i_scroll_blank, 3 i_ingot_ferrum, 6 i_ingot_tin
+SKILLMAKE = Blacksmithing 50.0
+
+ON=@CREATE
+   COLOR=color_o_Ferrum
+
+ON=@DCLICK
+   TARGET Target the item to repair...
+   RETURN 1
+   
+ON=@TARGON_ITEM
+IF (<CONT.TOPOBJ.UID> != <SRC.UID>)
+   SRC.SYSMESSAGE The item to repair must be in your backpack...
+   RETURN 1
+ENDIF
+IF (<SRC.TARG.TDATA1> = mat_Ferrum)
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+   SRC.EMOTE repair the <SRC.TARG.NAME>
+   REMOVE
+   RETURN 1
+ELSE
+   SRC.SYSMESSAGE This deed cannot repair that!
+   RETURN 1
+ENDIF
+   
+ON=@TARGON_CHAR
+   SRC.SYSMESSAGE You feel <SRC.TARG.NAME> would object...
+   RETURN 1
+
+ON=@TARGON_GROUND
+   SRC.SYSMESSAGE The ground is always in full repair, thanks to your taxes...
+   RETURN 1
+
+[ITEMDEF i_repair_deed_Brass]
+ID	= i_deed
+TYPE	= t_script
+NAME	= Brass Repair Deed
+WEIGHT = 2
+VALUE = 500
+RESOURCES = 10 i_scroll_blank, 3 i_ingot_brass, 6 i_ingot_tin
+SKILLMAKE = Blacksmithing 45.0
+
+ON=@CREATE
+   COLOR=color_o_Brass
+
+ON=@DCLICK
+   TARGET Target the item to repair...
+   RETURN 1
+   
+ON=@TARGON_ITEM
+IF (<CONT.TOPOBJ.UID> != <SRC.UID>)
+   SRC.SYSMESSAGE The item to repair must be in your backpack...
+   RETURN 1
+ENDIF
+IF (<SRC.TARG.TDATA1> = mat_Brass)
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+   SRC.EMOTE repair the <SRC.TARG.NAME>
+   REMOVE
+   RETURN 1
+ELSE
+   SRC.SYSMESSAGE This deed cannot repair that!
+   RETURN 1
+ENDIF
+   
+ON=@TARGON_CHAR
+   SRC.SYSMESSAGE You feel <SRC.TARG.NAME> would object...
+   RETURN 1
+
+ON=@TARGON_GROUND
+   SRC.SYSMESSAGE The ground is always in full repair, thanks to your taxes...
+   RETURN 1
+
+[ITEMDEF i_repair_deed_Chrome]
+ID	= i_deed
+TYPE	= t_script
+NAME	= Chrome Repair Deed
+WEIGHT = 2
+VALUE = 500
+RESOURCES = 10 i_scroll_blank, 3 i_ingot_chrome, 6 i_ingot_tin
+SKILLMAKE = Blacksmithing 55.0
+
+ON=@CREATE
+   COLOR=color_o_Chrome
+
+ON=@DCLICK
+   TARGET Target the item to repair...
+   RETURN 1
+   
+ON=@TARGON_ITEM
+IF (<CONT.TOPOBJ.UID> != <SRC.UID>)
+   SRC.SYSMESSAGE The item to repair must be in your backpack...
+   RETURN 1
+ENDIF
+IF (<SRC.TARG.TDATA1> = mat_Chrome)
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+   SRC.EMOTE repair the <SRC.TARG.NAME>
+   REMOVE
+   RETURN 1
+ELSE
+   SRC.SYSMESSAGE This deed cannot repair that!
+   RETURN 1
+ENDIF
+   
+ON=@TARGON_CHAR
+   SRC.SYSMESSAGE You feel <SRC.TARG.NAME> would object...
+   RETURN 1
+
+ON=@TARGON_GROUND
+   SRC.SYSMESSAGE The ground is always in full repair, thanks to your taxes...
+   RETURN 1
+
+[ITEMDEF i_repair_deed_Agapite]
+ID	= i_deed
+TYPE	= t_script
+NAME	= Agapite Repair Deed
+WEIGHT = 2
+VALUE = 500
+RESOURCES = 10 i_scroll_blank, 3 i_ingot_agapite, 6 i_ingot_tin
+SKILLMAKE = Blacksmithing 95.0
+
+ON=@CREATE
+   COLOR=color_o_Agapite
+
+ON=@DCLICK
+   TARGET Target the item to repair...
+   RETURN 1
+   
+ON=@TARGON_ITEM
+IF (<CONT.TOPOBJ.UID> != <SRC.UID>)
+   SRC.SYSMESSAGE The item to repair must be in your backpack...
+   RETURN 1
+ENDIF
+IF (<SRC.TARG.TDATA1> = mat_Agapite)
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+   SRC.EMOTE repair the <SRC.TARG.NAME>
+   REMOVE
+   RETURN 1
+ELSE
+   SRC.SYSMESSAGE This deed cannot repair that!
+   RETURN 1
+ENDIF
+   
+ON=@TARGON_CHAR
+   SRC.SYSMESSAGE You feel <SRC.TARG.NAME> would object...
+   RETURN 1
+
+ON=@TARGON_GROUND
+   SRC.SYSMESSAGE The ground is always in full repair, thanks to your taxes...
+   RETURN 1
+
+// [ITEMDEF i_repair_deed_Bloodrk]
+// ID	= i_deed
+// TYPE	= t_script
+// NAME	= Bloodrock Repair Deed
+// WEIGHT = 2
+// VALUE = 500
+// RESOURCES = 10 i_scroll_blank, 3 i_ingot_bloodrk, 6 i_ingot_tin
+// SKILLMAKE = Blacksmithing 100.0
+// 
+// ON=@CREATE
+//    COLOR=color_o_Bloodrk
+// 
+// ON=@DCLICK
+//    TARGET Target the item to repair...
+//    RETURN 1
+//    
+// ON=@TARGON_ITEM
+// IF (<CONT.TOPOBJ.UID> != <SRC.UID>)
+//    SRC.SYSMESSAGE The item to repair must be in your backpack...
+//    RETURN 1
+// ENDIF
+// IF (<SRC.TARG.TDATA1> = mat_Bloodrk)
+//    IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+//          SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+//          RETURN 1
+//    ENDIF
+//    SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+//    SRC.EMOTE repair the <SRC.TARG.NAME>
+//    REMOVE
+//    RETURN 1
+// ELSE
+//    SRC.SYSMESSAGE This deed cannot repair that!
+//    RETURN 1
+// ENDIF
+//    
+// ON=@TARGON_CHAR
+//    SRC.SYSMESSAGE You feel <SRC.TARG.NAME> would object...
+//    RETURN 1
+// 
+// ON=@TARGON_GROUND
+//    SRC.SYSMESSAGE The ground is always in full repair, thanks to your taxes...
+//    RETURN 1
+
+[ITEMDEF i_repair_deed_Shadow]
+ID	= i_deed
+TYPE	= t_script
+NAME	= Shadow Repair Deed
+WEIGHT = 2
+VALUE = 500
+RESOURCES = 10 i_scroll_blank, 3 i_ingot_shadow, 6 i_ingot_tin
+SKILLMAKE = Blacksmithing 90.0
+
+ON=@CREATE
+   COLOR=color_o_Shadow
+
+ON=@DCLICK
+   TARGET Target the item to repair...
+   RETURN 1
+   
+ON=@TARGON_ITEM
+IF (<CONT.TOPOBJ.UID> != <SRC.UID>)
+   SRC.SYSMESSAGE The item to repair must be in your backpack...
+   RETURN 1
+ENDIF
+IF (<SRC.TARG.TDATA1> = mat_Shadow)
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+   SRC.EMOTE repair the <SRC.TARG.NAME>
+   REMOVE
+   RETURN 1
+ELSE
+   SRC.SYSMESSAGE This deed cannot repair that!
+   RETURN 1
+ENDIF
+   
+ON=@TARGON_CHAR
+   SRC.SYSMESSAGE You feel <SRC.TARG.NAME> would object...
+   RETURN 1
+
+ON=@TARGON_GROUND
+   SRC.SYSMESSAGE The ground is always in full repair, thanks to your taxes...
+   RETURN 1
+
+[ITEMDEF i_repair_deed_Verite]
+ID	= i_deed
+TYPE	= t_script
+NAME	= Verite Repair Deed
+WEIGHT = 2
+VALUE = 500
+RESOURCES = 10 i_scroll_blank, 3 i_ingot_verite, 6 i_ingot_tin
+SKILLMAKE = Blacksmithing 95.0
+
+ON=@CREATE
+   COLOR=color_o_Verite
+
+ON=@DCLICK
+   TARGET Target the item to repair...
+   RETURN 1
+   
+ON=@TARGON_ITEM
+IF (<CONT.TOPOBJ.UID> != <SRC.UID>)
+   SRC.SYSMESSAGE The item to repair must be in your backpack...
+   RETURN 1
+ENDIF
+IF (<SRC.TARG.TDATA1> = mat_Verite)
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+   SRC.EMOTE repair the <SRC.TARG.NAME>
+   REMOVE
+   RETURN 1
+ELSE
+   SRC.SYSMESSAGE This deed cannot repair that!
+   RETURN 1
+ENDIF
+   
+ON=@TARGON_CHAR
+   SRC.SYSMESSAGE You feel <SRC.TARG.NAME> would object...
+   RETURN 1
+
+ON=@TARGON_GROUND
+   SRC.SYSMESSAGE The ground is always in full repair, thanks to your taxes...
+   RETURN 1
+
+[ITEMDEF i_repair_deed_Valorite]
+ID	= i_deed
+TYPE	= t_script
+NAME	= Valorite Repair Deed
+WEIGHT = 2
+VALUE = 500
+RESOURCES = 10 i_scroll_blank, 3 i_ingot_valorite, 6 i_ingot_tin
+SKILLMAKE = Blacksmithing 95.0
+
+ON=@CREATE
+   COLOR=color_o_Valorite
+
+ON=@DCLICK
+   TARGET Target the item to repair...
+   RETURN 1
+   
+ON=@TARGON_ITEM
+IF (<CONT.TOPOBJ.UID> != <SRC.UID>)
+   SRC.SYSMESSAGE The item to repair must be in your backpack...
+   RETURN 1
+ENDIF
+IF (<SRC.TARG.TDATA1> = mat_Valorite)
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+   SRC.EMOTE repair the <SRC.TARG.NAME>
+   REMOVE
+   RETURN 1
+ELSE
+   SRC.SYSMESSAGE This deed cannot repair that!
+   RETURN 1
+ENDIF
+   
+ON=@TARGON_CHAR
+   SRC.SYSMESSAGE You feel <SRC.TARG.NAME> would object...
+   RETURN 1
+
+ON=@TARGON_GROUND
+   SRC.SYSMESSAGE The ground is always in full repair, thanks to your taxes...
+   RETURN 1
+
+[ITEMDEF i_repair_deed_Entit]
+ID	= i_deed
+TYPE	= t_script
+NAME	= Enriched Titanium Repair Deed
+WEIGHT = 2
+VALUE = 500
+RESOURCES = 10 i_scroll_blank, 3 i_ingot_entit, 6 i_ingot_tin
+SKILLMAKE = Blacksmithing 90.0
+
+ON=@CREATE
+   COLOR=color_o_Entit
+
+ON=@DCLICK
+   TARGET Target the item to repair...
+   RETURN 1
+   
+ON=@TARGON_ITEM
+IF (<CONT.TOPOBJ.UID> != <SRC.UID>)
+   SRC.SYSMESSAGE The item to repair must be in your backpack...
+   RETURN 1
+ENDIF
+IF (<SRC.TARG.TDATA1> = mat_Entit)
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+   SRC.EMOTE repair the <SRC.TARG.NAME>
+   REMOVE
+   RETURN 1
+ELSE
+   SRC.SYSMESSAGE This deed cannot repair that!
+   RETURN 1
+ENDIF
+   
+ON=@TARGON_CHAR
+   SRC.SYSMESSAGE You feel <SRC.TARG.NAME> would object...
+   RETURN 1
+
+ON=@TARGON_GROUND
+   SRC.SYSMESSAGE The ground is always in full repair, thanks to your taxes...
+   RETURN 1
+
+[ITEMDEF i_repair_deed_ocshield]
+ID	= i_deed
+TYPE	= t_script
+NAME	= Order or Chaos Shield Repair Deed
+WEIGHT = 2
+VALUE = 500
+RESOURCES = 10 i_scroll_blank, 9 i_ingot_chrome, 6 i_ingot_tin
+SKILLMAKE = Blacksmithing 95.0
+
+ON=@CREATE
+   COLOR=025
+
+ON=@DCLICK
+   TARGET Target the item to repair...
+   RETURN 1
+   
+ON=@TARGON_ITEM
+IF ( (<SRC.TARG.BASEID> = i_shield_order_2) || (<SRC.TARG.BASEID> = i_shield_chaos_2) || (<SRC.TARG.BASEID> = i_shield_order_3) || (<SRC.TARG.BASEID> = i_shield_chaos_3) )
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+   SRC.EMOTE repair the <SRC.TARG.NAME>
+   REMOVE
+   RETURN 1
+ELSE
+   SRC.SYSMESSAGE This deed cannot repair that!
+   RETURN 1
+ENDIF
+   
+ON=@TARGON_CHAR
+   SRC.SYSMESSAGE You feel <SRC.TARG.NAME> would object...
+   RETURN 1
+
+ON=@TARGON_GROUND
+   SRC.SYSMESSAGE The ground is always in full repair, thanks to your taxes...
+   RETURN 1
+
+[EOF]

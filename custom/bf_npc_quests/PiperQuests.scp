@@ -1,0 +1,1059 @@
+//Quest by Sqweak
+//Nurse Jun/Piper and Love Book Quest
+
+
+///// Britains sewer Quest //////
+///FUNCTIONS ////
+
+[FUNCTION try_Piper_one]
+  if ( <DISTANCE> > 10 )
+     return 0
+  endif
+  SYSMESSAGE The music from the magical flute makes you feel dizzy.
+  SRC.SAY *Charmed*
+  LOCAL.STAM	= <eval( { 10 25 } )>
+  LOCAL.INT	= <eval( { 10 25 } )>
+  if ( <STAM> < <LOCAL.STAM> )
+     STAM	= 1
+  else
+     STAM	= <eval (<STAM> - <LOCAL.STAM>)>
+  endif
+  if ( <INT> < <LOCAL.INT> )
+     INT	= 1
+  else
+     INT	= <eval (<int> - <LOCAL.INT>)>
+  endif
+SOUND=045
+  
+[FUNCTION try_pipersong]
+  if ( rand(10) )
+     return 0
+  endif
+  EMOTE Begins to play a sweet melodic tune.
+  REGION.ALLCLIENTS try_pipersong_one
+
+
+[EVENTS e_npc_piper]
+ON = @HitTry
+  try_pipersong
+ON = @GetHit
+  try_pipersong
+
+
+////// SPEECH FILES ////
+
+[SPEECH spk_Qchild] 
+on=*hi* 
+on=*hello*
+on=*hail*
+on=*Greetings*
+on=*quest*
+on=*free*
+on=*go*
+on=*release*
+on=*follow*
+SAY Free us walk on our chains.. to break them.
+
+
+[SPEECH spk_QNurse] 
+on=*hi* 
+on=*hello*
+on=*hail*
+on=*Greetings*
+on=*quest*
+If (<EVAL <SCR.TAG.QPIPER>> > 36)
+   SAY You have help us too much. We can't ask for your help again.
+ENDIF
+IF (<EVAL <SRC.TAG.QPIPER>> = 0)
+   SAY Please can you help me? An evil Monster has lured our children down the sewers.
+   SAY He lured them down there playing magical music on his flute.
+   SAY To save them, free their chains and they will run to safety. Collect their Adoption
+   SAY Certificates and I will pay 500 gold coins for each of my babies saved.
+   SAY You may need to get help to find your way through the sewers.
+   SAY To receive your reward return to me and say REWARD.
+ENDIF
+IF ((<EVAL <SRC.TAG.QPIPER>> > 0) && (<EVAL <SCR.TAG.QPIPER>> < 35))
+   SAY Do you have an adoption certificate with you?
+   SAY Please say REWARD if you saved one of my babies.
+ENDIF
+
+on=*reward*
+if ((<SRC.RESTEST i_Adoption_Certifcate 1>) && (<EVAL <SCR.TAG.QPIPER>> < 37))
+   SRC.consume i_Adoption_Certifcate 1
+   SOUND=01FC
+   SRC.NEWITEM= i_gold, 500
+   SRC.ACT.BOUNCE 
+   SAY Thank you so much here is your reward
+   SRC.TAG.QPIPER = (<EVAL <SRC.TAG.QPIPER>> + 1)
+ELSE
+   SAY You have not got any adoption certificates.
+   SAY If you Rescue my children the will give you them.
+   RETURN 1
+ENDIF
+
+
+
+//// ITEMS  ////
+
+
+[ITEMDEF i_Adoption_Certifcate]
+ID	= i_scroll_blank
+NAME	= Adoption Certifcate
+TYPE	= T_NORMAL
+ARMOR	= 5
+DYE	= 0
+
+
+DESCRIPTION=Adoption Certifcate
+SUBSECTION=NPCS
+CATEGORY=Imperial uo
+
+[ITEMDEF I_lever_britsw_1]
+ID	= 0108c
+NAME	= Lever
+TYPE	= T_Script
+
+ON=@Create
+	Attr = 08010
+	
+ON=@Dclick	
+
+	if <morex> = 0 //Closed
+		MOREX = 1 //Open
+		TIMER = 60 //Have to run to Trigger B in 01 min
+		LINK.z -23 //open the door
+		DISPID = 0108e
+		update
+		src.message "You hear a grinding noise echoing in the distance"
+		return 1
+	else
+		MOREX = 0 //Closed
+		Timer = -1 //Always close
+		LINK.Z 3 //Close the door
+		DISPID = 0108c
+		update
+		return 1
+	endif
+	
+ON=@Timer
+	if <morex> = 0 //Closed
+		return 1  //Do nothing
+	else
+		MOREX = 0 //Closed
+		Timer = -1 //Always close
+		LINK.Z 3 //Hide the trigger
+		DISPID = 0108c
+		update
+		return 1
+	endif
+
+DESCRIPTION=Lever (1 min)
+SUBSECTION=NPCS
+CATEGORY=Imperial uo
+
+[ITEMDEF I_lever_britsw_2]
+ID	= 0108c
+NAME	= Lever
+TYPE	= T_Script
+
+ON=@Create
+	Attr = 08010
+	
+ON=@Dclick	
+
+	if <morex> = 0 //Closed
+		MOREX = 1 //Open
+		TIMER = 30 //Have to run to Trigger B in 30 seconds
+		LINK.z -23 //open the door
+		DISPID = 0108e
+		update
+		src.message "You hear a grinding noise echoing in the distance"
+		return 1
+	else
+		MOREX = 0 //Closed
+		Timer = -1 //Always close
+		LINK.Z 3 //Close the door
+		DISPID = 0108c
+		update
+		return 1
+	endif
+	
+ON=@Timer
+	if <morex> = 0 //Closed
+		return 1  //Do nothing
+	else
+		MOREX = 0 //Closed
+		Timer = -1 //Always close
+		LINK.Z 3 //Hide the trigger
+		DISPID = 0108c
+		update
+		return 1
+	endif
+
+DESCRIPTION=Lever (30 seconds)
+SUBSECTION=NPCS
+CATEGORY=Imperial uo
+
+[ITEMDEF I_lever_britsw_3]
+ID	= 0108c
+NAME	= Lever
+TYPE	= T_Script
+
+ON=@Create
+	Attr = 08010
+	
+ON=@Dclick	
+
+	if <morex> = 0 //Closed
+		MOREX = 1 //Open
+		TIMER = 10 //Have to run to Trigger B in 05 seconds
+		LINK.z -23 //open the door
+		DISPID = 0108e
+		update
+		src.message "You hear a grinding noise echoing in the distance"
+		return 1
+	else
+		MOREX = 0 //Closed
+		Timer = -1 //Always close
+		LINK.Z 3 //Close the door
+		DISPID = 0108c
+		update
+		return 1
+	endif
+	
+ON=@Timer
+	if <morex> = 0 //Closed
+		return 1  //Do nothing
+	else
+		MOREX = 0 //Closed
+		Timer = -1 //Always close
+		LINK.Z 3 //Hide the trigger
+		DISPID = 0108c
+		update
+		return 1
+	endif
+
+DESCRIPTION=Lever (10 sec)
+SUBSECTION=NPCS
+CATEGORY=Imperial uo
+
+[ITEMDEF I_lever_britsw_4]
+ID	= 0108c
+NAME	= Lever
+TYPE	= T_Script
+
+ON=@Create
+	Attr = 08010
+	
+ON=@Dclick	
+
+	if <morex> = 0 //Closed
+		MOREX = 1 //Open
+		TIMER = 1200 //Have to run to Trigger B in 05 seconds
+		LINK.z -23 //open the door
+		DISPID = 0108e
+		update
+		src.message "You hear a grinding noise echoing in the distance"
+		return 1
+	else
+		MOREX = 0 //Closed
+		Timer = -1 //Always close
+		LINK.Z 2 //Close the door
+		DISPID = 0108c
+		update
+		return 1
+	endif
+	
+ON=@Timer
+	if <morex> = 0 //Closed
+		return 1  //Do nothing
+	else
+		MOREX = 0 //Closed
+		Timer = -1 //Always close
+		LINK.Z 0 //Hide the trigger
+		DISPID = 0108c
+		update
+		return 1
+	endif
+
+DESCRIPTION=Lever (20 min)
+SUBSECTION=NPCS
+CATEGORY=Imperial uo
+
+
+//// Children   ////
+[CHARDEF c_child_mbbs]
+//Male Kid (Blond Hair) (not in t2a)
+//NOTE: NOT in T2a !
+DEFNAME=c_child_mbbs
+ID=c_man
+NAME=Child
+RESOURCES=4 t_food
+CAN=MT_WALK|MT_RUN|MT_USEHANDS
+
+ICON=i_pet_MAN
+FOODTYPE=15 t_food,t_fruit
+DESIRES=i_gold,e_notoriety
+AVERSIONS=t_TRAP,t_eerie_stuff
+TSPEECH=spk_human_prime
+TSPEECH=spk_human_default
+TEVENTS=e_Human_HearUnk
+TSPEECH=spk_Qchild
+
+
+ON=@Create
+NPC=brain_human
+STR=50
+DEX=30
+INT=30
+FENCING={8.0 19.0}
+PARRYING={8.0 19.0}
+SWORDSMANSHIP={8.0 19.0}
+WRESTLING={8.0 19.0}
+MACEFIGHTING={8.0 19.0}
+MAGICRESISTANCE={8.0 19.0}
+TACTICS={8.0 19.0}
+
+ON=@NPCseenewplayer
+DORAND (9)
+SAY Help me!
+SAY I'm Scared
+EMOTE Cries
+EMOTE Weeps
+SAY Please Rescue me
+SAY Rescue me Now! Oi You...
+SAY Please help me.
+SAY Over Here!
+SAY You here to help me?
+ENDDO
+
+ON = @PersonalSpace
+SAY Thank you so much... I am free!
+SRC.NEWITEM= i_Adoption_Certifcate
+SOUND=01fc
+SRC.ACT.BOUNCE 
+SRC.MESSAGE You break the child chains... he runs of to safety
+REMOVE
+
+DESCRIPTION=Child (Blond)
+SUBSECTION=NPCS
+CATEGORY=Imperial uo
+
+[CHARDEF c_child_mdbs]
+//Male Kid (Dark Hair)
+//NOTE: NOT in T2a !
+DEFNAME=c_child_mdbs
+ID=c_man
+NAME=Child
+CAN=MT_WALK|MT_RUN|MT_USEHANDS
+
+ICON=i_pet_MAN
+FOODTYPE=15 t_food,t_fruit
+DESIRES=i_gold,e_notoriety
+RESOURCES=4 i_ribs_raw
+AVERSIONS=t_TRAP,t_eerie_stuff
+TSPEECH=spk_human_prime
+TSPEECH=spk_human_default
+TEVENTS=e_Human_HearUnk
+TSPEECH=spk_Qchild
+
+ON=@Create
+NPC=brain_human
+STR=50
+DEX=30
+INT=30
+FENCING={8.0 19.0}
+PARRYING={8.0 19.0}
+SWORDSMANSHIP={8.0 19.0}
+WRESTLING={8.0 19.0}
+MACEFIGHTING={8.0 19.0}
+MAGICRESISTANCE={8.0 19.0}
+TACTICS={8.0 19.0}
+
+ON=@NPCseenewplayer
+DORAND (9)
+SAY Help me!
+SAY I'm Scared
+EMOTE Cries
+EMOTE Weeps
+SAY Please Rescue me
+SAY Rescue me Now! Oi You...
+SAY Please help me.
+SAY Over Here!
+SAY You here to help me?
+ENDDO
+
+ON = @PersonalSpace
+SAY Thank You so much... I am free!
+SRC.NEWITEM= i_Adoption_Certifcate
+SOUND=01fc
+SRC.ACT.BOUNCE 
+SRC.MESSAGE You break the child chains... he runs of to safety
+REMOVE
+
+DESCRIPTION=Child (Brunette)
+SUBSECTION=NPCS
+CATEGORY=Imperial uo
+
+[CHARDEF c_child_fbbs]
+//Female Kid (Blond Hair) (toddler)
+//NOTE: NOT in T2a !
+DEFNAME=c_child_fbbs
+ID = c_woman
+NAME=Child
+CAN=MT_WALK|MT_RUN|MT_FEMALE|MT_USEHANDS
+
+ICON=i_pet_woman
+FOODTYPE=15 t_food,t_fruit
+DESIRES=i_gold,e_notoriety
+RESOURCES=4 i_ribs_raw
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_human_default
+TEVENTS=e_Human_HearUnk
+TSPEECH=spk_Qchild
+
+BLOODCOLOR=0
+
+ON=@Create
+NPC=brain_human
+STR=50
+DEX=30
+INT=30
+FENCING={8.0 19.0}
+PARRYING={8.0 19.0}
+SWORDSMANSHIP={8.0 19.0}
+WRESTLING={8.0 19.0}
+MACEFIGHTING={8.0 19.0}
+MAGICRESISTANCE={8.0 19.0}
+TACTICS={8.0 19.0}
+
+ON=@NPCseenewplayer
+DORAND (9)
+SAY Help me!
+SAY I'm Scared
+EMOTE Cries
+EMOTE Weeps
+SAY Please Rescue me
+SAY Rescue me Now! Oi You...
+SAY Please help me.
+SAY Over Here!
+SAY You here to help me?
+ENDDO
+
+ON = @PersonalSpace
+SAY Thank You so much... I am free!
+SRC.NEWITEM= i_Adoption_Certifcate
+SOUND=01fc
+SRC.ACT.BOUNCE 
+SRC.MESSAGE You break the child chains... he runs of to safety
+REMOVE
+
+
+DESCRIPTION=Child (Female Blonde)
+SUBSECTION=NPCS
+CATEGORY=Imperial uo
+
+[CHARDEF c_child_fdbs]
+//Female Kid (Dark Hair)
+//NOTE: NOT in T2a !
+DEFNAME=c_child_fdbs
+ID = c_woman
+NAME=Child
+CAN=MT_WALK|MT_RUN|MT_FEMALE|MT_USEHANDS
+
+ICON=i_pet_woman
+FOODTYPE=15 t_food,t_fruit
+DESIRES=i_gold,e_notoriety
+RESOURCES=4 i_ribs_raw
+AVERSIONS=t_TRAP,t_eerie_stuff
+TSPEECH=spk_human_prime
+TSPEECH=spk_human_default
+TEVENTS=e_Human_HearUnk
+TSPEECH=spk_Qchild
+
+BLOODCOLOR=0
+
+ON=@Create
+NPC=brain_human
+STR=50
+DEX=30
+INT=30
+FENCING={8.0 19.0}
+PARRYING={8.0 19.0}
+SWORDSMANSHIP={8.0 19.0}
+WRESTLING={8.0 19.0}
+MACEFIGHTING={8.0 19.0}
+MAGICRESISTANCE={8.0 19.0}
+TACTICS={8.0 19.0}
+
+ON=@NPCseenewplayer
+DORAND (9)
+SAY Help me!
+SAY I'm Scared
+EMOTE Cries
+EMOTE Weeps
+SAY Please Rescue me
+SAY Rescue me Now! Oi You...
+SAY Please help me.
+SAY Over Here!
+SAY You here to help me?
+ENDDO
+
+ON = @PersonalSpace
+SAY Thank You so much... I am free!
+SRC.NEWITEM= i_Adoption_Certifcate
+SOUND=01fc
+SRC.ACT.BOUNCE 
+SRC.MESSAGE You break the child chains... he runs of to safety
+REMOVE
+
+DESCRIPTION=Child (Female Brunette)
+SUBSECTION=NPCS
+CATEGORY=Imperial uo
+
+[CHARDEF C_H_NJUN]
+DEFNAME=C_H_NJUN
+NAME=Nurse Jun
+ID=C_WOMAN
+DESIRES=i_gold,e_notoriety
+AVERSIONS=t_TRAP,t_eerie_stuff,e_carnivores3
+
+TSPEECH=spk_QNurse
+TEVENTS=e_npc_quest
+
+
+ON=@Create
+NPC=brain_human
+STR={31 45}
+DEX={41 55}
+INT={51 65}
+COLOR=083ea
+
+FENCING={15.0 38.0}
+PARRYING={25.0 48.0}
+SWORDSMANSHIP={15.0 38.0}
+WRESTLING={15.0 38.0}
+MACEFIGHTING={15.0 38.0}
+MAGICRESISTANCE={25.0 48.0}
+TACTICS={25.0 48.0}
+
+Title=Lady
+ITEMNEWBIE=i_hair_long
+COLOR=08a5
+
+
+ON=@NPCRestock
+ITEM=RANDOM_LIGHT
+ITEM=i_dress_full
+color=o76c
+
+ITEM=random_boots
+
+On=@NPCSeeNewPlayer 
+say <SRC.SEX Sir/Lady> Please Help, An Evil Monster has trapped my children..
+
+DESCRIPTION=Quest Giver (Nurse Jun)
+SUBSECTION=NPCS
+CATEGORY=Imperial uo
+
+[CHARDEF C_DIRE_RAT]
+//RAT (GIANT)
+DEFNAME=c_rat_dire
+ID=0d7
+NAME=Dire Rat
+SOUND=snd_MONSTER_GRAT1
+ICON=i_pet_RAT_2
+ANIM=01fff
+DAM=3,12
+ARMOR=9
+RESOURCES=3 i_ribs_raw, 1 i_fur_dark
+CAN=MT_WALK|MT_RUN
+
+FOODTYPE=9 t_meat_raw
+DESIRES=c_rat,c_a_rat_sewer,c_rat_giant
+AVERSIONS=t_TRAP
+
+
+ON=@Create
+COLOR = 03ff
+NPC=brain_monster
+
+STR={50 90}
+DEX={100 120}
+INT={16 30}
+
+PARRYING={50.0 55.0}
+MAGICRESISTANCE={55.0 60.0}
+TACTICS={32.0 45.0}
+WRESTLING={32.0 45.0}
+
+FAME=20
+KARMA={-3001 -3999}
+//ALIGNMENT=EVIL
+ON=@NPCRestock
+ITEM=i_gold,{30 100}
+
+DESCRIPTION=Dire Rat
+SUBSECTION=NPCS
+CATEGORY=Imperial uo
+
+[CHARDEF c_EYEpiper]
+DEFNAME		= c_EYEpiper
+NAME		= Eye of The Piper
+SOUND		= snd_MONSTER_GAZER1
+ID   		= 016
+ICON		= i_pet_GAZER
+ANIM		= 06007f
+DAM		= 6,14
+ARMOR		= 30
+RESOURCES	= 4 i_ribs_raw
+CAN		= MT_WALK|MT_FLY
+FOODTYPE	=
+DESIRES		= c_gazer
+AVERSIONS	= r_civilization
+TEVENTS		= e_teleporter
+
+
+ON=@Create
+COLOR = 076c
+  NPC		= brain_monster
+  FAME		= {600 1000}
+  KARMA		= {-3000 -3999}
+  STR		= {100 120}
+  DEX		= {86 105}
+  INT		= {60 100}
+  PARRYING	= {55.0 65.0}
+  MAGERY	= {20.0 35.0}
+  MAGICRESISTANCE={50.0 65.0}
+  TACTICS	= {20.0 50.0}
+  WRESTLING	= {40.0 50.0}
+ON=@NPCRestock
+  ITEMNEWBIE=i_spellbook
+   ADDSPELL=s_fire_bolt
+   ADDSPELL=s_curse
+   
+   ON=@Death
+loot_GAZER
+
+DESCRIPTION=Eye of The Piper
+SUBSECTION=NPCS
+CATEGORY=Imperial uo
+
+[CHARDEF c_h_thepiper] 
+DEFNAME=c_h_thepiper
+NAME=The Piper
+ID=C_MAN 
+TEVENTS=e_npc_daemon
+TEVENTS=e_npc_piper
+
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_MALE|MT_RUN|MT_FIRE_IMMUNE 
+//ALIGNMENT=EVIL 
+
+DAM=10,25 
+ARMOR=35 
+
+ON=@Create 
+TITLE=Wanted Man
+COLOR=colors_skin 
+STR=400 
+DEX=105
+INT=100 
+
+MAGICRESISTANCE=85.0 
+TACTICS=90.0 
+WRESTLING=700.0 
+SWORDSMANSHIP=100.0 
+MAGERY=50.0 
+
+NPC=BRAIN_HUMAN 
+
+KARMA={-3000 -4000} 
+FAME={2500 4000} 
+
+ON=@NPCRestock
+ITEMNEWBIE=i_hair_long
+ITEMNEWBIE=i_sword_long_steel
+ITEMNEWBIE=01711
+ITEMNEWBIE=01f9f
+COLOR=089f
+ITEMNEWBIE=0171c
+COLOR=089f
+ITEM=i_Shield_buckler_steel
+COLOR=089f
+ITEM=i_love_book
+ITEM=i_gold,{800 1000}
+
+DESCRIPTION=The Piper
+SUBSECTION=NPCS
+CATEGORY=Imperial uo
+
+
+///knolls//
+
+[CHARDEF c_m_Knoll_Overseer]
+DEFNAME=c_m_Knoll_Overseer
+NAME=Knoll Overseer
+ID=02d
+DAM=5,10
+ARMOR=10,12
+RESOURCES=9 i_ribs_raw
+FOODTYPE=15 t_meat_raw
+
+DESIRES=i_gold,spk_orc
+
+
+ON=@Create
+COLOR = 03ff
+STR={50 75}
+DEX={40 50}
+INT={25 35}
+//ALIGNMENT=EVIL
+
+MACEFIGHTING={40.0 55.0}
+MAGICRESISTANCE={25.0 35.0}
+PARRYING={45.0 60.0}
+TACTICS={45.0 55.5}
+WRESTLING={50.0 65.0}
+
+NPC=BRAIN_MONSTER
+
+KARMA={-100 -499}
+FAME={100 250}
+
+ON=@NPCRestock
+ITEM=i_club
+CONTAINER=i_backpack
+ITEM=i_boots_thigh
+ITEM=random_chest_armor,R20
+ITEM=random_all_armor,R30
+ITEM=i_gold,{120 170}
+
+
+
+CATEGORY=Imperial uo
+SUBSECTION=Britains Sewers Knolls 
+DESCRIPTION=Knoll Overseer  (club)
+
+[CHARDEF c_m_Knoll]
+DEFNAME=c_m_Knoll
+NAME=Knoll
+ID=02c
+RESOURCES=6 i_ribs_raw
+DAM=3,6
+ARMOR=10,10
+
+FOODTYPE=15 t_meat_raw
+
+DESIRES=i_gold,spk_orc
+
+
+ON=@Create
+COLOR = 03ff
+STR={50 75}
+DEX={50 75}
+INT={36 60}
+//ALIGNMENT=EVIL
+MAGICRESISTANCE={50.0 75.0}
+PARRYING={35.0 55.0}
+TACTICS={55.0 80.0}
+WRESTLING={35.0 55.0}
+
+KARMA={-3000 -1000}
+FAME={100 500}
+
+NPC=BRAIN_MONSTER
+
+ON=@NPCRestock
+CONTAINER=i_backpack
+ITEM={ i_boots_thigh 1 0 1 }
+ITEM=i_gold,{60 100}
+
+
+
+CATEGORY=Imperial uo
+SUBSECTION=Britains Sewers Knolls
+DESCRIPTION=Knoll
+
+
+[CHARDEF c_m_Knoll_Mage]
+DEFNAME=c_m_Knoll_Mage
+NAME=Knoll Mage
+ID=02a
+
+RESOURCES=6 i_ribs_raw
+FOODTYPE=15 t_meat_raw
+//ALIGNMENT=EVIL
+
+DAM=3,6
+ARMOR=10
+
+DESIRES=i_gold,spk_orc
+
+
+ON=@Create
+COLOR = 03ff
+STR={50 75}
+DEX={50 75}
+INT={60 90}
+
+MAGERY={35.0 60.0}
+MAGICRESISTANCE={50.0 75.0}
+PARRYING={35.0 55.0}
+TACTICS={55.0 80.0}
+WRESTLING={35.0 55.0}
+
+NPC=BRAIN_MONSTER
+
+KARMA={-3000 -1000}
+FAME={100 500}
+
+ITEMNEWBIE=i_spellbook
+//ADDSPELL=
+MORE1=068020811
+MORE2=00000000
+
+ON=@NPCRestock
+ITEM=random_first_circle,R3
+ITEM=random_second_circle,R6
+ITEM=i_gold,{40 90}
+
+
+
+CATEGORY=Imperial uo
+SUBSECTION=Britains Sewers Knolls
+DESCRIPTION=Knoll Mage
+
+
+[CHARDEF c_m_Knoll_Chief]
+DEFNAME=c_m_Knoll_Chief
+NAME=Knoll Chief
+ID=02d
+
+RESOURCES=6 i_ribs_raw
+FOODTYPE=15 t_meat_raw
+//ALIGNMENT=EVIL
+
+DAM=5,12
+ARMOR=13
+
+DESIRES=i_gold,spk_orc
+
+
+ON=@Create
+COLOR = 03ff
+NPC=BRAIN_MONSTER
+COLOR = 03ff
+STR={65 90}
+DEX={60 80}
+INT={36 60}
+
+MAGICRESISTANCE={50.0 75.0}
+PARRYING={50.0 70.0}
+TACTICS={55.0 80.0}
+WRESTLING={50.0 70.0}
+
+KARMA={-3000 -1000}
+FAME={100 500}
+
+ON=@NPCRestock
+ITEM=meager_monster_backpack
+ITEM={ i_boots_thigh 1 0 1 }
+ITEM=random_weapon
+ITEM=i_gold,{60 120}
+
+
+CATEGORY=Imperial uo
+SUBSECTION=Britains Sewers Knolls
+DESCRIPTION=Knoll Chief
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+[SPEECH jobbritlove] 
+on=*hi* 
+on=*hello*
+on=*hail*
+on=*Greetings*
+on=*wife*
+on=*murdered*
+on=*quest*
+IF (<SRC.TAG0.Britlove1> = 3)
+   SAY You are already done this quest! 
+   return 1
+ELSEIF (<SRC.TAG0.Britlove1> = 1) 
+   SAY You are already on this quest! 
+   return 1
+ELSE 
+   SAY My wife Mary has been murdered by the evil Piper. Can you find this foul creature and slay him for me? If you return a book of poems that reminds me of my wife, come back here and say "REWARD" and I will gladly pay you!
+   SRC.TAG.booklove1=1 
+   return 1 
+ENDIF
+on=*where*
+   SAY I think he went East from here. I think there is a camp there!
+On=*ok*
+on=*sure*
+   SAY=Oh! Thank you.
+on=*reward* 
+on=*collect* 
+IF ((<SRC.RESTEST i_love_book 1>) && (<SRC.TAG0.booklove1> == 01))
+   SRC.NEWITEM=i_gold 
+   SRC.ACT.AMOUNT=1000
+   SRC.ACT.BOUNCE 
+   SOUND=01FC 
+   SRC.SYSMESSAGE=You are now 1000 gold coins richer. 
+   SRC.consume i_love_book
+   SRC.TAG.booklove1=3
+   ANNOUNCE <SRC.NAME> has brought love back to the land...
+   Remove
+ELSE 
+   SAY You don't have the have the book!! 
+   RETURN 1 
+ENDIF
+
+[CHARDEF c_h_Dor_ugh]
+DEFNAME=c_m_Dor_ugh
+NAME=Dor Ugh the Goblin Commander
+ID=c_ORC_LORD
+DAM=10,20
+ARMOR=20,25
+RESOURCES=9 i_ribs_raw
+FOODTYPE=15 t_meat_raw
+
+DESIRES=i_gold,spk_orc
+TSPEECH=spk_orc
+
+
+ON=@Create
+COLOR=colors_green
+STR={100 120}
+DEX={40 50}
+INT={25 35}
+//ALIGNMENT=EVIL
+
+MACEFIGHTING={40.0 55.0}
+MAGICRESISTANCE={25.0 35.0}
+PARRYING={45.0 60.0}
+TACTICS={45.0 55.5}
+WRESTLING={50.0 65.0}
+
+NPC=BRAIN_MONSTER
+
+KARMA={-100 -499}
+FAME={250 600}
+
+ON=@NPCRestock
+ITEM=i_club
+CONTAINER=i_backpack
+ITEM=i_boots_thigh
+ITEM=MEAGER_GOLD_PILE
+ITEM=i_leather_tunic,R10
+ITEM=random_chest_armor,R20
+ITEM=random_all_armor,R30
+ITEM=i_love_book
+
+CATEGORY=Imperial uo
+SUBSECTION=Quests 
+DESCRIPTION=(Brit Love) Dor Ugh
+
+[ITEMDEF i_love_book]
+NAME=love Book
+ID=i_BOOK_OPEN
+
+CATEGORY=Imperial uo
+SUBSECTION=PiperQuest ADV1
+DESCRIPTION=love a Book
+
+ON=@Create
+MORE=b_love_book
+
+[BOOK b_love_book]
+PAGES=10
+TITLE=love Book
+AUTHOR=Mary
+
+[BOOK b_love_book 1]    
+I love O' husband
+I Love you true
+I love you Kevin
+Oh! I do! I do!
+
+[BOOK b_love_book 2]    
+I love you
+I love you
+You are the morning
+You are the wind
+You are my Love
+Oh! Kevin
+
+[BOOK b_love_book 3]
+The Air beneath my
+Feet is light and 
+you are my forever
+Light
+
+[CHARDEF C_H_Brit_love] 
+DEFNAME=C_H_Brit_love
+NAME=Kevin
+ID=C_MAN 
+DAM=15,20 
+ARMOR=20 
+
+TSPEECH = jobbritlove
+TEVENTS=e_npc_quest
+
+
+CATEGORY=Imperial uo
+SUBSECTION=Quests 
+DESCRIPTION=(Brit Love) Upset husband
+
+ON=@Create
+TITLE=Heartbroken Husband 
+NPC=brain_human 
+COLOR=colors_skin 
+STR={151 165} 
+DEX={80 120} 
+INT={151 165} 
+
+DETECTION={90.0 100.0} 
+NETHERLORE={90.0 100.0} 
+FENCING={90.0 100.0} 
+PARRYING={90.0 100.0} 
+SWORDSMANSHIP={90.0 100.0} 
+WRESTLING={90.0 100.0} 
+MACEFIGHTING={90.0 100.0} 
+MAGICRESISTANCE={90.0 100.0} 
+TACTICS={90.0 100.0} 
+
+ITEMNEWBIE=random_male_hair 
+COLOR=colors_hair 
+ITEMNEWBIE=random_facial_hair 
+COLOR=match_hair 
+
+on=@hit 
+   FLAGS=000000005 
+   return 1 
+
+on=@gethit 
+   FLAGS=000000005 
+   return 1 
+
+on=@damage 
+   FLAGS=000000005 
+   return 1 
+
+ON=@NPCRestock
+ITEM=i_shirt_plain 
+COLOR=colors_all 
+ITEM=random_pants 
+COLOR=colors_all 
+ITEM=01710
+COLOR=colors_all
+
+On=@NPCSeeNewPlayer 
+   SAY <SRC.SEX Sir/Lady> Please can you help me, My wife has been murdered. 
+
+
+[EOF]

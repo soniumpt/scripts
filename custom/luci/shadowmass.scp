@@ -1,0 +1,170 @@
+//=========================TENTACLES========================
+
+[EVENTS e_Tentacles]
+ON=@NPCSEENEWPLAYER
+	if <distance> < 5
+		if <hits> < <str>
+			hits = <hits> + 25
+		endif
+		
+		src.hits = <src.hits> +- 25
+		
+		return 1
+	endif
+	
+	ATTACK
+	
+ON=@Hit
+	if <hits> < <str>
+		hits = <hits> + 10
+	endif
+	
+ON=@Gethit
+	if <hits> < <str>
+		if <eval rand(5)> = 1
+			hits 		= <hits> + <eval <ARGN>/2>
+			src.hits	= <src.hits> +- <ARGN>
+		endif
+	endif
+	
+ON=@SpellEffect
+	if (<argn> == S_EarthQuake)
+		return 1
+	endif
+
+[CHARDEF C_shadow_tent]
+NAME	=Tenticles Of the Mass
+ID	=08
+ARMOR	=19,19
+SOUND	=snd_MONSTER_CORPSR1
+CAN	=MT_USEHANDS|MT_FIRE_IMMUNE
+TEVENTS	= e_npc_daemon
+TEVENTS	=e_Tentacles
+
+TEVENTS	= e_m_poisonres
+
+CATEGORY	=Monsters
+SUBSECTION	=Lucifus
+DESCRIPTION	=Tentacles of the Mass
+
+
+ON=@create
+	Color	= 07a10
+	STR	={1500 2000}
+	DEX	={500 700}
+	INT	={7030 9343}
+	
+	FAME	={5000 6000}
+	KARMA	=-10000
+
+	MAGICRESISTANCE	={40.0 80.0}
+	TACTICS		={300.0 500.0}
+	WRESTLING	={110.0 160.0}
+	MAGERY		={500.0 600.0}
+	
+	NPC		=BRAIN_MONSTER
+	
+	ITEMNEWBIE	=i_spellbook
+	ADDSPELL S_Lightning	
+	ADDSPELL s_paralyze
+	ADDSPELL s_curse
+	ADDSPELL s_summon_daemon
+
+ON=@NPCRestock
+ITEM	=i_gold,{20000 25000}
+
+ON=@Death
+loot_Balron
+
+
+
+
+[CHARDEF C_shadow_mass]
+NAME	=Shadow Mass
+ID	=c_reaper
+ARMOR	=19,19
+SOUND	=snd_MONSTER_CORPSR1
+CAN	=MT_USEHANDS|MT_FIRE_IMMUNE
+TEVENTS	= e_npc_daemon
+TEVENTS	=e_Tentacles
+
+TEVENTS	= e_m_poisonres
+
+CATEGORY	=Monsters
+SUBSECTION	=Lucifus
+DESCRIPTION	=Shadow Mass
+
+
+ON=@create
+	Color	= 07a10
+	STR	={6000 6000}
+	DEX	={500 700}
+	INT	={5000 5000}
+	
+	FAME	={5000 6000}
+	KARMA	=-10000
+
+	TACTICS		={400.0 500.0}
+	WRESTLING	={160.0 200.0}
+	MAGERY		={500.0 600.0}
+	
+	NPC		=BRAIN_MONSTER
+	
+	ITEMNEWBIE	=i_spellbook
+	ADDSPELL S_Lightning	
+	ADDSPELL s_paralyze
+	ADDSPELL s_curse
+	ADDSPELL s_summon_daemon
+        ADDSPELL s_flame_strike
+
+ON=@NPCRestock
+ITEM	=i_gold,{1000 10000}
+ITEM    =i_gem_shadow {10 15}
+
+[CHARDEF C_dk_newborn]
+NAME	=Newborn
+ID	=c_deamon_w_sword
+ARMOR	=19,19
+SOUND	=snd_MONSTER_CORPSR1
+CAN	=MT_USEHANDS|MT_FIRE_IMMUNE
+TEVENTS	= e_npc_daemon
+TEVENTS	=e_Tentacles
+
+TEVENTS	= e_m_poisonres
+
+CATEGORY	=Monsters
+SUBSECTION	=Lucifus
+DESCRIPTION	=Newborn
+
+
+ON=@create
+	Color	= 07a10
+	STR	={5000 5000}
+	DEX	={600 700}
+	INT	={5000 5000}
+	
+	FAME	={5000 6000}
+	KARMA	=-10000
+
+	MAGICRESISTANCE	={200.0 200.0}
+	TACTICS		={400.0 500.0}
+	WRESTLING	={160.0 200.0}
+	MAGERY		={500.0 600.0}
+        SWORDSMANSHIP	={500.0 600.0}
+	
+	NPC		=BRAIN_MONSTER
+	
+	ITEMNEWBIE	=i_spellbook
+	ADDSPELL S_Lightning	
+	ADDSPELL s_paralyze
+	ADDSPELL s_harm
+        ADDSPELL s_flame_strike
+ON=@NPCRestock
+ITEM	=i_gold,{40000 41000}
+
+ON=@Death
+loot_LICH_LORD
+
+[eof]
+
+

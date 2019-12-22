@@ -1,0 +1,134 @@
+[FUNCTION f_skillfail_detecthidden]
+  if ( 0<SRC.TAG.detectinghidden_tile> == 0 )		// normal detect hidden
+     SRC.MESSAGE You can't seem to find anything hidden here.
+     return 0
+  endif
+  
+  SRC.ACT			= <SRC.TAG.detectinghidden_tile>
+  SRC.TAG.detectinghidden_tile	= 0
+
+  if ( <SRC.ACT.DISTANCE> > <src.act.morez> )
+     SRC.MESSAGE You can't seem to find anything hidden here (<SRC.ACT.DISTANCE>/<src.act.morez>).
+     return 0
+  endif
+
+  if ( <SRC.INT> < <SRC.ACT.MOREy> ) // Too dumb. This takes care of mule characters with high detectinginvis
+     SRC.message You can't seem to find anything hidden here.
+     return 1
+  endif
+
+   if ( (rand(1000) + <SRC.ACT.MOREx>) > <SRC.DETECTINGHIDDEN> )	// roll
+      SRC.message You can't seem to find anything hidden here.
+      return 1
+   endif
+   
+   SRC.emote find <SRC.ACT.LINK.name>
+   SRC.ACT.LINK.ATTR		= <SRC.ACT.LINK.ATTR> & ~attr_invis
+   SRC.ACTARG1			= <SRC.act.morex>
+   SRC.ACTARG2			= <SRC.act.morey>
+   SRC.ACT.LINK.TRIGGER		= @UnHide
+   SRC.ACT.LINK.UPDATEX
+   SRC.UPDATE
+   SRC.SKILLCHECK_RUN Skill_Detection
+   return 0
+
+
+
+[ITEMDEF i_detectinghidden_tile]
+ID	= 012f0
+TYPE	= t_script
+NAME	= The floor looks oddly scrambled in here.
+
+ON=@Timer
+   TIMER	= -1
+   return 1
+
+ON=@Create
+   ATTR=attr_invis|attr_move_never|attr_static
+
+ON=@Step
+   if ( <SRC.ISNPC> || (<SRC.ID> == c_ghost_man) || (<SRC.ID> == c_ghost_woman) )  
+      return 0
+   endif
+
+   if ( <LINK> == 04fffffff )
+      REMOVE
+      return 1
+   endif
+
+   if ( !( <LINK.ATTR> & attr_invis ) ) // it's been found - remove
+      REMOVE
+      return 1
+   endif
+
+   if ( <LINK.BASEID> == i_dark_seal )
+     if ( <SRC.MANA> > 0 )
+       src.mana = <eval (<src.mana>-1)>
+     endif
+   endif
+   
+     if ( 0<SRC.TAG.detectinghidden_tile> == 0 )
+   elif ( (<SRC.TAG.detectinghidden_tile> == <UID>) && (<TIMER> > 1) )
+      return 0
+   endif
+   SRC.TAG.detectinghidden_tile = <UID>
+
+   if ( <TIMER> < 1 )
+      TIMER	= { 20 25 }
+      if ( (<SRC.INT> >= <MOREy>) )
+         if ( rand(1000) + <eval (<MOREx>/2)> < <SRC.DETECTINGHIDDEN> )
+            SRC.MESSAGE <NAME>
+         endif
+      endif
+   endif
+
+
+
+[FUNCTION hide]
+SRC.NEWITEM	m_hide_target
+SRC.ACT.MOREP	= <args>
+if ( <src.act.morex> == -1 )
+   src.sysmessage Usage is: .hide [skill mod] [min int] [max distance]
+   SRC.ACT.MOREX	= 0
+endif
+if ( <src.act.morey> == -1 )
+   SRC.ACT.MOREY	= 60 // default min INT
+endif
+if ( <src.act.morez> == -1 )
+   SRC.ACT.MOREZ	= 1
+endif
+SRC.ACT.TARGET What item do you want to hide (<src.act.morex> skill, <src.act.morey> int, <src.act.morez> max distance)?
+
+
+
+[ITEMDEF m_hide_target]
+ID	= i_memory
+NAME	= target
+
+ON=@Timer
+   REMOVE
+   return 1
+ON=@Create
+   ATTR		= attr_decay
+   TIMER	= 30
+ON=@Targon_item
+  IF !( <src.TARG.attr> & attr_invis )
+     src.TARG.attr = <src.TARG.attr> | attr_invis
+     SRC.SYSMESSAGE The item has been set invisible.
+  endif
+
+  SRC.NEWITEM i_detectinghidden_tile
+  SRC.ACT.LINK	= <src.targ.uid>
+  SRC.ACT.P	= <SRC.P>
+  SRC.ACT.MOREx	= <MOREx>
+  SRC.ACT.MOREy	= <MOREy>
+  SRC.ACT.MOREz	= <MOREz>
+
+  if ( <src.targ.baseid> == i_dark_seal )
+     src.act.name You feel a shiver run down your spine.
+  endif
+  SRC.SYSMESSAGE Placing tile at <SRC.ACT.P>, linked to <SRC.ACT.LINK.NAME>.
+  return 1
+
+
+[EOF]

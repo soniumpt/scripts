@@ -1,0 +1,102 @@
+//Changelog
+//---------
+//30-08-03 - Wigifer - Commented out HK periodic as item no longer exists - Tested
+//Jan 11 '04 - Wren - Commented out some of the bump script...makes no sense to me why it's there and is causing errors.
+//Jan 27 '04 - Wren - Added check for donation steeds bumping people who are not their owners.
+//20-03-04 - Wigifer - Flux system automated changer (For new system) - Tested
+//17-01-13 - Wigifer - Periodic trigger to update time on the skillgain
+
+[FUNCTION periodic_activate]
+SERV.ALLCLIENTS periodic_activate_
+
+[FUNCTION periodic_activate_]
+   findlayer(layer_k_periodic).timer	= 30
+
+[SPEECH spk_all_pc]
+ON=*
+
+//BY:      Jorge Pereira, evren@portugalmail.pt
+[ITEMDEF m_kell_periodic]	// yes, I'm egocentric, so what
+ID	= 0bbf
+TYPE	= t_comm_crystal
+LAYER	= layer_k_periodic
+NAME	= periodic trigger
+WEIGHT	= 0
+ON = @Create
+   SPEECH	= spk_all_pc
+   TYPE		= t_eq_script
+
+ON = @Equip
+   TYPE		= t_comm_crystal
+   CONT.FLAGS	= (<CONT.FLAGS> | statf_listenning)
+   ATTR		= attr_newbie | attr_move_never
+   TIMER	= timer_k_periodic
+ON = @Unequip
+   CONT.FLAGS	= (<CONT.FLAGS> &~ statf_listenning)
+
+ON = @Timer
+   TIMER	= timer_k_periodic	// set timer again
+   
+   VAR.PER_ACT	= <CONT.ACT>
+   
+   IF (<CONT.FINDID.i_memory_donatorskills>)
+      CONT.TAG.DONATORSKILLS.BONUSTIME=<CONT.FINDID.i_memory_donatorskills.TIMER>
+   ENDIF
+   // * melting of skargard ingots & keys outside skargard regions
+   if ( !<CONT.REGION_SKARGARD> )
+      if ( <CONT.RESTEST i_ore_skargard> )
+         CONT.SYSMESSAGE The skargard ore melts rapidly...
+         CONT.CONSUME <eval ({ 5 10 })> i_ore_skargard
+      endif
+      if ( <CONT.RESTEST t_deceit_key> )
+         CONT.CONSUME 5 t_deceit_key
+         CONT.SYSMESSAGE The glowing key melts.
+      endif
+   endif
+
+   // * ice areas damage effect
+   if ( strmatch( "Ice*", "<CONT.REGION.NAME>" ) )
+   if !(<cont.npc>)
+      doswitch rand(3)
+        CONT.SYSMESSAGE @060 It's blistering cold...
+        CONT.SYSMESSAGE @060 The cold air hurts your lungs...
+        CONT.SYSMESSAGE @060 You feel extremely cold...
+      enddo
+
+      if ( 0 )
+      elseif ( <CONT.SURVIVAL> < 30.0 )
+        LOCAL.DAM	= <eval ({ 9 12 })>
+      elseif ( <CONT.SURVIVAL> < 50.0 )
+        LOCAL.DAM	= <eval ({ 7 10 })>
+      elseif ( <CONT.SURVIVAL> < 70.0 )
+        LOCAL.DAM	= <eval ({ 6  9 })>
+      elseif ( <CONT.SURVIVAL> < 80.0 )
+        LOCAL.DAM	= <eval ({ 5 7 })>
+      elseif ( <CONT.SURVIVAL> < 90.0 )
+        LOCAL.DAM	= <eval ({ 3 5 })>
+      else
+        LOCAL.DAM	= <eval ({ 2 3 })>
+      endif
+      if ( <CONT.findlayer(layer_cape).uid> )
+         LOCAL.DAM	= <eval ((<LOCAL.DAM> * 2) / 3)>
+      endif
+    
+      if ( <LOCAL.DAM> > <CONT.HITS> )
+         CONT.HITS	= 0
+      else
+         CONT.HITS	= <eval (<CONT.HITS> - <LOCAL.DAM>)>
+      endif
+      CONT.UPDATE
+   endif
+   endif
+
+ 
+
+   CONT.ACT	= <VAR.PER_ACT>
+   return 1
+
+
+
+[EOF]
+
+

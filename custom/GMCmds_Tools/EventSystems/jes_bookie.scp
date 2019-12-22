@@ -1,0 +1,856 @@
+//Gambling scripts by "Jessica Graham" aka "Wren"
+
+//Bookie
+[CHARDEF c_Bookie]
+NAME=Al
+ID=C_MAN
+AVERSIONS=t_TRAP,t_eerie_stuff
+DESIRES=i_gold,e_notoriety
+CAN=MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_rehello
+TSPEECH=spk_human_default
+TSPEECH=spk_Bookie
+
+
+TEVENTS=e_Human_HearUnk
+TEVENTS=e_Human_ConvInit
+TEVENTS=e_Human_Needs
+TEVENTS=e_Human_Greet
+TEVENTS=e_Human_Space
+TEVENTS=e_Human_Refuse
+TEVENTS=e_Human_Environ
+
+CATEGORY=Imperial uo
+SUBSECTION=Miscellaneous
+DESCRIPTION=Bookie
+
+ON=@Create
+  STR		= {120 150}
+  DEX		= {50 60}
+  INT		= {36 60}
+
+   TAG.TotalBids=0
+   TAG.CloseBidding=1
+   TAG.Winner=EMPTY
+   TAG.WinnerOdds=0
+   TAG.OddsBased=0
+   TAG.BookieCut=0
+   TAG.DeclareWinner=0
+   TAG.LastEntry=0
+   TAG.Entry1=EMPTY
+   TAG.Entry1Bids=0
+   TAG.Entry2=EMPTY   
+   TAG.Entry2Bids=0
+   TAG.Entry3=EMPTY
+   TAG.Entry3Bids=0
+   TAG.Entry4=EMPTY
+   TAG.Entry4Bids=0
+   TAG.Entry5=EMPTY
+   TAG.Entry5Bids=0
+   TAG.Entry6=EMPTY
+   TAG.Entry6Bids=0
+   TAG.Entry7=EMPTY
+   TAG.Entry7Bids=0
+   TAG.Entry8=EMPTY
+   TAG.Entry8Bids=0
+   TAG.Entry9=EMPTY
+   TAG.Entry9Bids=0
+   TAG.Entry10=EMPTY
+   TAG.Entry10Bids=0
+   TAG.Entry11=EMPTY
+   TAG.Entry11Bids=0
+   TAG.Entry12=EMPTY
+   TAG.Entry12Bids=0
+   TAG.Entry13=EMPTY
+   TAG.Entry13Bids=0
+   TAG.Entry14=EMPTY
+   TAG.Entry14Bids=0
+   TAG.Entry15=EMPTY
+   TAG.Entry15Bids=0
+   TAG.Entry16=EMPTY
+   TAG.Entry16Bids=0
+   TAG.Entry17=EMPTY
+   TAG.Entry17Bids=0
+   TAG.Entry18=EMPTY
+   TAG.Entry18Bids=0
+   TAG.Entry19=EMPTY
+   TAG.Entry19Bids=0
+   TAG.Entry20=EMPTY
+   TAG.Entry20Bids=0
+   TAG.EMPTY=EMPTY
+
+   NPC=BRAIN_HUMAN
+   COLOR=colors_skin
+   NEED=i_gold
+   TITLE=The Bookie
+
+   INVUL 1
+
+   ITEMNEWBIE=random_male_hair
+   COLOR=colors_hair
+   ITEMNEWBIE=random_facial_hair
+   COLOR=match_hair
+   ITEMNEWBIE=i_boots_calf
+   COLOR=0700
+   ITEMNEWBIE=i_shirt_fancy
+   ITEMNEWBIE=i_pants_long
+   COLOR=0750
+   ITEMNEWBIE=i_doublet
+   COLOR=0700
+
+
+[SPEECH spk_Bookie]
+ON=*gamble*
+   IF (STRMATCH(<TAG.WINNER>, <TAG.EMPTY>)
+      SAY To place a bet say "Bid" or "Bet".
+   ELSE
+      SAY To see if you won anything say "Receive" or "Reward".
+   ENDIF
+
+ON=*Setup*
+   IF (<SRC.ACCOUNT.PLEVEL> > 1) //Script here for stone management
+      SRC.NEWITEM M_BookieLink
+      SRC.ACT.LINK=<UID>
+      SRC.EQUIP <SRC.ACT>
+      DIALOG	d_gambling_admin
+   ENDIF
+
+ON=*Add*
+   IF (<SRC.ACCOUNT.PLEVEL> > 1)
+      SRC.NEWITEM M_BookieLink
+      SRC.ACT.LINK=<UID>
+      SRC.EQUIP <SRC.ACT>
+
+      //Add player to list of prospects to bet on
+      SRC.NEWITEM M_BookieAddPlayer
+      SRC.EQUIP <SRC.ACT>
+   ENDIF
+
+ON=*Open*
+   IF (<SRC.ACCOUNT.PLEVEL> > 1)
+      SRC.NEWITEM M_BookieLink
+      SRC.ACT.LINK=<UID>
+      SRC.EQUIP <SRC.ACT>
+
+      SRC.FINDID(M_BookieLink).LINK.TAG.CloseBidding=0
+      SRC.SYSMESSAGE You have just opened bidding.
+   ENDIF
+
+ON=*Close*
+   IF (<SRC.ACCOUNT.PLEVEL> > 1)
+      SRC.NEWITEM M_BookieLink
+      SRC.ACT.LINK=<UID>
+      SRC.EQUIP <SRC.ACT>
+
+      SRC.FINDID(M_BookieLink).LINK.TAG.CloseBidding=1
+      SRC.SYSMESSAGE You have just closed bidding.
+   ENDIF
+
+ON=*Bet*
+ON=*Bid*
+   IF !(STRMATCH(<TAG.Entry1>, <TAG.EMPTY>))   			//If there is someone to bid on
+      IF (STRMATCH(<TAG.WINNER>, <TAG.EMPTY>)     		//If a winner has not been declared
+         IF (0<SRC.TAG.AmountBid>=0)				//If the player had not placed a bet
+            IF (0<TAG.CloseBidding>=0)				//If bidding is not closed
+               //Get a link to the bookie
+               SRC.NEWITEM M_BookieLink
+               SRC.ACT.LINK=<UID>
+               SRC.EQUIP <SRC.ACT>
+   
+               //Show a list of players they can bet on
+   	       DIALOG	d_gambling
+            ELSE
+               SAY Bidding has already been closed for this event.
+           ENDIF
+         ELSE
+            SAY <SRC.NAME>, You have already placed a bet for the amount of <EVAL 0<SRC.TAG.AmountBid>> on <SRC.TAG.BiddedOn>.
+         ENDIF    
+      ELSE
+         SAY You cannot place a bet because this event is already complete.
+      ENDIF
+   ELSE
+      SAY No participants are available to bet on yet.
+   ENDIF
+
+
+ON=*Retrieve*
+ON=*Reward*
+   IF !(STRMATCH(<TAG.WINNER>, <TAG.EMPTY>)       		//If the winner has been set to one of the participants
+      IF (STRMATCH(<TAG.WINNER>, <SRC.TAG.BiddedOn>)   	 	//If the player picked the winner
+
+         
+         SRC.NEWITEM	i_check					//add a check
+
+
+	 //Check to see what type of calculation was chosen for this event
+         IF (0<TAG.OddsBased>=0)
+
+            //Simply double players money and subtract 5% for bookie cut
+            TAG.BookieCut=<EVAL (<EVAL (<EVAL 0<SRC.TAG.AmountBid>>*100)>/2000)>
+	    SRC.ACT.MORE2=<EVAL (<EVAL (<EVAL 0<SRC.TAG.AmountBid>>*2)>-<EVAL 0<TAG.BookieCut>>)>
+         ELSE
+            //Odds based
+            //Odds =  total ammount bet/total ammount bet on player (this is calculated when the winner is selected)
+            //Winnings = ((odds*stake)+stake)-5%) = returns
+            TAG.BookieCut=<EVAL (<EVAL (<EVAL (<EVAL (<EVAL 0<TAG.WinnerOdds>>*<EVAL 0<SRC.TAG.AmountBid>>)> * 100)> / 2000)>)>
+            SRC.ACT.MORE2=<EVAL (<EVAL (<EVAL (<EVAL 0<TAG.WinnerOdds>>*<EVAL 0<SRC.TAG.AmountBid>>)> +<EVAL 0<SRC.TAG.AmountBid>>)>-<EVAL 0<TAG.BookieCut>>)>
+         ENDIF
+
+
+         SRC.ACT.CONT	= <SRC.findlayer(layer_bankbox).uid>	//place check in the their bank
+         SRC.SYSMESSAGE A check for the amount of <EVAL 0<SRC.ACT.MORE2>> has been placed in your bank account.
+      ELSE      
+         SRC.SYSMESSAGE Better Luck Next Time!
+      ENDIF
+
+      //Clear player's tags so that they can bet next time
+      SRC.TAG.AmountBid
+      SRC.TAG.BiddedOn
+   ELSE
+      SAY A Winner has not been set yet.
+   ENDIF
+
+
+[ItemDef M_BookieLink]
+id=i_memory
+Name=Bookie Player Link
+type=t_eq_script
+
+ON=@Create
+   TIMER=60
+
+ON=@Timer
+   Remove 
+   RETURN 1
+
+
+[ItemDef M_BookieAddPlayer]
+id=i_memory
+Name=Bookie Add Player Trigger
+type=t_eq_script
+
+ON=@Create
+   TIMER=60
+
+ON=@EQUIP
+   TARGET Target whom you would like to add to the contestant list. 
+
+On=@TARGON_CHAR
+   SRC.FINDID(M_BookieLink).LINK.TAG.LastEntry=<EVAL(0<SRC.FINDID(M_BookieLink).LINK.TAG.LastEntry>+1)>
+
+   IF (0<SRC.FINDID(M_BookieLink).LINK.TAG.LastEntry>=1)
+      SRC.FINDID(M_BookieLink).LINK.TAG.Entry1 = <SRC.TARG.NAME>
+
+   ELSEIF (0<SRC.FINDID(M_BookieLink).LINK.TAG.LastEntry>=2)
+      SRC.FINDID(M_BookieLink).LINK.TAG.Entry2 = <SRC.TARG.NAME>
+
+   ELSEIF (0<SRC.FINDID(M_BookieLink).LINK.TAG.LastEntry>=3)
+      SRC.FINDID(M_BookieLink).LINK.TAG.Entry3 = <SRC.TARG.NAME>
+
+   ELSEIF (0<SRC.FINDID(M_BookieLink).LINK.TAG.LastEntry>=4)
+      SRC.FINDID(M_BookieLink).LINK.TAG.Entry4 = <SRC.TARG.NAME>
+
+   ELSEIF (0<SRC.FINDID(M_BookieLink).LINK.TAG.LastEntry>=5)
+      SRC.FINDID(M_BookieLink).LINK.TAG.Entry5 = <SRC.TARG.NAME>
+
+   ELSEIF (0<SRC.FINDID(M_BookieLink).LINK.TAG.LastEntry>=6)
+      SRC.FINDID(M_BookieLink).LINK.TAG.Entry6 = <SRC.TARG.NAME>
+
+   ELSEIF (0<SRC.FINDID(M_BookieLink).LINK.TAG.LastEntry>=7)
+      SRC.FINDID(M_BookieLink).LINK.TAG.Entry7 = <SRC.TARG.NAME>
+
+   ELSEIF (0<SRC.FINDID(M_BookieLink).LINK.TAG.LastEntry>=8)
+      SRC.FINDID(M_BookieLink).LINK.TAG.Entry8 = <SRC.TARG.NAME>
+
+   ELSEIF (0<SRC.FINDID(M_BookieLink).LINK.TAG.LastEntry>=9)
+      SRC.FINDID(M_BookieLink).LINK.TAG.Entry9 = <SRC.TARG.NAME>
+
+   ELSEIF (0<SRC.FINDID(M_BookieLink).LINK.TAG.LastEntry>=10)
+      SRC.FINDID(M_BookieLink).LINK.TAG.Entry10 = <SRC.TARG.NAME>
+
+   ELSEIF (0<SRC.FINDID(M_BookieLink).LINK.TAG.LastEntry>=11)
+      SRC.FINDID(M_BookieLink).LINK.TAG.Entry11 = <SRC.TARG.NAME>
+
+   ELSEIF (0<SRC.FINDID(M_BookieLink).LINK.TAG.LastEntry>=12)
+      SRC.FINDID(M_BookieLink).LINK.TAG.Entry12 = <SRC.TARG.NAME>
+
+   ELSEIF (0<SRC.FINDID(M_BookieLink).LINK.TAG.LastEntry>=13)
+      SRC.FINDID(M_BookieLink).LINK.TAG.Entry13 = <SRC.TARG.NAME>
+
+   ELSEIF (0<SRC.FINDID(M_BookieLink).LINK.TAG.LastEntry>=14)
+      SRC.FINDID(M_BookieLink).LINK.TAG.Entry14 = <SRC.TARG.NAME>
+
+   ELSEIF (0<SRC.FINDID(M_BookieLink).LINK.TAG.LastEntry>=15)
+      SRC.FINDID(M_BookieLink).LINK.TAG.Entry15 = <SRC.TARG.NAME>
+
+   ELSEIF (0<SRC.FINDID(M_BookieLink).LINK.TAG.LastEntry>=16)
+      SRC.FINDID(M_BookieLink).LINK.TAG.Entry16 = <SRC.TARG.NAME>
+
+   ELSEIF (0<SRC.FINDID(M_BookieLink).LINK.TAG.LastEntry>=17)
+      SRC.FINDID(M_BookieLink).LINK.TAG.Entry17 = <SRC.TARG.NAME>
+
+   ELSEIF (0<SRC.FINDID(M_BookieLink).LINK.TAG.LastEntry>=18)
+      SRC.FINDID(M_BookieLink).LINK.TAG.Entry18 = <SRC.TARG.NAME>
+
+   ELSEIF (0<SRC.FINDID(M_BookieLink).LINK.TAG.LastEntry>=19)
+      SRC.FINDID(M_BookieLink).LINK.TAG.Entry19 = <SRC.TARG.NAME>
+
+   ELSEIF (0<SRC.FINDID(M_BookieLink).LINK.TAG.LastEntry>=20)
+      SRC.FINDID(M_BookieLink).LINK.TAG.Entry20 = <SRC.TARG.NAME>
+
+   ELSE
+      SRC.SYSMESSAGE You can only add 20 participants.
+      SRC.FINDID(M_BookieLink).REMOVE
+      REMOVE
+      RETURN 1
+      ENDIF
+   
+   SRC.SYSMESSAGE You have added <SRC.TARG.NAME> to the list of participants
+   SRC.FINDID(M_BookieLink).REMOVE
+   REMOVE
+   RETURN 1
+
+ON=@Timer
+   Remove 
+   RETURN 1
+
+
+
+//STAFF GUMP--------------------------------------------------------------------------
+[DIALOG d_gambling_admin]
+200,200
+gumppic 0 0 1140
+gumppic 63 15 1142
+
+text     135  17    0    0
+text     110  38    0    1
+text <QVAL (0<SRC.FINDID(M_BookieLink).LINK.TAG.CloseBidding>=0) ?  110  63    0    2 : 110  63    0    3 >
+text     110  88    0    4
+text <QVAL (0<SRC.FINDID(M_BookieLink).LINK.TAG.OddsBased>=0) ?  110 113    0    5 : 110 113    0    6 >
+text     110 138    0    7
+text     110 163    0    8
+
+button    85  42  <eval 04ba> <eval 04b9> 1 0 1
+button    85  67  <eval 04ba> <eval 04b9> 1 0 2
+button    85  92  <eval 04ba> <eval 04b9> 1 0 3
+button    85 117  <eval 04ba> <eval 04b9> 1 0 4
+button    85 142  <eval 04ba> <eval 04b9> 1 0 5
+button    85 167  <eval 04ba> <eval 04b9> 1 0 6
+
+[DIALOG d_gambling_admin TEXT]
+Staff Functions
+Add Player to List
+Bidding is Open (Toggle)
+Bidding is Closed (Toggle)
+Declare Winner
+Winnings are Double (Toggle)
+Odds-based Winnings (Toggle)
+Clear All Event Data
+Clear Winner
+
+
+[DIALOG d_gambling_admin BUTTON]
+ON = 1
+   //Add player to list of prospects to bet on
+   SRC.NEWITEM M_BookieAddPlayer
+   SRC.EQUIP <SRC.ACT>
+
+ON = 2
+   IF (0<SRC.FINDID(M_BookieLink).LINK.TAG.CloseBidding>=0)
+      SRC.FINDID(M_BookieLink).LINK.TAG.CloseBidding=1
+      SRC.SYSMESSAGE You have just closed bidding.
+   ELSE
+      SRC.FINDID(M_BookieLink).LINK.TAG.CloseBidding=0
+      SRC.SYSMESSAGE You have just opened bidding.
+   ENDIF
+   SRC.FINDID(M_BookieLink).REMOVE
+
+ON = 3
+   //Declare winner
+   IF !(STRMATCH(<TAG.Entry1>, <TAG.EMPTY>))
+     SRC.FINDID(M_BookieLink).LINK.TAG.DeclareWinner=1	//Set flag to indicate how to format gump
+     SRC.FINDID(M_BookieLink).LINK.TAG.CloseBidding=1	//Close bidding (should already be closed by this point but just in case...)
+     DIALOG d_gambling
+   ELSE
+      SRC.SYSMESSAGE You must add participants before you can declare a winner.
+   ENDIF
+
+ON = 4
+   IF (0<SRC.FINDID(M_BookieLink).LINK.TAG.OddsBased>=0)
+      SRC.FINDID(M_BookieLink).LINK.TAG.OddsBased=1
+      SRC.SYSMESSAGE You have just set winnings to Odds based.
+   ELSE
+      SRC.FINDID(M_BookieLink).LINK.TAG.OddsBased=0
+      SRC.SYSMESSAGE You have just set winnings to double or nothing.
+   ENDIF
+   SRC.FINDID(M_BookieLink).REMOVE
+
+ON = 5
+   //Clear list
+   SRC.FINDID(M_BookieLink).LINK.TAG.TotalBids=0
+   SRC.FINDID(M_BookieLink).LINK.TAG.Winner=EMPTY
+   SRC.FINDID(M_BookieLink).LINK.TAG.WinnerOdds=0
+   SRC.FINDID(M_BookieLink).LINK.TAG.OddsBased=0
+   SRC.FINDID(M_BookieLink).LINK.TAG.BookieCut=0
+   SRC.FINDID(M_BookieLink).LINK.TAG.DeclareWinner=0
+   SRC.FINDID(M_BookieLink).LINK.TAG.LastEntry=0
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry1=EMPTY
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry1Bids=0
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry2=EMPTY
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry2Bids=0
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry3=EMPTY
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry3Bids=0
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry4=EMPTY
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry4Bids=0
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry5=EMPTY
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry5Bids=0
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry6=EMPTY
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry6Bids=0
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry7=EMPTY
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry7Bids=0
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry8=EMPTY
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry8Bids=0
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry9=EMPTY
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry9Bids=0
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry10=EMPTY
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry10Bids=0
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry11=EMPTY
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry11Bids=0
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry12=EMPTY
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry12Bids=0
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry13=EMPTY
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry13Bids=0
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry14=EMPTY
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry14Bids=0
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry15=EMPTY
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry15Bids=0
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry16=EMPTY
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry16Bids=0
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry17=EMPTY
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry17Bids=0
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry18=EMPTY
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry18Bids=0
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry19=EMPTY
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry19Bids=0
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry20=EMPTY
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry20Bids=0
+   SRC.FINDID(M_BookieLink).REMOVE
+
+ON = 6
+   //Clear Winner and any other tags that don't affect the participant list
+   SRC.FINDID(M_BookieLink).LINK.TAG.TotalBids=0
+   SRC.FINDID(M_BookieLink).LINK.TAG.Winner=EMPTY
+   SRC.FINDID(M_BookieLink).LINK.TAG.WinnerOdds=0
+   SRC.FINDID(M_BookieLink).LINK.TAG.BookieCut=0
+   SRC.FINDID(M_BookieLink).LINK.TAG.DeclareWinner=0
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry1Bids=0
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry2Bids=0
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry3Bids=0
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry4Bids=0
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry5Bids=0
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry6Bids=0
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry7Bids=0
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry8Bids=0
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry9Bids=0
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry10Bids=0
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry11Bids=0
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry12Bids=0
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry13Bids=0
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry14Bids=0
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry15Bids=0
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry16Bids=0
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry17Bids=0
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry18Bids=0
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry19Bids=0
+   SRC.FINDID(M_BookieLink).LINK.TAG.Entry20Bids=0
+   SRC.FINDID(M_BookieLink).REMOVE
+
+
+//PLAYER GUMP-------------------------------------------------------------------------------------------------------------
+[DIALOG d_gambling]
+0,0
+resizepic 0  0 2600 580 450 // Curved Grey background 
+
+text  <QVAL (0<SRC.FINDID(M_BookieLink).LINK.TAG.DeclareWinner>=0) ? 20  50   0   0 : 20  50   0  25 >
+
+group 0
+
+   radio <QVAL !(STRMATCH(<SRC.FINDID(M_BookieLink).LINK.TAG.Entry1>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)) ?  150 100 210 211 0  51  : 5000 100 210 211  0 51 >
+   text  <QVAL !(STRMATCH(<SRC.FINDID(M_BookieLink).LINK.TAG.Entry1>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)) ?  170 100   0   1	    : 170 100    0  22 >
+ 
+   radio <QVAL !(STRMATCH(<SRC.FINDID(M_BookieLink).LINK.TAG.Entry2>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)) ?  150 120 210 211 0  52  : 5000 120 210 211 0  52 >
+   text  <QVAL !(STRMATCH(<SRC.FINDID(M_BookieLink).LINK.TAG.Entry2>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)) ?  170 120   0   2        : 170 120   0   22 >
+
+   radio <QVAL !(STRMATCH(<SRC.FINDID(M_BookieLink).LINK.TAG.Entry3>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)) ?  150 140 210 211 0  53  : 5000 140 210 211 0  53 >
+   text  <QVAL !(STRMATCH(<SRC.FINDID(M_BookieLink).LINK.TAG.Entry3>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)) ?  170 140   0   3	    : 170 140   0   22 >
+
+   radio <QVAL !(STRMATCH(<SRC.FINDID(M_BookieLink).LINK.TAG.Entry4>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)) ?  150 160 210 211 0  54  : 5000 160 210 211 0  54 >
+   text  <QVAL !(STRMATCH(<SRC.FINDID(M_BookieLink).LINK.TAG.Entry4>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)) ?  170 160   0   4        : 170 160   0   22 >
+
+   radio <QVAL !(STRMATCH(<SRC.FINDID(M_BookieLink).LINK.TAG.Entry5>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)) ?  150 180 210 211 0  55  : 5000 180 210 211 0  55 >
+   text  <QVAL !(STRMATCH(<SRC.FINDID(M_BookieLink).LINK.TAG.Entry5>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)) ?  170 180   0   5        : 170 180   0   22 >
+
+   radio <QVAL !(STRMATCH(<SRC.FINDID(M_BookieLink).LINK.TAG.Entry6>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)) ?  150 200 210 211 0  56  : 5000 200 210 211 0  56 >
+   text  <QVAL !(STRMATCH(<SRC.FINDID(M_BookieLink).LINK.TAG.Entry6>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)) ?  170 200   0   6        : 170 200   0   22 >
+
+   radio <QVAL !(STRMATCH(<SRC.FINDID(M_BookieLink).LINK.TAG.Entry7>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)) ?  150 220 210 211 0  57  : 5000 220 210 211 0  57 >
+   text  <QVAL !(STRMATCH(<SRC.FINDID(M_BookieLink).LINK.TAG.Entry7>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)) ?  170 220   0   7	    : 170 220   0   22 >
+
+   radio <QVAL !(STRMATCH(<SRC.FINDID(M_BookieLink).LINK.TAG.Entry8>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)) ?  150 240 210 211 0  58  : 5000 240 210 211 0  58 >
+   text  <QVAL !(STRMATCH(<SRC.FINDID(M_BookieLink).LINK.TAG.Entry8>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)) ?  170 240   0	8   : 170 240   0   22 >
+
+   radio <QVAL !(STRMATCH(<SRC.FINDID(M_BookieLink).LINK.TAG.Entry9>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)) ?  150 260 210 211 0  59  : 5000 260 210 211 0  59 >
+   text  <QVAL !(STRMATCH(<SRC.FINDID(M_BookieLink).LINK.TAG.Entry9>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)) ?  170 260   0   9        : 170 260   0   22 >
+
+   radio <QVAL !(STRMATCH(<SRC.FINDID(M_BookieLink).LINK.TAG.Entry10>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)) ? 150 280 210 211 0  60  : 5000 280 210 211 0  60 >
+   text  <QVAL !(STRMATCH(<SRC.FINDID(M_BookieLink).LINK.TAG.Entry10>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)) ? 170 280   0  10        : 170 280   0   22 >
+ 
+
+   radio <QVAL !(STRMATCH(<SRC.FINDID(M_BookieLink).LINK.TAG.Entry11>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)) ? 375 100 210 211 0  61 : 5000 100 210 211 0  61 >
+   text  <QVAL !(STRMATCH(<SRC.FINDID(M_BookieLink).LINK.TAG.Entry11>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)) ? 395 100   0  11 	   : 395 100   0	22 >
+ 
+   radio <QVAL !(STRMATCH(<SRC.FINDID(M_BookieLink).LINK.TAG.Entry12>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)) ? 375 120 210 211 1  62 : 5000 120 210 211 1  62 >
+   text  <QVAL !(STRMATCH(<SRC.FINDID(M_BookieLink).LINK.TAG.Entry12>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)) ? 395 120   0  12 	   : 395 120   0	22 >
+
+   radio <QVAL !(STRMATCH(<SRC.FINDID(M_BookieLink).LINK.TAG.Entry13>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)) ? 375 140 210 211 0  63 : 5000 140 210 211 0  63 >
+   text  <QVAL !(STRMATCH(<SRC.FINDID(M_BookieLink).LINK.TAG.Entry13>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)) ? 395 140   0  13 	   : 395 140   0	22 >
+ 
+   radio <QVAL !(STRMATCH(<SRC.FINDID(M_BookieLink).LINK.TAG.Entry14>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)) ? 375 160 210 211 0  64 : 5000 160 210 211 0  64 >
+   text  <QVAL !(STRMATCH(<SRC.FINDID(M_BookieLink).LINK.TAG.Entry14>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)) ? 395 160   0  14 	   : 395 160   0	22 >
+
+   radio <QVAL !(STRMATCH(<SRC.FINDID(M_BookieLink).LINK.TAG.Entry15>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)) ? 375 180 210 211 0  65 : 5000 180 210 211 0  65 >
+   text  <QVAL !(STRMATCH(<SRC.FINDID(M_BookieLink).LINK.TAG.Entry15>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)) ? 395 180   0  15 	   : 395 180   0	22 >
+
+   radio <QVAL !(STRMATCH(<SRC.FINDID(M_BookieLink).LINK.TAG.Entry16>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)) ? 375 200 210 211 0  66 : 5000 200 210 211 0  66 >
+   text  <QVAL !(STRMATCH(<SRC.FINDID(M_BookieLink).LINK.TAG.Entry16>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)) ? 395 200   0  16 	   : 395 200   0	22 >
+
+   radio <QVAL !(STRMATCH(<SRC.FINDID(M_BookieLink).LINK.TAG.Entry17>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)) ? 375 220 210 211 0  67 : 5000 220 210 211 0  67 >
+   text  <QVAL !(STRMATCH(<SRC.FINDID(M_BookieLink).LINK.TAG.Entry17>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)) ? 395 220   0  17 	   : 395 220   0	22 >
+
+   radio <QVAL !(STRMATCH(<SRC.FINDID(M_BookieLink).LINK.TAG.Entry18>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)) ? 375 240 210 211 0  68 : 5000 240 210 211 0  68 >
+   text  <QVAL !(STRMATCH(<SRC.FINDID(M_BookieLink).LINK.TAG.Entry18>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)) ? 395 240   0  18 	   : 395 240   0	22 >
+
+   radio <QVAL !(STRMATCH(<SRC.FINDID(M_BookieLink).LINK.TAG.Entry19>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)) ? 375 260 210 211 0  69 : 5000 260 210 211 0  69 >
+   text  <QVAL !(STRMATCH(<SRC.FINDID(M_BookieLink).LINK.TAG.Entry19>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)) ? 395 260   0  19 	   : 395 260   0	22 >
+
+   radio <QVAL !(STRMATCH(<SRC.FINDID(M_BookieLink).LINK.TAG.Entry20>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)) ? 375 280 210 211 0  70 : 5000 280 210 211 0  70 >
+   text  <QVAL !(STRMATCH(<SRC.FINDID(M_BookieLink).LINK.TAG.Entry20>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)) ? 395 280   0  20 	   : 395 280   0	22 >
+
+
+   text  <QVAL (0<SRC.FINDID(M_BookieLink).LINK.TAG.DeclareWinner>=0) ? 150 327   0  21 : 150 327   0 22 >
+   resizepic <QVAL (0<SRC.FINDID(M_BookieLink).LINK.TAG.DeclareWinner>=0) ? 250 320 2620 125  35 : 5000 320 2620 125  35 >
+   textentry <QVAL (0<SRC.FINDID(M_BookieLink).LINK.TAG.DeclareWinner>=0) ? 260 327  100  20 1152 1 22 : 5000 327  100  20 1152 1 22 >
+   text  <QVAL (0<SRC.FINDID(M_BookieLink).LINK.TAG.DeclareWinner>=0) ? 380 327	  0  23 : 380 327   0  22 >
+   text  <QVAL (0<SRC.FINDID(M_BookieLink).LINK.TAG.DeclareWinner>=0) ? 127 355   0  24 : 165 355   0  22 >
+
+   button 200 400 <eval bt_cancel_up> <eval bt_cancel_dn> 1 0 0
+   button 300 400 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+
+
+[DIALOG d_gambling TEXT]
+Choose the Player you think will win and the amount you would like to bet.
+<SRC.FINDID(M_BookieLink).LINK.TAG.Entry1>
+<SRC.FINDID(M_BookieLink).LINK.TAG.Entry2>
+<SRC.FINDID(M_BookieLink).LINK.TAG.Entry3>
+<SRC.FINDID(M_BookieLink).LINK.TAG.Entry4>
+<SRC.FINDID(M_BookieLink).LINK.TAG.Entry5>
+<SRC.FINDID(M_BookieLink).LINK.TAG.Entry6>
+<SRC.FINDID(M_BookieLink).LINK.TAG.Entry7>
+<SRC.FINDID(M_BookieLink).LINK.TAG.Entry8>
+<SRC.FINDID(M_BookieLink).LINK.TAG.Entry9>
+<SRC.FINDID(M_BookieLink).LINK.TAG.Entry10>
+<SRC.FINDID(M_BookieLink).LINK.TAG.Entry11>
+<SRC.FINDID(M_BookieLink).LINK.TAG.Entry12>
+<SRC.FINDID(M_BookieLink).LINK.TAG.Entry13>
+<SRC.FINDID(M_BookieLink).LINK.TAG.Entry14>
+<SRC.FINDID(M_BookieLink).LINK.TAG.Entry15>
+<SRC.FINDID(M_BookieLink).LINK.TAG.Entry16>
+<SRC.FINDID(M_BookieLink).LINK.TAG.Entry17>
+<SRC.FINDID(M_BookieLink).LINK.TAG.Entry18>
+<SRC.FINDID(M_BookieLink).LINK.TAG.Entry19>
+<SRC.FINDID(M_BookieLink).LINK.TAG.Entry20>
+Bet Amount
+<VAR.BLANKLINE>
+gps
+(Min bet = 50gps Max bet = 5000 gps)
+Choose the participant that won this event.
+
+
+
+[DIALOG d_gambling BUTTON]
+ON = 0
+
+ON = 1
+   IF (<argchk[51]>=1)
+      If (0<SRC.FINDID(M_BookieLink).LINK.TAG.DeclareWinner>=0)
+         SRC.TAG.BiddedOn=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry1>
+      ELSE
+         IF !(STRMATCH(<SRC.TAG.BiddedOn>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)
+            SRC.FINDID(M_BookieLink).LINK.TAG.Winner=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry1>
+            SRC.FINDID(M_BookieLink).LINK.TAG.WinnerOdds=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry1Bids>
+         ENDIF
+      ENDIF
+   ELSEIF (<argchk[52]>=1)
+      If (0<SRC.FINDID(M_BookieLink).LINK.TAG.DeclareWinner>=0)
+         SRC.TAG.BiddedOn=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry2>
+      ELSE
+         IF !(STRMATCH(<SRC.TAG.BiddedOn>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)
+            SRC.FINDID(M_BookieLink).LINK.TAG.Winner=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry2>
+            SRC.FINDID(M_BookieLink).LINK.TAG.WinnerOdds=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry2Bids>
+         ENDIF
+      ENDIF
+   ELSEIF (0<argchk[53]>==1)
+      If (0<SRC.FINDID(M_BookieLink).LINK.TAG.DeclareWinner>=0)
+         SRC.TAG.BiddedOn=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry3>
+      ELSE
+         IF !(STRMATCH(<SRC.TAG.BiddedOn>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)
+            SRC.FINDID(M_BookieLink).LINK.TAG.Winner=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry3>
+            SRC.FINDID(M_BookieLink).LINK.TAG.WinnerOdds=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry3Bids>
+         ENDIF
+      ENDIF
+   ELSEIF (0<argchk[54]>==1)
+      If (0<SRC.FINDID(M_BookieLink).LINK.TAG.DeclareWinner>=0)
+         SRC.TAG.BiddedOn=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry4>
+      ELSE
+         IF !(STRMATCH(<SRC.TAG.BiddedOn>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)
+            SRC.FINDID(M_BookieLink).LINK.TAG.Winner=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry4>
+            SRC.FINDID(M_BookieLink).LINK.TAG.WinnerOdds=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry4Bids>
+         ENDIF
+      ENDIF
+   ELSEIF (0<argchk[55]>==1)
+      If (0<SRC.FINDID(M_BookieLink).LINK.TAG.DeclareWinner>=0)
+         SRC.TAG.BiddedOn=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry5>
+      ELSE
+         IF !(STRMATCH(<SRC.TAG.BiddedOn>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)
+            SRC.FINDID(M_BookieLink).LINK.TAG.Winner=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry5>
+            SRC.FINDID(M_BookieLink).LINK.TAG.WinnerOdds=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry5Bids>
+         ENDIF
+      ENDIF
+   ELSEIF (0<argchk[56]>==1)
+      If (0<SRC.FINDID(M_BookieLink).LINK.TAG.DeclareWinner>=0)
+         SRC.TAG.BiddedOn=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry6>
+      ELSE
+         IF !(STRMATCH(<SRC.TAG.BiddedOn>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)
+            SRC.FINDID(M_BookieLink).LINK.TAG.Winner=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry6>
+            SRC.FINDID(M_BookieLink).LINK.TAG.WinnerOdds=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry6Bids>
+         ENDIF
+      ENDIF
+   ELSEIF (0<argchk[57]>==1)
+      If (0<SRC.FINDID(M_BookieLink).LINK.TAG.DeclareWinner>=0)
+         SRC.TAG.BiddedOn=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry7>
+      ELSE
+         IF !(STRMATCH(<SRC.TAG.BiddedOn>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)
+            SRC.FINDID(M_BookieLink).LINK.TAG.Winner=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry7>
+            SRC.FINDID(M_BookieLink).LINK.TAG.WinnerOdds=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry7Bids>
+         ENDIF
+      ENDIF
+   ELSEIF (0<argchk[58]>==1)
+      If (0<SRC.FINDID(M_BookieLink).LINK.TAG.DeclareWinner>=0)
+         SRC.TAG.BiddedOn=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry8>
+      ELSE
+         IF !(STRMATCH(<SRC.TAG.BiddedOn>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)
+            SRC.FINDID(M_BookieLink).LINK.TAG.Winner=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry8>
+            SRC.FINDID(M_BookieLink).LINK.TAG.WinnerOdds=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry8Bids>
+         ENDIF
+      ENDIF
+   ELSEIF (0<argchk[59]>==1)
+      If (0<SRC.FINDID(M_BookieLink).LINK.TAG.DeclareWinner>=0)
+         SRC.TAG.BiddedOn=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry9>
+      ELSE
+         IF !(STRMATCH(<SRC.TAG.BiddedOn>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)
+            SRC.FINDID(M_BookieLink).LINK.TAG.Winner=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry9>
+            SRC.FINDID(M_BookieLink).LINK.TAG.WinnerOdds=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry9Bids>
+         ENDIF
+      ENDIF
+   ELSEIF (0<argchk[60]>==1)
+      If (0<SRC.FINDID(M_BookieLink).LINK.TAG.DeclareWinner>=0)
+         SRC.TAG.BiddedOn=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry10>
+      ELSE
+         IF !(STRMATCH(<SRC.TAG.BiddedOn>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)
+            SRC.FINDID(M_BookieLink).LINK.TAG.Winner=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry10>
+            SRC.FINDID(M_BookieLink).LINK.TAG.WinnerOdds=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry10Bids>
+         ENDIF
+      ENDIF
+   ELSEIF (0<argchk[61]>==1)
+      If (0<SRC.FINDID(M_BookieLink).LINK.TAG.DeclareWinner>=0)
+         SRC.TAG.BiddedOn=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry11>
+      ELSE
+         IF !(STRMATCH(<SRC.TAG.BiddedOn>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)
+            SRC.FINDID(M_BookieLink).LINK.TAG.Winner=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry11>
+            SRC.FINDID(M_BookieLink).LINK.TAG.WinnerOdds=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry11Bids>
+         ENDIF
+      ENDIF
+   ELSEIF (0<argchk[62]>==1)
+      If (0<SRC.FINDID(M_BookieLink).LINK.TAG.DeclareWinner>=0)
+         SRC.TAG.BiddedOn=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry12>
+      ELSE
+         IF !(STRMATCH(<SRC.TAG.BiddedOn>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)
+            SRC.FINDID(M_BookieLink).LINK.TAG.Winner=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry12>
+            SRC.FINDID(M_BookieLink).LINK.TAG.WinnerOdds=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry12Bids>
+         ENDIF
+      ENDIF
+   ELSEIF (0<argchk[63]>==1)
+      If (0<SRC.FINDID(M_BookieLink).LINK.TAG.DeclareWinner>=0)
+         SRC.TAG.BiddedOn=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry13>
+      ELSE
+         IF !(STRMATCH(<SRC.TAG.BiddedOn>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)
+            SRC.FINDID(M_BookieLink).LINK.TAG.Winner=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry13>
+            SRC.FINDID(M_BookieLink).LINK.TAG.WinnerOdds=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry13Bids>
+         ENDIF
+      ENDIF
+   ELSEIF (0<argchk[64]>==1)
+      If (0<SRC.FINDID(M_BookieLink).LINK.TAG.DeclareWinner>=0)
+         SRC.TAG.BiddedOn=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry14>
+      ELSE
+         IF !(STRMATCH(<SRC.TAG.BiddedOn>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)
+            SRC.FINDID(M_BookieLink).LINK.TAG.Winner=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry14>
+            SRC.FINDID(M_BookieLink).LINK.TAG.WinnerOdds=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry14Bids>
+         ENDIF
+      ENDIF
+   ELSEIF (0<argchk[65]>==1)
+      If (0<SRC.FINDID(M_BookieLink).LINK.TAG.DeclareWinner>=0)
+         SRC.TAG.BiddedOn=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry15>
+      ELSE
+         IF !(STRMATCH(<SRC.TAG.BiddedOn>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)
+            SRC.FINDID(M_BookieLink).LINK.TAG.Winner=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry15>
+            SRC.FINDID(M_BookieLink).LINK.TAG.WinnerOdds=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry15Bids>
+         ENDIF
+      ENDIF
+   ELSEIF (0<argchk[66]>==1)
+      If (0<SRC.FINDID(M_BookieLink).LINK.TAG.DeclareWinner>=0)
+         SRC.TAG.BiddedOn=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry16>
+      ELSE
+         IF !(STRMATCH(<SRC.TAG.BiddedOn>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)
+            SRC.FINDID(M_BookieLink).LINK.TAG.Winner=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry16>
+            SRC.FINDID(M_BookieLink).LINK.TAG.WinnerOdds=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry16Bids>
+         ENDIF
+      ENDIF
+   ELSEIF (0<argchk[67]>==1)
+      If (0<SRC.FINDID(M_BookieLink).LINK.TAG.DeclareWinner>=0)
+         SRC.TAG.BiddedOn=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry17>
+      ELSE
+         IF !(STRMATCH(<SRC.TAG.BiddedOn>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)
+            SRC.FINDID(M_BookieLink).LINK.TAG.Winner=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry17>
+            SRC.FINDID(M_BookieLink).LINK.TAG.WinnerOdds=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry17Bids>
+         ENDIF
+      ENDIF
+   ELSEIF (0<argchk[68]>==1)
+      If (0<SRC.FINDID(M_BookieLink).LINK.TAG.DeclareWinner>=0)
+         SRC.TAG.BiddedOn=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry18>
+      ELSE
+         IF !(STRMATCH(<SRC.TAG.BiddedOn>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)
+            SRC.FINDID(M_BookieLink).LINK.TAG.Winner=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry18>
+            SRC.FINDID(M_BookieLink).LINK.TAG.WinnerOdds=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry18Bids>
+         ENDIF
+      ENDIF
+   ELSEIF (0<argchk[69]>==1)
+      If (0<SRC.FINDID(M_BookieLink).LINK.TAG.DeclareWinner>=0)
+         SRC.TAG.BiddedOn=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry19>
+      ELSE
+         IF !(STRMATCH(<SRC.TAG.BiddedOn>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)
+            SRC.FINDID(M_BookieLink).LINK.TAG.Winner=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry19>
+            SRC.FINDID(M_BookieLink).LINK.TAG.WinnerOdds=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry19Bids>
+         ENDIF
+      ENDIF
+   ELSEIF (0<argchk[70]>==1)
+      If (0<SRC.FINDID(M_BookieLink).LINK.TAG.DeclareWinner>=0)
+         SRC.TAG.BiddedOn=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry20>
+      ELSE
+         IF !(STRMATCH(<SRC.TAG.BiddedOn>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)
+            SRC.FINDID(M_BookieLink).LINK.TAG.Winner=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry20>
+            SRC.FINDID(M_BookieLink).LINK.TAG.WinnerOdds=<SRC.FINDID(M_BookieLink).LINK.TAG.Entry20Bids>
+         ENDIF
+      ENDIF
+   ENDIF
+
+
+
+   If (0<SRC.FINDID(M_BookieLink).LINK.TAG.DeclareWinner>=1)
+      IF !(STRMATCH(<SRC.FINDID(M_BookieLink).LINK.TAG.Winner>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)
+         SRC.FINDID(M_BookieLink).LINK.TAG.WinnerOdds=<EVAL <SRC.FINDID(M_BookieLink).LINK.TAG.TotalBids>/<SRC.FINDID(M_BookieLink).LINK.TAG.WinnerOdds>>
+         SRC.FINDID(M_BookieLink).LINK.TAG.DeclareWinner=0
+         SRC.SYSMESSAGE You have declared <SRC.FINDID(M_BookieLink).LINK.TAG.Winner> as the winner of this competition.
+      ELSE
+         SRC.SYSMESSAGE You must choose a participant to declare a winner.
+      ENDIF
+   ELSE
+      IF !(STRMATCH(<SRC.TAG.BiddedOn>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>)
+         IF (<ARGTXT[1]>>5000)
+            SRC.FINDID(M_BookieLink).LINK.SAY You can only place a bid of 5000 gold pieces or less.
+            SRC.TAG.AmountBid
+            SRC.TAG.BiddedOn
+         ELSEIF (<ARGTXT[1]><50)
+            SRC.FINDID(M_BookieLink).LINK.SAY You cannot place a bid for under 50 gold piece.
+            SRC.TAG.AmountBid
+            SRC.TAG.BiddedOn
+         ELSE
+            var.gold=<ARGTXT[1]>
+	    consumegold_everywhere <eval (<var.gold>)>
+	    if ( <VAR.consumegold> > 0 )
+	       SRC.FINDID(M_BookieLink).LINK.SAY You do not have enough gold to make that bet.
+	       VAR.RETURN	= 1
+	       return 1
+	    endif
+	    
+            SRC.TAG.AmountBid=<ARGTXT[1]>
+            SRC.FINDID(M_BookieLink).LINK.TAG.TotalBids=<EVAL(0<SRC.FINDID(M_BookieLink).LINK.TAG.TotalBids>+<EVAL <ARGTXT[1]>>)>
+            SRC.SYSMESSAGE You have placed a bet for the amount of <EVAL 0<SRC.TAG.AmountBid>> on <SRC.TAG.BiddedOn>.
+         ENDIF
+      ELSE
+         SRC.FINDID(M_BookieLink).LINK.SAY You must pick a participant to bid on.
+      ENDIF
+   ENDIF
+
+
+   
+   If (0<SRC.FINDID(M_BookieLink).LINK.TAG.DeclareWinner>=0)
+      IF !(STRMATCH(<SRC.TAG.BiddedOn>, <SRC.FINDID(M_BookieLink).LINK.TAG.EMPTY>))
+         IF (<argchk[51]>=1)
+            SRC.FINDID(M_BookieLink).LINK.TAG.Entry1Bids=<EVAL(0<SRC.FINDID(M_BookieLink).LINK.TAG.Entry1Bids>+<EVAL <ARGTXT[1]>>)>
+         ELSEIF (<argchk[52]>=1)
+            SRC.FINDID(M_BookieLink).LINK.TAG.Entry2Bids=<EVAL(0<SRC.FINDID(M_BookieLink).LINK.TAG.Entry2Bids>+<EVAL <ARGTXT[1]>>)>
+         ELSEIF (0<argchk[53]>==1)
+            SRC.FINDID(M_BookieLink).LINK.TAG.Entry3Bids=<EVAL(0<SRC.FINDID(M_BookieLink).LINK.TAG.Entry3Bids>+<EVAL <ARGTXT[1]>>)>
+         ELSEIF (0<argchk[54]>==1)
+            SRC.FINDID(M_BookieLink).LINK.TAG.Entry4Bids=<EVAL(0<SRC.FINDID(M_BookieLink).LINK.TAG.Entry4Bids>+<EVAL <ARGTXT[1]>>)>
+         ELSEIF (0<argchk[55]>==1)
+            SRC.FINDID(M_BookieLink).LINK.TAG.Entry5Bids=<EVAL(0<SRC.FINDID(M_BookieLink).LINK.TAG.Entry5Bids>+<EVAL <ARGTXT[1]>>)>
+         ELSEIF (0<argchk[56]>==1)
+            SRC.FINDID(M_BookieLink).LINK.TAG.Entry6Bids=<EVAL(0<SRC.FINDID(M_BookieLink).LINK.TAG.Entry6Bids>+<EVAL <ARGTXT[1]>>)>
+         ELSEIF (0<argchk[57]>==1)
+            SRC.FINDID(M_BookieLink).LINK.TAG.Entry7Bids=<EVAL(0<SRC.FINDID(M_BookieLink).LINK.TAG.Entry7Bids>+<EVAL <ARGTXT[1]>>)>
+         ELSEIF (0<argchk[58]>==1)
+            SRC.FINDID(M_BookieLink).LINK.TAG.Entry8Bids=<EVAL(0<SRC.FINDID(M_BookieLink).LINK.TAG.Entry8Bids>+<EVAL <ARGTXT[1]>>)>
+         ELSEIF (0<argchk[59]>==1)
+            SRC.FINDID(M_BookieLink).LINK.TAG.Entry9Bids=<EVAL(0<SRC.FINDID(M_BookieLink).LINK.TAG.Entry9Bids>+<EVAL <ARGTXT[1]>>)>
+         ELSEIF (0<argchk[60]>==1)
+            SRC.FINDID(M_BookieLink).LINK.TAG.Entry10Bids=<EVAL(0<SRC.FINDID(M_BookieLink).LINK.TAG.Entry10Bids>+<EVAL <ARGTXT[1]>>)>
+         ELSEIF (0<argchk[61]>==1)
+            SRC.FINDID(M_BookieLink).LINK.TAG.Entry11Bids=<EVAL(0<SRC.FINDID(M_BookieLink).LINK.TAG.Entry11Bids>+<EVAL <ARGTXT[1]>>)>
+         ELSEIF (0<argchk[62]>==1)
+            SRC.FINDID(M_BookieLink).LINK.TAG.Entry12Bids=<EVAL(0<SRC.FINDID(M_BookieLink).LINK.TAG.Entry12Bids>+<EVAL <ARGTXT[1]>>)>
+         ELSEIF (0<argchk[63]>==1)
+            SRC.FINDID(M_BookieLink).LINK.TAG.Entry13Bids=<EVAL(0<SRC.FINDID(M_BookieLink).LINK.TAG.Entry13Bids>+<EVAL <ARGTXT[1]>>)>
+         ELSEIF (0<argchk[64]>==1)
+            SRC.FINDID(M_BookieLink).LINK.TAG.Entry14Bids=<EVAL(0<SRC.FINDID(M_BookieLink).LINK.TAG.Entry14Bids>+<EVAL <ARGTXT[1]>>)>
+         ELSEIF (0<argchk[65]>==1)
+            SRC.FINDID(M_BookieLink).LINK.TAG.Entry15Bids=<EVAL(0<SRC.FINDID(M_BookieLink).LINK.TAG.Entry15Bids>+<EVAL <ARGTXT[1]>>)>
+         ELSEIF (0<argchk[66]>==1)
+            SRC.FINDID(M_BookieLink).LINK.TAG.Entry16Bids=<EVAL(0<SRC.FINDID(M_BookieLink).LINK.TAG.Entry16Bids>+<EVAL <ARGTXT[1]>>)>
+         ELSEIF (0<argchk[67]>==1)
+            SRC.FINDID(M_BookieLink).LINK.TAG.Entry17Bids=<EVAL(0<SRC.FINDID(M_BookieLink).LINK.TAG.Entry17Bids>+<EVAL <ARGTXT[1]>>)>
+         ELSEIF (0<argchk[68]>==1)
+            SRC.FINDID(M_BookieLink).LINK.TAG.Entry18Bids=<EVAL(0<SRC.FINDID(M_BookieLink).LINK.TAG.Entry18Bids>+<EVAL <ARGTXT[1]>>)>
+         ELSEIF (0<argchk[69]>==1)
+            SRC.FINDID(M_BookieLink).LINK.TAG.Entry19Bids=<EVAL(0<SRC.FINDID(M_BookieLink).LINK.TAG.Entry19Bids>+<EVAL <ARGTXT[1]>>)>
+         ELSEIF (0<argchk[70]>==1)
+            SRC.FINDID(M_BookieLink).LINK.TAG.Entry20Bids=<EVAL(0<SRC.FINDID(M_BookieLink).LINK.TAG.Entry20Bids>+<EVAL <ARGTXT[1]>>)>
+         ENDIF
+      ENDIF
+   ENDIF
+
+
+[EOF]

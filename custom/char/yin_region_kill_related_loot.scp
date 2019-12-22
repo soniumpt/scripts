@@ -1,0 +1,238 @@
+[FUNCTION y_give_me_loot] 
+//function for GMs to see the Variables states at this region.
+   OBJ=<UID>
+   OBJ.SAY This region is called: <REGION.DEFNAME>.
+   TRYP 0 OBJ.SAY There were <EVAL <VAR0.<REGION.DEFNAME>_loot>> kills in this regions.
+   OBJ.SAY Loot mod is: <EVAL <VAR0.LOOTMOD>>
+
+[FUNCTION addlootgold] 
+//function to add gold at loot. <ARGS> is MAX ammount of gold you want to add. 
+   OBJ =<UID>
+   LOCAL.GOLD =<EVAL (<ARGS>*<VAR0.LOOTMOD>)/1000>
+   if (0<src.findid(i_hope).timer> >= 1 )
+      	LOCAL.GOLD = <eval (<LOCAL.GOLD> + (<LOCAL.GOLD> / 2))>
+   ENDIF
+   SERV.NEWITEM = i_gold,<LOCAL.GOLD>, <OBJ> 
+
+[FUNCTION addlootmisc] 
+//function to add ammount of some items - reagents as example. Dependable on kills in region.
+   OBJ =<UID>
+   LOCAL.AM1 = <EVAL <ARGN1>>
+   LOCAL.AMOUNT =<EVAL (<LOCAL.AM1>*<VAR0.LOOTMOD>)/1000>
+   SERV.NEWITEM = <ARGV1>,<LOCAL.AMOUNT>, <OBJ> 
+
+[FUNCTION addlootitem] 
+//syntaxis "addlootitem itemname, amount,COLOR","addlootitem i_gold, 100, 6"  When item should be standart COLOR simply dont write the COLOR argument
+   OBJ=<UID>
+   IF (<VAR0.LOOTMOD> > <VAR0.STANDART_ITEM_LOOTMOD>)
+      TRYP 0 SERV.NEWITEM <ARGV0>,<ARGV1>,<OBJ.UID>
+      IF (0<ARGV2> == 0)
+      ELSE
+	 NEW.COLOR = <ARGV2>
+      ENDIF
+   ELSE
+      LOCAL.RND0 =<EVAL (<VAR0.STANDART_ITEM_min_chance>+(<VAR0.STANDART_ITEM_max_chance>*(<VAR0.<REGION.DEFNAME>_loot>/1000))>
+      IF ( RAND(<LOCAL.RND0>) == 1 )
+         TRYP 0 SERV.NEWITEM <ARGV0>, <ARGV1>, <OBJ.UID>
+	 IF (0<ARGV2> == 0)
+	 ELSE
+	   NEW.COLOR = <ARGV2>
+	 ENDIF
+      ENDIF
+   ENDIF
+		
+[FUNCTION addlootrandom] 
+//Syntaxis "addlootrandom ,10 ,50, 1, i_gold"
+//<ARGN1> is minimum chance, <ARGN2> is maximum chance,<ARGN3> amount //set as minimum 2 as random chance.
+   OBJ=<UID>
+   LOCAL.CHANCEMIN = <EVAL <ARGN1>>
+   LOCAL.CHANCEMAX = (<ARGN2>*<VAR0.<REGION.DEFNAME>_loot>)/1000
+   LOCAL.RND1 =<LOCAL.CHANCEMIN>+<LOCAL.CHANCEMAX>
+   if (0<src.findid(i_hope).timer> >= 1 )
+      	LOCAL.RND1 = <eval (<LOCAL.RND1> - (<LOCAL.RND1> / 10))>
+   ENDIF
+   IF ( RAND(<LOCAL.RND1>) == 1 ) 
+      TRYP 0 SERV.NEWITEM <ARGV3>, <ARGN3>, <OBJ.UID>
+   ENDIF
+
+[FUNCTION y_region_loot_calculator] 
+//set it at @DeathCorpse of all NPCs to calculate how much gold it will have and chance of geting rare items.
+   OBJ=<UID>
+   IF (<VAR0.<REGION.DEFNAME>_loot> > 1000)
+      <VAR0.<REGION.DEFNAME>_loot> = 1000
+   ENDIF
+   LOCAL.DEATHS = <VAR0.<REGION.DEFNAME>_loot>
+   VAR0.LOOTMOD = 1000 - (<LOCAL.DEATHS>) // 1 - (deaths/1000)
+
+[FUNCTION y_region_loot_death] 
+//set it on DEATH event of all NPCs.
+//   TRYP 0 VAR.<REGION.DEFNAME>_loot = <EVAL <VAR0.<REGION.DEFNAME>_loot> +1> //the ammount of Deathes counter is different depending on monster type. Fire Gient or Lich Lord add like 10 points at time.
+   TRYP 0 var.<region.defname>_loot = 150
+
+[CHARDEF c_test_dead] //testing NPC to show you how it works
+Name=Test Deadman
+ID=c_man
+DESIRES=i_gold,e_notoriety
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+ON=@Create
+   NPC=brain_human
+   COLOR=COLORs_skin
+   STR={60 80}
+   DEX={60 80}
+   INT={90 120}
+
+on=@Death
+   y_region_loot_death
+   y_region_loot_calculator
+   addlootgold ,500
+   addlootitem ,i_bow,1
+   addlootrandom ,100,200,1,i_candle
+
+[ITEMDEF i_region_loot_stone]
+ID	= 0ed5
+NAME	= Great Wonderful Cute Majesty Yins region loot setup
+TYPE	= t_script
+
+ON=@Create
+   ATTR	= attr_move_never
+   TIMER	= 600
+   COLOR = 06
+
+ON=@DClick
+   //message @34 Click. <REGION.DEFNAME>
+   //timer = 2
+   //return 1
+   DIALOG d_region_loot_setup
+   SRC.SOUND 1023
+   RETURN 1
+
+ON=@Timer //add here all regions!!
+   IF (<VAR0.region_loot_status> == 0)
+      RETURN 1
+   ENDIF
+   IF (<VAR0.a_townBritain_loot> == 0)
+      MESSAGE Britains region loot counters is 0
+      TIMER = <VAR0.LOOT_REDUCE_cycle>
+   ELSE
+      VAR.a_townBritain_loot = <VAR0.a_townBritain_loot> - <VAR0.LOOT_REDUCE>
+      TRYP 0 MESSAGE Counter at <REGION.NAME> reduced by <VAR0.LOOT_REDUCE>. It is : <EVAL <VAR0.<REGION.DEFNAME>_loot>> currently.
+      TIMER = <VAR0.LOOT_REDUCE_CYCLE>
+   ENDIF
+
+[DIALOG d_region_loot_setup]
+0,0
+page 0
+resizepic 0 0 2620 625 260
+
+IF (<VAR0.region_loot_status> == 1)
+   LOCAL.STATUS = Enabled
+ELSE
+   LOCAL.STATUS = Disabled
+ENDIF
+dtext   30  15  034 Never fear, Yin is here!
+dtext   30  30 044e Script status: <LOCAL.STATUS>
+dtext   30  45 044e Timer: <EVAL <VAR0.LOOT_REDUCE_CYCLE>>
+dtext   30  60 044e Points removed at once: <EVAL <VAR0.LOOT_REDUCE>>
+
+dtext  315  30 044e Item Gain Modificator: <EVAL <VAR0.STANDART_ITEM_LOOTMOD>>
+dtext  315  45 044e Item Random Min Chance: <EVAL <VAR0.STANDART_ITEM_min_chance>>
+dtext  315  60 044e Item Random Max Chance: <EVAL <VAR0.STANDART_ITEM_max_chance>>
+
+button  30 120 2104 2104 1 0 6
+dtext   45 115  034 Enable/Disable
+button  30 160 2104 2104 1 0 2
+dtext   45 155   77 Timer +100
+button  30 140 2104 2104 1 0 3
+dtext   45 135   77 Timer -100
+button 150 140 2104 2104 1 0 4
+dtext  165 135   77 Kills -1
+button 150 160 2104 2104 1 0 5
+dtext  165 155   77 Kills +1
+button  30 180 2104 2104 1 0 1
+dtext   45 175 044e Set Default Values
+
+button 300 115 2104 2104 1 0 7
+dtext  315 110  034 Standart Item Gain Modificator - 100
+button 300 135 2104 2104 1 0 8
+dtext  315 130  034 Standart Item Gain Modificator + 100
+button 300 155 2104 2104 1 0 9
+dtext  315 150  034 Item Random Min Chance -1
+button 300 175 2104 2104 1 0 10
+dtext  315 170  034 Item Random Min Chance +1
+button 300 195 2104 2104 1 0 11
+dtext  315 190  034 Item Random Max Chance -1
+button 300 215 2104 2104 1 0 12
+dtext  315 210  034 Item Random Max Chance +1
+
+[DIALOG d_region_loot_setup BUTTON]
+on=1
+   VAR.LOOT_REDUCE_cycle = 600
+   VAR.region_loot_status = 1
+   VAR.LOOT_REDUCE=1
+   VAR.STANDART_ITEM_LOOTMOD = 800 //modificator on how many kills at regions you get items by default, without random check. The lower the value is, at more "killed" regions you get items. 
+   VAR.STANDART_ITEM_min_chance = 2 //modificator on minimum chance of geting standart item.
+   VAR.STANDART_ITEM_max_chance = 5 //modificator on maximum additional chance of geting standart item.
+   DIALOG d_region_loot_setup
+   SRC.SOUND 1023
+
+on=2
+   VAR.LOOT_REDUCE_CYCLE = <VAR0.LOOT_REDUCE_CYCLE> + 100
+   DIALOG d_region_loot_setup
+   SRC.SOUND 1023
+
+on=3
+   VAR.LOOT_REDUCE_CYCLE = <VAR0.LOOT_REDUCE_CYCLE> - 100
+   DIALOG d_region_loot_setup
+   SRC.SOUND 1023
+
+on=4
+   VAR.LOOT_REDUCE = <VAR0.LOOT_REDUCE> -1
+   DIALOG d_region_loot_setup
+   SRC.SOUND 1023
+
+on=5
+   VAR.LOOT_REDUCE = <VAR0.LOOT_REDUCE> +1
+   DIALOG d_region_loot_setup
+   SRC.SOUND 1023
+
+on=6
+   IF (<VAR0.region_loot_status> == 0)
+      VAR.region_loot_status = 1
+   ELSE
+      VAR.region_loot_status = 0
+   ENDIF
+   DIALOG d_region_loot_setup
+   SRC.SOUND 1023
+
+on=7
+   VAR.STANDART_ITEM_LOOTMOD = <VAR0.STANDART_ITEM_LOOTMOD> - 100
+   DIALOG d_region_loot_setup
+   SRC.SOUND 1023
+
+on=8
+   VAR.STANDART_ITEM_LOOTMOD = <VAR0.STANDART_ITEM_LOOTMOD> + 100
+   DIALOG d_region_loot_setup
+   SRC.SOUND 1023
+
+on=9
+   VAR.STANDART_ITEM_min_chance = <VAR0.STANDART_ITEM_min_chance> -1
+   DIALOG d_region_loot_setup
+   SRC.SOUND 1023
+
+on=10
+   VAR.STANDART_ITEM_min_chance = <VAR0.STANDART_ITEM_min_chance> +1
+   DIALOG d_region_loot_setup
+   SRC.SOUND 1023
+
+on=11
+   VAR.STANDART_ITEM_max_chance = <VAR0.STANDART_ITEM_max_chance> -1
+   DIALOG d_region_loot_setup
+   SRC.SOUND 1023
+
+on=12
+   VAR.STANDART_ITEM_max_chance = <VAR0.STANDART_ITEM_max_chance> +1
+   DIALOG d_region_loot_setup
+   SRC.SOUND 1023
+
+[EOF]

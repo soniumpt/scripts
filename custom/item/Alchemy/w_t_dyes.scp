@@ -1,0 +1,1760 @@
+///Imperial UO dyes added
+///Modified by Slash to allow dyes to change the color of PvP reward tubs
+///New Dye (dark Bronze) - Tiff - Sept. 4, 03
+///New Hair Vat          - Tiff - Sept. 5, 03
+///Changed Hair vat to dye beards too - Wren - Jan 02 '04
+
+  /////////
+ //Dying//
+/////////
+
+[ITEMDEF 0fa9]
+//Dyes
+DEFNAME=i_dyes
+TYPE=T_DYE
+WEIGHT=3
+CATEGORY=Items by Professions
+SUBSECTION=Tailor
+DESCRIPTION=Dyes
+
+SKILLMAKE=ALCHEMY 10.0, t_mortar
+RESOURCES=1 i_log_pine,1 i_reag_blood_moss,1 i_reag_sulfur_ash,1 i_reag_black_pearl,1 i_reag_serpent_scale
+
+ON=@TARGON_ITEM
+IF ( <SRC.TARG.MOREZ> == 1)
+      SRC.SYSMESSAGE You can't use these on this tub.
+      RETURN 1
+ENDIF
+   IF ( <SRC.TARG.BASEID> == i_dye_tub )
+      SRC.TARG.MOREX = 100
+      SRC.TARG.NAME = Dye tub with 100 uses
+      SRC.TARG.MOREY = 1
+      SRC.TARG.MOREZ = 0
+      REMOVE
+      RETURN 0
+   ELSEIF ( <SRC.TARG.BASEID> == i_mount_tub )
+   remove
+   return 0
+   ELSE
+      SRC.SYSMESSAGE You can only use dyes on a dye tub.
+      RETURN 1
+   ENDIF
+
+ON=@TARGON_CHAR
+   SRC.SYSMESSAGE You can only use dyes on a dye tub.
+   RETURN 1
+   
+
+[ITEMDEF 0fab]
+//Dying Tub
+DEFNAME=i_dye_tub
+TYPE=T_DYE_VAT
+WEIGHT=10
+SKILLMAKE=CARPENTRY 50.0, t_carpentry
+RESOURCES=5 i_log_pine
+CATEGORY=Items by Professions
+SUBSECTION=Tailor
+DESCRIPTION=Dying Tub
+
+ON=@CLICK
+IF (( <COLOR> == 0485 ) || ( <COLOR> == 0480 ) || ( <COLOR> == 048f ) || ( <COLOR> == 0481 ) || ( <COLOR> == 09b1 ) || ( <COLOR> == 0483 ) || ( <COLOR> == 0484 ) || ( <COLOR> == 0486 ) || ( <COLOR> == 0487 ) || ( <COLOR> == 048a ) || ( <COLOR> == 079e ) || ( <COLOR> == 0488 ) || ( <COLOR> == 0489 ) || ( <COLOR> == 048d ) || ( <COLOR> == 048b ) || ( <COLOR> == 0a10 ) ) 
+	IF ( <MOREZ> == 0)
+         IF ( <MOREX> > 12)
+         serv.log :dyes: <src.name> <src.account> used a dodgy dye tub <color> <name> <MOREX> uses 
+         src.sysmessage @0485 You shouldnt be abusing dye tubs, this one has been removed
+         REMOVE
+         ENDIF
+        ENDIF 
+ELSEIF (( <COLOR> == 0455 ) || ( <COLOR> == 099d ) || ( <COLOR> == 09f6 ) || ( <COLOR> == 0af1 ) || ( <COLOR> == 07eb ) || ( <COLOR> == 0ae3 ) || ( <COLOR> == 0ac9 ) || ( <COLOR> == 0b4d ) || ( <COLOR> == 0bb1 ) || ( <COLOR> == 0b3b ) || ( <COLOR> == 0aa8 ) || ( <COLOR> == 084e ) || ( <COLOR> == 0b87 ) || ( <COLOR> == 0b00 ) || ( <COLOR> == 0490 ) || ( <COLOR> == 0ae4 ) )
+	IF ( <MOREZ> == 0)
+         IF ( <MOREX> > 12)
+         serv.log :dyes: <src.name> <src.account> used a dodgy dye tub <color> <name> <MOREX> uses 
+         src.sysmessage @0485 You shouldnt be abusing dye tubs, this one has been removed
+         REMOVE
+         ENDIF
+        ENDIF
+ELSEIF (( <COLOR> == 0ba1 ) || ( <COLOR> == 048e ) || ( <COLOR> == 0482 ) || ( <COLOR> == 0b8a ) || ( <COLOR> == 07a2 ) || ( <COLOR> == 0ae6 ) || ( <COLOR> == 0777 ) || ( <COLOR> == 0793 ) || ( <COLOR> == 048c ))
+	IF ( <MOREZ> == 0)
+         IF ( <MOREX> > 12)
+         serv.log :dyes: <src.name> <src.account> used a dodgy dye tub <color> <name> <MOREX> uses 
+         src.sysmessage @0485 You shouldnt be abusing dye tubs, this one has been removed
+         REMOVE
+         ENDIF
+        ENDIF
+ENDIF
+
+ON=@DCLICK
+IF (( <COLOR> == 0485 ) || ( <COLOR> == 0480 ) || ( <COLOR> == 048f ) || ( <COLOR> == 0481 ) || ( <COLOR> == 09b1 ) || ( <COLOR> == 0483 ) || ( <COLOR> == 0484 ) || ( <COLOR> == 0486 ) || ( <COLOR> == 0487 ) || ( <COLOR> == 048a ) || ( <COLOR> == 079e ) || ( <COLOR> == 0488 ) || ( <COLOR> == 0489 ) || ( <COLOR> == 048d ) || ( <COLOR> == 048b ) || ( <COLOR> == 0a10 ) ) 
+	IF ( <MOREZ> == 0)
+         IF ( <MOREX> > 12)
+         serv.log :dyes: <src.name> <src.account> used a dodgy dye tub <color> <name> <MOREX> uses 
+         src.sysmessage @0485 You shouldnt be abusing dye tubs, this one has been removed
+         REMOVE
+         ENDIF
+        ENDIF 
+ELSEIF (( <COLOR> == 0455 ) || ( <COLOR> == 099d ) || ( <COLOR> == 09f6 ) || ( <COLOR> == 0af1 ) || ( <COLOR> == 07eb ) || ( <COLOR> == 0ae3 ) || ( <COLOR> == 0ac9 ) || ( <COLOR> == 0b4d ) || ( <COLOR> == 0bb1 ) || ( <COLOR> == 0b3b ) || ( <COLOR> == 0aa8 ) || ( <COLOR> == 084e ) || ( <COLOR> == 0b87 ) || ( <COLOR> == 0b00 ) || ( <COLOR> == 0490 ) || ( <COLOR> == 0ae4 ) )
+	IF ( <MOREZ> == 0)
+         IF ( <MOREX> > 12)
+         serv.log :dyes: <src.name> <src.account> used a dodgy dye tub <color> <name> <MOREX> uses 
+         src.sysmessage @0485 You shouldnt be abusing dye tubs, this one has been removed
+         REMOVE
+         ENDIF
+        ENDIF
+ELSEIF (( <COLOR> == 0ba1 ) || ( <COLOR> == 048e ) || ( <COLOR> == 0482 ) || ( <COLOR> == 0b8a ) || ( <COLOR> == 07a2 ) || ( <COLOR> == 0ae6 ) || ( <COLOR> == 0777 ) || ( <COLOR> == 0793 ) || ( <COLOR> == 048c ))
+	IF ( <MOREZ> == 0)
+         IF ( <MOREX> > 12)
+         serv.log :dyes: <src.name> <src.account> used a dodgy dye tub <color> <name> <MOREX> uses 
+         src.sysmessage @0485 You shouldnt be abusing dye tubs, this one has been removed
+         REMOVE
+         ENDIF
+        ENDIF
+ENDIF
+   IF ( (<MOREZ> == 1) && ( <SRC.TAILORING> < 700 ) )
+      SRC.SYSMESSAGE You do not have the required tailoring skill to use rare dyes.
+      RETURN 1
+   ENDIF
+   IF ( <SRC.TAILORING> < 150 )
+      SRC.SYSMESSAGE Dying objects requires a knowledge of tailoring you do not posess.
+      RETURN 1
+   ENDIF
+   IF ( <MOREY> == 0)
+      MOREX = 100
+      NAME = Dye tub with 100 uses
+   ENDIF
+   IF ( <MOREY> == 2)
+      SRC.SYSMESSAGE This dying tub is empty
+      RETURN 1
+   ENDIF
+   IF ( <MOREX> == 0)
+      NAME = Empty dye tub
+      MOREX = 0
+      COLOR = 00
+      MOREY = 2
+      RETURN 0
+   ENDIF
+   MOREX = <EVAL( <MOREX> - 1)>
+   IF ( <MOREZ> == 1)
+      NAME = rare dye tub with <MOREX> uses
+      RETURN 0
+   ENDIF
+   NAME = Dye tub with <MOREX> uses
+   RETURN 0
+
+ON=@TARGON_ITEM
+
+   IF ( <SRC.TARG.BASEID> == i_hair_tub )
+      IF ( (<MOREZ> == 1) && (<EVAL <MOREX>> < 9) ) || ( (<MOREZ> == 0) && (<EVAL <MOREX>> < 99) )
+         SRC.SYSMESSAGE You need a full tub for this.
+         MOREX = <EVAL( <MOREX> + 1)>
+         NAME = rare dye tub with <MOREX> uses
+         RETURN 1
+      ELSE
+         SRC.TARG.COLOR = <COLOR>
+         SRC.TARG.MOREX = 1
+         SRC.TARG.NAME = Dyed Hair Tub
+         SRC.TARG.MOREY = 1
+         SRC.TARG.MOREZ = 0
+         REMOVE
+         RETURN 1
+      ENDIF
+   ELSEIF ( <SRC.TARG.BASEID> == i_mount_tub )
+      IF ( (<MOREZ> == 1) )   
+         SRC.SYSMESSAGE You cannot use rare dyes on steed tubs.
+         MOREX = <EVAL( <MOREX> + 1)>
+         NAME = rare dye tub with <MOREX> uses
+         RETURN 1
+      ELSEIF (<EVAL <MOREX>> < 99)
+         SRC.SYSMESSAGE You need a full tub for this.
+         MOREX = <EVAL( <MOREX> + 1)>
+         NAME = rare dye tub with <MOREX> uses
+         RETURN 1
+      ELSE
+         SRC.SYSMESSAGE You transfer the dye to the steed dye tub.
+         SRC.TARG.COLOR = <COLOR>
+         REMOVE
+         RETURN 1
+      ENDIF
+   ELSEIF (<SRC.TARG.BASEID> == i_dye_tub_backpack)
+      IF ( (<MOREZ> == 1) && (<EVAL <MOREX>> < 9) )
+         SRC.SYSMESSAGE You need a full tub for this.
+         MOREX = <EVAL( <MOREX> + 1)>
+         NAME = rare dye tub with <MOREX> uses
+         RETURN 1
+      ELSEIF (<EVAL <MOREX>> < 99)
+         SRC.SYSMESSAGE You need a full tub for this.
+         MOREX = <EVAL( <MOREX> + 1)>
+         NAME = rare dye tub with <MOREX> uses
+         RETURN 1
+      ELSE
+         SRC.SYSMESSAGE You transfer the dye to the backpack dye tub.
+         SRC.TARG.COLOR = <HVAL <COLOR>>
+         REMOVE
+         RETURN 1
+      ENDIF
+   ELSEIF (<SRC.TARG.BASEID> == i_dye_tub)
+      SRC.SYSMESSAGE You need dyes to for that.
+      MOREX = <EVAL( <MOREX> + 1)>
+      NAME = rare dye tub with <MOREX> uses
+      RETURN 1
+   ELSEIF (<SRC.TARG.BASEID> == i_rune_marker)
+      IF ( <SRC.TARG.TOPOBJ.UID> != <SRC.UID> )
+        SRC.SYSMESSAGE You must have it in your pack to dye it.
+        RETURN 1
+      ENDIF
+      SRC.TARG.COLOR = <COLOR>
+      RETURN 1
+   ELSEIF (<SRC.TARG.BASEID> == i_robe_donator)
+      IF ( <SRC.TARG.TOPOBJ.UID> != <SRC.UID> )
+      SRC.SYSMESSAGE You must have it in your pack to dye it.
+        RETURN 1
+      ENDIF
+      SRC.TARG.COLOR = <COLOR>
+      RETURN 1
+   ELSEIF ( (<SRC.TARG.BASEID> == i_backpack) && (<SRC.TARG.CONT>=<SRC.UID>) )
+      SRC.TARG.COLOR = <COLOR>
+      RETURN 1
+   ELSEIF (<SRC.TARG.ATTR>  &  attr_newbie)
+      SRC.SYSMESSAGE You cannot Dye this!
+      MOREX = <EVAL( <MOREX> + 1)>
+      NAME = rare dye tub with <MOREX> uses
+      RETURN 1
+   ELSEIF ( <SRC.TARG.TOPOBJ.UID> != <SRC.UID> )
+      SRC.SYSMESSAGE You must have it in your pack to dye it.
+      RETURN 1  
+   ENDIF
+   RETURN 0
+   
+   ON=@CREATE
+   MOREX=100
+   MOREY=1
+   NAME=Dye tub with 100 uses
+   
+/////////// NEW Hair Tub - Tiff 5/8/03    
+   
+[ITEMDEF i_hair_tub]
+DEFNAME=i_hair_Tub
+ID=i_dye_tub
+WEIGHT=10
+SKILLMAKE=CARPENTRY 85.0, t_carpentry
+CATEGORY=Items by Professions
+SUBSECTION=Tailor
+DESCRIPTION=Dying Tub for Hair
+RESOURCES=5 i_log_pine, 5 i_nails
+
+ON=@CREATE
+	TYPE =t_dye_vat
+	NAME=Hair Dying Tub
+	
+ 
+	
+ON=@DCLICK
+   IF ( <MOREX> == 0)
+      SRC.SYSMESSAGE This dying tub is empty
+      RETURN 1
+   ENDIF
+   IF ( <MOREY> == 2)
+      SRC.SYSMESSAGE This dying tub is empty
+      RETURN 1
+   ENDIF     
+
+ON=@TARGON_CHAR
+   IF  (<SRC.TARG.uid> == <SRC.uid>) 
+	SRC.TARG.FINDLAYER(layer_hair).color = <COLOR>
+	SRC.TARG.FINDLAYER(layer_beard).color = <COLOR>
+	remove
+      RETURN 1			
+   ENDIF	
+ON=@TARGON_ITEM
+   IF ( (<SRC.TARG.BASEID> == i_backpack) && (<SRC.TARG.ATTR> == 014))
+   	SRC.SYSMESSAGE You cannot dye this.
+         RETURN 1 
+   ELSEIF (<SRC.TARG.TYPE> == t_dye_vat)
+        SRC.SYSMESSAGE You cannot dye this.
+        RETURN 1
+   ELSEIF ( <SRC.TARG.TYPE> == t_clothing )
+        SRC.SYSMESSAGE You cannot dye this.
+        return 1           
+   ELSE
+   	SRC.SYSMESSAGE You can not dye this item
+         RETURN 1
+   ENDIF
+
+
+  /////////////
+ //RARE DYES//
+/////////////
+
+// Scripted specially for MPZ.UO shard By Tgon.
+// Any application of this script to your site is done so at your own risk.
+// Revamped and adapted by Warman (warman@mail.pt).
+// (May 2013) - Clean Up & f_alchemy_dyes added by Ray.
+
+[FUNCTION f_alchemy_dyes]
+IF (<SRC.TARG.BASEID> == i_dye_tub)
+SRC.TARG.MOREX=10
+SRC.TARG.MOREY=1
+SRC.TARG.NAME rare dye tub with 10 uses
+SRC.ANIM 34
+SRC.SYSMESSAGE You add the dyes to the tub.
+SRC.TARG.COLOR = <COLOR>
+SRC.TARG.MOREZ=1
+REMOVE
+RETURN 1
+ELSEIF (<SRC.TARG.BASEID> == i_pvp_tub_70)
+SRC.TARG.COLOR = <COLOR>
+SRC.SYSMESSAGE You add the dyes to the tub.
+REMOVE
+RETURN 1
+ELSEIF (<SRC.TARG.BASEID> == i_pvp_tub_15)
+SRC.TARG.COLOR = <COLOR>
+SRC.SYSMESSAGE You add the dyes to the tub.
+REMOVE
+RETURN 1	
+ELSEIF (<SRC.TARG.BASEID> == i_hair_tub)
+SRC.TARG.COLOR = <COLOR>
+SRC.SYSMESSAGE You add the dyes to the tub.
+SRC.TARG.MOREX=1
+SRC.TARG.MOREY=1	
+REMOVE
+RETURN 1	
+ELSEIF (<SRC.TARG.BASEID> == i_dye_tub_backpack)
+SRC.TARG.COLOR = <COLOR>
+SRC.SYSMESSAGE You add the dyes to the tub.
+SRC.TARG.MOREX=1
+SRC.TARG.MOREY=1	
+REMOVE
+RETURN 1
+ELSE
+SRC.SYSMESSAGE That is not a dye tub!
+ENDIF
+RETURN 1
+
+[ITEMDEF i_black_dye]
+  ID=i_bottle_2
+  WEIGHT=4
+  VALUE=150
+  NAME=black
+  SKILLMAKE=ALCHEMY 63.0, t_mortar
+  RESOURCES=20 i_reag_obsidian, 20 i_reag_batwing, 20 i_reag_pig_iron, 1 i_bottle_empty
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Rare Dyes
+  DESCRIPTION=Black
+
+ON=@CREATE
+   COLOR=0485
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+
+
+[ITEMDEF i_ice_dye]
+  ID=i_bottle_2
+  WEIGHT=4
+  VALUE=150
+  NAME=ancient ice blue
+  SKILLMAKE=ALCHEMY 95.0, t_mortar
+  RESOURCES=20 i_reag_obsidian, 20 i_reag_pumice, 10 i_frost_lizard_scale, 20 i_reag_worm_heart, 2 i_ice_titan_eye, 1 i_bottle_empty
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Rare Dyes
+  DESCRIPTION=Ice
+
+ON=@CREATE
+   COLOR=0480
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+
+
+[ITEMDEF i_angel_dye]
+  ID=i_bottle_2
+  WEIGHT=4
+  VALUE=150
+  NAME=angel
+  SKILLMAKE=ALCHEMY 85.0, t_mortar
+  RESOURCES=20 i_reag_obsidian, 20 i_reag_pumice, 20 i_reag_worm_heart, 1 i_bottle_empty
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Rare Dyes
+  DESCRIPTION=Angel
+
+ON=@CREATE
+   COLOR=048f
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+
+
+
+[ITEMDEF i_white_dye]
+  ID=i_bottle_2
+  WEIGHT=4
+  VALUE=150
+  NAME=white
+  SKILLMAKE=ALCHEMY 77.0, t_mortar
+  RESOURCES=20 i_reag_bone, 20 i_reag_pumice, 20 i_reag_worm_heart, 1 i_infected_spine, 1 i_bottle_empty
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Rare Dyes
+  DESCRIPTION=White
+
+ON=@CREATE
+   COLOR=0481
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+
+
+
+[ITEMDEF i_softpink_dye]
+  ID=i_bottle_2
+  WEIGHT=4
+  VALUE=150
+  NAME=passion pink
+  SKILLMAKE=ALCHEMY 78.0, t_mortar
+  RESOURCES=20 i_reag_bone, 20 i_reag_pumice, 20 i_reag_worm_heart, 1 i_bottle_empty
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Rare Dyes
+  DESCRIPTION=Soft Pink
+
+ON=@CREATE
+   COLOR=09b1
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+
+[ITEMDEF i_purple_dye]
+  ID=i_bottle_2
+  WEIGHT=4
+  VALUE=150
+  NAME=purple
+  SKILLMAKE=ALCHEMY 72.0, t_mortar
+  RESOURCES=20 i_reag_brimstone, 20 i_reag_executioners_cap, 20 i_reag_blood_vial, 1 i_bottle_empty
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Rare Dyes
+  DESCRIPTION=Purple/Blue
+
+ON=@CREATE
+   COLOR=0483
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+
+
+
+[ITEMDEF i_pwhite_dye]
+  ID=i_bottle_2
+  WEIGHT=4
+  VALUE=150
+  NAME=pure white
+  SKILLMAKE=ALCHEMY 87.0, t_mortar
+  RESOURCES=20 i_reag_bone, 20 i_reag_pumice, 20 i_reag_volcanic_ash, 1 i_white_dye, 1 i_bottle_empty
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Rare Dyes
+  DESCRIPTION=Pure White
+
+ON=@CREATE
+   COLOR=0484
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+
+[ITEMDEF i_fire_dye]
+  ID=i_bottle_2
+  WEIGHT=4
+  VALUE=150
+  NAME=ancient fire
+  SKILLMAKE=ALCHEMY 85.0, t_mortar
+  RESOURCES=20 i_reag_brimstone, 20 i_reag_dragon_blood, 20 i_reag_blood_vial, 1 i_bottle_empty
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Rare Dyes
+  DESCRIPTION=Fire
+
+ON=@CREATE
+   COLOR=0486
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+
+[ITEMDEF i_green_dye]
+  ID=i_bottle_2
+  WEIGHT=4
+  VALUE=150
+  NAME=green
+  SKILLMAKE=ALCHEMY 60.0, t_mortar
+  RESOURCES=20 i_reag_bone, 20 i_reag_dragon_blood, 20 i_reag_serpent_scale, 1 i_venomous_tooth, 1 i_bottle_empty
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Rare Dyes
+  DESCRIPTION=Green
+
+ON=@CREATE
+   COLOR=0487
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+[ITEMDEF i_softgreen_dye]
+  ID=i_bottle_2
+  WEIGHT=4
+  VALUE=150
+  NAME=soft green
+  SKILLMAKE=ALCHEMY 60.0, t_mortar
+  RESOURCES=20 i_reag_bone, 20 i_reag_dragon_blood, 20 i_reag_serpent_scale, 1 i_bottle_empty
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Rare Dyes
+  DESCRIPTION=Soft Green
+
+ON=@CREATE
+   COLOR=048a
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+ 
+
+//Added New Dye - Tiff 4/9/03
+
+
+[ITEMDEF i_dkbronze_dye]
+  ID=i_bottle_2
+  WEIGHT=4
+  VALUE=150
+  NAME=Dark Bronze
+  SKILLMAKE=ALCHEMY  85.0, t_mortar
+  RESOURCES= 20 i_reag_blood_spawn, 30 i_reag_blackmoor, 25 i_reag_fertile_dirt, 1 i_bottle_empty
+  CATEGORY=Imperial uo
+  SUBSECTION=Rare Dyes
+  DESCRIPTION=Dark Bronze
+  
+ON=@CREATE
+   COLOR=079e
+   
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+   
+ON=@TARGON_ITEM
+f_alchemy_dyes   
+      
+                
+
+[ITEMDEF i_bronze_dye]
+  ID=i_bottle_2
+  WEIGHT=4
+  VALUE=150
+  NAME=bronze
+  SKILLMAKE=ALCHEMY 69.0, t_mortar
+  RESOURCES=20 i_reag_blood_spawn, 20 i_reag_blackmoor, 20 i_reag_fertile_dirt, 1 i_bottle_empty
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Rare Dyes
+  DESCRIPTION=Bronze
+
+ON=@CREATE
+   COLOR=0488
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+
+
+[ITEMDEF i_blue_dye]
+  ID=i_bottle_2
+  WEIGHT=4
+  VALUE=150
+  NAME=blue
+  SKILLMAKE=ALCHEMY 66.0, t_mortar
+  RESOURCES=20 i_reag_obsidian, 20 i_reag_bone, 20 i_reag_eye_of_newt, 2 i_poisonous_eye, 1 i_bottle_empty
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Rare Dyes
+  DESCRIPTION=Blue
+
+ON=@CREATE
+   COLOR=0489
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+
+
+[ITEMDEF i_softblue_dye]
+  ID=i_bottle_2
+  WEIGHT=4
+  VALUE=150
+  NAME=soft blue
+  SKILLMAKE=ALCHEMY 64.0, t_mortar
+  RESOURCES=20 i_reag_obsidian, 20 i_reag_bone, 20 i_reag_eye_of_newt, 1 i_bottle_empty
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Rare Dyes
+  DESCRIPTION=Soft Blue
+
+ON=@CREATE
+   COLOR=048d
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+
+
+[ITEMDEF i_softperp_dye]
+  ID=i_bottle_2
+  WEIGHT=4
+  VALUE=150
+  NAME=soft purple
+  SKILLMAKE=ALCHEMY 55.0, t_mortar
+  RESOURCES=20 i_reag_blood_moss,20 i_reag_sulfur_ash,20 i_reag_black_pearl, 1 i_bottle_empty
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Rare Dyes
+  DESCRIPTION=Soft Purple
+
+ON=@CREATE
+   COLOR=048b
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+[ITEMDEF i_hardpink_dye]
+  ID=i_bottle_2
+  WEIGHT=4
+  VALUE=150
+  NAME=strong pink
+  SKILLMAKE=ALCHEMY 75.0, t_mortar
+  RESOURCES=20 i_reag_brimstone, 20 i_reag_dragon_blood, 20 i_reag_blood_vial, 1 i_bottle_empty
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Rare Dyes
+  DESCRIPTION=Hard Pink
+
+ON=@CREATE 
+COLOR=0a10
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+
+
+[ITEMDEF i_rblack_dye]
+  ID=i_bottle_2
+  WEIGHT=4
+  VALUE=150
+  NAME=black
+  SKILLMAKE=ALCHEMY 95.0, t_mortar
+  RESOURCES=20 i_reag_obsidian, 20 i_reag_batwing, 20 i_reag_black_pearl, 20 i_reag_pig_iron, 1 i_bottle_empty
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Rare Dyes
+  DESCRIPTION=Black
+
+ON=@CREATE
+   COLOR=0455
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+
+
+///The following are rare dyes chosen from new hues. 31st March 2005 
+
+[ITEMDEF i_rain_dye]
+  ID=i_bottle_2
+  WEIGHT=4
+  VALUE=150
+  NAME=rain
+  SKILLMAKE=ALCHEMY 97.0, t_mortar
+  RESOURCES=20 i_reag_black_pearl, 20 i_reag_spider_silk, 20 i_reag_obsidian, 20 i_reag_dead_wood, 1 i_bottle_empty
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Rare Dyes
+  DESCRIPTION=Rain
+
+ON=@CREATE
+   COLOR=099d 
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+
+
+[ITEMDEF i_swamp_dye]
+  ID=i_bottle_2
+  WEIGHT=4
+  VALUE=150
+  NAME=swamp
+  SKILLMAKE=ALCHEMY 76.0, t_mortar
+  RESOURCES=20 i_reag_nightshade, 20 i_toxic_feather, 20 i_reag_fertile_dirt, 1 i_bottle_empty
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Rare Dyes
+  DESCRIPTION=Swamp
+
+ON=@CREATE
+   COLOR=09f6 
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+
+
+[ITEMDEF i_cardinal_dye]
+  ID=i_bottle_2
+  WEIGHT=4
+  VALUE=150
+  NAME=cardinal
+  SKILLMAKE=ALCHEMY 87.0, t_mortar
+  RESOURCES=20 i_reag_blood_vial, 20 i_toxic_feather, 1 i_infected_spine, 20 i_reag_blood_moss, 1 i_dread_dye, 1 i_bottle_empty
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Rare Dyes
+  DESCRIPTION=Cardinal
+
+ON=@CREATE
+   COLOR=0af1
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+
+[ITEMDEF i_fog_dye]
+  ID=i_bottle_2
+  WEIGHT=4
+  VALUE=150
+  NAME=fog
+  SKILLMAKE=ALCHEMY 82.0, t_mortar
+  RESOURCES=20 i_reag_pumice, 20 i_reag_spider_silk, 20 i_mongbat_jaw, 20 i_reag_dragon_blood, 1 i_bottle_empty
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Rare Dyes
+  DESCRIPTION=Fog
+
+ON=@CREATE
+   COLOR=07eb
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+
+
+[ITEMDEF i_sunset_dye]
+  ID=i_bottle_2
+  WEIGHT=4
+  VALUE=150
+  NAME=sunset
+  SKILLMAKE=ALCHEMY 99.0, t_mortar
+  RESOURCES=20 i_reag_sulfur_ash, 20 i_reag_blood_moss, 20 i_reag_brimstone, 20 i_reag_blood_vial, 1 i_bottle_empty
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Rare Dyes
+  DESCRIPTION=Sunset
+
+ON=@CREATE
+   COLOR=0ae3
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+
+
+[ITEMDEF i_passionpurp_dye]
+  ID=i_bottle_2
+  WEIGHT=4
+  VALUE=150
+  NAME=passion purple
+  SKILLMAKE=ALCHEMY 67.0, t_mortar
+  RESOURCES=20 i_reag_black_pearl, 20 i_reag_pumice, 20 i_reag_worm_heart, 1 i_bottle_empty
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Rare Dyes
+  DESCRIPTION=Passion Purple
+
+ON=@CREATE
+   COLOR=0ac9
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+
+///The following are rare dyes chosen from new hues. 25th May 2006
+
+
+[ITEMDEF i_frozenblue_dye]
+  ID=i_bottle_2
+  WEIGHT=4
+  VALUE=150
+  NAME=frozen blue
+  SKILLMAKE=ALCHEMY 97.0, t_mortar
+  RESOURCES=1 i_blue_dye, 1 i_ice_dye, 20 i_reag_worm_heart, 20 i_Orc_spine, 1 i_bottle_empty
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Rare Dyes
+  DESCRIPTION=Frozen Blue
+
+ON=@CREATE
+   COLOR=0b4d
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+
+[ITEMDEF i_silkenpurple_dye]
+  ID=i_bottle_2
+  WEIGHT=4
+  VALUE=150
+  NAME=silken purple
+  SKILLMAKE=ALCHEMY 76.4, t_mortar
+  RESOURCES=20 i_reag_black_pearl, 20 i_reag_brimstone, 20 i_reag_mandrake_root, 1 i_bottle_empty
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Rare Dyes
+  DESCRIPTION=Silken Purple
+
+ON=@CREATE
+   COLOR=0aa9
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+
+[ITEMDEF i_citrus_dye]
+  ID=i_bottle_2
+  WEIGHT=4
+  VALUE=150
+  NAME=citrus
+  SKILLMAKE=ALCHEMY 100.0, t_mortar
+  RESOURCES=20 i_reag_blood_vial, 20 i_reag_daemon_bone, 20 i_reag_blood_moss, 1 i_fire_dye, 1 i_bottle_empty
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Rare Dyes
+  DESCRIPTION=Citrus
+
+ON=@CREATE
+   COLOR=0b3b
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+
+
+[ITEMDEF i_dread_dye]
+  ID=i_bottle_2
+  WEIGHT=4
+  VALUE=150
+  NAME=dread
+  SKILLMAKE=ALCHEMY 57.0, t_mortar
+  RESOURCES=20 i_reag_mandrake_root, 20 i_reag_brimstone, 20 i_reag_blood_moss, 1 i_bottle_empty
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Rare Dyes
+  DESCRIPTION=Dread
+
+ON=@CREATE
+   COLOR=0aa8
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+
+[ITEMDEF i_forest_dye]
+  ID=i_bottle_2
+  WEIGHT=4
+  VALUE=150
+  NAME=forest
+  SKILLMAKE=ALCHEMY 79.0, t_mortar
+  RESOURCES=20 i_reag_nightshade, 20 i_reag_garlic, 20 i_reag_bone, 1 i_bottle_empty
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Rare Dyes
+  DESCRIPTION=Forest
+
+ON=@CREATE
+   COLOR=0bb6
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+
+[ITEMDEF i_heavenlywhite_dye]
+  ID=i_bottle_2
+  WEIGHT=4
+  VALUE=150
+  NAME=heavenly white
+  SKILLMAKE=ALCHEMY 100.0, t_mortar
+  RESOURCES=1 i_angel_dye, 1 i_white_dye, 50 i_reag_ginseng, 50 i_reag_obsidian,  1 i_log_whiteoak, 2 i_angel_dust, 1 i_bottle_empty
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Rare Dyes
+  DESCRIPTION=Heavenly White
+
+ON=@CREATE
+   COLOR=0b87
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+
+[ITEMDEF i_deepseablue_dye]
+  ID=i_bottle_2
+  WEIGHT=4
+  VALUE=150
+  NAME=deep sea blue
+  SKILLMAKE=ALCHEMY 93.0, t_mortar
+  RESOURCES=20 i_reag_obsidian, 20 i_reag_nightshade, 20 i_reag_worm_heart, 10 i_reag_Dragons_heart, 1 i_bottle_empty
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Rare Dyes
+  DESCRIPTION=Deep Sea Blue
+
+ON=@CREATE
+   COLOR=0b00
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+[ITEMDEF i_strongpink_dye]
+  ID=i_bottle_2
+  WEIGHT=4
+  VALUE=150
+  NAME=classic strong pink
+  SKILLMAKE=ALCHEMY 85.0, t_mortar
+  RESOURCES=20 i_reag_blood_vial, 20 i_reag_brimstone, 20 i_reag_dragon_blood, 20 i_reag_worm_heart, 1 i_bottle_empty
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Rare Dyes
+  DESCRIPTION=Classic Strong Pink
+
+ON=@CREATE
+   COLOR=0490
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+[ITEMDEF i_cerulean_dye]
+  ID=i_bottle_2
+  WEIGHT=4
+  VALUE=150
+  NAME=cerulean
+  SKILLMAKE=ALCHEMY 86.0, t_mortar
+  RESOURCES=20 i_reag_black_pearl, 20 i_reag_spider_silk, 20 i_reag_worm_heart, 20 i_Mongbat_Jaw, 1 i_bottle_empty
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Rare Dyes
+  DESCRIPTION=Cerulean
+
+ON=@CREATE
+   COLOR=0ae4
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+[ITEMDEF i_vorpal_dye]
+  ID=i_bottle_2
+  WEIGHT=4
+  VALUE=150
+  NAME=vorpal
+  SKILLMAKE=ALCHEMY 115.0, t_mortar
+  RESOURCES=50 i_reag_black_pearl, 1 i_black_dye, 1 i_rblack_dye, 1 i_purplerain_dye, 1 i_bottle_empty
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Rare Dyes
+  DESCRIPTION=Vorpal
+
+ON=@CREATE
+   COLOR=0ba1
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+[ITEMDEF i_phantom_dye]
+  ID=i_bottle_2
+  WEIGHT=4
+  VALUE=150
+  NAME=phantom
+  SKILLMAKE=ALCHEMY 76.0, t_mortar
+  RESOURCES=20 i_reag_blood_vial, 20 i_reag_garlic, 20 i_reag_worm_heart, 1 i_bottle_empty
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Rare Dyes
+  DESCRIPTION=Phantom
+
+ON=@CREATE
+   COLOR=048e
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+[ITEMDEF i_spectre_dye]
+  ID=i_bottle_2
+  WEIGHT=4
+  VALUE=150
+  NAME=spectre
+  SKILLMAKE=ALCHEMY 80.0, t_mortar
+  RESOURCES=1 i_white_dye, 20 i_reag_dead_wood, 20 i_reag_executioners_cap, 20 i_reag_obsidian, 1 i_bottle_empty
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Rare Dyes
+  DESCRIPTION=Spectre
+
+ON=@CREATE
+   COLOR=0482
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+[ITEMDEF i_peppermint_dye]
+  ID=i_bottle_2
+  WEIGHT=4
+  VALUE=150
+  NAME=peppermint
+  SKILLMAKE=ALCHEMY 98.0, t_mortar
+  RESOURCES=20 i_reag_black_pearl, 20 i_reag_pumice, 20 i_reag_worm_heart, 1 i_bottle_empty
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Rare Dyes
+  DESCRIPTION=Peppermint
+
+ON=@CREATE
+   COLOR=0b8a
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+[ITEMDEF i_electricblue_dye]
+  ID=i_bottle_2
+  WEIGHT=4
+  VALUE=150
+  NAME=electric blue
+  SKILLMAKE=ALCHEMY 96.0, t_mortar
+  RESOURCES=1 i_softblue_dye, 20 i_reag_serpent_scale, 20 i_reag_dragon_blood, 20 i_reag_worm_heart, 1 i_bottle_empty
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Rare Dyes
+  DESCRIPTION=Electric Blue
+
+ON=@CREATE
+   COLOR=07a2
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+[ITEMDEF i_purplerain_dye]
+  ID=i_bottle_2
+  WEIGHT=4
+  VALUE=150
+  NAME=purple rain
+  SKILLMAKE=ALCHEMY 98.0, t_mortar
+  RESOURCES=1 i_rain_dye, 1 i_softperp_dye, 20 i_reag_pumice, 20 i_mongbat_jaw, 1 i_bottle_empty
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Rare Dyes
+  DESCRIPTION=Purple Rain
+
+ON=@CREATE
+   COLOR=0ae6
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+[ITEMDEF i_mellowyellow_dye]
+  ID=i_bottle_2
+  WEIGHT=4
+  VALUE=150
+  NAME=mellow yellow
+  SKILLMAKE=ALCHEMY 81.0, t_mortar
+  RESOURCES=20 i_reag_sulfur_ash, 20 i_reag_volcanic_ash, 20 i_reag_nightshade, 1 i_bottle_empty
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Rare Dyes
+  DESCRIPTION=Mellow Yellow
+
+ON=@CREATE
+   COLOR=0777
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+[ITEMDEF i_classicfire_dye]
+  ID=i_bottle_2
+  WEIGHT=4
+  VALUE=150
+  NAME=classic fire
+  SKILLMAKE=ALCHEMY 105.0, t_mortar
+  RESOURCES=1 i_fire_dye, 20 i_reag_volcanic_ash, 20 i_reag_sulfur_ash, 20 i_reag_blood_moss, 20 i_reag_brimstone, 1 i_bottle_empty
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Rare Dyes
+  DESCRIPTION=Classic Fire
+
+ON=@CREATE
+   COLOR=0793
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+[ITEMDEF i_classicpassionpink_dye]
+  ID=i_bottle_2
+  WEIGHT=4
+  VALUE=150
+  NAME=classic passion pink
+  SKILLMAKE=ALCHEMY 88.0, t_mortar
+  RESOURCES=20 i_reag_bone, 20 i_reag_pumice, 20 i_reag_worm_heart, 10 i_reag_brimstone, 20 i_reag_sulfur_ash, 1 i_bottle_empty
+  CATEGORY=Imperial uo
+  SUBSECTION=Rare Dyes
+  DESCRIPTION=Classic Passion Pink
+
+ON=@CREATE
+   COLOR=048c
+
+ON=@DCLICK
+   TARGET Target the tub you wish to dye.
+   RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+/////////////////////////////////////////
+///         Imperial UO Dyes   ////////
+///////////////////////////////////////
+
+
+[ITEMDEF i_iron_dye]
+ID=i_bottle_2
+WEIGHT=4
+VALUE=150
+NAME=Iron
+SKILLMAKE=ALCHEMY 50.0, t_mortar
+RESOURCES=10 i_ingot_iron, 5 i_reag_bone, 10 i_reag_garlic, 1 i_bottle_empty
+
+ON=@CREATE
+COLOR=0763
+
+ON=@DCLICK
+TARGET Target the tub you wish to dye.
+RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+
+
+[ITEMDEF i_bronze2_dye]
+ID=i_bottle_2
+WEIGHT=4
+VALUE=150
+NAME=Bronze Second
+SKILLMAKE=ALCHEMY 50.0, t_mortar
+RESOURCES=5 i_ingot_bronze, 10 i_reag_mandrake_root, 10 i_reag_blood_moss, 1 i_bottle_empty
+
+ON=@CREATE
+COLOR=03ec
+
+ON=@DCLICK
+TARGET Target the tub you wish to dye.
+RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+
+[ITEMDEF i_steel_dye]
+ID=i_bottle_2
+WEIGHT=4
+VALUE=150
+NAME=Steel
+SKILLMAKE=ALCHEMY 50.0, t_mortar
+RESOURCES=5 i_ingot_steel, 5 i_reag_bone, 10 i_reag_garlic, 1 i_bottle_empty
+
+ON=@CREATE
+COLOR=0835
+
+ON=@DCLICK
+TARGET Target the tub you wish to dye.
+RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+
+
+[ITEMDEF i_titanium_dye]
+ID=i_bottle_2
+WEIGHT=4
+VALUE=150
+NAME=Titanium
+SKILLMAKE=ALCHEMY 55.0, t_mortar
+RESOURCES=10 i_ingot_titanium, 10 i_reag_batwing, 10 i_reag_obsidian, 1 i_bottle_empty
+
+ON=@CREATE
+COLOR=04de
+
+ON=@DCLICK
+TARGET Target the tub you wish to dye.
+RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+
+[ITEMDEF i_shadow_dye]
+ID=i_bottle_2
+WEIGHT=4
+VALUE=150
+NAME=Shadow
+SKILLMAKE=ALCHEMY 60.0, t_mortar
+RESOURCES=20 i_ingot_shadow, 20 i_reag_nightshade, 20 i_reag_black_pearl, 1 i_bottle_empty
+
+ON=@CREATE
+COLOR=0770
+
+ON=@DCLICK
+TARGET Target the tub you wish to dye.
+RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+
+[ITEMDEF i_agapite_dye]
+ID=i_bottle_2
+WEIGHT=4
+VALUE=150
+NAME=Agapite
+SKILLMAKE=ALCHEMY 60.0, t_mortar
+RESOURCES=20 i_ingot_agapite, 20 i_reag_mandrake_root, 20 i_reag_blackmoor, 1 i_bottle_empty
+
+ON=@CREATE
+COLOR=0400
+
+ON=@DCLICK
+TARGET Target the tub you wish to dye.
+RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+
+[ITEMDEF i_terathane_dye]
+ID=i_bottle_2
+WEIGHT=4
+VALUE=150
+NAME=Terathan
+SKILLMAKE=ALCHEMY 65.0, t_mortar
+RESOURCES=20 i_ingot_terathane, 20 i_reag_spider_silk, 10 i_reag_serpent_scale, 1 i_bottle_empty
+
+ON=@CREATE
+COLOR=05a5
+
+ON=@DCLICK
+TARGET Target the tub you wish to dye.
+RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+
+[ITEMDEF i_verite_dye]
+ID=i_bottle_2
+WEIGHT=4
+VALUE=150
+NAME=Verite
+SKILLMAKE=ALCHEMY 70.0, t_mortar
+RESOURCES=20 i_ingot_verite, 20 i_reag_fertile_dirt, 20 i_reag_eye_of_newt, 1 i_bottle_empty
+
+ON=@CREATE
+COLOR=07d1
+
+ON=@DCLICK
+TARGET Target the tub you wish to dye.
+RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+
+[ITEMDEF i_valorite_dye]
+ID=i_bottle_2
+WEIGHT=4
+VALUE=150
+NAME=Valorite
+SKILLMAKE=ALCHEMY 70.0, t_mortar
+RESOURCES=20 i_ingot_valorite, 20 i_reag_fertile_dirt, 20 i_reag_worm_heart, 1 i_bottle_empty
+
+ON=@CREATE
+COLOR=0515
+
+ON=@DCLICK
+TARGET Target the tub you wish to dye.
+RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+
+[ITEMDEF i_adamantine_dye]
+ID=i_bottle_2
+WEIGHT=4
+VALUE=150
+NAME=Adamantine
+SKILLMAKE=ALCHEMY 75.0, t_mortar
+RESOURCES=5 i_ingot_adamantine, 20 i_reag_eye_of_newt, 20 i_reag_worm_heart, 1 i_bottle_empty
+
+ON=@CREATE
+COLOR=0524
+
+ON=@DCLICK
+TARGET Target the tub you wish to dye.
+RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+
+[ITEMDEF i_mahogany_dye]
+ID=i_bottle_2
+WEIGHT=4
+VALUE=150
+NAME=Mahogany
+SKILLMAKE=ALCHEMY 75.0, t_mortar
+RESOURCES=10 i_log_mahogany, 10 i_log_oak, 20 i_reag_batwing, 1 i_bottle_empty
+
+ON=@CREATE
+COLOR=0608
+
+ON=@DCLICK
+TARGET Target the tub you wish to dye.
+RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+[ITEMDEF i_skargard_dye]
+ID=i_bottle_2
+WEIGHT=4
+VALUE=150
+NAME=Skargard
+SKILLMAKE=ALCHEMY 80.0, t_mortar
+RESOURCES=5 i_ingot_skargard, 20 i_reag_worm_heart, 20 i_reag_pumice, 1 i_bottle_empty
+
+ON=@CREATE
+COLOR=060
+
+ON=@DCLICK
+TARGET Target the tub you wish to dye.
+RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+[ITEMDEF i_cherry_dye]
+ID=i_bottle_2
+WEIGHT=4
+VALUE=150
+NAME=Cherry
+SKILLMAKE=ALCHEMY 80.0, t_mortar
+RESOURCES=2 i_log_cherry, 5 i_reag_dragon_blood, 20 i_reag_ectoplasm_vial, 1 i_bottle_empty
+
+ON=@CREATE
+COLOR=0151
+
+ON=@DCLICK
+TARGET Target the tub you wish to dye.
+RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+[ITEMDEF i_phoenix_dye]
+ID=i_bottle_2
+WEIGHT=4
+VALUE=150
+NAME=Phoenix
+SKILLMAKE=ALCHEMY 85.0, t_mortar
+RESOURCES=1 i_ingot_phoenix, 20 i_ingot_gold, 20 i_reag_sulfur_ash, 1 i_bottle_empty
+
+ON=@CREATE
+COLOR=032
+
+ON=@DCLICK
+TARGET Target the tub you wish to dye.
+RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+[ITEMDEF i_blackrock_dye]
+ID=i_bottle_2
+WEIGHT=4
+VALUE=150
+NAME=Blackrock
+SKILLMAKE=ALCHEMY 85.0, t_mortar
+RESOURCES=1 i_ingot_blackrock, 20 i_gem_shadow, 20 i_reag_blackmoor, 1 i_bottle_empty
+
+ON=@CREATE
+COLOR=0455
+
+ON=@DCLICK
+TARGET Target the tub you wish to dye.
+RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+[ITEMDEF i_bloodrock_dye]
+ID=i_bottle_2
+WEIGHT=4
+VALUE=150
+NAME=Bloodrock
+SKILLMAKE=ALCHEMY 85.0, t_mortar
+RESOURCES=1 i_ingot_bloodrock, 5 i_reag_blood_vial, 5 i_reag_blood_spawn, 1 i_bottle_empty
+
+ON=@CREATE
+COLOR=04c2
+
+ON=@DCLICK
+TARGET Target the tub you wish to dye.
+RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+[ITEMDEF i_composite_dye]
+ID=i_bottle_2
+WEIGHT=4
+VALUE=150
+NAME=Composite
+SKILLMAKE=ALCHEMY 90.0, t_mortar
+RESOURCES=5 i_log_composite, 25 i_reag_dead_wood, 1 i_balron_bones, 1 i_bronze2_dye, 1 i_bottle_empty
+
+ON=@CREATE
+COLOR=0488
+
+ON=@DCLICK
+TARGET Target the tub you wish to dye.
+RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+[ITEMDEF i_verminard_dye]
+ID=i_bottle_2
+WEIGHT=4
+VALUE=150
+NAME=Verminard
+SKILLMAKE=ALCHEMY 95.0, t_mortar
+RESOURCES=25 i_ingot_verminard, 25 i_gem_shadow, 25 i_reag_dragon_blood, 1 i_bottle_empty
+
+ON=@CREATE
+COLOR=079b
+
+ON=@DCLICK
+TARGET Target the tub you wish to dye.
+RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+[ITEMDEF i_stronghold_dye]
+ID=i_bottle_2
+WEIGHT=4
+VALUE=150
+NAME=Stronghold
+SKILLMAKE=ALCHEMY 95.0, t_mortar
+RESOURCES=25 i_ingot_stronghold, 25 i_angel_dust, 25 i_reag_daemon_bone, 1 i_bottle_empty
+
+ON=@CREATE
+COLOR=07a1
+
+ON=@DCLICK
+TARGET Target the tub you wish to dye.
+RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+[ITEMDEF i_enrichedtitanium_dye]
+ID=i_bottle_2
+WEIGHT=4
+VALUE=150
+NAME=Enriched Titanium
+SKILLMAKE=ALCHEMY 95.0, t_mortar
+RESOURCES=5 i_ingot_entit, 100 i_ingot_gold, 1 i_verite_dye, 1 i_titanium_dye, 1 i_bottle_empty
+
+ON=@CREATE
+COLOR=0798
+
+ON=@DCLICK
+TARGET Target the tub you wish to dye.
+RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+[ITEMDEF i_myst_dye]
+ID=i_bottle_2
+WEIGHT=4
+VALUE=150
+NAME=Myst
+SKILLMAKE=ALCHEMY 95.0, t_mortar
+RESOURCES=3 i_log_myst, 1 i_adamantine_dye, 1 i_valorite_dye, 1 i_bottle_empty
+
+ON=@CREATE
+COLOR=07a0
+
+ON=@DCLICK
+TARGET Target the tub you wish to dye.
+RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+
+[ITEMDEF i_acid_dye]
+ID=i_bottle_2
+WEIGHT=4
+VALUE=150
+NAME=Acid
+SKILLMAKE=ALCHEMY 100.0, t_mortar
+RESOURCES=20 i_poisonous_eye, 20 i_acid_demon_blood, 5 i_venomous_tooth, 40 i_infected_spine, 1 i_bottle_empty
+
+
+ON=@CREATE
+COLOR=0a43
+
+ON=@DCLICK
+TARGET Target the tub you wish to dye.
+RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+[ITEMDEF i_new_fire_dye]
+ID=i_bottle_2
+WEIGHT=4
+VALUE=150
+NAME=New Fire
+SKILLMAKE=ALCHEMY 100.0, t_mortar
+RESOURCES=100 i_reag_volcanic_ash, 10 i_reag_brimstone, 10 i_reag_blood_vial, 10 i_reag_blood_spawn, 1 i_balron_bones, 1 i_bottle_empty
+
+ON=@CREATE
+COLOR=077a
+
+ON=@DCLICK
+TARGET Target the tub you wish to dye.
+RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+[ITEMDEF i_whiteoak_dye]
+ID=i_bottle_2
+WEIGHT=4
+VALUE=150
+NAME=White Oak
+SKILLMAKE=ALCHEMY 95.0, t_mortar
+RESOURCES=3 i_log_whiteoak, 50 i_angel_dust, 100 i_ingot_silver, 1 i_bottle_empty
+
+ON=@CREATE
+COLOR=07b5
+
+ON=@DCLICK
+TARGET Target the tub you wish to dye.
+RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+
+[ITEMDEF i_new_ice_dye]
+ID=i_bottle_2
+WEIGHT=4
+VALUE=150
+NAME=New Ice
+SKILLMAKE=ALCHEMY 100.0, t_mortar
+RESOURCES=50 i_frost_lizard_scale, 20 i_ingot_gold, 10 i_ice_titan_eye, 20 i_angel_dust, 1 i_balron_bones, 1 i_bottle_empty
+
+ON=@CREATE
+COLOR=077b
+
+ON=@DCLICK
+TARGET Target the tub you wish to dye.
+RETURN 1
+
+ON=@TARGON_ITEM
+f_alchemy_dyes
+
+
+[EOF]

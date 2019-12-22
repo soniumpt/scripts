@@ -1,0 +1,1697 @@
+//******************************************************************************************************************************//
+//                      Function to ban a player from paging Created by Pink Panther                                           //
+//*****************************************************************************************************************************//
+
+[FUNCTION pageban]
+IF (<ISEMPTY <ARGS>>)
+	SRC.SYSMESSAGE Please enter the time (in minutes) you wish to ban the player for.
+	RETURN 1
+ENDIF
+
+if ( <ARGS> < 0 )
+   SRC.SYSMESSAGE You can't ban someone for negative time!
+   return 1
+endif
+
+  SRC.NEWITEM i_pageban
+  SRC.ACT.MORE1 = <args>
+  SRC.ACT.TARGET Who do you wish to ban from paging for <eval <SRC.ACT.MORE1>> minutes?
+  RETURN 1
+  
+[ITEMDEF i_pageban]
+NAME=Page Ban Targetter
+ID=i_memory
+TYPE=T_EQ_SCRIPT
+LAYER=30
+
+ON=@CREATE
+   ATTR=attr_decay
+
+ON=@TARGON_CHAR
+   if (<src.targ.findid(i_pageban_timer).uid>)
+      src.message They have already been banned from paging!
+      Return 1
+   endif
+	  SRC.TARG.ACCOUNT.TAG.PAGEBAN=1
+      SERV.NEWITEM= i_pageban_timer
+	  NEW.TIMER= <more1> * 60
+	  SRC.TARG.EQUIP <NEW.UID>
+	  src.targ.sysmessage  @55 You have been banned from paging for <eval <more1>> minutes.
+	  src.targ.sysmessage @55 Type .pagebantime to see how many time is left until the ban is removed.
+	  src.sysmessage @55 You have banned <src.targ.name> from paging for <eval <more1>> minutes.
+	  SERV.LOG :PAGE BAN: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> banned <SRC.TARG.UID> <SRC.TARG.ACCOUNT> <SRC.TARG.NAME> from paging for <eval <more1>> minutes.
+	  return 1
+
+
+ON=@TARGON_ITEM
+  SRC.SYSMESSAGE You can't ban an item!
+  TIMER=1
+  REMOVE
+  RETURN 1
+
+ON=@TARGON_GROUND
+  SRC.SYSMESSAGE You can't ban the ground!
+  TIMER=1
+  REMOVE
+  RETURN 1
+  
+  
+[Itemdef i_pageban_timer]
+Name=Page Ban Timer
+id=i_memory
+layer= 30
+TYPE=t_eq_script
+
+ON=@TIMER
+   cont.account.tag.pageban=
+   cont.sysmessage @55 You have been un-banned from paging.
+   remove
+   return 1
+   
+[Function pagebantime]
+if (<src.findid(i_pageban_timer).uid>)
+    SRC.SYSMESSAGE @55 There are <eval (<src.findid(i_pageban_timer).timer> / 60)> minutes left until the page ban is over.
+ELSE
+	SRC.SYSMESSAGE You don't appear to be banned from paging.
+	RETURN 1
+endif
+
+[PLEVEL 1]
+pagebantime
+
+[PLEVEL 6]
+pageban
+	
+
+//******************************************************************************************************************************//
+//                      Function to set a message above an NPC/Char head Created by Pink Panther                                //
+//*****************************************************************************************************************************//
+
+[EVENTS e_npc_message]
+ 
+ON=@CLICK
+MESSAGE <TAG.MESSAGE>
+ 
+[FUNCTION npcmessage]
+ 
+IF (<ISEMPTY <ARGS>>)
+        SRC.NEWITEM i_npc_message
+        SRC.ACT.TARGET Please target the NPC to remove a message from.
+ELSE
+        SRC.NEWITEM i_npc_message
+        NEW.NAME = <ARGS>
+        SRC.ACT.TARGET Please target the NPC to set the message to.
+ENDIF
+ 
+ 
+[ITEMDEF i_npc_message]
+NAME=NPC Message Targetter
+ID=i_memory
+TYPE=T_EQ_SCRIPT
+LAYER=30
+ 
+ON=@CREATE
+ATTR=attr_decay
+   
+ON=@TARGON_CHAR
+ 
+IF (<SRC.TARG.ISNPC>)
+        IF (STRMATCH("<NAME>","NPC Message Targetter"))
+                SRC.TARG.EVENTS -e_npc_message
+                SRC.TARG.TAG.MESSAGE =
+                SRC.SYSMESSAGE NPC Message successfuly removed.
+        ELSE
+                SRC.TARG.EVENTS +e_npc_message
+                SRC.TARG.TAG.MESSAGE = <NAME>
+                SRC.SYSMESSAGE NPC Message set to: <NAME>
+        ENDIF
+ELSE
+        SRC.SYSMESSAGE You must target a NPC with this.
+ENDIF
+REMOVE
+RETURN 1
+ 
+ON=@TARGON_GROUND
+SRC.SYSMESSAGE You must target a NPC with this.
+TIMER=1
+REMOVE
+RETURN 1
+ 
+ON=@TARGON_ITEM
+SRC.SYSMESSAGE You must target a NPC with this.
+TIMER=1
+REMOVE
+RETURN 1
+		
+	
+[EVENTS e_char_message]
+ 
+ON=@CLICK
+MESSAGE <TAG.CHARMESSAGE>
+ 
+[FUNCTION charmessage]
+ 
+IF (<ISEMPTY <ARGS>>)
+        SRC.NEWITEM i_char_message
+        SRC.ACT.TARGET Please target the character to remove a message from.
+ELSE
+        SRC.NEWITEM i_char_message
+        NEW.NAME = <ARGS>
+        SRC.ACT.TARGET Please target the character to set the message to.
+ENDIF
+ 
+ 
+[ITEMDEF i_char_message]
+NAME=Char Message Targetter
+ID=i_memory
+TYPE=T_EQ_SCRIPT
+LAYER=30
+ 
+ON=@CREATE
+ATTR=attr_decay
+   
+ON=@TARGON_CHAR
+ 
+
+        IF (STRMATCH("<NAME>","Char Message Targetter"))
+                SRC.TARG.EVENTS -e_char_message
+                SRC.TARG.TAG.CHARMESSAGE =
+                SRC.SYSMESSAGE Character Message successfuly removed.
+        ELSE
+                SRC.TARG.EVENTS +e_char_message
+                SRC.TARG.TAG.CHARMESSAGE = <NAME>
+                SRC.SYSMESSAGE Char Message set to: <NAME>
+        ENDIF
+REMOVE
+RETURN 1
+ 
+ON=@TARGON_GROUND
+SRC.SYSMESSAGE You must target a character with this.
+TIMER=1
+REMOVE
+RETURN 1
+ 
+ON=@TARGON_ITEM
+SRC.SYSMESSAGE You must target a character with this.
+TIMER=1
+REMOVE
+RETURN 1
+			
+	
+
+
+//******************************************************************************************************************************//
+//                      Function to players manually fix vote tags Created by Pink Panther                                     //
+//*****************************************************************************************************************************//
+
+[FUNCTION votefix]
+
+IF (<EVAL <SRC.ACCOUNT.TAG0.VOTEJOINUO>> == 1)
+
+	FOR <SRC.ACCOUNT.CHARS>
+		IF  (<SRC.ACCOUNT.CHAR.<EVAL <LOCAL._FOR>-1>.FINDID.i_mem_vote_joinuo>)
+			SRC.TAG.JOINUOCHECK=1
+			IF (<SRC.ACCOUNT.CHAR.<EVAL <LOCAL._FOR>-1>.FINDID.i_mem_vote_joinuo.TIMER> < 1) 
+				SRC.ACCOUNT.TAG.VOTEJOINUO=
+				SRC.ACCOUNT.CHAR.<EVAL <LOCAL._FOR>-1>.FINDID.i_mem_vote_joinuo.REMOVE
+				SERV.LOG :VOTE FIX: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> has successfully manually reseted Join UO vote timer.
+				SRC.SYSMESSAGE @30 Vote timer for JoinUO successfully reseted.
+			ELSE
+				SRC.SYSMESSAGE JoinUO doesn't seem bugged. If this is wrong please page.
+			ENDIF
+		ENDIF	
+	ENDFOR
+	
+	IF !(<EVAL <SRC.TAG0.JOINUOCHECK>>==1)
+		SRC.ACCOUNT.TAG.VOTEJOINUO=
+		SERV.LOG :VOTE FIX: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> has successfully manually reseted Join UO vote timer.
+		SRC.SYSMESSAGE @30 Vote timer for JoinUO successfully reseted.
+	ENDIF
+	
+	SRC.TAG.JOINUOCHECK=
+
+ELSE
+	SRC.SYSMESSAGE JoinUO doesn't seem bugged. If this is wrong please page.
+ENDIF
+
+IF (<EVAL <SRC.ACCOUNT.TAG0.VOTEUOTOP>> == 1)
+
+	FOR <SRC.ACCOUNT.CHARS>
+		IF  (<SRC.ACCOUNT.CHAR.<EVAL <LOCAL._FOR>-1>.FINDID.i_mem_vote_uotop>)
+			SRC.TAG.UOTOPCHECK=1
+			IF (<SRC.ACCOUNT.CHAR.<EVAL <LOCAL._FOR>-1>.FINDID.i_mem_vote_uotop.TIMER> < 1) 
+				SRC.ACCOUNT.TAG.VOTEUOTOP=
+				SRC.ACCOUNT.CHAR.<EVAL <LOCAL._FOR>-1>.FINDID.i_mem_vote_uotop.REMOVE
+				SERV.LOG :VOTE FIX: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> has successfully manually reseted UO Top 200 vote timer.
+				SRC.SYSMESSAGE @30 Vote timer for UO Top 200 successfully reseted.
+			ELSE
+				SRC.SYSMESSAGE UO Top 200 doesn't seem bugged. If this is wrong please page.
+			ENDIF
+		ENDIF	
+	ENDFOR
+	
+	IF !(<EVAL <SRC.TAG0.UOTOPCHECK>>==1)
+		SRC.ACCOUNT.TAG.VOTEUOTOP=
+		SERV.LOG :VOTE FIX: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> has successfully manually reseted UO Top 200 vote timer.
+		SRC.SYSMESSAGE @30 Vote timer for UO Top 200 successfully reseted.
+	ENDIF
+	
+	SRC.TAG.UOTOPCHECK=
+
+ELSE
+	SRC.SYSMESSAGE UO Top 200 doesn't seem bugged. If this is wrong please page.
+ENDIF
+
+IF (<EVAL <SRC.ACCOUNT.TAG0.VOTEXTREMETOP>> == 1)
+
+	FOR <SRC.ACCOUNT.CHARS>
+		IF  (<SRC.ACCOUNT.CHAR.<EVAL <LOCAL._FOR>-1>.FINDID.i_mem_vote_xtremetop>)
+			SRC.TAG.XTREMETOPCHECK=1
+			IF (<SRC.ACCOUNT.CHAR.<EVAL <LOCAL._FOR>-1>.FINDID.i_mem_vote_xtremetop.TIMER> < 1) 
+				SRC.ACCOUNT.TAG.VOTEXTREMETOP=
+				SRC.ACCOUNT.CHAR.<EVAL <LOCAL._FOR>-1>.FINDID.i_mem_vote_xtremetop.REMOVE
+				SERV.LOG :VOTE FIX: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> has successfully manually reseted XtremeTop 100 vote timer.
+				SRC.SYSMESSAGE @30 Vote timer for XtremeTop 100 successfully reseted.
+			ELSE
+				SRC.SYSMESSAGE XtremeTop 100 doesn't seem bugged. If this is wrong please page.
+			ENDIF
+		ENDIF	
+	ENDFOR
+	
+	IF !(<EVAL <SRC.TAG0.XTREMETOPCHECK>>==1)
+		SRC.ACCOUNT.TAG.VOTEXTREMETOP=
+		SERV.LOG :VOTE FIX: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> has successfully manually reseted XtremeTop 100 vote timer.
+		SRC.SYSMESSAGE @30 Vote timer for XtremeTop 100 successfully reseted.
+	ENDIF
+	
+	SRC.TAG.XTREMETOPCHECK=
+
+ELSE
+	SRC.SYSMESSAGE XtremeTop 100 doesn't seem bugged. If this is wrong please page.
+ENDIF
+
+IF (<EVAL <SRC.ACCOUNT.TAG0.VOTEMMORPGLIST>> == 1)
+
+	FOR <SRC.ACCOUNT.CHARS>
+		IF  (<SRC.ACCOUNT.CHAR.<EVAL <LOCAL._FOR>-1>.FINDID.i_mem_vote_mmorpglist>)
+			SRC.TAG.MMORPGLISTCHECK=1
+			IF (<SRC.ACCOUNT.CHAR.<EVAL <LOCAL._FOR>-1>.FINDID.i_mem_vote_mmorpglist.TIMER> < 1) 
+				SRC.ACCOUNT.TAG.VOTEMMORPGLIST=
+				SRC.ACCOUNT.CHAR.<EVAL <LOCAL._FOR>-1>.FINDID.i_mem_vote_mmorpglist.REMOVE
+				SERV.LOG :VOTE FIX: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> has successfully manually reseted MMORPG List vote timer.
+				SRC.SYSMESSAGE @30 Vote timer for MMORPG List successfully reseted.
+			ELSE
+				SRC.SYSMESSAGE MMORPG List doesn't seem bugged. If this is wrong please page.
+			ENDIF
+		ENDIF	
+	ENDFOR
+	
+	IF !(<EVAL <SRC.TAG0.MMORPGLISTCHECK>>==1)
+		SRC.ACCOUNT.TAG.VOTEMMORPGLIST=
+		SERV.LOG :VOTE FIX: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> has successfully manually reseted MMORPG List vote timer.
+		SRC.SYSMESSAGE @30 Vote timer for MMORPG List successfully reseted.
+	ENDIF
+	
+	SRC.TAG.MMORPGLISTCHECK=
+
+ELSE
+	SRC.SYSMESSAGE MMORPG List doesn't seem bugged. If this is wrong please page.
+ENDIF
+
+IF (<EVAL <SRC.ACCOUNT.TAG0.VOTEGTOP>> == 1)
+
+	FOR <SRC.ACCOUNT.CHARS>
+		IF  (<SRC.ACCOUNT.CHAR.<EVAL <LOCAL._FOR>-1>.FINDID.i_mem_vote_gtop>)
+			SRC.TAG.GTOPCHECK=1
+			IF (<SRC.ACCOUNT.CHAR.<EVAL <LOCAL._FOR>-1>.FINDID.i_mem_vote_gtop.TIMER> < 1) 
+				SRC.ACCOUNT.TAG.VOTEGTOP=
+				SRC.ACCOUNT.CHAR.<EVAL <LOCAL._FOR>-1>.FINDID.i_mem_vote_gtop.REMOVE
+				SERV.LOG :VOTE FIX: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> has successfully manually reseted GTop 100 vote timer.
+				SRC.SYSMESSAGE @30 Vote timer for GTop 100 successfully reseted.
+			ELSE
+				SRC.SYSMESSAGE GTop 100 UO doesn't seem bugged. If this is wrong please page.
+			ENDIF
+		ENDIF	
+	ENDFOR
+	
+	IF !(<EVAL <SRC.TAG0.GTOPCHECK>>==1)
+		SRC.ACCOUNT.TAG.VOTEGTOP=
+		SERV.LOG :VOTE FIX: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> has successfully manually reseted GTop 100 vote timer.
+		SRC.SYSMESSAGE @30 Vote timer for GTop 100 successfully reseted.
+	ENDIF
+	
+	SRC.TAG.GTOPCHECK=
+
+ELSE
+	SRC.SYSMESSAGE GTop 100 UO doesn't seem bugged. If this is wrong please page.
+ENDIF
+
+IF (<EVAL <SRC.ACCOUNT.TAG0.VOTETOP100UO>> == 1)
+
+	FOR <SRC.ACCOUNT.CHARS>
+		IF  (<SRC.ACCOUNT.CHAR.<EVAL <LOCAL._FOR>-1>.FINDID.i_mem_vote_top100uo>)
+			SRC.TAG.TOP100UOCHECK=1
+			IF (<SRC.ACCOUNT.CHAR.<EVAL <LOCAL._FOR>-1>.FINDID.i_mem_vote_top100uo.TIMER> < 1) 
+				SRC.ACCOUNT.TAG.VOTETOP100UO=
+				SRC.ACCOUNT.CHAR.<EVAL <LOCAL._FOR>-1>.FINDID.i_mem_vote_top100uo.REMOVE
+				SERV.LOG :VOTE FIX: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> has successfully manually reseted TOP 100 UO vote timer.
+				SRC.SYSMESSAGE @30 Vote timer for TOP 100 UO successfully reseted.
+			ELSE
+				SRC.SYSMESSAGE TOP 100 UO doesn't seem bugged. If this is wrong please page.
+			ENDIF
+		ENDIF	
+	ENDFOR
+	
+	IF !(<EVAL <SRC.TAG0.TOP100UOCHECK>>==1)
+		SRC.ACCOUNT.TAG.VOTETOP100UO=
+		SERV.LOG :VOTE FIX: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> has successfully manually reseted TOP 100 UO vote timer.
+		SRC.SYSMESSAGE @30 Vote timer for TOP 100 UO successfully reseted.
+	ENDIF
+	
+	SRC.TAG.TOP100UOCHECK=
+
+ELSE
+	SRC.SYSMESSAGE TOP 100 UO doesn't seem bugged. If this is wrong please page.
+ENDIF
+
+IF (<EVAL <SRC.ACCOUNT.TAG0.VOTEGAMESITES>> == 1)
+
+	FOR <SRC.ACCOUNT.CHARS>
+		IF  (<SRC.ACCOUNT.CHAR.<EVAL <LOCAL._FOR>-1>.FINDID.i_mem_vote_gamesites>)
+			SRC.TAG.GAMESITESCHECK=1
+			IF (<SRC.ACCOUNT.CHAR.<EVAL <LOCAL._FOR>-1>.FINDID.i_mem_vote_gamesites.TIMER> < 1) 
+				SRC.ACCOUNT.TAG.VOTEGAMESITES=
+				SRC.ACCOUNT.CHAR.<EVAL <LOCAL._FOR>-1>.FINDID.i_mem_vote_gamesites.REMOVE
+				SERV.LOG :VOTE FIX: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> has successfully manually reseted Game Sites vote timer.
+				SRC.SYSMESSAGE @30 Vote timer for Game Sites successfully reseted.
+			ELSE
+				SRC.SYSMESSAGE Game Sites doesn't seem bugged. If this is wrong please page.
+			ENDIF
+		ENDIF	
+	ENDFOR
+	
+	IF !(<EVAL <SRC.TAG0.GAMESITESCHECK>>==1)
+		SRC.ACCOUNT.TAG.VOTEGAMESITES=
+		SERV.LOG :VOTE FIX: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> has successfully manually reseted Game Sites vote timer.
+		SRC.SYSMESSAGE @30 Vote timer for Game Sites successfully reseted.
+	ENDIF
+	
+	SRC.TAG.GAMESITESCHECK=
+
+ELSE
+	SRC.SYSMESSAGE Game Sites doesn't seem bugged. If this is wrong please page.
+ENDIF
+
+IF (<EVAL <SRC.ACCOUNT.TAG0.VOTEMMORPGTOP>> == 1)
+
+	FOR <SRC.ACCOUNT.CHARS>
+		IF  (<SRC.ACCOUNT.CHAR.<EVAL <LOCAL._FOR>-1>.FINDID.i_mem_vote_mmorpgtop>)
+			SRC.TAG.MMORPGTOPCHECK=1
+			IF (<SRC.ACCOUNT.CHAR.<EVAL <LOCAL._FOR>-1>.FINDID.i_mem_vote_mmorpgtop.TIMER> < 1) 
+				SRC.ACCOUNT.TAG.VOTEMMORPGTOP=
+				SRC.ACCOUNT.CHAR.<EVAL <LOCAL._FOR>-1>.FINDID.i_mem_vote_mmorpgtop.REMOVE
+				SERV.LOG :VOTE FIX: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> has successfully manually reseted MMORPGTop 200 vote timer.
+				SRC.SYSMESSAGE @30 Vote timer for MMORPGTop 200 successfully reseted.
+			ELSE
+				SRC.SYSMESSAGE MMORPGTop 200 doesn't seem bugged. If this is wrong please page.
+			ENDIF
+		ENDIF	
+	ENDFOR
+	
+	IF !(<EVAL <SRC.TAG0.MMORPGTOPCHECK>>==1)
+		SRC.ACCOUNT.TAG.VOTEMMORPGTOP=
+		SERV.LOG :VOTE FIX: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> has successfully manually reseted MMORPGTop 200 vote timer.
+		SRC.SYSMESSAGE @30 Vote timer for MMORPGTop 200 successfully reseted.
+	ENDIF
+	
+	SRC.TAG.MMORPGTOPCHECK=
+
+ELSE
+	SRC.SYSMESSAGE MMORPGTop 200 doesn't seem bugged. If this is wrong please page.
+ENDIF
+
+IF (<EVAL <SRC.ACCOUNT.TAG0.VOTEUOGATEWAY>> == 1)
+
+	FOR <SRC.ACCOUNT.CHARS>
+		IF  (<SRC.ACCOUNT.CHAR.<EVAL <LOCAL._FOR>-1>.FINDID.i_mem_vote_uogateway>)
+			SRC.TAG.UOGATEWAYCHECK=1
+			IF (<SRC.ACCOUNT.CHAR.<EVAL <LOCAL._FOR>-1>.FINDID.i_mem_vote_uogateway.TIMER> < 1) 
+				SRC.ACCOUNT.TAG.VOTEUOGATEWAY=
+				SRC.ACCOUNT.CHAR.<EVAL <LOCAL._FOR>-1>.FINDID.i_mem_vote_uogateway.REMOVE
+				SERV.LOG :VOTE FIX: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> has successfully manually reseted UOGateway vote timer.
+				SRC.SYSMESSAGE @30 Vote timer for UOGateway successfully reseted.
+			ELSE
+				SRC.SYSMESSAGE UOGateway doesn't seem bugged. If this is wrong please page.
+			ENDIF
+		ENDIF	
+	ENDFOR
+	
+	IF !(<EVAL <SRC.TAG0.UOGATEWAYCHECK>>==1)
+		SRC.ACCOUNT.TAG.VOTEUOGATEWAY=
+		SERV.LOG :VOTE FIX: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> has successfully manually reseted UOGateway vote timer.
+		SRC.SYSMESSAGE @30 Vote timer for UOGateway successfully reseted.
+	ENDIF
+	
+	SRC.TAG.UOGATEWAYCHECK=
+
+ELSE
+	SRC.SYSMESSAGE UOGateway doesn't seem bugged. If this is wrong please page.
+ENDIF
+
+IF (<EVAL <SRC.ACCOUNT.TAG0.VOTETOPMMORPG>> == 1)
+
+	FOR <SRC.ACCOUNT.CHARS>
+		IF  (<SRC.ACCOUNT.CHAR.<EVAL <LOCAL._FOR>-1>.FINDID.i_mem_vote_topmmorpg>)
+			SRC.TAG.TOPMMORPGCHECK=1
+			IF (<SRC.ACCOUNT.CHAR.<EVAL <LOCAL._FOR>-1>.FINDID.i_mem_vote_topmmorpg.TIMER> < 1) 
+				SRC.ACCOUNT.TAG.VOTETOPMMORPG=
+				SRC.ACCOUNT.CHAR.<EVAL <LOCAL._FOR>-1>.FINDID.i_mem_vote_topmmorpg.REMOVE
+				SERV.LOG :VOTE FIX: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> has successfully manually reseted Top MMORPG vote timer.
+				SRC.SYSMESSAGE @30 Vote timer for Top MMORPG successfully reseted.
+			ELSE
+				SRC.SYSMESSAGE Top MMORPG doesn't seem bugged. If this is wrong please page.
+			ENDIF
+		ENDIF	
+	ENDFOR
+	
+	IF !(<EVAL <SRC.TAG0.TOPMMORPGCHECK>>==1)
+		SRC.ACCOUNT.TAG.VOTETOPMMORPG=
+		SERV.LOG :VOTE FIX: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> has successfully manually reseted Top MMORPG vote timer.
+		SRC.SYSMESSAGE @30 Vote timer for Top MMORPG successfully reseted.
+	ENDIF
+	
+	SRC.TAG.TOPMMORPGCHECK=
+
+ELSE
+	SRC.SYSMESSAGE Top MMORPG doesn't seem bugged. If this is wrong please page.
+ENDIF
+	
+
+[PLEVEL 1]
+votefix
+
+
+//******************************************************************************************************************************//
+// Function to move a player within your screen range to you, useful on logged out players at houses Created by Pink Panther   //
+//*****************************************************************************************************************************//
+
+[FUNCTION moveplayer]
+IF (<ISEMPTY <ARGS>>)
+	SRC.SYSMESSAGE Please specify which player you want to move.
+	RETURN 1
+ENDIF
+
+FORPLAYERS 15
+IF (strmatch("<NAME>","<ARGS>")
+	GO <SRC.P>
+	SERV.LOG :MOVE PLAYER: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> is moving <UID> <ACCOUNT> <NAME> to <SRC.P>
+ENDIF
+ENDFOR
+
+//******************************************************************************************************************************//
+//                        Function to fix global jewelry names once upon a time Created by Pink Panther                         //
+//*****************************************************************************************************************************//
+
+[FUNCTION fixjewelrynames]
+FORINSTANCES i_skill_ring
+			IF (!(strcmpi("<STRSUB 0 2 <NAME>>","of")))
+				NAME=ring <NAME>
+				VAR0.ringschanged +=1
+			ENDIF
+ENDFOR
+FORINSTANCES i_skill_bracelet
+			IF (!(strcmpi("<STRSUB 0 2 <NAME>>","of")))
+				NAME=bracelet <NAME>
+				VAR0.braceletschanged +=1
+			ENDIF
+ENDFOR
+FORINSTANCES i_skill_earrings
+			IF (!(strcmpi("<STRSUB 0 2 <NAME>>","of")))
+				NAME=earrings <NAME>
+				VAR0.earringschanged +=1
+			ENDIF
+ENDFOR
+FORINSTANCES i_skill_necklace_1
+			IF (!(strcmpi("<STRSUB 0 2 <NAME>>","of")))
+				NAME=necklace <NAME>
+				VAR0.necklaceschanged +=1
+			ENDIF
+ENDFOR
+FORINSTANCES i_skill_necklace_2
+			IF (!(strcmpi("<STRSUB 0 2 <NAME>>","of")))
+				NAME=necklace <NAME>
+				VAR0.necklaceschanged +=1
+			ENDIF
+ENDFOR
+FORINSTANCES i_skill_necklace_3
+			IF (!(strcmpi("<STRSUB 0 2 <NAME>>","of")))
+				NAME=necklace <NAME>
+				VAR0.necklaceschanged +=1
+			ENDIF
+ENDFOR
+
+SRC.SYSMESSAGE <EVAL <VAR.ringschanged>> rings names changed.
+SRC.SYSMESSAGE <EVAL <VAR.braceletschanged>> bracelets names changed.
+SRC.SYSMESSAGE <EVAL <VAR.earringschanged>> earrings names changed.
+SRC.SYSMESSAGE <EVAL <VAR.necklaceschanged>> necklaces names changed.
+
+VAR.ringschanged=
+VAR.braceletschanged=
+VAR.earringschanged=
+VAR.necklaceschanged=
+
+//******************************************************************************************************************************//
+//                         Function to convert hexadecimal to decimal Created by Pink Panther                                  //
+//*****************************************************************************************************************************//
+
+[FUNCTION converthex]
+
+IF (<ISEMPTY <ARGS>>)
+SRC.SYSMESSAGE Please specify an hexadecimal number.
+RETURN 1
+ENDIF
+
+SRC.SYSMESSAGE <ARGS>=<EVAL <ARGS>>
+RETURN1
+
+//******************************************************************************************************************************//
+//        Function to teleport to a logged in or logged out player, by name, instead of .goname Created by Pink Panther          //
+//*****************************************************************************************************************************//
+
+[FUNCTION goplayer]
+
+IF (<ISEMPTY <ARGS>>)
+SRC.SYSMESSAGE Please specify a player name to go to.
+RETURN 1
+ENDIF
+
+FORPLAYERS 6144
+	IF (strmatch("<ARGS>","<NAME>"))
+		IF (<ACCOUNT.PLEVEL> <= <SRC.ACCOUNT.PLEVEL>)
+			SRC.GO <P>
+			SERV.LOG :GOPLAYER: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> is going to <UID> <ACCOUNT> <NAME> at <P>
+			RETURN 1
+		ENDIF
+	ELSEIF (<FINDID.i_rune_incognito.uid>) && (strmatch("<ARGS>","<FINDID.i_rune_incognito.name>"))
+		IF (<ACCOUNT.PLEVEL> <= <SRC.ACCOUNT.PLEVEL>)
+			SRC.GO <P>
+			SERV.LOG :GOPLAYER: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> is going to <UID> <ACCOUNT> <NAME> at <P>
+			RETURN 1
+		ENDIF
+	ENDIF
+ENDFOR
+
+//******************************************************************************************************************************//
+//        Function to teleport to a logged in player, by name, instead of .goname Created by Pink Panther          //
+//*****************************************************************************************************************************//
+
+[FUNCTION goclient]
+
+IF (<ISEMPTY <ARGS>>)
+SRC.SYSMESSAGE Please specify a player name to go to.
+RETURN 1
+ENDIF
+
+SERV.ALLCLIENTS f_goclient_name125a <args>
+
+[FUNCTION f_goclient_name125a]
+
+IF (strmatch("<ARGS>","<NAME>"))
+	IF (<ACCOUNT.PLEVEL> <= <SRC.ACCOUNT.PLEVEL>)
+		SRC.GO <P>
+		SERV.LOG :GOCLIENT: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> is going to <UID> <ACCOUNT> <NAME> at <P>
+		RETURN 1
+	ENDIF
+ELSEIF (<FINDID.i_rune_incognito.uid>) && (strmatch("<ARGS>","<FINDID.i_rune_incognito.name>"))
+	IF (<ACCOUNT.PLEVEL> <= <SRC.ACCOUNT.PLEVEL>)
+		SRC.GO <P>
+		SERV.LOG :GOCLIENT: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> is going to <UID> <ACCOUNT> <NAME> at <P>
+		RETURN 1
+	ENDIF
+ENDIF
+ENDFOR
+
+//******************************************************************************************************************************//
+//                    Function to check amount of players in each faction Created by Pink Panther                              //
+//*****************************************************************************************************************************//
+
+[FUNCTION factionstatus]
+FORPLAYERS 6144
+	IF (strmatch("<tag0.alignment>","alignment_chaos"))
+		VAR0.PLAYERSINCHAOS +=1
+	ELSEIF (strmatch("<tag0.alignment>","alignment_order"))
+		VAR0.PLAYERSINORDER +=1
+	ELSEIF (strmatch("<tag0.alignment>","alignment_mercenary"))
+		VAR0.PLAYERSINMERCENARY +=1
+	ELSEIF (strmatch("<tag0.alignment>","alignment_syndicate"))
+		VAR0.PLAYERSINSYNDICATE +=1
+	ELSEIF (strmatch("<tag0.alignment>","alignment_brotherhood"))
+		VAR0.PLAYERSINBROTHERHOOD +=1
+	ENDIF
+ENDFOR
+
+SRC.SYSMESSAGE There are <EVAL <VAR0.PLAYERSINCHAOS>> players in Chaos.
+SRC.SYSMESSAGE There are <EVAL <VAR0.PLAYERSINORDER>> players in Order.
+SRC.SYSMESSAGE There are <EVAL <VAR0.PLAYERSINMERCENARY>> players in Mercenary.
+SRC.SYSMESSAGE There are <EVAL <VAR0.PLAYERSINSYNDICATE>> players in Syndicate.
+SRC.SYSMESSAGE There are <EVAL <VAR0.PLAYERSINBROTHERHOOD>> players in Brotherhood.
+
+VAR.PLAYERSINCHAOS=
+VAR.PLAYERSINORDER=
+VAR.PLAYERSINMERCENARY=
+VAR.PLAYERSINSYNDICATE=
+VAR.PLAYERSINBROTHERHOOD=
+
+//******************************************************************************************************************************//
+//                    Function to check the lock status of a specific skill Created by Pink Panther                            //
+//*****************************************************************************************************************************//
+
+[FUNCTION lockstatus]
+
+IF (<ISEMPTY <ARGS>>)
+SRC.SYSMESSAGE Please specify a skill to check lock status.
+RETURN 1
+ENDIF
+
+IF (!(strmatch("<ARGS>","alchemy")) && !(strmatch("<ARGS>","blacksmithing")) && !(strmatch("<ARGS>","bowery")) && !(strmatch("<ARGS>","carpentry")) && !(strmatch("<ARGS>","cooking")) && !(strmatch("<ARGS>","herding")) && !(strmatch("<ARGS>","fishing")) && !(strmatch("<ARGS>","healing")) && !(strmatch("<ARGS>","lockpicking")) && !(strmatch("<ARGS>","lumberjacking")) && !(strmatch("<ARGS>","magery")) && !(strmatch("<ARGS>","masonry")) && !(strmatch("<ARGS>","meditation")) && !(strmatch("<ARGS>","mining")) && !(strmatch("<ARGS>","musicianship")) && !(strmatch("<ARGS>","magicresistance")) && !(strmatch("<ARGS>","snooping")) && !(strmatch("<ARGS>","stealing")) && !(strmatch("<ARGS>","stealth")) && !(strmatch("<ARGS>","tailoring")) && !(strmatch("<ARGS>","tinkering")) && !(strmatch("<ARGS>","archery")) && !(strmatch("<ARGS>","swordsmanship")) && !(strmatch("<ARGS>","macefighting")) && !(strmatch("<ARGS>","fencing")) && !(strmatch("<ARGS>","parrying")) && !(strmatch("<ARGS>","tactics")) && !(strmatch("<ARGS>","wrestling")) && !(strmatch("<ARGS>","cartography")) && !(strmatch("<ARGS>","detection")) && !(strmatch("<ARGS>","hiding")) && !(strmatch("<ARGS>","inscription")) && !(strmatch("<ARGS>","necromancy")) && !(strmatch("<ARGS>","poisoning")) && !(strmatch("<ARGS>","provocation")) && !(strmatch("<ARGS>","taming")) && !(strmatch("<ARGS>","tracking")) && !(strmatch("<ARGS>","armslore")) && !(strmatch("<ARGS>","anatomy")) && !(strmatch("<ARGS>","animallore")) && !(strmatch("<ARGS>","itemid")) && !(strmatch("<ARGS>","evaluatingintel")))
+SRC.SYSMESSAGE That skill name does not exist.
+RETURN 1
+ENDIF
+
+SRC.NEWITEM i_lockstatus_targetter
+NEW.NAME=<ARGS>
+SRC.ACT.TARGET At whom do you want to check the lock status of <SRC.ACT.NAME>?
+RETURN 1
+
+
+[ITEMDEF i_lockstatus_targetter]
+
+NAME=Lock Status Targetter
+ID=i_memory
+TYPE=T_EQ_SCRIPT
+LAYER=30
+
+ON=@CREATE
+   ATTR=attr_decay
+
+ON=@TARGON_CHAR
+
+IF (<SRC.TARG.SKILLLOCK.<NAME>> == 2)
+SRC.SYSMESSAGE <NAME> is Locked.
+ELSEIF (<SRC.TARG.SKILLLOCK.<NAME>> == 1)
+SRC.SYSMESSAGE <NAME> has Arrow Down.
+ELSEIF (<SRC.TARG.SKILLLOCK.<NAME>> == 0)
+SRC.SYSMESSAGE <NAME> has Arrow Up.
+ENDIF
+RETURN 1
+
+ON=@TARGON_ITEM
+  SRC.SYSMESSAGE You can't target an item!
+  TIMER=1
+  REMOVE
+  RETURN 1
+
+ON=@TARGON_GROUND
+  SRC.SYSMESSAGE You can't target the ground!
+  TIMER=1
+  REMOVE
+  RETURN 1
+
+
+//******************************************************************************************************************************//
+//                 Function to check all characters names from a specified account name Created by Pink Panther                //
+//*****************************************************************************************************************************//
+
+[FUNCTION checkaccountcharacters]
+
+IF (<ISEMPTY <ARGS>>)
+	SRC.SYSMESSAGE Please specify which account you want to check.
+	RETURN 1
+ENDIF
+
+FORPLAYERS 6144
+	IF (strmatch("<ACCOUNT>","<ARGS>"))
+		IF !(<ACCOUNT.PLEVEL> > <SRC.ACCOUNT.PLEVEL>)
+			SRC.SYSMESSAGE Character Name: <NAME> 
+			SRC.SYSMESSAGE Online Status: <TAG.ISONLINE>
+		ENDIF
+	ENDIF
+ENDFOR
+
+[PLEVEL 6]
+checkaccountcharacters
+
+//******************************************************************************************************************************//
+//Function to summon an online player to your position and then send him back to his previous location Created by Pink Panther //
+//*****************************************************************************************************************************//
+
+[FUNCTION playersummon]
+IF (<ISEMPTY <ARGS>>)
+	SRC.SYSMESSAGE Please specify which player you want to summon.
+	RETURN 1
+ENDIF
+
+IF (strmatch("<SRC.NAME>","<ARGS>"))
+	SRC.SYSMESSAGE You can't summon yourself.
+	RETURN 1
+ENDIF
+
+SERV.ALLCLIENTS f_playersummon_name125a <args>
+
+[FUNCTION f_playersummon_name125a]
+
+IF (strmatch("<NAME>","<ARGS>"))
+	IF !(<ACCOUNT.PLEVEL> > <SRC.ACCOUNT.PLEVEL>)
+		TAG.PRESUMMONPOS=<P>
+		SERV.LOG :PLAYER SUMMON: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> is summoning <UID> <ACCOUNT> <NAME> from <P> to <SRC.P>
+		GO <SRC.P>
+		SYSMESSAGE You have been summoned by <SRC.NAME>.
+		SRC.SYSMESSAGE You summon <NAME> to your location.
+	ENDIF
+ELSEIF (<FINDID.i_rune_incognito.uid>) && (strmatch("<ARGS>","<FINDID.i_rune_incognito.name>"))
+	IF !(<ACCOUNT.PLEVEL> > <SRC.ACCOUNT.PLEVEL>)
+		TAG.PRESUMMONPOS=<P>
+		SERV.LOG :PLAYER SUMMON: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> is summoning <UID> <ACCOUNT> <NAME> from <P> to <SRC.P>
+		GO <SRC.P>
+		SYSMESSAGE You have been summoned by <SRC.NAME>.
+		SRC.SYSMESSAGE You summon <NAME> to your location.
+	ENDIF
+ENDIF
+
+
+[FUNCTION playerdismiss]
+
+  SRC.NEWITEM i_playerdismiss
+  SRC.ACT.TARGET Please target the player you want to send back to their pre summon location.
+  RETURN 1
+  
+[ITEMDEF i_playerdismiss]
+NAME=Player Dismiss Targetter
+ID=i_memory
+TYPE=T_EQ_SCRIPT
+LAYER=30
+
+ON=@CREATE
+   ATTR=attr_decay
+
+ON=@TARGON_CHAR
+	IF (<SRC.TARG.UID>==<SRC.UID>)
+		SRC.SYSMESSAGE You can't target yourself with this.
+		RETURN 1
+	ENDIF
+	
+	IF (<SRC.TARG.ACCOUNT.PLEVEL> > <SRC.ACCOUNT.PLEVEL>)
+		SRC.SYSMESSAGE You can't use this on this player.
+		RETURN 1
+	ENDIF
+	
+	IF !(<SRC.TARG.TAG.PRESUMMONPOS>)
+		SRC.SYSMESSAGE This player does not have any pre summon location saved.
+		RETURN 1
+	ELSE
+		SRC.TARG.GO <SRC.TARG.TAG.PRESUMMONPOS>
+		SRC.SYSMESSAGE <SRC.TARG.NAME> has been teleported back to <SRC.TARG.TAG.PRESUMMONPOS>
+		SRC.TARG.SYSMESSAGE You have been teleported back to your previous location.
+		SERV.LOG <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> dismissed <SRC.TARG.UID> <SRC.TARG.ACCOUNT> <SRC.TARG.NAME> from <SRC.TARG.P> to <SRC.TARG.TAG.PRESUMMONPOS>
+		SRC.TARG.TAG.PRESUMMONPOS=
+		RETURN 1
+	ENDIF
+
+ON=@TARGON_ITEM
+  SRC.SYSMESSAGE You can't target an item!
+  TIMER=1
+  REMOVE
+  RETURN 1
+
+ON=@TARGON_GROUND
+  SRC.SYSMESSAGE You can't target the ground!
+  TIMER=1
+  REMOVE
+  RETURN 1
+
+
+//*********************************************************************************************************//
+//               Function to check current server time Created by Pink Panther                             //
+//*********************************************************************************************************//
+[FUNCTION servertime]
+SRC.SYSMESSAGE Current server time is <serv.rtime>
+RETURN 1
+
+[PLEVEL 1]
+SERVERTIME
+
+//*********************************************************************************************************//
+//                 Function to disable Combat Messages Created by Pink Panther                             //
+//*********************************************************************************************************//
+
+[FUNCTION COMBATMESSAGES]
+
+IF (<SRC.TAG.DAMMESSAGE>==1)
+SRC.SYSMESSAGE You have enabled combat information messages.
+SRC.TAG.DAMMESSAGE=
+RETURN 1
+ELSE
+SRC.SYSMESSAGE You have disabled combat information messages.
+SRC.TAG.DAMMESSAGE=1
+RETURN 1
+ENDIF
+
+[PLEVEL 1]
+COMBATMESSAGES
+
+//*********************************************************************************************************//
+//                      Function to disable World Chat Created by Pink Panther                             //
+//*********************************************************************************************************//
+
+[FUNCTION worldchatmute]
+IF (<VAR.WORLDCHATDISABLED>==1) 
+	VAR.WORLDCHATDISABLED=
+	SRC.SYSMESSAGE World Chat is now ENABLED.
+	SERV.ALLCLIENTS SYSMESSAGE @07A1 World Chat has been RE-ENABLED.
+	RETURN 1
+ELSEIF (<VAR.WORLDCHATDISABLED>==0)
+	VAR.WORLDCHATDISABLED=1
+	SRC.SYSMESSAGE World Chat is now DISABLED.
+	SERV.ALLCLIENTS SYSMESSAGE @07A1 World Chat has been temporarily DISABLED.
+	RETURN 1
+ENDIF
+
+
+//***********************************************************//
+//         Function to check:                                //
+//                                                           //
+// - Character holding the most PvP Tickets                  //
+// - Total amount of PvP Tickets available in the server     //
+// - Number of characters holding at least 1 PvP Tickets     // 
+//                                                           //
+//       Created by Pink Panther                             //
+//***********************************************************//
+
+[FUNCTION pvpticketsrecord]
+
+FORINSTANCES i_pvptoken
+    IF !(<CONT.TOPOBJ.ISGM>)    
+	
+		VAR.PVPTICKETSCOUNT=<EVAL <VAR0.PVPTICKETSCOUNT> + <AMOUNT>>
+		
+		VAR.PVPTICKETSCOUNTCHAR=<EVAL <VAR.PVPTICKETSCOUNTCHAR>+1>
+		
+		IF (<AMOUNT> > <EVAL <VAR0.PVPTICKETSRECORD1>>)
+					
+			IF (strmatch("<CONT.TOPOBJ.NAME>", "<VAR.PVPTICKETSRECORD1NAME>"))
+			
+				VAR.PVPTICKETSRECORD1= <AMOUNT>
+				VAR.PVPTICKETSRECORD1CONTAINER=<CONT.NAME> <CONT.UID>
+				VAR.PVPTICKETSRECORD1NAME=<CONT.TOPOBJ.NAME>		
+						
+			ELSEIF (strmatch("<CONT.TOPOBJ.NAME>", "<VAR.PVPTICKETSRECORD2NAME>"))
+	
+				VAR.PVPTICKETSRECORD2= <EVAL <VAR.PVPTICKETSRECORD1>>
+				VAR.PVPTICKETSRECORD2CONTAINER= <VAR.PVPTICKETSRECORD1CONTAINER>
+				VAR.PVPTICKETSRECORD2NAME= <VAR.PVPTICKETSRECORD1NAME>
+		
+				VAR.PVPTICKETSRECORD1= <AMOUNT>
+				VAR.PVPTICKETSRECORD1CONTAINER=<CONT.NAME> <CONT.UID>
+				VAR.PVPTICKETSRECORD1NAME=<CONT.TOPOBJ.NAME>
+													
+			ELSEIF (strmatch("<CONT.TOPOBJ.NAME>", "<VAR.PVPTICKETSRECORD3NAME>"))
+	
+				VAR.PVPTICKETSRECORD3= <EVAL <VAR.PVPTICKETSRECORD2>>
+				VAR.PVPTICKETSRECORD3CONTAINER= <VAR.PVPTICKETSRECORD2CONTAINER>
+				VAR.PVPTICKETSRECORD3NAME= <VAR.PVPTICKETSRECORD2NAME>
+	
+				VAR.PVPTICKETSRECORD2= <EVAL <VAR.PVPTICKETSRECORD1>>
+				VAR.PVPTICKETSRECORD2CONTAINER= <VAR.PVPTICKETSRECORD1CONTAINER>
+				VAR.PVPTICKETSRECORD2NAME= <VAR.PVPTICKETSRECORD1NAME>
+		
+				VAR.PVPTICKETSRECORD1= <AMOUNT>
+				VAR.PVPTICKETSRECORD1CONTAINER=<CONT.NAME> <CONT.UID>
+				VAR.PVPTICKETSRECORD1NAME=<CONT.TOPOBJ.NAME>
+												
+			ELSEIF (strmatch("<CONT.TOPOBJ.NAME>", "<VAR.PVPTICKETSRECORD4NAME>"))
+	
+				VAR.PVPTICKETSRECORD4= <EVAL <VAR.PVPTICKETSRECORD3>>
+				VAR.PVPTICKETSRECORD4CONTAINER= <VAR.PVPTICKETSRECORD3CONTAINER>
+				VAR.PVPTICKETSRECORD4NAME= <VAR.PVPTICKETSRECORD3NAME>
+		
+				VAR.PVPTICKETSRECORD3= <EVAL <VAR.PVPTICKETSRECORD2>>
+				VAR.PVPTICKETSRECORD3CONTAINER= <VAR.PVPTICKETSRECORD2CONTAINER>
+				VAR.PVPTICKETSRECORD3NAME= <VAR.PVPTICKETSRECORD2NAME>
+	
+				VAR.PVPTICKETSRECORD2= <EVAL <VAR.PVPTICKETSRECORD1>>
+				VAR.PVPTICKETSRECORD2CONTAINER= <VAR.PVPTICKETSRECORD1CONTAINER>
+				VAR.PVPTICKETSRECORD2NAME= <VAR.PVPTICKETSRECORD1NAME>
+				
+				VAR.PVPTICKETSRECORD1= <AMOUNT>
+				VAR.PVPTICKETSRECORD1CONTAINER=<CONT.NAME> <CONT.UID>
+				VAR.PVPTICKETSRECORD1NAME=<CONT.TOPOBJ.NAME>
+													
+			ELSE
+				
+				VAR.PVPTICKETSRECORD5= <EVAL <VAR.PVPTICKETSRECORD4>>
+				VAR.PVPTICKETSRECORD5CONTAINER= <VAR.PVPTICKETSRECORD4CONTAINER>
+				VAR.PVPTICKETSRECORD5NAME= <VAR.PVPTICKETSRECORD4NAME>
+		
+				VAR.PVPTICKETSRECORD4= <EVAL <VAR.PVPTICKETSRECORD3>>
+				VAR.PVPTICKETSRECORD4CONTAINER= <VAR.PVPTICKETSRECORD3CONTAINER>
+				VAR.PVPTICKETSRECORD4NAME= <VAR.PVPTICKETSRECORD3NAME>
+		
+				VAR.PVPTICKETSRECORD3= <EVAL <VAR.PVPTICKETSRECORD2>>
+				VAR.PVPTICKETSRECORD3CONTAINER= <VAR.PVPTICKETSRECORD2CONTAINER>
+				VAR.PVPTICKETSRECORD3NAME= <VAR.PVPTICKETSRECORD2NAME>
+	
+				VAR.PVPTICKETSRECORD2= <EVAL <VAR.PVPTICKETSRECORD1>>
+				VAR.PVPTICKETSRECORD2CONTAINER= <VAR.PVPTICKETSRECORD1CONTAINER>
+				VAR.PVPTICKETSRECORD2NAME= <VAR.PVPTICKETSRECORD1NAME>
+		
+				VAR.PVPTICKETSRECORD1= <AMOUNT>
+				VAR.PVPTICKETSRECORD1CONTAINER=<CONT.NAME> <CONT.UID>
+				VAR.PVPTICKETSRECORD1NAME=<CONT.TOPOBJ.NAME>
+							
+			ENDIF
+						
+		ELSEIF ((<AMOUNT> > <EVAL <VAR0.PVPTICKETSRECORD2>>) && !(strmatch("<CONT.TOPOBJ.NAME>", "<VAR.PVPTICKETSRECORD1NAME>")))						
+					
+			IF (strmatch("<CONT.TOPOBJ.NAME>", "<VAR.PVPTICKETSRECORD2NAME>"))
+						
+				VAR.PVPTICKETSRECORD2= <AMOUNT>
+				VAR.PVPTICKETSRECORD2CONTAINER=<CONT.NAME> <CONT.UID>
+				VAR.PVPTICKETSRECORD2NAME=<CONT.TOPOBJ.NAME>
+							
+			ELSEIF (strmatch("<CONT.TOPOBJ.NAME>", "<VAR.PVPTICKETSRECORD3NAME>"))
+	
+				VAR.PVPTICKETSRECORD3= <EVAL <VAR.PVPTICKETSRECORD2>>
+				VAR.PVPTICKETSRECORD3CONTAINER= <VAR.PVPTICKETSRECORD2CONTAINER>
+				VAR.PVPTICKETSRECORD3NAME= <VAR.PVPTICKETSRECORD2NAME>
+	
+				VAR.PVPTICKETSRECORD2= <AMOUNT>
+				VAR.PVPTICKETSRECORD2CONTAINER=<CONT.NAME> <CONT.UID>
+				VAR.PVPTICKETSRECORD2NAME=<CONT.TOPOBJ.NAME>
+													
+			ELSEIF (strmatch("<CONT.TOPOBJ.NAME>", "<VAR.PVPTICKETSRECORD4NAME>"))
+	
+				VAR.PVPTICKETSRECORD4= <EVAL <VAR.PVPTICKETSRECORD3>>
+				VAR.PVPTICKETSRECORD4CONTAINER= <VAR.PVPTICKETSRECORD3CONTAINER>
+				VAR.PVPTICKETSRECORD4NAME= <VAR.PVPTICKETSRECORD3NAME>
+						
+				VAR.PVPTICKETSRECORD3= <EVAL <VAR.PVPTICKETSRECORD2>>
+				VAR.PVPTICKETSRECORD3CONTAINER= <VAR.PVPTICKETSRECORD2CONTAINER>
+				VAR.PVPTICKETSRECORD3NAME= <VAR.PVPTICKETSRECORD2NAME>
+	
+				VAR.PVPTICKETSRECORD2= <AMOUNT>
+				VAR.PVPTICKETSRECORD2CONTAINER=<CONT.NAME> <CONT.UID>
+				VAR.PVPTICKETSRECORD2NAME=<CONT.TOPOBJ.NAME>
+							
+			ELSE
+	
+				VAR.PVPTICKETSRECORD5= <EVAL <VAR.PVPTICKETSRECORD4>>
+				VAR.PVPTICKETSRECORD5CONTAINER= <VAR.PVPTICKETSRECORD4CONTAINER>
+				VAR.PVPTICKETSRECORD5NAME= <VAR.PVPTICKETSRECORD4NAME>
+					
+				VAR.PVPTICKETSRECORD4= <EVAL <VAR.PVPTICKETSRECORD3>>
+				VAR.PVPTICKETSRECORD4CONTAINER= <VAR.PVPTICKETSRECORD3CONTAINER>
+				VAR.PVPTICKETSRECORD4NAME= <VAR.PVPTICKETSRECORD3NAME>
+						
+				VAR.PVPTICKETSRECORD3= <EVAL <VAR.PVPTICKETSRECORD2>>
+				VAR.PVPTICKETSRECORD3CONTAINER= <VAR.PVPTICKETSRECORD2CONTAINER>
+				VAR.PVPTICKETSRECORD3NAME= <VAR.PVPTICKETSRECORD2NAME>
+	
+				VAR.PVPTICKETSRECORD2= <AMOUNT>
+				VAR.PVPTICKETSRECORD2CONTAINER=<CONT.NAME> <CONT.UID>
+				VAR.PVPTICKETSRECORD2NAME=<CONT.TOPOBJ.NAME>
+							
+			ENDIF
+						
+		ELSEIF ((<AMOUNT> > <EVAL <VAR0.PVPTICKETSRECORD3>>) && !(strmatch("<CONT.TOPOBJ.NAME>", "<VAR.PVPTICKETSRECORD1NAME>")) && !(strmatch("<CONT.TOPOBJ.NAME>", "<VAR.PVPTICKETSRECORD2NAME>")))		
+		
+			IF (strmatch("<CONT.TOPOBJ.NAME>", "<VAR.PVPTICKETSRECORD3NAME>"))
+						
+				VAR.PVPTICKETSRECORD3= <AMOUNT>
+				VAR.PVPTICKETSRECORD3CONTAINER=<CONT.NAME> <CONT.UID>
+				VAR.PVPTICKETSRECORD3NAME=<CONT.TOPOBJ.NAME>
+							
+			ELSEIF (strmatch("<CONT.TOPOBJ.NAME>", "<VAR.PVPTICKETSRECORD4NAME>"))
+	
+				VAR.PVPTICKETSRECORD4= <EVAL <VAR.PVPTICKETSRECORD3>>
+				VAR.PVPTICKETSRECORD4CONTAINER= <VAR.PVPTICKETSRECORD3CONTAINER>
+				VAR.PVPTICKETSRECORD4NAME= <VAR.PVPTICKETSRECORD3NAME>
+	
+				VAR.PVPTICKETSRECORD3= <AMOUNT>
+				VAR.PVPTICKETSRECORD3CONTAINER=<CONT.NAME> <CONT.UID>
+				VAR.PVPTICKETSRECORD3NAME=<CONT.TOPOBJ.NAME>
+																			
+			ELSE
+	
+				VAR.PVPTICKETSRECORD5= <EVAL <VAR.PVPTICKETSRECORD4>>
+				VAR.PVPTICKETSRECORD5CONTAINER= <VAR.PVPTICKETSRECORD4CONTAINER>
+				VAR.PVPTICKETSRECORD5NAME= <VAR.PVPTICKETSRECORD4NAME>
+					
+				VAR.PVPTICKETSRECORD4= <EVAL <VAR.PVPTICKETSRECORD3>>
+				VAR.PVPTICKETSRECORD4CONTAINER= <VAR.PVPTICKETSRECORD3CONTAINER>
+				VAR.PVPTICKETSRECORD4NAME= <VAR.PVPTICKETSRECORD3NAME>
+						
+				VAR.PVPTICKETSRECORD3= <AMOUNT>
+				VAR.PVPTICKETSRECORD3CONTAINER=<CONT.NAME> <CONT.UID>
+				VAR.PVPTICKETSRECORD3NAME=<CONT.TOPOBJ.NAME>
+							
+			ENDIF
+							
+		ELSEIF ((<AMOUNT> > <EVAL <VAR0.PVPTICKETSRECORD4>>) && !(strmatch("<CONT.TOPOBJ.NAME>", "<VAR.PVPTICKETSRECORD1NAME>")) && !(strmatch("<CONT.TOPOBJ.NAME>", "<VAR.PVPTICKETSRECORD2NAME>")) && !(strmatch("<CONT.TOPOBJ.NAME>", "<VAR.PVPTICKETSRECORD3NAME>")))
+	
+			IF (strmatch("<CONT.TOPOBJ.NAME>", "<VAR.PVPTICKETSRECORD4NAME>"))
+						
+				VAR.PVPTICKETSRECORD4= <AMOUNT>
+				VAR.PVPTICKETSRECORD4CONTAINER=<CONT.NAME> <CONT.UID>
+				VAR.PVPTICKETSRECORD4NAME=<CONT.TOPOBJ.NAME>
+																										
+			ELSE
+	
+				VAR.PVPTICKETSRECORD5= <EVAL <VAR.PVPTICKETSRECORD4>>
+				VAR.PVPTICKETSRECORD5CONTAINER= <VAR.PVPTICKETSRECORD4CONTAINER>
+				VAR.PVPTICKETSRECORD5NAME= <VAR.PVPTICKETSRECORD4NAME>
+						
+				VAR.PVPTICKETSRECORD4= <AMOUNT>
+				VAR.PVPTICKETSRECORD4CONTAINER=<CONT.NAME> <CONT.UID>
+				VAR.PVPTICKETSRECORD4NAME=<CONT.TOPOBJ.NAME>
+							
+			ENDIF
+	
+						
+		ELSEIF ((<AMOUNT> > <EVAL <VAR0.PVPTICKETSRECORD5>>) && !(strmatch("<CONT.TOPOBJ.NAME>", "<VAR.PVPTICKETSRECORD1NAME>")) && !(strmatch("<CONT.TOPOBJ.NAME>", "<VAR.PVPTICKETSRECORD2NAME>")) && !(strmatch("<CONT.TOPOBJ.NAME>", "<VAR.PVPTICKETSRECORD3NAME>")) && !(strmatch("<CONT.TOPOBJ.NAME>", "<VAR.PVPTICKETSRECORD4NAME>")))
+								
+				VAR.PVPTICKETSRECORD5= <AMOUNT>
+				VAR.PVPTICKETSRECORD5CONTAINER=<CONT.NAME> <CONT.UID>
+				VAR.PVPTICKETSRECORD5NAME=<CONT.TOPOBJ.NAME>
+					
+		ENDIF
+	ENDIF	
+ENDFOR
+
+SRC.SYSMESSAGE First player with most PvP Tickets is <VAR.PVPTICKETSRECORD1NAME> with <EVAL <VAR.PVPTICKETSRECORD1>> PvP Tickets stored at <VAR.PVPTICKETSRECORD1CONTAINER>.
+SRC.SYSMESSAGE Second player with most PvP Tickets is <VAR.PVPTICKETSRECORD2NAME> with <EVAL <VAR.PVPTICKETSRECORD2>> PvP Tickets stored at <VAR.PVPTICKETSRECORD2CONTAINER>.
+SRC.SYSMESSAGE Third player with most PvP Tickets is <VAR.PVPTICKETSRECORD3NAME> with <EVAL <VAR.PVPTICKETSRECORD3>> PvP Tickets stored at <VAR.PVPTICKETSRECORD3CONTAINER>.
+SRC.SYSMESSAGE Fourth player with most PvP Tickets is <VAR.PVPTICKETSRECORD4NAME> with <EVAL <VAR.PVPTICKETSRECORD4>> PvP Tickets stored at <VAR.PVPTICKETSRECORD4CONTAINER>.
+SRC.SYSMESSAGE Fifth player with most PvP Tickets is <VAR.PVPTICKETSRECORD5NAME> with <EVAL <VAR.PVPTICKETSRECORD5>> PvP Tickets stored at <VAR.PVPTICKETSRECORD5CONTAINER>.
+
+SRC.SYSMESSAGE Total amount of PvP Tickets in the server is <eval <VAR.PVPTICKETSCOUNT>> PvP Tickets.
+
+SRC.SYSMESSAGE <EVAL <VAR.PVPTICKETSCOUNT>> PvP Tickets are in <EVAL <VAR.PVPTICKETSCOUNTCHAR>> different characters.
+
+VAR.PVPTICKETSRECORD1=
+VAR.PVPTICKETSRECORD1CONTAINER=
+VAR.PVPTICKETSRECORD1NAME=
+
+VAR.PVPTICKETSRECORD2=
+VAR.PVPTICKETSRECORD2CONTAINER=
+VAR.PVPTICKETSRECORD2NAME=
+
+VAR.PVPTICKETSRECORD3=
+VAR.PVPTICKETSRECORD3CONTAINER=
+VAR.PVPTICKETSRECORD3NAME=
+
+VAR.PVPTICKETSRECORD4=
+VAR.PVPTICKETSRECORD4CONTAINER=
+VAR.PVPTICKETSRECORD4NAME=
+
+VAR.PVPTICKETSRECORD5=
+VAR.PVPTICKETSRECORD5CONTAINER=
+VAR.PVPTICKETSRECORD5NAME=
+
+VAR.PVPTICKETSCOUNT=
+VAR.PVPTICKETSCOUNTCHAR=
+
+
+//*********************************************************************************************************//
+//                              Claimskill Function                                                        //
+//*********************************************************************************************************//
+
+[PLEVEL 1]
+downtime2014
+
+[FUNCTION downtime2014]
+SRC.SYSMESSAGE This command is no longer available.
+RETURN 1
+
+IF (<SRC.ACCOUNT.TOTALCONNECTTIME> >=1440)
+IF (<SRC.ACCOUNT.TAG0.downtime2014> == 0)
+   SRC.ACCOUNT.TAG0.downtime2014=1
+   SRC.ACCOUNT.TAG0.ELIGIBLEFORSKILL=1
+   SRC.ACCOUNT.TAG0.ALLOCATEDSKILL=<EVAL <SRC.ACCOUNT.TAG0.ALLOCATEDSKILL> + 25>
+   SRC.ACCOUNT.TAG0.VOTEPOINTS=<EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS> + 250>
+   SERV.NEWITEM 0139d
+   NEW.COLOR 07ad
+   NEW.NAME I waited 5 days for a server transfer - 13/01/2014
+   NEW.BOUNCE
+   SRC.SYSMESSAGE @07ad Your account has been awarded 25% claimskill, 250 Loyalty Points and a Statue for the downtime.
+   SERV.LOG :downtime2014: Claimed on account <SRC.ACCOUNT>: <SRC.NAME> <SRC.UID>
+ELSE
+	SRC.SYSMESSAGE You already got your downtime reward!
+ENDIF
+ELSE
+	SRC.SYSMESSAGE Sorry but your account is not old enough to be worthy of any reward.
+ENDIF
+
+
+//*********************************************************************************************************//
+//                     Function to check maximum Loyalty Points Created by Pink Panther                    //
+//*********************************************************************************************************//
+
+[FUNCTION loyaltypointsrecord]
+
+FORPLAYERS 6144
+
+IF (<EVAL <ACCOUNT.TAG0.VOTEPOINTS>> > <EVAL <VAR0.LOYALTYVOTEPOINTSRECORD>>)
+VAR.LOYALTYVOTEPOINTSRECORD=<EVAL <ACCOUNT.TAG0.VOTEPOINTS>>
+VAR.LOYALTYVOTEPOINTSRECORDNAME=<NAME>
+ENDIF
+
+IF (<EVAL <ACCOUNT.TAG0.WASTEDPOINTS>> > <EVAL <VAR0.LOYALTYWASTEDPOINTSRECORD>>)
+VAR.LOYALTYWASTEDPOINTSRECORD=<EVAL <ACCOUNT.TAG0.WASTEDPOINTS>>
+VAR.LOYALTYWASTEDPOINTSRECORDNAME=<NAME>
+ENDIF
+
+IF ((<EVAL <ACCOUNT.TAG0.WASTEDPOINTS>> + <eval <ACCOUNT.TAG0.VOTEPOINTS>>) > <EVAL <VAR0.LOYALTYPOINTSRECORD>>) 
+VAR.LOYALTYPOINTSRECORD= (<EVAL <ACCOUNT.TAG0.WASTEDPOINTS>> + <eval <ACCOUNT.TAG0.VOTEPOINTS>>)
+VAR.LOYALTYPOINTSRECORDNAME=<NAME>
+ENDIF
+
+ENDFOR
+
+SRC.SYSMESSAGE Player with more Vote Loyalty Points: <VAR.LOYALTYVOTEPOINTSRECORDNAME> with <EVAL <VAR.LOYALTYVOTEPOINTSRECORD>> points.
+SRC.SYSMESSAGE Player with more Wasted Loyalty Points: <VAR.LOYALTYWASTEDPOINTSRECORDNAME> with <EVAL <VAR.LOYALTYWASTEDPOINTSRECORD>> points.
+SRC.SYSMESSAGE Player with more Total Loyalty Points: <VAR.LOYALTYPOINTSRECORDNAME> with <EVAL <VAR.LOYALTYPOINTSRECORD>> points.
+
+VAR.LOYALTYVOTEPOINTSRECORD=
+VAR.LOYALTYVOTEPOINTSRECORDNAME=
+
+VAR.LOYALTYWASTEDPOINTSRECORD=
+VAR.LOYALTYWASTEDPOINTSRECORDNAME=
+
+VAR.LOYALTYPOINTSRECORD= 
+VAR.LOYALTYPOINTSRECORDNAME=
+
+
+//*********************************************************************************************************//
+//      Vote Tags and Memory Items Removal Function Created by Pink Panther                                //
+//*********************************************************************************************************//
+
+[FUNCTION voteremove]
+
+SRC.NEWITEM i_vote_removal
+SRC.ACT.TARGET Who do you wish to remove all vote tags and memory items from?
+RETURN 1
+
+[ITEMDEF i_vote_removal]
+NAME=Vote Removal Targetter
+ID=i_memory
+TYPE=T_EQ_SCRIPT
+LAYER=30
+
+ON=@CREATE
+   ATTR=attr_decay
+   TIMER=10
+
+On=@TARGON_Char
+
+IF (<SRC.TARG.FINDID.i_mem_vote_joinuo>)
+SRC.TARG.FINDID.i_mem_vote_joinuo.remove
+ENDIF
+
+SRC.TARG.ACCOUNT.TAG.VOTEJOINUO=
+
+IF (<SRC.TARG.FINDID.i_mem_vote_uotop>) 
+SRC.TARG.FINDID.i_mem_vote_uotop.remove
+ENDIF
+
+SRC.TARG.ACCOUNT.TAG.VOTEUOTOP=
+
+IF (<SRC.TARG.FINDID.i_mem_vote_xtremetop>) 
+SRC.TARG.FINDID.i_mem_vote_xtremetop.remove
+ENDIF
+
+SRC.TARG.ACCOUNT.TAG.VOTEXTREMETOP=
+
+IF (<SRC.TARG.FINDID.i_mem_vote_mmorpglist>) 
+SRC.TARG.FINDID.i_mem_vote_mmorpglist.remove
+ENDIF
+
+SRC.TARG.ACCOUNT.TAG.VOTEMMORPGLIST=
+
+IF (<SRC.TARG.FINDID.i_mem_vote_gtop>) 
+SRC.TARG.FINDID.i_mem_vote_gtop.remove
+ENDIF
+
+SRC.TARG.ACCOUNT.TAG.VOTEGTOP=
+
+IF (<SRC.TARG.FINDID.i_mem_vote_top100uo>) 
+SRC.TARG.FINDID.i_mem_vote_top100uo.remove
+ENDIF
+
+SRC.TARG.ACCOUNT.TAG.VOTETOP100UO=
+
+IF (<SRC.TARG.FINDID.i_mem_vote_gamesites>) 
+SRC.TARG.FINDID.i_mem_vote_gamesites.remove
+ENDIF
+
+SRC.TARG.ACCOUNT.TAG.VOTEGAMESITES=
+
+IF (<SRC.TARG.FINDID.i_mem_vote_mmorpgtop>) 
+SRC.TARG.FINDID.i_mem_vote_mmorpgtop.remove
+ENDIF
+
+SRC.TARG.ACCOUNT.TAG.VOTEMMORPGTOP=
+
+IF (<SRC.TARG.FINDID.i_mem_vote_uogateway>) 
+SRC.TARG.FINDID.i_mem_vote_uogateway.remove
+ENDIF
+
+SRC.TARG.ACCOUNT.TAG.VOTEUOGATEWAY=
+
+IF (<SRC.TARG.FINDID.i_mem_vote_topmmorpg>) 
+SRC.TARG.FINDID.i_mem_vote_topmmorpg.remove
+ENDIF
+
+SRC.TARG.ACCOUNT.TAG.VOTETOPMMORPG=
+
+SERV.LOG :VOTE REMOVAL: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> removed <SRC.TARG.UID> <SRC.TARG.ACCOUNT> <SRC.TARG.NAME> vote memory items and tags!
+
+RETURN 1
+
+//*********************************************************************************************************//
+//                             Faction Removal Function Created by Pink Panther                            //
+//*********************************************************************************************************//
+
+[FUNCTION factionremove]
+
+if ( !strcmp( "<args>", "brotherhood" ) )
+SRC.NEWITEM i_brotherhood_removal
+SRC.ACT.TARGET Who do you wish to remove from the Brotherhood?
+RETURN 1
+elseif ( !strcmp( "<args>", "syndicate" ) )
+SRC.NEWITEM i_syndicate_removal
+SRC.ACT.TARGET Who do you wish to remove from the Syndicate?
+RETURN 1
+elseif ( !strcmp( "<args>", "mercenary" ) )
+SRC.NEWITEM i_mercenary_removal
+SRC.ACT.TARGET Who do you wish to remove from the Mercenaries?
+RETURN 1
+elseif ( !strcmp( "<args>", "order" ) )
+SRC.NEWITEM i_chaosorder_removal
+SRC.ACT.TARGET Who do you wish to remove from Order?
+RETURN 1
+elseif ( !strcmp( "<args>", "chaos" ) )
+SRC.NEWITEM i_chaosorder_removal
+SRC.ACT.TARGET Who do you wish to remove from Chaos?
+RETURN 1
+else
+SRC.SYSMESSAGE Please pick the faction you want to remove the player from. Brotherhood, Syndicate, Mercenary, Chaos or Order.
+return 1
+endif
+
+[ITEMDEF i_brotherhood_removal]
+NAME=Brotherhood Removal Targetter
+ID=i_memory
+TYPE=T_EQ_SCRIPT
+LAYER=30
+
+ON=@CREATE
+   ATTR=attr_decay
+   TIMER=10
+
+On=@TARGON_Char
+	SRC.TARG.TAG.BROTHERHOODRANK=
+    SRC.TARG.TAG.CURRENTBRANK=
+	SRC.TARG.TAG.ALIGNMENT=
+	SRC.TARG.TAG.REP.ALIGNMENT=
+	SRC.TARG.TAG.ALIGNMENT.SHOWTITLE=
+	SRC.TARG.TAG.NAME.SUFFIX=
+	SRC.TARG.EVENTS -e_brotherhood_rank
+    SERV.LOG :FACTION REMOVAL: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> removed <SRC.TARG.UID> <SRC.TARG.ACCOUNT> <SRC.TARG.NAME> from the Brotherhood!
+    return 1
+
+On=@Timer
+   Remove
+   
+[ITEMDEF i_syndicate_removal]
+NAME=Syndicate Removal Targetter
+ID=i_memory
+TYPE=T_EQ_SCRIPT
+LAYER=30
+
+ON=@CREATE
+   ATTR=attr_decay
+   TIMER=10
+
+On=@TARGON_Char
+    SRC.TARG.TAG.SYNDICATERANK=
+    SRC.TARG.TAG.CURRENTSRANK=
+	SRC.TARG.TAG.ALIGNMENT=
+	SRC.TARG.TAG.REP.ALIGNMENT=
+	SRC.TARG.TAG.ALIGNMENT.SHOWTITLE=
+	SRC.TARG.TAG.NAME.SUFFIX=
+	SRC.TARG.EVENTS -e_syndicate_rank
+	SERV.LOG :FACTION REMOVAL: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> removed <SRC.TARG.UID> <SRC.TARG.ACCOUNT> <SRC.TARG.NAME> from the Syndicate!
+    return 1
+
+On=@Timer
+   Remove
+
+[ITEMDEF i_mercenary_removal]
+NAME=Mercenary Removal Targetter
+ID=i_memory
+TYPE=T_EQ_SCRIPT
+LAYER=30
+
+ON=@CREATE
+   ATTR=attr_decay
+   TIMER=10
+
+On=@TARGON_Char
+    SRC.TARG.TAG.MERCENARYRANK=
+	SRC.TARG.TAG.CURRENTMRANK=
+	SRC.TARG.TAG.ALIGNMENT=
+	SRC.TARG.TAG.REP.ALIGNMENT=
+	SRC.TARG.TAG.ALIGNMENT.SHOWTITLE=
+	SRC.TARG.TAG.NAME.SUFFIX=
+	SRC.TARG.EVENTS -e_mercenary_rank
+    SERV.LOG :FACTION REMOVAL: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> removed <SRC.TARG.UID> <SRC.TARG.ACCOUNT> <SRC.TARG.NAME> from the Mercenaries!
+    return 1
+
+On=@Timer
+   Remove
+   
+
+[ITEMDEF i_chaosorder_removal]
+NAME=Chaos and Order Removal Targetter
+ID=i_memory
+TYPE=T_EQ_SCRIPT
+LAYER=30
+
+ON=@CREATE
+   ATTR=attr_decay
+   TIMER=10
+
+On=@TARGON_Char
+    SRC.TARG.TAG.ALIGNMENT=
+	SRC.TARG.TAG.CHARISCHAOS=
+	SRC.TARG.TAG.CHARISORDER=
+	SRC.TARG.TAG.REP.ALIGNMENT=
+	SRC.TARG.TAG.OCCLAIMED=
+	SRC.TARG.TAG.ALIGNMENT.SHOWTITLE=
+	SRC.TARG.TAG.NAME.SUFFIX=
+	SRC.TARG.EVENTS -e_order_rank
+	SRC.TARG.EVENTS -e_chaos_rank
+	SERV.LOG :FACTION REMOVAL: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> removed <SRC.TARG.UID> <SRC.TARG.ACCOUNT> <SRC.TARG.NAME> from Chaos/Order!
+    return 1
+
+On=@Timer
+   Remove
+   
+//*********************************************************************************************************//
+//              GM List Function and Login/Logout notifications Created by Pink Panther                    //
+//*********************************************************************************************************//
+[FUNCTION gmlist] 
+
+IF ( <ACCOUNT.PLEVEL> >= 2)
+	serv.allclients listgm 
+	return 1
+ENDIF
+
+[FUNCTION listgm] 
+
+IF ( <ACCOUNT.PLEVEL> >= 2)
+	IF (<ACCOUNT.PLEVEL> <= <SRC.ACCOUNT.PLEVEL>)
+	SRC.SYSMESSAGE @0b72 <NAME>: <REGION.NAME>
+	Return 1
+	ENDIF
+	IF ((<ACCOUNT.PLEVEL> > <SRC.ACCOUNT.PLEVEL>) && !(<flags> & statf_insubstantial))
+	SRC.SYSMESSAGE @0b72 <NAME>: <REGION.NAME>
+	Return 1
+	ENDIF
+Endif
+   
+[FUNCTION gmlogin] 
+
+IF ( <SRC.ACCOUNT.PLEVEL> >= 2)
+	serv.allclients logingm
+	return 1
+ENDIF
+
+[FUNCTION logingm] 
+IF ( <ACCOUNT.PLEVEL> >= 2)
+IF !(<UID> == <SRC.UID>)
+	IF (<ACCOUNT.PLEVEL> >= <SRC.ACCOUNT.PLEVEL>)
+	SYSMESSAGE @0b72 <SRC.NAME> logged in at <SRC.REGION.NAME>
+	Return 1
+	ENDIF
+endif
+Endif
+
+[FUNCTION gmlogout] 
+
+IF ( <SRC.ACCOUNT.PLEVEL> >= 2)
+	serv.allclients logoutgm
+	return 1
+ENDIF
+
+[FUNCTION logoutgm] 
+IF ( <ACCOUNT.PLEVEL> >= 2)
+IF !(<UID> == <SRC.UID>)
+	IF (<ACCOUNT.PLEVEL> >= <SRC.ACCOUNT.PLEVEL>)
+	SYSMESSAGE @0b72 <SRC.NAME> logged out at <SRC.REGION.NAME>
+	Return 1
+	ENDIF
+endif
+Endif
+
+
+[PLEVEL 2]
+gmlist
+
+//*********************************************************************************************************//
+//                             Escape Function Created by Pink Panther                                      //
+//*********************************************************************************************************//
+
+[FUNCTION stuck]
+
+SRC.f_close_trade
+
+IF  STRMATCH("Shame", "<SRC.REGION.NAME>")
+	SRC.SYSMESSAGE You can't do that from here.
+	RETURN 1
+ELSEIF STRMATCH("Britain Cowpen","<SRC.REGION.NAME>")
+	SRC.SYSMESSAGE You can't do that from here.
+	RETURN 1
+ELSEIF (<EVAL <SRC.TAG0.inevent>> == 1)
+	SRC.SYSMESSAGE You can't do that while participating in an event.
+	RETURN 1
+ELSEIF (<REGION_SKARGARD>)
+    SRC.SYSMESSAGE You can't do that from here.
+	RETURN 1
+ELSEIF (<SRC.ACT.TYPE> == t_multi)
+    SRC.SYSMESSAGE You cannot use this in a house.
+    RETURN 1
+ELSEIF (<REGION.FLAGS> & region_antimagic_all)
+    SRC.SYSMESSAGE You can't do that from here.
+    RETURN 1
+ELSEIF (<SRC.MEMORYFINDTYPE.memory_fight> )
+   SRC.SYSMESSAGE You cannot use this whilst fighting.
+   RETURN 1
+ELSEIF (<SRC.FLAGS> & statf_stone) 
+   SRC.SYSMESSAGE You cannot use this whilst stoned.
+   RETURN 1
+ELSEIF (<SRC.ACCOUNT.JAIL>=1)
+   SRC.SYSMESSAGE You cannot use this whilst in jail.
+   RETURN 1
+ELSEIF (<SRC.FLAGS> & statf_war) 
+   SRC.SYSMESSAGE You cannot use this in war mode.
+   RETURN 1
+ELSEIF (<SRC.FLAGS> & statf_criminal)       
+   SRC.SYSMESSAGE You cannot use this whilst criminal.
+   RETURN 1
+ELSEIF ( <SRC.FLAGS> & statf_freeze ) 
+    SRC.SYSMESSAGE You can't do that in your current state.
+    RETURN 1
+ELSEIF ( ( (<MEMORYFINDTYPE(memory_fight).uid>) && ( <UID.<MEMORYFINDTYPE(memory_fight).LINK>.NPC> = 0 ) ) || ( (<MEMORYFINDTYPE(MEMORY_IAGGRESSOR).uid>) && ( <UID.<MEMORYFINDTYPE(MEMORY_IAGGRESSOR).LINK>.NPC> = 0 ) ) )
+    SRC.SYSMESSAGE You are too busy fighting to do that right now.
+    RETURN 1
+ELSEIF ( (<MEMORYFINDTYPE(memory_harmedby).uid>) && ( <UID.<MEMORYFINDTYPE(memory_harmedby).LINK>.NPC> = 0 ) )
+    SRC.SYSMESSAGE You are too busy defending yourself to do that right now.
+    RETURN 1
+ENDIF
+
+IF (<SRC.FINDID.escape_teleport_delay.UID>)
+   SRC.SYSMESSAGE @0454 You will be teleported to <SRC.FINDID.escape_teleport_delay.NAME> in <eval (<SRC.FINDID.escape_teleport_delay.timer>)> seconds.
+   SRC.SYSMESSAGE @0459 Type .stuckcancel if you wish to cancel the teleport.
+   RETURN 1
+ENDIF
+
+
+IF (<ISEMPTY <ARGS>>) || !(STRMATCH("<ARGS>","Britain") || STRMATCH("<ARGS>","Minoc") || STRMATCH("<ARGS>","Buccaneer's Den") || STRMATCH("<ARGS>","Moonglow") )
+  SRC.SYSMESSAGE @0454 Please type the town you want to be teleported to:
+  SRC.SYSMESSAGE @0459 .stuck Britain
+  SRC.SYSMESSAGE @0459 .stuck Minoc
+  SRC.SYSMESSAGE @0459 .stuck Buccaneer's Den
+  SRC.SYSMESSAGE @0459 .stuck Moonglow
+  RETURN 1
+ELSE
+  IF !(<SRC.ISDEAD>)
+    IF !(<SRC.FINDID.m_teleport_delay.UID>)
+      SERV.NEWITEM = escape_teleport_delay
+      NEW.NAME=<ARGS>
+      NEW.EQUIP
+      SERV.NEWITEM = m_teleport_delay
+      NEW.EQUIP
+      RETURN 1
+    ELSE
+       SRC.SYSMESSAGE You must wait <eval (<SRC.FINDID.m_teleport_delay.timer>/60)> minutes before using this command again.
+        RETURN 1
+    ENDIF
+  ELSE
+    SRC.GO <ARGS>
+    RETURN 1
+  ENDIF
+ENDIF
+
+RETURN 1
+	
+
+[ItemDef escape_teleport_Delay]
+id=i_memory
+Name=Escape Teleport Delay
+type=t_eq_script
+
+ON=@Create
+TIMER = 60
+
+
+ON=@EQUIP
+SRC.MESSAGE Teleporting...
+SRC.SYSMESSAGE @0454 You will be teleported to <NAME> in 1 minute, please wait.
+SRC.SYSMESSAGE @0459 Type .stuckcancel if you wish to cancel the teleport.
+
+ON=@Timer
+CONT.f_close_trade
+
+IF  STRMATCH( "Britain Cowpen", "<CONT.REGION.NAME>" )
+	CONT.SYSMESSAGE You can't do that from here.
+	RETURN 1
+ELSEIF (<EVAL <CONT.TAG0.inevent>> == 1)
+	CONT.SYSMESSAGE You can't do that while participating in an event.
+	RETURN 1
+ELSEIF ( <REGION_SKARGARD> )
+    CONT.SYSMESSAGE You can't do that from here.
+	RETURN 1
+ELSEIF ( <CONT.ACT.TYPE> == t_multi )
+    CONT.sysmessage You cannot use this in a house.
+    return 1
+ELSEIF ( <REGION.FLAGS> & region_antimagic_all )
+    CONT.SYSMESSAGE You can't do that from here.
+    RETURN 1
+ELSEIF (<REGION.FLAGS> & region_antimagic_recall_out)
+    CONT.SYSMESSAGE You can't do that from here.
+    RETURN 1
+ELSEIF (<CONT.MEMORYFINDTYPE.memory_fight> )
+   CONT.sysmessage You cannot use this whilst fighting.
+   RETURN 1
+ELSEIF ( <CONT.FLAGS> & statf_stone ) 
+   CONT.sysmessage You cannot use this whilst stoned.
+   RETURN 1
+ELSEIF (<CONT.ACCOUNT.JAIL>=1)
+   CONT.sysmessage You cannot use this whilst in jail.
+   RETURN 1
+ELSEIF (<CONT.FLAGS> & statf_war) 
+   CONT.sysmessage You cannot use this in war mode.
+   RETURN 1
+ELSEIF (<CONT.FLAGS> & statf_criminal)       
+   CONT.sysmessage You cannot use this whilst criminal.
+   RETURN 1
+ELSEIF ( <CONT.FLAGS> & statf_freeze ) 
+    CONT.SYSMESSAGE You can't do that in your current state.
+    RETURN 1
+ENDIF
+
+IF (<CONT.ISDEAD>)
+	IF STRMATCH("<NAME>","Britain") 
+		CONT.GO 1482,1612,20
+	ELSEIF STRMATCH("<NAME>","Minoc")
+		CONT.GO 2578,605
+	ELSEIF STRMATCH("<NAME>","Buccaneer's Den")
+		CONT.GO 2707,2154
+	ELSEIF STRMATCH("<NAME>","Moonglow")
+		CONT.GO 4397,1090
+	ENDIF
+ELSE
+	CONT.GO <NAME>
+ENDIF
+CONT.SYSMESSAGE You have been teleported to <NAME>.
+REMOVE
+RETURN 1
+
+
+[ItemDef m_teleport_Delay]
+id=i_memory
+Name=Stuck Teleport Delay
+type=t_eq_script
+
+ON=@Create
+TIMER = 1800
+
+ON=@Timer
+REMOVE
+RETURN 1
+
+[FUNCTION stuckcancel]
+
+IF <SRC.FINDID.escape_teleport_delay.UID>
+SRC.FINDID.escape_teleport_delay.remove
+SRC.FINDID.m_teleport_delay.remove
+src.sysmessage You canceled the teleport.
+return 1 
+endif
+
+
+[PLEVEL 1]
+stuck
+stuckcancel
+
+
+
+//*********************************************************************************************************//
+//                         Academy Bindback Edited by Pink Panther                                         //
+//*********************************************************************************************************//
+
+[FUNCTION academyhome]
+	
+IF      ( <FLAGS> & statf_war ) 
+	SYSMESSAGE You can't do that when in warmode.       
+	RETURN 1
+ELSEIF ( <FLAGS> & statf_stone ) 
+	SYSMESSAGE You can't do that in your current state.
+	RETURN 1
+ELSEIF ( <REGION.FLAGS> & region_antimagic_all )
+	SYSMESSAGE You can't do that from here.
+	RETURN 1
+ELSEIF (<REGION.FLAGS> & region_antimagic_recall_out)
+	SYSMESSAGE You can't do that from here.
+      	RETURN 1
+ELSEIF (0<TAG.KFKSTORED> = 01) 
+	sysmessage You cannot use this while in a PVP
+	return 1
+ELSEIF (0<tag.statsstored> = 01) 
+	sysmessage You cannot use this while in a PVP
+	return 1
+ENDIF
+IF ( <FLAGS> & statf_dead )
+	IF ((<SRC.TAG0.ACADEMY>==1) || (<src.account.totalconnecttime> < 10000))
+	go 2010,2741,30
+    src.message You have been teleported to the Academy.
+	ELSE
+	SRC.SYSMESSAGE You can no longer use this command.
+	ENDIF
+endif
+
+[PLEVEL 1]
+academyhome
+
+[EOF]

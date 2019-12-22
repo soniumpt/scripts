@@ -1,0 +1,449 @@
+////////////////////////
+//Player Town Guards  //
+//v1.1                //
+//By Wigifer          //
+////////////////////////
+
+// Guard names
+
+[NAMES NAMES_GUARDS]
+20
+Andrew
+Bob
+Derek
+Donatello
+Eric
+George
+Karl
+Lenard
+Leonardo
+Michaelangelo
+Matthew
+Michael
+Nick
+Paul
+Phil
+Peter
+Raphael
+Simon
+Steven
+Terry
+
+
+// Good guards event
+
+[EVENTS e_goodguard] 
+ON=@NPCSeeNewPlayer
+IF (<SRC.KARMA> > 2000)
+FACE
+BOW
+DORAND 3
+SAY=Good day <SRC.SEX m'lord/m'lady>.
+SAY=Hail <SRC.SEX Sir/Miss> <SRC.NAME>.
+SAY=Welcome to our town <SRC.SEX m'lord/m'lady>.
+ENDDO
+
+ELSEIF (<SRC.KARMA> < -2000)
+DORAND 3
+SAY=This is no place for followers of evil!
+SAY=Your death will be a lesson to all evil foul <SRC.NAME>!
+SAY=Thou shalt not leave our town evil one!
+ENDDO
+ATTACK
+
+ELSEIF (<SRC.KILLS> > 3)
+DORAND 3
+SAY=Vile murderer, you shall pay for your sins with your blood!
+SAY=<SRC.NAME>, your death will be a lesson to all evil!
+SAY=Thou shalt not leave our town foul <SRC.NAME>!
+ENDDO
+ATTACK
+ENDIF
+
+ON=@Hit
+SAY Do not return here foul heathen!
+
+// Good town guards
+
+[CHARDEF c_h_townguard_good_sword]
+ID=C_MAN
+NAME=#NAMES_GUARDS the Town Guard
+SOUND=snd_HUMAN_M_DIE_01
+AVERSIONS=t_TRAP,t_eerie_stuff
+DAM=50,55
+TEVENTS	= e_goodguard
+TEVENTS=e_all_npc
+
+ON=@Create
+  COLOR		= colors_skin
+  STR		= 850
+  DEX		= 80
+  INT		= 25
+  NPC		= brain_monster
+  PARRYING	= 90.0
+  SWORDSMANSHIP	= 90.0
+  TACTICS	= 90.0
+  ANATOMY       = 90.0
+  FAME		= 3000
+     KARMA	= 2000
+
+  ITEMNEWBIE=random_male_hair
+  COLOR=colors_hair
+  ITEMNEWBIE=random_facial_hair
+  COLOR=match_hair
+
+  ITEM=m_posdef_army
+
+  ITEMNEWBIE=i_platemail_gloves_titanium
+  ITEMNEWBIE=i_platemail_arms_titanium
+  ITEMNEWBIE=i_platemail_gorget_titanium
+  ITEMNEWBIE=i_platemail_chest_titanium
+  ITEMNEWBIE=i_platemail_leggings_titanium
+  ITEMNEWBIE=i_sword_long_b_titanium
+  ITEMNEWBIE=i_shield_heater_titanium
+  ITEM=i_gold,{300 400}
+
+
+CATEGORY=Player Towns
+SUBSECTION=Guards
+DESCRIPTION=Good Guard (Sword)
+
+
+[CHARDEF c_h_townguard_good_mace]
+ID=C_MAN
+NAME=#NAMES_GUARDS the Town Guard
+SOUND=snd_HUMAN_M_DIE_01
+AVERSIONS=t_TRAP,t_eerie_stuff
+DAM=50,55
+TEVENTS	= e_goodguard
+TEVENTS=e_all_npc
+
+ON=@Create
+  COLOR		= colors_skin
+  STR		= 850
+  DEX		= 80
+  INT		= 25
+  NPC		= brain_monster
+  PARRYING	= 90.0
+  MACEFIGHTING	= 90.0
+  TACTICS	= 90.0
+  ANATOMY       = 90.0
+  FAME		= 3000
+     KARMA	= 2000
+
+  ITEMNEWBIE=random_male_hair
+  COLOR=colors_hair
+  ITEMNEWBIE=random_facial_hair
+  COLOR=match_hair
+
+  ITEM=m_posdef_army
+
+  ITEMNEWBIE=i_platemail_gloves_titanium
+  ITEMNEWBIE=i_platemail_arms_titanium
+  ITEMNEWBIE=i_platemail_gorget_titanium
+  ITEMNEWBIE=i_platemail_chest_titanium
+  ITEMNEWBIE=i_platemail_leggings_titanium
+  ITEMNEWBIE=i_mace_titanium
+  ITEMNEWBIE=i_shield_heater_titanium
+  ITEM=i_gold,{300 400}
+
+
+CATEGORY=Player Towns
+SUBSECTION=Guards
+DESCRIPTION=Good Guard (Mace)
+
+[CHARDEF c_h_townguard_good_halberd]
+ID=C_MAN
+NAME=#NAMES_GUARDS the Town Guard
+SOUND=snd_HUMAN_M_DIE_01
+AVERSIONS=t_TRAP,t_eerie_stuff
+DAM=50,55
+TEVENTS	= e_goodguard
+TEVENTS=e_all_npc
+
+ON=@Create
+  COLOR		= colors_skin
+  STR		= 850
+  DEX		= 80
+  INT		= 25
+  NPC		= brain_monster
+  PARRYING	= 90.0
+  MACEFIGHTING	= 90.0
+  TACTICS	= 90.0
+  ANATOMY       = 90.0
+  FAME		= 3000
+     KARMA	= 2000
+
+  ITEMNEWBIE=random_male_hair
+  COLOR=colors_hair
+  ITEMNEWBIE=random_facial_hair
+  COLOR=match_hair
+
+  ITEM=m_posdef_army
+
+  ITEMNEWBIE=i_platemail_gloves_titanium
+  ITEMNEWBIE=i_platemail_arms_titanium
+  ITEMNEWBIE=i_platemail_gorget_titanium
+  ITEMNEWBIE=i_platemail_chest_titanium
+  ITEMNEWBIE=i_platemail_leggings_titanium
+  ITEMNEWBIE=i_halberd_titanium
+  ITEM=i_gold,{300 400}
+
+
+CATEGORY=Player Towns
+SUBSECTION=Guards
+DESCRIPTION=Good Guard (Halberd)
+
+[CHARDEF c_h_townguard_good_mage]
+ID=C_MAN
+NAME=#NAMES_GUARDS the Town Guard
+SOUND=snd_HUMAN_M_DIE_01
+AVERSIONS=t_TRAP,t_eerie_stuff
+DAM=50,55
+TEVENTS	= e_goodguard
+TEVENTS=e_all_npc
+
+CATEGORY=Player Towns
+SUBSECTION=Guards
+DESCRIPTION=Good Guard (Mage)
+
+ON=@Create
+  COLOR		= colors_skin
+  STR		= 850
+  DEX		= 80
+  INT		= 25
+  NPC		= brain_monster
+  MAGERY	= 90.0
+  WRESTLING	= 90.0
+  TACTICS	= 45.0
+  ANATOMY       = 90.0
+  FAME		= 3000
+     KARMA	= 2000
+
+  ITEM=m_posdef_army
+
+  ITEMNEWBIE=i_hair_long
+  COLOR=colors_hair
+  ITEMNEWBIE=i_robe
+  COLOR=025
+  ITEMNEWBIE=i_hat_wizards
+  COLOR=025
+  ITEMNEWBIE=i_boots_calf
+  COLOR=025
+  ITEMNEWBIE=random_scroll
+
+  CONTAINER=i_bag
+  ITEM=i_reag_black_pearl,{ 1 15 }
+  ITEM=i_reag_blood_moss,{ 1 15 }
+  ITEM=i_reag_garlic,{ 1 15 }
+  ITEM=i_reag_ginseng,{ 1 15 }
+  ITEM=i_reag_mandrake_root,{ 1 15 }
+  ITEM=i_reag_nightshade,{ 1 15 }
+  ITEM=i_reag_sulfur_ash,{ 1 15 }
+  ITEM=i_reag_spider_silk,{ 1 15 }
+
+  ITEMNEWBIE=i_full_spellbook
+
+// Evil guards event
+
+[EVENTS e_evilguard] 
+ON=@NPCSeeNewPlayer
+IF (<SRC.KARMA> > 2000)
+DORAND 3
+SAY=Foul do-gooder! You shall die by my hands!
+SAY=<SRC.NAME>, you shall die in the name of evil this day!
+SAY=Get thee gone before I smite thee <SRC.NAME>
+ENDDO
+EMOTE spit towards you
+ATTACK
+
+ELSEIF (<SRC.KARMA> < -2000)
+DORAND 3
+SAY=Vile as always <SRC.SEX m'lord/m'lady>.
+SAY=Hail <SRC.SEX Sir/Miss> <SRC.NAME>.
+SAY=Welcome to our foul town <SRC.SEX m'lord/m'lady>.
+ENDDO
+ENDIF
+
+ON=@Hit
+SAY Do not return here foolish follower of light.
+SRC.DAMAGE={30 35}
+
+// Evil town guards
+
+[CHARDEF c_h_townguard_evil_sword]
+ID=C_MAN
+NAME=#NAMES_GUARDS the Town Guard
+SOUND=snd_HUMAN_M_DIE_01
+AVERSIONS=t_TRAP,t_eerie_stuff
+TEVENTS	= e_evilguard
+TEVENTS=e_all_npc
+
+ON=@Create
+  COLOR		= colors_skin
+  STR		= 150
+  DEX		= 80
+  INT		= 25
+  NPC		= brain_monster
+  PARRYING	= 90.0
+  SWORDSMANSHIP	= 90.0
+  TACTICS	= 90.0
+  ANATOMY       = 90.0
+  FAME		= 3000
+     KARMA	= -3000
+
+  ITEMNEWBIE=random_male_hair
+  COLOR=colors_hair
+  ITEMNEWBIE=random_facial_hair
+  COLOR=match_hair
+
+  ITEM=m_posdef_army
+
+  ITEMNEWBIE=i_platemail_gloves_titanium
+  ITEMNEWBIE=i_platemail_arms_titanium
+  ITEMNEWBIE=i_platemail_gorget_titanium
+  ITEMNEWBIE=i_platemail_chest_titanium
+  ITEMNEWBIE=i_platemail_leggings_titanium
+  ITEMNEWBIE=i_sword_long_b_titanium
+  ITEMNEWBIE=i_shield_heater_titanium
+  ITEM=i_gold,{300 400}
+
+
+CATEGORY=Player Towns
+SUBSECTION=Guards
+DESCRIPTION=Evil Guard (Sword)
+
+
+[CHARDEF c_h_townguard_evil_mace]
+ID=C_MAN
+NAME=#NAMES_GUARDS the Town Guard
+SOUND=snd_HUMAN_M_DIE_01
+AVERSIONS=t_TRAP,t_eerie_stuff
+TEVENTS	= e_evilguard
+TEVENTS=e_all_npc
+
+ON=@Create
+  COLOR		= colors_skin
+  STR		= 150
+  DEX		= 80
+  INT		= 25
+  NPC		= brain_monster
+  PARRYING	= 90.0
+  MACEFIGHTING	= 90.0
+  TACTICS	= 90.0
+  ANATOMY       = 90.0
+  FAME		= 3000
+     KARMA	= -3000
+
+  ITEMNEWBIE=random_male_hair
+  COLOR=colors_hair
+  ITEMNEWBIE=random_facial_hair
+  COLOR=match_hair
+
+  ITEM=m_posdef_army
+
+  ITEMNEWBIE=i_platemail_gloves_titanium
+  ITEMNEWBIE=i_platemail_arms_titanium
+  ITEMNEWBIE=i_platemail_gorget_titanium
+  ITEMNEWBIE=i_platemail_chest_titanium
+  ITEMNEWBIE=i_platemail_leggings_titanium
+  ITEMNEWBIE=i_mace_titanium
+  ITEMNEWBIE=i_shield_heater_titanium
+  ITEM=i_gold,{300 400}
+
+
+CATEGORY=Player Towns
+SUBSECTION=Guards
+DESCRIPTION=Evil Guard (Mace)
+
+[CHARDEF c_h_townguard_evil_halberd]
+ID=C_MAN
+NAME=#NAMES_GUARDS the Town Guard
+SOUND=snd_HUMAN_M_DIE_01
+AVERSIONS=t_TRAP,t_eerie_stuff
+TEVENTS	= e_evilguard
+TEVENTS=e_all_npc
+
+ON=@Create
+  COLOR		= colors_skin
+  STR		= 150
+  DEX		= 80
+  INT		= 25
+  NPC		= brain_monster
+  PARRYING	= 90.0
+  MACEFIGHTING	= 90.0
+  TACTICS	= 90.0
+  ANATOMY       = 90.0
+  FAME		= 3000
+     KARMA	= -3000
+
+  ITEMNEWBIE=random_male_hair
+  COLOR=colors_hair
+  ITEMNEWBIE=random_facial_hair
+  COLOR=match_hair
+
+  ITEM=m_posdef_army
+
+  ITEMNEWBIE=i_platemail_gloves_titanium
+  ITEMNEWBIE=i_platemail_arms_titanium
+  ITEMNEWBIE=i_platemail_gorget_titanium
+  ITEMNEWBIE=i_platemail_chest_titanium
+  ITEMNEWBIE=i_platemail_leggings_titanium
+  ITEMNEWBIE=i_halberd_titanium
+  ITEM=i_gold,{300 400}
+
+
+CATEGORY=Player Towns
+SUBSECTION=Guards
+DESCRIPTION=Evil Guard (Halberd)
+
+[CHARDEF c_h_townguard_evil_mage]
+ID=C_MAN
+NAME=#NAMES_GUARDS the Town Guard
+SOUND=snd_HUMAN_M_DIE_01
+AVERSIONS=t_TRAP,t_eerie_stuff
+TEVENTS	= e_evilguard
+TEVENTS=e_all_npc
+
+CATEGORY=Player Towns
+SUBSECTION=Guards
+DESCRIPTION=Evil Guard (Mage)
+
+ON=@Create
+  COLOR		= colors_skin
+  STR		= 150
+  DEX		= 80
+  INT		= 25
+  NPC		= brain_monster
+  MAGERY	= 90.0
+  WRESTLING	= 90.0
+  TACTICS	= 45.0
+  ANATOMY       = 90.0
+  FAME		= 3000
+     KARMA	= -3000
+
+  ITEM=m_posdef_army
+
+  ITEMNEWBIE=i_hair_long
+  COLOR=colors_hair
+  ITEMNEWBIE=i_robe
+  COLOR=025
+  ITEMNEWBIE=i_hat_wizards
+  COLOR=025
+  ITEMNEWBIE=i_boots_calf
+  COLOR=025
+  ITEMNEWBIE=random_scroll
+
+  CONTAINER=i_bag
+  ITEM=i_reag_black_pearl,{ 1 15 }
+  ITEM=i_reag_blood_moss,{ 1 15 }
+  ITEM=i_reag_garlic,{ 1 15 }
+  ITEM=i_reag_ginseng,{ 1 15 }
+  ITEM=i_reag_mandrake_root,{ 1 15 }
+  ITEM=i_reag_nightshade,{ 1 15 }
+  ITEM=i_reag_sulfur_ash,{ 1 15 }
+  ITEM=i_reag_spider_silk,{ 1 15 }
+
+  ITEMNEWBIE=i_full_spellbook
+
+[EOF]

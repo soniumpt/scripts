@@ -1,0 +1,174 @@
+// Scripted By Monty
+
+[PLEVEL 4]
+positioner
+
+[FUNCTION positioner]
+dialog d_mape_positioner
+
+[DEFNAME mape_positioner_settings]
+mape_p_background 1 // If you want background behind positioner set to 1.
+mape_p_maximum_move 18 // Maximum of move. Minimum is set to 1.
+mape_p_save_memory 0 // If you want save memory of your server set to 1.
+
+[DIALOG d_mape_positioner]
+0,0
+page 0
+if <DEF.mape_p_background>
+	resizepic 128 131 9270 377 172
+endif
+button 206 166 4501 4501 1 0 1
+button 206 237 4503 4503 1 0 2
+button 143 237 4505 4505 1 0 3
+button 143 166 4507 4507 1 0 4
+button 292 168 4500 4500 1 0 5
+button 292 237 4504 4504 1 0 6
+//dtext 192 143 262 Positioner
+dtext 376 166 956 How much:
+button 473 148 250 251 1 0 7
+button 473 179 252 253 1 0 8
+dtext 370 200 956 Automatic re-target:
+//dtext 345 255 262  
+dtext 345 275 262 Imperial UO Positioner
+button 425 235 1209 1210 1 0 9
+button 475 235 1209 1210 1 0 10
+if <TAG0.mape_pos_retarg>
+dtext 400 230 167 Yes
+dtext 450 230 956 No
+else
+dtext 400 230 956 Yes
+dtext 450 230 37 No
+endif
+if <TAG0.mape_pos_move>
+dtext 450 166 38 <eval <TAG0.mape_pos_move>>	
+else
+dtext 450 166 38 1
+endif
+
+[DIALOG d_mape_positioner button]
+ON=0
+sysmessage The positioner is closing.
+if <DEF.mape_p_save_memory>
+sysmessage Settings can not be save.
+TAG0.mape_pos_move =
+TAG0.mape_pos_retarg =
+else
+sysmessage Settings were saved.
+endif
+
+ON=1
+TARGETF f_move_n ,<src.uid>
+dialog d_mape_positioner
+
+ON=2
+TARGETF f_move_e ,<src.uid>
+dialog d_mape_positioner
+
+ON=3
+TARGETF f_move_s ,<src.uid>
+dialog d_mape_positioner
+
+ON=4
+TARGETF f_move_w ,<src.uid>
+dialog d_mape_positioner
+
+ON=5
+TARGETF f_move_up ,<src.uid>
+dialog d_mape_positioner
+
+ON=6
+TARGETF f_move_down ,<src.uid>
+dialog d_mape_positioner
+
+ON=7
+if <TAG0.mape_pos_move>
+if <TAG0.mape_pos_move> < <DEF.mape_p_maximum_move>
+TAG0.mape_pos_move ++
+else
+sysmessage [Imperial UO Positioner] Admin set maximum to: <eval <DEF.mape_p_maximum_move>>
+endif	
+else
+TAG0.mape_pos_move 2
+endif
+dialog d_mape_positioner
+
+ON=8
+if <TAG0.mape_pos_move>
+if <TAG0.mape_pos_move> > 1
+TAG0.mape_pos_move --
+else
+sysmessage [Imperial UO Positioner] One (1) is minimum.
+endif
+else
+TAG0.mape_pos_move 1
+sysmessage [Imperial UO Positioner] One (1) is minimum.
+endif
+dialog d_mape_positioner
+
+ON=9
+TAG0.mape_pos_retarg 1
+dialog d_mape_positioner
+
+ON=10
+TAG0.mape_pos_retarg 0
+dialog d_mape_positioner
+
+[FUNCTION f_move_n]
+if <TAG0.mape_pos_move>
+argo.move 0,-<TAG0.mape_pos_move>
+else
+argo.move 0,-1
+endif
+if <TAG0.mape_pos_retarg>
+TARGETF f_move_n ,<src.uid>
+endif
+
+[FUNCTION f_move_e]
+if <TAG0.mape_pos_move>
+argo.move <TAG0.mape_pos_move>,0
+else
+argo.move 1,0
+endif
+if <TAG0.mape_pos_retarg>
+TARGETF f_move_e ,<src.uid>
+endif
+
+[FUNCTION f_move_s]
+if <TAG0.mape_pos_move>
+argo.move 0,<TAG0.mape_pos_move>
+else
+argo.move 0,1
+endif
+if <TAG0.mape_pos_retarg>
+TARGETF f_move_s ,<src.uid>
+endif
+
+[FUNCTION f_move_w]
+if <TAG0.mape_pos_move>
+argo.move -<TAG0.mape_pos_move>,0
+else
+argo.move -1,0
+endif
+if <TAG0.mape_pos_retarg>
+TARGETF f_move_w ,<src.uid>
+endif
+
+[FUNCTION f_move_up]
+if <TAG0.mape_pos_move>
+argo.nudgeup <TAG0.mape_pos_move>
+else
+argo.nudgeup 1
+endif
+if <TAG0.mape_pos_retarg>
+TARGETF f_move_up ,<src.uid>
+endif
+
+[FUNCTION f_move_down]
+if <TAG0.mape_pos_move>
+argo.nudgeup -<TAG0.mape_pos_move>
+else
+argo.nudgeup -1
+endif
+if <TAG0.mape_pos_retarg>
+TARGETF f_move_down ,<src.uid>
+endif

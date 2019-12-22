@@ -1,0 +1,117 @@
+// ----------------------
+// - AFK Macro Licenses -
+// ----------------------
+
+// Core Components
+// ---------------
+
+[ITEMDEF m_afk_permit]
+ID=i_memory
+TYPE=t_eq_script
+NAME=AFK Permit Timer
+
+ON=@TIMER
+   CONT.SYSMESSAGE @43 You may now use another AFK Permit.
+   CONT.TAG.PERMIT=
+   SERV.LOG Character <CONT.NAME> on <CONT.ACCOUNT>'s permit for AFK has expired.
+   REMOVE
+   RETURN 1
+
+// Tickets
+// -------
+
+[ITEMDEF i_afk_permit_1]
+ID=i_scroll_blank
+NAME=AFK Macro Permit (1 hour)
+TYPE=t_normal
+
+ON=@CREATE
+   COLOR=0851
+
+ON=@DCLICK
+   IF !(<SRC.FINDID.m_afk_permit.UID>)
+      SRC.SYSMESSAGE @20 You may now AFK Macro for one hour.
+      SRC.SYSMESSAGE @25 Any longer and you will be subject to normal punishments.
+      SERV.NEWITEM m_afk_permit
+      NEW.EQUIP <SRC.UID>
+      NEW.TIMER=3600
+      SRC.TAG.PERMIT=AFK Allowance
+      SERV.LOG Character <SRC.NAME> on <SRC.ACCOUNT> has used an AFK Permit for 1 hour!
+      REMOVE
+   ELSE
+      LOCAL.TIMELEFT=<SRC.FINDID.m_afk_permit.TIMER> / 60
+      SRC.SYSMESSAGE @30 You cannot use another AFK Permit for <EVAL <LOCAL.TIMELEFT>> minutes.
+   ENDIF
+   RETURN 1
+   
+[ITEMDEF i_afk_permit_2]
+ID=i_scroll_blank
+NAME=AFK Macro Permit (2 hours)
+TYPE=t_normal
+
+ON=@CREATE
+   COLOR=0851
+
+ON=@DCLICK
+   IF !(<SRC.FINDID.m_afk_permit.UID>)
+      SRC.SYSMESSAGE @20 You may now AFK Macro for two hours.
+      SRC.SYSMESSAGE @25 Any longer and you will be subject to normal punishments.
+      SERV.NEWITEM m_afk_permit
+      NEW.EQUIP <SRC.UID>
+      NEW.TIMER=7200
+      SRC.TAG.PERMIT=AFK Allowance
+      SERV.LOG Character <SRC.NAME> on <SRC.ACCOUNT> has used an AFK Permit for 2 hours!
+      REMOVE
+   ELSE
+      LOCAL.TIMELEFT=<SRC.FINDID.m_afk_permit.TIMER> / 60
+      SRC.SYSMESSAGE @30 You cannot use another AFK Permit for <EVAL <LOCAL.TIMELEFT>> minutes.
+   ENDIF
+   RETURN 1
+   
+[ITEMDEF i_afk_permit_4]
+ID=i_scroll_blank
+NAME=AFK Macro Permit (4 hours)
+TYPE=t_normal
+
+ON=@CREATE
+   COLOR=0851
+
+ON=@DCLICK
+   IF !(<SRC.FINDID.m_afk_permit.UID>)
+      SRC.SYSMESSAGE @20 You may now AFK Macro for four hours.
+      SRC.SYSMESSAGE @25 Any longer and you will be subject to normal punishments.
+      SERV.NEWITEM m_afk_permit
+      NEW.EQUIP <SRC.UID>
+      NEW.TIMER=14400
+      SRC.TAG.PERMIT=AFK Allowance
+      SERV.LOG Character <SRC.NAME> on <SRC.ACCOUNT> has used an AFK Permit for 4 hours!
+      REMOVE
+   ELSE
+      LOCAL.TIMELEFT=<SRC.FINDID.m_afk_permit.TIMER> / 60
+      SRC.SYSMESSAGE @30 You cannot use another AFK Permit for <EVAL <LOCAL.TIMELEFT>> minutes.
+   ENDIF
+   RETURN 1
+   
+[ITEMDEF i_afk_permit_8]
+ID=i_scroll_blank
+NAME=AFK Macro Permit (8 hours)
+TYPE=t_normal
+
+ON=@CREATE
+   COLOR=0851
+
+ON=@DCLICK
+   IF !(<SRC.FINDID.m_afk_permit.UID>)
+      SRC.SYSMESSAGE @20 You may now AFK Macro for eight hours.
+      SRC.SYSMESSAGE @25 Any longer and you will be subject to normal punishments.
+      SERV.NEWITEM m_afk_permit
+      NEW.EQUIP <SRC.UID>
+      NEW.TIMER=28800
+      SRC.TAG.PERMIT=AFK Allowance
+      SERV.LOG Character <SRC.NAME> on <SRC.ACCOUNT> has used an AFK Permit for 8 hours!
+      REMOVE
+   ELSE
+      LOCAL.TIMELEFT=<SRC.FINDID.m_afk_permit.TIMER> / 60
+      SRC.SYSMESSAGE @30 You cannot use another AFK Permit for <EVAL <LOCAL.TIMELEFT>> minutes.
+   ENDIF
+   RETURN 1

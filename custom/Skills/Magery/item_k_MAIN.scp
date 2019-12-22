@@ -1,0 +1,169 @@
+[FUNCTION CHECK_PARAFIELD]
+   if ( <NPC> )
+      return 0
+   endif
+
+   if ( 0<TAG.PARAFIELD> == 0 )
+      return 0
+   endif
+
+   ACT	= <TAG.PARAFIELD>
+   if ( <ACT.TYPE> != t_spell )
+      TAG.PARAFIELD	=
+      return 0
+   endif
+
+   if ( <ACT.LINK.UID> == <UID> )
+      return 0
+   endif
+
+   if ( (<ACT.P.X> == <P.X>) && (<ACT.P.Y> == <P.Y>) )
+      ACT.REMOVE
+   endif
+
+   CONSUME 5 i_rune_PARALYZE_FIELD
+   return 1
+
+
+// STONE wall
+[ITEMDEF i_spell_wall_stone]
+ID		= 02c9
+NAME		= wall of stone
+TYPE		= T_WALL
+CAN=CAN_I_BLOCK
+DESCRIPTION	= @
+ON = @Create
+  COLOR	= { 02b3 1 0317 1 }
+  
+ON=@DROPON_CHAR
+   if ( <ARGO.TIMER> > 0 )
+    FINDLAYER.layer_spell_paralyze.remove
+    ARGO.REMOVE
+    CHECK_PARAFIELD
+    RETURN 1
+  endif
+
+ON = @STEP
+  if ( <TIMER> > 0 )
+    SRC.findlayer.layer_spell_paralyze.remove
+    SRC.FLAGS=(<SRC.FLAGS> &~ statf_freeze)
+    remove
+    SRC.CHECK_PARAFIELD
+    return 1
+  endif
+
+
+
+// FIRE wall
+[ITEMDEF i_spell_fire_wall_ew]
+ID		= 0398c
+NAME		= wall of fire
+TYPE		= T_FIRE
+ON = @Create
+
+ON = @Step
+   if ( <SRC.CHECK_PARAFIELD> )
+      REMOVE
+   endif
+
+[ITEMDEF i_spell_fire_wall_ns]
+ID		= 03996
+NAME		= wall of fire
+TYPE		= T_FIRE
+ON = @Create
+
+ON = @Step
+   if ( <SRC.CHECK_PARAFIELD> )
+      REMOVE
+   endif
+
+
+
+
+// POISON wall
+[ITEMDEF i_spell_poison_field_ew]
+ID		= 03914
+NAME		= wall of poison
+TYPE		= T_spell
+ON = @Create
+  COLOR	= 084f
+
+ON = @Step
+
+   if ( <SRC.CHECK_PARAFIELD> )
+      REMOVE
+   endif
+
+
+[ITEMDEF i_spell_poison_field_ns]
+ID		= 03920
+NAME		= wall of poison
+TYPE		= T_spell
+ON = @Create
+  COLOR	= 084f
+
+ON = @Step
+   if ( <SRC.CHECK_PARAFIELD> )
+      REMOVE
+   endif
+
+
+// PARALYSIS wall
+[ITEMDEF i_spell_paralyze_field_ew]
+ID		= 03967
+NAME		= stasis field
+TYPE		= T_spell
+ON = @Create
+  COLOR		= 0849
+  
+ON = @Step
+
+If (<Src.Isdead>)
+     Return 1
+EndIf
+
+  if ( <SRC.CHECK_PARAFIELD> )
+     REMOVE
+  else
+     SRC.TAG.PARAFIELD	= <UID>
+  endif
+
+
+[ITEMDEF i_spell_paralyze_field_ns]
+ID		= 03979
+NAME		= stasis field
+TYPE		= T_spell
+ON = @Create
+  COLOR		= 0849
+  
+ON = @Step
+
+If (<Src.Isdead>)
+     Return 1
+EndIf
+
+  if ( <SRC.CHECK_PARAFIELD> )
+     REMOVE
+  else
+     SRC.TAG.PARAFIELD	= <UID>
+  endif
+
+
+// ENERGY wall
+[ITEMDEF i_spell_energy_wall_ew]
+ID		= 03947
+NAME		= energy wall
+TYPE		= T_spell
+ON = @Create
+   COLOR	= 029
+
+
+[ITEMDEF i_spell_energy_wall_ns]
+ID		= 03956
+NAME		= energy wall
+TYPE		= T_spell
+ON = @Create
+   COLOR	= 029
+
+
+[EOF]

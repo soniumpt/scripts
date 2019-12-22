@@ -1,0 +1,53 @@
+[DIALOG d_seed_spyglass]
+128,48
+page 0
+resizepic 0 0 3600 384 384
+page 1
+resizepic 64 20 5054 256 20
+DTEXT 130 20 10 Basic Information
+resizepic 64 120 5054 256 35
+DTEXT 118 128 10 Advanced Information
+f_get_seed_information
+
+[DIALOG d_seed_spyglass TEXT]
+
+[DIALOG d_seed_spyglass BUTTON]
+
+
+[FUNCTION f_get_seed_information]
+DTEXT 40 40 25 The <SRC.TARG.NAME> will bear <VAR.FRUIT>'s.
+IF (<SRC.HERDING> > <VAR.SKILL>)
+   DTEXT 40 65 40 You feel you will be able to plant the
+   DTEXT 40 90 40 fruit with reasonable success.
+ELSE
+   DTEXT 40 65 40 You feel that you do not know
+   DTEXT 40 90 40 enough about the fruit to plant it.
+ENDIF
+IF (<SRC.HERBLORE> > (<VAR.SKILL> - 200) )
+   DTEXT 40 165 70 Your innate ability with plant life
+   DTEXT 40 190 70 tells you that the plant requires <eval <VAR.FEEDING>>
+   DTEXT 40 215 70 units of food each cycle.
+   IF (<SRC.HERBLORE> > (<VAR.SKILL> - 150) )
+      DTEXT 40 240 95 You also feel that the plant requires <eval <VAR.WATERING>>
+      DTEXT 40 265 95 units of water each cycle.
+   ELSE
+      DTEXT 40 240 95 You do not have enough knowledge of
+      DTEXT 40 265 95 plant life for watering information
+   ENDIF
+ELSE
+   DTEXT 40 165 70 You do not have enough knowledge of
+   DTEXT 40 190 70 plant life for feeding information
+   DTEXT 40 240 95 You do not have enough knowledge of
+   DTEXT 40 265 95 plant life for watering information
+ENDIF
+IF (<SRC.HERDING> > (<VAR.SKILL> + 150) )
+   DTEXT 40 290 110 You believe that the seed goes through
+   DTEXT 40 315 110 <eval <VAR.PHASES>> feeding and watering cycles.
+   IF (<SRC.HERDING> > (<VAR.SKILL> + 200) )
+      f_phasetime_minutes
+      DTEXT 40 340 125 Each cycle lasts around <eval <VAR.PHASETIME_MINUTES>> minutes
+   ENDIF
+ELSE
+   DTEXT 40 290 110 You believe that the seed goes through
+   DTEXT 40 315 110 <eval <VAR.PHASES>> feeding and watering cycles.
+ENDIF

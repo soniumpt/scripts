@@ -1,0 +1,99 @@
+[FUNCTION WRITEFILE]
+IF !(<FILE.INUSE>)
+FILE.MODE.CREATE=1
+FILE.MODE.APPEND=1
+FILE.MODE.WRITEFLAG=1
+IF (<FILE.OPEN <STRARG <ARGS>>>)
+FILE.WRITELINE <STREAT <ARGS>>
+FILE.CLOSE
+ENDIF
+ENDIF
+
+//Registration Script
+
+[DIALOG d_register]
+250,50
+//NOMOVE
+//NOCLOSE
+//NODISPOSE
+
+page 0
+
+RESIZEPIC 93 52 9200 354 388
+GUMPPIC 197 70 100
+TEXT 235 84 0 0
+TEXT 223 125 0 1
+GUMPPIC 90 27 52
+HTMLGUMP 175 184 200 100 2 1 1
+GUMPPIC 90 27 52
+HTMLGUMP 175 184 200 100 2 1 1
+GUMPPIC 102 296 2430
+TEXTENTRY 120 301 308 20 0 1 3
+TEXTENTRY 117 332 308 20 0 2 4
+TEXTENTRY 120 362 304 20 0 3 5
+BUTTON 235 411 247 248 1 0 1
+
+[DIALOG d_register TEXT]
+Welcome!
+Imperial UO
+Welcome to our world. Here, you will find lots of adventures and fun with other players. Please, respect the other players as well as the Staff Members. Our goal is to provide fun to everyone. Please, register your account details below, these informations are extremely important in case of account loss and other support cases. The staff team will never ask for any other information, such as your password.
+
+Real Name
+Account Name
+E-mail
+
+[DIALOG d_register BUTTON]
+
+ON=1
+
+IF !(STRMATCH(*@*, <ARGTXT[3]>))
+SRC.SYSMESSAGE Invalid e-mail. Please, try again.
+DIALOG d_register
+RETURN 0
+
+ELSE
+
+WRITEFILE registration\<SRC.ACCOUNT>.txt REAL NAME = <ARGTXT[1]>
+WRITEFILE registration\<SRC.ACCOUNT>.txt ACCOUNT = <SRC.ACCOUNT>
+WRITEFILE registration\<SRC.ACCOUNT>.txt CHARACTER NAME = <SRC.NAME>
+WRITEFILE registration\<SRC.ACCOUNT>.txt EMAIL = <ARGTXT [3]>
+SRC.SYSMESSAGE @0a43 You have successfully registered yourself!
+SRC.ACCOUNT.TAG.REGISTERED=1
+ENDIF
+RETURN 1
+
+//Staff logging
+
+[EVENTS e_staff]
+
+ON=@LOGIN
+stafflog <NAME> (<UID>) logged on in <REGION.NAME>
+gmlogin
+
+ON=@LOGOUT
+stafflog <NAME> (<UID>) logged off in <REGION.NAME>
+gmlogout
+
+ON=@Hunger
+RETURN 1
+
+ON=@ItemCreate
+stafflog <NAME> (<UID>) created <ARGO.NAME> (<ARGO.UID>)
+
+ON=@ItemPickUp_Pack
+stafflog <NAME> (<UID>) got <ACT.AMOUNT> <ACT.NAME> (<ACT>) from <ACT.CONT.NAME> (<ACT.CONT>) [POS:<p>]
+
+ON=@ITEMDROPON_GROUND
+stafflog <NAME> (<UID>) dropped <ACT.AMOUNT> <ACT.NAME> (<ACT>) in the floor [POS:<p>]
+
+ON=@ITEMDROPON_ITEM
+stafflog <NAME> (<UID>) put <ACT.AMOUNT> <ACT.NAME> (<ACT>) in <ARGO.NAME> (<ARGO.UID>) [POS:<p>]
+
+
+[FUNCTION stafflog]
+
+IF (<ISEVENT.e_staff>)
+WRITEFILE stafflogs\<NAME>_<serv.rtime.format %d><serv.rtime.format %m><serv.rtime.format %Y>.txt <RTIME.HOUR>:<RTIME.MINUTE>:<RTIME.SECOND> : <ARGS><DEF.BR>
+ELSE
+RETURN 1
+ENDIF

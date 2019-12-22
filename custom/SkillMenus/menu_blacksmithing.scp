@@ -1,0 +1,634 @@
+// Blacksmithing section
+
+[SKILLMENU sm_blacksmith]
+Blacksmithing
+
+ON=i_repair_deed_copper Repair Deeds
+SKILLMENU=sm_repair_deeds
+
+// ON=i_ANVIL Repair	// pretty much anyone can attempt to repair.
+// TESTIF=( <BLACKSMITHING> >= 1.0 )
+// REPAIR
+
+//ON=I_Pickaxe_rare1 <name> (<resmake>)
+//MAKEITEM=I_Pickaxe_rare1
+//TAG.MAKEITEM.LEVEL	= 100.0
+
+//ON=I_Pickaxe_rare2 <name> (<resmake>)
+//MAKEITEM=I_Pickaxe_rare2
+//TAG.MAKEITEM.LEVEL	= 100.0
+
+//ON=I_Pickaxe_rare <name> (<resmake>)
+//MAKEITEM=I_Pickaxe_rare
+//TAG.MAKEITEM.LEVEL	= 100.0
+
+ON=i_ingot_bronze <name> (<resmake>)
+MAKEITEM=i_ingot_bronze
+TAG.MAKEITEM.LEVEL	= 20.0
+
+//ON=i_ingot_brass <name> (<resmake>)
+//MAKEITEM=i_ingot_brass
+//TAG.MAKEITEM.LEVEL	= 25.0
+
+ON=i_ingot_steel <name> (<resmake>)
+MAKEITEM=i_ingot_steel
+TAG.MAKEITEM.LEVEL	= 30.0
+
+//ON=i_ingot_chrome <name> (<resmake>)
+//MAKEITEM=i_ingot_chrome
+//TAG.MAKEITEM.LEVEL	= 30.0
+
+ON=i_ingot_adamantine <name> (<resmake>)
+MAKEITEM=i_ingot_adamantine
+TAG.MAKEITEM.LEVEL	= 40.0
+
+ON=i_ingot_phoenix <name> (<resmake>)
+MAKEITEM=i_ingot_phoenix
+TAG.MAKEITEM.LEVEL	= 50.0
+
+ON=i_ingot_entit <name> (<resmake>)
+MAKEITEM=i_ingot_entit
+TAG.MAKEITEM.LEVEL	= 60.0
+
+ON=i_ingot_verminard <name> (<resmake>)
+MAKEITEM=i_ingot_verminard
+TAG.MAKEITEM.LEVEL	= 60.0
+
+ON=i_ingot_stronghold <name> (<resmake>)
+MAKEITEM=i_ingot_stronghold
+TAG.MAKEITEM.LEVEL	= 60.0
+
+//ON=i_ingot_blackrock <name> (<resmake>)
+//MAKEITEM=i_ingot_blackrock
+//TAG.MAKEITEM.LEVEL	= 80.0
+
+ON=i_ingot_bloodrock <name> (<resmake>)
+MAKEITEM=i_ingot_bloodrock
+TAG.MAKEITEM.LEVEL	= 80.0
+
+
+// New Alloys
+
+ON=i_ingot_valorite <name> (<resmake>)
+MAKEITEM=i_ingot_valorite
+TAG.MAKEITEM.LEVEL	= 40.0
+
+ON=i_ingot_verite <name> (<resmake>)
+MAKEITEM=i_ingot_verite
+TAG.MAKEITEM.LEVEL	= 40.0
+
+ON=i_sword_great Bladed weapons
+SKILLMENU=sm_bladed_weapons
+
+ON=i_axe Axes
+SKILLMENU=sm_axe_weapons
+
+ON=i_mace Blunt weapons
+SKILLMENU=sm_blunt_weapons
+
+ON=i_spear_short Pole weapons
+SKILLMENU=sm_pole_weapons
+
+ON=i_chainmail_tunic Mail armour
+SKILLMENU=sm_mail_armour
+
+ON=i_platemail_chest Plate armour
+SKILLMENU=sm_plate_armour
+
+ON=i_shield_round Shields
+SKILLMENU=sm_shields
+
+
+// == NEW DIALOG SYSTEM ==
+
+// ====================
+// =     FUNCTION     =
+// = Blacksmith Craft =
+// ====================
+
+// This function resets the TAG.CRAFTINGINDEX to 0
+// and then calls the DIALOG d_crafting_blacksmith
+//
+// As an FYI, TAG.CRAFTINGINDEX marks the offset of
+// the menu item currently at the top (From zero-point)
+
+[FUNCTION f_crafting_blacksmith]
+TAG.CRAFTINGINDEX = 0
+DIALOGCLOSE d_crafting_blacksmith
+DIALOG d_crafting_blacksmith
+
+// ====================
+// =      DIALOG      =
+// = Blacksmith Craft =
+// ====================
+
+// This dialog is a replacement for standard Blacksmithing
+// behaviour, offering a custom interface which informs
+// the user what is required for each item in the list.
+// 
+// The page list is as follows: 
+// - Page 1: Alloys (Using f_crafting_blacksmith_alloylist)
+// - Page 2: Blade Weapons (Using f_crafting_blacksmith_bladelist)
+// - Page 3: Blunt Weapons (Using f_crafting_blacksmith_bluntlist)
+// - Page 4: Piercing Weapons (Using f_crafting_blacksmith_piercinglist)
+// - Page 5: Armour (Using f_crafting_blacksmith_armourlist)
+//
+// Each page calls f_crafting_blacksmith_entry for each of its
+// up-to-four entries visible. When the player moves the list with
+// the up and down arrows, an offset is adjusted in TAG.CRAFTINGINDEX
+// (which is reset to 0 when a new page is selected from a button).
+//
+// f_crafting_blacksmith_entry takes two arguments:
+// - <[LIST] [OFFSET]>
+//   Replace LIST with whichever list is relevant to the page, e.g.
+//   Page 1 would be <f_crafting_blacksmith_alloylist [OFFSET]>
+//   Replace OFFSET with the <TAG.CRAFTINGINDEX + Item on page>
+//   as a zero-point index.
+//   e.g. The third visible item would be <TAG.CRAFTINGINDEX + 2>
+// - <BUTTONID>
+//   This simply tells f_crafting_blacksmith_entry which button to
+//   use in this instance. This will be:
+//   Page 1: 1001-1004
+//   Page 2: 2001-2004
+//   Page 3: 3001-3004
+//   Page 4: 4001-4004
+//   Page 5: 5001-5004
+//
+// If a player can make an item, pressing the relevant BUTTONID will
+// fire MAKEITEM on the player for that item.
+// 
+// All checks to see if a player can make an item are performed in
+// f_crafting_blacksmith_entry, so please refer to that to see how
+// that functionality works.
+
+
+[DIALOG d_crafting_blacksmith]
+30, 30
+resizepic 0 0 3500 640 480
+
+// == ROOT ==
+PAGE 0
+dtext 240 10 052 Blacksmithing Crafting Menu
+
+// Fun fact: We can actually HIDE the buttons behind the resizepic
+//           and STILL press the buttons!
+//           Hidden buttons which give the illusion of clicking
+//           the tab.
+// Alloys
+dorigin 30 30
+button +2 +3 9750 9750 1 0 1 
+button +2 +8 9750 9750 1 0 1 
+button +2 +13 9750 9750 1 0 1
+resizepic +0 +0 5100 115 40
+dtext +30 +2 035 Alloys
+// Blades
+dorigin *115 *0
+button +2 +3 9750 9750 1 0 2 
+button +2 +8 9750 9750 1 0 2
+button +2 +13 9750 9750 1 0 2
+resizepic +0 +0 5100 115 40
+dtext +5 +2 035 Blade Weapons
+// Blunts
+dorigin *115 *0
+button +2 +3 9750 9750 1 0 3
+button +2 +8 9750 9750 1 0 3
+button +2 +13 9750 9750 1 0 3
+resizepic +0 +0 5100 115 40
+dtext +5 +2 035 Blunt Weapons
+// Piercing 
+dorigin *115 *0
+button +2 +3 9750 9750 1 0 4 
+button +2 +8 9750 9750 1 0 4
+button +2 +13 9750 9750 1 0 4
+resizepic +0 +0 5100 115 40
+dtext +5 +2 035 Piercing Weapons
+// Armour
+dorigin *115 *0
+button +2 +3 9750 9750 1 0 5 
+button +2 +8 9750 9750 1 0 5
+button +2 +13 9750 9750 1 0 5
+resizepic +0 +0 5100 115 40
+dtext +30 +2 035 Armour
+// Main Screen
+resizepic 30 50 5100 575 415
+
+// == ALLOYS ==
+PAGE 1
+// There is no separation by metal for Alloys, so
+// straight up top tab saying Alloys!
+resizepic 40 55 5120 555 40
+dtext 300 65 057 All Alloys
+
+// The origin which defines the root point of f_crafting_blacksmith_entry
+// NOTE: If you remove this without changing any other code, the whole
+//       script *will* break.
+dorigin 40 100
+
+// f_crafting_blacksmith_entry uses the "dorigin" for its placement
+// so please do not remove it.
+f_crafting_blacksmith_entry <f_crafting_blacksmith_alloylist 0>, 1001
+f_crafting_blacksmith_entry <f_crafting_blacksmith_alloylist 1>, 1002
+f_crafting_blacksmith_entry <f_crafting_blacksmith_alloylist 2>, 1003
+f_crafting_blacksmith_entry <f_crafting_blacksmith_alloylist 3>, 1004
+
+// These are our right hand menu up and down items.
+IF (<TAG.CRAFTINGINDEX> > 0)
+   button 580 105 5600 5604 1 0 101
+ENDIF
+
+IF (<TAG.CRAFTINGINDEX> < <EVAL <f_crafting_blacksmith_alloylist> - 4>)
+   button 580 435 5602 5606 1 0 102
+ENDIF
+
+
+
+// == Blades ==
+PAGE 2
+// Blades are split by the type of blade in question,
+// e.g. Katana, Long Sword
+dorigin 40 55
+resizepic *0 +0 5120 111 20
+dtext +5 +0 057 Daggers
+resizepic *111 +0 5120 111 20
+dtext +5 +0 057 Kryss
+resizepic *111 +0 5120 111 20
+dtext +5 +0 057 Cutlasses
+resizepic *111 +0 5120 111 20
+dtext +5 +0 057 Katanas
+resizepic *111 +0 5120 111 20
+dtext +5 +0 057 Scimitars
+dorigin 40 75
+resizepic *0 +0 5120 111 20
+dtext +5 +0 057 Thin Swords
+resizepic *111 +0 5120 111 20
+dtext +5 +0 057 Long Swords
+resizepic *111 +0 5120 111 20
+dtext +5 +0 057 Great Swords
+resizepic *111 +0 5120 111 20
+dtext +5 +0 057 Broad Swords
+resizepic *111 +0 5120 111 20
+dtext +5 +0 057 Miscellany
+
+// The origin which defines the root point of f_crafting_blacksmith_entry
+// NOTE: If you remove this without changing any other code, the whole
+//       script *will* break.
+dorigin 40 100
+
+// f_crafting_blacksmith_entry uses the "dorigin" for its placement
+// so please do not remove it.
+f_crafting_blacksmith_entry <f_crafting_blacksmith_daggerlist 0>, 1001
+f_crafting_blacksmith_entry <f_crafting_blacksmith_daggerlist 1>, 1002
+f_crafting_blacksmith_entry <f_crafting_blacksmith_daggerlist 2>, 1003
+f_crafting_blacksmith_entry <f_crafting_blacksmith_daggerlist 3>, 1004
+
+// These are our right hand menu up and down items.
+IF (<TAG.CRAFTINGINDEX> > 0)
+   button 580 105 5600 5604 1 0 201
+ENDIF
+
+IF (<TAG.CRAFTINGINDEX> < <EVAL <f_crafting_blacksmith_daggerlist> - 4>)
+   button 580 435 5602 5606 1 0 202
+ENDIF
+
+// == Blunts ==
+PAGE 3
+// OVERLAY IN RED
+dtext 240 62 023 Blunt Weapons
+
+// The origin where we can place our menu
+dorigin 40 100
+
+
+// == Piercing ==
+PAGE 4
+// OVERLAY IN RED
+dtext 340 62 023 Piercing Weapons
+
+// The origin where we can place our menu
+dorigin 40 100
+
+
+// == Armour ==
+PAGE 5
+// OVERLAY IN RED
+dtext 480 62 023 Armour
+
+// The origin where we can place our menu
+dorigin 40 100
+
+
+
+
+[DIALOG d_crafting_blacksmith TEXT]
+
+[DIALOG d_crafting_blacksmith BUTTON]
+// == Main Page Transitions ==
+ON=1 // Alloys
+   TAG.CRAFTINGINDEX = 0
+   DIALOG d_crafting_blacksmith 1
+
+ON=2 // Blade
+   TAG.CRAFTINGINDEX = 0
+   DIALOG d_crafting_blacksmith 2
+
+ON=3 // Blunt
+   TAG.CRAFTINGINDEX = 0
+   DIALOG d_crafting_blacksmith 3
+
+ON=4 // Piercing
+   TAG.CRAFTINGINDEX = 0
+   DIALOG d_crafting_blacksmith 4
+
+ON=5 // Armor
+   TAG.CRAFTINGINDEX = 0
+   DIALOG d_crafting_blacksmith 5
+
+// Alloys Up/Down
+   
+ON=101
+   TAG.CRAFTINGINDEX -= 1
+   DIALOG d_crafting_blacksmith 1
+
+ON=102
+   TAG.CRAFTINGINDEX += 1
+   DIALOG d_crafting_blacksmith 1
+
+// Daggers Up/Down
+   
+ON=201
+   TAG.CRAFTINGINDEX -= 1
+   DIALOG d_crafting_blacksmith 2
+
+ON=202
+   TAG.CRAFTINGINDEX += 1
+   DIALOG d_crafting_blacksmith 2   
+   
+
+// Craft Alloy
+
+ON=1001
+   MAKEITEM <f_crafting_blacksmith_alloylist 0>
+
+ON=1002
+   MAKEITEM <f_crafting_blacksmith_alloylist 1>
+
+ON=1003
+   MAKEITEM <f_crafting_blacksmith_alloylist 2>
+
+ON=1004
+   MAKEITEM <f_crafting_blacksmith_alloylist 3>
+   
+
+
+
+// ====================
+// =     FUNCTION     =
+// =    Alloy List    =
+// ====================
+
+// Usage:
+// - f_crafting_blacksmith_alloylist
+//   RETURNS <ListLength>
+// - f_crafting_blacksmith_alloylist <ARGS>
+//   RETURNS <ITEMDEF AT INDEX <ARGS>>
+
+[FUNCTION f_crafting_blacksmith_alloylist]
+// If no argument, return the list length.
+// ISEMPTY checks to see, without an undefined, if ARGS is empty. If so, return the list length (Which we would need to manually update).
+IF (<ISEMPTY <ARGS>>)
+   RETURN "9"
+ELSE
+   DOSWITCH <EVAL <TAG.CRAFTINGINDEX> + <ARGS>>
+      RETURN "i_ingot_brass"
+      RETURN "i_ingot_bronze"
+      RETURN "i_ingot_steel"
+      RETURN "i_ingot_chrome"
+      RETURN "i_ingot_stronghold"
+      RETURN "i_ingot_verminard"
+      RETURN "i_ingot_entit"
+      RETURN "i_ingot_phoenix"
+      RETURN "i_ingot_adamantine"
+   ENDDO
+ENDIF
+
+// ======================
+// =      FUNCTION      =
+// =    MATERIAL List   =
+// ======================
+
+// Usage:
+// - f_crafting_blacksmith_daggerlist
+//   RETURNS <ListLength>
+// - f_crafting_blacksmith_daggerlist <ARGS>
+//   RETURNS <ITEMDEF AT INDEX <ARGS>>
+
+[FUNCTION f_crafting_blacksmith_materiallist]
+// If no argument, return the maximum list length.
+// ISEMPTY checks to see, without an undefined, if ARGS is empty. If so, return the list length (Which we would need to manually update).
+IF (<ISEMPTY <ARGS>>)
+   RETURN "22"
+ELSE
+   DOSWITCH <EVAL <TAG.CRAFTINGINDEX> + <ARGS>>
+      RETURN "copper"
+      RETURN "pure_copper"
+      RETURN "ferrum"
+      RETURN "bronze"
+      RETURN "brass"
+      RETURN "steel"
+      RETURN "chrome"
+      RETURN "gold"
+      RETURN "silver"
+      RETURN "titanium"
+      RETURN "terathane"
+      RETURN "agapite"
+      RETURN "shadow"
+      RETURN "adamantine"
+      RETURN "stronghold"
+      RETURN "verminard"
+      RETURN "verite"
+      RETURN "valorite"
+      RETURN "skargard"
+      RETURN "blackrock"
+      RETURN "bloodrock"
+      RETURN "phoenix"
+   ENDDO
+ENDIF
+
+[FUNCTION f_crafting_blacksmith_materiallist]
+// If no argument, return the maximum list length.
+// ISEMPTY checks to see, without an undefined, if ARGS is empty. If so, return the list length (Which we would need to manually update).
+IF (<ISEMPTY <ARGS>>)
+   RETURN "22"
+ELSE
+   DOSWITCH <ARGS>
+      RETURN "copper"
+      RETURN "pure_copper"
+      RETURN "ferrum"
+      RETURN "bronze"
+      RETURN "brass"
+      RETURN "steel"
+      RETURN "chrome"
+      RETURN "gold"
+      RETURN "silver"
+      RETURN "titanium"
+      RETURN "terathane"
+      RETURN "agapite"
+      RETURN "shadow"
+      RETURN "adamantine"
+      RETURN "stronghold"
+      RETURN "verminard"
+      RETURN "verite"
+      RETURN "valorite"
+      RETURN "skargard"
+      RETURN "blackrock"
+      RETURN "bloodrock"
+      RETURN "phoenix"
+   ENDDO
+ENDIF
+
+[FUNCTION f_crafting_blacksmith_itemlist]
+// If no argument, return the list length.
+// ISEMPTY checks to see, without an undefined, if ARGS is empty. If so, return the list length (Which we would need to manually update).
+IF (<ISEMPTY <ARGS>>)
+   RETURN "9"
+ELSE
+   DOSWITCH <EVAL <ARGS>>
+      RETURN "i_ingot_"
+      RETURN "i_dagger_"
+      RETURN "i_kryss_"
+      RETURN "i_cutlass_"
+      RETURN "i_katana_"
+      RETURN "i_scimitar_"
+      RETURN "i_sword_long_b_"
+      RETURN "i_sword_long_"
+      RETURN "i_sword_great_"
+      RETURN "i_sword_broad_"
+   ENDDO
+ENDIF
+
+
+// We should be scuppered here by being unable to have two nested LOCAL._FOR here...
+// But we can work around this with manual ints!
+[FUNCTION f_serverlist_update_blacksmith]
+SERV.LIST.CRAFTING_BLACKSMITH.CLEAR
+LOCAL.MATERIALLIST = 0
+// We're working around Sphere's limitations on nesting a FOR in a FOR...
+// ...by using a WHILE.
+WHILE (<LOCAL.MATERIALLIST> < <EVAL <f_crafting_blacksmith_materiallist>>)
+   FOR 0 <EVAL <f_crafting_blacksmith_itemlist> - 1>
+      LOCAL.ITEMTOVERIFY = <f_crafting_blacksmith_itemlist <EVAL <LOCAL._FOR>>><f_crafting_blacksmith_materiallist <EVAL <LOCAL.MATERIALLIST>>>
+      IF (<EVAL <f_crafting_blacksmith_verifyitem <LOCAL.ITEMTOVERIFY>> > == 1)
+         SERV.LIST.CRAFTING_BLACKSMITH.ADD <LOCAL.ITEMTOVERIFY>
+      ENDIF
+   ENDFOR
+   LOCAL.MATERIALLIST += 1
+ENDWHILE
+SYSMESSAGE <EVAL <SERV.LIST.CRAFTING_BLACKSMITH.COUNT>> items added.
+SYSMESSAGE <SERV.LIST.CRAFTING_BLACKSMITH>
+
+// You may be wondering "Why is James using <EVAL <SERV.DEFLIST.ITEMDEF.FINDELEM <ARGS>>>?
+//                       Surely <SERV.ITEMID.<ARGS>> would be quicker?"
+// This is indeed true... But if the latter fails, it throws an Undefined Symbol exception.
+// Why? Because when it returns less than 1, it's saying "Error: Could not find from your demand."
+// However, <EVAL <SERV.DEFLIST.ITEMDEF.FINDELEM <ARGS>>> does not demand a specific item be called.
+// Instead, it ASKS if an item even exists - If it does, it will give it's LIST index. If not, it's -1.
+
+[FUNCTION f_crafting_blacksmith_verifyitem]
+IF (<EVAL <SERV.DEFLIST.ITEMDEF.FINDELEM <ARGS>>> > 0)
+   RETURN "1"
+ENDIF
+RETURN "0"
+
+
+[FUNCTION f_crafting_blacksmith_entry]
+
+// FUN SPHERE FACT
+// When you load a gump, it loads ALL the pages into memory.
+// That means when you call this function, if one of your lists
+// is longer than the other, it will send errors because it's checking
+// ALL OF THE LISTS to see if it can call them.
+// God bless Sphere.
+// For example: Page 1 has a maximum list of 8.
+//              Page 2's dagger list has a maximum of 22.
+//              The minute you call anything above 8, because it's loading
+//              Page 1 and Page 2 at the same time and just layering, it's
+//              going to pass no <ARGV[X]> to page 1 to work out.
+// Checking for ISEMPTY will prevent these errors.
+
+IF (<ISEMPTY <ARGV[0]>>)
+//   SERV.LOG ::ERROR:: Empty input detected. To check, <ARGV[0]>::<ARGV[1]>
+ELSEIF (<ARGV[0]>)
+   resizepic +0 +0 9270 530 85
+   resizepic +10 +10 2620 60 60
+   
+   // We need to retrieve the colours and I've not worked out a quicker way to just
+   // strip the material from the ite-Oh god I think I just worked out a more efficient
+   // method, back in a seco-wait, no, because tilepics are all awkwardly plac-ah fuck it this'd
+   // be way too long otherwise.
+   IF (STRMATCH(*pure_copper*,<ARGV[0]>) )
+      LOCAL.THISCOLOUR = color_o_pure_copper
+   ELSE
+      // To consolidate the process:
+      // Reverse string > Explode with _ delimiter > Re-reverse the "last" word > Add to "color_o_"
+      // e.g. i_kryss_copper > reppoc_ssyrk_i > reppoc > copper > color_o_copper
+      // We do it this way as, going forward, we have no guarantee which word will be our material
+      // such as in the case of i_kryss_copper being word 3, and i_sword_broad_copper being word 4
+      LOCAL.STRWORKED = <STRREVERSE <ARGV[0]>>
+      LOCAL.STRWORKED = <f_get_material <EXPLODE _,<LOCAL.STRWORKED>> >
+      LOCAL.THISCOLOUR = color_o_<LOCAL.STRWORKED>
+   ENDIF
+   tilepichue +20 +30 <SERV.ITEMDEF.<ARGV[0]>.ID> <EVAL <LOCAL.THISCOLOUR> - 1>
+      
+   // This section compiles the resources required list.
+   LOCAL.RESOURCESREQUIRED1 = " "
+   FOR 1 3
+      IF !(<ISEMPTY <SERV.ITEMDEF.<ARGV[0]>.RESOURCES.<LOCAL._FOR>.KEY> >)
+         LOCAL.RESOURCESREQUIRED1 = <LOCAL.RESOURCESREQUIRED1> [<SERV.ITEMDEF.<ARGV[0]>.RESOURCES.<LOCAL._FOR>.VALUE> <SERV.ITEMDEF.<SERV.ITEMDEF.<ARGV[0]>.RESOURCES.<LOCAL._FOR>.KEY>.NAME>]
+      ENDIF
+   ENDFOR
+   LOCAL.RESOURCESREQUIRED2 = " "
+   FOR 4 6
+      IF !(<ISEMPTY <SERV.ITEMDEF.<ARGV[0]>.RESOURCES.<LOCAL._FOR>.KEY> >)
+         LOCAL.RESOURCESREQUIRED2 = <LOCAL.RESOURCESREQUIRED2> [<SERV.ITEMDEF.<ARGV[0]>.RESOURCES.<LOCAL._FOR>.VALUE> <SERV.ITEMDEF.<SERV.ITEMDEF.<ARGV[0]>.RESOURCES.<LOCAL._FOR>.KEY>.NAME>]
+      ENDIF
+   ENDFOR
+   
+   // This section compiles the skills required list.
+   LOCAL.SKILLREQUIRED = " "
+   FOR 1 3
+      IF !(<ISEMPTY <SERV.ITEMDEF.<ARGV[0]>.SKILLMAKE.<LOCAL._FOR>.KEY> >)
+         LOCAL.SKILLREQUIRED = <LOCAL.SKILLREQUIRED> [<FVAL <SERV.ITEMDEF.<ARGV[0]>.SKILLMAKE.<LOCAL._FOR>.VALUE>>% <SERV.SKILL.<SERV.ITEMDEF.<ARGV[0]>.SKILLMAKE.<LOCAL._FOR>.KEY>.NAME>]
+      ENDIF
+   ENDFOR
+   // We're going to do a hack-around for restest for ease...
+   // If we CANMAKE we have both res and skill.
+   // If we can makeskill, clearly we have skill but not res.
+   // If we do not have the skill or resources, go for the latter.
+   // Why not, eh?
+   IF (<SRC.CANMAKE(<ARGV[0]>)>)
+      dtext +85 +5 012 <SERV.ITEMDEF.<ARGV[0]>.NAME>
+      dtext +95 +25 040 <LOCAL.RESOURCESREQUIRED1>
+      dtext +95 +40 040 <LOCAL.RESOURCESREQUIRED2>
+      dtext +95 +55 040 <LOCAL.SKILLREQUIRED>
+      dtext +450 +15 040 Craft Item
+      button +460 +40 2450 2451 1 0 <EVAL <ARGV[1]>>
+   ELSEIF (<SRC.CANMAKESKILL(<ARGV[0]>)>)
+      dtext +85 +10 012 <SERV.ITEMDEF.<ARGV[0]>.NAME>
+      dtext +95 +25 022 <LOCAL.RESOURCESREQUIRED1>
+      dtext +95 +40 022 <LOCAL.RESOURCESREQUIRED2>
+      dtext +95 +55 040 <LOCAL.SKILLREQUIRED>
+   ELSE
+      dtext +85 +10 012 <SERV.ITEMDEF.<ARGV[0]>.NAME>
+      dtext +95 +25 022 <LOCAL.RESOURCESREQUIRED1>
+      dtext +95 +40 022 <LOCAL.RESOURCESREQUIRED2>
+      dtext +95 +55 022 <LOCAL.SKILLREQUIRED>
+   ENDIF
+   dorigin *0 *90
+ENDIF
+
+
+[FUNCTION f_get_material]
+RETURN ""<STRREVERSE <ARGV[0]>>""
+
+
+[EOF]

@@ -1,0 +1,157 @@
+//Quest by Sqweak
+//Minotaur Quest
+
+[CHARDEF C_minotaur] 
+   NAME=Minotaur 
+   ID=C_man 
+   DAM=20,40 
+   ARMOR=40 
+   
+   TSPEECH=jobMinotaur 
+   CAN=MT_WALK|MT_RUN|MT_EQUIP|MT_USEHANDS 
+
+ON=@Create 
+   COLOR=0a2e 
+   NPC=brain_human 
+   KARMA=-20 
+   STR=100 
+   DEX=100 
+   INT=100 
+   
+   SWORDSMANSHIP=100.0 
+   TACTICS=100.0 
+   
+   ITEMNEWBIE=01547 
+   COLOR=0a2e 
+   ITEMNEWBIE=01537 
+   COLOR=0026 
+   ITEMNEWBIE=041A4 
+   ITEMNEWBIE=013C6 
+   COLOR=0413 
+   ITEMNEWBIE=0170E 
+
+ON=@NPCRestock
+   ITEM=i_gold,{200 500} 
+
+On=@NPCSeeNewPlayer 
+   SAY Booo Hooo... I have lost her... 
+
+CATEGORY=Imperial uo
+SUBSECTION=Quests 
+DESCRIPTION=(Minaotaur) Minotaur 
+
+
+[SPEECH jobMinotaur] 
+on=hi 
+on=hello
+on=hail
+on=sawat dee
+on=Greetings
+   SAY <SRC.SEX Sir/Lady> She is lost and I have nary the strength to avenge her... 
+   
+ON=who
+on=Krai 
+ON=what
+on=arai
+ON=where
+on=ti nai
+on=*quest*
+   SAY My wife and I were traveling these mountains when a giant surprised us. 
+   SAY He threw large rocks at us crushing my wife to death. 
+   SAY The foul brute took her head as a trophy. 
+   SAY If only I had the strength to defeat him alone I could sing the Lament for her.... 
+   
+ON=how 
+ON=help
+on=pid 
+on=Choau
+   SAY If you could bring back the head of my wife I would be eternally grateful. 
+   SAY Any plunder you find with the giant you can keep and I have my own reward... 
+   SAY Just say "agree" to take up this quest. 
+   
+ON=agree 
+on=hen duaw
+   IF ( <SRC.TAG.NPC_QUEST_DONE> & NPCQ_Minotaur )
+      SAY You have already done this quest.
+   ELSEIF ( <SRC.TAG.NPC_QUEST_START> & NPCQ_Minotaur )
+      SAY You have already agreed to help me! 
+   ELSE 
+      SAY Thank you for helping me! The giant can't be very far away! 
+      SAY Follow the mountains and you are sure to find him!
+      SAY Return my wife's head to me by saying "collect". 
+      SRC.TAG.NPC_QUEST_START = <eval ( <SRC.TAG.NPC_QUEST_START> | NPCQ_Minotaur )>
+   endif 
+   RETURN 1
+
+on=collect
+on=sa soam
+on=reward
+on=rangval
+   IF !( <SRC.TAG.NPC_QUEST_START> & NPCQ_Minotaur )
+      SAY I must know if you will help me before I give you the
+      SAY information <SRC.SEX milord/milady>
+   ELSEIF (( <SRC.TAG.NPC_QUEST_START> & NPCQ_Minotaur ) && !<SRC.RESTEST 1 i_minotaur_head>)
+      SAY You do not have my my wife's head! Do not return untill you do! 
+   ELSEIF <SRC.RESTEST 1 i_minotaur_head> 
+      SAY Here is your 2000gps reward! 
+      SRC.NEWITEM=i_GOLD 
+      SRC.ACT.AMOUNT=2000 
+      SRC.ACT.BOUNCE 
+      SRC.consume i_minotaur_head  
+      SRC.TAG.NPC_QUEST_START = <eval ( <SRC.TAG.NPC_QUEST_START> &~ NPCQ_Minotaur )>
+      SRC.TAG.NPC_QUEST_DONE = <eval ( <SRC.TAG.NPC_QUEST_DONE> | NPCQ_Minotaur )>
+      ANNOUNCE <SRC.NAME> has set right an great wrong.
+      REMOVE
+   ENDIF
+   RETURN 1
+
+
+[ITEMDEF I_MINOTAUR_HEAD] 
+   ID=01547 
+   NAME=Minotaur head
+   DYE=0 
+
+ON=@CREATE 
+   COLOR=0a2e 
+
+
+[CHARDEF C_GIANT_QUEST] 
+   NAME=Evil Giant Minotaur killer
+   ID=c_TITAN 
+   SOUND=snd_MONSTER_TROLL1 
+   ICON=i_pet_TITAN 
+   DAM=10,30
+   ARMOR=40 
+   
+   CAN=MT_WALK|MT_RUN|MT_EQUIP|MT_USEHANDS 
+
+ON=@Create 
+   COLOR=0410 
+   STR=500 
+   DEX=70
+   INT=70 
+   PARRYING=80.0 
+   MAGICRESISTANCE=80.0 
+   TACTICS=100.0 
+   WRESTLING=100.0 
+   NPC=BRAIN_BERSERK 
+   FAME={100 300} 
+   KARMA={-2000 -2999} 
+
+On=@NPCSeeNewPlayer 
+   SAY ME SMASH HEAD!!!!! 
+
+ON=@NPCRestock
+   ITEM=I_MINOTAUR_HEAD 
+
+ON=@Death
+  y_region_loot_death
+  y_region_loot_calculator
+  loot_FROST_TROLL
+  
+CATEGORY=Imperial uo
+SUBSECTION=Quests 
+DESCRIPTION=(minatours) Giant 
+
+
+[EOF]

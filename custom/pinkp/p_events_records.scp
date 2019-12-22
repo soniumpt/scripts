@@ -1,0 +1,921 @@
+//*********************************************************************************************************//
+//               Event Exit Stone Rating Recorder Created by Pink Panther                                 //
+//*********************************************************************************************************//
+
+[itemdef i_famekarma_exit_stone_record]
+Name= Fame, Karma and Kills Exit Stone Record
+ID=i_guildstone
+Type=T_Normal
+
+On=@Create
+   COLOR= 0
+   MOREP= 4308,954,10
+   MORE1= 3
+   
+on=@Dclick
+   IF !((<SRC.ISGM>) || (<SRC.ISCOUNS>))
+		If (<src.tag0.statsstored> == 01)
+		
+			src.kills=<src.tag.killsbackup>
+			src.karma=<src.tag.karmabackup>
+			src.fame=<src.tag.famebackup>
+			src.tag.rep.alignment=<src.tag.repbackup>
+			SRC.FLAGS = <SRC.FLAGS> & ~statf_criminal
+			SRC.FINDID.b_kill_decayer.timer = <src.tag.killtimerbackup>
+				
+			IF (<SRC.TAG0.POWERTIMERBACKUP>)
+				SRC.NEWITEM i_memory_donatorskills
+				NEW.TIMER=<src.tag.powertimerbackup>
+				NEW.MORE2=2
+				NEW.EQUIP <SRC.UID>	
+				src.tag.powertimerbackup=
+			ENDIF
+
+			src.tag.karmabackup = 
+			src.tag.famebackup = 
+			src.tag.killsbackup = 
+			src.tag.repbackup=
+			src.tag.statsstored =
+			src.tag.inevent=
+			src.tag.killtimerbackup =
+	
+			src.for_memory f_fkk_peace
+	
+			say Karma & Kills Restored
+				
+			IF (<MORE1>==0) 
+				
+				SERV.LOG <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> got no prize from <uid> exit stone
+				SRC.GO <MOREP>
+				
+			ELSEIF (<MORE1>==1)
+							
+				SERV.LOG <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> got one PvP Ticket from <uid> exit stone
+				SERV.NEWITEM i_pvptoken
+				NEW.BOUNCE
+				SRC.GO <MOREP>
+				
+			ELSEIF (<MORE1>==2)
+				
+				SERV.LOG <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> got two PvP Ticket from <uid> exit stone
+				SERV.NEWITEM i_pvptoken,{2}
+				NEW.BOUNCE 
+				SRC.GO <MOREP>
+				
+			ELSE
+				SRC.SYSMESSAGE This stone is not proper configured, please ask a Game Master to do so.
+					
+			ENDIF
+		
+		
+			IF (<TAG0.WINNERS>==1)	
+			
+			SRC.TAG0.<TAG.PVPTYPE>RATING=<EVAL <SRC.TAG0.<TAG.PVPTYPE>RATING>+1>
+					
+			SERV.LOG :EVENT RECORD: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> got 1 <TAG.PVPTYPE> Rating. Now has <eval <src.tag0.<TAG.PVPTYPE>rating>>.
+					
+				IF (<EVAL <SRC.TAG0.<TAG.PVPTYPE>RATING>> > <EVAL <UID.0439c6b38.tag0.<TAG.PVPTYPE>rating1>>)
+					
+					IF strmatch("<UID.0439c6b38.TAG0.<TAG.PVPTYPE>RATING1NAME>", "<SRC.NAME>")
+						
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating1=<EVAL <SRC.TAG0.<TAG.PVPTYPE>RATING>>
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating1name=<SRC.NAME>
+							
+					ELSEIF strmatch("<UID.0439c6b38.TAG0.<TAG.PVPTYPE>RATING2NAME>", "<SRC.NAME>")
+						
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating2=<EVAL <UID.0439c6b38.tag0.<TAG.PVPTYPE>rating1>>
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating2name=<UID.0439c6b38.tag0.<TAG.PVPTYPE>rating1name>
+							
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating1=<EVAL <SRC.TAG0.<TAG.PVPTYPE>RATING>>
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating1name=<SRC.NAME>
+							
+					ELSEIF strmatch("<UID.0439c6b38.TAG0.<TAG.PVPTYPE>RATING3NAME>", "<SRC.NAME>")
+						
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating3=<EVAL <UID.0439c6b38.tag0.<TAG.PVPTYPE>rating2>>
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating3name=<UID.0439c6b38.tag0.<TAG.PVPTYPE>rating2name>
+						
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating2=<EVAL <UID.0439c6b38.tag0.<TAG.PVPTYPE>rating1>>
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating2name=<UID.0439c6b38.tag0.<TAG.PVPTYPE>rating1name>
+											
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating1=<EVAL <SRC.TAG0.<TAG.PVPTYPE>RATING>>
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating1name=<SRC.NAME>
+						
+					ELSEIF strmatch("<UID.0439c6b38.TAG0.<TAG.PVPTYPE>RATING4NAME>", "<SRC.NAME>")
+						
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating4=<EVAL <UID.0439c6b38.tag0.<TAG.PVPTYPE>rating3>>
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating4name=<UID.0439c6b38.tag0.<TAG.PVPTYPE>rating3name>
+							
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating3=<EVAL <UID.0439c6b38.tag0.<TAG.PVPTYPE>rating2>>
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating3name=<UID.0439c6b38.tag0.<TAG.PVPTYPE>rating2name>
+						
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating2=<EVAL <UID.0439c6b38.tag0.<TAG.PVPTYPE>rating1>>
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating2name=<UID.0439c6b38.tag0.<TAG.PVPTYPE>rating1name>
+												
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating1=<EVAL <SRC.TAG0.<TAG.PVPTYPE>RATING>>
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating1name=<SRC.NAME>
+							
+					ELSE
+						
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating5=<EVAL <UID.0439c6b38.tag0.<TAG.PVPTYPE>rating4>>
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating5name=<UID.0439c6b38.tag0.<TAG.PVPTYPE>rating4name>
+					
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating4=<EVAL <UID.0439c6b38.tag0.<TAG.PVPTYPE>rating3>>
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating4name=<UID.0439c6b38.tag0.<TAG.PVPTYPE>rating3name>
+				
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating3=<EVAL <UID.0439c6b38.tag0.<TAG.PVPTYPE>rating2>>
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating3name=<UID.0439c6b38.tag0.<TAG.PVPTYPE>rating2name>
+					
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating2=<EVAL <UID.0439c6b38.tag0.<TAG.PVPTYPE>rating1>>
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating2name=<UID.0439c6b38.tag0.<TAG.PVPTYPE>rating1name>
+					
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating1=<EVAL <SRC.TAG0.<TAG.PVPTYPE>RATING>>
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating1name=<SRC.NAME>
+							
+					ENDIF
+						
+				ELSEIF (<EVAL <SRC.TAG0.<TAG.PVPTYPE>RATING>> > <EVAL <UID.0439c6b38.tag0.<TAG.PVPTYPE>rating2>>)
+					
+					IF strmatch("<UID.0439c6b38.TAG0.<TAG.PVPTYPE>RATING2NAME>", "<SRC.NAME>")
+						
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating2=<EVAL <SRC.TAG0.<TAG.PVPTYPE>RATING>>
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating2name=<SRC.NAME>
+							
+					ELSEIF strmatch("<UID.0439c6b38.TAG0.<TAG.PVPTYPE>RATING3NAME>", "<SRC.NAME>")
+						
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating3=<EVAL <UID.0439c6b38.tag0.<TAG.PVPTYPE>rating2>>
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating3name=<UID.0439c6b38.tag0.<TAG.PVPTYPE>rating2name>
+					
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating2=<EVAL <SRC.TAG0.<TAG.PVPTYPE>RATING>>
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating2name=<SRC.NAME>
+							
+					ELSEIF strmatch("<UID.0439c6b38.TAG0.<TAG.PVPTYPE>RATING4NAME>", "<SRC.NAME>")
+						
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating4=<EVAL <UID.0439c6b38.tag0.<TAG.PVPTYPE>rating3>>
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating4name=<UID.0439c6b38.tag0.<TAG.PVPTYPE>rating3name>
+						
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating3=<EVAL <UID.0439c6b38.tag0.<TAG.PVPTYPE>rating2>>
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating3name=<UID.0439c6b38.tag0.<TAG.PVPTYPE>rating2name>
+							
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating2=<EVAL <SRC.TAG0.<TAG.PVPTYPE>RATING>>
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating2name=<SRC.NAME>
+							
+					ELSE
+					
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating5=<EVAL <UID.0439c6b38.tag0.<TAG.PVPTYPE>rating4>>
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating5name=<UID.0439c6b38.tag0.<TAG.PVPTYPE>rating4name>
+					
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating4=<EVAL <UID.0439c6b38.tag0.<TAG.PVPTYPE>rating3>>
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating4name=<UID.0439c6b38.tag0.<TAG.PVPTYPE>rating3name>
+						
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating3=<EVAL <UID.0439c6b38.tag0.<TAG.PVPTYPE>rating2>>
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating3name=<UID.0439c6b38.tag0.<TAG.PVPTYPE>rating2name>
+					
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating2=<EVAL <SRC.TAG0.<TAG.PVPTYPE>RATING>>
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating2name=<SRC.NAME>
+							
+					ENDIF
+						
+				ELSEIF (<EVAL <SRC.TAG0.<TAG.PVPTYPE>RATING>> > <EVAL <UID.0439c6b38.tag0.<TAG.PVPTYPE>rating3>>)
+					
+					IF strmatch("<UID.0439c6b38.TAG0.<TAG.PVPTYPE>RATING3NAME>", "<SRC.NAME>")
+						
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating3=<EVAL <SRC.TAG0.<TAG.PVPTYPE>RATING>>
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating3name=<SRC.NAME>
+						
+					ELSEIF strmatch("<UID.0439c6b38.TAG0.<TAG.PVPTYPE>RATING4NAME>", "<SRC.NAME>")
+						
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating4=<EVAL <UID.0439c6b38.tag0.<TAG.PVPTYPE>rating3>>
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating4name=<UID.0439c6b38.tag0.<TAG.PVPTYPE>rating3name>
+							
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating3=<EVAL <SRC.TAG0.<TAG.PVPTYPE>RATING>>
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating3name=<SRC.NAME>
+													
+					ELSE
+					
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating5=<EVAL <UID.0439c6b38.tag0.<TAG.PVPTYPE>rating4>>
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating5name=<UID.0439c6b38.tag0.<TAG.PVPTYPE>rating4name>
+					
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating4=<EVAL <UID.0439c6b38.tag0.<TAG.PVPTYPE>rating3>>
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating4name=<UID.0439c6b38.tag0.<TAG.PVPTYPE>rating3name>
+							
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating3=<EVAL <SRC.TAG0.<TAG.PVPTYPE>RATING>>
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating3name=<SRC.NAME>
+							
+					ENDIF
+						
+				ELSEIF (<EVAL <SRC.TAG0.<TAG.PVPTYPE>RATING>> > <EVAL <UID.0439c6b38.tag0.<TAG.PVPTYPE>rating4>>)
+					
+					IF strmatch("<UID.0439c6b38.TAG0.<TAG.PVPTYPE>RATING4NAME>", "<SRC.NAME>")
+						
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating4=<EVAL <SRC.TAG0.<TAG.PVPTYPE>RATING>>
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating4name=<SRC.NAME>
+							
+					ELSE
+					
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating5=<EVAL <UID.0439c6b38.tag0.<TAG.PVPTYPE>rating4>>
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating5name=<UID.0439c6b38.tag0.<TAG.PVPTYPE>rating4name>
+								
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating4=<EVAL <SRC.TAG0.<TAG.PVPTYPE>RATING>>
+						TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating4name=<SRC.NAME>
+					ENDIF
+						
+				ELSEIF (<EVAL <SRC.TAG0.<TAG.PVPTYPE>RATING>> > <EVAL <UID.0439c6b38.tag0.<TAG.PVPTYPE>rating5>>)			
+								
+					TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating5=<EVAL <SRC.TAG0.<TAG.PVPTYPE>RATING>>
+					TRY UID.0439c6b38.tag0.<TAG.PVPTYPE>rating5name=<SRC.NAME>
+					
+				ENDIF
+					
+			ENDIF
+		 
+							
+		else
+		
+			SRC.FOR_MEMORY f_fkk_peace	   
+			SRC.FLAGS = <SRC.FLAGS> & ~statf_criminal
+			Say You Have No Stats Stored
+			src.go <morep>
+			
+		ENDIF
+		
+	ELSE
+		DIALOG d_exit_stone_record
+		RETURN 1
+    ENDIF
+    Return 1
+
+ON=@CLICK
+
+
+IF (<MORE1>==0) 
+	NAME= <TAG.PVPTYPENAME> <TAG.PVPRESULT> Fame, Karma and Kills Exit Stone Without Reward!
+ELSEIF (<MORE1>==1)
+	NAME= <TAG.PVPTYPENAME> <TAG.PVPRESULT> Fame, Karma and Kills Exit Stone With Reward!
+ELSEIF (<MORE1>==2)
+	NAME= <TAG.PVPTYPENAME> <TAG.PVPRESULT> Fame, Karma and Kills Exit Stone With Double Reward!
+ELSE
+	IF (<SRC.ISGM>) || (<SRC.ISCOUNS>)
+		NAME= Double click the stone to configure it!
+	ELSE
+		NAME= Fame, Karma and Kills Exit Stone (NOT CONFIGURED)
+	ENDIF
+ENDIF
+
+[DIALOG d_exit_stone_record]
+0,0
+page 0
+resizepic 92 56 3600 180 130
+
+dtext 120 80 137 Select Result:
+
+dtext 155 110 2300 Winners
+button 135 115 1209 1210 1 0 1
+
+dtext 155 140 2300 Losers
+button 135 145 1209 1210 1 0 2
+
+[DIALOG d_exit_stone_record button]
+ON=1
+tag.winners=1
+tag.pvpresult=Winners
+SRC.SYSMESSAGE You selected "Winners" as the ones who are going to use the stone.
+DIALOG d_exit_stone_record2
+ON=2
+tag.winners=
+tag.pvpresult=Losers
+SRC.SYSMESSAGE You selected "Losers" as the ones who are going to use the stone.
+DIALOG d_exit_stone_record3
+
+
+[DIALOG d_exit_stone_record2]
+0,0
+page 0
+resizepic 92 56 3600 180 340
+
+dtext 120 80 137 Select Event Type:
+
+dtext 155 110 2300 Unclassified
+button 135 115 1209 1210 1 0 1
+
+dtext 155 140 2300 Team PvP
+button 135 145 1209 1210 1 0 2
+
+dtext 155 170 2300 1vs1 PvP
+button 135 175 1209 1210 1 0 3
+
+dtext 155 200 2300 X-Pot
+button 135 205 1209 1210 1 0 4
+
+dtext 155 230 2300 Llama Race
+button 135 235 1209 1210 1 0 5
+
+dtext 155 260 2300 FFA
+button 135 265 1209 1210 1 0 6
+
+dtext 155 290 2300 Trader
+button 135 295 1209 1210 1 0 7
+
+dtext 155 320 2300 Monster Bash
+button 135 325 1209 1210 1 0 8
+
+[DIALOG d_exit_stone_record2 button]
+ON=1
+TAG.PVPTYPE=
+TAG.PVPTYPENAME=
+SRC.SYSMESSAGE You selected "Unclassified" as the Event Type.
+DIALOG d_exit_stone_record3
+ON=2
+TAG.PVPTYPE=teampvp
+TAG.PVPTYPENAME=Team PvP
+SRC.SYSMESSAGE You selected "Team PvP" as the Event Type.
+DIALOG d_exit_stone_record3
+ON=3
+TAG.PVPTYPE=1VS1
+TAG.PVPTYPENAME=1vs1
+SRC.SYSMESSAGE You selected "1vs1 PvP" as the Event Type.
+DIALOG d_exit_stone_record3
+ON=4
+TAG.PVPTYPE=XPOT
+TAG.PVPTYPENAME=X-Pot
+SRC.SYSMESSAGE You selected "X-Pot" as the Event Type.
+DIALOG d_exit_stone_record3
+ON=5
+TAG.PVPTYPE=LLAMARACE
+TAG.PVPTYPENAME=Llama Race
+SRC.SYSMESSAGE You selected "Llama Race" as the Event Type.
+DIALOG d_exit_stone_record3
+ON=6
+TAG.PVPTYPE=FFA
+TAG.PVPTYPENAME=FFA
+SRC.SYSMESSAGE You selected "FFA" as the Event Type.
+DIALOG d_exit_stone_record3
+ON=7
+TAG.PVPTYPE=TRADER
+TAG.PVPTYPENAME=Trader Event
+SRC.SYSMESSAGE You selected "Trader" as the Event Type.
+DIALOG d_exit_stone_record3
+ON=8
+TAG.PVPTYPE=MONSTERBASH
+TAG.PVPTYPENAME=Monster Bash
+SRC.SYSMESSAGE You selected "Monster Bash" as the Event Type.
+DIALOG d_exit_stone_record3
+
+[DIALOG d_exit_stone_record3]
+0,0
+page 0
+resizepic 92 56 3600 180 170
+
+dtext 120 80 137 Select Event Reward:
+
+dtext 155 110 2300 No Reward
+button 135 115 1209 1210 1 0 1
+
+dtext 155 140 2300 1 PvP Ticket
+button 135 145 1209 1210 1 0 2
+
+dtext 155 170 2300 2 PvP Ticket
+button 135 175 1209 1210 1 0 3
+
+[DIALOG d_exit_stone_record3 button]
+ON=1
+MORE1=0
+COLOR=079C
+SRC.SYSMESSAGE You selected "No Reward" as Event Reward.
+ON=2
+MORE1=1
+COLOR=07B5
+SRC.SYSMESSAGE You selected "1 PvP Ticket" as Event Reward.
+ON=3
+MORE1=2
+COLOR=0784
+SRC.SYSMESSAGE You selected "2 PvP Ticket" as Event Reward.				
+
+//*********************************************************************************************************//
+//                       Llama Race Time Record NPC and Items Created by Pink Panther                      //
+//*********************************************************************************************************//
+
+[ITEMDEF i_race_start]
+ID=i_floor_marble
+NAME=Llama Race Time Record Start
+
+ON=@CREATE
+ATTR=08090
+COLOR=07A0
+
+ON=@STEP
+IF !(<SRC.FINDID.i_llamarace_timer>)
+SRC.NEWITEM i_llamarace_timer
+NEW.EQUIP <SRC.UID>
+SRC.SYSMESSAGE You started the race! Complete the Llama Race Track as fast as you can and beat the current time record!
+ENDIF
+
+[ITEMDEF i_race_end]
+ID=i_floor_marble
+NAME=Llama Race Time Record Finish
+
+ON=@CREATE
+ATTR=08090
+COLOR=07A0
+
+ON=@STEP
+IF (<SRC.FINDID.i_llamarace_timer>)
+OBJ=<SRC.FINDID.I_LLAMARACE_TIMER>
+OBJ.TAG0.FINISHTIME=<EVAL (900 - <OBJ.TIMER>)>
+SRC.SYSMESSAGE You completed the Llama Race Track in <eval <OBJ.TAG0.FINISHTIME>> seconds.
+TRY UID.03a3d745.say <SRC.NAME> completed the Llama Race Track in <eval <OBJ.TAG0.FINISHTIME>> seconds!
+TRY UID.03a3d745.tag0.timer=<eval <OBJ.TAG0.FINISHTIME>>
+TRY UID.03a3d745.tag0.player=<SRC.NAME>
+
+IF (<EVAL <UID.03a3d745.tag0.timer>> < <EVAL <UID.03a3d745.tag0.playerrecord1>>)
+					
+	IF strmatch("<UID.03a3d745.TAG0.playerrecord1name>", "<SRC.NAME>")
+	
+		TRY UID.03a3d745.tag0.playerrecord1=<EVAL <UID.03a3d745.tag0.timer>>
+	    TRY UID.03a3d745.tag0.playerrecord1name=<UID.03a3d745.tag0.player>
+		
+	ELSEIF strmatch("<UID.03a3d745.TAG0.playerrecord2name>", "<SRC.NAME>")
+	
+		TRY UID.03a3d745.tag0.playerrecord2=<EVAL <UID.03a3d745.tag0.playerrecord1>>
+		TRY UID.03a3d745.tag0.playerrecord2name=<UID.03a3d745.tag0.playerrecord1name>
+			
+		TRY UID.03a3d745.tag0.playerrecord1=<EVAL <UID.03a3d745.tag0.timer>>
+		TRY UID.03a3d745.tag0.playerrecord1name=<UID.03a3d745.tag0.player>
+		
+	ELSEIF strmatch("<UID.03a3d745.TAG0.playerrecord3name>", "<SRC.NAME>")
+	
+		TRY UID.03a3d745.tag0.playerrecord3=<EVAL <UID.03a3d745.tag0.playerrecord2>>
+		TRY UID.03a3d745.tag0.playerrecord3name=<UID.03a3d745.tag0.playerrecord2name>
+	
+		TRY UID.03a3d745.tag0.playerrecord2=<EVAL <UID.03a3d745.tag0.playerrecord1>>
+		TRY UID.03a3d745.tag0.playerrecord2name=<UID.03a3d745.tag0.playerrecord1name>
+	
+		TRY UID.03a3d745.tag0.playerrecord1=<EVAL <UID.03a3d745.tag0.timer>>
+		TRY UID.03a3d745.tag0.playerrecord1name=<UID.03a3d745.tag0.player>
+		
+	ELSEIF strmatch("<UID.03a3d745.TAG0.playerrecord4name>", "<SRC.NAME>")
+	
+		TRY UID.03a3d745.tag0.playerrecord4=<EVAL <UID.03a3d745.tag0.playerrecord3>>
+		TRY UID.03a3d745.tag0.playerrecord4name=<UID.03a3d745.tag0.playerrecord3name>
+	
+		TRY UID.03a3d745.tag0.playerrecord3=<EVAL <UID.03a3d745.tag0.playerrecord2>>
+		TRY UID.03a3d745.tag0.playerrecord3name=<UID.03a3d745.tag0.playerrecord2name>
+	
+		TRY UID.03a3d745.tag0.playerrecord2=<EVAL <UID.03a3d745.tag0.playerrecord1>>
+		TRY UID.03a3d745.tag0.playerrecord2name=<UID.03a3d745.tag0.playerrecord1name>
+	
+		TRY UID.03a3d745.tag0.playerrecord1=<EVAL <UID.03a3d745.tag0.timer>>
+		TRY UID.03a3d745.tag0.playerrecord1name=<UID.03a3d745.tag0.player>
+		
+	ELSE
+									
+		TRY UID.03a3d745.tag0.playerrecord5=<EVAL <UID.03a3d745.tag0.playerrecord4>>
+		TRY UID.03a3d745.tag0.playerrecord5name=<UID.03a3d745.tag0.playerrecord4name>
+		
+		TRY UID.03a3d745.tag0.playerrecord4=<EVAL <UID.03a3d745.tag0.playerrecord3>>
+		TRY UID.03a3d745.tag0.playerrecord4name=<UID.03a3d745.tag0.playerrecord3name>
+	
+		TRY UID.03a3d745.tag0.playerrecord3=<EVAL <UID.03a3d745.tag0.playerrecord2>>
+		TRY UID.03a3d745.tag0.playerrecord3name=<UID.03a3d745.tag0.playerrecord2name>
+	
+		TRY UID.03a3d745.tag0.playerrecord2=<EVAL <UID.03a3d745.tag0.playerrecord1>>
+		TRY UID.03a3d745.tag0.playerrecord2name=<UID.03a3d745.tag0.playerrecord1name>
+		
+		TRY UID.03a3d745.tag0.playerrecord1=<EVAL <UID.03a3d745.tag0.timer>>
+		TRY UID.03a3d745.tag0.playerrecord1name=<UID.03a3d745.tag0.player>
+	
+	ENDIF
+					
+ELSEIF (<EVAL <UID.03a3d745.tag0.timer>> < <EVAL <UID.03a3d745.tag0.playerrecord2>>)
+
+	IF strmatch("<UID.03a3d745.TAG0.playerrecord2name>", "<SRC.NAME>")
+	
+		TRY UID.03a3d745.tag0.playerrecord2=<EVAL <UID.03a3d745.tag0.timer>>
+	    TRY UID.03a3d745.tag0.playerrecord2name=<UID.03a3d745.tag0.player>
+		
+	ELSEIF strmatch("<UID.03a3d745.TAG0.playerrecord3name>", "<SRC.NAME>")
+	
+		TRY UID.03a3d745.tag0.playerrecord3=<EVAL <UID.03a3d745.tag0.playerrecord2>>
+		TRY UID.03a3d745.tag0.playerrecord3name=<UID.03a3d745.tag0.playerrecord2name>
+
+		TRY UID.03a3d745.tag0.playerrecord2=<EVAL <UID.03a3d745.tag0.timer>>
+		TRY UID.03a3d745.tag0.playerrecord2name=<UID.03a3d745.tag0.player>
+		
+	ELSEIF strmatch("<UID.03a3d745.TAG0.playerrecord4name>", "<SRC.NAME>")
+	
+		TRY UID.03a3d745.tag0.playerrecord4=<EVAL <UID.03a3d745.tag0.playerrecord3>>
+		TRY UID.03a3d745.tag0.playerrecord4name=<UID.03a3d745.tag0.playerrecord3name>
+	
+		TRY UID.03a3d745.tag0.playerrecord3=<EVAL <UID.03a3d745.tag0.playerrecord2>>
+		TRY UID.03a3d745.tag0.playerrecord3name=<UID.03a3d745.tag0.playerrecord2name>
+	
+		TRY UID.03a3d745.tag0.playerrecord2=<EVAL <UID.03a3d745.tag0.timer>>
+		TRY UID.03a3d745.tag0.playerrecord2name=<UID.03a3d745.tag0.player>
+	
+	ELSE
+										
+		TRY UID.03a3d745.tag0.playerrecord5=<EVAL <UID.03a3d745.tag0.playerrecord4>>
+		TRY UID.03a3d745.tag0.playerrecord5name=<UID.03a3d745.tag0.playerrecord4name>
+		
+		TRY UID.03a3d745.tag0.playerrecord4=<EVAL <UID.03a3d745.tag0.playerrecord3>>
+		TRY UID.03a3d745.tag0.playerrecord4name=<UID.03a3d745.tag0.playerrecord3name>
+	
+		TRY UID.03a3d745.tag0.playerrecord3=<EVAL <UID.03a3d745.tag0.playerrecord2>>
+		TRY UID.03a3d745.tag0.playerrecord3name=<UID.03a3d745.tag0.playerrecord2name>
+
+		TRY UID.03a3d745.tag0.playerrecord2=<EVAL <UID.03a3d745.tag0.timer>>
+		TRY UID.03a3d745.tag0.playerrecord2name=<UID.03a3d745.tag0.player>
+	
+	ENDIF
+	
+ELSEIF (<EVAL <UID.03a3d745.tag0.timer>> < <EVAL <UID.03a3d745.tag0.playerrecord3>>)
+					
+	IF strmatch("<UID.03a3d745.TAG0.playerrecord3name>", "<SRC.NAME>")
+	
+		TRY UID.03a3d745.tag0.playerrecord3=<EVAL <UID.03a3d745.tag0.timer>>
+	    TRY UID.03a3d745.tag0.playerrecord3name=<UID.03a3d745.tag0.player>
+		
+	ELSEIF strmatch("<UID.03a3d745.TAG0.playerrecord4name>", "<SRC.NAME>")
+	
+		TRY UID.03a3d745.tag0.playerrecord4=<EVAL <UID.03a3d745.tag0.playerrecord3>>
+		TRY UID.03a3d745.tag0.playerrecord4name=<UID.03a3d745.tag0.playerrecord3name>
+		
+		TRY UID.03a3d745.tag0.playerrecord3=<EVAL <UID.03a3d745.tag0.timer>>
+		TRY UID.03a3d745.tag0.playerrecord3name=<UID.03a3d745.tag0.player>
+		
+	ELSE
+	
+		TRY UID.03a3d745.tag0.playerrecord5=<EVAL <UID.03a3d745.tag0.playerrecord4>>
+		TRY UID.03a3d745.tag0.playerrecord5name=<UID.03a3d745.tag0.playerrecord4name>
+		
+		TRY UID.03a3d745.tag0.playerrecord4=<EVAL <UID.03a3d745.tag0.playerrecord3>>
+		TRY UID.03a3d745.tag0.playerrecord4name=<UID.03a3d745.tag0.playerrecord3name>
+		
+		TRY UID.03a3d745.tag0.playerrecord3=<EVAL <UID.03a3d745.tag0.timer>>
+		TRY UID.03a3d745.tag0.playerrecord3name=<UID.03a3d745.tag0.player>
+	
+	ENDIF
+	
+ELSEIF (<EVAL <UID.03a3d745.tag0.timer>> < <EVAL <UID.03a3d745.tag0.playerrecord4>>)
+					
+	IF strmatch("<UID.03a3d745.TAG0.playerrecord4name>", "<SRC.NAME>")
+		TRY UID.03a3d745.tag0.playerrecord4=<EVAL <UID.03a3d745.tag0.timer>>
+	    TRY UID.03a3d745.tag0.playerrecord4name=<UID.03a3d745.tag0.player>
+		
+	ELSE
+									
+	TRY UID.03a3d745.tag0.playerrecord5=<EVAL <UID.03a3d745.tag0.playerrecord4>>
+	TRY UID.03a3d745.tag0.playerrecord5name=<UID.03a3d745.tag0.playerrecord4name>
+		
+	TRY UID.03a3d745.tag0.playerrecord4=<EVAL <UID.03a3d745.tag0.timer>>
+	TRY UID.03a3d745.tag0.playerrecord4name=<UID.03a3d745.tag0.player>
+	
+	ENDIF
+	
+ELSEIF (<EVAL <UID.03a3d745.tag0.timer>> < <EVAL <UID.03a3d745.tag0.playerrecord5>>)
+						
+	TRY UID.03a3d745.tag0.playerrecord5=<EVAL <UID.03a3d745.tag0.timer>>
+	TRY UID.03a3d745.tag0.playerrecord5name=<UID.03a3d745.tag0.player>
+	
+ENDIF
+
+SRC.FINDID.I_LLAMARACE_TIMER.REMOVE
+ENDIF
+ 
+[ItemDef i_llamarace_timer]
+id=i_memory
+Name=Llama Race Timer
+type=t_eq_script
+
+ON=@Create
+TIMER = 900
+
+ON=@TIMER
+REMOVE
+
+
+[CHARDEF c_h_llamarace_recorder]
+ID = c_man
+NAME = Llama Race Judge
+TSPEECH = spk_llamaracerecorder
+
+ON = @Create
+FLAGS=01000005
+STR= 10000
+DEX= 10000
+INT= 10000
+Title= The Record Keeper
+ITEMNEWBIE= i_Hat_feather
+COLOR= 07a1
+ITEMNEWBIE= i_studded_tunic
+COLOR= 07a1
+ITEMNEWBIE= i_leather_leggings
+COLOR= 07a1
+ITEMNEWBIE= i_boots_calf
+COLOR= 07a1
+ITEMNEWBIE= i_shirt_fancy
+COLOR= 07a0
+ITEMNEWBIE= i_sash
+COLOR= 07a0
+
+[SPEECH spk_llamaracerecorder]
+
+on=*record*
+Say <tag0.playerrecord1name> holds the current record, completing the Llama Race Track in <eval <tag0.playerrecord1>> seconds.
+RETURN 1
+
+on=*reset*
+
+IF (<SRC.ACCOUNT.PLEVEL> > 5)
+TAG.playerrecord1name=
+TAG.playerrecord2name=
+TAG.playerrecord3name=
+TAG.playerrecord4name=
+TAG.playerrecord5name=
+
+TAG.playerrecord1=900
+TAG.playerrecord2=1000
+TAG.playerrecord3=1100
+TAG.playerrecord4=1200
+TAG.playerrecord5=1300
+
+ELSE
+SAY Only an Admin can do this.
+ENDIF
+RETURN 1
+
+
+
+//*********************************************************************************************************//
+//                           Event Records Dialogs Created by Pink Panther                                 //
+//*********************************************************************************************************//
+
+[DIALOG d_event_records]
+0,0
+page 0
+resizepic 92 56 3600 180 260
+
+dtext 120 80 137 Select Event Type:
+
+dtext 155 110 2300 Team PvP
+button 135 115 1209 1210 1 0 1
+
+dtext 155 140 2300 1vs1 PvP
+button 135 145 1209 1210 1 0 2
+
+dtext 155 170 2300 X-Pot PvP
+button 135 175 1209 1210 1 0 3
+
+dtext 155 200 2300 Llama Race
+button 135 205 1209 1210 1 0 4
+
+dtext 155 230 2300 FFA PvP
+button 135 235 1209 1210 1 0 5
+
+dtext 155 260 2300 Trader Event
+button 135 265 1209 1210 1 0 6
+
+[DIALOG d_event_records button]
+ON=1
+SRC.DIALOG d_event_records_teampvp
+RETURN 1
+
+ON=2
+SRC.DIALOG d_event_records_1vs1pvp
+RETURN 1
+
+ON=3
+SRC.DIALOG d_event_records_xpot
+RETURN 1
+
+ON=4
+SRC.DIALOG d_event_records_llamarace
+RETURN 1
+
+ON=5
+SRC.DIALOG d_event_records_ffa
+RETURN 1
+
+ON=6
+SRC.DIALOG d_event_records_trader
+RETURN 1
+
+[DIALOG d_event_records_teampvp]
+0,0
+page 0
+resizepic 92 56 3600 300 260
+
+dtext 170 80 137 Team PvP Top 5 Winners
+
+dtext 120 110 137 Position
+
+dtext 120 140 2300 1
+dtext 120 170 2300 2
+dtext 120 200 2300 3
+dtext 120 230 2300 4
+dtext 120 260 2300 5
+
+dtext 200 110 137 Player Name
+
+dtext 200 140 2300 <UID.0439c6b38.tag0.teampvprating1name>
+dtext 200 170 2300 <UID.0439c6b38.tag0.teampvprating2name>
+dtext 200 200 2300 <UID.0439c6b38.tag0.teampvprating3name>
+dtext 200 230 2300 <UID.0439c6b38.tag0.teampvprating4name>
+dtext 200 260 2300 <UID.0439c6b38.tag0.teampvprating5name>
+
+dtext 330 110 137 Wins
+
+dtext 330 140 2300 <eval <UID.0439c6b38.tag0.teampvprating1>>
+dtext 330 170 2300 <eval <UID.0439c6b38.tag0.teampvprating2>>
+dtext 330 200 2300 <eval <UID.0439c6b38.tag0.teampvprating3>>
+dtext 330 230 2300 <eval <UID.0439c6b38.tag0.teampvprating4>>
+dtext 330 260 2300 <eval <UID.0439c6b38.tag0.teampvprating5>>
+
+[DIALOG d_event_records_1vs1pvp]
+0,0
+page 0
+resizepic 92 56 3600 300 260
+
+dtext 175 80 137 1vs1 PvP Top 5 Winners
+
+dtext 120 110 137 Position
+
+dtext 120 140 2300 1
+dtext 120 170 2300 2
+dtext 120 200 2300 3
+dtext 120 230 2300 4
+dtext 120 260 2300 5
+
+dtext 200 110 137 Player Name
+
+dtext 200 140 2300 <UID.0439c6b38.tag0.1vs1rating1name>
+dtext 200 170 2300 <UID.0439c6b38.tag0.1vs1rating2name>
+dtext 200 200 2300 <UID.0439c6b38.tag0.1vs1rating3name>
+dtext 200 230 2300 <UID.0439c6b38.tag0.1vs1rating4name>
+dtext 200 260 2300 <UID.0439c6b38.tag0.1vs1rating5name>
+
+dtext 330 110 137 Wins
+
+dtext 330 140 2300 <eval <UID.0439c6b38.tag0.1vs1rating1>>
+dtext 330 170 2300 <eval <UID.0439c6b38.tag0.1vs1rating2>>
+dtext 330 200 2300 <eval <UID.0439c6b38.tag0.1vs1rating3>>
+dtext 330 230 2300 <eval <UID.0439c6b38.tag0.1vs1rating4>>
+dtext 330 260 2300 <eval <UID.0439c6b38.tag0.1vs1rating5>>
+
+[DIALOG d_event_records_xpot]
+0,0
+page 0
+resizepic 92 56 3600 300 260
+
+dtext 165 80 137 X-Pot PvP Top 5 Winners
+
+dtext 120 110 137 Position
+
+dtext 120 140 2300 1
+dtext 120 170 2300 2
+dtext 120 200 2300 3
+dtext 120 230 2300 4
+dtext 120 260 2300 5
+
+dtext 200 110 137 Player Name
+
+dtext 200 140 2300 <UID.0439c6b38.tag0.xpotrating1name>
+dtext 200 170 2300 <UID.0439c6b38.tag0.xpotrating2name>
+dtext 200 200 2300 <UID.0439c6b38.tag0.xpotrating3name>
+dtext 200 230 2300 <UID.0439c6b38.tag0.xpotrating4name>
+dtext 200 260 2300 <UID.0439c6b38.tag0.xpotrating5name>
+
+dtext 330 110 137 Wins
+
+dtext 330 140 2300 <eval <UID.0439c6b38.tag0.xpotrating1>>
+dtext 330 170 2300 <eval <UID.0439c6b38.tag0.xpotrating2>>
+dtext 330 200 2300 <eval <UID.0439c6b38.tag0.xpotrating3>>
+dtext 330 230 2300 <eval <UID.0439c6b38.tag0.xpotrating4>>
+dtext 330 260 2300 <eval <UID.0439c6b38.tag0.xpotrating5>>
+
+[DIALOG d_event_records_ffa]
+0,0
+page 0
+resizepic 92 56 3600 300 260
+
+dtext 175 80 137 FFA PvP Top 5 Winners
+
+dtext 120 110 137 Position
+
+dtext 120 140 2300 1
+dtext 120 170 2300 2
+dtext 120 200 2300 3
+dtext 120 230 2300 4
+dtext 120 260 2300 5
+
+dtext 200 110 137 Player Name
+
+dtext 200 140 2300 <UID.0439c6b38.tag0.ffarating1name>
+dtext 200 170 2300 <UID.0439c6b38.tag0.ffarating2name>
+dtext 200 200 2300 <UID.0439c6b38.tag0.ffarating3name>
+dtext 200 230 2300 <UID.0439c6b38.tag0.ffarating4name>
+dtext 200 260 2300 <UID.0439c6b38.tag0.ffarating5name>
+
+dtext 330 110 137 Wins
+
+dtext 330 140 2300 <eval <UID.0439c6b38.tag0.ffarating1>>
+dtext 330 170 2300 <eval <UID.0439c6b38.tag0.ffarating2>>
+dtext 330 200 2300 <eval <UID.0439c6b38.tag0.ffarating3>>
+dtext 330 230 2300 <eval <UID.0439c6b38.tag0.ffarating4>>
+dtext 330 260 2300 <eval <UID.0439c6b38.tag0.ffarating5>>
+
+[DIALOG d_event_records_trader]
+0,0
+page 0
+resizepic 92 56 3600 300 260
+
+dtext 155 80 137 Trader Event Top 5 Winners
+
+dtext 120 110 137 Position
+
+dtext 120 140 2300 1
+dtext 120 170 2300 2
+dtext 120 200 2300 3
+dtext 120 230 2300 4
+dtext 120 260 2300 5
+
+dtext 200 110 137 Player Name
+
+dtext 200 140 2300 <UID.0439c6b38.tag0.traderrating1name>
+dtext 200 170 2300 <UID.0439c6b38.tag0.traderrating2name>
+dtext 200 200 2300 <UID.0439c6b38.tag0.traderrating3name>
+dtext 200 230 2300 <UID.0439c6b38.tag0.traderrating4name>
+dtext 200 260 2300 <UID.0439c6b38.tag0.traderrating5name>
+
+dtext 330 110 137 Wins
+
+dtext 330 140 2300 <eval <UID.0439c6b38.tag0.traderrating1>>
+dtext 330 170 2300 <eval <UID.0439c6b38.tag0.traderrating2>>
+dtext 330 200 2300 <eval <UID.0439c6b38.tag0.traderrating3>>
+dtext 330 230 2300 <eval <UID.0439c6b38.tag0.traderrating4>>
+dtext 330 260 2300 <eval <UID.0439c6b38.tag0.traderrating5>>
+
+[DIALOG d_event_records_llamarace]
+0,0
+page 0
+resizepic 92 56 3600 300 465
+
+dtext 160 80 137 Llama Race Top 5 Winners
+
+dtext 120 110 137 Position
+
+dtext 120 140 2300 1
+dtext 120 170 2300 2
+dtext 120 200 2300 3
+dtext 120 230 2300 4
+dtext 120 260 2300 5
+
+dtext 200 110 137 Player Name
+
+dtext 200 140 2300 <UID.0439c6b38.tag0.llamaracerating1name>
+dtext 200 170 2300 <UID.0439c6b38.tag0.llamaracerating2name>
+dtext 200 200 2300 <UID.0439c6b38.tag0.llamaracerating3name>
+dtext 200 230 2300 <UID.0439c6b38.tag0.llamaracerating4name>
+dtext 200 260 2300 <UID.0439c6b38.tag0.llamaracerating5name>
+
+dtext 330 110 137 Wins
+
+dtext 330 140 2300 <eval <UID.0439c6b38.tag0.llamaracerating1>>
+dtext 330 170 2300 <eval <UID.0439c6b38.tag0.llamaracerating2>>
+dtext 330 200 2300 <eval <UID.0439c6b38.tag0.llamaracerating3>>
+dtext 330 230 2300 <eval <UID.0439c6b38.tag0.llamaracerating4>>
+dtext 330 260 2300 <eval <UID.0439c6b38.tag0.llamaracerating5>>
+
+dtext 140 290 137 Llama Race Top 5 Time Records
+
+dtext 120 320 137 Position
+
+dtext 120 350 2300 1
+dtext 120 380 2300 2
+dtext 120 410 2300 3
+dtext 120 440 2300 4
+dtext 120 470 2300 5
+
+dtext 200 320 137 Player Name
+
+dtext 200 350 2300 <UID.03a3d745.tag0.playerrecord1name>
+dtext 200 380 2300 <UID.03a3d745.tag0.playerrecord2name>
+dtext 200 410 2300 <UID.03a3d745.tag0.playerrecord3name>
+dtext 200 440 2300 <UID.03a3d745.tag0.playerrecord4name>
+dtext 200 470 2300 <UID.03a3d745.tag0.playerrecord5name>
+
+dtext 330 320 137 Seconds
+
+dtext 330 350 2300 <eval <UID.03a3d745.tag0.playerrecord1>>
+dtext 330 380 2300 <eval <UID.03a3d745.tag0.playerrecord2>>
+dtext 330 410 2300 <eval <UID.03a3d745.tag0.playerrecord3>>
+dtext 330 440 2300 <eval <UID.03a3d745.tag0.playerrecord4>>
+dtext 330 470 2300 <eval <UID.03a3d745.tag0.playerrecord5>>
+
+[FUNCTION eventrecords]
+SRC.DIALOG d_event_records
+return 1
+
+[PLEVEL 1]
+eventrecords
+
+[EOF]

@@ -1,0 +1,88 @@
+//Bulk Item Deeds
+//contributed by Rolypoly January 3rd 2004
+//minor modifications by Wren to make them craftable with Inscription
+//Jan 15 '04 - Wren changed blank deeds to be normal scrolls so stackable.  Also changed so items have to be in the bank but scroll does not
+
+[ITEMDEF i_item_deed] 
+NAME=blank item deed
+ID=i_scroll_blank
+RESOURCES= i_scroll_blank, 5 i_scribe_powder, 15 i_reag_garlic, 15 i_reag_mandrake_root
+TYPE=t_script
+WEIGHT=0.1 
+SKILLMAKE=INSCRIPTION 60.0, t_scribe_tools
+VALUE = 500
+
+ON=@CREATE 
+COLOR=042 
+
+ON=@DCLICK 
+TARGET Target the items you wish to compress. 
+RETURN 1 
+
+ON=@TARGON_CHAR 
+SRC.SYSMESSAGE I don't think they'd agree to that! 
+RETURN 1 
+
+ON=@TARGON_ITEM 
+IF <SRC.TARG.CONT.UID>==<SRC.FINDLAYER(29).UID> 
+elseif <SRC.TARG.CONT.CONT.UID>==<SRC.FINDLAYER(29).UID> 
+elseif <SRC.TARG.CONT.CONT.CONT.UID>==<SRC.FINDLAYER(29).UID> 
+elseif <SRC.TARG.CONT.CONT.CONT.CONT.UID>==<SRC.FINDLAYER(29).UID> 
+else 
+SRC.SYSMESSAGE The items must be in your bank to store them. 
+RETURN 1 
+ENDIF 
+F_ITEMDEED
+RETURN 1 
+ELSE 
+ENDIF
+
+
+[ITEMDEF i_filled_deed] 
+NAME=filled item deed
+ID=I_DEED 
+RESOURCES=2 i_scroll_blank, i_scribe_powder, 10 i_reag_garlic, 10 i_reag_mandrake_root
+TYPE=t_script 
+WEIGHT=0.1 
+VALUE = 500
+DYE=1
+
+ON=@CREATE 
+COLOR=043 
+//ATTR=attr_newbie 
+
+ON=@DCLICK 
+IF <CONT.UID>==<SRC.FINDLAYER(29).UID> 
+SRC.NEWITEM=<TAG.BASEID> 
+SRC.ACT.AMOUNT=<TAG.AMOUNT>
+SRC.ACT.cont=<src.findlayer.29.uid> 
+SRC.SYSMESSAGE Item retrieved. 
+REMOVE 
+RETURN 1 
+ELSE 
+SRC.SYSMESSAGE You may only use this deed in your bank box. 
+RETURN 1 
+ENDIF 
+
+[FUNCTION F_ITEMDEED]
+IF (<SRC.TARG.AMOUNT><50) 
+SRC.SYSMESSAGE You can not fill this deed with items counting less then 50. 
+RETURN 1 
+ELSE 
+SRC.NEWITEM=i_filled_deed 
+SRC.ACT.BOUNCE 
+SRC.ACT.TAG.BASEID=<SRC.TARG.BASEID> 
+SRC.ACT.TAG.AMOUNT=1 
+SRC.ACT.TAG.AMOUNT=<EVAL <SRC.ACT.TAG.AMOUNT>+<SRC.TARG.AMOUNT>+-1> 
+SRC.ACT.NAME=a filled commodity deed [<SRC.TARG.AMOUNT>/<SRC.TARG.NAME>] 
+SRC.SYSMESSAGE <SRC.TARG.AMOUNT> Item(s) stored.
+src.targ.remove 
+If (<amount>=1)
+   remove  
+ELSE
+   amount=(<amount>-1)
+   update
+ENDIF
+ENDIF 
+
+[EOF]

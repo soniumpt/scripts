@@ -1,0 +1,101 @@
+
+[ITEMDEF 09b9]
+DEFNAME=i_bird_raw
+VALUE=1
+TYPE=T_FOOD_RAW
+TDATA1=i_bird_cooked
+WEIGHT=0.5
+CATEGORY=Items by Professions
+SUBSECTION=Cook
+DESCRIPTION=Raw Bird
+DUPELIST=09ba
+
+ON=@targon_item
+if ( <amount> > 5 )
+   f_cook_targon_item
+   return 1
+endif
+
+
+[ITEMDEF 09f1]
+// DEFNAME2=RAW_RIBS
+DEFNAME=i_ribs_raw
+TYPE=t_meat_raw
+TDATA1=i_ribs_cooked
+VALUE=3
+WEIGHT=1
+CATEGORY=Items by Professions
+SUBSECTION=Cook
+DESCRIPTION=Ribs (Raw)
+
+ON=@targon_item
+if ( <amount> > 5 )
+   f_cook_targon_item
+   return 1
+endif
+
+
+
+
+[ITEMDEF 01e17]
+//raw fish, cut open, minus head, facing NW
+DEFNAME=i_fish_raw
+VALUE=1
+TYPE=T_FOOD_RAW
+TDATA1=i_fish_cooked
+CATEGORY=Items by Professions
+SUBSECTION=Cook
+DESCRIPTION=Fish (Raw, Cut, & No Head)
+DUPELIST=01e18
+
+ON=@targon_item
+if ( <amount> > 5 )
+   f_cook_targon_item
+   return 1
+endif
+
+
+
+
+[ITEMDEF 097a]
+// raw_fish
+DEFNAME=i_fish_cut_raw
+TYPE=T_FOOD_RAW
+TDATA1=i_fish_cut_cooked
+VALUE=1
+WEIGHT=0.1
+CATEGORY=Items by Professions
+SUBSECTION=Cook
+DESCRIPTION=Fish Steak (Raw)
+
+ON=@targon_item
+if ( <amount> > 5 )
+   f_cook_targon_item
+   return 1
+endif
+
+
+
+[FUNCTION f_cook_targon_item]
+if ( (<SRC.TARG.TYPE> != T_FIRE) && (<SRC.TARG.TYPE> != T_CAMPFIRE) )
+   SRC.SYSMESSAGE That is not a fire!
+   return 1
+endif
+if ( (<TOPOBJ.UID> != <SRC.UID> )
+   SRC.SYSMESSAGE Item to cook must be in backpack!
+   return 1
+endif
+SRC.NEWITEM <TDATA1>
+LOCAL.SKILL	= <EVAL (<SRC.COOKING> * (75 + <eval rand(50)>)/10>
+LOCAL.AMOUNT	= <eval ((<AMOUNT> * <LOCAL.SKILL>) / 10000)>
+if ( <LOCAL.AMOUNT> == 0 )
+   src.sysmessage You fail to cook anything.
+   return 1
+endif
+SRC.ACT.AMOUNT	= <LOCAL.AMOUNT>
+REMOVE
+SRC.ACT.BOUNCE
+SRC.SYSMESSAGE You cook <EVAL <SRC.ACT.AMOUNT>> <name>.
+
+
+[EOF]

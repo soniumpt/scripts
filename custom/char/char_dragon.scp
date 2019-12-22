@@ -1,0 +1,692 @@
+// #-----------#
+// # CHANGELOG #
+// #-----------#
+//
+// 18/08/18 - Wigifer - Removed random loot from these monsters, ready for conversion to the new f_central_loot table.
+
+//********************************************************************//
+//                           LOOT TEMPLATES                           //
+//********************************************************************// 
+[FUNCTION loot_DRAGON]
+   addlootgold ,5000
+   addlootrandom ,10,20,1,random_jewel
+   addlootitem random_scroll, 2
+   addlootitem i_scroll_blank, 2
+   addlootrandom ,200,250,1,random_rare_2  
+
+//********************************************************************//
+[FUNCTION loot_DRAGON_crystal]
+   addlootgold ,9200
+   addlootrandom ,10,20,1,random_jewel
+   addlootitem random_scroll, 2
+   addlootitem i_scroll_blank, 2
+   addlootrandom ,2,10,4,random_jewel
+   addlootrandom ,200,250,1,random_rare_2  
+
+//********************************************************************//
+[FUNCTION loot_ICE_npc_dragon]
+ addlootgold ,5000
+ addlootitem Random_Potion, 1
+ addlootrandom ,225,275,1,random_rare_2
+
+  
+//********************************************************************//
+[FUNCTION loot_WYVERN]
+ addlootgold ,3750
+ addlootitem Random_Potion, 1
+
+
+//********************************************************************//
+[FUNCTION loot_ANCIENT_WYRM]
+ addlootgold ,7500
+ addlootitem random_scroll, 2
+ addlootitem i_scroll_blank, 2   
+ addlootitem Random_Potion, 3
+ addlootitem Random_Potion, 2  
+
+//********************************************************************//
+[FUNCTION loot_DRAKE]
+ addlootgold ,2900
+ addlootitem i_reag_nightshade, 20
+ addlootitem random_scroll, 1
+ addlootitem i_scroll_blank, 2
+
+//********************************************************************//
+[FUNCTION loot_dragonrares_Low]
+   addlootrandom ,125,175,1,i_luck_stone
+   addlootrandom ,125,175,1,i_Merc_contract2
+   addlootrandom ,275,325,1,i_Merc_contract2
+   addlootrandom ,150,200,1,i_gobletrare1
+   addlootrandom ,250,300,1,i_goldenchest
+   addlootmisc 750,i_reward_ticket
+
+[FUNCTION loot_dragonrares_Med]
+   addlootrandom ,125,175,1,i_luck_stone
+   addlootrandom ,75,125,1,i_Merc_contract2
+   addlootrandom ,175,225,1,i_Merc_contract2
+   addlootrandom ,125,175,1,i_gobletrare1
+   addlootrandom ,175,225,1,i_goldenchest
+   addlootmisc 1000,i_reward_ticket
+
+[FUNCTION loot_dragonrares_High]
+   addlootrandom ,10,30,1,i_luck_stone
+   addlootrandom ,10,30,1,i_Merc_contract4
+   addlootrandom ,50,125,1,i_gobletrare1
+   addlootrandom ,75,125,1,i_goldenchest
+   addlootrandom ,175,225,1,random_rare_3
+   addlootmisc 1500,i_reward_ticket
+
+
+
+//********************************************************************//
+//                               DRAGONS                              //
+//********************************************************************//
+[CHARDEF 0c]
+DEFNAME		= c_dragon_green
+NAME		= #NAMES_DRAGON the Dragon
+SOUND		= snd_MONSTER_DRAGON1
+ICON		= i_pet_DRAGON
+ANIM		= 03f9c7f
+CAN		= MT_WALK|MT_RUN|MT_FLY|MT_FIRE_IMMUNE
+DAM		= 25,50
+ARMOR		= 100
+RESOURCES	= 20 i_ribs_raw, 8 i_reag_dragon_blood, 1 i_dragonhide_green, 1 i_reag_Dragons_heart
+FOODTYPE	= 80 t_meat_raw,t_gem
+DESIRES		= i_gold
+AVERSIONS	= r_water,r_civilization
+TEVENTS		= e_npc_dragon
+CATEGORY	= Monsters
+SUBSECTION	= Dragons and Drakes
+DESCRIPTION	= Dragon (Green)
+
+ON=@NPCRESTOCK
+ITEM=i_fig_patchwork_sklt,R20
+
+ON = @Create
+  NPC		= brain_dragon
+  COLOR		= 00487
+  FAME		= {3000 9000}
+  KARMA		= {-5000 -5999}
+  STR		= {1200 1300}
+  DEX		= {105 115}
+  INT		= {137 143}
+  PARRYING	= {55.0 95.0}
+  MAGICRESISTANCE={99.0 120.0}
+  TACTICS	= {98.0 100.0}
+  WRESTLING	= {90.0 93.0}
+
+//********************************************************************//
+[CHARDEF 03b]
+DEFNAME		= c_dragon_red
+NAME		= #NAMES_DRAGON the Dragon
+SOUND		= snd_MONSTER_DRAGON1
+ICON		= i_pet_DRAGON
+ANIM		= 03f9c7f
+CAN		= MT_WALK|MT_RUN|MT_FLY|MT_FIRE_IMMUNE
+DAM		= 35,50
+ARMOR		= 100
+RESOURCES	= 20 i_ribs_raw, 8 i_reag_dragon_blood, 1 i_dragonhide_red, 1 i_reag_Dragons_heart
+FOODTYPE	= 80 t_meat_raw,t_gem
+DESIRES		= i_gold
+AVERSIONS	= r_water,r_civilization
+TEVENTS		= e_npc_dragon
+
+CATEGORY	= Monsters
+SUBSECTION	= Dragons and Drakes
+DESCRIPTION	= Dragon (Red)
+
+ ON=@NPCRESTOCK
+ITEM=i_fig_patchwork_sklt,R20
+
+ON = @Create
+  NPC		= brain_dragon
+  COLOR		= 0799
+  FAME		= {3000 9000}
+  KARMA		= {-5000 -5999}
+  STR		= {1200 1300}
+  DEX		= {95 115}
+  INT		= {137 143}
+  PARRYING	= {55.0 95.0}
+  MAGICRESISTANCE={99.0 150.0}
+  TACTICS	= {98.0 100.0}
+  WRESTLING	= {90.0 93.0}
+  
+//********************************************************************//
+[CHARDEF 01106]
+DEFNAME		= c_m_dragon_crystal
+ID		= c_DRAGON_RED
+NAME		= #NAMES_DRAGON the Crystal Dragon
+SOUND		= snd_MONSTER_DRAGON1
+ICON		= i_pet_dragon
+DAM		= 30,70
+ARMOR		= 120
+RESOURCES	= 99 i_ribs_raw,8 i_reag_dragon_blood,1 i_reag_Dragons_heart,2 i_dragonhide_crystal,1 i_reag_Dragons_heart
+CAN		= MT_WALK|MT_FLY|MT_RUN|MT_FIRE_IMMUNE
+FOODTYPE	= 80 t_meat_raw
+DESIRES		= i_gold
+AVERSIONS	= r_water,r_civilization
+TEVENTS		= e_npc_dragon
+
+CATEGORY	= Monsters
+SUBSECTION	= Dragons and Drakes
+DESCRIPTION	= Crystal Dragon
+
+ON = @Create
+  NPC		= brain_dragon
+  COLOR		= 07fff
+  FAME		= {3000 9000}
+  KARMA		= {-5000 -5999}
+  STR		= {1825 1940}
+  DEX		= {105 140}
+  INT		= {175 200}
+  PARRYING	= {55.0 95.0}
+  MAGICRESISTANCE={199.0 250.0}
+  TACTICS	= {198.0 200.0}
+  WRESTLING	= {90.0 93.0}
+  
+//********************************************************************//
+[CHARDEF 01011]
+DEFNAME		= c_m_dragon_ice
+NAME		= Ice Dragon
+ID		= c_DRAGON_RED
+SOUND		= snd_MONSTER_DRAGON1
+ICON		= i_pet_dragon
+CAN		= MT_WALK|MT_FLY|MT_RUN
+DAM		= 15,50
+ARMOR		= 75
+FOODTYPE	= 80 t_meat_raw
+DESIRES		= i_gold
+RESOURCES	= 99 i_ribs_raw,8 i_reag_dragon_blood, 1 i_reag_Dragons_heart, 2 i_dragonhide_ice
+AVERSIONS	= r_civilization,r_water
+TEVENTS		= e_npc_dragon
+
+CATEGORY	= Monsters
+SUBSECTION	= Dragons and Drakes
+DESCRIPTION	= Ice Dragon
+
+ON=@Create
+  NPC		= brain_monster
+  COLOR		= {07e5 1 0ae4 1 07b5 1}
+  FAME		= {3000 9000}
+  KARMA		= {-4999 -5999}
+  STR		= {2000 2200}
+  DEX		= {100 105}
+  INT		= {137 143}
+  PARRYING	= {55.0 95.0}
+  MAGERY	= {99.0 100.0}
+  MAGICRESISTANCE={99.0 100.0}
+  TACTICS	= {199.0 200.0}
+  WRESTLING	= {90.0 93.0}
+  
+ON=@NPCActFight
+  IF (<EVAL RAND(10)> = 1)
+     IF (<CanSeeLOS>)
+        f_ice_breath1238888 5 25
+     ENDIF
+  ENDIF
+  RETURN 0
+
+//********************************************************************//
+[CHARDEF c_undead_Dragon]
+DEFNAME=c_undeadDragon
+ID=c_DRAGON_RED
+NAME=Undead Dragon
+SOUND=snd_MONSTER_DRAGON1
+ICON=i_pet_dragon
+DAM=15,35
+ARMOR=36
+RESOURCES=99 i_ribs_raw,8 i_reag_dragon_blood,2 i_hide
+CAN=MT_WALK|MT_FLY|MT_FIRE_IMMUNE
+FOODTYPE=80 t_meat_raw
+DESIRES=i_gold
+AVERSIONS=r_water,r_civilization
+
+
+ON=@Create
+  NPC=brain_dragon
+  FAME={3000 9000}
+  KARMA={-5000 -5999}
+
+  COLOR=03c0
+  STR={795 825}
+  DEX={200 300}
+  INT=10000
+
+  PARRYING={90.0 100.0}
+  MAGICRESISTANCE={99.0 100.0}
+  TACTICS={98.0 100.0}
+  WRESTLING={90.0 93.0}
+  NECROMANCY={90.0 100.0}
+  MAGERY={90.0 100.0}
+
+  ITEMNEWBIE=i_spellbook
+  ADDSPELL=s_Hallucination
+  ADDSPELL=s_summon_undead
+
+CATEGORY=Elves
+SUBSECTION=YEW
+DESCRIPTION=Undead Dragon
+
+
+//********************************************************************//
+//                               WYVERN                               //
+//********************************************************************//
+[CHARDEF 01016]
+DEFNAME		= c_m_wyvern
+NAME		= Wyvern
+ID		= c_DRAGON_RED
+DAM		= 6,36
+ARMOR		= 100
+RESOURCES	= 50 i_ribs_raw, 2 i_dragonhide_drake
+FOODTYPE	= 25 t_meat_raw
+DESIRES		= i_gold
+AVERSIONS	= r_civilization,r_water
+TEVENTS		= e_npc_dragon
+
+CATEGORY	= Monsters
+SUBSECTION	= Dragons and Drakes
+DESCRIPTION	= Wyvern
+
+ON = @Create
+  NPC		= brain_dragon
+  FAME		= {3000 9000}
+  KARMA		= {-5000 -5999}
+  STR		= {600 930}
+  DEX		= {153 172}
+  INT		= {125 137}
+  PARRYING	= {65.0 80.0}
+  MAGICRESISTANCE={65.0 80.0}
+  TACTICS	= {165.0 190.0}
+  WRESTLING	= {65.0 80.0}
+  
+//********************************************************************//
+//                                 WYRM                               //
+//********************************************************************//
+[ITEMDEF i_wyrm_fire]
+ID=i_fx_field_fire
+
+ON=@TIMER
+   REMOVE
+   RETURN 1
+
+[CHARDEF 01025]
+DEFNAME		= c_m_dragon_wyrm
+NAME		= Wyrm
+ID		= c_dragon_red
+SOUND		= snd_MONSTER_DRAGON1
+ICON		= i_pet_dragon
+RESDISPDNID	= c_DRAGON_RED
+RESLEVEL	= 2
+RESDISPDNHUE	= 0
+DAM		= 11,53
+ARMOR		= 100
+RESOURCES	= 99 i_ribs_raw,8 i_reag_dragon_blood, 2 i_dragonhide_drake
+CAN		= MT_WALK|MT_FLY
+FOODTYPE	= 80 t_meat_raw
+DESIRES		= i_gold
+AVERSIONS	= r_civilization,r_water
+TEVENTS		= e_npc_dragon
+
+CATEGORY	= Monsters
+SUBSECTION	= Dragons and Drakes
+DESCRIPTION	= Wyrm
+
+ON = @Create
+  NPC		= brain_dragon
+  COLOR		= 0
+  FAME		= {3000 9000}
+  KARMA		= {-6000 -6999}
+  STR		= {1100 1185}
+  DEX		= {86 175}
+  INT		= {125 137}
+  PARRYING	= {55.0 95.0}
+  MAGERY	= 99.0
+  MAGICRESISTANCE={99.0 100.0}
+  TACTICS	= {198.0 200.0}
+  WRESTLING	= {90.0 93.0}  
+  
+ON = @GetHit
+  DOSWITCH <EVAL (<HITS>/100)>
+     COLOR	= 07e8
+     COLOR	= 09b6
+     COLOR	= 0aff
+     COLOR	= 07ad
+     COLOR	= 0afe
+     COLOR	= 0af9
+     COLOR	= 0af8
+     COLOR	= 0455
+     COLOR	= 0452
+     COLOR	= 0458
+     COLOR	= 0
+     COLOR	= 0
+  END DO
+  
+  DOSWITCH <EVAL (<HITS>/100)>
+     LOCAL.MOD	= 550 
+     LOCAL.MOD	= 450 
+     LOCAL.MOD	= 360 
+     LOCAL.MOD	= 280 
+     LOCAL.MOD	= 210 
+     LOCAL.MOD	= 150 
+     LOCAL.MOD	= 100
+     LOCAL.MOD	= 60
+     LOCAL.MOD	= 30
+     LOCAL.MOD	= 10
+     LOCAL.MOD	= 0
+     LOCAL.MOD	= 0
+  END DO
+  
+  MODSTR	= <LOCAL.MOD>
+  MODDEX	= <LOCAL.MOD>
+  MODINT	= <LOCAL.MOD>
+  RETURN 0
+
+ON = @NPCSeeNewPlayer
+  DOSWITCH <EVAL (<HITS>/100)>
+     COLOR	= 07e8
+     COLOR	= 09b6
+     COLOR	= 0aff
+     COLOR	= 07ad
+     COLOR	= 0afe
+     COLOR	= 0af9
+     COLOR	= 0af8
+     COLOR	= 0455
+     COLOR	= 0452
+     COLOR	= 0458
+     COLOR	= 0
+     COLOR	= 0
+  END DO
+  
+  DOSWITCH <EVAL (<HITS>/100)>
+     LOCAL.MOD	= 550 
+     LOCAL.MOD	= 450 
+     LOCAL.MOD	= 360 
+     LOCAL.MOD	= 280 
+     LOCAL.MOD	= 210 
+     LOCAL.MOD	= 150 
+     LOCAL.MOD	= 100
+     LOCAL.MOD	= 60
+     LOCAL.MOD	= 30
+     LOCAL.MOD	= 10
+     LOCAL.MOD	= 0
+     LOCAL.MOD	= 0
+  END DO
+  
+  MODSTR	= <LOCAL.MOD>
+  MODDEX	= <LOCAL.MOD>
+  MODINT	= <LOCAL.MOD>
+
+  RETURN 0
+
+ON = @DEATH
+   EMOTE explode in a boiling spray of fire and blood
+   SOUND 0227
+   NEWITEM=i_phoenix_fire  
+   ACT.P=<P> 
+   ACT.MOVE -2 -2 
+   NEWITEM=i_phoenix_fire  
+   ACT.P=<P> 
+   ACT.MOVE -2 -1 
+   NEWITEM=i_phoenix_fire  
+   ACT.P=<P> 
+   ACT.MOVE 2 -2 
+   NEWITEM=i_phoenix_fire  
+   ACT.P=<P> 
+   ACT.MOVE -1 -1 
+   NEWITEM=i_phoenix_fire  
+   ACT.P=<P> 
+   ACT.MOVE 1 -1 
+   NEWITEM=i_phoenix_fire  
+   ACT.P=<P> 
+   ACT.MOVE 2 -1 
+   NEWITEM=i_phoenix_fire  
+   ACT.P=<P> 
+   ACT.MOVE 0 -1 
+   NEWITEM=i_phoenix_fire  
+   ACT.P=<P> 
+   ACT.MOVE 0 -2 
+   NEWITEM=i_phoenix_fire  
+   ACT.P=<P> 
+   ACT.MOVE -2 -1 
+   
+   NEWITEM=i_phoenix_fire_2 
+   ACT.P=<P> 
+   ACT.MOVE -2 -3 
+   NEWITEM=i_phoenix_fire_2 
+   ACT.P=<P> 
+   ACT.MOVE -1 1 
+   NEWITEM=i_phoenix_fire_2 
+   ACT.P=<P> 
+   ACT.MOVE -1 -2 
+   NEWITEM=i_phoenix_fire_2 
+   ACT.P=<P> 
+   ACT.MOVE -1 0 
+   NEWITEM=i_phoenix_fire_2 
+   ACT.P=<P> 
+   ACT.MOVE -2 -2 
+   NEWITEM=i_phoenix_fire_2  
+   ACT.P=<P> 
+   ACT.MOVE -2 -1 
+   NEWITEM=i_phoenix_fire_2 
+   ACT.P=<P> 
+   ACT.MOVE -2 0 
+   NEWITEM=i_phoenix_fire_2  
+   ACT.P=<P> 
+   ACT.MOVE -2 2 
+   NEWITEM=i_phoenix_fire_2 
+   ACT.P=<P> 
+   ACT.MOVE -2 1 
+   
+   NEWITEM=i_phoenix_fire_3  
+   ACT.P=<P> 
+   ACT.MOVE 2 -2 
+   NEWITEM=i_phoenix_fire_3 
+   ACT.P=<P> 
+   ACT.MOVE 2 -1 
+   NEWITEM=i_phoenix_fire_3 
+   ACT.P=<P> 
+   ACT.MOVE 2 0 
+   NEWITEM=i_phoenix_fire_3 
+   ACT.P=<P> 
+   ACT.MOVE 2 1 
+   NEWITEM=i_phoenix_fire_3 
+   ACT.P=<P> 
+   ACT.MOVE 2 2 
+   NEWITEM=i_phoenix_fire_3 
+   ACT.P=<P> 
+   ACT.MOVE 1 1 
+   NEWITEM=i_phoenix_fire_3 
+   ACT.P=<P> 
+   ACT.MOVE 1 0 
+   NEWITEM=i_phoenix_fire_3 
+   ACT.P=<P> 
+   ACT.MOVE 1 -2 
+   NEWITEM=i_phoenix_fire_3 
+   ACT.P=<P> 
+   ACT.MOVE 1 -1 
+   
+   NEWITEM=i_phoenix_fire_4
+   ACT.P=<P> 
+   ACT.MOVE 2 1 
+   NEWITEM=i_phoenix_fire_4
+   ACT.P=<P> 
+   ACT.MOVE -2 1 
+   NEWITEM=i_phoenix_fire_4
+   ACT.P=<P> 
+   ACT.MOVE -2 2 
+   NEWITEM=i_phoenix_fire_4
+   ACT.P=<P> 
+   ACT.MOVE -1 2 
+   NEWITEM=i_phoenix_fire_4
+   ACT.P=<P> 
+   ACT.MOVE -1 1 
+   NEWITEM=i_phoenix_fire_4
+   ACT.P=<P> 
+   ACT.MOVE 0 2 
+   NEWITEM=i_phoenix_fire_4
+   ACT.P=<P> 
+   ACT.MOVE 0 1 
+   NEWITEM=i_phoenix_fire_4
+   ACT.P=<P> 
+   ACT.MOVE 1 2 
+   NEWITEM=i_phoenix_fire_4
+   ACT.P=<P> 
+   ACT.MOVE 2 2 
+   act.link = <uid>
+   
+   NEWITEM=i_wyrm_fire
+   ACT.P=<P>
+   ACT.TIMER=60
+   NEWITEM=i_wyrm_fire
+   ACT.P=<P>
+   ACT.TIMER=60
+   ACT.MOVE 1 0
+   NEWITEM=i_wyrm_fire
+   ACT.P=<P>
+   ACT.TIMER=60
+   ACT.MOVE 0 1
+   NEWITEM=i_wyrm_fire
+   ACT.P=<P>
+   ACT.TIMER=60
+   ACT.MOVE -1 0
+   NEWITEM=i_wyrm_fire
+   ACT.P=<P>
+   ACT.TIMER=60
+   ACT.MOVE 0 -1
+
+
+//********************************************************************//
+//                                DRAKE                               //
+//********************************************************************//
+[CHARDEF 03c]
+DEFNAME	= c_m_dragon_icedrake
+NAME		= #NAMES_DRAGON the Ice Drake
+SOUND		= snd_MONSTER_DRAGON1
+ICON		= i_pet_DRAGON
+ANIM		= 03f9c7f
+CAN		= MT_WALK|MT_FLY|MT_FIRE_IMMUNE
+DAM		= 4,24
+ARMOR		= 105
+RESOURCES	= 50 i_ribs_raw, 8 i_reag_dragon_blood, 1 i_dragonhide_ice
+FOODTYPE	= 25 t_meat_raw,t_gem
+DESIRES		= i_gold
+AVERSIONS	= r_civilization
+TEVENTS		= e_npc_dragon
+
+CATEGORY	= Monsters
+SUBSECTION	= Dragons and Drakes
+DESCRIPTION	= Drake (Ice)
+
+ON = @Create
+  NPC		= brain_monster
+  COLOR		= {07e5 1 0ae4 1 07b5 1 0af5 1}
+  FAME		= {2000 6000}
+  KARMA		= {-5000 -6999}
+  STR		= {500 530}
+  DEX		= {133 152}
+  INT		= {112 125}
+  PARRYING	= {65.0 80.0}
+  MAGICRESISTANCE={65.0 80.0}
+  TACTICS	= {65.0 90.0}
+  WRESTLING	= {65.0 80.0}
+
+ON=@NPCActFight
+  IF (<EVAL RAND(10)> = 1)
+     IF (<CanSeeLOS>)
+        f_ice_breath1238888 5 25
+     ENDIF
+  ENDIF
+  RETURN 0
+
+//********************************************************************//
+[CHARDEF 03d]
+DEFNAME	= c_m_dragon_firedrake
+NAME		= #NAMES_DRAGON the Fire Drake
+SOUND		= snd_MONSTER_DRAGON1
+ICON		= i_pet_DRAGON
+ANIM		= 03f9c7f
+CAN		= MT_WALK|MT_FLY|MT_FIRE_IMMUNE
+DAM		= 4,24
+ARMOR		= 75
+RESOURCES	= 50 i_ribs_raw, 8 i_reag_dragon_blood, 1 i_dragonhide_drake
+FOODTYPE	= 25 t_meat_raw,t_gem
+DESIRES		= i_gold
+AVERSIONS	= r_water,r_civilization
+TEVENTS		= e_npc_dragon
+
+CATEGORY	= Monsters
+SUBSECTION	= Dragons and Drakes
+DESCRIPTION	= Drake (Fire)
+
+ON = @Create
+  NPC		= brain_dragon
+  COLOR		= {0ae3 1 021 1 0aa8 1 0793 1}
+  FAME		= {2000 6000}
+  KARMA		= {-5000 -5999}
+  STR		= {500 530}
+  DEX		= {133 152}
+  INT		= {112 125}
+  PARRYING	= {65.0 80.0}
+  MAGICRESISTANCE ={65.0 80.0}
+  TACTICS	= {65.0 90.0}
+  WRESTLING	= {65.0 80.0}
+  
+ 
+  
+//********************************************************************//
+//                             FUNCTIONS                              //
+//********************************************************************//
+[FUNCTION f_ice_breath1238888]    
+    EFFECT -1 i_fx_sparkle 1 15 0 0af3
+    DOSWITCH <EVAL RAND(10)>
+       LOCAL.DRAIN	= <ARGN1>
+       LOCAL.DRAIN	= <EVAL (<ARGN1>+1)>
+       LOCAL.DRAIN	= <EVAL (<ARGN1>+2)>
+       LOCAL.DRAIN	= <EVAL (<ARGN1>+3)>
+       LOCAL.DRAIN	= <EVAL (<ARGN1>+4)>
+       LOCAL.DRAIN	= <EVAL (<ARGN1>+5)>
+       LOCAL.DRAIN	= <EVAL (<ARGN1>+6)>
+       LOCAL.DRAIN	= <EVAL (<ARGN1>+7)>
+       LOCAL.DRAIN	= <EVAL (<ARGN1>+8)>
+       LOCAL.DRAIN	= <EVAL (<ARGN1>+9)>
+    END DO   
+    DOSWITCH <EVAL RAND(10)>
+       LOCAL.DAMAGE	= <ARGN2>
+       LOCAL.DAMAGE	= <EVAL (<ARGN2>+1)>
+       LOCAL.DAMAGE	= <EVAL (<ARGN2>+2)>
+       LOCAL.DAMAGE	= <EVAL (<ARGN2>+3)>
+       LOCAL.DAMAGE	= <EVAL (<ARGN2>+4)>
+       LOCAL.DAMAGE	= <EVAL (<ARGN2>+5)>
+       LOCAL.DAMAGE	= <EVAL (<ARGN2>+6)>
+       LOCAL.DAMAGE	= <EVAL (<ARGN2>+7)>
+       LOCAL.DAMAGE	= <EVAL (<ARGN2>+8)>
+       LOCAL.DAMAGE	= <EVAL (<ARGN2>+9)>
+    END DO  
+    ACT.SYSMESSAGE @05 You feel very cold as the dragon breath hits you.
+    
+    ACT.EFFECT 3 i_fx_sparkle 1 15 0 0af3
+    
+    IF (<LOCAL.DRAIN> < <ACT.STAM>)
+       ACT.STAM = <EVAL (<ACT.STAM>-<LOCAL.DRAIN>)>
+    ELSE
+       ACT.STAM = 0
+    ENDIF
+    
+    ACT.DAMAGE <EVAL <LOCAL.DAMAGE>>
+
+//********************************************************************//
+//                           ITEMS WITH USE                           //
+//********************************************************************// 
+[ITEMDEF i_ice_breath_memory]
+ID=i_memory
+NAME=Ice Breath Timer
+
+ON=@CREATE
+   TIMER=2
+
+ON=@TIMER
+   SERV.LOG ICE BREATH TIMER IS ON <CONT.NAME> <CONT.UID>
+   REMOVE
+   RETURN 1
+
+[EOF]

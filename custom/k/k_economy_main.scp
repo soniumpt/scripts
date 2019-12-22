@@ -1,0 +1,103 @@
+[ITEMDEF i_check]
+ID	= i_scroll_blank
+NAME	= cheque
+TYPE	= t_normal
+VALUE   = 100
+
+ON = @Click
+   if ( <AMOUNT> > 1 )
+      IF (<AMOUNT> > 10)
+         SERV.LOG <SRC.ACCOUNT>:<SRC.NAME>[<SRC.UID>] has just clicked <AMOUNT> <EVAL <MORE2>>gps cheques [<UID>].
+
+	STAFFLOG <SRC.ACCOUNT>:<SRC.NAME> has just clicked <AMOUNT> <EVAL <MORE2>>gps cheques [<UID>].
+
+      ENDIF
+      MESSAGE <AMOUNT> cheques worth <eval <MORE2>> gold pieces each
+   else
+      MESSAGE a cheque worth <eval <MORE2>> gold pieces
+   endif
+   return 1
+ON=@ClientTooltip
+     src.addcliloc 1042971,worth <eval <MORE2>> gold pieces 
+ON = @DClick
+   IF (<CONT>==<SRC.FINDLAYER.21.UID>)
+      if ( <AMOUNT> > 1 )
+         TARGET Who do you want to hand the cheques?
+      else
+         TARGET Who do you want to hand the cheque to or what gold would you like to put in the cheque?
+      endif
+      return 1
+   ELSE
+      SRC.SYSMESSAGE Please put the cheque in your backpack before trying to cash it.
+      return 1
+   ENDIF
+   
+ON = @Targon_char
+   IF !( <TOPOBJ.UID> = <SRC.UID> )
+      SRC.SYSMESSAGE You must hold the cheque.
+      RETURN 1
+   ENDIF
+   
+   if !( (<SRC.TARG.BASEID> == c_h_banker) || (<SRC.TARG.BASEID> == c_h_banker_f) )
+      src.sysmessage That's not a banker!
+      return 1
+   endif
+   
+   IF (<AMOUNT> > 1)
+      SERV.LOG <SRC.ACCOUNT>:<SRC.NAME>[<SRC.UID>] has just tried to cash <AMOUNT> <EVAL <MORE2>>gp cheques [<UID>].
+
+         STAFFLOG <SRC.ACCOUNT>:<SRC.NAME>[<SRC.UID>] has just tried to cash <AMOUNT> <EVAL <MORE2>>gps cheques [<UID>].
+
+      SRC.TARG.SAY Sorry, I'm not permitted to cash in stacks. Each cheque has to be individually cashed.
+      RETURN 1
+   ENDIF
+
+   IF (<EVAL <MORE2>> <= 500000)
+      SERV.LOG <SRC.ACCOUNT>:<SRC.NAME>[<SRC.UID>] has just cashed a <EVAL <MORE2>>gp cheque.
+         STAFFLOG <SRC.ACCOUNT>:<SRC.NAME>[<SRC.UID>] has just cashed a <EVAL <MORE2>>gps cheque.
+
+      SRC.TARG.SAY Here, I'll cash in that <EVAL <MORE2>> cheque for you.
+      SRC.givegold <eval <MORE2>>
+      REMOVE
+   ELSE
+      SERV.LOG <SRC.ACCOUNT>:<SRC.NAME>[<SRC.UID>] has just cashed a <EVAL <MORE2>>gp cheque.
+         STAFFLOG <SRC.ACCOUNT>:<SRC.NAME>[<SRC.UID>] has just cashed a <EVAL <MORE2>>gps cheque.
+      SRC.TARG.SAY Here, I'll cash in 500000 of that cheque for you. If you would like to cash in the rest, pass the cheque to me again.
+      SRC.givegold 500000
+      MORE2 = <EVAL (<MORE2>-500000)>
+   ENDIF
+   return 1
+
+ON = @Targon_item
+//Add gold to check if it is in their pack and the check is not >=500000
+   IF ( <AMOUNT> > 1 )
+      SRC.SYSMESSAGE You must separate the cheques before adding gold to them
+      RETURN 1
+   ENDIF
+   IF ( <SRC.TARG.BASEID>==i_gold )
+      IF ( <EVAL <MORE2>> < 500000 )
+         IF ( <SRC.TARG.TOPOBJ.UID> = <SRC.UID> )
+            IF (<EVAL <EVAL <MORE2>> + <EVAL <SRC.TARG.AMOUNT>>> > 500000)
+               SRC.SYSMESSAGE That stack of gold will not fit into this cheque.
+            ELSE
+               MORE2 = (<EVAL <MORE2>> + <EVAL <SRC.TARG.AMOUNT>>)
+               SERV.LOG <SRC.ACCOUNT>:<SRC.NAME>[<SRC.UID>] has just added <EVAL <SRC.TARG.AMOUNT>>gp to cheque <uid>.
+
+         STAFFLOG <SRC.ACCOUNT>:<SRC.NAME>[<SRC.UID>] has just added a <EVAL <SRC.TARG.AMOUNT>>gp to cheque <uid>.
+
+               SRC.TARG.REMOVE
+               SRC.SYSMESSAGE You add the gold to the cheque.
+               
+            ENDIF
+         ELSE
+            SRC.SYSMESSAGE You must have the gold in your backpack to add it to the cheque.
+         ENDIF   
+      ELSE
+         SRC.SYSMESSAGE You cannot add anymore than gold to this cheque.
+      ENDIF
+   ELSE
+      SRC.SYSMESSAGE You can only put gold into a cheque.
+   ENDIF
+   RETURN 1
+
+[EOF]

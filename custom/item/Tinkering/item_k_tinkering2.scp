@@ -1,0 +1,130 @@
+[TYPEDEF t_goggles]
+ON = @Click
+   MESSAGE <NAME>
+   if ( <SRC.ITEMID> < 30.0 )
+      return 1
+   endif
+   if ( <MOREz> < 0 )
+      MESSAGE (<eval (((0-<MOREz>)*100)/30)>% lighter enviroment)
+   else
+      MESSAGE (<eval (((<MOREz>)*100)/30)>% darker enviroment)
+   endif
+   return 1
+
+ON = @DClick
+   EQUIP
+   return 1
+ON = @Equip
+   TRIGGER @UpdateLight
+ON = @Unequip
+   SRC.UPDATE
+   TIMER -1
+ON = @UpdateLight
+   LOCAL.LIGHT	= <SECTOR.LIGHT>
+   LOCAL.SHADE	= <eval (<SECTOR.LIGHT>+<MOREz>)>
+   if ( <LOCAL.SHADE> > 30 )
+      LOCAL.SHADE	= 30
+   elseif ( <LOCAL.SHADE> < 0 )
+      LOCAL.SHADE	= 0
+   endif
+   SECTOR.LIGHT	= <LOCAL.SHADE>
+
+   if ( <CONT.FLAGS> & statf_nightsight )
+      SECTOR.LIGHT	= <LOCAL.LIGHT>
+   else
+      CONT.FLAGS	= (<CONT.FLAGS> | statf_nightsight)
+      SECTOR.LIGHT	= <LOCAL.LIGHT>
+      CONT.FLAGS	= (<CONT.FLAGS> & ~statf_nightsight)
+   endif
+   TIMER	= 3
+   return 1
+
+
+[ITEMDEF i_goggles_dark1]
+ID		= i_goggles
+NAME		= shaded spectacles
+WEIGHT		= 1
+TYPE		= T_GOGGLES
+LAYER		= 6
+VALUE		= 8
+RESOURCES	= 1 i_ingot_copper, 1 i_ingot_tin, 5 i_reag_obsidian_p
+ON = @Create
+   MOREz	= 6	// shade
+ON = @Timer
+   TRIGGER @UpdateLight
+   return 1
+
+[ITEMDEF i_goggles_dark2]
+ID	= i_goggles
+NAME	= strong shaded spectacles
+WEIGHT	= 1
+TYPE	= T_GOGGLES
+LAYER	= 6
+VALUE	= 8
+ON = @Create
+   MOREz	= 12	// shade
+ON = @Timer
+   TRIGGER @UpdateLight
+   return 1
+
+
+[ITEMDEF i_goggles_light1]
+ID	= i_goggles
+NAME	= weak nighttime spectacles
+WEIGHT	= 1
+TYPE	= T_GOGGLES
+LAYER	= 6
+VALUE	= 8
+ON = @Create
+   MOREz	= -4	// shade
+ON = @Timer
+   TRIGGER @UpdateLight
+   return 1
+
+
+[ITEMDEF i_goggles_light2]
+ID	= i_goggles
+NAME	= nighttime spectacles
+WEIGHT	= 1
+TYPE	= T_GOGGLES
+LAYER	= 6
+VALUE	= 8
+ON = @Create
+   MOREz	= -8	// shade
+   COLOR	= 0169
+ON = @Timer
+   TRIGGER @UpdateLight
+   return 1
+
+
+[ITEMDEF 09a8]
+DEFNAME		= i_box_brass
+TYPE		= T_CONTAINER
+TDATA2		= 04b
+//TDATA2=043	// no lock?
+FLIP		= 1
+WEIGHT		= 5
+DUPELIST	= 0e80
+SKILLMAKE	= TINKERING 55.0, t_tinker_tools
+RESOURCES	= 5 i_ingot_copper, 1 i_nails, 2 i_hinge
+CATEGORY	= Provisions - Miscellaneous
+SUBSECTION	= Containers
+DESCRIPTION	= Brass Box  (N)
+
+
+[ITEMDEF 0e40]
+DEFNAME		= i_chest_metal_brass
+TYPE		= T_CONTAINER
+TDATA2		= 042
+FLIP		= 1
+WEIGHT		= 20
+SKILLMAKE	= TINKERING 80.0,t_tinker_tools
+RESOURCES	= 12 i_ingot_iron, 2 i_ingot_gold, 1 i_nails, 2 i_hinge
+DUPELIST	= 0e41
+CATEGORY	= Provisions - Miscellaneous
+SUBSECTION	= Containers
+DESCRIPTION	= METAL BRASS CHEST (W)
+
+
+
+[EOF]

@@ -1,0 +1,174 @@
+//Quests by Sqweak
+//Rare Book Dealer
+
+[CHARDEF C_H_book_dealer_a] 
+   DEFNAME=C_H_Book_Dealer_a
+   NAME=George Peabottom
+   ID=C_MAN 
+   DAM=15,20 
+   ARMOR=20 
+   
+   TSPEECH=jobsbooka
+   
+   TEVENTS=e_npc_quest
+   
+ON=@Create 
+   TITLE=Book Dealer
+   NPC=brain_human 
+   COLOR=colors_skin 
+   STR={151 165} 
+   DEX={80 120} 
+   INT={151 165} 
+
+   DETECTION={90.0 100.0} 
+   FENCING={90.0 100.0} 
+   PARRYING={90.0 100.0} 
+   SWORDSMANSHIP={90.0 100.0} 
+   WRESTLING={90.0 100.0} 
+   MACEFIGHTING={90.0 100.0} 
+   MAGICRESISTANCE={90.0 100.0} 
+   TACTICS={90.0 100.0} 
+
+   ITEMNEWBIE=random_male_hair 
+   COLOR=colors_hair 
+   ITEMNEWBIE=i_robe
+   COLOR=colors_red
+   ITEMNEWBIE=random_facial_hair 
+   COLOR=match_hair 
+
+On=@NPCSeeNewPlayer 
+   IF !( <SRC.TAG.NPC_QUEST_START> & NPCQ_BookDealer ) && !( <SRC.TAG.NPC_QUEST_DONE> & NPCQ_BookDealer )
+      SAY <SRC.SEX Sir/Lady> Can you help me recover a book?
+   ELSEIF ( <SRC.TAG.NPC_QUEST_START> & NPCQ_BookDealer )
+      SAY <SRC.SEX Sir/Lady> Have you retrieved my book yet?
+   ENDIF
+
+CATEGORY=Imperial uo
+SUBSECTION=Quests 
+DESCRIPTION=(book) dealer a
+
+
+[ITEMDEF i_vrare_book]
+   NAME=Invisible ink (Rare Book)
+   ID=0ff2
+
+   CATEGORY=Imperial uo
+   SUBSECTION=Quests 
+   DESCRIPTION=(Rare Book) Staff
+
+
+[CHARDEF C_H_Book_Dealer_b] 
+   DEFNAME=C_H_Book_Dealer_b
+   NAME=Bill Barnard
+   ID=C_MAN 
+   DAM=15,20 
+   ARMOR=20 
+
+   TSPEECH=jobsbookb
+   
+   TEVENTS=e_npc_quest
+
+ON=@Create 
+   TITLE=Book Dealer
+   NPC=brain_human 
+   COLOR=colors_skin 
+   STR={151 165} 
+   DEX={80 120} 
+   INT={151 165} 
+
+   DETECTION={90.0 100.0}  
+   FENCING={90.0 100.0} 
+   PARRYING={90.0 100.0} 
+   SWORDSMANSHIP={90.0 100.0} 
+   WRESTLING={90.0 100.0} 
+   MACEFIGHTING={90.0 100.0} 
+   MAGICRESISTANCE={90.0 100.0} 
+   TACTICS={90.0 100.0} 
+
+   ITEMNEWBIE=random_male_hair 
+   COLOR=colors_hair 
+   ITEMNEWBIE=i_robe
+   COLOR=colors_blue
+   ITEMNEWBIE=random_facial_hair 
+   COLOR=match_hair 
+
+CATEGORY=Imperial uo
+SUBSECTION=Quests 
+DESCRIPTION=(books) Dealer b
+
+[SPEECH jobsbooka] 
+on=hi 
+on=hello
+on=hail
+on=sawat dee
+on=Greetings
+on=help
+on=quest
+on=book
+   IF ( <SRC.TAG.NPC_QUEST_DONE> & NPCQ_BookDealer )
+      SAY You have already retrieved my book for me this quest!
+   ELSEIF ( <SRC.TAG.NPC_QUEST_START> & NPCQ_BookDealer )
+      SAY Do you have my book yet?!  
+      SAY You need to retrieve the book from Bill Bernard in the Britain Library.
+   ELSE 
+      SAY I need you to collect a book for me, from Bill Bernard at the Britain Libary. Will you help me?
+   ENDIF
+   RETURN 1
+
+on=sure
+on=yes
+on=ok
+on=accept
+on=agree
+   IF ( <SRC.TAG.NPC_QUEST_DONE> & NPCQ_BookDealer )
+      SAY You have already retrieved my book for me!
+   ELSEIF ( <SRC.TAG.NPC_QUEST_START> & NPCQ_BookDealer )
+      SAY Do you have my book yet?!  
+      SAY You need to retrieve the book from Bill Bernard in the Britain Library.
+   ELSE 
+      SRC.TAG.NPC_QUEST_START = <eval ( <SRC.TAG.NPC_QUEST_START> | NPCQ_BookDealer )>
+      SAY I will pay 5000gps for it. To collect it say "Deliver", come back to me and say "Reward" and I will pay you.
+   ENDIF
+   RETURN 1
+   
+on=reward 
+on=collect 
+   IF ( <SRC.TAG.NPC_QUEST_DONE> & NPCQ_BookDealer )
+      SAY You have already retrieved my book for me! Thanks Again!
+   ELSEIF !( <SRC.TAG.NPC_QUEST_START> & NPCQ_BookDealer )
+      SAY You must agree to bring me the book <SRC.SEX milord/milady>.
+   ELSEIF (( <SRC.TAG.NPC_QUEST_START> & NPCQ_BookDealer ) && !<SRC.RESTEST 1 i_vrare_book>)
+      SAY You don't have the have the book!!
+   ELSEIF <SRC.RESTEST 1 i_vrare_book>
+      SERV.NEWITEM=i_gold 
+      NEW.AMOUNT=5000
+      NEW.BOUNCE 
+      SOUND=01FC 
+      SRC.SYSMESSAGE=You are now 5000 gps richer. 
+      SRC.consume i_vrare_book
+      SRC.TAG.NPC_QUEST_START = <eval ( <SRC.TAG.NPC_QUEST_START> &~ NPCQ_BookDealer )>
+      SRC.TAG.NPC_QUEST_DONE = <eval ( <SRC.TAG.NPC_QUEST_DONE> | NPCQ_BookDealer )>      
+      SAY Thank you for delivering the book safety.
+      RETURN 0
+   ENDIF      
+   RETURN 1 
+
+
+[SPEECH jobsbookb] 
+on=*hi*
+on=*reward*
+on=*quest*
+Say Say "deliver" in order to deliver the book back to George Peabottom.
+on=Deliver
+   IF ( <SRC.TAG.NPC_QUEST_DONE> & NPCQ_BookDealer )
+      SAY You have already delivered that book...are you feeling alright?
+      EMOTE look concerned
+   ELSEIF !( <SRC.TAG.NPC_QUEST_START> & NPCQ_BookDealer )
+      SAY I'm afraid I do not hire for delivery.
+   ELSEIF !( <SRC.RESTEST 1 i_vrare_book>  )
+      SRC.NEWITEM=i_vrare_book
+      SRC.ACT.BOUNCE 
+      SOUND=01FC
+      SAY Ah I received word George Peabottom.  He said you would be coming, please deliver this book safely. Say "reward" when you arrive.
+   ENDIF
+[EOF]

@@ -1,0 +1,57 @@
+[ITEMDEF 09a7]
+DEFNAME=i_pitcher_glass
+TYPE=T_PITCHER_EMPTY
+TDATA1=i_pitcher_glass
+FLIP=1
+RESOURCES=6 i_GLASS
+VALUE=50
+WEIGHT=2
+CATEGORY=Provisions - Miscellaneous
+SUBSECTION=Containers
+DESCRIPTION=Empty Glass Pitcher
+DUPELIST=0ff6,0ff7
+
+
+ON=@TARGON_CHAR
+//Added by Wren - 10/09/03 - Make cows milkable
+   IF (<SRC.TARG.BODY>=c_cow_bw) || (<SRC.TARG.BODY> = c_cow_brown)
+      IF <SRC.TARG.FINDID(M_Milking_Timer)>
+         SRC.SYSMESSAGE This cow has just been milked, you must wait a while.
+      ELSE
+         IF (0<SRC.TARG.TAG.TIMESMILKED> >= 20 )
+            SRC.SYSMESSAGE This cow is too old to give anymore milk.
+         ELSE
+            IF (<SRC.ANIMALLORE> >= 50.0)
+               SRC.TARG.NEWITEM m_milking_timer
+               SRC.TARG.ACT.CONT = <SRC.TARG>
+               SRC.TARG.TAG.TIMESMILKED = (0<SRC.TARG.TAG.TIMESMILKED>+1)
+
+               SRC.SYSMESSAGE You put the pitcher of milk in your backpack
+               SRC.NEWITEM i_pitcher_milk
+               SRC.ACT.BOUNCE
+               REMOVE
+            ELSE
+               SRC.SYSMESSAGE The cow seems uncomfortable with your presence.
+            ENDIF
+         ENDIF
+      ENDIF
+      RETURN 1
+   ELSE
+      RETURN 0
+   ENDIF
+
+
+[ItemDef M_Milking_Timer]
+//Added by Wren - 10/09/03 - simply used to put a delay between times that a cow is milked
+id=i_memory
+Name=Milking Timer
+type=t_eq_script
+
+ON=@Create
+   TIMER=30
+
+ON=@Timer
+   REMOVE
+   RETURN 1
+   
+[EOF]

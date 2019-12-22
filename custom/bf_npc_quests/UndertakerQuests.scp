@@ -1,0 +1,1196 @@
+
+// The Cove Undertaker's Quests
+// ----------------------------
+//
+// Version 0.3a
+//
+// CHANGELOG
+// ---------
+// 
+// Version 0.1, 29th April 2006: Added The Undertaker. 
+// Version 0.2, 11th June 2006: Added Experimental Necromancy.
+// Version 0.3, 13th June 2006: Touched up Experimental Necromancy and The Undertaker
+//                              - Minor bug fixes
+//                              - Minor grammar fixes
+//                              - Touched up story elements
+// Version 0.3a, 14th June 2006: Minor cleanup of the script
+// Version 0.3b, 15th June 2006: Optimisation of the Death event for the characters.
+//
+// CONTENTS
+// --------
+//
+// By Quest:
+// - The Undertaker (Resource-gathering quest)
+// - Experimental Necromancy
+// - The Customer is Always Right (Chain Quest 1)
+// - If I Were a Rich Man (Chain Quest 2)
+// - Thoughts of a Dying Atheist (Chain Quest 3)
+
+//------------------------------
+//-       The Undertaker       -
+//------------------------------
+
+// Premise
+// -------
+// 
+// Randomly-named skulls will be dropped from skeletons, zombies, undead
+// dragons, etc. These can be cashed in with The Undertaker for profit.
+// Profit from each will be random.
+//
+
+[ITEMDEF i_skull_undertaker]
+ID=i_bone_skull
+TYPE=t_normal
+VALUE=4
+WEIGHT=0
+FLIP=0
+
+ON=@CREATE
+   MORE1=<EVAL RAND(10000)>
+   NAME=a skull marked "<EVAL <MORE1>>"
+   MORE2=<EVAL RAND(899) + 101>
+   
+ON=@DCLICK
+   TARGET Who would you like to give this to?
+   RETURN 1
+   
+ON=@TARGON_ITEM
+   SRC.SYSMESSAGE You try to insert this into the <SRC.TARG.NAME>, but with no success.
+   RETURN 1
+   
+ON=@TARGON_GROUND
+   SRC.SYSMESSAGE If you're going to do that, you might as well drop this there. Pointless...
+   RETURN 1
+   
+ON=@TARGON_CHAR
+   IF (<SRC.TARG.ID>==c_cove_undertaker)
+      SRC.TARG.SAY Aha! Excellent. This skull, according to my records, belonged to... Well you probably don't care.
+      SRC.TARG.SAY Here, I shall reward you with <EVAL <MORE2>> gold for this skull.
+      SERV.LOG <SRC.NAME> has reclaimed an undertaker skull for <EVAL <MORE2>>
+      REMOVE
+      SERV.NEWITEM i_gold
+      NEW.AMOUNT=<EVAL <MORE2>>
+      NEW.BOUNCE <SRC.UID>
+      SRC.TAG.UNDERTAKERSKULLS=<EVAL <SRC.TAG.UNDERTAKERSKULLS> + 1>
+   ELSE
+      SRC.SYSMESSAGE You don't think they'll want this...
+   ENDIF
+   RETURN 1
+   
+[ITEMDEF i_skull_pet_undertaker]
+ID=01ae4
+TYPE=t_normal
+VALUE=4
+WEIGHT=0
+FLIP=0
+
+ON=@CREATE
+   MORE1=<EVAL RAND(10000)>
+   NAME=a skull marked "pet <EVAL <MORE1>>"
+   MORE2=<EVAL RAND(899) + 101>
+   
+ON=@DCLICK
+   TARGET Who would you like to give this to?
+   RETURN 1
+   
+ON=@TARGON_ITEM
+   SRC.SYSMESSAGE You try to insert this into the <SRC.TARG.NAME>, but with no success.
+   RETURN 1
+   
+ON=@TARGON_GROUND
+   SRC.SYSMESSAGE If you're going to do that, you might as well drop this there. Pointless...
+   RETURN 1
+   
+ON=@TARGON_CHAR
+   IF (<SRC.TARG.ID>==c_cove_undertaker)
+      SRC.TARG.SAY Ah, one of my rare pet skulls... Isn't it a shame such beautiful creatures can be ruined so?
+      SRC.TARG.SAY Here, I shall reward you with <EVAL <MORE2>> gold for this skull.
+      SERV.LOG <SRC.NAME> has reclaimed an undertaker pet skull for <EVAL <MORE2>>
+      REMOVE
+      SERV.NEWITEM i_gold
+      NEW.AMOUNT=<EVAL <MORE2>>
+      NEW.BOUNCE <SRC.UID>
+      SRC.TAG.UNDERTAKERSKULLS=<EVAL <SRC.TAG.UNDERTAKERSKULLS> + 1>
+   ELSE
+      SRC.SYSMESSAGE You don't think they'll want this...
+   ENDIF
+   RETURN 1
+   
+   
+//-----------------------------
+//-  The Quest Function\Gump  -
+//-----------------------------
+
+[FUNCTION f_undertaker_skulls]
+   IF !(0<SRC.TAG.UNDERTAKERSKULLS>)
+      VAR.QUESTHASOPTIONS=
+      VAR.QUESTOPTION1=
+      VAR.QUESTOPTION2=
+      TAG.QUESTOPTION1.SELECTION=
+      TAG.QUESTOPTION2.SELECTION=
+      TAG.QUESTCONFIRM.SELECTION=
+      VAR.QUESTTITLE=The Undertaker
+      VAR.QUESTPICTURE=4462
+      VAR.QUESTLINE1=If you want a job I have some work for you... I want you to
+      VAR.QUESTLINE2=kill skeletons, zombies, and undead dragons. Now off you go.
+      VAR.QUESTLINE3=Hmm? What for? Oh, yes, of course, excuse me, I'm rather pressed
+      VAR.QUESTLINE4=for time at the moment. Basically I've been burying people
+      VAR.QUESTLINE5=for a long time. Now for various reasons, they're re-appearing and attacking people.
+      VAR.QUESTLINE6=Damn unscrupulous necromancers ruining my artwork... If you ever find a skull with
+      VAR.QUESTLINE7=a numerical etching, bring it back to me so I can bury it properly once more.
+      VAR.QUESTLINE8=
+      VAR.QUESTLINE9=Oh, and if you need more information, check that adventurers newsletter, I think it's
+      VAR.QUESTLINE10=called the "The UO Project Website"... By the way, what is a "UOProject"? Come to that,
+      VAR.QUESTLINE11=what on earth is a "UO?"...
+      VAR.QUESTCONFIRMSECTION=Ok, thanks for the information.
+      DIALOG d_quest_standard
+   ELSEIF (<SRC.TAG.UNDERTAKERSKULLS> < 10)
+      VAR.QUESTHASOPTIONS=
+      VAR.QUESTOPTION1=
+      VAR.QUESTOPTION2=
+      TAG.QUESTOPTION1.SELECTION=
+      TAG.QUESTOPTION2.SELECTION=
+      TAG.QUESTCONFIRM.SELECTION=
+      VAR.QUESTTITLE=The Undertaker
+      VAR.QUESTPICTURE=4462
+      VAR.QUESTLINE1=Ah yes, hello... I assume you want to check how many
+      VAR.QUESTLINE2=skulls you've returned, yes? Well I can tell you that
+      VAR.QUESTLINE3=you have returned to me...
+      VAR.QUESTLINE4=<EVAL <SRC.TAG.UNDERTAKERSKULLS>> skulls!
+      VAR.QUESTLINE5=
+      VAR.QUESTLINE6=Well, you've only just started really... Make sure you bring me back as many as you
+      VAR.QUESTLINE7=possibly can... Remember, the trick is to bury yourself... In your work, of course...
+      VAR.QUESTLINE8=
+      VAR.QUESTLINE9=
+      VAR.QUESTLINE10=
+      VAR.QUESTLINE11=
+      VAR.QUESTCONFIRMSECTION=Ok, thanks for the information.
+      DIALOG d_quest_standard
+   ELSEIF (<SRC.TAG.UNDERTAKERSKULLS> < 50)
+      VAR.QUESTHASOPTIONS=
+      VAR.QUESTOPTION1=
+      VAR.QUESTOPTION2=
+      TAG.QUESTOPTION1.SELECTION=
+      TAG.QUESTOPTION2.SELECTION=
+      TAG.QUESTCONFIRM.SELECTION=
+      VAR.QUESTTITLE=The Undertaker
+      VAR.QUESTPICTURE=4462
+      VAR.QUESTLINE1=Ah yes, hello... I assume you want to check how many
+      VAR.QUESTLINE2=skulls you've returned, yes? Well I can tell you that
+      VAR.QUESTLINE3=you have returned to me...
+      VAR.QUESTLINE4=<EVAL <SRC.TAG.UNDERTAKERSKULLS>> skulls!
+      VAR.QUESTLINE5=
+      VAR.QUESTLINE6=You're doing ok so far... Try to get dragged in deeper though...
+      VAR.QUESTLINE7=
+      VAR.QUESTLINE8=
+      VAR.QUESTLINE9=
+      VAR.QUESTLINE10=
+      VAR.QUESTLINE11=
+      DIALOG d_quest_standard
+   ELSEIF (<SRC.TAG.UNDERTAKERSKULLS> < 100)
+      VAR.QUESTHASOPTIONS=
+      VAR.QUESTOPTION1=
+      VAR.QUESTOPTION2=
+      TAG.QUESTOPTION1.SELECTION=
+      TAG.QUESTOPTION2.SELECTION=
+      TAG.QUESTCONFIRM.SELECTION=
+      VAR.QUESTTITLE=The Undertaker
+      VAR.QUESTPICTURE=4462
+      VAR.QUESTLINE1=<SRC.NAME>... I assume you want to check how many
+      VAR.QUESTLINE2=skulls you've returned, yes? Well, for your information,
+      VAR.QUESTLINE3=you have returned to me...
+      VAR.QUESTLINE4=<EVAL <SRC.TAG.UNDERTAKERSKULLS>> skulls!
+      VAR.QUESTLINE5=
+      VAR.QUESTLINE6=Hmm... Thinking about it... That many skulls... And still not dead...
+      VAR.QUESTLINE7=Kind of a shame but... I can use someone like you for a lot of work that goes on here...
+      VAR.QUESTLINE8=
+      VAR.QUESTLINE9=
+      VAR.QUESTLINE10=
+      VAR.QUESTLINE11=
+      DIALOG d_quest_standard
+   ELSEIF (<SRC.TAG.UNDERTAKERSKULLS> < 200)
+      VAR.QUESTHASOPTIONS=
+      VAR.QUESTOPTION1=
+      VAR.QUESTOPTION2=
+      TAG.QUESTOPTION1.SELECTION=
+      TAG.QUESTOPTION2.SELECTION=
+      TAG.QUESTCONFIRM.SELECTION=
+      VAR.QUESTTITLE=The Undertaker
+      VAR.QUESTPICTURE=4462
+      VAR.QUESTLINE1=Ah, <SRC.NAME>. you want to check just how many
+      VAR.QUESTLINE2=skulls you've returned, yes? Well I am proud to say that
+      VAR.QUESTLINE3=you have returned to me...
+      VAR.QUESTLINE4=<EVAL <SRC.TAG.UNDERTAKERSKULLS>> skulls!
+      VAR.QUESTLINE5=
+      VAR.QUESTLINE6=<SRC.SEX Sir\Madam>, you are becoming an asset to this firm. Why, I haven't
+      VAR.QUESTLINE7=had so many re-burials for years! It truly warms my deeply buried heart...
+      VAR.QUESTLINE8=
+      VAR.QUESTLINE9=
+      VAR.QUESTLINE10=
+      VAR.QUESTLINE11=
+      DIALOG d_quest_standard
+   ELSEIF (<SRC.TAG.UNDERTAKERSKULLS> < 350)
+      VAR.QUESTHASOPTIONS=
+      VAR.QUESTOPTION1=
+      VAR.QUESTOPTION2=
+      TAG.QUESTOPTION1.SELECTION=
+      TAG.QUESTOPTION2.SELECTION=
+      TAG.QUESTCONFIRM.SELECTION=
+      VAR.QUESTTITLE=The Undertaker
+      VAR.QUESTPICTURE=4462
+      VAR.QUESTLINE1=Ah, <SRC.NAME>. you want to check just how many
+      VAR.QUESTLINE2=skulls you've returned, yes? Well I am proud to say that
+      VAR.QUESTLINE3=you have returned to me...
+      VAR.QUESTLINE4=<EVAL <SRC.TAG.UNDERTAKERSKULLS>> skulls!
+      VAR.QUESTLINE5=
+      VAR.QUESTLINE6=Seriously, one day you'll have to come to one of my burials... I guarantee you, it
+      VAR.QUESTLINE7=truly is art in progress <SRC.NAME>! Then again, eventually even you will be the
+      VAR.QUESTLINE8=guest of honour at one of them... I'm sorry, I forget that you don't like that idea...
+      VAR.QUESTLINE9=
+      VAR.QUESTLINE10=
+      VAR.QUESTLINE11=
+      DIALOG d_quest_standard
+   ELSEIF (<SRC.TAG.UNDERTAKERSKULLS> < 500)
+      VAR.QUESTHASOPTIONS=
+      VAR.QUESTOPTION1=
+      VAR.QUESTOPTION2=
+      TAG.QUESTOPTION1.SELECTION=
+      TAG.QUESTOPTION2.SELECTION=
+      TAG.QUESTCONFIRM.SELECTION=
+      VAR.QUESTTITLE=The Undertaker
+      VAR.QUESTPICTURE=4462
+      VAR.QUESTLINE1=Well, <SRC.NAME>, I almost can't believe you're still
+      VAR.QUESTLINE2=willing to assist me as well as you do! Many give up rather
+      VAR.QUESTLINE3=quickly... Must be the smell... Anyhow, you've retrieved...
+      VAR.QUESTLINE4=<EVAL <SRC.TAG.UNDERTAKERSKULLS>> skulls!
+      VAR.QUESTLINE5=
+      VAR.QUESTLINE6=Now, I know this is a sensitive subject, what with you being alive and whatnot...
+      VAR.QUESTLINE7=But, I just thought you would like to know that, for your eventual demise, I shall
+      VAR.QUESTLINE8=be reserving you my new Undead Away 5000! A brand new coffin enchanted to prevent
+      VAR.QUESTLINE9=anyone ever exhuming you and performing any dark arts on you! I was going to call
+      VAR.QUESTLINE10=it the Undead Away, but young Jin assured me that adding a big number would help
+      VAR.QUESTLINE11=it sell. "rrwrr fancy sound rrwrr kids rrwrr big numbers" were his exact words...
+      DIALOG d_quest_standard
+   ELSEIF (<SRC.TAG.UNDERTAKERSKULLS> < 500)
+      VAR.QUESTHASOPTIONS=
+      VAR.QUESTOPTION1=
+      VAR.QUESTOPTION2=
+      TAG.QUESTOPTION1.SELECTION=
+      TAG.QUESTOPTION2.SELECTION=
+      TAG.QUESTCONFIRM.SELECTION=
+      VAR.QUESTTITLE=The Undertaker
+      VAR.QUESTPICTURE=4462
+      VAR.QUESTLINE1=Ah, <SRC.NAME> my friend, welcome! Thanks to you, business
+      VAR.QUESTLINE2=is skyrocketing! People like being assured that, no matter
+      VAR.QUESTLINE3=what, we ensure that once you're under, you damn well stay!
+      VAR.QUESTLINE4=And...You've retrieved <EVAL <SRC.TAG.UNDERTAKERSKULLS>> skulls!
+      VAR.QUESTLINE5=
+      VAR.QUESTLINE6=So anyhow, I've been told that my dark, under the ground, stay there personality
+      VAR.QUESTLINE7=just isn't enough... Get a sense of humour, Rockwell said... So... How about...
+      VAR.QUESTLINE8=Why did the zombie go to the healer? He wanted to learn a few sick jokes!... No?
+      VAR.QUESTLINE9=Well how about... What did the zombie get a medal for?  Deadication!...
+      VAR.QUESTLINE10=It's not really working is it... Bah... Perhaps mother was right, and I really
+      VAR.QUESTLINE11=should stick to my nightjob...
+      DIALOG d_quest_standard
+   ENDIF
+
+
+//-----------------------------
+//-  Experimental Necromancy  -
+//-----------------------------
+
+// Premise
+// -------
+// 
+// A skull is found on a skeleton. However, the marking on the skull is not a number.
+// The Undertaker points you to Cove's necromancer, whom asks for you to be near death.
+// Once you are "brought back" to health, she points the player to Yew Crypts, where two adventurers
+// can be found. The man and his wife are trying to find the reversal for a necromancy
+// curse which the wife had planted on the man in a bid to save Lord British.
+// At this point two choices can be made...
+// - Kill the man and his wife, as those cursed and made undead are fair game in Britannia.
+// - Aid them in finding a cure, by killing a dark succubus whose blood will purge the sin.
+// The first choice causes a 3k drop in Karma, and rewards 20k and a random low magical.
+// The second choice increases Karma by 2k, fame by 1k, and rewards 15k and a random low magical.
+// The first choice also gives a newbied item, a Bloodied Badge of the Dragon Guard.
+// The second choice gives a newbied item, a Pristine Badge of the Dragon Guard.
+//
+// Important Notes
+// ---------------
+//
+// NPCQ_ExpNecromancy is the quest flag used to denote the start, and good end to the quest.
+// NPCQ_ExpNecroBadEnd is the quest flag used solely to denote the bad end.
+// Tags   - Player <TAG.EXPNECRO.PARTSDONE> is used to denote how far an individual is in the quest.
+//        - It is removed at the end of the quest.
+// Badges - *Pristine Badge of the Dragon Guard* leads to employment for *Union of Britannia Guards*
+//        - *Bloodied Badge of the Dragon Guard* leads to employment for 
+//          *The Movement for Arcane Greatness and Esteem (MAGE)*
+// Other  - Completion of this quest is mandatory in order to take up the Undertaker Quest
+//          "The Customer is Always Right"
+//
+
+
+
+// - Items -
+
+[ITEMDEF i_skull_undertaker_experimental_necromancy]
+ID=01ae4
+TYPE=t_normal
+VALUE=4
+WEIGHT=0
+FLIP=0
+NAME=Skull Marked With a Spiral
+CATEGORY=Imperial uo Undertaker Quests
+SUBSECTION=Experimental Necromancy
+DESCRIPTION=Marked Skull
+
+   
+ON=@DCLICK
+   TARGET Who would you like to give this to?
+   RETURN 1
+   
+ON=@TARGON_ITEM
+   SRC.SYSMESSAGE You try to insert this into the <SRC.TARG.NAME>, but with no success.
+   RETURN 1
+   
+ON=@TARGON_GROUND
+   SRC.SYSMESSAGE If you're going to do that, you might as well drop this there. Pointless...
+   RETURN 1
+   
+ON=@TARGON_CHAR
+   IF (<SRC.TARG.ID>==c_cove_undertaker)
+      IF ( <SRC.TAG.NPC_QUEST_DONE_2> & NPCQ_ExpNecromancy )
+         SRC.SYSMESSAGE You decide against bothering <SRC.TARG.NAME> again over this matter... 
+      ELSEIF ( <SRC.TAG.NPC_QUEST_START_2> & NPCQ_ExpNecromancy )
+         SRC.TARG.SAY Another skull? Oh well, I can't tell you anything else anyhow. Sorry.
+      ELSE 
+         SRC.TAG.NPC_QUEST_START_2 = <eval ( <SRC.TAG.NPC_QUEST_START_2> | NPCQ_Expnecromancy )>
+         f_undertaker_experimental_necromancy_part_1
+         f_undertaker_experimental_necromancy_part_1_confirmed
+         REMOVE
+      ENDIF
+   ELSE
+      SRC.SYSMESSAGE You don't think they'll want this...
+   ENDIF
+   RETURN 1
+
+
+
+[ITEMDEF i_badge_of_the_dragon_guard_pristine]
+ID=026b1
+TYPE=t_normal
+NAME=Pristine Badge of the Dragon Guard
+CATEGORY=Imperial uo Undertaker Quests
+SUBSECTION=Experimental Necromancy
+DESCRIPTION=Badge of the Dragon Guard - Pristine
+
+ON=@CREATE
+   ATTR=01
+   COLOR=07a1
+
+
+[ITEMDEF i_badge_of_the_dragon_guard_bloodied]
+ID=026b1
+TYPE=t_normal
+NAME=Bloodied Badge of the Dragon Guard
+CATEGORY=Imperial uo Undertaker Quests
+SUBSECTION=Experimental Necromancy
+DESCRIPTION=Badge of the Dragon Guard - Bloodied
+
+ON=@CREATE
+   ATTR=01
+   COLOR=0acb
+
+
+[ITEMDEF i_experimental_necromancy_bloodied_letters]
+ID=i_cards
+TYPE=t_normal
+NAME=Series of Bloodied Letters
+
+ON=@CREATE
+   ATTR=01
+
+ON=@DCLICK
+   f_undertaker_experimental_necromancy_letter_to_sarah
+   RETURN 1
+
+
+[ITEMDEF i_experimental_necromancy_letter_to_hero]
+ID=i_cards
+TYPE=t_normal
+NAME=A Letter from Kyoshi
+
+ON=@CREATE
+   ATTR=01
+
+ON=@DCLICK
+   f_undertaker_experimental_necromancy_letter_to_hero
+   RETURN 1
+
+
+[ITEMDEF i_experimental_necromancy_vial_siren_blood]
+ID=i_vial_empty
+TYPE=t_normal
+NAME=Vial of Sirens Blood
+CATEGORY=Imperial uo Undertaker Quests
+SUBSECTION=Experimental Necromancy
+DESCRIPTION=Vial of Sirens Blood
+
+ON=@CREATE
+   ATTR=01
+
+
+// - Characters -
+
+[CHARDEF c_experimental_necromancy_sarah]
+
+NAME=Sarah
+ID=c_woman
+DAM=5,12 
+ARMOR=30
+
+DESIRES=i_gold,e_notoriety,t_magic
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+TSPEECH=spk_experimental_necromancy_sarah
+
+
+TEVENTS=e_Human_HearUnk
+TEVENTS=e_Human_Needs
+TEVENTS=e_Human_Refuse
+TEVENTS=e_Human_Environ
+CATEGORY=Imperial uo Undertaker Quests
+SUBSECTION=Experimental Necromancy
+DESCRIPTION=Sarah
+
+ON=@CREATE
+   VAR.EXPNECRO.SARAH=<UID>
+   NPC=brain_human
+   COLOR=0401
+   STR=600
+   INT=1000
+   DEX=120
+   ALLSKILLS=750
+   MAGERY=1000
+   NECROMANCY=1000
+   EVALUATINGINTEL=1000
+   MAGICRESISTANCE=1000
+   ITEMNEWBIE=i_robe
+   COLOR=0ac9
+   ITEMNEWBIE=i_hair_long
+   COLOR=0aa8
+   ITEMNEWBIE=i_boots_thigh
+   ITEMNEWBIE=i_staff_black_imbued
+
+ON=@DEATH
+   IF (0<ACT.TAG.NPC_QUEST_START_2> & NPCQ_ExpNecromancy )
+      IF ( !(0<ACT.TAG.NPC_QUEST_DONE_2> & NPCQ_ExpNecroBadEnd ) || !(0<ACT.TAG.NPC_QUEST_DONE_2> & NPCQ_ExpNecromancy ) )
+         IF (0<ACT.TAG.KYOSHIISKILLED>)
+            ACT.TAG.KYOSHIISKILLED=
+            ANNOUNCE The warrior <ACT.NAME> has chosen the fate of the Cursed One and his Wife...
+            ACT.KARMA=<ACT.KARMA> - 3000
+            ACT.SYSMESSAGE Your karma has dropped extremely from this quest.
+            SERV.NEWITEM i_badge_of_the_dragon_guard_bloodied
+            NEW.CONT <SRC.UID>
+            NEW.AMOUNT=1
+            SERV.NEWITEM i_experimental_necromancy_bloodied_letters
+            NEW.CONT <SRC.UID>
+            NEW.AMOUNT=1
+            SERV.NEWITEM i_gold
+            NEW.AMOUNT=20000
+            NEW.CONT <SRC.UID>
+            SRC.TAG.EXPNECRO.PARTSDONE=
+            ACT.TAG.NPC_QUEST_DONE_2 = <eval ( <ACT.TAG.NPC_QUEST_DONE_2> | NPCQ_ExpNecroBadEnd )>
+         ELSE
+            ACT.TAG.SARAHISKILLED=1
+         ENDIF
+      ENDIF
+   ENDIF
+   
+
+[CHARDEF c_experimental_necromancy_kyoshi]
+
+NAME=Kyoshi
+ID=c_man
+DAM=15,27 
+ARMOR=80
+
+DESIRES=i_gold,e_notoriety,t_magic
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+TEVENTS=e_Human_HearUnk
+TEVENTS=e_Human_Needs
+TEVENTS=e_Human_Refuse
+TEVENTS=e_Human_Environ
+CATEGORY=Imperial uo Undertaker Quests
+SUBSECTION=Experimental Necromancy
+DESCRIPTION=Kyoshi
+
+ON=@CREATE
+   VAR.EXPNECRO.KYOSHI=<UID>
+   NPC=brain_human
+   STR=900
+   INT=100
+   DEX=80
+   ALLSKILLS=750
+   SWORDSMANSHIP=1000
+   TACTICS=1000
+   ANATOMY=1000
+   MAGICRESISTANCE=500
+   MAGERY=0
+   ITEMNEWBIE=i_robe_male
+   COLOR=0b05
+   ITEMNEWBIE=i_hat_oriental
+   COLOR=0b05
+   ITEMNEWBIE=i_boots_thigh
+   ITEMNEWBIE=i_daisho_experimental
+
+ON=@HIT
+   IF (<EVAL RAND(10)> = 1)
+      EMOTE reach out for your spine, barely brushing it and making contact...
+      ACT.HITS=<ACT.HITS> / 5
+      ACT.HITS=<ACT.HITS> * 4
+   ENDIF
+
+
+ON=@DEATH
+   IF (0<ACT.TAG.NPC_QUEST_START_2> & NPCQ_ExpNecromancy )
+      IF ( !(0<ACT.TAG.NPC_QUEST_DONE_2> & NPCQ_ExpNecroBadEnd ) || !(0<ACT.TAG.NPC_QUEST_DONE_2> & NPCQ_ExpNecromancy ) )
+         IF (0<ACT.TAG.SARAHISKILLED>)
+            ACT.TAG.SARAHISKILLED=
+            ANNOUNCE The warrior <ACT.NAME> has chosen the fate of the Cursed One and his Wife...
+            ACT.KARMA=<ACT.KARMA> - 3000
+            ACT.SYSMESSAGE Your karma has dropped extremely from this quest.
+            SERV.NEWITEM i_badge_of_the_dragon_guard_bloodied
+            NEW.CONT <SRC.UID>
+            NEW.AMOUNT 1
+            SERV.NEWITEM i_experimental_necromancy_bloodied_letters
+            NEW.CONT <SRC.UID>
+            NEW.AMOUNT=1
+            SERV.NEWITEM i_gold
+            NEW.AMOUNT=20000
+            NEW.CONT <SRC.UID>
+            SRC.TAG.EXPNECRO.PARTSDONE=
+            ACT.TAG.NPC_QUEST_DONE_2 = <eval ( <ACT.TAG.NPC_QUEST_DONE_2> | NPCQ_ExpNecroBadEnd )>
+         ELSE
+            ACT.TAG.KYOSHIISKILLED=1
+         ENDIF
+      ENDIF
+   ENDIF
+
+[ITEMDEF i_daisho_experimental]
+ID=i_daisho
+NAME=Experimental Soul Eater
+TYPE=t_weapon_sword
+DAM=10,20
+SKILL=Swordsmanship
+REQSTR=40
+TWOHANDS=Y
+WEIGHT=2
+DUPELIST=027f4
+VALUE=242
+TDATA1=mat_adamantine
+RESDISPDNID=i_katana
+RESLEVEL=2
+
+ON=@CREATE
+HITPOINTS={50 60}
+
+
+[CHARDEF c_experimental_necromancy_siren]
+ID=c_succubus_lbr
+NAME=Dark Succubus
+DAM=10,15
+ARMOR=40
+CATEGORY=Imperial uo Undertaker Quests
+SUBSECTION=Experimental Necromancy
+DESCRIPTION=Siren
+
+ON=@CREATE
+   COLOR=04de
+   NPC=brain_monster
+   FAME=8000
+   KARMA=-10000
+   STR=1400
+   INT=250
+   DEX=100
+   ALLSKILLS=1000
+   
+ON=@GETHIT
+   IF (RAND(20) = 1)
+      EMOTE sing a deceptively sweet song just before <SRC.NAME>'s weapon makes contact...
+      SRC.MESSAGE *So... Soothing... Must... Not... Hit... No!... Must... Resist...*
+      RETURN 1
+   ENDIF
+
+
+ON=@DEATH
+   IF (<ACT.TAG.NPC_QUEST_DONE_2> & NPCQ_ExpNecroBadEnd ) || (<ACT.TAG.NPC_QUEST_DONE_2> & NPCQ_ExpNecromancy ) )
+      SERV.NEWITEM i_gold
+      NEW.CONT <SRC.UID>
+      NEW.AMOUNT {3000 5000}
+ //     IF (<EVAL RAND(450)> = 5)
+ //        NEWNPC c_m_hiryu
+ //        NEW.EMOTE break free from its shrunken constraints
+ //     ENDIF
+   ELSEIF (0<ACT.TAG.NPC_QUEST_START_2> & NPCQ_ExpNecromancy )
+      IF ( !(0<ACT.TAG.NPC_QUEST_DONE_2> & NPCQ_ExpNecroBadEnd ) || !(0<ACT.TAG.NPC_QUEST_DONE_2> & NPCQ_ExpNecromancy ) )
+         SERV.NEWITEM i_experimental_necromancy_vial_siren_blood
+         NEW.CONT <SRC.UID>
+         NEW.AMOUNT 1
+      ENDIF
+   ELSE
+      SERV.NEWITEM i_gold
+      NEW.CONT <SRC.UID>
+      NEW.AMOUNT {3000 5000}
+ //     IF (<EVAL RAND(450)> = 5)
+ //        NEWNPC c_m_hiryu
+ //        NEW.EMOTE break free from its shrunken constraints
+ //     ENDIF
+   ENDIF
+
+
+
+// - Speech -
+
+[SPEECH spk_experimental_necromancy_sarah]
+// Default responses to things as most humans would do.
+
+ON=Move*
+   BYE
+   LEAVE (1+Rand(3))
+   RETURN 1
+
+ON=*bye*
+ON=*farewell*
+ON=*see ya*
+ON=*hasta l*
+ON=*see you *
+   DORAND 2
+      SAY Fare thee well <SRC.NAME>...
+      SAY Good bye <SRC.NAME>...
+   ENDDO
+   LEAVE
+   RETURN 1
+
+ON=*go away*
+ON=*leave me alone*
+ON=*fuck*
+ON=*take a hike*
+ON=*go fly a kite*
+ON=*shit*
+ON=*cunt*
+ON=*bollocks*
+   DORAND 3
+      SAY Thou shocketh me with thy language!
+      SAY The guards of Lord British rise not to such language...
+      SAY My my...
+   ENDDO
+   LEAVE
+   BYE
+   RETURN 1
+
+ON=*Time*
+   SAY=It is <LOCALTIME>
+
+ON=*hail*
+ON=hi*
+ON=greet*
+ON=hello*
+ON=greetings*
+ON=good*see*thee*
+   DORAND 3
+      SAY Hail.
+      SAY Hi.
+      SAY Hey.
+   ENDDO
+   
+ON=*how*you*
+ON=how*thou*
+   DORAND 3
+      SAY I am ok... I fear however I am closer than before to giving... Never mind...
+      SAY I bode well, but my husband...
+      SAY I fear more for my husband...
+   ENDDO
+   
+ON=*where*thou*live*
+ON=where*you*live*
+ON=thou*live*
+ON=you*live*
+ON=what city are you from*
+ON=what town are you from*
+ON=where*you*from*
+ON=where*thou*from*
+   DORAND 2
+      SAY We come from Britain...
+      SAY Well certainly not here!
+   ENDDO
+   
+ON=*where*am*I*
+ON=What town am I in*
+ON=what*town is this*
+   DORAND 3
+      SAY Thou hast stumbled into <SRC.REGION.NAME>.
+      SAY <SRC.REGION.NAME>.
+      SAY <SRC.REGION.NAME> is where thou dost find thyself.
+   ENDDO
+
+ON=*where*are*we*
+ON=What town are we in*
+   SAY We art in <SRC.REGION.NAME>.
+
+ON=*thou*work*
+ON=*you*work*
+   DORAND 3
+      SAY I used to be part of the Dragon Guard, protecting Lord British.
+      SAY For now, I am just an Adventurer desperately in need...
+      SAY I will not work soon due to my um... Condition.
+   ENDDO
+
+ON=*thanks*
+ON=thank you*
+ON=thank thee*
+ON=thank ye*
+ON=appreciate*
+   SAY Nothing to thank me for.
+
+ON=*who are you*
+ON=what's your name*
+ON=what is your name*
+ON=who art thou*
+ON=*who are ye*
+ON=who*you*
+ON=what are you called*
+ON=what art thou called*
+ON=*what is thy name*
+ON=what's thy name*
+ON=what are ye called*
+ON=know your name*
+ON=*know thy name*
+ON=know yer name*
+ON=*Is*name*
+ON=What's thy name*
+   DORAND 3
+      SAY My name is <NAME>.
+      SAY I am <NAME>.
+      SAY I am called <NAME>.
+   ENDDO
+
+ON=*make*money*
+ON=earn*money*
+ON=get*money*
+   DORAND 4
+      SAY Alas I cannot spare the coin...
+      SAY Thou shouldst try working for one of the companies...
+   ENDDO
+
+ON=*cave*
+ON=destard*
+ON=despise*
+ON=shame*
+ON=deceit*
+ON=hythloth*
+ON=wrong*
+ON=covetous*
+   DORAND 5
+      SAY The places under Britannia - some call them 'dungeons' - are rich with treasures and gold. They are also guarded by horrible creatures that want nothing more than to dine on humans.
+      SAY The dugeons and caves under Britannia are rumored to have treasures and excitements in abundance. Though I don't know many who have returned unscathed from them.
+      SAY There are many as yet unmapped places beneath Britannia. 'Tis rumored to be riches and magic in them. And creatures that will rend the flesh from thy bones.
+      SAY Shame, Wrong, Despise, and Hythloth are a few...
+      SAY Hmmm..the names of a few of the dungeons... Despise, Deceit, Shame...
+   ENDDO
+
+ON=*gold*
+ON=treasure*
+   DORAND 2
+      SAY If you think I know of any, then thou art mistaken...
+      SAY Cure first, gold later...
+   ENDDO
+
+ON=*Britannia*
+   DORAND 2
+      SAY For now it is safe, but when I ventured to Cove... I heard disturbing whispers...
+      SAY I fear for it's safety, just look at how darkness recently overcame Cove...
+   ENDDO
+
+ON=*Lord British*
+ON=ruler*
+ON=king*
+   DORAND 3
+      SAY Lord British... I remember my time serving him like it was yesterday...
+      SAY Our Lord has suffered much over the years... Darkonians, Void, DuKarn...
+      SAY I have protected him in the past, and pray one day that I can do so again.
+   ENDDO
+
+ON=*wigifer*
+   SAY YOU'VE FOUND AN EASTER EGG! YAY!...
+   EMOTE blink
+   SAY Huh? What was that? What came over me? It was like I had no control...
+
+ON=*Virtue*
+ON=virtues*
+ON=shrines*
+ON=truth*
+ON=love*
+ON=courage*
+ON=spirituality*
+ON=valor*
+ON=honor*
+ON=justice*
+ON=sacrifice*
+ON=honesty*
+ON=humility*
+ON=compassion*
+   SAY The virtues... The codes by which all people should live...
+
+ON=*moongates*
+   DORAND 3
+      SAY The moongates? They are doors that will lead thee around Britannia. The destinations of the moongates change in accordance to the phases of the two moons.
+      SAY Thou shouldst learn to use the moongates if thou dost plan to travel far. Study the moons. The phases of the moons control the destinations of the moongates.
+      SAY If thou dost use the moongates, then thou might not end up where thou had planned, unless thou hast learned how to use them correctly. The phases of the two moons are the key, thou knowest.
+   ENDDO
+
+ON=*moons*
+   SAY Britannia's moons are called Trammel and Felucca. They control the destinations of the moongates.
+
+ON=*ilshenar*
+   SAY Thou knoweth of Ilshenar? But the Britannian Overseers hast not made public its existance yet...
+
+ON=*malas*
+   SAY Malas? How wouldst thou know about... Never mind...
+   
+ON=*tokuno*
+   SAY Tokuno was lost a long time ago... Rumours are abound that it has been found east of Britannia however...
+
+ON=*hen*ridin spinnaz*
+   SAY Also cockerels.
+   
+ON=*wig*ridin spinnaz*
+   SAY Also easter eggs.
+   
+ON=*wren*ridin spinnaz*
+   SAY Also gumps.
+   
+ON=*NEDM*
+   EMOTE look at <SRC.NAME> as if <SRC.NAME> set fire to a cat...
+
+ON=*portugal*sucks*
+ON=*pt*sucks*
+   EMOTE look at <SRC.NAME> and nods in agreement.
+   
+ON=*zidane*headbutt*
+   EMOTE blink whilst keeping her chest well guarded.
+
+ON=*pwned*
+   SAY If thou keepst using such common adventurer language, it wilt be thou that wilt be "pwned"
+
+ON=*wtf*
+ON=*stfu*
+ON=*lol*
+ON=*rofl*
+ON=*lmao*
+ON=*fdx*
+   SAY Huh? Sorry but I do not understand such acronyms...
+
+ON=*Where*
+   SAY=You are in <SRC.REGION.NAME>.
+
+ON=*skull*
+ON=*quest*
+   IF (<SRC.TAG.NPC_QUEST_DONE_2> & NPCQ_ExpNecromancy)
+      SAY I get the feeling that what you wish to know has already been sorted.
+   ELSEIF (<SRC.TAG.NPC_QUEST_START_2> & NPCQ_ExpNecromancy) 
+      IF (<SRC.TAG.EXPNECRO.PARTSDONE> = 3)
+         f_undertaker_experimental_necromancy_part_4
+      ELSEIF (<SRC.TAG.EXPNECRO.PARTSDONE> = 4)
+         f_undertaker_experimental_necromancy_part_5
+      ELSEIF (<SRC.FINDID.i_experimental_necromancy_vial_siren_blood> && <SRC.TAG.EXPNECRO.PARTSDONE> = 5 )
+         f_undertaker_experimental_necromancy_part_6
+      ELSE
+         SAY We've already been over this.
+      ENDIF
+   ELSE 
+      SAY Huh? If you have something to say speak up.
+   ENDIF
+
+// Key phrase for an underlying conspiracy
+ON=The Path of the Righteous Man
+   SAY OVERRIDE: SERVANT OF THE SERAPH IDENTIFIED
+   SAY EMERGENCY PROCEDURES INITIATED - PLEASE REFER TO YOUR MANUAL PAGE 3, ROW 2
+   SAY NO FURTHER ACTION HAS BEEN TAKEN
+
+ON=The Promised Land
+   IF (<eval ( <SRC.TAG.COMPANIESEMPLOYEDBY> | NPCE_TheSeraphOrder )>)
+      IF (<SRC.TAG.NPCE_TheSeraphOrder.REP> > 1000)
+         SAY OVERRIDE: HIGH SERVANT OF THE SERAPH IDENTIFIED
+         SAY - THE PROMISED LAND -
+         SAY RUMOURED TO BE OTHERWISE KNOWN AS ILSHENAR. NO MORE INFORMATION AVAILABLE.
+      ENDIF
+   ENDIF
+
+ON=*The path to Ilshenar*
+   SAY OVERRIDE: THE PATH TO ILSHENAR
+   SAY ONE CAN ONLY FIND THIS FOLLOWING THE INFORMATION ON PAGE 3 AND PAGE 4
+   SAY HEDGEHOG QUEST NUMBER 1 MAIN TITLE SONG ON FANTASYREEL - FIND THE HOLY KNIGHT
+
+
+// - Quest Speech -
+
+
+[FUNCTION f_undertaker_experimental_necromancy_part_1]
+   VAR.QUESTHASOPTIONS=
+   VAR.QUESTOPTION1=
+   VAR.QUESTOPTION2=
+   TAG.QUESTOPTION1.SELECTION=
+   TAG.QUESTOPTION2.SELECTION=
+   TAG.QUESTCONFIRM.SELECTION=
+   VAR.QUESTTITLE=Experimental Necromancy
+   VAR.QUESTPICTURE=6227
+   VAR.QUESTLINE1=Hrm... That's not one of mine. Look, it's not a damaged number,
+   VAR.QUESTLINE2=it's almost like a burn! The skull itself looks like it was marked
+   VAR.QUESTLINE3=long after the death of the dead. Now if I were you, I'd be less
+   VAR.QUESTLINE4=worried about where you found it, and more worried about what or
+   VAR.QUESTLINE5=who made that mark.
+   VAR.QUESTLINE6=If I was a gambling man, I'd say it had something to do with necromancy, it's a very
+   VAR.QUESTLINE7=precise marking. Perhaps you should consult with the town Necromancer. She might know
+   VAR.QUESTLINE8=a thing or two. Just um... If I were you, I would exercise caution around her. I hear
+   VAR.QUESTLINE9=that the term man-eater can be applied to her. Quite literally. Though she's open
+   VAR.QUESTLINE10=minded to women too... Equality and all that stuff...
+   VAR.QUESTLINE11=Just say "Skull" to her.
+   VAR.QUESTCONFIRMSECTION=Um... Right... Thanks... I think...
+   DIALOG d_quest_standard
+
+   
+[FUNCTION f_undertaker_experimental_necromancy_part_2]
+   VAR.QUESTHASOPTIONS=
+   VAR.QUESTOPTION1=
+   VAR.QUESTOPTION2=
+   TAG.QUESTOPTION1.SELECTION=
+   TAG.QUESTOPTION2.SELECTION=
+   TAG.QUESTCONFIRM.SELECTION=f_undertaker_experimental_necromancy_part_2_confirmed
+   VAR.QUESTTITLE=Experimental Necromancy
+   VAR.QUESTPICTURE=6227
+   VAR.QUESTLINE1=Ooh, a skull! And one marked by the... Hey hold on, why should I
+   VAR.QUESTLINE2=help you? You don't look... In need enough. Come back to me when
+   VAR.QUESTLINE3=you actually need my assistance. Say... When you have 20 quarts of
+   VAR.QUESTLINE4=that lovely... Sweet... Healthy... Young blood...
+   VAR.QUESTLINE5=Mmmmmmmm... Just thinking about it gives me goosebumps and a funny
+   VAR.QUESTLINE6=feeling inside of me...
+   VAR.QUESTLINE7=
+   VAR.QUESTLINE8=
+   VAR.QUESTLINE9=
+   VAR.QUESTLINE10=
+   VAR.QUESTLINE11=
+   VAR.QUESTCONFIRMSECTION=Riiiight... I'm going. Over there. Now. Very quickly.
+   DIALOG d_quest_standard
+
+   
+[FUNCTION f_undertaker_experimental_necromancy_part_3]
+   VAR.QUESTHASOPTIONS=
+   VAR.QUESTOPTION1=
+   VAR.QUESTOPTION2=
+   TAG.QUESTOPTION1.SELECTION=
+   TAG.QUESTOPTION2.SELECTION=
+   TAG.QUESTCONFIRM.SELECTION=f_undertaker_experimental_necromancy_part_3_confirmed
+   VAR.QUESTTITLE=Experimental Necromancy
+   VAR.QUESTPICTURE=6227
+   VAR.QUESTLINE1=Mmm... You taste so gooooooood... You're sweet... You're so...
+   VAR.QUESTLINE2=Oh my... Yes... Yesssss... Yeeeeeeeeeeaaaaaaaaaaagggggggghhhhh...
+   VAR.QUESTLINE3=Mmmmmmm... That was good... I should really return the favour.
+   VAR.QUESTLINE4=So, what was it you wanted me to look at?
+   VAR.QUESTLINE5=
+   VAR.QUESTLINE6=...Well well, you're just full of surprises. This is indeed a rare marking, coming
+   VAR.QUESTLINE7=from a very unique curse. If I remember correctly, I directed a young couple to the
+   VAR.QUESTLINE8=Yew Crypts. They were asking for a cure or something... But be careful. If the man
+   VAR.QUESTLINE9=makes contact with you... Well... With the top of your spine... Lets just say you
+   VAR.QUESTLINE10=won't be living for long.
+   VAR.QUESTLINE11=
+   VAR.QUESTCONFIRMSECTION=Ok. Well I'm going now. Again. Quickly... Cyalaterniceseeingyoubye!
+   DIALOG d_quest_standard
+   
+   
+[FUNCTION f_undertaker_experimental_necromancy_part_4]
+   VAR.QUESTHASOPTIONS=1
+   VAR.QUESTOPTION1=I'm listening...
+   VAR.QUESTOPTION2=You think I care? Die die die!
+   TAG.QUESTOPTION1.SELECTION=f_undertaker_experimental_necromancy_part_4_confirmed_good
+   TAG.QUESTOPTION2.SELECTION=f_undertaker_experimental_necromancy_part_4_confirmed_bad
+   TAG.QUESTCONFIRM.SELECTION=
+   VAR.QUESTTITLE=Experimental Necromancy
+   VAR.QUESTPICTURE=6227
+   VAR.QUESTLINE1=Wait! No please! We mean you no harm! Please spare us, we just
+   VAR.QUESTLINE2=want to find a cure for my husband here!
+   VAR.QUESTLINE3=
+   VAR.QUESTLINE4=
+   VAR.QUESTLINE5=
+   VAR.QUESTLINE6=
+   VAR.QUESTLINE7=
+   VAR.QUESTLINE8=
+   VAR.QUESTLINE9=
+   VAR.QUESTLINE10=
+   VAR.QUESTLINE11=
+   VAR.QUESTCONFIRMSECTION=
+   DIALOG d_quest_standard
+
+
+[FUNCTION f_undertaker_experimental_necromancy_part_5]
+   VAR.QUESTHASOPTIONS=1
+   VAR.QUESTOPTION1=Hrm... I'll help... But no funny business...
+   VAR.QUESTOPTION2=That's nice. DIE DIE DIE!
+   TAG.QUESTOPTION1.SELECTION=f_undertaker_experimental_necromancy_part_5_confirmed
+   TAG.QUESTOPTION2.SELECTION=f_undertaker_experimental_necromancy_part_4_confirmed_bad
+   TAG.QUESTCONFIRM.SELECTION=
+   VAR.QUESTTITLE=Experimental Necromancy
+   VAR.QUESTPICTURE=6227
+   VAR.QUESTLINE1=I don't know if you remember when the void invaded Britain, but
+   VAR.QUESTLINE2=they were dark days... We were part of an elite guard.
+   VAR.QUESTLINE3=Long cut short, my husband, also my commander, ordered me to curse
+   VAR.QUESTLINE4=him with anything that had the endurance to protect Lord British. 
+   VAR.QUESTLINE5=Unfortunately to maintain his life, he had to drain the aura from
+   VAR.QUESTLINE6=humans. Although we kept this to the undead, whom maintain a dark aura, it caused
+   VAR.QUESTLINE7=him to lose the capacity to speak. In our search for the cure, we were directed here
+   VAR.QUESTLINE8=by an odd healer. Alas, my husband has not fed for too long, and the monsters here do
+   VAR.QUESTLINE9=not carry an aura adequate for absorbtion. So I can only humbly ask...
+   VAR.QUESTLINE10=Would you aid us in obtaining this cure? We will give you all we have sir.
+   VAR.QUESTLINE11=
+   VAR.QUESTCONFIRMSECTION=
+   DIALOG d_quest_standard
+
+
+[FUNCTION f_undertaker_experimental_necromancy_part_6]
+   VAR.QUESTHASOPTIONS=
+   VAR.QUESTOPTION1=
+   VAR.QUESTOPTION2=
+   TAG.QUESTOPTION1.SELECTION=
+   TAG.QUESTOPTION2.SELECTION=
+   TAG.QUESTCONFIRM.SELECTION=f_undertaker_experimental_necromancy_good_ending
+   VAR.QUESTTITLE=Experimental Necromancy
+   VAR.QUESTPICTURE=6227
+   VAR.QUESTLINE1=My heavens that... It's the cure! <SRC.NAME> I cannot thank you
+   VAR.QUESTLINE2=enough for what you have done! You do not know what this means
+   VAR.QUESTLINE3=to me, to my husband, and to our coming child... I cannot thank
+   VAR.QUESTLINE4=thee enough, but my husband hath written thee a letter along with
+   VAR.QUESTLINE5=a package inside. It should contain enough gold to cover some of your expenses we
+   VAR.QUESTLINE6=pray. Also, there is something else... It's use can be explained to thee in the
+   VAR.QUESTLINE7=letter which my husband hath given you...
+   VAR.QUESTLINE8=
+   VAR.QUESTLINE9=From the bottom of my heart, you have my eternal gratitude. One day, I hope to pay
+   VAR.QUESTLINE10=you back for this deed...
+   VAR.QUESTLINE11=
+   VAR.QUESTCONFIRMSECTION=I am glad to have aided thee.
+   DIALOG d_quest_standard
+   
+
+// - Letter -
+
+[FUNCTION f_undertaker_experimental_necromancy_letter_to_sarah]
+   VAR.QUESTHASOPTIONS=
+   VAR.QUESTOPTION1=
+   VAR.QUESTOPTION2=
+   TAG.QUESTOPTION1.SELECTION=
+   TAG.QUESTOPTION2.SELECTION=
+   TAG.QUESTCONFIRM.SELECTION=f_undertaker_experimental_necromancy_feeling
+   VAR.QUESTTITLE=Experimental Necromancy Conclusion - The Death of Sarah and Kyoshi...
+   VAR.QUESTPICTURE=731
+   VAR.QUESTLINE1=My dear wife Sarah,
+   VAR.QUESTLINE2=I know you were weeping again last night. Do not fret. Although the
+   VAR.QUESTLINE3=we paid was high, we did what we had to in order to save Britain 
+   VAR.QUESTLINE4=from ruin. Please do not feel that you have to come with me in a 
+   VAR.QUESTLINE5=bid to find a cure. Our child which you carry should not have to experience 
+   VAR.QUESTLINE6=the taste of combat, but instead be with you feeling the love and warmth that only we
+   VAR.QUESTLINE7=can give him. Do not fret, the cure is within our grasp. I swear to you that I shall
+   VAR.QUESTLINE8=be free of this affliction before our child is born.
+   VAR.QUESTLINE9=
+   VAR.QUESTLINE10=I love you always,
+   VAR.QUESTLINE11=Kyoshi
+   VAR.QUESTCONFIRMSECTION=This is dated morning of their death...
+   DIALOG d_quest_letter
+
+
+[FUNCTION f_undertaker_experimental_necromancy_letter_to_hero]
+   VAR.QUESTHASOPTIONS=
+   VAR.QUESTOPTION1=
+   VAR.QUESTOPTION2=
+   TAG.QUESTOPTION1.SELECTION=
+   TAG.QUESTOPTION2.SELECTION=
+   TAG.QUESTCONFIRM.SELECTION=
+   VAR.QUESTTITLE=Experimental Necromancy Conclusion - Kyoshi's Gratitude
+   VAR.QUESTPICTURE=731
+   VAR.QUESTLINE1=<TAG.HERO>,
+   VAR.QUESTLINE2=Words cannot begin to express how grateful I am for all that you
+   VAR.QUESTLINE3=have done for us. As a way of thanks, I offer you my badge of
+   VAR.QUESTLINE4=the Dragon Guard, along with this letter. I shall no longer be
+   VAR.QUESTLINE5=fighting after this, as my wife is expecting to give birth any day now. However,
+   VAR.QUESTLINE6=you seem quite capable in combat. If you seek employment, take the badge and
+   VAR.QUESTLINE7=this letter to the Union of Britannia Guards, along with the badge. Consider this
+   VAR.QUESTLINE8=my reccomendation that you be employed by them as a part-timer.
+   VAR.QUESTLINE9=If they wish to seek me for confirmation, they know where to find me.
+   VAR.QUESTLINE10=May the Virtues Guide You,
+   VAR.QUESTLINE11=Kyoshi
+   VAR.QUESTCONFIRMSECTION=Excellent! *Air-lutes*
+   DIALOG d_quest_letter
+
+
+
+// - Procedural Functions -
+
+[FUNCTION f_undertaker_experimental_necromancy_part_1_confirmed]
+SRC.TAG.EXPNECRO.PARTSDONE=1
+
+[FUNCTION f_undertaker_experimental_necromancy_part_2_confirmed]
+SRC.TAG.EXPNECRO.PARTSDONE=2
+
+[FUNCTION f_undertaker_experimental_necromancy_part_3_confirmed]
+SRC.TAG.EXPNECRO.PARTSDONE=3
+
+[FUNCTION f_undertaker_experimental_necromancy_part_4_confirmed_good] // Good Path
+SRC.TAG.EXPNECRO.PARTSDONE=4
+SRC.f_undertaker_experimental_necromancy_part_5
+
+[FUNCTION f_undertaker_experimental_necromancy_part_5_confirmed]
+SRC.TAG.EXPNECRO.PARTSDONE=5
+
+
+[FUNCTION f_undertaker_experimental_necromancy_part_4_confirmed_bad] // Bad Path
+SRC.TAG.EXPNECRO.PARTSDONE=6
+TRY OBJ=<UID.<VAR.EXPNECRO.SARAH>.UID>
+OBJ.KILLS=10
+TRY UID.<VAR.EXPNECRO.KYOSHI>.KILLS=10
+
+
+// - Misc Functions -
+
+
+
+[FUNCTION f_undertaker_experimental_necromancy_feeling]
+
+IF (<SRC.KARMA> > -1000)
+   SRC.EMOTE feel ill as the letter is rolled back up...
+   SRC.MESSAGE *She was...*
+ELSE
+   SRC.EMOTE chuckle slightly as the letter is rolled up...
+   SRC.MESSAGE *If I'd waited a few more days, I could have got the babes shoes too... Hehe...*
+ENDIF
+
+
+[FUNCTION f_undertaker_experimental_necromancy_good_ending]
+
+SRC.KARMA=<SRC.KARMA> + 2000
+SRC.SYSMESSAGE Your karma has risen notably from this quest.
+SERV.NEWITEM i_experimental_necromancy_letter_to_hero
+NEW.TAG.HERO=<SRC.NAME>
+NEW.BOUNCE <SRC.UID>
+SERV.NEWITEM i_gold
+NEW.AMOUNT=15000
+NEW.BOUNCE <SRC.UID>
+SERV.NEWITEM i_badge_of_the_dragon_guard_pristine
+NEW.AMOUNT=1
+NEW.BOUNCE <SRC.UID>
+SRC.TAG.NPC_QUEST_DONE_2 = <eval ( <SRC.TAG.NPC_QUEST_DONE_2> | NPCQ_ExpNecromancy )>
+SRC.TAG.EXPNECRO.PARTSDONE=
+ANNOUNCE The warrior <SRC.NAME> has chosen the fate of the Cursed One and his Wife...
+
+
+
+
+[EOF]

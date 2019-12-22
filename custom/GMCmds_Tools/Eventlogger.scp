@@ -1,0 +1,45 @@
+[PLEVEL 2]
+recordevent
+lastevent
+
+
+[FUNCTION recordevent]
+TRY UID.043c282b3.more2=<eval (<UID.043c282b3.more2>+1)>//adds 1 to the more2 so it can add the tag number one by one
+TRY UID.043c282b3.TAG.eventlog<eval (<UID.043c282b3.more2>)>=<SERV.RTIME.FORMAT %d>-<SERV.RTIME.FORMAT %m>-<SERV.RTIME.FORMAT %y> at <SERV.RTIME.FORMAT %H>:<SERV.RTIME.FORMAT %M> by <SRC.NAME> - <ARGS>//pulls the tag number from the more2 and makes it the args
+SERV.LOG EVENT: <SRC.NAME> is running - <ARGS>
+SYSMESSAGE You have recorded the event <ARGS> on line <eval (<UID.043c282b3.more2>)>//informs the user of what he recorded and on which line
+RETURN 1
+
+[FUNCTION lastevent]
+If !(strcmpi("<args>",""))//null value just plain command
+     SYSMESSAGE The last event recorded was:
+     SYSMESSAGE <UID.043c282b3.TAG.eventlog<eval <UID.043c282b3.More2>>>
+     RETURN 1
+ElseIf !(strcmpi("<UID.043c282b3.TAG.eventlog<eval <Args>>>",""))//null value just plain command
+     SYSMESSAGE The last event recorded was:
+     SYSMESSAGE <UID.043c282b3.TAG.eventlog<eval <UID.043c282b3.More2>>>
+     RETURN 1
+ElseIf (<args> <= <eval (<UID.043c282b3.more2>)>)//value requested is a valid one
+         SYSMESSAGE The event you requested was:
+         SYSMESSAGE <UID.043c282b3.TAG.eventlog<eval <Args>>>
+EndIf
+RETURN 1
+
+
+[ITEMDEF i_eventlogger]
+DEFNAME=i_eventlogger
+ID=i_gravestone
+NAME=uid_event_stone
+WEIGHT=5000
+Type=t_normal
+
+ON=@Create
+    Type=t_normal
+    Color=07ad
+    Timer=-1
+    ATTR=08010
+
+ON=@Click
+    SAY DO NOT DELETE THIS!!
+	
+[EOF]

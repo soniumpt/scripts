@@ -1,0 +1,3599 @@
+//-------------------------------------------------------------------------------------------------
+//-                                                                                               -
+//-------------------------------------Champion Script v1.04---------------------------------------
+//-                                                                                               -
+//-----------------------------------Written By James Timbrell-------------------------------------
+//-                                                                                               -
+//---------------------------------For use on Burstfire UO alone-----------------------------------
+//-                                                                                               -
+//------Script dedicated to the memory of "Janey", neighbour and friend of mine in real life.------
+//-----------------------------------R.I.P. 22nd of April 2003-------------------------------------
+//-                                                                                               -
+//------------------------------------Changes in version 1.04--------------------------------------
+//-                                                                                               -
+//-28th April 2003                                                                                -
+//-                                                                                               -
+//-   Loot templates reworked - 1gp loot on Bloodthirster, as is in no-pk\loot area               -
+//-   Timer - Decided to be left due to dropped loot :|                                           -
+//-                                                                                               -
+//-                                                                                               -
+//------------------------------------Changes in version 1.03--------------------------------------
+//-                                                                                               -
+//-25th April 2003                                                                                -
+//-                                                                                               -
+//-   Succubus singular group completed - One player only inside Wind gardens plane 10            -
+//-   An error where the Bloodthirsters Strength was only 400 now fixed (Oops :P)                 -
+//-   Succubus damage ratings changed - Now appropriate for single player                         -
+//-   Timer for the Bloodreaver fixed but commented out - Works best without apparently...        -
+//-                                                                                               -
+//-Next Release:                                                                                  -
+//-                                                                                               -
+//-   New spawn group, to be based in T2A somewhere...                                            -
+//-   Assess Timer                                                                                -
+//-                                                                                               -
+//------------------------------------Changes in version 1.01--------------------------------------
+//-                                                                                               -
+//-24th April 2003                                                                                -
+//-                                                                                               -
+//-   Script now called "Champion Script" as is only fair as the script is now 80% rewritten      -
+//-   Bloodthirster Champion Spawns written solely for Shame                                      -
+//-   4 Tiered spawn group introduced                                                             -
+//-                                                                                               -
+//------------------------------------Pre-Renaming of Scripts--------------------------------------
+//------------------------------------Changes in version 1.05b-------------------------------------
+//-                                                                                               -
+//-                                                                                               -
+//-17th April 2003                                                                                -
+//-                                                                                               -
+//-Version 1.05 modernised to 1.82 items (Skulls etc)                                             -
+//-Different type of skulls to 1.82 (Plain instead of OSI Skull Candles)                          -
+//-General graphical differences                                                                  -
+//-                                                                                               -
+//-                                                                                               -
+//------------------------------------Changes in version 1.05--------------------------------------
+//-                                                                                               -
+//-                                                                                               -
+//-04th March 2003                                                                                -
+//-                                                                                               -
+//-Now remembered to date changes list :P                                                         -
+//-Second guardian spawn group completed (Bloodthirster)                                          -
+//-Fixed a minor bug allowing 99 kills instead of 100 (My own fault for not updating it proper)   -
+//-Problem with Bloodthirster not having any skills fixed                                         -
+//-                                                                                               -
+//-                                                                                               -
+//------------------------------------Changes in version 1.01--------------------------------------
+//-                                                                                               -
+//-                                                                                               -
+//-Damned if I can remember an exact date for this...                                             -
+//-												  -
+//-Stones replaced with skulls                                                                    -
+//-First guardian spawn fully completed                                                           -
+//-                                                                                               -
+//-                                                                                               -
+//------------------For the purposes of all reading I should explain the system.-------------------
+//------------------Champions are extremely hard monsters which should be taken -------------------
+//------------------on by groups of at least 9 or 10 people. However it is not  -------------------
+//------------------as simple as merely going to the spawn. To call forth these -------------------
+//------------------protectors of the land the warrior must battle its minions  -------------------
+//------------------until enough are slayed to summon forth the creature. This  -------------------
+//------------------is showed by up to 20 skulls, each one designating 5        -------------------
+//------------------monsters killed. Of course, over time, this too fades...    -------------------
+//------------------                                                            -------------------
+//------------------Once a champion has been summoned and killed, the player    -------------------
+//------------------earns a tag saying he has killed that monster. With these   -------------------
+//------------------the player can then go see an NPC and ask for a title       -------------------
+//------------------if they have enough champion kills. These too can fade...   -------------------
+//------------------                                                            -------------------
+//------------------When a champion is defeated they also drop a skull. When    -------------------
+//------------------all of these are obtained, they can call forth the final    -------------------
+//------------------champion. The loot for this champion is 50000 gold, 2       -------------------
+//------------------random stat rares, and a "Skull of Conquest".               -------------------
+//-                                                                                               -
+//------------------------Current ones are the Succubus and Bloodthirster.-------------------------
+
+
+
+//-----------------------------------Items for spawn and kills-------------------------------------
+
+// This is the circle of champion tiles for the mirror champion, the Succubus.
+// Central stone for spawn
+
+[CHARDEF c_champion_succubus_spawn]
+DEFNAME=c_champion_succubus_spawn
+NAME=Succubus Statue
+ID=c_harpy
+SOUND=snd_MONSTER_DAEMON1
+ICON=i_pet_harpy
+DAM=30,45
+ARMOR=120
+
+//ALIGNMENT=EVIL
+CAN=MT_WALK|MT_FLY
+TEVENTS=e_all_npc
+DESIRES=i_gold
+AVERSIONS=r_water,r_mountains
+
+ON=@Create
+   KARMA=-2000
+   STONE
+   INVUL
+
+
+[CHARDEF c_champion_bloodthirster_spawn]
+DEFNAME=c_champion_bloodthirster_spawn
+NAME=Bloodthirster Statue
+ID=c_daemon_w_sword
+SOUND=snd_MONSTER_DAEMON1
+ICON=i_pet_harpy
+DAM=30,45
+ARMOR=120
+
+//ALIGNMENT=EVIL
+CAN=MT_WALK|MT_FLY
+TEVENTS=e_all_npc
+DESIRES=i_gold
+AVERSIONS=r_water,r_mountains
+
+ON=@Create
+   KARMA=-2000
+   STONE
+   INVUL
+
+   
+[ITEMDEF i_champion_succubus_spawn]
+ID=i_stairs_stone
+
+ON=@CREATE
+  COLOR=006a5
+  TIMER=1
+
+ON=@TIMER
+  IF (0<VAR.SUCCUBUS>>=100)
+     LINK.NEWITEM i_transform_smoke
+     LINK.ACT.P	= <P>
+     LINK.NEWNPC = c_h_championtiffany
+     LINK.ACT.P	= <P>
+     REGION.ALLCLIENTS SYSMESSAGE @052f The area's champion has been released!
+     VAR.SUCCUBUS=0
+     TIMER=1
+  ELSE
+     VAR.SUCCUBUSREMOVE=(0<VAR.SUCCUBUSREMOVE>+1)
+     TIMER=1
+  ENDIF
+  IF (0<VAR.SUCCUBUSREMOVE>=270)
+     IF (0<VAR.SUCCUBUS>>0)
+        VAR.SUCCUBUSREMOVE=0
+        VAR.SUCCUBUS=(0<VAR.SUCCUBUS>-1)
+     ENDIF
+  ENDIF
+  RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions Spawns
+DESCRIPTION=Succubus Spawn Stone
+
+
+
+[CHARDEF c_champion_bloodthirster_spawn]
+DEFNAME=c_champion_bloodthirster
+NAME=Bloodthirster
+ID=c_DAEMON_W_SWORD
+SOUND=snd_MONSTER_DAEMON1
+ICON=i_pet_dragon
+DAM=40,65
+ARMOR=160
+RESOURCES=8 i_reag_daemon_bone
+
+//ALIGNMENT=EVIL
+CAN=MT_WALK|MT_FLY
+TEVENTS=e_npc_daemon
+TEVENTS=e_all_npc
+DESIRES=c_DAEMON,i_gold,t_wand
+AVERSIONS=r_water,r_mountains
+
+ON=@Create
+   KARMA=-2000
+   STONE
+   INVUL
+
+
+[ITEMDEF i_champion_bloodthirster_spawn]
+ID=i_stairs_stone
+
+ON=@CREATE
+  COLOR=006a5
+  TIMER=1
+
+ON=@TIMER
+  IF (0<VAR.BLOODTHIRSTER.LEVEL_ONE>>=100)
+     IF (0<VAR.BLOODTHIRSTER.LEVEL_TWO>>=100)
+        IF (0<VAR.BLOODTHIRSTER.LEVEL_THREE>>=100)
+           IF (0<VAR.BLOODTHIRSTER.LEVEL_FOUR>>=100)
+              LINK.NEWITEM i_transform_smoke
+              LINK.ACT.P	= <P>
+              LINK.NEWNPC = c_champion_bloodthirster
+              LINK.ACT.P	= <P>
+              REGION.ALLCLIENTS SYSMESSAGE @052f The area's champion has been released!
+              VAR.BLOODTHIRSTER.LEVEL_ONE=0
+              VAR.BLOODTHIRSTER.LEVEL_TWO=0
+              VAR.BLOODTHIRSTER.LEVEL_THREE=0
+              VAR.BLOODTHIRSTER.LEVEL_FOUR=0
+           ENDIF
+        ENDIF
+     ENDIF
+  ENDIF
+//  VAR.BLOODTHIRSTERREMOVE=(0<VAR.BLOODTHIRSTERREMOVE>+1)
+//  IF (0<VAR.BLOODTHIRSTERREMOVE>=60)
+//     VAR.BLOODTHIRSTER.LEVEL_ONE=(0<VAR.BLOODTHIRSTER.LEVEL_ONE>-1)
+//  ENDIF
+//  IF (0<VAR.BLOODTHIRSTERREMOVE>=120)
+//    VAR.BLOODTHIRSTER.LEVEL_ONE=(0<VAR.BLOODTHIRSTER.LEVEL_ONE>-1)
+//    VAR.BLOODTHIRSTER.LEVEL_TWO=(0<VAR.BLOODTHIRSTER.LEVEL_TWO>-1)
+//  ENDIF
+//  IF (0<VAR.BLOODTHIRSTERREMOVE>=180)
+//    VAR.BLOODTHIRSTER.LEVEL_ONE=(0<VAR.BLOODTHIRSTER.LEVEL_ONE>-1)
+//    VAR.BLOODTHIRSTER.LEVEL_THREE=(0<VAR.BLOODTHIRSTER.LEVEL_THREE>-1)
+//  ENDIF
+//  IF (0<VAR.BLOODTHIRSTERREMOVE>=240)
+//    VAR.BLOODTHIRSTER.LEVEL_ONE=(0<VAR.BLOODTHIRSTER.LEVEL_ONE>-1)             
+//    VAR.BLOODTHIRSTER.LEVEL_TWO=(0<VAR.BLOODTHIRSTER.LEVEL_TWO>-1)
+//    VAR.BLOODTHIRSTER.LEVEL_FOUR=(0<VAR.BLOODTHIRSTER.LEVEL_FOUR>-1)
+//  ENDIF
+//  IF (0<VAR.BLOODTHIRSTERREMOVE>=300)
+//    VAR.BLOODTHIRSTER.LEVEL_ONE=(0<VAR.BLOODTHIRSTER.LEVEL_ONE>-1)
+//  ENDIF
+//  IF (0<VAR.BLOODTHIRSTERREMOVE>=360)              
+//    VAR.BLOODTHIRSTER.LEVEL_ONE=(0<VAR.BLOODTHIRSTER.LEVEL_ONE>-1)
+//    VAR.BLOODTHIRSTER.LEVEL_TWO=(0<VAR.BLOODTHIRSTER.LEVEL_TWO>-1)
+//    VAR.BLOODTHIRSTER.LEVEL_THREE=(0<VAR.BLOODTHIRSTER.LEVEL_THREE>-1)
+//  ENDIF
+//  IF (0<VAR.BLOODTHIRSTERREMOVE>=420)
+//    VAR.BLOODTHIRSTER.LEVEL_ONE=(0<VAR.BLOODTHIRSTER.LEVEL_ONE>-1)
+//  ENDIF
+//  IF (0<VAR.BLOODTHIRSTERREMOVE>=480)
+//    VAR.BLOODTHIRSTER.LEVEL_ONE=(0<VAR.BLOODTHIRSTER.LEVEL_ONE>-1)                       
+//    VAR.BLOODTHIRSTER.LEVEL_TWO=(0<VAR.BLOODTHIRSTER.LEVEL_TWO>-1)
+//    VAR.BLOODTHIRSTER.LEVEL_FOUR=(0<VAR.BLOODTHIRSTER.LEVEL_FOUR>-1)
+//  ENDIF
+//  IF (0<VAR.BLOODTHIRSTERREMOVE>=540)
+//    VAR.BLOODTHIRSTER.LEVEL_ONE=(0<VAR.BLOODTHIRSTER.LEVEL_ONE>-1)
+//    VAR.BLOODTHIRSTER.LEVEL_THREE=(0<VAR.BLOODTHIRSTER.LEVEL_THREE>-1)
+//  ENDIF
+//  IF (0<VAR.BLOODTHIRSTERREMOVE>=600)
+//    VAR.BLOODTHIRSTER.LEVEL_ONE=(0<VAR.BLOODTHIRSTER.LEVEL_ONE>-1)                       
+//    VAR.BLOODTHIRSTER.LEVEL_TWO=(0<VAR.BLOODTHIRSTER.LEVEL_TWO>-1)
+//  ENDIF
+//  IF (0<VAR.BLOODTHIRSTERREMOVE>=660)
+//    VAR.BLOODTHIRSTER.LEVEL_ONE=(0<VAR.BLOODTHIRSTER.LEVEL_ONE>-1)
+//  ENDIF
+//  IF (0<VAR.BLOODTHIRSTERREMOVE>=740)
+//    VAR.BLOODTHIRSTER.LEVEL_ONE=(0<VAR.BLOODTHIRSTER.LEVEL_ONE>-1)
+//    VAR.BLOODTHIRSTER.LEVEL_TWO=(0<VAR.BLOODTHIRSTER.LEVEL_TWO>-1)
+//    VAR.BLOODTHIRSTER.LEVEL_THREE=(0<VAR.BLOODTHIRSTER.LEVEL_THREE>-1)
+//    VAR.BLOODTHIRSTER.LEVEL_FOUR=(0<VAR.BLOODTHIRSTER.LEVEL_FOUR>-1)                                
+//    VAR.BLOODTHIRSTERREMOVE=0
+//  ENDIF                       
+  TIMER=1
+  RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions Spawns
+DESCRIPTION=Bloodthirster Spawn Stone
+
+//-------------------------------------Miscellaneous Items List------------------------------------
+
+
+[ITEMDEF i_champion_platform]
+ID=i_stairs_stone
+NAME=Platform
+
+ON=@CREATE
+  COLOR=006a5
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions Misc Items
+DESCRIPTION=Champion Platform Stone
+
+[ITEMDEF i_champion_succubus_entrance]
+ID=0177d
+NAME=Shimmering Grass
+
+ON=@STEP
+  IF (0<VAR.SUCCUBUS.ENTER>=1)
+     SRC.SAY You feel a force pull you back, as if someone elses fate is being decided...
+     SRC.GO 1449,2345,5
+  ELSEIF <SRC.FINDID.i_champion_succubus_soul.UID>
+     SRC.SAY You feel as if your soul has fought a million battles, and fall back dizzily...
+     SRC.GO 1449,2345,5
+  ELSE
+     SRC.SAY You feel as if you are going to fight the dark side of your soul...
+     SRC.GO 5212,23,15,10 
+     VAR.SUCCUBUS.ENTER=1
+  ENDIF
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions Misc Items
+DESCRIPTION=Entrance to Succubus
+
+[ITEMDEF i_champion_succubus_exit]
+ID=i_moongate_blue
+NAME=Platform
+
+ON=@CREATE
+  COLOR=07fff
+ON=@STEP
+  SRC.NEWITEM i_champion_succubus_soul
+  SRC.ACT.CONT=<SRC.UID>
+  VAR.SUCCUBUS.ENTER=0
+  SRC.GO 1449,2345,5
+  
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions Misc Items
+DESCRIPTION=Exit from Succubus
+
+[ITEMDEF i_champion_succubus_soul]
+ID=i_memory
+TYPE=t_eq_script
+NAME=Succubus Soul
+ON=@Create
+TIMER=43200 //12 hours
+
+ON=@Timer
+    CONT.TAG.SUCCUBUS.SOUL=0
+    REMOVE
+    RETURN 1
+
+//--------------------------------------Skulls of the Succubus-------------------------------------
+
+
+// Outer Rim Stones follow
+// Layout is on this basis
+
+// AAAAA
+// A A A
+// AASAA
+// A A A
+// AAAAA
+
+// A is the tile which colours
+// S is the central spawn
+
+// Stone 1 of 20
+
+[ITEMDEF i_champion_succubus_skull_one]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+// If 5 kills or more are made, the skull shows, otherwise stays hidden
+ON=@TIMER
+   IF ( 0<VAR.SUCCUBUS>>=5)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Succubus Skull One
+
+// Stone 2 of 20
+
+[ITEMDEF i_champion_succubus_skull_two]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.SUCCUBUS>>=10)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Succubus Skull Two
+
+[ITEMDEF i_champion_succubus_skull_three]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.SUCCUBUS>>=15)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Succubus Skull Three
+
+[ITEMDEF i_champion_succubus_skull_four]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.SUCCUBUS>>=20)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Succubus Skull Four
+
+[ITEMDEF i_champion_succubus_skull_five]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.SUCCUBUS>>=25)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Succubus Skull Five
+
+[ITEMDEF i_champion_succubus_skull_six]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.SUCCUBUS>>=30)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Succubus Skull Six
+
+[ITEMDEF i_champion_succubus_skull_seven]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.SUCCUBUS>>=35)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Succubus Skull Seven
+
+[ITEMDEF i_champion_succubus_skull_eight]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.SUCCUBUS>>=40)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Succubus Skull Eight
+
+[ITEMDEF i_champion_succubus_skull_nine]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.SUCCUBUS>>=45)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Succubus Skull Nine
+
+[ITEMDEF i_champion_succubus_skull_ten]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.SUCCUBUS>>=50)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Succubus Skull Ten
+
+[ITEMDEF i_champion_succubus_skull_eleven]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.SUCCUBUS>>=55)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Succubus Skull Eleven
+
+[ITEMDEF i_champion_succubus_skull_twelve]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.SUCCUBUS>>=60)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Succubus Skull Twelve
+
+[ITEMDEF i_champion_succubus_skull_thirteen]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.SUCCUBUS>>=65)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Succubus Skull Thirteen
+
+[ITEMDEF i_champion_succubus_skull_fourteen]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.SUCCUBUS>>=70)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Succubus Skull Fourteen
+
+[ITEMDEF i_champion_succubus_skull_fifteen]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.SUCCUBUS>>=75)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Succubus Skull Fifteen
+
+[ITEMDEF i_champion_succubus_skull_sixteen]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.SUCCUBUS>>=80)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Succubus Skull Sixteen
+
+[ITEMDEF i_champion_succubus_skull_seventeen]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.SUCCUBUS>>=85)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Succubus Skull Seventeen
+
+[ITEMDEF i_champion_succubus_skull_eighteen]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.SUCCUBUS>>=90)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Succubus Skull Eighteen
+
+[ITEMDEF i_champion_succubus_skull_ninteen]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.SUCCUBUS>>=95)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Succubus Skull Ninteen
+
+[ITEMDEF i_champion_succubus_skull_twenty]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.SUCCUBUS>>=100)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Succubus Skull Twenty
+
+
+//--------------------------------Skulls of the Bloodthirster Level 1------------------------------
+
+
+// Outer Rim Stones follow
+// Layout is on this basis
+
+// AAAAA
+// A A A
+// AASAA
+// A A A
+// AAAAA
+
+// A is the tile which colours
+// S is the central spawn
+
+// Stone 1 of 20
+
+[ITEMDEF i_champion_bloodthirster_level_one_skull_one]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+// If 5 kills or more are made, the skull shows, otherwise stays hidden
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_ONE>>=5)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 1 Skull One
+
+// Stone 2 of 20
+
+[ITEMDEF i_champion_bloodthirster_level_one_skull_two]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_ONE>>=10)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 1 Skull Two
+
+[ITEMDEF i_champion_bloodthirster_level_one_skull_three]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_ONE>>=15)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 1 Skull Three
+
+[ITEMDEF i_champion_bloodthirster_level_one_skull_four]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_ONE>>=20)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 1 Skull Four
+
+[ITEMDEF i_champion_bloodthirster_level_one_skull_five]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_ONE>>=25)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 1 Skull Five
+
+[ITEMDEF i_champion_bloodthirster_level_one_skull_six]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_ONE>>=30)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 1 Skull Six
+
+[ITEMDEF i_champion_bloodthirster_level_one_skull_seven]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_ONE>>=35)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 1 Skull Seven
+
+[ITEMDEF i_champion_bloodthirster_level_one_skull_eight]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_ONE>>=40)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 1 Skull Eight
+
+[ITEMDEF i_champion_bloodthirster_level_one_skull_nine]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_ONE>>=45)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 1 Skull Nine
+
+[ITEMDEF i_champion_bloodthirster_level_one_skull_ten]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_ONE>>=50)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 1 Skull Ten
+
+[ITEMDEF i_champion_bloodthirster_level_one_skull_eleven]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_ONE>>=55)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 1 Skull Eleven
+
+[ITEMDEF i_champion_bloodthirster_level_one_skull_twelve]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_ONE>>=60)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 1 Skull Twelve
+
+[ITEMDEF i_champion_bloodthirster_level_one_skull_thirteen]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_ONE>>=65)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 1 Skull Thirteen
+
+[ITEMDEF i_champion_bloodthirster_level_one_skull_fourteen]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_ONE>>=70)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 1 Skull Fourteen
+
+[ITEMDEF i_champion_bloodthirster_level_one_skull_fifteen]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_ONE>>=75)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 1 Skull Fifteen
+
+[ITEMDEF i_champion_bloodthirster_level_one_skull_sixteen]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_ONE>>=80)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 1 Skull Sixteen
+
+[ITEMDEF i_champion_bloodthirster_level_one_skull_seventeen]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_ONE>>=85)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 1 Skull Seventeen
+
+[ITEMDEF i_champion_bloodthirster_level_one_skull_eighteen]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_ONE>>=90)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 1 Skull Eighteen
+
+[ITEMDEF i_champion_bloodthirster_level_one_skull_ninteen]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_ONE>>=95)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 1 Skull Ninteen
+
+[ITEMDEF i_champion_bloodthirster_level_one_skull_twenty]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_ONE>>=100)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 1 Skull Twenty
+
+
+//--------------------------------Skulls of the Bloodthirster Level 2------------------------------
+
+
+// Outer Rim Stones follow
+// Layout is on this basis
+
+// AAAAA
+// A A A
+// AASAA
+// A A A
+// AAAAA
+
+// A is the tile which colours
+// S is the central spawn
+
+// Stone 1 of 20
+
+[ITEMDEF i_champion_bloodthirster_level_two_skull_one]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+// If 5 kills or more are made, the skull shows, otherwise stays hidden
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_TWO>>=5)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 2 Skull One
+
+// Stone 2 of 20
+
+[ITEMDEF i_champion_bloodthirster_level_two_skull_two]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_TWO>>=10)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 2 Skull Two
+
+[ITEMDEF i_champion_bloodthirster_level_two_skull_three]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_TWO>>=15)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 2 Skull Three
+
+[ITEMDEF i_champion_bloodthirster_level_two_skull_four]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_TWO>>=20)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 2 Skull Four
+
+[ITEMDEF i_champion_bloodthirster_level_two_skull_five]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_TWO>>=25)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 2 Skull Five
+
+[ITEMDEF i_champion_bloodthirster_level_two_skull_six]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_TWO>>=30)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 2 Skull Six
+
+[ITEMDEF i_champion_bloodthirster_level_two_skull_seven]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_TWO>>=35)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 2 Skull Seven
+
+[ITEMDEF i_champion_bloodthirster_level_two_skull_eight]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_TWO>>=40)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 2 Skull Eight
+
+[ITEMDEF i_champion_bloodthirster_level_two_skull_nine]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_TWO>>=45)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 2 Skull Nine
+
+[ITEMDEF i_champion_bloodthirster_level_two_skull_ten]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_TWO>>=50)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 2 Skull Ten
+
+[ITEMDEF i_champion_bloodthirster_level_two_skull_eleven]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_TWO>>=55)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 2 Skull Eleven
+
+[ITEMDEF i_champion_bloodthirster_level_two_skull_twelve]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_TWO>>=60)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 2 Skull Twelve
+
+[ITEMDEF i_champion_bloodthirster_level_two_skull_thirteen]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_TWO>>=65)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 2 Skull Thirteen
+
+[ITEMDEF i_champion_bloodthirster_level_two_skull_fourteen]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_TWO>>=70)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 2 Skull Fourteen
+
+[ITEMDEF i_champion_bloodthirster_level_two_skull_fifteen]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_TWO>>=75)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 2 Skull Fifteen
+
+[ITEMDEF i_champion_bloodthirster_level_two_skull_sixteen]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_TWO>>=80)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 2 Skull Sixteen
+
+[ITEMDEF i_champion_bloodthirster_level_two_skull_seventeen]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_TWO>>=85)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 2 Skull Seventeen
+
+[ITEMDEF i_champion_bloodthirster_level_two_skull_eighteen]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_TWO>>=90)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 2 Skull Eighteen
+
+[ITEMDEF i_champion_bloodthirster_level_two_skull_ninteen]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_TWO>>=95)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 2 Skull Ninteen
+
+[ITEMDEF i_champion_bloodthirster_level_two_skull_twenty]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_TWO>>=100)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 2 Skull Twenty
+
+
+//--------------------------------Skulls of the Bloodthirster Level 3------------------------------
+
+
+// Outer Rim Stones follow
+// Layout is on this basis
+
+// AAAAA
+// A A A
+// AASAA
+// A A A
+// AAAAA
+
+// A is the tile which colours
+// S is the central spawn
+
+// Stone 1 of 20
+
+[ITEMDEF i_champion_bloodthirster_level_three_skull_one]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+// If 5 kills or more are made, the skull shows, otherwise stays hidden
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_THREE>>=5)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 3 Skull One
+
+// Stone 2 of 20
+
+[ITEMDEF i_champion_bloodthirster_level_three_skull_two]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_THREE>>=10)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 3 Skull Two
+
+[ITEMDEF i_champion_bloodthirster_level_three_skull_three]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_THREE>>=15)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 3 Skull Three
+
+[ITEMDEF i_champion_bloodthirster_level_three_skull_four]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_THREE>>=20)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 3 Skull Four
+
+[ITEMDEF i_champion_bloodthirster_level_three_skull_five]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_THREE>>=25)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 3 Skull Five
+
+[ITEMDEF i_champion_bloodthirster_level_three_skull_six]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_THREE>>=30)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 3 Skull Six
+
+[ITEMDEF i_champion_bloodthirster_level_three_skull_seven]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_THREE>>=35)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 3 Skull Seven
+
+[ITEMDEF i_champion_bloodthirster_level_three_skull_eight]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_THREE>>=40)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 3 Skull Eight
+
+[ITEMDEF i_champion_bloodthirster_level_three_skull_nine]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_THREE>>=45)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 3 Skull Nine
+
+[ITEMDEF i_champion_bloodthirster_level_three_skull_ten]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_THREE>>=50)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 3 Skull Ten
+
+[ITEMDEF i_champion_bloodthirster_level_three_skull_eleven]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_THREE>>=55)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 3 Skull Eleven
+
+[ITEMDEF i_champion_bloodthirster_level_three_skull_twelve]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_THREE>>=60)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 3 Skull Twelve
+
+[ITEMDEF i_champion_bloodthirster_level_three_skull_thirteen]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_THREE>>=65)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 3 Skull Thirteen
+
+[ITEMDEF i_champion_bloodthirster_level_three_skull_fourteen]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_THREE>>=70)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 3 Skull Fourteen
+
+[ITEMDEF i_champion_bloodthirster_level_three_skull_fifteen]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_THREE>>=75)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 3 Skull Fifteen
+
+[ITEMDEF i_champion_bloodthirster_level_three_skull_sixteen]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_THREE>>=80)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 3 Skull Sixteen
+
+[ITEMDEF i_champion_bloodthirster_level_three_skull_seventeen]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_THREE>>=85)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 3 Skull Seventeen
+
+[ITEMDEF i_champion_bloodthirster_level_three_skull_eighteen]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_THREE>>=90)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 3 Skull Eighteen
+
+[ITEMDEF i_champion_bloodthirster_level_three_skull_ninteen]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_THREE>>=95)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 3 Skull Ninteen
+
+[ITEMDEF i_champion_bloodthirster_level_three_skull_twenty]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_THREE>>=100)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 3 Skull Twenty
+
+
+//--------------------------------Skulls of the Bloodthirster Level 4------------------------------
+
+
+// Outer Rim Stones follow
+// Layout is on this basis
+
+// AAAAA
+// A A A
+// AASAA
+// A A A
+// AAAAA
+
+// A is the tile which colours
+// S is the central spawn
+
+// Stone 1 of 20
+
+[ITEMDEF i_champion_bloodthirster_level_four_skull_one]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+// If 5 kills or more are made, the skull shows, otherwise stays hidden
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_FOUR>>=5)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 4 Skull One
+
+// Stone 2 of 20
+
+[ITEMDEF i_champion_bloodthirster_level_four_skull_two]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_FOUR>>=10)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 4 Skull Two
+
+[ITEMDEF i_champion_bloodthirster_level_four_skull_three]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_FOUR>>=15)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 4 Skull Three
+
+[ITEMDEF i_champion_bloodthirster_level_four_skull_four]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_FOUR>>=20)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 4 Skull Four
+
+[ITEMDEF i_champion_bloodthirster_level_four_skull_five]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_FOUR>>=25)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 4 Skull Five
+
+[ITEMDEF i_champion_bloodthirster_level_four_skull_six]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_FOUR>>=30)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 4 Skull Six
+
+[ITEMDEF i_champion_bloodthirster_level_four_skull_seven]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_FOUR>>=35)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 4 Skull Seven
+
+[ITEMDEF i_champion_bloodthirster_level_four_skull_eight]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_FOUR>>=40)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 4 Skull Eight
+
+[ITEMDEF i_champion_bloodthirster_level_four_skull_nine]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_FOUR>>=45)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 4 Skull Nine
+
+[ITEMDEF i_champion_bloodthirster_level_four_skull_ten]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_FOUR>>=50)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 4 Skull Ten
+
+[ITEMDEF i_champion_bloodthirster_level_four_skull_eleven]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_FOUR>>=55)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 4 Skull Eleven
+
+[ITEMDEF i_champion_bloodthirster_level_four_skull_twelve]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_FOUR>>=60)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 4 Skull Twelve
+
+[ITEMDEF i_champion_bloodthirster_level_four_skull_thirteen]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_FOUR>>=65)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 4 Skull Thirteen
+
+[ITEMDEF i_champion_bloodthirster_level_four_skull_fourteen]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_FOUR>>=70)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 4 Skull Fourteen
+
+[ITEMDEF i_champion_bloodthirster_level_four_skull_fifteen]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_FOUR>>=75)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 4 Skull Fifteen
+
+[ITEMDEF i_champion_bloodthirster_level_four_skull_sixteen]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_FOUR>>=80)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 4 Skull Sixteen
+
+[ITEMDEF i_champion_bloodthirster_level_four_skull_seventeen]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_FOUR>>=85)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 4 Skull Seventeen
+
+[ITEMDEF i_champion_bloodthirster_level_four_skull_eighteen]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_FOUR>>=90)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 4 Skull Eighteen
+
+[ITEMDEF i_champion_bloodthirster_level_four_skull_ninteen]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_FOUR>>=95)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 4 Skull Ninteen
+
+[ITEMDEF i_champion_bloodthirster_level_four_skull_twenty]
+ID=i_skull_candle_lit
+ON=@CREATE
+COLOR=025
+ATTR=00091
+TIMER=1
+
+ON=@TIMER
+   IF ( 0<VAR.BLOODTHIRSTER.LEVEL_FOUR>>=100)
+   ATTR=00011
+   ELSE
+   ATTR=00091
+   ENDIF
+   TIMER=1
+   RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Level 4 Skull Twenty
+
+
+//----------------------------------Test monster for all variable----------------------------------
+
+
+[CHARDEF c_h_championtest]
+ID=C_WOMAN
+NAME=Tiffany [Test Monster]
+SOUND=snd_HUMAN_M_DIE_01
+AVERSIONS=t_TRAP,t_eerie_stuff
+TEVENTS=e_all_npc
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Test Monster for Variables
+
+ON=@DEATH
+  VAR.SUCCUBUS=100 // This line is to add a hundred kills to the succubus summon
+  VAR.BLOODTHIRSTER.LEVEL_THREE=100 // This line is to add a hundred kills to the higher bloodthirster group
+  FINDLAYER(layer_horse).remove
+  VAR.BLOODTHIRSTER.LEVEL_TWO=100 // This line is to add a hundred kills to the basic bloodthirster group
+
+ON=@Create
+  COLOR=00655
+  STR	= 100
+  DEX	= 100
+  INT	= 75
+  NPC	= brain_monster
+  FAME=2000
+  KARMA	= -6000
+  MAGERY	= 40.0
+  EVALUATINGINTEL       = 100.0
+  ITEMNEWBIE=i_spellbook
+  COLOR=0782
+  ITEMNEWBIE=i_surcoat_army
+  COLOR=0486
+  ITEMNEWBIE=i_hat_wizards
+  COLOR=0486
+  ITEMNEWBIE=i_boots_calf
+  COLOR=0486
+  
+ON=@NPCRESTOCK
+  ITEMNEWBIE=i_mt_ostard_zostrich
+  COLOR=07fff
+
+
+//--------------------------------------Succubus Spawn Group---------------------------------------
+
+
+//Mirror monsters
+
+[CHARDEF c_h_mirrorgonads]
+ID=C_MAN
+NAME=Gonads An Strife
+SOUND=snd_HUMAN_M_DIE_01
+AVERSIONS=t_TRAP,t_eerie_stuff
+TEVENTS=e_all_npc
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Mirror Images
+DESCRIPTION=Gonads An Strife
+
+ON=@DEATH
+  VAR.SUCCUBUS=(0<VAR.SUCCUBUS> +1) // This line is to add one kill to the succubus summon
+  FINDLAYER(layer_horse).remove
+  
+ON=@Create
+  COLOR=00655
+  STR	= 120
+  DEX	= 95
+  INT	= 60
+  NPC	= brain_monster
+  FAME=2000
+  KARMA	= -6000
+  PARRYING	= 100.0
+  SWORDSMANSHIP	= 100.0
+  MAGICRESISTANCE=75.0
+  EVALUATINGINTEL= 85.0
+  TACTICS	= 100.0
+  ANATOMY       = 100.0
+  MAGERY        = 75.0
+  ITEMNEWBIE=i_hair_long
+  COLOR=07a1
+
+
+  ITEMNEWBIE=i_platemail_gloves_titanium
+  ITEMNEWBIE=i_platemail_helm_titanium
+  ITEMNEWBIE=i_platemail_arms_titanium
+  ITEMNEWBIE=i_platemail_gorget_titanium
+  ITEMNEWBIE=i_platemail_chest_titanium
+  ITEMNEWBIE=i_platemail_leggings_titanium
+  ITEMNEWBIE=i_halberd_adamantine
+  ITEMNEWBIE=i_CAPE
+  COLOR=07a1
+  ITEMNEWBIE=i_robe
+  COLOR=01
+  ITEM= i_gold,{150 300}
+
+ON=@NPCRESTOCK
+  ITEMNEWBIE=i_mt_ostard_zostrich
+  COLOR=07fff
+  RETURN 1
+
+[CHARDEF c_h_mirrorsnake]
+ID=C_MAN
+NAME=Snake
+SOUND=snd_HUMAN_M_DIE_01
+AVERSIONS=t_TRAP,t_eerie_stuff
+TEVENTS=e_all_npc
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Mirror Images
+DESCRIPTION=Snake
+
+ON=@DEATH
+  VAR.SUCCUBUS=(0<VAR.SUCCUBUS> +1) // This line is to add one kill to the succubus summon
+  FINDLAYER(layer_horse).remove
+  
+ON=@Create
+  COLOR=00655
+  STR	= 122
+  DEX	= 95
+  INT	= 60
+  NPC	= brain_monster
+  FAME=2000
+  KARMA	= -6000
+  PARRYING	= 100.0
+  SWORDSMANSHIP	= 100.0
+  MAGICRESISTANCE=50.0
+  EVALUATINGINTEL= 60.0
+  TACTICS	= 100.0
+  ANATOMY       = 100.0
+  MAGERY        = 55.0
+
+  ITEMNEWBIE=i_platemail_gloves_titanium
+  ITEMNEWBIE=i_platemail_helm_titanium
+  ITEMNEWBIE=i_platemail_arms_titanium
+  ITEMNEWBIE=i_platemail_gorget_titanium
+	  ITEMNEWBIE=i_platemail_chest_titanium
+  ITEMNEWBIE=i_platemail_leggings_titanium
+  ITEMNEWBIE=i_sword_great_adamantine
+  ITEMNEWBIE=i_shield_heater_adamantine
+  ITEMNEWBIE=i_robe
+  COLOR=0005d
+  ITEM= i_gold,{150 300}
+
+ON=@NPCRESTOCK
+  ITEMNEWBIE=i_mt_horse_tan
+  COLOR=00061
+  RETURN 1
+ 
+[CHARDEF c_h_mirrormaugrim]
+ID=C_MAN
+NAME=Maugrim
+SOUND=snd_HUMAN_M_DIE_01
+AVERSIONS=t_TRAP,t_eerie_stuff
+TEVENTS=e_all_npc
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Mirror Images
+DESCRIPTION=Maugrim
+
+ON=@DEATH
+  VAR.SUCCUBUS=(0<VAR.SUCCUBUS> +1) // This line is to add one kill to the succubus summon
+  FINDLAYER(layer_horse).remove
+  
+ON=@Create
+  COLOR=00655
+  STR	= 118
+  DEX	= 100
+  INT	= 75
+  NPC	= brain_monster
+  FAME=2000
+  KARMA	= -6000
+  PARRYING	= 100.0
+  MACEFIGHTING	= 100.0
+  MAGICRESISTANCE=75.0
+  EVALUATINGINTEL= 100.0
+  TACTICS	= 100.0
+  ANATOMY       = 100.0
+
+  ITEMNEWBIE=i_platemail_gloves_titanium
+  ITEMNEWBIE=i_verite_plate_helm
+  ITEMNEWBIE=i_platemail_arms_titanium
+  ITEMNEWBIE=i_platemail_gorget_titanium
+  ITEMNEWBIE=i_tera_scale_tunic
+  ITEMNEWBIE=i_verite_platemail_leggings
+  ITEMNEWBIE=i_staff_quarter_cherry
+  ITEMNEWBIE=i_apron_half
+  COLOR=01
+  ITEMNEWBIE=i_dress_plain
+  COLOR=00486
+  ITEM= i_gold,{150 300}
+
+ON=@NPCRESTOCK
+  ITEMNEWBIE=i_mt_ostard_zostrich
+  COLOR=0005d
+  RETURN 1
+
+[CHARDEF c_h_mirrorsephiroth]
+ID=C_MAN
+NAME=Sephiroth
+SOUND=snd_HUMAN_M_DIE_01
+AVERSIONS=t_TRAP,t_eerie_stuff
+TEVENTS=e_all_npc
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Mirror Images
+DESCRIPTION=Sephiroth
+
+ON=@DEATH
+  VAR.SUCCUBUS=(0<VAR.SUCCUBUS> +1) // This line is to add one kill to the succubus summon
+  FINDLAYER(layer_horse).remove
+  
+ON=@Create
+  COLOR=00655
+  STR	= 120
+  DEX	= 100
+  INT	= 55
+  NPC	= brain_monster
+  FAME=2000
+  KARMA	= -6000
+  SWORDSMANSHIP	= 100.0
+  MAGICRESISTANCE=75.0
+  EVALUATINGINTEL= 85.0
+  TACTICS	= 100.0
+  ANATOMY       = 100.0
+  MAGERY        = 75.0
+  ITEMNEWBIE=i_hair_long
+  COLOR=07a1
+
+
+  ITEMNEWBIE=i_platemail_gloves_titanium
+  ITEMNEWBIE=i_platemail_helm_titanium
+  ITEMNEWBIE=i_platemail_arms_titanium
+  ITEMNEWBIE=i_platemail_gorget_titanium
+  ITEMNEWBIE=i_platemail_chest_titanium
+  ITEMNEWBIE=i_platemail_leggings_titanium
+  ITEMNEWBIE=i_sword_broad_adamantine
+  NAME=Masamune
+  COLOR=00481
+  ITEMNEWBIE=i_CAPE
+  COLOR=01
+  ITEMNEWBIE=01ffe
+  COLOR=01
+  ITEM= i_gold,{150 300}
+
+ON=@NPCRESTOCK
+  ITEMNEWBIE=i_mt_horse_tan
+  RETURN 1
+
+[CHARDEF c_h_mirrorslash]
+ID=C_MAN
+NAME=Slash
+SOUND=snd_HUMAN_M_DIE_01
+AVERSIONS=t_TRAP,t_eerie_stuff
+T
+TEVENTS=e_all_npc
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Mirror Images
+DESCRIPTION=Slash
+
+ON=@DEATH
+  VAR.SUCCUBUS=(0<VAR.SUCCUBUS> +1) // This line is to add one kill to the succubus summon
+  FINDLAYER(layer_horse).remove
+  
+ON=@Create
+  COLOR=00655
+  STR	= 135
+  DEX	= 107
+  INT	= 75
+  NPC	= brain_monster
+  FAME=2000
+  KARMA	= -6000
+  PARRYING      = 100.0
+  MACEFIGHTING	= 100.0
+  MAGICRESISTANCE=60.0
+  EVALUATINGINTEL= 85.0
+  TACTICS	= 100.0
+  ANATOMY       = 100.0
+  MAGERY        = 100.0
+
+
+  ITEMNEWBIE=i_platemail_gloves_titanium
+  ITEMNEWBIE=i_platemail_arms_titanium
+  ITEMNEWBIE=i_platemail_gorget_titanium
+  ITEMNEWBIE=i_platemail_chest_titanium
+  ITEMNEWBIE=i_platemail_leggings_titanium
+  ITEMNEWBIE=i_maul_adamantine
+  ITEMNEWBIE=i_shield_chaos
+  ITEMNEWBIE=i_CAPE
+  COLOR=01
+  ITEMNEWBIE=01ffe
+  COLOR=01
+  ITEM= i_gold,{150 300}
+
+ON=@NPCRESTOCK
+  ITEMNEWBIE=i_mt_horse_tan
+  RETURN 1
+
+[CHARDEF c_h_mirrornim]
+ID=C_MAN
+NAME=NIM
+SOUND=snd_HUMAN_M_DIE_01
+AVERSIONS=t_TRAP,t_eerie_stuff
+T
+TEVENTS=e_all_npc
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Mirror Images
+DESCRIPTION=NIM
+
+ON=@DEATH
+  VAR.SUCCUBUS=(0<VAR.SUCCUBUS> +1) // This line is to add one kill to the succubus summon
+  FINDLAYER(layer_horse).remove
+  
+ON=@Create
+  COLOR=00655
+  STR	= 110
+  DEX	= 100
+  INT	= 65
+  NPC	= brain_monster
+  FAME=2000
+  KARMA	= -6000
+  PARRYING      = 95.0
+  SWORDSMANSHIP	= 100.0
+  MAGICRESISTANCE=35.0
+  EVALUATINGINTEL= 50.0
+  TACTICS	= 97.0
+  ANATOMY       = 90.0
+  MAGERY        = 85.0
+  HIDING        = 40.0
+  ITEMNEWBIE=i_hair_long
+  COLOR=07a1
+  ITEMNEWBIE=i_bone_helmet
+  COLOR=01
+  ITEMNEWBIE=i_platemail_gloves_titanium
+  ITEMNEWBIE=i_platemail_arms_titanium
+  ITEMNEWBIE=i_platemail_gorget_titanium
+  ITEMNEWBIE=i_platemail_chest_titanium
+  ITEMNEWBIE=i_platemail_leggings_titanium
+  ITEMNEWBIE=i_sword_broad_adamantine
+  ITEMNEWBIE=i_shield_chaos
+  ITEMNEWBIE=i_robe
+  COLOR=01
+  ITEM= i_gold,{150 300}
+
+ON=@NPCRESTOCK
+  ITEMNEWBIE=i_mt_horse_tan
+  COLOR=0263
+  RETURN 1
+
+[CHARDEF c_h_mirrormagar]
+ID=C_MAN
+NAME=Magar
+SOUND=snd_HUMAN_M_DIE_01
+AVERSIONS=t_TRAP,t_eerie_stuff
+T
+TEVENTS=e_all_npc
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Mirror Images
+DESCRIPTION=Magar
+
+ON=@DEATH
+  VAR.SUCCUBUS=(0<VAR.SUCCUBUS> +1) // This line is to add one kill to the succubus summon
+  FINDLAYER(layer_horse).remove
+  
+ON=@Create
+  COLOR=00655
+  STR	= 101
+  DEX	= 100
+  INT	= 75
+  NPC	= brain_monster
+  FAME=2000
+  KARMA	= -6000
+  PARRYING      = 100.0
+  SWORDSMANSHIP	= 100.0
+  MAGICRESISTANCE=100.0
+  EVALUATINGINTEL= 100.0
+  TACTICS	= 100.0
+  ANATOMY       = 100.0
+  MAGERY        = 100.0
+  HIDING        = 100.0
+  ITEMNEWBIE=i_hair_long
+  COLOR=07a1
+  ITEMNEWBIE=i_platemail_gloves_titanium
+  ITEMNEWBIE=i_platemail_arms_titanium
+  ITEMNEWBIE=i_platemail_gorget_titanium
+  ITEMNEWBIE=i_ranger_leather_tunic
+  ITEMNEWBIE=i_platemail_leggings_titanium
+  ITEMNEWBIE=i_sword_broad_adamantine
+  ITEMNEWBIE=i_shield_heater_adamantine
+  ITEM= i_gold,{150 300}
+
+ON=@NPCRESTOCK
+  ITEMNEWBIE=i_mt_horse_tan
+  RETURN 1
+
+
+//-------------------------------------Succubus Champion One---------------------------------------
+
+
+[CHARDEF c_h_championtiffany]
+ID=C_WOMAN
+NAME=Tiffany
+SOUND=snd_HUMAN_M_DIE_01
+AVERSIONS=t_TRAP,t_eerie_stuff
+TEVENTS=e_all_npc
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Succubus - Tiffany
+
+ON=@Death
+        FINDLAYER(layer_horse).remove
+	NEWITEM i_transform_smoke
+	SRC.ACT.P	= <P>
+		
+	NEWNPC c_champion_succubus
+	SRC.ACT.P = <P>
+	
+	RETURN 0
+
+ON=@Create
+  COLOR=00655
+  STR	= 100
+  DEX	= 100
+  INT	= 75
+  NPC	= brain_monster
+  FAME=2000
+  KARMA	= -6000
+  MAGERY	= 40.0
+  EVALUATINGINTEL       = 100.0
+  ITEMNEWBIE=i_spellbook
+  COLOR=0782
+  ITEMNEWBIE=i_surcoat_army
+  COLOR=0486
+  ITEMNEWBIE=i_hat_wizards
+  COLOR=0486
+  ITEMNEWBIE=i_boots_calf
+  COLOR=0486
+
+ON=@NPCRESTOCK
+  ITEMNEWBIE=i_mt_ostard_zostrich
+  COLOR=07fff
+
+
+//-------------------------------------Succubus Champion Two---------------------------------------
+
+
+[CHARDEF c_champion_succubus]
+DEFNAME=c_champion_succubus
+NAME=Succubus
+ID=c_harpy
+SOUND=snd_MONSTER_DAEMON1
+ICON=i_pet_harpy
+DAM=10,23
+ARMOR=120
+
+//ALIGNMENT=EVIL
+CAN=MT_WALK|MT_FLY
+TEVENTS=e_npc_daemon
+TEVENTS=e_npc_harpy
+TEVENTS=e_all_npc
+DESIRES=i_gold
+AVERSIONS=r_water,r_mountains
+
+ON=@Create
+COLOR=00671
+STR={2785 2985}
+DEX={575 255}
+INT={455 555}
+FAME= 7000
+KARMA= -8000
+PARRYING={90.0 100.0}
+MAGERY={120.0 140.0}
+TACTICS={120.0 150.0}
+WRESTLING={150.0 200.0}
+EVALUATINGINTEL={90.0 110.0}
+
+ITEMNEWBIE=i_spellbook
+ADDSPELL=s_flamestrike
+
+NPC=brain_monster
+
+ON=@NPCRestock
+ITEM=tp_loot_succubus
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Succubus Champion
+
+[TEMPLATE tp_loot_succubus]
+DEFNAME=tp_loot_succubus
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champion Templates
+DESCRIPTION=Succubus Template
+CONTAINER=i_backpack
+ITEM=i_final_champion_succubus
+ITEM=i_gold,{10000 12000}
+
+
+//---------------------------Bloodthirster - Lvl 1 Elemental Spawn Group---------------------------
+
+
+[CHARDEF c_bloodthirster_earth_level1]
+// Should eat metals and ores.
+ID=c_elem_earth
+NAME=Earth Elemental
+SOUND=snd_ELEMENTL_ERTHEL1
+ICON=i_pet_elem_earth
+ANIM=079c7f
+DAM=5,20
+ARMOR=17
+RESOURCES=8 tm_rocks
+CAN=MT_WALK|MT_GHOST
+TEVENTS=e_all_npc
+FOODTYPE=15 t_arock,t_coin,t_ore,t_ingot
+DESIRES=r_caves
+BLOODCOLOR=colors_brown
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champ Elementals
+DESCRIPTION=Earth Elemental Level 1
+
+ON=@Create
+NPC=brain_monster
+FAME={1000 6000}
+KARMA={-3000 -3999}
+
+//ALIGNMENT=EVIL
+STR={125 155}
+DEX={66 85}
+INT={71 92}
+
+PARRYING={40.0 65.0}
+MAGICRESISTANCE={50.0 95.0}
+TACTICS={60.0 100.0}
+WRESTLING={60.0 100.0}
+MINING=80.0
+
+ON=@NPCRestock
+ITEM=i_gold
+
+ON=@DEATH
+  VAR.BLOODTHIRSTER.LEVEL_ONE=(0<VAR.BLOODTHIRSTER.LEVEL_ONE> +1) // This line is to add one kill to the first bloodthirster spawn group - basic elementals
+
+[CHARDEF c_bloodthirster_scorpion_level1]
+ID=c_scorpion_giant
+NAME=Giant Scorpion
+SOUND=snd_MONSTER_GSCORP1
+ICON=i_pet_SCORP
+ANIM=078c7f
+CAN=MT_WALK
+TEVENTS=e_all_npc
+DAM=3,12
+ARMOR=14
+RESOURCES=8 i_ribs_raw
+FOODTYPE=15 t_meat_raw
+AVERSIONS=r_civilization
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champ Elementals
+DESCRIPTION=Scorpion Level 1
+
+ON=@Create
+NPC=brain_monster
+
+STR={93 135}
+DEX={86 95}
+INT={16 30}
+
+PARRYING={60.0 70.0}
+MAGICRESISTANCE={30.0 35.0}
+TACTICS={60.0 75.0}
+WRESTLING={50.0 65.0}
+POISONING={80.0 100.0}
+TAMING=60.0
+
+FAME={100 2000}
+KARMA={-2000 -2999}
+//ALIGNMENT=EVIL
+
+ON = @EnvironChange
+   if ( <FLAGS> & statf_conjured )
+      POISONING = 0
+   endif
+
+ON=@DEATH
+  VAR.BLOODTHIRSTER.LEVEL_ONE=(0<VAR.BLOODTHIRSTER.LEVEL_ONE> +1) // This line is to add one kill to the first bloodthirster spawn group - basic elementals
+
+//---------------------------Bloodthirster - Lvl 2 Elemental Spawn Group---------------------------
+
+
+[CHARDEF c_bloodthirster_air_level2]
+ID=c_elem_air
+NAME=Air Elemental
+SOUND=snd_ELEMENTL_AIRELEM1
+ICON=i_pet_elem_air
+ANIM=079dff
+DAM=5,13
+ARMOR=30
+CAN=MT_WALK|MT_FLY
+TEVENTS=e_all_npc
+FOODTYPE=
+DESIRES=r_mountains
+BLOODCOLOR=colors_white
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champ Elementals
+DESCRIPTION=Air Elemental Level 2
+
+ON=@Create
+NPC=brain_monster
+FAME={1000 6000}
+KARMA={-4000 -4999}
+
+//ALIGNMENT=EVIL
+STR={125 155}
+DEX={165 185}
+INT={71 95}
+
+PARRYING={65.0 75.0}
+MAGERY={60.0 75.0}
+MAGICRESISTANCE={60.0 75.0}
+TACTICS={60.0 80.0}
+WRESTLING={60.0 80.0}
+//SPELLCIRCLES=3 7
+
+ON=@NPCRestock
+ITEM=i_gold
+
+ON=@DEATH
+  VAR.BLOODTHIRSTER.LEVEL_TWO=(0<VAR.BLOODTHIRSTER.LEVEL_TWO> +1) // This line is to add one kill to the second bloodthirster spawn group
+
+[CHARDEF c_bloodthirster_earth_level2]
+// Should eat metals and ores.
+ID=c_elem_earth
+NAME=Earth Elemental
+SOUND=snd_ELEMENTL_ERTHEL1
+ICON=i_pet_elem_earth
+ANIM=079c7f
+DAM=5,20
+ARMOR=17
+RESOURCES=8 tm_rocks
+CAN=MT_WALK|MT_GHOST
+TEVENTS=e_all_npc
+FOODTYPE=15 t_arock,t_coin,t_ore,t_ingot
+DESIRES=r_caves
+BLOODCOLOR=colors_brown
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champ Elementals
+DESCRIPTION=Earth Elemental Level 2
+
+ON=@Create
+NPC=brain_monster
+FAME={1000 6000}
+KARMA={-3000 -3999}
+
+//ALIGNMENT=EVIL
+STR={125 155}
+DEX={66 85}
+INT={71 92}
+
+PARRYING={40.0 65.0}
+MAGICRESISTANCE={50.0 95.0}
+TACTICS={60.0 100.0}
+WRESTLING={60.0 100.0}
+MINING=80.0
+
+ON=@NPCRestock
+ITEM=i_gold
+
+ON=@DEATH
+  VAR.BLOODTHIRSTER.LEVEL_TWO=(0<VAR.BLOODTHIRSTER.LEVEL_TWO> +1) // This line is to add one kill to the second bloodthirster spawn group
+
+[CHARDEF c_bloodthirster_fire_level2]
+NAME=Fire Elemental
+ID=c_elem_fire
+SOUND=snd_ELEMENTL_FIRELEM1
+ICON=i_pet_elem_fire
+ANIM=079dff
+DAM=4,12
+ARMOR=20
+RESOURCES=8 t_MAGIC
+CAN=MT_WALK|MT_FIRE_IMMUNE|MT_RUN|MT_USEHANDS
+TEVENTS=e_all_npc
+FOODTYPE=t_fire
+DESIRES=t_LAVA
+BLOODCOLOR=colors_red
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champ Elementals
+DESCRIPTION=Fire Elemental Level 2
+
+ON=@Create
+NPC=brain_monster
+
+STR={125 155}
+DEX={165 185}
+INT={71 95}
+
+PARRYING={55.0 65.0}
+MAGERY={60.0 75.0}
+MAGICRESISTANCE={60.0 75.0}
+TACTICS={80.0 100.0}
+WRESTLING={70.0 100.0}
+
+FAME={1000 6000}
+KARMA={-4000 -4999}
+
+//ALIGNMENT=EVIL
+//SPELLCIRCLE=3 5
+
+ITEMNEWBIE=i_light_source
+ITEMNEWBIE=i_spellbook	// knows fire type spells.
+ADDSPELL=s_fire_field
+ADDSPELL=s_explosion
+ADDSPELL=s_flamestrike
+ADDSPELL=s_meteor_swarm
+ADDSPELL=s_summon_elem_fire
+
+ON=@NPCRestock
+ITEM=i_gold
+
+ON=@Death
+// Create death explosion to damage those nearby.
+VAR.BLOODTHIRSTER.LEVEL_TWO=(0<VAR.BLOODTHIRSTER.LEVEL_TWO> +1) // This line is to add one kill to the second bloodthirster spawn group
+NEWITEM=i_fx_explode
+act.TYPE=T_EXPLOSION
+act.ATTR=ATTR_MOVE_NEVER | ATTR_CAN_DECAY
+act.LINK=<uid>
+act.morex=10 // damage
+act.morey=090 // wFlags DAMAGE_GENERAL
+act.morez=2 // iDist
+act.p=<p>
+act.TIMERD=1 // immediate decay
+
+[CHARDEF c_bloodthirster_water_level2]
+NAME=Water Elemental
+ID=c_elem_water
+SOUND=snd_ELEMENTL_WATREL1
+ICON=i_pet_elem_water
+ANIM=079dff
+DAM=4,12
+ARMOR=20
+RESOURCES=8 t_MAGIC
+CAN=MT_WALK|MT_SWIM|MT_USEHANDS
+TEVENTS=e_all_npc
+FOODTYPE=t_water_wash
+DESIRES=r_WATER
+BLOODCOLOR=colors_blue
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champ Elementals
+DESCRIPTION=Water Elemental Level 2
+
+ON=@Create
+NPC=brain_monster
+FAME={1000 6000}
+KARMA={-3000 -3999}
+
+STR={125 155}
+DEX={66 85}
+INT={71 95}
+
+PARRYING={55.0 65.0}
+MAGERY={60.0 75.0}
+MAGICRESISTANCE={60.0 75.0}
+TACTICS={55.0 65.0}
+WRESTLING={70.0 90.0}
+
+//ALIGNMENT=EVIL
+//SPELLCIRCLES=3 7
+
+ON=@NPCRestock
+ITEM=i_gold
+
+ON=@Death
+VAR.BLOODTHIRSTER.LEVEL_TWO=(0<VAR.BLOODTHIRSTER.LEVEL_TWO> +1) // This line is to add one kill to the second bloodthirster spawn group
+
+
+//--------------------------Bloodthirster - Lvl 3 Elemental Spawn Group----------------------------
+
+[CHARDEF c_bloodthirster_air_level3]
+ID=c_elem_air
+NAME=Air Elemental
+SOUND=snd_ELEMENTL_AIRELEM1
+ICON=i_pet_elem_air
+ANIM=079dff
+DAM=5,13
+ARMOR=30
+CAN=MT_WALK|MT_FLY
+TEVENTS=e_all_npc
+FOODTYPE=
+DESIRES=r_mountains
+BLOODCOLOR=colors_white
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champ Elementals
+DESCRIPTION=Air Elemental Level 3
+
+ON=@Create
+NPC=brain_monster
+FAME={1000 6000}
+KARMA={-4000 -4999}
+
+//ALIGNMENT=EVIL
+STR={125 155}
+DEX={165 185}
+INT={71 95}
+
+PARRYING={65.0 75.0}
+MAGERY={60.0 75.0}
+MAGICRESISTANCE={60.0 75.0}
+TACTICS={60.0 80.0}
+WRESTLING={60.0 80.0}
+//SPELLCIRCLES=3 7
+
+ON=@NPCRestock
+ITEM=i_gold
+
+ON=@DEATH
+  VAR.BLOODTHIRSTER.LEVEL_THREE=(0<VAR.BLOODTHIRSTER.LEVEL_THREE> +1) // This line is to add one kill to the first bloodthirster spawn group - basic elementals
+
+[CHARDEF c_bloodthirster_ice_level3]
+NAME=Ice Elemental
+ID=c_elem_earth
+SOUND=snd_ELEMENTL_ERTHEL1
+ICON=i_pet_elem_earth
+DAM=5,26
+ARMOR=20
+CAN=MT_WALK
+TEVENTS=e_all_npc
+RESOURCES=8 t_magic
+DESIRES=r_caves
+
+ON=@Create
+COLOR=color_ice
+STR={155 185}
+DEX={86 115}
+INT={170 192}
+//ALIGNMENT=EVIL
+
+PARRYING={40.0 65.0}
+MAGICRESISTANCE={40.0 95.0}
+TACTICS={70.0 100.0}
+WRESTLING={60.0 100.0}
+
+NPC=brain_monster
+
+FAME={100 2000}
+KARMA={-3000 -3999}
+
+ON=@NPCRestock
+ITEM=i_gold
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champ Elementals
+DESCRIPTION=Ice Elemental Level 3
+
+ON=@Death
+VAR.BLOODTHIRSTER.LEVEL_THREE=(0<VAR.BLOODTHIRSTER.LEVEL_THREE> +1) // This line is to add one kill to the second bloodthirster spawn group - higher elementals
+
+[CHARDEF c_bloodthirster_poison]
+NAME=Poison Elemental
+ID=c_elem_air
+SOUND=snd_ELEMENTL_WATREL1
+ICON=i_pet_elem_air
+CAN=MT_WALK
+TEVENTS=e_all_npc
+DAM=9,31
+ARMOR=35
+RESOURCES=3 t_magic
+DESIRES=r_dungeon_rock
+
+ON=@Create
+NPC=brain_monster
+COLOR=colors_poison
+STR={425 515}
+DEX={165 185}
+INT={360 435}
+
+PARRYING={75.0 85.0}
+MAGERY={80.0 95.0}
+MAGICRESISTANCE={80.0 95.0}
+TACTICS={80.0 100.0}
+WRESTLING={70.0 90.0}
+
+FAME={100 2000}
+KARMA={-5000 -5999}
+
+
+ITEMNEWBIE=i_spellbook	// knows fire type spells.
+ADDSPELL=s_poison
+ADDSPELL=s_clumsy
+ADDSPELL=s_paralyze
+
+ON=@NPCRestock
+ITEM=i_gold
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champ Elementals
+DESCRIPTION=Poison Elemental Level 3
+
+ON=@Death
+VAR.BLOODTHIRSTER.LEVEL_THREE=(0<VAR.BLOODTHIRSTER.LEVEL_THREE> +1) // This line is to add one kill to the second bloodthirster spawn group - higher elementals
+
+
+//--------------------------Bloodthirster - Lvl 4 Elemental Spawn Group----------------------------
+
+
+[CHARDEF c_bloodthirster_snow_level4]
+NAME=Snow Elemental
+ID=c_elem_earth
+SOUND=snd_ELEMENTL_AIRELEM1
+ICON=i_pet_elem_earth
+DAM=4,24
+ARMOR=25
+TEVENTS=e_all_npc
+RESOURCES=8 t_magic
+DESIRES=r_mountains
+
+ON=@Create
+NPC=brain_monster
+COLOR=color_snow
+STR={325 355}
+DEX={165 185}
+INT={71 95}
+
+PARRYING={65.0 75.0}
+MAGICRESISTANCE={60.0 75.0}
+TACTICS={80.0 100.0}
+WRESTLING={80.0 100.0}
+
+FAME={100 2000}
+KARMA={-4000 -4999}
+
+//ALIGNMENT=EVIL
+
+ON=@NPCRestock
+ITEM=i_gold
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champ Elementals
+DESCRIPTION=Snow Elemental Level 4
+
+ON=@Death
+VAR.BLOODTHIRSTER.LEVEL_FOUR=(0<VAR.BLOODTHIRSTER.LEVEL_FOUR> +1) // This line is to add one kill to the second bloodthirster spawn group - higher elementals
+
+[CHARDEF c_bloodthirster_blood_level4]
+NAME=Blood Elemental
+ID=c_elem_water
+SOUND=snd_ELEMENTL_WATREL1
+DAM=4,43
+ARMOR=50
+RESOURCES=
+CAN=MT_WALK
+TEVENTS=e_all_npc
+DESIRES=r_dungeon_rock
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champ Elementals
+DESCRIPTION=Blood Elemental Level 4
+
+ON=@Create
+NPC=BRAIN_MONSTER
+COLOR=colors_blood
+STR={900 1000}
+DEX={80 185}
+INT={190 315}
+
+
+PARRYING={85.0 95.0}
+MAGERY={85.0 100.0}
+MAGICRESISTANCE={80.0 95.0}
+TACTICS={80.0 100.0}
+WRESTLING={80.0 100.0}
+
+FAME={1000 2000}
+KARMA={-5000 -5999}
+
+ITEMNEWBIE=i_spellbook	// knows fire type spells.
+ADDSPELL=s_weaken
+ADDSPELL=s_clumsy
+
+ON=@NPCRestock
+ITEM=i_gold
+
+ON=@Death
+VAR.BLOODTHIRSTER.LEVEL_FOUR=(0<VAR.BLOODTHIRSTER.LEVEL_FOUR> +1) // This line is to add one kill to the second bloodthirster spawn group - higher elementals
+
+
+//-------------------------------------Bloodthirster Champion--------------------------------------
+
+
+[CHARDEF c_champion_bloodthirster]
+DEFNAME=c_champion_bloodthirster
+NAME=Bloodthirster
+ID=c_DAEMON_W_SWORD
+SOUND=snd_MONSTER_DAEMON1
+ICON=i_pet_dragon
+DAM=11,21
+ARMOR=160
+RESOURCES=8 i_reag_daemon_bone
+
+//ALIGNMENT=EVIL
+CAN=MT_WALK|MT_FLY
+TEVENTS=e_npc_daemon
+TEVENTS=e_all_npc
+DESIRES=c_DAEMON,i_gold,t_wand
+AVERSIONS=r_water,r_mountains
+
+ON=@Create
+COLOR=00747
+STR={5000 5005}
+DEX={575 255}
+INT={15 25}
+FAME= 8000
+KARMA= -9000
+
+PARRYING={90.0 100.0}
+MAGERY={120.0 140.0}
+TACTICS={120.0 150.0}
+WRESTLING={100.0 110.0}
+EVALUATINGINTEL={90.0 110.0}
+
+ITEMNEWBIE=i_spellbook
+ADDSPELL=s_summon_daemon
+ADDSPELL=s_flamestrike
+
+NPC=brain_monster
+
+ON=@NPCRestock
+ITEM=tp_loot_bloodthirster
+ITEM=loot_newrares_hard
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champions
+DESCRIPTION=Bloodthirster Champion
+
+[TEMPLATE tp_loot_bloodthirster]
+DEFNAME=tp_loot_bloodthirster
+CATEGORY=Wigifer MPZ
+SUBSECTION=Champion Templates
+DESCRIPTION=Bloodthirster Template
+CONTAINER=i_backpack
+ITEM=i_final_champion_bloodthirster
+ITEM=random_potion
+ITEM={ random_scroll 1 0 1 }
+ITEM=i_gold,{15000 25000}
+
+
+//-----------------------------------Final Champion Skull Group------------------------------------
+
+
+[ITEMDEF i_final_champion_succubus]
+ID=01ae4
+NAME=Skull of Deception
+
+ON=@CREATE
+COLOR=0073
+
+
+[ITEMDEF i_final_champion_bloodthirster]
+ID=01ae4
+NAME=Skull of Elements
+
+ON=@CREATE
+COLOR=0126
+
+
+//-----------------------------------Champion Title Memory Item------------------------------------
+
+
+[ITEMDEF i_champion_signup]
+ID=01ae4
+NAME=Double click me to join the champion challenge and reward scheme!
+
+ON=@CREATE
+COLOR=0126
+
+ON=@DCLICK
+IF <SRC.RESTEST i_champion_bloodthirster_title>
+SRC.SYSMESSAGE You are already signed up for the bloodthirster.
+SRC.SYSMESSAGE Further registration not required for bloodthirster.
+ELSE
+   SRC.NEWITEM i_champion_bloodthirster_title
+   SRC.ACT.EQUIP
+ENDIF
+IF <SRC.RESTEST i_champion_succubus_title>
+SRC.SYSMESSAGE You are already signed up for the succubus.
+SRC.SYSMESSAGE Further registration not required for succubus.
+ELSE
+   SRC.NEWITEM i_champion_succubus_title
+   SRC.ACT.EQUIP
+ENDIF
+REMOVE
+RETURN 1
+
+
+[ITEMDEF i_champion_succubus_title]
+NAME    = Succubus Title
+ID	= i_memory
+TYPE	= t_eq_script
+LAYER	= layer_special
+
+ON=@CREATE
+TIMER=604800
+
+ON=@TIMER
+SRC.TAG.SUCCUBUSTITLE=(0<SRC.TAG.SUCCUBUSTITLE>-1)
+IF (0<SRC.TAG.SUCCUBUSTITLE>=0)
+   SRC.SYSMESSAGE You feel the victorys over the Succubus leave you entirely...   
+ELSEIF (0<SRC.TAG.SUCCUBUSTITLE>=2)
+   SRC.TITLE
+ELSEIF (0<ACT.TAG.SUCCUBUSTITLE>=5)
+   SRC.TITLE Scourge of Dopplegangers
+ELSEIF (0<SRC.TAG.SUCCUBUSTITLE>=11)
+   SRC.TITLE Slayer of Dopplegangers
+ENDIF
+TIMER=604800
+RETURN 1
+
+
+[ITEMDEF i_champion_bloodthirster_title]
+NAME    = Bloodthirster Title
+ID	= i_memory
+TYPE	= t_eq_script
+LAYER	= layer_special
+
+ON=@CREATE
+TIMER=604800
+
+ON=@TIMER
+SRC.TAG.BLOODTHIRSTERTITLE=(0<TAG.BLOODTHIRSTERTITLE>-1)
+IF (0<TAG.BLOODTHIRSTERTITLE>=0)
+   SRC.SYSMESSAGE You feel the victorys over the Bloodthirster leave you entirely...
+ELSEIF (0<TAG.BLOODTHIRSTERTITLE>=2)
+   SRC.TITLE
+ELSEIF (0<TAG.BLOODTHIRSTERTITLE>=5)
+   SRC.TITLE Vanquisher of the Elements
+ELSEIF (0<TAG.BLOODTHIRSTERTITLE>=11)
+   SRC.TITLE Master of the Elements
+ENDIF
+TIMER=604800
+RETURN 1
+
+[EOF]

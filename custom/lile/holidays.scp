@@ -1,0 +1,617 @@
+[TEMPLATE loot_leprechaun]
+CATEGORY=Imperial uo
+SUBSECTION=St. Patricks Day Item Templates
+DESCRIPTION=The Leprechaun Loot
+CONTAINER=i_bag
+ITEM=i_gold,{1000 3000}
+ITEM=i_merc_contract3,{1 2}
+ITEM={i_green_dye 1 0 4}
+ITEM={i_irish_bacon 1 0 4}
+ITEM={i_saint_patrick_shoes 1 0 50}
+ITEM={i_saint_patrick_pants 1 0 50}
+ITEM={i_saint_patrick_shirt 1 0 50}
+ITEM={i_saint_patrick_hat 1 0 50}
+ITEM={i_pvptoken 1 0 10}
+ITEM={i_saint_patrick_special_shoes 1 0 500}
+ITEM={i_saint_patrick_special_pants 1 0 500}
+ITEM={i_saint_patrick_special_shirt 1 0 500}
+ITEM={i_saint_patrick_special_hat 1 0 500}
+ITEM={i_saint_patrick_lost_hat 1 0 500}
+
+
+[TEMPLATE loot_leprechaun_super]
+CATEGORY=Imperial uo
+SUBSECTION=St. Patricks Day Item Templates
+DESCRIPTION=The Leprechaun Loot Super
+CONTAINER=i_bag
+ITEM=i_gold,{3000 6000}
+ITEM=i_merc_contract3,{1 2}
+ITEM={i_green_dye 1 0 4}
+ITEM={i_irish_bacon 1 0 4}
+ITEM={i_saint_patrick_shoes 1 0 20}
+ITEM={i_saint_patrick_pants 1 0 20}
+ITEM={i_saint_patrick_shirt 1 0 20}
+ITEM={i_saint_patrick_hat 1 0 20}
+ITEM={i_pvptoken 1 0 1}
+ITEM={i_saint_patrick_special_shoes 1 0 200}
+ITEM={i_saint_patrick_special_pants 1 0 200}
+ITEM={i_saint_patrick_special_shirt 1 0 200}
+ITEM={i_saint_patrick_special_hat 1 0 200}
+ITEM={i_saint_patrick_lost_hat 1 0 200}
+
+/Shoes
+
+[ITEMDEF i_saint_patrick_shoes]
+DEFNAME=i_saint_patrick_shoes
+ID=0170f
+NAME=Saint Patrick's Shoes
+WEIGHT=1
+TYPE=T_CLOTHING
+ARMOR=1
+VALUE=44
+CATEGORY=Imperial uo
+SUBSECTION=St. Patricks Day Items
+DESCRIPTION=Saint Patrick's Shoes
+
+ON=@Create
+COLOR=0a8
+HITPOINTS={50 60}
+TAG.LUCK = 20
+
+/Pants
+
+[ITEMDEF i_saint_patrick_pants]
+DEFNAME=i_saint_patrick_pants
+ID=01539
+NAME=Saint Patrick's Pants
+WEIGHT=1
+TYPE=T_CLOTHING
+ARMOR=1
+VALUE=26
+CATEGORY=Imperial uo
+SUBSECTION=St. Patricks Day Items
+DESCRIPTION=Saint Patrick's Pants
+
+ON=@Create
+COLOR=0a8
+HITPOINTS={50 60}
+TAG.LUCK = 20
+
+/Shirt
+
+[ITEMDEF i_saint_patrick_shirt]
+DEFNAME=i_saint_patrick_shirt
+ID=01517
+NAME=Saint Patrick's Shirt
+WEIGHT=1
+TYPE=T_CLOTHING
+ARMOR=1
+VALUE=26
+CATEGORY=Imperial uo
+SUBSECTION=St. Patricks Day Items
+DESCRIPTION=Saint Patrick's Shirt
+
+ON=@Create
+COLOR=0a8
+HITPOINTS={50 60}
+TAG.LUCK = 20
+
+/Hat
+
+[ITEMDEF i_saint_patrick_hat]
+DEFNAME=i_saint_patrick_hat
+ID=0171a
+NAME=Saint Patrick's Hat
+WEIGHT=1
+TYPE=T_CLOTHING
+ARMOR=1
+VALUE=26
+CATEGORY=Imperial uo
+SUBSECTION=St. Patricks Day Items
+DESCRIPTION=Saint Patrick's Hat
+
+ON=@Create
+COLOR=0a8
+HITPOINTS={50 60}
+TAG.LUCK = 20
+
+
+/Special Hat
+
+[ITEMDEF i_saint_patrick_lost_hat]
+DEFNAME=i_saint_patrick_lost_hat
+ID=0171a
+NAME=Leprechaun's Lost Hat
+WEIGHT=1
+TYPE=T_CLOTHING
+ARMOR=1
+VALUE=26
+CATEGORY=Imperial uo
+SUBSECTION=St. Patricks Day Items
+DESCRIPTION=Leprechaun's Lost Hat
+
+ON=@Create
+COLOR=0795
+HITPOINTS={50 60}
+TAG.LUCK = 100
+
+ON=@Equip
+src.meditation = <eval <src.meditation> + 10>
+
+ON=@Unequip
+src.meditation = <eval <src.meditation> - 10>
+
+
+
+[ITEMDEF i_irish_bacon]
+ID=i_bacon_slice
+NAME=Irish Bacon
+WEIGHT=1
+TYPE=T_FOOD
+VALUE=82
+TDATA4=3
+
+CATEGORY=Imperial uo
+SUBSECTION=St. Patricks Day Items
+DESCRIPTION=Irish Bacon
+
+ON=@CREATE
+COLOR=0795
+
+ON=@DCLICK
+IF <src.findid.i_irish_bacon_eating.uid> 
+	SRC.SYSMESSAGE You can't eat another bacon yet or you'll be sick!
+	RETURN 1
+ELSEIF (<SRC.FOOD> > 14)
+	SRC.SYSMESSAGE You are too full to eat anymore.
+	RETURN 1
+ENDIF
+IF (<TDATA4> >1)
+	SRC.EMOTE eat the <NAME>
+	SRC.FOOD = <EVAL (<src.food> + <TDATA4>)>
+ENDIF
+
+SERV.NEWITEM=i_irish_bacon_eating
+NEW.ACT.CONT=<SRC.UID>
+SRC.SYSMESSAGE You eat the irish bacon and feel energized...
+SRC.MODDEX=<eval <SRC.MODDEX> + 5>
+SRC.MODSTR=<eval <SRC.MODSTR> + 5>
+SRC.MODDEX=<eval <SRC.MODINT> + 5>
+
+
+IF ( <SRC.FOOD> < 2 )
+	SRC.SYSMESSAGE You still feel starving.
+	ELSEIF ( <SRC.FOOD> < 4 )
+	SRC.SYSMESSAGE You still feel very hungry.
+	ELSEIF ( <SRC.FOOD> < 6 )
+	SRC.SYSMESSAGE You still feel hungry.
+	ELSEIF ( <SRC.FOOD> < 8 )
+	SRC.SYSMESSAGE You still feel a little hungry.
+	ELSEIF ( <SRC.FOOD> < 10 )
+	SRC.SYSMESSAGE You dont't feel hungry anymore.
+	ELSEIF ( <SRC.FOOD> < 12 )
+	SRC.SYSMESSAGE You feel fed.
+	ELSEIF ( <SRC.FOOD> < 14 )
+	SRC.SYSMESSAGE You feel well fed.
+	ELSE
+	SRC.SYSMESSAGE You feel absolutely stuffed
+ENDIF
+
+// Food HP calc
+LOCAL.MAXHITSPERFOOD = (<EVAL (<SRC.STR> + (<TDATA4>*6))>)
+IF ( <SRC.HITS> >= <LOCAL.MAXHITSPERFOOD> )
+	RETURN 1
+ENDIF
+SRC.HITS = <EVAL (<SRC.HITS> + (<TDATA4>*3))> 
+
+// Consume only one
+AMOUNT = <EVAL (<AMOUNT>-1)>
+IF (<AMOUNT> == 0)
+	REMOVE
+ENDIF
+RETURN 1
+
+
+[ITEMDEF i_irish_bacon_eating]
+ID=i_memory
+TYPE=t_eq_script
+NAME=Irish Bacon Consumed
+ON=@Create
+TIMER=600 // 10 minutes
+
+ON=@Timer
+CONT.MODDEX=<eval <CONT.MODDEX> - 5>
+CONT.MODDEX=<eval <CONT.MODSTR> - 5>
+CONT.MODDEX=<eval <CONT.MODINT> - 5>
+REMOVE
+RETURN 1
+
+
+
+
+
+[CHARDEF c_leprechaun_imp]
+DEFNAME=c_leprechaun_imp
+NAME=The Leprechaun
+ID=c_mongbat
+SOUND=snd_MONSTER_DAEMON1
+ICON=i_pet_mongbat
+CAN=MT_WALK|MT_FLY|MT_USEHANDS
+TEVENTS=e_npc_daemon
+DAM=20,35
+ARMOR=65
+RESOURCES=5 i_ribs_raw
+DESIRES=c_DAEMON,i_gold,t_wand
+AVERSIONS=r_water,r_mountains
+CATEGORY=Imperial uo
+SUBSECTION=St. Patricks Day Items
+DESCRIPTION=The Leprechaun
+
+ON=@Create
+NPC=brain_monster
+COLOR=0795
+FAME={4000 8000}
+KARMA={-5000 -5999}
+STR={675 705}
+DEX={96 106}
+INT={300 325}
+PARRYING={65.0 75.0}
+MAGERY={70.0 85.0}
+MAGICRESISTANCE={70.0 80.0}
+TACTICS={70.0 80.0}
+WRESTLING={60.0 80.0}
+
+ON=@NPCRestock
+ITEM=loot_leprechaun
+
+
+
+
+[CHARDEF c_leprechaun_imp_super]
+DEFNAME=c_leprechaun_imp_super
+NAME=The Leprechaun King
+ID=c_mongbat
+SOUND=snd_MONSTER_DAEMON1
+ICON=i_pet_daemon
+CAN=MT_WALK|MT_FLY|MT_USEHANDS
+TEVENTS=e_npc_daemon
+DAM=40,55
+ARMOR=100
+RESOURCES=5 i_ribs_raw
+DESIRES=c_DAEMON,i_gold,t_wand
+AVERSIONS=r_water,r_mountains
+CATEGORY=Imperial uo
+SUBSECTION=St. Patricks Day Items
+DESCRIPTION=The Leprechaun
+
+ON=@Create
+   COLOR=0aff
+   STR={1985 2185}
+   DEX={175 255}
+   INT={300 325}
+
+   PARRYING={90.0 100.0}
+   MAGERY={90.0 100.0}
+   MAGICRESISTANCE={150.0 200.0}
+   TACTICS={190.0 200.0}
+   WRESTLING={90.0 100.0}
+   TAMING={298.0 299.0}
+   DETECTION=200.0
+   NPC=brain_monster
+  
+	TAG.OVERRIDE.MOVERATE 40
+   FAME={4000 8000}
+   KARMA={-6000 -6999}
+
+ON=@NPCRestock
+ITEM=loot_leprechaun_super
+
+
+
+[ITEMDEF i_saint_patrick_special_shoes]
+DEFNAME=i_saint_patrick_special_shoes
+ID=0170f
+NAME=Special Leprechaun's Shoes
+WEIGHT=1
+TYPE=T_CLOTHING
+ARMOR=1
+VALUE=44
+CATEGORY=Imperial uo
+SUBSECTION=St. Patricks Day Items
+DESCRIPTION=Special Leprechaun's Shoes
+
+ON=@Create
+COLOR=07a5
+HITPOINTS={50 60}
+
+
+/Pants
+
+[ITEMDEF i_saint_patrick_special_pants]
+DEFNAME=i_saint_patrick_special_pants
+ID=01539
+NAME=Special Leprechaun's Pants
+WEIGHT=1
+TYPE=T_CLOTHING
+ARMOR=1
+VALUE=26
+CATEGORY=Imperial uo
+SUBSECTION=St. Patricks Day Items
+DESCRIPTION=Special Leprechaun's Pants
+
+ON=@Create
+COLOR=07a5
+HITPOINTS={50 60}
+TAG.LUCK = 50
+
+/Shirt
+
+[ITEMDEF i_saint_patrick_special_shirt]
+DEFNAME=i_saint_patrick_special_shirt
+ID=01517
+NAME=Special Leprechaun's Shirt
+WEIGHT=1
+TYPE=T_CLOTHING
+ARMOR=1
+VALUE=26
+CATEGORY=Imperial uo
+SUBSECTION=St. Patricks Day Items
+DESCRIPTION=Special Leprechaun's Shirt
+
+ON=@Create
+COLOR=07a5
+HITPOINTS={50 60}
+TAG.LUCK = 50
+
+/Hat
+
+[ITEMDEF i_saint_patrick_special_hat]
+DEFNAME=i_saint_patrick_special_hat
+ID=0171a
+NAME=Special Leprechaun's Hat
+WEIGHT=1
+TYPE=T_CLOTHING
+ARMOR=1
+VALUE=26
+CATEGORY=Imperial uo
+SUBSECTION=St. Patricks Day Items
+DESCRIPTION=Special Leprechaun's Hat
+
+ON=@Create
+COLOR=07a5
+HITPOINTS={50 60}
+TAG.LUCK = 50
+
+
+[ITEMDEF i_potion_Explosion_irish]
+NAME	= irish explosion
+ID	=i_bottle_empty
+TYPE	=T_POTION
+TDATA1	=0
+RESOURCES=i_reag_sulfur_ash 3, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 55.0
+VALUE	=36
+ON=@Click
+   f_potion_click125a
+ON=@Create
+  MORE1=s_explosion
+  MORE2=70.0
+  COLOR=07a5
+
+ 
+ON=@SpellEffect
+  if ( <REGION.FLAGS> & region_flag_guarded )
+     REMOVE
+     return 1
+  endif
+  
+  
+ON=@DClick
+
+  if ( <REGION.FLAGS> & region_flag_guarded )
+     SRC.SYSMESSAGE You can't use explosion potions in a guarded area.
+     return 1
+  endif
+
+  if (<src.findid.i_xpot_memory>)
+     SRC.MESSAGE You cant use another exposion potion yet!
+     return 1
+  else 
+     src.newitem=i_xpot_memory
+     src.act.cont=<src.uid>
+	  doswitch rand(5)
+		src.say The Irish seem to have more fire about them than the Scots.
+		src.say The Irish do not want anyone to wish them well; they want everyone to wish their enemies ill.
+		src.say Though the pen is mightier than the sword, the sword speaks louder and stronger at any given moment.
+		src.say I had that stubborn streak, the Irish in me I guess.
+		src.say Making peace, I have found, is much harder than making war.
+    enddo
+     return 0
+  endif
+
+ON=@Timer
+  if ( <REGION.FLAGS> & region_flag_guarded )
+     SAY *poof*
+     remove
+     return 1
+  endif
+
+  
+[ITEMDEF i_guinness]
+ID=i_bottle
+NAME=Pint of Guinness
+VALUE=500
+
+on=@create
+	color=0488
+	
+on=@dclick
+	IF (<SRC.TAG0.DRUNK> < 5)
+		SRC.TAG.DRUNK = <EVAL <SRC.TAG0.DRUNK>+1>
+	ELSEIF (<SRC.TAG0.DRUNK> == 05)
+		src.newitem m_theGuinnessEffect
+		src.equip <new>
+	ENDIF
+	doswitch rand(5)
+		src.say A drunkard is a dead man, and all dead men are drunk.
+		src.say Dublin was turning into Disneyland with super-pubs, a Purgatory open till five in the morning.
+		src.say I only drink on two occasions - When I am thirsty and when I'm not thirsty.
+		src.say I am a drinker with a writing problem.
+		src.say I spent 90% of my money on women and drink. The rest I wasted.
+    enddo
+	remove
+	return 1
+	
+[ItemDef m_theGuinnessEffect]
+id=i_memory
+Name=Guinness Effect
+type=t_eq_script
+
+ON=@Create
+   TIMER    = 55
+
+ON=@EQUIP
+   SRC.FLAGS=<SRC.FLAGS>|000400000  
+   SRC.FIX 
+
+ON=@UNEQUIP
+	SRC.TAG.DRUNK =
+   SRC.flags=<SRC.flags> &~ 000400000
+   SRC.FIX 
+
+ON=@Timer
+   Remove 
+   RETURN 1
+
+   
+   
+
+  
+[ITEMDEF i_drink_roulette]
+ID=i_bottle
+NAME=Irish Liquor
+
+on=@create
+	color=07a5
+	ATTR=ATTR_MOVE_NEVER
+	
+on=@dclick
+		src.emote cautiously take a sip of the strange liquor
+		local.hit = 0
+		doswitch rand(5)
+			local.hit = 1
+			local.hit = 0
+			local.hit = 0
+			local.hit = 0
+			local.hit = 0
+		enddo
+		if (<local.hit> == 1)
+			src.emote feels their throat burning
+			src.newitem m_roulette
+			src.equip <new>
+		endif
+	return 1
+	
+[ItemDef m_roulette]
+id=i_memory
+Name=Roulette
+type=t_eq_script
+
+on=@create
+	timer = 3
+	
+	
+ON=@EQUIP
+   SRC.FLAGS=<SRC.FLAGS>|statf_freeze  
+   SRC.FIX 
+
+ON=@UNEQUIP
+   SRC.flags=<SRC.flags> &~ statf_freeze
+   SRC.FIX 
+   
+on=@timer
+	timer=3
+	cont.emote cough violently as the alcohol burns their throat
+	cont.hits = <eval <cont.hits>-30>
+	if (<cont.hits> <= 0)
+		remove
+	endif
+
+	
+[ITEMDEF i_pot_o_gold]
+NAME=Pot O' Gold
+ID=i_cauldron
+
+ON=@Create
+	ATTR=ATTR_MOVE_NEVER
+	COLOR=0aff
+	timer=-1
+
+ON=@DClick
+	IF (<DISTANCE> < 2 )
+		serv.allclients sysmessage <SRC.NAME> found a <NAME>
+		src.newitem i_leprechaun_gold
+		new.more2 = <more2>
+		src.bounce <new>
+		serv.newnpc c_leprechaun_imp
+		NEW.P=<P>
+		NEW.UPDATE
+		serv.newnpc c_leprechaun_imp
+		NEW.P=<P>
+		NEW.UPDATE
+		REMOVE
+	ELSE
+		src.sysmessage @07a5 You're going to need to get closer to see what's inside.
+	ENDIF
+	return 1
+	
+[ITEMDEF i_leprechaun_gold]
+ID=01b4c
+NAME=Leprechaun Gold
+
+on=@create
+	timer=-1
+	attr=04
+
+on=@dclick
+	src.sysmessage Who do you want to sell the Leprechaun Gold to?
+	targetf t_leprechaun <UID>
+	return 1
+	
+[FUNCTION t_leprechaun]
+	
+	if (<ARGO.ID> == c_h_banker)
+		NEWITEM i_check
+		ACT.MORE2	= <eval <UID.<ARGS>.MORE2>>
+		ACT.CONT	= <findlayer(layer_bankbox).uid>
+		SERV.LOG <SRC.NAME> sold a pile of Lecprechaun Gold for <eval <ACT.MORE2>>
+		UID.<ARGS>.remove
+		ARGO.SAY @07a5 Wow! Real Leprechaun Gold! Here is a check for <eval <ACT.MORE2>> in exchange!
+	else
+		src.sysmessage They don't have a clue how much this is worth!
+	endif
+	return 1
+	
+
+
+[ITEMDEF i_pot_o_gold_player]
+NAME=Pot O' Gold
+ID=i_cauldron
+
+ON=@Create
+	ATTR=ATTR_MOVE_NEVER
+	COLOR=0aff
+	timer=-1
+
+ON=@DClick
+	IF (<DISTANCE> < 2 )
+		src.emote peer into the <NAME>
+		src.message @07a5 You feel the magic of the Leprechauns, but there is no gold left.
+	ELSE
+		src.sysmessage @07a5 You're going to need to get closer to see what's inside.
+	ENDIF
+	return 1
+
+	
+
+[EOF]

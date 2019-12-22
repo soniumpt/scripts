@@ -1,0 +1,1034 @@
+//Changelog
+//---------
+//04/05/2004 - Wigifer - Stats stuff - Tested - P.S. Kell you're a sodding pain
+//17/01/2013 - Wigifer - Double Skill Donators (i_bonus_skill) - P.S. Kell is still a pain
+//16/02/2013 - Ray - CTAGs for the Bonus Rolls for Warrior Skills.
+//16/08/2018 - Wigifer - Added [WIG DEBUG] messages
+//23/08/2018 - Wigifer - Added criminal remover to CHAR Control if timer fires and there's no Criminal Timer
+//                     - Removed reference to f_ap_recalc, because it's dead. Good riddance.
+//25/11/2019 - Wigifer - Updated all remaining <TIME> to <SERV.TIME> (56d update issue)
+
+[FUNCTION f_main_control_tags]
+   SRC.SYSMESSAGE @010 Showing taglist for <FINDLAYER(layer_k_control).NAME>
+   SRC.FINDLAYER(layer_k_control).TAGLIST
+
+// By evren@portugalmail.pt
+// *
+// This is used to perform an immediate skillcheck
+// --
+[FUNCTION SKILLCHECK_RUN]
+   DEBUGSAY SKILLCHECK_RUN
+   findlayer(layer_k_control).trigger @SkillStart_part1
+   findlayer(layer_k_control).MORE = (<args>)
+   findlayer(layer_k_control).trigger @SkillStart_part2
+
+
+[FUNCTION SKILLCHECK_NOW]
+   DEBUGSAY SKILLCHECK_NOW
+   findlayer(layer_k_control).TIMER = -1
+   findlayer(layer_k_control).trigger @SkillStart_part1
+   findlayer(layer_k_control).MORE = (<args>)
+   findlayer(layer_k_control).trigger @SkillStart_part2
+
+
+[FUNCTION SKILLCHECK_START]
+  DEBUGSAY SKILLCHECK_START
+  if ( <NPC> )
+     return 1
+  endif
+  findlayer(layer_k_control).TIMER = -1
+  findlayer(layer_k_control).TAG.IMPROVE.MODIFIER	= 100
+  SKILLCHECK_SUCCESS <args>
+
+
+// *
+// Used in @login to enable the skill improvement system
+// --
+[FUNCTION f_control_enable]
+   DEBUGSAY f_control_enable
+   SRC.PLAYERDEBUGSAY ::k_MAIN_skill_improve:: f_control_enable has been fired.
+   LOCAL.ACT	= <SRC.ACT>
+   
+   
+   LOCAL.CAPSTR	= 95
+   LOCAL.CAPDEX	= 90
+   LOCAL.CAPINT	= 90
+   if ( <findid(m_kell_control).uid> != 0 )
+      SRC.PLAYERDEBUGSAY ::k_MAIN_skill_improve:: f_control_enable HAS found an m_kell_control.
+      SRC.ACT	= <findid(m_kell_control).uid>
+      if ( <SRC.ACT.TAG0.VERSION> == 0 )
+        LOCAL.CAPSTR	= <SRC.ACT.TAG0.CAPSTR>
+        LOCAL.CAPDEX	= <SRC.ACT.TAG0.CAPDEX>
+        LOCAL.CAPINT	= <SRC.ACT.TAG0.CAPINT>
+	SRC.ACT.REMOVE
+      endif
+   endif
+
+   if ( <findid(m_kell_control).uid> == 0 )
+      SRC.PLAYERDEBUGSAY ::k_MAIN_skill_improve:: f_control_enable HAS NOT found an m_kell_control.
+      SRC.NEWITEM		m_kell_control
+      SRC.ACT.CONT		= <UID>
+      SRC.ACT.TIMER		= -1
+      SRC.ACT.EQUIP
+      SRC.ACT.TAG.CAPSTR	= <LOCAL.CAPSTR>
+      SRC.ACT.TAG.CAPINT	= <LOCAL.CAPINT>
+      SRC.ACT.TAG.CAPDEX	= <LOCAL.CAPDEX>
+      SRC.ACT.TAG.AP_MAGERY	= 0
+      SRC.ACT.TAG.AP_COMBAT	= 0
+      SRC.ACT.TAG.VERSION	= 1
+   else
+      SRC.ACT	= <findid(m_kell_control).uid>
+   endif
+   SRC.ACT.TYPE	= t_sign_gump
+
+   if ( <SRC.TAG0.STATFIX2> == 0 )
+      SRC.FINDLAYER(32).remove
+      SRC.FINDLAYER(44).remove
+      SRC.ACT.TAG.OSTR	= <SRC.STR>
+      SRC.ACT.TAG.OINT	= <SRC.INT>
+      SRC.ACT.TAG.ODEX	= <SRC.DEX>
+      SRC.TAG.STATFIX2	= 1
+   endif
+   
+[FUNCTION f_makeitem_start]
+  CONT.TAG.MAKEITEM.CONT	= <CONT.TARG.CONT.UID>
+  CONT.TAG.MAKEITEM.TARG	= <CONT.TARG.UID>
+  CONT.TAG.MAKEITEM.TARG.AMOUNT	= <CONT.TARG.AMOUNT>		// not used here
+  CONT.TAG.MAKEITEM.TARG.BASEID	= <CONT.TARG.BASEID>		// used in SKILLCHECK_
+  CONT.TAG.MAKEITEM.TARG.ID	= <CONT.TARG.ID>		// used in SKILLCHECK_
+  CONT.TAG.MAKEITEM.ITEM	= <CONT.ACTARG1>		// used in SKILLCHECK_
+
+
+// called in @SkillMakeItem
+[FUNCTION f_makeitem_end]
+   SRC.MESSAGE Makeitem Stage 1 Fired
+   FIX_QUALITY <SRC.<SERV.SKILL(<SRC.ACTION>).KEY>>
+   if ( <src.TAG0.MAKEITEM.CONT> )	// dest container set
+      SRC.MESSAGE Makeitem Stage 2 Fired
+      SRC.ACT	= <src.TAG0.MAKEITEM.CONT>
+      if ( <SRC.ACT.UID> )
+         SRC.MESSAGE Makeitem Stage 3 Fired
+         CONT	= <SRC.ACT.UID>
+         SRC.SYSMESSAGE You put the <NAME> in <CONT.NAME>.
+         SRC.MESSAGE [Skill make end: <SRC.<SERV.SKILL(<SRC.ACTION>).KEY>]
+         SRC.MESSAGE [Skill make quality: <QUALITY>]
+         return 1
+      endif
+   endif
+   return 0
+ 
+
+[FUNCTION f_makeitem_while]
+  if ( <f_makeitem_dupebug> )
+     return 1
+  endif
+
+
+[FUNCTION f_makeitem_dupebug]
+  LOCAL.AMOUNT	= <EVAL (<CONT.ACTARG2>/0FFFF)>
+  if ( <LOCAL.AMOUNT> == 1 )
+     return 0
+  endif
+
+  if ( ( <LOCAL.AMOUNT> > 1 ) && ( <CONT.UID.<CONT.TARG.UID>.AMOUNT> != <LOCAL.AMOUNT> ) )
+  elseif ( <CONT.UID.<CONT.TARG.UID>.CONT.UID> != <CONT.TAG0.MAKEITEM.CONT> )
+  else
+     return 0
+  endif
+  
+  TIMER		= -1
+  CONT.ACTION	= -1
+  return 1
+
+
+[FUNCTION FIX_QUALITY]
+   LOCAL.QUALITY	= <eval (50 + rand(50) + (<args> / 10))>
+   if (0<src.findid(i_hope).timer> >= 1 )
+   	LOCAL.QUALITY = <eval (<LOCAL.QUALITY> + (<LOCAL.QUALITY> / 10))>
+   ENDIF
+   if ( <LOCAL.QUALITY> > 200 )
+      LOCAL.QUALITY	= 200 )
+   endif
+   QUALITY	= <LOCAL.QUALITY>
+   
+
+// *
+// The object that controls the whole stuff
+// --
+[ITEMDEF m_kell_control]	// yes, I'm egocentric
+NAME	= char CONTROL
+ID	= 0c09
+TYPE	= t_eq_script
+WEIGHT	= 0
+LAYER	= layer_k_control
+
+ON = @Create
+  TIMER	= -1
+
+ON = @Timer
+  // Not a skill thing BUT this should catch users with hearall on mid-game
+  if ((<CONT.HEARALL> == 1) && (<CONT.ACCOUNT.PLEVEL> <= 1))
+     SERV.LOG <CONT.NAME> had hearall on. Disabling. (Found by m_kell_control)
+     CONT.HEARALL = 0
+  endif
+  
+  IF !(<CONT.FINDID.b_criminal_timer.UID>)
+     CONT.FLAGS = <EVAL (<CONT.FLAGS> &~ statf_criminal)>
+  ENDIF
+  
+  if ( 0 )
+  elseif ( <MORE> == Skill_Archery )
+    MORE2	= 1
+  elseif ( <MORE> == Skill_Swordsmanship )
+    MORE2	= 1
+  elseif ( <MORE> == Skill_Macefighting )
+    MORE2	= 1
+  elseif ( <MORE> == Skill_Fencing )
+    MORE2	= 1
+  elseif ( <MORE> == Skill_Poisoning )
+    MORE2	= 1
+  elseif ( <MORE> == Skill_Wrestling )
+    MORE2	= 1
+  elseif ( <MORE> == <CONT.action> )
+     TIMER	= 1
+     MORE2	= <MORE2>+1
+     	  
+     if ( 0 )
+     elseif ( <MORE> == Skill_Mining )
+        if ( <CONT.TAG0.PROBE> != 0 )
+          if ( (<CONT.P.X> != <CONT.TAG0.PROBE.X>) || (<CONT.P.Y> != <CONT.TAG0.PROBE.Y>) )
+             CONT.SYSMESSAGE You stop mining.
+	     TIMER	= -1
+	     CONT.ACTION	= -1
+	  endif
+	endif
+	return 1
+     elseif ( <MORE> == Skill_Lumberjack )
+        if ( <CONT.TAG0.PROBE> != 0 )
+          if ( (<CONT.P.X> != <CONT.TAG0.PROBE.X>) || (<CONT.P.Y> != <CONT.TAG0.PROBE.Y>) )
+             CONT.SYSMESSAGE You stop lumbering for wood.
+	     TIMER	= -1
+	     CONT.ACTION	= -1
+	  endif
+	endif
+	return 1
+     elseif ( <MORE> == Skill_Alchemy )
+       f_makeitem_while
+     elseif ( <MORE> == Skill_Blacksmith )
+       if ( ( <CONT.P.X> != <CONT.TAG0.SKILLSTART.x> ) || ( <CONT.P.Y> != <CONT.TAG0.SKILLSTART.y> ) )
+          TIMER		= -1
+          CONT.ACTION	= -1
+	  return 1
+       endif
+       f_makeitem_while       
+     elseif ( <MORE> == Skill_Bowery )
+       f_makeitem_while
+     elseif ( <MORE> == Skill_Carpentry )
+       f_makeitem_while
+     elseif ( <MORE> == Skill_Inscription )
+       f_makeitem_while
+     elseif ( <MORE> == Skill_Tailoring )
+       f_makeitem_while
+     elseif ( <MORE> == Skill_Tinkering )
+       f_makeitem_while
+     else
+       return 1
+     endif
+     return 1
+  endif
+  
+  TIMER		= -1
+ 
+  if ( <MORE2> == 0 )
+    CONT.DEBUGSAY MORE2 = 0
+  else
+    CONT.DEBUGSAY Periodic @Timer <CONT.<SERV.SKILL(<MORE>).KEY>>
+    TRIGGER	= @SkillSuccess
+  endif
+  return 1
+
+ON = @SkillStart_part1
+CONT.DEBUGSAY Periodic @SkillStart1 <SERV.SKILL(<MORE>).KEY>, <CONT.<SERV.SKILL(<MORE>).KEY>>
+
+  //if ( <TIMER> != -1 )		// finish the previous check
+  if ( 0 )
+  elseif ( <MORE> == Skill_Anatomy )
+     TRIGGER @SkillSuccess
+  elseif ( <MORE> == Skill_ArmsLore )
+     TRIGGER @SkillSuccess
+  elseif ( <MORE> == Skill_AnimalLore )
+     TRIGGER @SkillSuccess
+  elseif ( <MORE> == Skill_EvalInt )
+     TRIGGER @SkillSuccess
+  elseif ( <MORE> == Skill_Parrying )
+     TRIGGER @SkillSuccess
+  elseif ( <MORE> == Skill_Healing )
+     TRIGGER @SkillSuccess
+  elseif ( <MORE> == Skill_MagicResist )
+     TRIGGER @SkillSuccess
+  elseif ( <MORE> == Skill_Tactics )
+     TRIGGER @SkillSuccess
+  elseif ( <MORE> == Skill_Archery )
+     TRIGGER @SkillSuccess
+  elseif ( <MORE> == Skill_Swordsmanship )
+     TRIGGER @SkillSuccess
+  elseif ( <MORE> == Skill_Macefighting )
+     TRIGGER @SkillSuccess
+  elseif ( <MORE> == Skill_Fencing )
+     TRIGGER @SkillSuccess
+  elseif ( <MORE> == Skill_Wrestling )
+     TRIGGER @SkillSuccess
+  endif
+  //endif
+
+//  if ( <TAG0.AP_UPDATE> )	// armour penalty needs updating
+//     TAG.AP_UPDATE	= 0
+//     f_ap_recalc
+//  endif
+
+  MORE2		= 1	// delay counter
+  MORE		= <hval (<CONT.action>)>
+
+// this is seperate in two parts so we can make delayed skillchecks by altering MORE inbetween
+ON = @SkillStart		// CUSTOM trigger
+CONT.DEBUGSAY Periodic @SkillStart <SERV.SKILL(<MORE>).KEY>, <CONT.<SERV.SKILL(<MORE>).KEY>>
+
+  TRIGGER @SkillStart_part1
+  TRIGGER @SkillStart_part2
+
+ON = @SkillStart_part2 
+CONT.DEBUGSAY Periodic @SkillStart2 <SERV.SKILL(<MORE>).KEY>, <CONT.<SERV.SKILL(<MORE>).KEY>>
+
+  if ( 0 )
+  elseif ( <MORE> == Skill_Alchemy )
+    f_makeitem_start
+  elseif ( <MORE> == Skill_Blacksmith )
+    f_makeitem_start
+  elseif ( <MORE> == Skill_Bowery )
+    f_makeitem_start
+  elseif ( <MORE> == Skill_Carpentry )
+    f_makeitem_start
+  elseif ( <MORE> == Skill_Inscription )
+    f_makeitem_start
+  elseif ( <MORE> == Skill_Tailoring )
+    f_makeitem_start
+  elseif ( <MORE> == Skill_Tinkering )
+    f_makeitem_start
+  endif
+
+  TAG.ACTARG1	= <CONT.ACTARG1>
+  TAG.ACTARG2	= <CONT.ACTARG2>
+  TAG.ACTARG3	= <CONT.ACTARG3>
+  TIMER		= 1
+
+ON	= @SkillSuccess		// CUSTOM trigger
+   CONT.PLAYERDEBUGSAY ::k_MAIN_skill_improve:: SkillSuccess fired!
+
+   CONT.DEBUGSAY Periodic @SkillSuccess <CONT.<SERV.SKILL(<MORE>).KEY>>, <SERV.SKILL(<MORE>).KEY>
+
+   //If We don't have a valid skill...
+  IF ( <eval (<SERV.LOOKUPSKILL <SERV.SKILL(<MORE>).KEY>>)> < 0 )
+    RETURN 1
+  ELSEIF ( <eval (<SERV.LOOKUPSKILL <SERV.SKILL(<MORE>).KEY>>)> > 49 )
+    RETURN 1
+  ENDIF
+  
+  if ( 0 )
+  elseif ( <MORE> == Skill_Blacksmith )
+    if ( ( <CONT.P.X> != <CONT.TAG0.SKILLSTART.x> ) || ( <CONT.P.Y> != <CONT.TAG0.SKILLSTART.y> ) )
+       TIMER		= -1
+       CONT.ACTION	= -1
+       return 1
+    endif
+  endif
+
+  TAG.IMPROVE.MODIFIER		= 100
+  SKILLCHECK_SUCCESS_ <MORE>
+
+
+ON	= @SkillFail		// CUSTOM trigger
+   SRC.PLAYERDEBUGSAY ::k_MAIN_skill_improve:: SkillFail fired!
+   
+   CONT.DEBUGSAY Periodic @SkillFail <SERV.SKILL(<MORE>).KEY>, <CONT.<SERV.SKILL(<MORE>).KEY>>
+
+  if ( <CONT.<SERV.SKILL(<MORE>).KEY>> < 350 )
+    TAG.IMPROVE.MODIFIER	= 100
+    SKILLCHECK_SUCCESS_ <MORE>
+  endif
+  TAG.IMPROVE.MODIFIER		= 100
+
+
+// debug command
+[function sk_reset]
+ACT			= <findlayer(layer_k_control).uid>
+ACT.TAG.RESET		= 2
+ACT.TAG.IMPROVE.COUNT	= 0
+ACT.TAG.TIRED.TOTAL	=
+
+
+[FUNCTION SKILLCHECK_SUCCESS]
+  findlayer(layer_k_control).SKILLCHECK_SUCCESS_ <args>
+  
+
+[FUNCTION SKILLCHECK_SUCCESS_]
+  CONT.DEBUGSAY SKILLCHECK_SUCCESS <eval (<SERV.LOOKUPSKILL <SERV.SKILL(<args>).KEY>>)>  
+  if ( <CONT.ISDEAD> )
+     return 0
+  endif
+  
+  //Used both lookupskill and skill because lookupskill doesn't accept skilldef only key
+  VAR.SKILLNUM	=  <eval (<SERV.LOOKUPSKILL <SERV.SKILL(<args>).KEY>>)>  
+  
+  if ( <CONT.SKILLLOCK[<eval <VAR.SKILLNUM>>]> )
+     if ( <CONT.TAG0.DEBUG.skills> )
+       if ( <CONT.SKILLLOCK[<eval <VAR.SKILLNUM>>]> == 2 )
+         CONT.SAY [skill locked, <eval <VAR.SKILLNUM>>].
+       else
+         CONT.SAY [skill decreasing, <eval <VAR.SKILLNUM>>].
+       endif
+     endif
+     return 0
+  endif
+  
+  SRC.PLAYERDEBUGSAY ::k_MAIN_skill_improve:: SKILLCHECK_SUCCESS_ Fired.
+  SAFETRY CONT.SKILLCHECK_<eval <VAR.SKILLNUM>> 
+  
+
+//
+//  MATHS below
+// 
+[FUNCTION STATCHECK_interpolate]
+  LOCAL.rate_stat1	=  75
+  LOCAL.rate_stat2	=  50
+  LOCAL.rate_stat3	=  25
+  LOCAL.rate_stat4	=  15
+  LOCAL.CHANCE 		=  0
+  if ( <args> <= 30 )
+     LOCAL.CHANCE = <eval (  <LOCAL.rate_stat1> - (((<LOCAL.rate_stat1>-<LOCAL.rate_stat2>) * (<args>-00)) / 30) )>
+  elseif ( <args> <= 65 )
+     LOCAL.CHANCE = <eval (  <LOCAL.rate_stat2> - (((<LOCAL.rate_stat2>-<LOCAL.rate_stat3>) * (<args>-30)) / 35) )>
+  else
+     LOCAL.CHANCE = <eval (  <LOCAL.rate_stat3> - (((<LOCAL.rate_stat3>-<LOCAL.rate_stat4>) * (<args>-65)) / 35) )>
+  endif
+  RETURN <EVAL <LOCAL.CHANCE> * 5>
+  
+
+
+[FUNCTION SKILLCHECK_interpolate]
+  VAR.CHANCE = 0
+  if ( <args> <= 30.0 )
+     VAR.CHANCE = <eval (  <var.rate1> - (((0<VAR.rate1>-<var.rate2>) * (<args>-000)) / 300)  )>
+  elseif ( <args> <= 65.0 )
+     VAR.CHANCE = <eval (  <var.rate2> - (((0<VAR.rate2>-<var.rate3>) * (<args>-300)) / 350)  )>
+  else
+     VAR.CHANCE = <eval (  <var.rate3> - (((0<VAR.rate3>-<var.rate4>) * (<args>-650)) / 350)  )>
+  endif
+  // Multiply the chance by 10 or 1000
+  VAR.CHANCE	= <eval (0<VAR.CHANCE> * 30)>
+   IF (strmatch("<REGION.GROUP>","Dungeon"))
+			IF !(strmatch("<UID.ACT_UID.NAME>","char CONTROL")
+				IF (<UID.ACT_UID.ISNPC>)
+					IF (<UID.ACT_UID.BRAIN> == 10)
+							VAR.CHANCE = <eval (0<VAR.CHANCE> * 2)>
+					ENDIF
+				ENDIF
+			ENDIF
+	ENDIF
+	 IF (strmatch("<REGION.GROUP>","Other Dungeons"))
+			IF !(strmatch("<UID.ACT_UID.NAME>","char CONTROL")
+				IF (<UID.ACT_UID.ISNPC>)
+					IF (<UID.ACT_UID.BRAIN> == 10)
+							VAR.CHANCE = <eval (0<VAR.CHANCE> * 2)>
+					ENDIF
+				ENDIF
+			ENDIF
+	ENDIF
+	
+	// if they try a trader action with bonus rolls on, simply turn it off. :)
+
+	IF (<ACTION> == Skill_Mining) || (<ACTION> == Skill_Alchemy) || (<ACTION> == Skill_Blacksmith) || (<ACTION> == Skill_Bowery) || (<ACTION> == Skill_Carpentry) || (<ACTION> == Skill_Cartography) || (<ACTION> == Skill_Fishing) || (<ACTION> == Skill_Cooking) || (<ACTION> == Skill_Inscription) || (<ACTION> == Skill_Tailoring) || (<ACTION> == Skill_Tinkering) || (<ACTION> == Skill_Taming) || (<ACTION> == Skill_ArmsLore)
+		CTAG.BONUSROLLS = 0
+	ENDIF
+	
+	IF (<FINDID.i_memory_donatorskills.UID>) // Donator skill rolls!
+
+	   IF (<FINDID.i_memory_donatorskills.MORE2> > 0)
+	      VAR.CHANCE = <eval (0<VAR.CHANCE> * <FINDID.i_memory_donatorskills.MORE2>)>
+	   ELSE
+	      VAR.CHANCE = <eval (0<VAR.CHANCE> * 2)>
+	   ENDIF
+	ENDIF
+	
+	// if src has tag.bonusrolls, then VAR.CHANCE *8
+
+	IF (<CTAG0.BONUSROLLS> == 01)
+		VAR.CHANCE = <EVAL (0<VAR.CHANCE> *8)>
+	ENDIF
+
+
+// auxiliary functions that take several parameters by parsing them into the morep of an object
+[FUNCTION SKILLCHECK_INIT]
+  PLAYERDEBUGSAY ::k_MAIN_skill_improve:: Skillcheck Initiated!
+  VAR.ACT_UID	= <ACT.UID>
+  VAR.KEY	= <args>
+  ACT		= <findlayer(layer_k_control).uid>
+  ACT.TYPE	= t_sign_gump
+
+
+[FUNCTION SKILLCHECK_MAKEITEM]
+  if ( <<VAR.KEY>> < <TAG0.MAKEITEM.LEVEL> )
+     if ( <VAR.SKILLNUM> == Skill_BlackSmith )
+        LOCAL.MODIFIER	= <eval ((<<var.key>> - <TAG0.MAKEITEM.LEVEL>)/4)>
+     else
+        return 0
+     endif
+  else
+     LOCAL.MODIFIER	= <eval ((<<var.key>> - <TAG0.MAKEITEM.LEVEL>)/6)>
+  endif
+
+  if ( <TAG0.DEBUG.SKILLS> )
+     if ( <LOCAL.modifier> )
+        SAY (modifier <eval <LOCAL.modifier>> / <eval <TAG0.MAKEITEM.LEVEL>>)
+     endif
+  endif
+  
+  TAG.MAKEITEM.LEVEL	= 100.0		// fix for those items missing a makeitem level
+  
+  if ( <LOCAL.MODIFIER> > <ACT.TAG0.IMPROVE.MODIFIER> )
+     ACT.TAG.IMPROVE.MODIFIER	= 0	// no chance
+     return 0
+  endif
+  
+  ACT.TAG.IMPROVE.MODIFIER	= <eval (<ACT.TAG0.IMPROVE.MODIFIER> - <LOCAL.modifier> )>
+  if ( <ACT.TAG0.IMPROVE.MODIFIER> < 5 )
+     ACT.TAG.IMPROVE.MODIFIER	= 0
+  elseif ( <ACT.TAG0.IMPROVE.MODIFIER> > 150 )
+     ACT.TAG.IMPROVE.MODIFIER	= 150
+  endif
+
+
+[FUNCTION SKILLCHECK_ADJUST_COMBAT]
+  ACT		= <VAR.ACT_UID>
+  if !( <ACT.ISCHAR> )
+     ACT	= <findlayer(layer_k_control).uid>
+     return 0
+  endif
+
+  LOCAL.modifier	= 0
+  if ( <ACT.STR> < <STR> )
+     LOCAL.modifier	= <eval (<STR> - <ACT.STR>)>
+  elseif ( <ACT.STR> > 500 )
+     LOCAL.modifier	= -20
+  elseif ( <ACT.STR> > 400 )
+     LOCAL.modifier	= -15
+  elseif ( <ACT.STR> > 300 )
+     LOCAL.modifier	= -10
+  elseif ( <ACT.STR> > 300 )
+     LOCAL.modifier	= -5
+  endif
+  if ( <ACT.DEX> < 70 )
+     LOCAL.modifier	= (0<LOCAL.modifier> + <eval (7 - (0<VAR.DEX> / 10))>)
+  endif
+
+  if ( <LOCAL.modifier> > 90 )
+     LOCAL.modifier	= 90
+  endif
+
+  if ( <TAG0.DEBUG.SKILLS> )
+     if ( <LOCAL.modifier> )
+        SAY (modifier <eval <LOCAL.modifier>>)
+     endif
+  endif
+  
+  ACT	= <findlayer(layer_k_control).uid>
+  ACT.TAG.IMPROVE.MODIFIER	= <eval (<ACT.TAG0.IMPROVE.MODIFIER> - <LOCAL.modifier> )>
+  if ( <ACT.TAG0.IMPROVE.MODIFIER> < 5 )
+     ACT.TAG.IMPROVE.MODIFIER	= 0
+  elseif ( <ACT.TAG0.IMPROVE.MODIFIER> > 150 )
+     ACT.TAG.IMPROVE.MODIFIER	= 150
+  endif
+
+  
+
+[COMMENT FUNCTION SKILLCHECK_MAKEITEM_INIT]
+  VAR.MAKEITEM.ITEM	= <args>
+  
+  
+[COMMENT FUNCTION SKILLCHECK_MAKEITEM_TEST]
+  if !( <hval (<TAG0.MAKEITEM.ITEM>&~0a4000000)> == <hval (0<VAR.MAKEITEM.ITEM>&~0a4000000)> )
+     return 0
+  endif
+
+  if ( <<VAR.KEY>> < <args> )
+     return 0
+  endif
+
+  LOCAL.MODIFIER	= <eval ((<<var.key>> - <args>)/6)>
+
+  if ( <LOCAL.MODIFIER> > <ACT.TAG0.IMPROVE.MODIFIER> )
+     ACT.TAG.IMPROVE.MODIFIER	= 0	// no chance
+     return 0
+  endif
+  
+  ACT.TAG.IMPROVE.MODIFIER	= <eval (<ACT.TAG0.IMPROVE.MODIFIER> - <LOCAL.modifier> )>
+  if ( <ACT.TAG0.IMPROVE.MODIFIER> < 20 )
+     ACT.TAG.IMPROVE.MODIFIER	= 0
+  endif
+  // SYSMESSAGE Making <VAR.MAKEITEM.ITEM>:: modifier down to <eval <ACT.TAG0.IMPROVE.MODIFIER>>
+
+
+[FUNCTION SKILLCHECK_STATS]
+  //ACT.MOREP = <args>
+  IF (<TAG0.DEBUG.STATS>=1)
+     SAY <ARGN1> <ARGN2> <ARGN3>
+  ENDIF
+  VAR.STR   = <ARGN1>
+  VAR.INT   = <ARGN2>
+  VAR.DEX   = <ARGN3>
+
+
+[FUNCTION SKILLCHECK_ADV]
+  ACT.MOREP = <args>
+  VAR.RATE1 = <act.morex>
+  VAR.RATE2 = <act.morey>
+  VAR.RATE3 = <act.morez>
+  VAR.RATE4 = <act.morem>
+
+  SKILLCHECK_REFRESH sk_refresh_<eval <VAR.SKILLNUM>>
+
+
+[FUNCTION SKILLCHECK_REFRESH]  
+  LOCAL.REFRESH		= <eval (<args>)>
+  LOCAL.LASTUSAGE		= <eval (<ACT.TAG0.SKILL.<eval <VAR.SKILLNUM>>.LASTUSE> - 0)>
+  VAR.ELAPSED		= <eval (<AGE> - <LOCAL.LASTUSAGE>)>
+
+  if ( <VAR.ELAPSED> > <LOCAL.REFRESH> )
+    SAFETRY ACT.TAG.SKILL.<eval <VAR.SKILLNUM>>.LASTUSE	= <AGE>
+    VAR.ELAPSED		= 1
+  else
+    VAR.ELAPSED		= 0
+  endif
+  
+[FUNCTION STAT_UPDATE]
+  if ( (<TAG0.O<args>> == 0) || <CONT.TAG0.RESET.STATS> )
+     SAFETRY TAG.O<args>	= <CONT.<args>>
+     if ( <CONT.TAG0.DEBUG.stats> )
+       CONT.SYSMESSAGE Initialized O<args> to <eval <TAG0.O<args>>>, cap is <eval <TAG0.CAP<args>>>.
+     endif
+  endif
+
+
+// not finished
+[FUNCTION STATCHECK_CALC]
+  // highest: real or base
+  
+  //Grab highest stat between stat and stat tag...
+  LOCAL.STAT		= <ACT.TAG0.O<args>>
+  if ( <O<args>> > <LOCAL.STAT> )
+     LOCAL.STAT	= <O<args>>
+  endif
+
+  //Exit if stat is greater than 120 and the player has no fluxes
+  if ( <LOCAL.STAT> >= 120 )
+     if !(<TAG0.FLUX>)
+        return 0
+     endif
+  endif
+
+  //Exit if stat is greater than the cap that the player put on the stat  
+  if ( <LOCAL.STAT> >= <ACT.TAG0.CAP<ARGS>> )
+     return 0
+  endif
+  
+  //Exit if the current stat is greater than the max achievable for the skill being used
+  LOCAL.LIMIT		= <VAR.<args>>
+  if ( ( <LOCAL.STAT> >= <LOCAL.LIMIT> ) || (<LOCAL.LIMIT> < 1) )
+     return 0
+  endif
+  
+  //Convert current stat to percent of scale of the skill, if is > 100% set to 100%
+  LOCAL.PERCENT		= <eval ((<LOCAL.STAT> * 100) / <LOCAL.LIMIT>)>
+  if ( <LOCAL.PERCENT> > 100 )
+     LOCAL.PERCENT	= 100
+  endif
+  
+  //Retrieve Chance of Roll and Roll
+  LOCAL.CHANCE_STAT	= <STATCHECK_interpolate <eval <LOCAL.PERCENT>>>
+  LOCAL.STATROLL		= <eval rand(1000)>
+  
+  //Message in skillrolls to notify player that the stat is rolling.
+  if ( <TAG0.SHOW.SKILLROLLS> )
+     SYSMESSAGE <args> is rolling.  You are at <EVAL <LOCAL.PERCENT>>% of <args> possible for this skill.
+  endif
+  
+  //Show debug info if tag is set.
+  if ( <TAG0.DEBUG.stats> ) 
+     LOCAL.INT0	= <eval (<LOCAL.CHANCE_STAT>/10)>
+     LOCAL.DEC0	= <eval ((<LOCAL.CHANCE_STAT>-(<LOCAL.INT0>*10)))>
+     LOCAL.INT1	= <eval (<LOCAL.statroll>/10)>
+     LOCAL.DEC1	= <eval ((<LOCAL.statroll>-(<LOCAL.INT2>*10)))>
+     SAY <args> at <eval <LOCAL.PERCENT>>% of the possible <args> for this skill.
+     SAY NEED: <eval <LOCAL.INT1>>.<eval <LOCAL.dec1>>%, GOT: <eval <LOCAL.INT0>>.<eval <LOCAL.dec0>>%  
+  endif
+  
+  //Compare Roll and Chance and Roll if Success
+  if !( <LOCAL.STATROLL> >= <LOCAL.CHANCE_STAT> )
+      SAFETRY ACT.TAG.O<args>	= <eval (<ACT.TAG0.O<args>> + 1 )>
+      SAFETRY <args>		= <eval (<<args>>+1)>
+
+	  //DB.EXECUTE "call SetCharacterStats('<uid>', <str> , <dex>, <int>);"
+	  
+      if ( (<ACT.TAG0.IMPROVE.COUNT> == 0) || (<ACT.TAG0.IMPROVE.LASTTIME> == 0) )
+        ACT.TAG.IMPROVE.LASTTIME	= <AGE>
+        ACT.TAG.IMPROVE.COUNT		= 0
+     endif
+  endif
+
+
+[FUNCTION SKILLCHECK_CALC]
+  VAR.SKILL	= <ARGS>
+
+  if ( <VAR.SKILL> >= 100.0 )
+     VAR.CHANCE0	= 0.0
+     VAR.CHANCE		= 0.0
+     VAR.CHANCE1	= 0.0
+     VAR.SKILLROLL	= 12000
+     return 0
+  endif
+  
+  SKILLCHECK_interpolate <VAR.SKILL>
+  VAR.CHANCE0	= <VAR0.CHANCE>
+
+  VAR.MOD_INT	= <eval (<INT>/10)>
+  VAR.MOD_INT	= <eval ((0<VAR.CHANCE> * <VAR.MOD_INT>) / 70)>
+  VAR.CHANCE	= <eval (0<VAR.CHANCE> + <VAR.MOD_INT>)>
+  VAR.SKILLROLL = <eval rand(12000)>
+  VAR.SKILLROLL = <eval rand(12000)>
+
+  VAR.CHANCE1	= <VAR.CHANCE>
+
+
+// Perform the SKILLCHECK for particular skill groups
+[FUNCTION SKILLCHECK_ROLL]
+  SKILLCHECK_CALC	<<var.key>>
+
+  //Initialize Char Control for Stat Tags if it's not already initialized
+  ACT.STAT_UPDATE	STR
+  ACT.STAT_UPDATE	INT
+  ACT.STAT_UPDATE	DEX
+
+  //Calculate Current Stat Total
+  LOCAL.STAT_TOTAL	= <eval (<ACT.TAG0.OSTR> + <ACT.TAG0.OINT> + <ACT.TAG0.ODEX>)>
+  LOCAL.STAT_TOTAL2	= <eval (<oSTR> + <oINT> + <oDEX>)>
+  if ( <LOCAL.STAT_TOTAL2> > <LOCAL.STAT_TOTAL> )
+     IF ( <LOCAL.STAT_TOTAL2> > 275 )
+        IF (<TAG0.FLUX>)
+           LOCAL.STAT_TOTAL	= <LOCAL.STAT_TOTAL2>
+        ENDIF
+     ELSE
+        LOCAL.STAT_TOTAL	= <LOCAL.STAT_TOTAL2>
+     ENDIF
+  endif
+
+  //Check for spells or drunkeness which would affect stat rolls
+  if ( <LOCAL.STAT_TOTAL> > 255 )
+     if ( <findlayer.LAYER_SPELL_STATS.uid> )
+        LOCAL.STAT_TOTAL	= 500
+     elseif ( <findlayer.LAYER_FLAG_Drunk.uid> )
+        LOCAL.STAT_TOTAL	= 501
+     endif
+  endif
+
+  //If player is fluxed and stats are not full to the flux limit: roll
+  if (<TAG0.FLUX> >= 1)
+     if (<EVAL (<LOCAL.STAT_TOTAL> <= (<TAG0.FLUX> + 275)) >)
+        STATCHECK_CALC	STR
+        STATCHECK_CALC	INT
+        STATCHECK_CALC	DEX
+     endif
+
+  //If player is less than 275: roll
+  elseif ( <LOCAL.STAT_TOTAL> < 275 )
+     STATCHECK_CALC	STR
+     STATCHECK_CALC	INT
+     STATCHECK_CALC	DEX
+  
+  //If player cannot roll for some reason notify if in debug mode
+  elseif ( <TAG0.DEBUG.stats> )
+     if ( <LOCAL.STAT_TOTAL> == 500 )
+        SAY (not rolling stats - stat spell)
+     elseif ( <LOCAL.STAT_TOTAL> == 501 )
+        SAY (not rolling stats - drunk)
+     else
+        SAY (not rolling stats - over cap)
+     endif
+  endif
+  TAG.RESET.STATS	=	// remove reset flag
+
+
+// Using SKILLCHECK_OPPOSITE <total>, <current>, <percent>
+// is the same as
+//   SKILLCHECK_OPP_GROUP <total>
+//     SKILLCHECK_OPP_ADD <current>, <percent>
+//   SKILLCHECK_OPP_END
+
+
+[FUNCTION SKILLCHECK_OPPOSITE]
+  ACT.MOREP	= <args>
+  if ( <act.morez> <= 0 )
+     ACT.MOREZ	= 100
+  endif
+
+  VAR.OPP_MAX	= <eval <act.morex>>
+  VAR.OPP_TOTAL	= <eval ( (<act.morey> * <act.morez>) / 10 )>
+  SKILLCHECK_OPP_END
+
+
+[FUNCTION SKILLCHECK_OPP_GROUP]
+  VAR.OPP_MAX	= <eval <args>>
+  VAR.OPP_TOTAL	= 0		// initialize with the current skill
+
+
+[FUNCTION SKILLCHECK_OPP_ADD]
+  ACT.MOREP	= <args>
+  VAR.OPP_TOTAL	= <eval (0<VAR.opp_total> + ( (<act.morex> * <act.morey>) / 10 ) )>
+
+
+[FUNCTION SKILLCHECK_OPP_END]
+  if ( !sk_opposite )
+     return 0
+  endif
+
+  if ( <var.opp_total> <= 0 )
+     return 0
+  endif
+
+  if ( <eval (0<VAR.opp_total> + <<var.key>>)> >= <var.opp_max> )
+     SYSMESSAGE Progression blocked due to opposing skills.
+     VAR.CHANCE		= 0
+     return 0
+  endif
+
+  VAR.OPP_TOTAL	= <eval (0<VAR.opp_max> - <var.opp_total>)>
+  SYSMESSAGE	Opposed skill points left: <eval <var.opp_total>>
+
+  // decrease chance here, according to the number of opposed skill points regarding
+  // the maximum allowed
+  VAR.CHANCE	= <eval (0<VAR.CHANCE> * <VAR.OPP_TOTAL>) / <VAR.OPP_MAX>))>
+
+
+[FUNCTION SKILLCHECK_FINISH]
+  SKILLCHECK_DECAY
+  if ( <ACT.TAG0.IMPROVE.MODIFIER> == 0 )
+     ACT.TAG.IMPROVE.MODIFIER	= 100
+  endif
+  
+  if ( !<VAR.ELAPSED> )
+    if ( <TAG0.DEBUG.skills> )
+       SAY <var.key> (waiting)
+    endif
+    //return 0
+  endif
+  
+  VAR.CHANCE	= <eval ((<ACT.TAG0.IMPROVE.MODIFIER> * <VAR.CHANCE>)/100)>
+
+  if ( 0 )
+  elseif ( <SKILLTOTAL> < 700.0 )
+  elseif ( <SKILLTOTAL> < 800.0 )
+  elseif ( <SKILLTOTAL> < 900.0 )
+     //VAR.CHANCE	= <eval ((0<VAR.CHANCE> * 75)/100)>
+  elseif ( <SKILLTOTAL> < 950.0 )
+     //VAR.CHANCE	= <eval ((0<VAR.CHANCE> * 65)/100)>
+  elseif ( <SKILLTOTAL> < 1200.0 )
+   //  if ( <<var.key>> < 75.0 )
+    //   VAR.CHANCE	= <eval ((0<VAR.CHANCE> * 55)/100)>
+   //  else
+     //  VAR.CHANCE	= 0
+   //  endif
+  else
+     VAR.CHANCE	= 0
+  endif
+  if ( <SKILLTOTAL> > 1200.0 )
+     VAR.CHANCE	= 0
+  endif   
+  if ( <REGION.FLAGS> & (region_flag_safe|region_flag_no_pvp) )
+     VAR.CHANCE	= 0
+  endif
+
+  ACT		= <VAR.ACT_UID>
+  
+  if ( <ACT.ISCHAR> )
+    if ( <ACT.REGION.FLAGS> & (region_flag_safe|region_flag_no_pvp) )
+      VAR.CHANCE	= 0
+    endif
+  endif
+  ACT	= <findlayer(layer_k_control).uid>
+
+  VAR.CHANCE		= <eval (0<VAR.CHANCE>/10)>
+  VAR.CHANCE0		= <eval (0<VAR.CHANCE0>/10)>
+  VAR.CHANCE1		= <eval (0<VAR.CHANCE1>/10)>
+  VAR.SKILLROLL		= <eval (0<VAR.SKILLROLL>/10)>
+
+  VAR.SUM	= <eval ({ (0<VAR.chance>*5) (0<VAR.chance>*7) }/10)>
+  if ( <ACT.TAG0.SKILL.<eval <VAR.SKILLNUM>>.SUM> )
+     SAFETRY ACT.TAG.SKILL.<eval <VAR.SKILLNUM>>.SUM	= <eval (<ACT.TAG0.SKILL.<eval <VAR.SKILLNUM>>.SUM> + <var.sum>)>
+  else
+     SAFETRY ACT.TAG.SKILL.<eval <VAR.SKILLNUM>>.SUM	= <var.sum>
+  endif
+
+  if ( <TAG0.DEBUG.skills> || <TAG0.SHOW.SKILLROLLS> )
+    LOCAL.INT0	= <eval (0<VAR.CHANCE0>/10)>
+    LOCAL.DEC0	= <eval ((0<VAR.CHANCE0>-(0<LOCAL.INT0>*10))/1)>
+    LOCAL.INT1	= <eval (0<VAR.CHANCE1>/10)>
+    LOCAL.DEC1	= <eval ((0<VAR.CHANCE1>-(0<LOCAL.INT1>*10))/1)>
+    LOCAL.INT2	= <eval (0<VAR.CHANCE>/10)>
+    LOCAL.DEC2	= <eval ((0<VAR.CHANCE>-(0<LOCAL.INT2>*10))/1)>
+    LOCAL.INT3	= <eval (0<VAR.SKILLROLL>/10)>
+    LOCAL.DEC3	= <eval ((0<VAR.SKILLROLL>-(0<LOCAL.INT3>*10))/1)>
+    LOCAL.INT4	= <eval (<ACT.TAG0.SKILL.<eval <VAR.SKILLNUM>>.SUM>/10)>
+    LOCAL.DEC4	= <eval ((<ACT.TAG0.SKILL.<eval <VAR.SKILLNUM>>.SUM>-(0<LOCAL.INT4>*10))/1)>
+    
+    if ( <TAG0.DEBUG.skills> )
+       if ( <ACT.TAG0.SKILL.<eval <VAR.SKILLNUM>>.SUM> > 999 )
+          SAY <var.key>: (Accumulation RAISE: <ACT.TAG0.SKILL.<eval <VAR.SKILLNUM>>.SUM> )
+       else
+         if ( <var.skillroll> <= <var.chance> )
+            SAY <var.key>: (RAISE!)
+         else
+            SAY <var.key>: (<eval <LOCAL.int4>>.<eval <LOCAL.dec4>>%)
+         endif
+         SAY <eval <LOCAL.int0>>.<eval <LOCAL.dec0>>%  <eval <LOCAL.int2>>.<eval <LOCAL.dec2>>% :: <eval <LOCAL.int3>>.<eval <LOCAL.dec3>>%
+       endif
+    elseif ( <var.chance> > 0 )
+       if ( <ACT.TAG0.SKILL.<eval <VAR.SKILLNUM>>.SUM> > 999 )
+	 SYSMESSAGE [<var.key>: Accumulated enough experience to RAISE!]
+       elseif ( <var.skillroll> <= <var.chance> )
+         if ( <LOCAL.DEC3> < 10 )
+            LOCAL.DEC3	= <eval (0<LOCAL.DEC3> + 1)>
+         endif 
+         SYSMESSAGE [<var.key>: need <eval <LOCAL.int2>>.<eval <LOCAL.dec2>>% or lower, got <eval <LOCAL.int3>>.<eval <LOCAL.dec3>>% - RAISE!]
+       else
+         SYSMESSAGE [<var.key>(<eval <LOCAL.int4>>.<eval <LOCAL.dec4>>%): need <eval <LOCAL.int2>>.<eval <LOCAL.dec2>>% or lower, got <eval <LOCAL.int3>>.<eval <LOCAL.dec3>>%]
+       endif
+
+       if ( <TAG0.SHOW.SKILLROLLS> > 500 )
+          TAG.SHOW.SKILLROLLS	= 0
+	  SYSMESSAGE [DISPLAY OF SKILL ROLLS DISABLED]
+       else
+          TAG.SHOW.SKILLROLLS	= <eval (<TAG0.SHOW.SKILLROLLS> + 1)>
+       endif
+    endif
+  endif
+
+  var.canraise	= 0
+  
+  if ( 0 )
+  elseif ( <eval <ACT.TAG0.SKILL.<eval <VAR.SKILLNUM>>.SUM>> > 999 )
+     var.canraise	= 1
+  elseif ( <VAR.SKILLROLL> <= <VAR.CHANCE> )
+     var.canraise	= 1
+  endif
+  
+  
+  if ( <var.canraise> )
+     if ( (<ACT.TAG0.IMPROVE.COUNT> == 0) || (<ACT.TAG0.IMPROVE.LASTTIME> == 0) )
+        ACT.TAG.IMPROVE.LASTTIME	= <AGE>
+        ACT.TAG.IMPROVE.COUNT		= 0
+     endif
+
+     VAR.INCREASE	= 1
+     if ( <<VAR.KEY>> < 90.0 )
+        if ( <VAR.SKILLROLL> < 3 )
+           VAR.INCREASE	= 3
+	elseif ( <VAR.SKILLROLL> < 12 )
+	   VAR.INCREASE	= 2
+	endif
+     endif
+
+     // INCREASE TOTAL IMPROVEMENT COUNTER
+     if ( 0 )
+     elseif ( <<var.key>> < 30.0 )
+       ACT.TAG.IMPROVE.COUNT		= <eval (<ACT.TAG.IMPROVE.COUNT> + 1)>
+     elseif ( <<var.key>> < 40.0 )
+       ACT.TAG.IMPROVE.COUNT		= <eval (<ACT.TAG.IMPROVE.COUNT> + 2)>
+     elseif ( <<var.key>> < 50.0 )
+       ACT.TAG.IMPROVE.COUNT		= <eval (<ACT.TAG.IMPROVE.COUNT> + 3)>
+     elseif ( <<var.key>> < 60.0 )
+       ACT.TAG.IMPROVE.COUNT		= <eval (<ACT.TAG.IMPROVE.COUNT> + 4 )>
+     elseif ( <<var.key>> < 70.0 )
+       ACT.TAG.IMPROVE.COUNT		= <eval (<ACT.TAG.IMPROVE.COUNT> + 5 )>
+     elseif ( <<var.key>> < 80.0 )
+       ACT.TAG.IMPROVE.COUNT		= <eval (<ACT.TAG.IMPROVE.COUNT> + 6 )>
+     elseif ( <<var.key>> < 90.0 )
+       ACT.TAG.IMPROVE.COUNT		= <eval (<ACT.TAG.IMPROVE.COUNT> + 7 )>
+     else
+       ACT.TAG.IMPROVE.COUNT		= <eval (<ACT.TAG.IMPROVE.COUNT> + 8 )>
+     endif
+
+     SAFETRY ACT.TAG.SKILL.<eval <VAR.SKILLNUM>>.SUM	= 0
+     SAFETRY <var.key> = <eval (<<var.key>> + <VAR.INCREASE>)>
+	 
+	 //DB.EXECUTE "call SetCharacterSkill('<uid>', '<var.key>', <eval (<<var.key>> + 0)>);"
+     
+    // if ( <SKILLTOTAL> == 700.0 )
+   //     SYSMESSAGE You have now attained a TOTAL of 700.0 skill points, 200.0 points until skill cap.
+   //  elseif ( <SKILLTOTAL> == 800.0 )
+    //    SYSMESSAGE You have now attained a TOTAL of 800.0 skill points, 100.0 points until skill cap.
+    // elseif ( <SKILLTOTAL> == 900.0 )
+   //     SYSMESSAGE You have now attained a TOTAL of 900.0 skill points. You have 100.0 points to learn in skills under 75%.
+   //  elseif ( <SKILLTOTAL> == 1000.0 )
+    //    SYSMESSAGE You have now attained a TOTAL of 1000.0 skill points, reaching the skill cap.
+    // endif
+  ENDIF
+  act = <VAR.ACT_UID>
+
+
+
+[FUNCTION SKILLCHECK_DECAY]
+  if ( <SKILLTOTAL> < 650.0 )
+     return 1
+  endif
+
+  if ( (<SERV.TIME> - <ACT.TAG0.SKILLS.LASTDECAY>) < 300 )
+     return 1
+  endif
+  ACT.TAG0.SKILLS.LASTDECAY	= <SERV.TIME>
+
+  VAR.DECAY_LIST	= ""
+  VAR.DECAY_COUNT	= 0
+  SKILLCHECK_DECAY_LIST		0
+  
+  if ( <VAR.DECAY_COUNT> == 0 )
+     return 0
+  elseif ( <VAR.DECAY_COUNT> == 1 )
+     VAR.DECAY		= <VAR.DECAY_LAST>
+  else
+     VAR.DECAY		= <eval ( { <VAR.DECAY_LIST> } )>
+  endif
+
+  SAFETRY	<var.decay> = <eval (<<var.decay>> - 1)>
+  UPDATE
+
+
+[FUNCTION SKILLCHECK_DECAY_LIST]
+   if ( <argn> > 49 )
+      return 1
+   endif 
+
+   if ( (<SkillLock[<argn>]> == 1) && (<<argn>> > 0) )
+      VAR.DECAY_LIST	= "<VAR.DECAY_LIST> <argn> <<argn>> "
+      VAR.DECAY_LAST	= <argn>
+      VAR.DECAY_COUNT	= <eval (0<VAR.DECAY_COUNT>+1)>
+   endif
+
+   SKILLCHECK_DECAY_LIST	<eval (<argn>+1)>
+
+[FUNCTION skillbonus_check]
+
+IF (<SRC.ALCHEMY> > 40.0) || (<SRC.ARMSLORE> > 40.0) || (<SRC.BLACKSMITHING> > 40.0)|| (<SRC.BOWCRAFT> > 40.0)|| (<SRC.CARPENTRY> > 40.0)|| (<SRC.CARTOGRAPHY> > 40.0)|| (<SRC.COOKING> > 40.0)|| (<SRC.FISHING> > 40.0)|| (<SRC.INSCRIPTION> > 40.0)|| (<SRC.ITEMID> > 40.0)|| (<SRC.LUMBERJACKING> > 40.0)|| (<SRC.MASONRY> > 40.0)|| (<SRC.MINING> > 40.0)|| (<SRC.TAILORING> > 40.0)|| (<SRC.TAMING> > 40.0)|| (<SRC.TINKERING> > 40.0)
+SRC.CTAG.BONUSROLLS=0
+ELSE
+SRC.CTAG.BONUSROLLS=1
+ENDIF
+
+[EOF]

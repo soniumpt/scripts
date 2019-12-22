@@ -1,0 +1,136 @@
+//Jan 15 '04 - Wren - added ability to dispel mimic (songs of the world)
+
+[FUNCTION f_spell_fizzle]
+   EFFECT 3, 03735, 3, 15, 1
+   SOUND 250
+   if ( !strcmp( "<args>", "" ) )
+      sysmessage The spell fizzles.
+   else
+      sysmessage <args>
+   endif
+
+
+[FUNCTION f_spell_paralyze]
+   VAR.RETURN = 1
+   if ( <src.uid> == <uid> )
+      src.sysmessage You can't paralyze yourself.
+      return 0
+   endif
+   
+   if ( <findid(i_rune_paralyze).uid> )
+      if ( <flags> & statf_freeze )
+         src.sysmessage <name> is already paralyzed.
+         return 0
+      else
+         consume i_rune_paralyze
+      endif
+   endif
+
+   if ( <flags> & statf_freeze )
+      src.sysmessage <name> is already standing still.
+      return 0
+   endif
+   
+   VAR.SKILL	= <argn>
+   VAR.RES	= <magicresistance>
+   VAR.CIRCLE	= 5
+   VAR.AGGR	= 1
+
+   if ( <VAR.RETURN> == 0 )
+      if ( <findid(i_rune_poison).uid> )
+         consume 1 i_rune_poison
+      endif
+   endif
+
+[FUNCTION f_spell_mana_vampire]
+   VAR.RETURN = 1
+   if ( <src.uid> == <uid> )
+      src.sysmessage The Spell Fizzles.
+      return 0  
+   endif
+   if ( <mana> <= 20 )
+      src.sysmessage Their magical energies are too weak.
+      return 0
+   ENDIF
+
+      if ( <VAR.RETURN> == 1 )
+       mana == 0
+       SRC.MANA	= <SRC.INT> 
+      endif
+
+[FUNCTION f_spell_poison]
+   if ( <src.uid> == <uid> )
+      VAR.RETURN = 0
+      return 0
+   endif
+   
+   VAR.RETURN = 1
+   if ( <findid(i_rune_poison).uid> )
+      src.sysmessage <name> is already poisoned.
+      return 0
+   endif
+
+   if ( ( <findid(i_poisoning1).uid> ) || ( <findid(i_poisoning2).uid> ) || ( <findid(i_poisoning3).uid> ) || ( <findid(i_poisoning4).uid> ) )
+      src.sysmessage <name> is already poisoned.
+      return 0
+   endif
+
+   if ( <flags> & statf_poisoned )
+      src.sysmessage <name> is already poisoned.
+      return 0
+   endif
+   
+   VAR.SKILL	= <argn>
+   VAR.RES	= <magicresistance>
+   VAR.CIRCLE	= 4
+   VAR.AGGR	= 1
+
+
+[FUNCTION f_spell_dispel]
+   VAR.RETURN = 0
+ 
+   if (( <KARMA> < -900 ) || ( <KILLS> > 3 ) || (<FLAGS> & statf_criminal)  || (<FLAGS> & statf_conjured))
+   else
+   	IF ( <ISORDER> && <SRC.ISCHAOS> )
+	ELSEIF ( <ISCHAOS> && <SRC.ISORDER> )
+   	ELSEIF ( <uid> == <src.uid> )
+	//dispel bug - maybe this sometimes gets the memory obj and not the player
+   	ELSE
+      		RETURN <EVAL <CRIMINAL>>
+      	endif
+   endif
+   if ( <src.uid> == <uid> )	// succeed in dispelling self
+      SRC.consume i_rune_polymorph
+      src.findid(m_SongMimic).remove
+      src.findid(i_light_source).remove
+      return 0
+   endif
+
+   VAR.SKILL	= <argn>
+   VAR.RES	= <eval (<magicresistance> + (<magery>/6))>
+   VAR.CIRCLE	= 5
+   VAR.AGGR	= 0
+
+
+[FUNCTION f_spell_mass_dispel]
+   VAR.RETURN = 0
+
+   if ( <src.uid> == <uid> )	// succeed in dispelling self
+      src.findid(m_SongMimic).remove
+      src.findid(i_light_source).remove
+      return 0
+   endif
+
+   VAR.SKILL	= <argn>
+   VAR.RES	= <eval (<magicresistance> + (<magery>/6))>
+   VAR.CIRCLE	= 7
+   VAR.AGGR	= 0
+
+
+[FUNCTION f_stone_field]
+   if ( <FLAGS> & statf_freeze )
+      say Unparalized
+      findlayer(layer_spell_paralyze).remove
+   endif
+
+[EOF]

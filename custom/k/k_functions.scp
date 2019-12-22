@@ -1,0 +1,692 @@
+//Changelog
+//---------
+//21-12-03 - Wren    - Added runes to renameable so people can get rid of rune to: also fixed rename to only in backpack
+//10-08-03 - Wigifer - Disable Bags Rename - Untested (Emergency fix)
+//11-08-03 - Wigifer - Fix for bags outside of backpacks - Untested (Emergency fix)
+//12-08-03 - Wigifer - Bags re-enabled BUT STILL BUGGED - Tested (Emergency Fix)
+//08-09-03 - Tiffany - Rebirth Touch up (see lines below) - Tested
+//06-09-13 - Ray - Commented all un-shrink restrictions.
+// 25/11/2019 - Wigifer - Updated all remaining <TIME> to <SERV.TIME> (56d update issue)
+
+[FUNCTION ISDAMAGESPELL]
+IF ((<ARGN1> == 5) || (<ARGN1> == 12) || (<ARGN1> == 18) || (<ARGN1> == 30) || (<ARGN1> == 42) || (<ARGN1> == 49) || (<ARGN1> == 51) || (<ARGN1> == 55))
+RETURN 1
+ENDIF
+RETURN 0
+
+[FUNCTION HTMLDIALOG]
+  VAR.GT = ">"
+  VAR.LT = "<"
+  VAR.BREAK = <VAR.LT>BR<VAR.GT>
+  VAR.POSITION = <VAR.LT>P<VAR.GT>
+  DIALOG <args>
+
+
+[FUNCTION GET_REBIRTH]
+  LOCAL.REBIRTH	= <TAG.ARM.EFFECT.REBIRTH>
+   if ( 0<TAG.REBIRTH.COUNT> )
+      TAG.REBIRTH.COUNT	= <eval (0<TAG.REBIRTH.COUNT> - ((<SERV.TIME> - <TAG.REBIRTH.TIME>) / ( 60 * 60 * 10 ) ) )>
+      if ( <TAG.REBIRTH.COUNT> < 0 )
+         TAG.REBIRTH.COUNT	= 0
+         TAG.REBIRTH.TIME	= 
+      endif
+   else
+      TAG.REBIRTH.COUNT	= 0
+   endif
+   LOCAL.REBIRTH	= <eval ( 0<LOCAL.REBIRTH> - (20 * <TAG.REBIRTH.COUNT>) )>
+   return <LOCAL.rebirth>
+
+
+[FUNCTION SUMMONHERE]
+NEWNPC			= <args>
+ACT.FLAGS		= (<ACT.FLAGS> | statf_pet)
+ACT.NEWITEM		= i_memory
+ACT.ACT.COLOR		= memory_ipet
+ACT.ACT.LAYER		= layer_special
+ACT.ACT.CONT		= <ACT.UID>
+ACT.ACT.LINK		= <UID>
+
+
+[FUNCTION SUMMONRUNE]
+ACT.FLAGS		= (<ACT.FLAGS> | statf_conjured)
+ACT.NEWITEM		= i_rune_summon_creature
+ACT.ACT.LAYER		= 41
+ACT.ACT.ATTR		= 026
+ACT.ACT.CONT		= <ACT.UID>
+ACT.ACT.LINK		= <UID>
+ACT.ACT.MOREp		= <args>
+ACT.ACT.TIMER		= <ACT.ACT.MOREx>
+ACT.ACT.MOREx		= 40
+
+
+[FUNCTION MASTER]
+  if !( <FLAGS> & statf_pet )
+     return 0
+  endif
+  return <memoryfindtype.memory_ipet.link.uid>
+
+
+
+[FUNCTION ANNOUNCE]
+SERV.ALLCLIENTS SYSMESSAGE @15 <args>
+
+[FUNCTION REGION_ua__deprecated]
+  if ( 0 )
+  elseif ( <REGION.UID> == 06002a63 )
+  elseif ( <REGION.UID> == 06002874 )
+  else
+    return 1
+  endif
+  return 0
+  
+[FUNCTION SAFETRY]
+   TRY <args>
+
+
+[FUNCTION MAXCLIENTS]
+  return <UID.uid_settings.TAG.SERVER.MAX_CLIENTS>
+
+
+[FUNCTION tct]
+if ( <TAG0.LASTCONNECTTIME> == 0 )
+   TAG0.LASTCONNECTTIME	= <SERV.TIME>
+endif
+if ( <TAG0.TOTALCONNECTTIME> == 0 )
+   TAG0.TOTALCONNECTTIME	= 0
+endif
+return <eval ((<TAG0.TOTALCONNECTTIME> + <SERV.TIME> - <TAG0.LASTCONNECTTIME>)/10 )>
+
+[FUNCTION loyalct]
+IF ( <TAG0.LASTLOYALTIME> == 0 )
+TAG0.LASTLOYALTIME = <SERV.TIME>
+ENDIF
+IF ( <TAG0.LOYALTIME> == 0 )
+TAG0.LOYALTIME=0
+ENDIF
+RETURN <eval ((<TAG0.LOYALTIME> + <SERV.TIME> - <TAG0.LASTLOYALTIME>)/10 )>
+
+[FUNCTION LOOPITEMS]
+  VAR.call_fun = <args>
+  f_loopitems_rec 0 
+
+[FUNCTION f_loopitems_rec]
+  VAR.BEFORE	= <findcont(<args>).uid>
+
+  if ( <var.before> == 0 ) 
+    return 0 // stop 
+  endif 
+  
+  TRY UID.<var.before>.<VAR.call_fun>
+
+  if ( <findcont(<args>).uid> != <VAR.BEFORE> )	// was deleted - list changed
+     f_loopitems_rec <args>
+     return 0
+  endif 
+
+  f_loopitems_rec <eval (<args>+1)> 
+
+
+[FUNCTION SRCLOOPITEMS]
+  VAR.call_fun = <args>
+  f_srcloopitems_rec 0 
+
+[FUNCTION f_srcloopitems_rec]
+  VAR.BEFORE	= <findcont(<args>).uid>
+
+  if ( <var.before> == 0 ) 
+    return 0 // stop 
+  endif 
+  
+  SRC.TRY SRC.UID.<var.before>.<VAR.call_fun>
+
+  if ( <findcont(<args>).uid> != <VAR.BEFORE> )	// was deleted - list changed
+     f_srcloopitems_rec <args>
+     return 0
+  endif 
+
+  f_srcloopitems_rec <eval (<args>+1)> 
+
+
+[FUNCTION findplayer]
+f_findplayer <args>
+if ( <VAR.findplayer_uid> == 0 )
+  sysmessage No player found by that name.
+  return 1
+endif
+sysmessage Player with name <args> has UID <VAR.findplayer_uid>.
+sysmessage <uid.<VAR.findplayer_uid>.sex He/She> is in <uid.<VAR.findplayer_uid>.region.name>, at <uid.<VAR.findplayer_uid>.p>.
+
+[FUNCTION f_findplayer]
+VAR.findplayer_uid = 0
+serv.allclients f_findplayer_aux <args>
+RETURN <VAR.FINDPLAYER_UID>
+
+[FUNCTION f_findplayer_aux]
+if ( !strcmp( <name>, <args> ) )
+   VAR.findplayer_uid = <UID>
+endif
+
+
+[FUNCTION FOR_MEMORY]
+  VAR.call_fun = <args>
+  f_memory_loop_rec 0 
+
+[FUNCTION f_memory_loop_rec]
+  if ( <findcont(<args>).uid> == 0 ) 
+    return 0 // stop 
+  endif 
+
+  if ( <findcont(<args>).baseid> == i_memory )
+    VAR.BEFORE	= <findcont(<args>).uid>
+
+    TRY <VAR.call_fun> <VAR.BEFORE> // call the function
+
+    if ( <findcont(<args>).uid> != <VAR.BEFORE> )	// was deleted - list moved
+       f_memory_loop_rec <args>
+       return 0
+    endif 
+  endif
+  f_memory_loop_rec <eval (<args>+1)> 
+
+
+
+//
+// Rename items
+// 
+[FUNCTION rename]
+SRC.NEWITEM		= i_Rename
+SRC.ACT.TAG.ARGNAME	= <ARGS>
+SRC.ACT.TARGET		= What do you want to rename?
+
+
+[ITEMDEF i_rename]
+ID	= i_memory
+NAME	= rename
+TYPE	= t_script
+LAYER	= 30
+ON=@Timer
+  REMOVE
+  return1
+ON=@Create
+  ATTR	= attr_decay
+  TIMER	= 30
+  
+ON=@Targon_item
+  IF (( <SRC.TARG.BASEID> == i_bag_reagents_sm ) ||( <SRC.TARG.BASEID> == i_bag_reagents_lg ) || ( <SRC.TARG.BASEID> == i_bag ) || ( <SRC.TARG.BASEID> == i_rune_marker ) || ( <SRC.TARG.BASEID> == i_present ) || (<SRC.TARG.BASEID> == i_key_copper))
+     IF (<SRC.TARG.CONT.UID> = <SRC.FINDLAYER(21).UID>)
+        SRC.SYSMESSAGE <SRC.TARG.NAME> renamed to <TAG.ARGNAME>.
+        SRC.TARG.NAME <TAG.ARGNAME>
+        REMOVE 
+        RETURN 1
+     ELSE
+        SRC.SYSMESSAGE The item must be in your backpack to rename it!
+     ENDIF
+  ENDIF
+  IF (( <SRC.TARG.TAG.LEVEL> == 20) && (<SRC.TARG.ISWEAPON>))
+          SRC.SYSMESSAGE <SRC.TARG.NAME> renamed to <TAG.ARGNAME>.
+          SRC.TARG.NAME <TAG.ARGNAME>
+          REMOVE 
+          RETURN 1  
+  ENDIF
+  SRC.SYSMESSAGE You can't rename that.
+  RETURN 1
+
+
+//
+// Auxiliary commands
+// 
+[FUNCTION invbank]
+ACT=<SRC.FINDLAYER(layer_pack).uid>
+ACT.CONT=<SRC.FINDLAYER(layer_bankbox).UID> 
+ACT.CONT.UPDATE
+ACT.UPDATE
+SRC.UPDATE
+
+
+[FUNCTION nukebank]		// useful, leave it be
+   findlayer(layer_bankbox).remove
+
+[FUNCTION TOTALGOLD]
+  LOCAL.TOTALGOLD = <findlayer(layer_bankbox).rescount i_gold>
+  LOCAL.TOTALGOLD = <eval( <LOCAL.TOTALGOLD> + <findlayer(layer_pack).rescount i_gold>)>
+  RETURN <LOCAL.TOTALGOLD>
+
+[FUNCTION consumebank]
+act = <SRC.FINDLAYER(layer_bankbox).uid>
+act.layer = layer_pack
+act.type = t_container
+act.equip
+src.consume <args>
+act.layer = layer_bankbox
+act.type = t_eq_bank_box
+act.equip
+
+
+[FUNCTION consumegold_everywhere]
+   var.consumegold_rest = <args>
+   var.consumegold = <args>
+   src.findlayer(layer_bankbox).consumegold_rec 0
+   if ( <var.consumegold> > 0 ) // not enough in bank, search player pack for the rest
+      var.consumegold_rest = <eval( <var.consumegold_rest> - <var.consumegold>)>
+      src.findlayer(layer_pack).consumegold_rec 0
+      if ( <var.consumegold> = 0 ) // yes, we had enough
+         var.consumegold = <var.consumegold_rest>
+         src.findlayer(layer_bankbox).consumegold_rec 0
+      endif
+   endif
+   return 0
+   
+
+[FUNCTION consumegold]
+   var.consumegold = <args>
+   consumegold_rec 0
+   if ( <var.consumegold> = 0 )
+      return 0
+   endif
+   return 1
+
+
+[FUNCTION consumegold_rec]
+   if ( <args> > 100 )
+      return 0
+   endif 
+   
+   if ( <findcont(<args>).uid> = 0 )
+      return 0
+   endif
+
+   if ( <findcont(<args>).baseid> != i_gold ) // skip stuff other than gold
+      consumegold_rec <eval (1+<args>)>
+      return 0
+   endif
+
+   var.consumegold = <eval (<var.consumegold> - <findcont(<args>).amount>)>
+   if ( <var.consumegold> < 0 ) // more than enough, reduce amount
+      SRC.ACT = <findcont(<args>).uid>
+      src.act.amount = <eval (0 - <var.consumegold>)>
+      var.consumegold = 0
+      return 0
+   endif
+
+   if ( <var.consumegold> > 0 ) // still need more gold
+      consumegold_rec <eval (1+<args>)>
+   endif
+
+   if ( <var.consumegold> > 0 ) // we tried, but no more money around
+      return 0
+   endif
+
+   src.act = <findcont(<args>).uid>
+   src.act.remove
+   return 0
+
+
+[FUNCTION consumeticket_everywhere]
+   var.consumeticket_rest = <args>
+   var.consumeticket = <args>
+   src.findlayer(layer_bankbox).consumeticket_rec 0
+   if ( <var.consumeticket> > 0 ) // not enough in bank, search player pack for the rest
+      var.consumeticket_rest = <eval( <var.consumeticket_rest> - <var.consumeticket>)>
+      src.findlayer(layer_pack).consumeticket_rec 0
+      if ( <var.consumeticket> = 0 ) // yes, we had enough
+         var.consumeticket = <var.consumeticket_rest>
+         src.findlayer(layer_bankbox).consumeticket_rec 0
+      endif
+   endif
+   return 0
+   
+
+[FUNCTION consumeticket]
+   var.consumeticket = <args>
+   consumeticket_rec 0
+   if ( <var.consumeticket> = 0 )
+      return 0
+   endif
+   return 1
+
+[FUNCTION consumeticket_rec]
+   if ( <findcont(<args>).uid> = 0 )
+      return 0
+   endif
+
+   if ( <findcont(<args>).baseid> != i_reward_ticket ) // skip stuff other than ticket
+      consumeticket_rec <eval (1+<args>)>
+      return 0
+   endif
+
+   var.consumeticket = <eval (<var.consumeticket> - <findcont(<args>).amount>)>
+   if ( <var.consumeticket> < 0 ) // more than enough, reduce amount
+      SRC.ACT = <findcont(<args>).uid>
+      src.act.amount = <eval (0 - <var.consumeticket>)>
+      var.consumeticket = 0
+      return 0
+   endif
+
+   if ( <var.consumeticket> > 0 ) // still need more ticket
+      consumeticket_rec <eval (1+<args>)>
+   endif
+
+   if ( <var.consumeticket> > 0 ) // we tried, but no more money around
+      return 0
+   endif
+
+   src.act = <findcont(<args>).uid>
+   src.act.remove
+   return 0
+
+
+[FUNCTION givegold]
+  if ( <args> <= 0 )
+     return 0
+  endif
+  
+  if ( <args> > 60000 )
+     LOCAL.LEFT	= <eval (<args> - 60000)>
+     LOCAL.HAND	= 60000
+  else
+     LOCAL.LEFT	= 0
+     LOCAL.HAND	= <args>
+  endif
+
+  SERV.NEWITEM i_gold, <EVAL <LOCAL.HAND>>, <SRC.findlayer(layer_bankbox).uid>
+  givegold <LOCAL.LEFT>
+
+
+[FUNCTION skill_name]
+  doswitch <args>
+    LOCAL.skill_name	= Alchemy
+    LOCAL.skill_name	= Assessment
+    LOCAL.skill_name	= Creature lore
+    LOCAL.skill_name	= Item lore
+    LOCAL.skill_name	= Arms Lore
+    LOCAL.skill_name	= Shieldfighting	// Parrying
+    LOCAL.skill_name	= unused		// Begging
+    LOCAL.skill_name	= Blacksmithing
+    LOCAL.skill_name	= Bowery		// Bowcraft/Fletching
+    LOCAL.skill_name	= Songs of Peace		// Peacemaking
+    LOCAL.skill_name	= Survival		// Camping	// 10
+    LOCAL.skill_name	= Carpentry
+    LOCAL.skill_name	= Cartography
+    LOCAL.skill_name	= Cooking
+    LOCAL.skill_name	= Awareness		// Detecting Hidden
+    LOCAL.skill_name	= Songs of the World	// enticement
+    LOCAL.skill_name	= Mystic lore		// Evaluating Intel
+    LOCAL.skill_name	= Healing
+    LOCAL.skill_name	= Fishing
+    LOCAL.skill_name	= Netherworld lore	// Forensics
+    LOCAL.skill_name	= Farming		// Herding	// 20
+    LOCAL.skill_name	= Hiding
+    LOCAL.skill_name	= Songs of War
+    LOCAL.skill_name	= Inscription
+    LOCAL.skill_name	= Lock Picking/Remove traps
+    LOCAL.skill_name	= Magery
+    LOCAL.skill_name	= Resist Magic
+    LOCAL.skill_name	= Tactics
+    LOCAL.skill_name	= Snooping
+    LOCAL.skill_name	= Musicianship
+    LOCAL.skill_name	= Poisoning			// 30
+    LOCAL.skill_name	= Archery
+    LOCAL.skill_name	= Necromancy		// Spirit Speak
+    LOCAL.skill_name	= Stealing
+    LOCAL.skill_name	= Tailoring
+    LOCAL.skill_name	= Taming
+    LOCAL.skill_name	= Herbs lore		// Taste ID
+    LOCAL.skill_name	= Tinkering
+    LOCAL.skill_name	= Tracking
+    LOCAL.skill_name	= Masonry		// Veterinary
+    LOCAL.skill_name	= Blade weapons		// 40
+    LOCAL.skill_name	= Blunt weapons
+    LOCAL.skill_name	= Piercing weapons
+    LOCAL.skill_name	= Unarmed combat
+    LOCAL.skill_name	= Lumberjacking
+    LOCAL.skill_name	= Mining
+    LOCAL.skill_name	= Meditation
+    LOCAL.skill_name	= Stealth
+    LOCAL.skill_name	= Necromancy
+    LOCAL.skill_name	= new necro
+    LOCAL.skill_name	= Focus
+  enddo
+  RETURN <LOCAL.SKILL_NAME>
+
+
+
+[FUNCTION spell_name]
+  doswitch <args>
+    LOCAL.spell_name	=
+    LOCAL.spell_name	= Clumsy
+    LOCAL.spell_name	= Create Food
+    LOCAL.spell_name	= Feeblemind
+    LOCAL.spell_name	= Heal
+    LOCAL.spell_name	= Magic Arrow
+    LOCAL.spell_name	= Night Sight
+    LOCAL.spell_name	= Reactive Armor
+    LOCAL.spell_name	= Weaken
+    LOCAL.spell_name	= Agility
+    LOCAL.spell_name	= Cunning
+    LOCAL.spell_name	= Cure
+    LOCAL.spell_name	= Harm
+    LOCAL.spell_name	= Magic Trap
+    LOCAL.spell_name	= Magic Untrap
+    LOCAL.spell_name	= Protection
+    LOCAL.spell_name	= Strength
+    LOCAL.spell_name	= Bless
+    LOCAL.spell_name	= Fireball
+    LOCAL.spell_name	= Magic Lock
+    LOCAL.spell_name	= Poison
+    LOCAL.spell_name	= Telekinisis
+    LOCAL.spell_name	= Teleport
+    LOCAL.spell_name	= Unlock
+    LOCAL.spell_name	= Wall of Stone
+    LOCAL.spell_name	= Arch Cure
+    LOCAL.spell_name	= Arch Protection
+    LOCAL.spell_name	= Curse
+    LOCAL.spell_name	= Fire Field
+    LOCAL.spell_name	= Greater Heal
+    LOCAL.spell_name	= Lightning
+    LOCAL.spell_name	= Mana Drain
+    LOCAL.spell_name	= Recall
+    LOCAL.spell_name	= Blade Spirit
+    LOCAL.spell_name	= Dispel Field
+    LOCAL.spell_name	= Incognito
+    LOCAL.spell_name	= Magic Reflection
+    LOCAL.spell_name	= Mind Blast
+    LOCAL.spell_name	= Paralyze
+    LOCAL.spell_name	= Poison Field
+    LOCAL.spell_name	= Summon Creature
+    LOCAL.spell_name	= Dispel
+    LOCAL.spell_name	= Energy Bolt
+    LOCAL.spell_name	= Explosion
+    LOCAL.spell_name	= Invisibility
+    LOCAL.spell_name	= Mark
+    LOCAL.spell_name	= Mass Curse
+    LOCAL.spell_name	= Paralyze Field
+    LOCAL.spell_name	= Reveal
+    LOCAL.spell_name	= Chain Lightning
+    LOCAL.spell_name	= Energy Field
+    LOCAL.spell_name	= Flamestrike
+    LOCAL.spell_name	= Gate Travel
+    LOCAL.spell_name	= Mana Vampire
+    LOCAL.spell_name	= Mass Dispel
+    LOCAL.spell_name	= Meteor Storm
+    LOCAL.spell_name	= Polymorph
+    LOCAL.spell_name	= Earthquake
+    LOCAL.spell_name	= Energy Vortex
+    LOCAL.spell_name	= Resurrection
+    LOCAL.spell_name	= Summon Air Elemental
+    LOCAL.spell_name	= Summon Daemon
+    LOCAL.spell_name	= Summon Earth Elemental
+    LOCAL.spell_name	= Summon Fire Elemental
+    LOCAL.spell_name	= Summon Water Elemental
+  enddo
+  RETURN <LOCAL.spell_name>
+  
+[FUNCTION necro_spell_name]
+  doswitch <eval <args>>
+    LOCAL.necro_spell_name	=
+    LOCAL.necro_spell_name	= Animate Dead
+    LOCAL.necro_spell_name	= Blood Oath
+    LOCAL.necro_spell_name	= Corpse Skin
+    LOCAL.necro_spell_name	= Curse Weapon
+    LOCAL.necro_spell_name	= Evil Omen
+    LOCAL.necro_spell_name	= Horrific Beast
+    LOCAL.necro_spell_name	= Liche Form
+    LOCAL.necro_spell_name	= Mind Rot
+    LOCAL.necro_spell_name	= Pain Spike
+    LOCAL.necro_spell_name	= Poison Strike
+    LOCAL.necro_spell_name	= Strangle
+    LOCAL.necro_spell_name	= Summon Familiar
+    LOCAL.necro_spell_name	= Vampiric Embrace
+    LOCAL.necro_spell_name	= Vengeful Spirit
+    LOCAL.necro_spell_name	= Wither
+    LOCAL.necro_spell_name	= Wraith Form
+  enddo
+  RETURN <LOCAL.necro_spell_name>
+
+[FUNCTION SYSMESSAGE_ua_deprecated]
+  if ( <NPC> || !<REGION_ua_deprecated> || <restest t_eq_client_linger> )
+     return 0
+  endif
+
+  if ( <REGION.GUARDED> )
+     REGION.GUARDED	= 0
+     TAG.MAPPLANE	= <MAPPLANE>
+     MAPPLANE		= 100
+     FINDLAYER(layer_bankbox).SAYua <ARGS>
+     MAPPLANE		= <TAG.MAPPLANE>
+     REGION.GUARDED 	= 1
+  else
+     TAG.MAPPLANE	= <MAPPLANE>
+     MAPPLANE		= 100
+     FINDLAYER(layer_bankbox).SAYua <ARGS>
+     MAPPLANE		= <TAG.MAPPLANE>
+  endif  
+
+[FUNCTION CONSUME_MEMORY_fight]
+   CONSUME_MEMORY memory_fight
+
+[FUNCTION CONSUME_MEMORY]
+   LOCAL.CONSUME_MEMORY	= <ACT.UID>
+   CONSUME_MEMORY_ <args>
+   ACT		= <LOCAL.CONSUME_MEMORY>
+
+[FUNCTION CONSUME_MEMORY_]
+   ACT	= <MEMORYFINDTYPE.<args>>
+   if ( <ACT.UID> )
+      ACT.REMOVE
+      CONSUME_MEMORY_
+   endif
+
+
+[FUNCTION RESTRICT_UNSHRINK]
+//If they have no unshrink tag, add one
+//   if ( 0<SRC.TAG.LAST_UNSHRINK> == 0 )
+//      SRC.TAG.LAST_UNSHRINK = <SERV.TIME>
+//      RETURN 0
+//   endif
+   
+//If their last unshrink was long enough ago (between 20 and 30 seconds), let them unshrink and save current time
+//   if ( (<SERV.TIME> - <SRC.TAG.LAST_UNSHRINK>) > 175 )
+//    SRC.TAG.LAST_UNSHRINK	= <SERV.TIME>
+
+//shrink based on str
+  
+        IF ( (<uid.<targ.more2>.str>) < 100 )
+         	IF ( <src.stamina> > 6 )
+         		SRC.STAMINA = ( <SRC.STAMINA> - 5 )
+      			RETURN 0
+      		ELSE
+      			SRC.SYSMESSAGE You dont have enough energy to unshrink this
+      			RETURN 1
+      		ENDIF	
+      	ELSEIF	( (<uid.<targ.more2>.str>) < 200 )
+         	IF ( <src.stamina> > 11 )
+         		SRC.STAMINA = ( <SRC.STAMINA> - 10 )
+      			RETURN 0
+      		ELSE
+      			SRC.SYSMESSAGE You dont have enough energy to unshrink this
+      			RETURN 1
+      		ENDIF			
+       	ELSEIF	( (<uid.<targ.more2>.str>) < 300 )
+         	IF ( <src.stamina> > 16 )
+         		SRC.STAMINA= (<SRC.STAMINA>-15 )
+      			RETURN 0
+      		ELSE
+      			SRC.SYSMESSAGE You dont have enough energy to unshrink this
+      			RETURN 1
+      		ENDIF	     
+      	ELSEIF	( (<uid.<targ.more2>.str>) < 400 )
+         	IF ( <src.stamina> > 21 )
+         		SRC.STAMINA= (<SRC.STAMINA>-20 )
+      			RETURN 0
+      		ELSE
+      			SRC.SYSMESSAGE You dont have enough energy to unshrink this
+      			RETURN 1
+      		ENDIF	      
+      	ELSEIF	( (<uid.<targ.more2>.str>) < 600 )
+         	IF ( <src.stamina> > 31 )
+         		SRC.STAMINA= (<SRC.STAMINA>-30)
+      			RETURN 0
+      		ELSE
+      			SRC.SYSMESSAGE You dont have enough energy to unshrink this
+      			RETURN 1
+      		ENDIF	      
+      	ELSEIF	( (<uid.<targ.more2>.str>) < 900 )
+         	IF ( <src.stamina> > 51 )
+         		SRC.STAMINA=<SRC.STAMINA>-50
+      			RETURN 0
+      		ELSE
+      			SRC.SYSMESSAGE You dont have enough energy to unshrink this
+      			RETURN 1
+      		ENDIF	      
+      	ELSEIF	( (<uid.<targ.more2>.str>) < 1500 )
+         	IF ( <src.stamina> > 71 )
+         		SRC.STAMINA= (<SRC.STAMINA>-70)
+      			RETURN 0
+      		ELSE
+      			SRC.SYSMESSAGE You dont have enough energy to unshrink this
+      			RETURN 1
+      		ENDIF	      
+      	ELSEIF	( (<uid.<targ.more2>.str>) > 1501 )
+         	IF ( <src.stamina> == <src.str> )
+         		SRC.STAMINA= (<SRC.STAMINA>-<src.str>)
+      			RETURN 0
+      		ELSE
+      			SRC.SYSMESSAGE You dont have enough energy to unshrink this
+      			RETURN 1
+      		ENDIF	      
+      	ENDIF
+
+      
+      RETURN 0
+   endif
+
+//Restrict Unshrink if we get this far
+//   if !( <src.isgm> || <src.iscouns> )
+//   SRC.SYSMESSAGE @52 You cannot unshrink another pet yet.
+//   RETURN 1
+//   endif
+   
+   
+		
+		
+
+[FUNCTION PERCENT_OF_SCALE]
+//ARGN1 = Low
+//ARGN2 = High
+//ARGN3 = Value to convert to %
+LOCAL.POS=<EVAL (<ARGN2>-<ARGN1>)>
+LOCAL.POS=<EVAL (<ARGN3>/<LOCAL.POS>)>
+LOCAL.POS=<EVAL (<LOCAL.POS> * 100)>
+RETURN <EVAL <LOCAL.POS>>
+
+[FUNCTION VALUE_FROM_POS]
+//ARGN1 = Low
+//ARGN2 = High
+//ARGN3 = % to convert to Value
+LOCAL.VAL = <EVAL (<ARGN3>*(<ARGN2>-<ARGN1>))>
+LOCAL.VAL = <EVAL (<LOCAL.VAL>/100)>
+LOCAL.VAL = <EVAL (<LOCAL.VAL>+<ARGN1>)>
+RETURN <EVAL <LOCAL.VAL>>
+
+
+[EOF]

@@ -1,0 +1,1810 @@
+// CHANGELOG
+// ---------
+// 05-07-03 - Wigifer - Shrink limits, pack horse fix, and stacking empower and emblaze prevented
+// Oct-15-03 - Wren - Rearranged DClick of explosion potions to disable in guarded areas; was returning before check
+// 25-NOV-03 - Wren - Fixed Empowers...I think Changed LINK in emblaze mem to CONT
+// 07-FEB-04 - Wren - Removed a line in shrinks that attempted to remove the target's backpack..is already a pack horse check before that point and didn't work anyway.
+// 25-SEP-04 - Wren - Added Raist's poisoning script stuff to cures and poisons
+// 15-SEP-05 - Raist - Removed the lines of remove the backpack for greater shrink
+// 15-SEP-05 - Raist - Added golems to shrinkable stuff with G Shrink and have them bounce to backpack
+
+[EVENTS e_stat_potion]
+ON=@Spelleffect
+   IF (<argn>==17)
+      IF (<SRC.FINDID.i_emblaze_memory>)
+         IF !(<SRC.FINDID.i_emblaze_memory2>)
+            SRC.SYSMESSAGE The potion seems to deflect the spell...
+            RETURN 1
+         ENDIF
+      ENDIF
+   ENDIF
+
+
+[FUNCTION f_potion_click125a]
+   //if ( <COLOR> == 0 )
+      DISPID	=
+   //endif
+   TRIGGER @Create
+
+[FUNCTION CONSUMEPOTION]
+   CONSUMEONE 
+   SRC.NEWITEM i_bottle_empty
+   SRC.ACT.BOUNCE
+   return 1
+
+[FUNCTION USEPOTION]
+    SRC.SPELLEFFECT <MORE1>, <MORE2>
+    return <CONSUMEPOTION>
+
+[ITEMDEF i_xpot_memory]
+ID=i_memory
+TYPE=t_eq_script
+NAME=xpot timer
+ON=@create
+ATTR=attr_invis|attr_decay
+timer=2
+
+ON=@timer
+remove
+return 1
+
+[ITEMDEF i_emblaze_memory]
+ID=i_memory
+TYPE=t_eq_script
+NAME=Emblaze Memory
+ON=@create
+ATTR=attr_invis|attr_decay
+timer=250
+
+ON=@timer
+CONT.EVENTS -e_stat_potion
+remove
+return 1
+
+[ITEMDEF i_emblaze_memory2]
+ID=i_memory
+TYPE=t_eq_script
+NAME=Emblaze Memory
+ON=@create
+ATTR=attr_invis|attr_decay
+timer=1
+
+ON=@timer
+remove
+return 1
+
+[ITEMDEF i_potion_ra]
+NAME=Spirit Armour
+ID=i_bottle_empty
+TYPE=T_POTION
+RESOURCES=i_reag_garlic,i_reag_spider_silk,i_reag_sulfur_ash, i_bottle_EMPTY
+TDATA1=i_bottle_empty
+SKILLMAKE=ALCHEMY 100.0
+VALUE=112
+ON=@Click
+  f_potion_click125a
+ON=@Create
+  MORE1=s_reactive_armor
+  MORE2=100.0
+  COLOR=04b
+  
+
+[ITEMDEF i_potion_EmpowerLess]
+ID=i_bottle_empty
+TYPE=T_POTION
+NAME=lesser empower
+TDATA1=i_bottle_empty
+RESOURCES=i_reag_garlic 1, i_reag_mandrake_root 1, i_bottle_EMPTY, i_Mongbat_Jaw 1
+SKILLMAKE=ALCHEMY 36.0
+VALUE=23
+ON=@Click
+  f_potion_click125a
+ON=@Create
+ MORE1=s_Bless
+ MORE2=10.0
+ COLOR=08a9
+
+[ITEMDEF i_potion_CureLess]
+ID=i_bottle_empty
+TYPE=T_POTION
+NAME=lesser cure poison
+TDATA1=i_bottle_empty
+RESOURCES=i_reag_garlic 1, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 15.0
+VALUE=23
+ON=@Click
+  f_potion_click125a
+ON=@Create
+ MORE1=s_Cure
+ MORE2=30.0
+ COLOR=028
+ 
+//Added for Poisoning via the Poison Skill
+ON=@DCLICK
+    IF <SRC.FINDID.i_poisoning1.UID>
+      IF !(<SRC.FINDLAYER(50)>)
+      	 SRC.FINDID.i_poisoning1.REMOVE
+         SRC.SYSMESSAGE You drink the potion and feel it's curing properties take effect.
+      ENDIF
+    ENDIF
+    RETURN 0
+
+[ITEMDEF i_potion_Nightsight]
+ID=i_bottle_empty
+NAME=night sight
+TYPE=T_POTION
+TDATA1=i_bottle_empty
+RESOURCES=i_reag_spider_silk 1, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 20.0
+VALUE=27
+ON=@Click
+  f_potion_click125a
+ON=@DClick
+   return <USEPOTION>
+ON=@Create
+  MORE1=s_night_sight
+  MORE2=75.0
+  COLOR=03e5
+
+[ITEMDEF i_potion_RefreshLess]
+NAME=lesser refresh
+ID=i_bottle_empty
+TYPE=T_POTION
+TDATA1=i_bottle_empty
+RESOURCES=i_reag_black_pearl 1, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 30.0
+VALUE=29
+ON=@Click
+   f_potion_click125a
+ON=@Create
+  MORE1=s_Refresh
+  MORE2=80.0
+  COLOR=037
+
+
+[ITEMDEF i_potion_HealLess]
+NAME=lesser heal
+ID=i_bottle_empty
+TYPE=T_POTION
+RESOURCES=i_reag_ginseng 2, i_bottle_EMPTY
+TDATA1=i_bottle_empty
+SKILLMAKE=ALCHEMY 33.0
+VALUE=30
+ON=@Click
+   f_potion_click125a
+ON=@Create
+  MORE1=s_heal
+  MORE2=50.0
+  COLOR=038
+
+
+[ITEMDEF i_potion_ExplosionLess]
+NAME=lesser explosion
+ID=i_bottle_empty
+TYPE=T_POTION
+TDATA1=0
+RESOURCES=i_reag_sulfur_ash 2, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 36.0
+VALUE	=32
+ON=@Click
+   f_potion_click125a
+ON=@Create
+  MORE1=s_explosion
+  MORE2=30.0
+  COLOR=0486
+  
+ON=@SpellEffect
+   
+  if ( <REGION.FLAGS> & region_flag_guarded )
+     REMOVE
+     return 1
+  endif
+  
+ON=@DClick
+   
+   if ( <REGION.FLAGS> & region_flag_guarded )
+       SRC.SYSMESSAGE You can't use explosion potions in a guarded area.
+       return 1
+   endif
+
+   if (<src.findid.i_xpot_memory>)
+    	SRC.MESSAGE You cant use another exposion potion yet!
+    	return 1
+    else 
+    	src.newitem=i_xpot_memory
+  	src.act.cont=<src.uid>
+  	return 0
+   endif
+
+ON=@Timer
+  if ( <REGION.FLAGS> & region_flag_guarded )
+     SAY *poof*
+     remove
+     return 1
+  endif
+
+
+[ITEMDEF i_potion_AgilityLess]
+ID	=i_bottle_empty
+NAME	=lesser agility
+TYPE	=T_POTION
+TDATA1	=i_bottle_empty
+RESOURCES=i_reag_blood_moss 1, i_bottle_empty
+SKILLMAKE=ALCHEMY 40.0
+VALUE	=30
+ON=@Click
+   f_potion_click125a
+ON=@Create
+  MORE1	=s_Agility
+  MORE2	=20.0
+  COLOR	=0fc
+
+
+[ITEMDEF i_potion_PoisonLess]
+NAME	=lesser poison
+ID	=i_bottle_empty
+TYPE	=T_POTION
+TDATA1	=i_bottle_empty
+RESOURCES=i_reag_nightshade 2, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 45.0
+VALUE	=30
+
+ON=@Click
+   f_potion_click125a
+ON=@Create
+  MORE1	=s_poison
+  MORE2	=30.0
+  COLOR	=0a3
+
+//Added for Poisoning via the Poison Skill
+ON=@DClick
+   IF <CONT.LAYER>=21
+      TARGET On which weapon do you want to apply the poison?
+   Else 
+      SRC.SYSMESSAGE The potion must be in your backpack for you to use it
+  EndIf
+//SRC.SYSMESSAGE This skill is disabled...
+//RETURN 1
+     
+ON=@Targon_item
+IF ( (<SRC.TARG.TYPE>=t_weapon_fence) || (<SRC.TARG.TYPE>=t_weapon_xbow) || (<SRC.TARG.TYPE>=t_weapon_bow) )
+   IF (<SRC.TARG.TOPOBJ.UID> = <SRC.UID>)
+      IF  (<EVAL (<EVAL (-{10 50})> + <EVAL (<SRC.POISONING>/10)> )> > 0) 			//chance of failing or succedding when applying poison
+         SRC.TARG.MORE2=<EVAL ( (<EVAL (<SRC.POISONING>/4)> + <EVAL ({75 250})> ) / 100 )> 	//how many charges it gets
+         SRC.TARG.TAG.POISONLEVEL=1 								//establishes difference between each potion level 1 to 4
+         SRC.SYSMESSAGE You successfully apply the poison on the weapon for <EVAL(<SRC.TARG.MORE2>)> charges!
+         SRC.SKILLCHECK_RUN Skill_Poisoning 							//skill roll
+         IF (<AMOUNT> > 1) 									//makes sure that it doesnt consume all potions if there are more than 1 stacked
+            AMOUNT=<EVAL (<AMOUNT>-1)>
+         Else
+            REMOVE
+         EndIf  
+         SRC.NEWITEM i_bottle_empty
+         SRC.ACT.BOUNCE
+      Else
+         SRC.SYSMESSAGE You fail to apply poison on the item!
+         IF (<AMOUNT> > 1) //makes sure that it doesnt consume all potions if there are more than 1 stacked when you fail to apply the poison
+	      AMOUNT=<EVAL (<AMOUNT>-1)>	                         
+	 Else
+              REMOVE
+	 EndIf
+         SRC.NEWITEM i_bottle_empty
+         SRC.ACT.BOUNCE
+      EndIf   
+    ELSE
+       SRC.SYSMESSAGE You are not skilled enough to apply this poison.
+    EndIf
+ELSE
+   SRC.SYSMESSAGE You can't apply poison on this item!
+EndIf
+RETURN 1
+
+ON=@Targon_char
+   SRC.SYSMESSAGE You can only apply this on weapons!
+   RETURN 1
+
+ON=@Targon_ground
+   SRC.SYSMESSAGE You can only apply this on weapons!
+   RETURN 1   
+
+
+[ITEMDEF i_potion_StrengthLess]
+ID	=i_bottle_empty
+NAME	=lesser strength
+TYPE	=T_POTION
+TDATA1	=i_bottle_empty
+RESOURCES=i_reag_obsidian 1, i_bottle_empty
+SKILLMAKE=ALCHEMY 45.0
+VALUE	=30
+ON=@Click
+   f_potion_click125a
+ON=@Create
+  MORE1	=s_Strength
+  MORE2	=20.0
+  COLOR	=089
+
+
+[ITEMDEF i_potion_ClevernessLess]
+ID	=i_bottle_empty
+NAME	=lesser cleverness
+TYPE	=T_POTION
+TDATA1	=i_bottle_empty
+RESOURCES=i_reag_worm_heart 1, i_bottle_empty
+SKILLMAKE=ALCHEMY 50.0
+ON=@Click
+   f_potion_click125a
+ON=@Create
+  MORE1	=s_Cunning
+  MORE2	=20.0
+  COLOR	=062
+
+
+[ITEMDEF i_potion_Refresh]
+NAME	=refresh
+ID	=i_bottle_empty
+TYPE	=T_POTION
+TDATA1	=i_bottle_empty
+RESOURCES=i_reag_black_pearl 1, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 52.0
+VALUE	=31
+ON=@Click
+   f_potion_click125a
+ON=@Create
+  MORE1	=s_Refresh
+  MORE2	=120.0
+  COLOR	=037
+
+
+
+[ITEMDEF i_potion_Heal]
+NAME	=heal
+ID	=i_bottle_empty
+TYPE	=T_POTION
+RESOURCES=i_reag_ginseng 3, i_bottle_EMPTY
+TDATA1	=i_bottle_empty
+SKILLMAKE=ALCHEMY 54.0
+VALUE	=36
+ON=@Click
+   f_potion_click125a
+ON=@Create
+  MORE1	=s_heal
+  MORE2	=70.0
+  COLOR	=038
+
+
+[ITEMDEF i_potion_Explosion]
+NAME	=explosion
+ID	=i_bottle_empty
+TYPE	=T_POTION
+TDATA1	=0
+RESOURCES=i_reag_sulfur_ash 3, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 55.0
+VALUE	=36
+ON=@Click
+   f_potion_click125a
+ON=@Create
+  MORE1=s_explosion
+  MORE2=70.0
+  COLOR=0486
+
+ 
+ON=@SpellEffect
+  if ( <REGION.FLAGS> & region_flag_guarded )
+     REMOVE
+     return 1
+  endif
+ON=@DClick
+
+  if ( <REGION.FLAGS> & region_flag_guarded )
+     SRC.SYSMESSAGE You can't use explosion potions in a guarded area.
+     return 1
+  endif
+
+  if (<src.findid.i_xpot_memory>)
+     SRC.MESSAGE You cant use another exposion potion yet!
+     return 1
+  else 
+     src.newitem=i_xpot_memory
+     src.act.cont=<src.uid>
+     return 0
+  endif
+
+ON=@Timer
+  if ( <REGION.FLAGS> & region_flag_guarded )
+     SAY *poof*
+     remove
+     return 1
+  endif
+
+
+[ITEMDEF i_potion_Cure]
+ID	=i_bottle_empty
+TYPE	=T_POTION
+NAME	=cure poison
+TDATA1	=i_bottle_empty
+RESOURCES=i_reag_garlic 3, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 56.0
+VALUE	=36
+ON=@Click
+   f_potion_click125a
+ON=@Create
+  MORE1	=s_Cure
+  MORE2	=60.0
+  COLOR	=028
+
+//Added for Poisoning via the Poison Skill
+ON=@DCLICK
+   IF  ((<SRC.FINDID.i_poisoning1.UID>) || (<SRC.FINDID.i_poisoning2.UID>))
+      IF !(<SRC.FINDLAYER(50)>)
+         SRC.FINDID.i_poisoning1.REMOVE
+         SRC.FINDID.i_poisoning2.REMOVE
+         SRC.SYSMESSAGE You drink the potion and feel it's curing properties take effect.
+      ENDIF
+   ENDIF
+   RETURN 0
+   
+[ITEMDEF i_potion_Empower]
+ID	=i_bottle_empty
+NAME	=empower
+TYPE	=T_POTION
+TDATA1	=i_bottle_empty
+RESOURCES=i_reag_garlic 2, i_reag_mandrake_root 2, i_bottle_empty 1, i_Orc_spine 1
+SKILLMAKE=ALCHEMY 67.0
+VALUE	=49
+ON=@DClick
+  IF (<SRC.FINDID.i_emblaze_memory>)
+     SRC.SYSMESSAGE You cant use another emblaze yet!
+     RETURN 1
+  ELSE 
+     SRC.FINDID.i_rune_bless.REMOVE
+     f_potion_click125a
+     SRC.NEWITEM=i_emblaze_memory
+     SRC.ACT.CONT=<SRC.UID>
+     SRC.NEWITEM=i_emblaze_memory2
+     SRC.ACT.CONT=<SRC.UID>
+     SRC.ACT.LINK=<SRC.UID>
+     SRC.EVENTS +e_stat_potion
+     RETURN 0
+  ENDIF
+ON=@Create
+  MORE1	=s_Bless
+  MORE2	=60.0
+  COLOR	=08a6
+
+
+[ITEMDEF i_potion_Agility]
+ID	=i_bottle_empty
+NAME	=agility
+TYPE	=T_POTION
+TDATA1	=i_bottle_empty
+RESOURCES=i_reag_blood_moss 3, i_bottle_empty
+SKILLMAKE=ALCHEMY 60.0
+VALUE	=49
+ON=@Click
+   f_potion_click125a
+ON=@Create
+  MORE1	=s_Agility
+  MORE2	=50.0
+  COLOR	=0fc
+
+
+[ITEMDEF i_potion_PermanenceLess]
+ID	=i_bottle_empty
+NAME	=lesser permanence
+TYPE	=T_POTION
+RESOURCES=i_reag_blackmoor 2, i_reag_executioners_cap 2, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 61.0
+VALUE	=44
+ON=@Click
+   f_potion_click125a
+ON=@Create
+  MORE2	=50.0
+  COLOR	=0f3
+ON=@DCLICK
+  VAR.f_permanence125a=<MORE2>
+  return <f_permanence125a>
+
+
+[ITEMDEF i_potion_Stoneskin]
+NAME	=stone skin
+ID	=i_bottle_empty
+TYPE	=T_POTION
+TDATA1	=i_bottle_empty
+RESOURCES=i_reag_black_pearl 1, i_reag_pig_iron 3, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 63.0
+VALUE	=50
+ON=@Click
+   f_potion_click125a
+ON=@DClick
+   return <USEPOTION>
+ON=@Create
+  MORE1	=s_Stoneskin
+  MORE2	=100.0
+  COLOR	=02e7
+
+
+[ITEMDEF i_potion_Strength]
+ID	=i_bottle_empty
+NAME	=strength
+TYPE	=T_POTION
+TDATA1	=i_bottle_empty
+RESOURCES=i_reag_obsidian 3, i_bottle_empty
+SKILLMAKE=ALCHEMY 64.0
+VALUE	=41
+ON=@Click
+   f_potion_click125a
+ON=@Create
+  MORE1	=s_Strength
+  MORE2	=50.0
+  COLOR	=089
+
+
+
+[ITEMDEF i_potion_Poison]
+NAME	=poison
+ID	=i_bottle_empty
+TYPE	=T_POTION
+TDATA1	=i_bottle_empty
+RESOURCES=i_reag_nightshade 30, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 65.0
+VALUE	=46
+
+ON=@Click
+   f_potion_click125a
+ON=@Create
+  MORE1	=s_poison
+  MORE2	=50.0
+  COLOR	=0a3
+
+//Added for Poisoning via the Poison Skill
+ON=@DClick
+   IF <CONT.LAYER>=21
+      TARGET On which weapon do you want to apply the poison?
+   Else 
+      SRC.SYSMESSAGE The potion must be in your backpack for you to use it
+   EndIf
+//   SRC.SYSMESSAGE This skill is disabled...
+//   RETURN 1
+     
+ON=@Targon_item
+IF ( (<SRC.TARG.TYPE>=t_weapon_fence)  || (<SRC.TARG.TYPE>=t_weapon_xbow) || (<SRC.TARG.TYPE>=t_weapon_bow) )
+   IF ( (<SRC.POISONING> >= 400) && (<SRC.TARG.TOPOBJ.UID> = <SRC.UID>) )
+      IF  <EVAL(<EVAL(-{10 50})>+<EVAL(<SRC.POISONING>/10)>)>>0
+         SRC.TARG.MORE2=<EVAL ( ( <EVAL (<SRC.POISONING>/4)> + <EVAL ({75 250})> ) / 100 )>
+         SRC.TARG.TAG.POISONLEVEL=2
+         SRC.SYSMESSAGE You successfully apply the poison on the weapon for <EVAL(<SRC.TARG.MORE2>)> charges!
+         SRC.SKILLCHECK_RUN Skill_Poisoning
+         IF ( <AMOUNT> > 1 )
+            AMOUNT=<EVAL(<AMOUNT>-1)>
+         Else 
+            REMOVE
+         EndIf     
+         SRC.NEWITEM i_bottle_empty
+         SRC.ACT.BOUNCE
+      Else
+         SRC.SYSMESSAGE You fail to apply poison on the item!
+         IF ( <AMOUNT> > 1 )
+	      AMOUNT=<EVAL(<AMOUNT>-1)>
+	   Else
+            REMOVE
+         EndIf   
+         SRC.NEWITEM i_bottle_empty
+         SRC.ACT.BOUNCE
+      EndIf
+   ELSE
+      SRC.SYSMESSAGE You are not skilled enough to apply this poison.
+   ENDIF
+Else 
+   SRC.SYSMESSAGE You can't apply poison on this item!
+EndIf
+RETURN 1
+ON=@Targon_char
+   SRC.SYSMESSAGE You can only apply this on weapons!
+   RETURN 1
+
+ON=@Targon_ground
+   SRC.SYSMESSAGE You can only apply this on weapons!
+   RETURN 1     
+
+
+[ITEMDEF i_potion_ManaLess]
+ID	=i_bottle_empty
+NAME	=lesser mana refresh
+TYPE	=T_POTION
+TDATA1	=i_bottle_empty
+RESOURCES=i_reag_black_pearl 2, i_reag_worm_heart 3, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 66.0
+VALUE	=59
+ON=@Click
+   f_potion_click125a
+ON=@Create
+  MORE1	=s_mana
+  MORE2	=20.0
+  COLOR	=0c1
+
+
+[ITEMDEF i_potion_Cleverness]
+ID	=i_bottle_empty
+NAME	=cleverness
+TYPE	=T_POTION
+TDATA1	=i_bottle_empty
+RESOURCES=i_reag_worm_heart 3, i_bottle_empty
+SKILLMAKE=ALCHEMY 68.0
+VALUE	=42
+ON=@Click
+   f_potion_click125a
+ON=@Create
+  MORE1	=s_Cunning
+  MORE2	=50.0
+  COLOR	=062
+
+
+
+[ITEMDEF i_potion_Permanence]
+ID	=i_bottle_empty
+NAME	=permanence
+TYPE	=T_POTION
+RESOURCES=i_reag_blackmoor 3, i_reag_executioners_cap 3, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 70.0
+VALUE	=55
+ON=@Click
+   f_potion_click125a
+ON=@Create
+  MORE2	=70.0
+  COLOR	=0f3
+ON=@DCLICK
+  VAR.f_permanence125a=<MORE2>
+  return <f_permanence125a>
+
+
+[ITEMDEF i_potion_CureGreat]
+ID	=i_bottle_empty
+TYPE	=T_POTION
+NAME	=greater cure
+TDATA1	=i_bottle_empty
+RESOURCES=i_reag_garlic 4, i_reag_mandrake_root 2, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 71.0
+VALUE	=56
+ON=@Click
+   f_potion_click125a
+ON=@Create
+  MORE1	=s_Cure
+  MORE2	=60.0
+  COLOR	=028
+
+//Added for Poisoning via the Poison Skill
+ON=@DCLICK
+   IF  ((<SRC.FINDID.i_poisoning1.UID>) || (<SRC.FINDID.i_poisoning2.UID>) || (<SRC.FINDID.i_poisoning3.UID>) || (<SRC.FINDID.i_poisoning4.UID>) || (<SRC.FINDID.i_poison_food.UID>))
+      IF !(<SRC.FINDLAYER(50)>)
+         SRC.FINDID.i_poisoning1.REMOVE
+         SRC.FINDID.i_poisoning2.REMOVE
+         SRC.FINDID.i_poisoning3.REMOVE
+         SRC.FINDID.i_poisoning4.REMOVE
+         SRC.FINDID.i_poison_food.REMOVE
+         SRC.SYSMESSAGE You drink the potion and feel it's curing properties take effect.
+         IF <SRC.FINDID.i_poisoning4.UID>
+            SRC.FINDID.i_poisoning4.REMOVE
+         ENDIF
+      ENDIF
+   EndIf
+   RETURN 0
+
+[ITEMDEF i_potion_RefreshGreat]
+NAME	=greater refresh
+ID	=i_bottle_empty
+TYPE	=T_POTION
+TDATA1	=i_bottle_empty
+RESOURCES=i_reag_black_pearl 2, i_reag_mandrake_root 1, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 72.0
+VALUE	=52
+ON=@Click
+   f_potion_click125a
+ON=@Create
+  MORE1	=s_Refresh
+  MORE2	=200.0
+  COLOR	=037
+
+
+
+[ITEMDEF i_potion_AgilityGreat]
+ID	=i_bottle_empty
+NAME	=greater agility
+TYPE	=T_POTION
+TDATA1	=i_bottle_empty
+RESOURCES=i_reag_blood_moss 3, i_reag_mandrake_root 2, i_bottle_empty
+SKILLMAKE=ALCHEMY 74.0
+VALUE	=71
+ON=@Click
+   f_potion_click125a
+ON=@Create
+  MORE1	=s_Agility
+  MORE2	=90.0
+  COLOR	=0fc
+
+
+
+
+
+[ITEMDEF i_potion_ExplosionGreat]
+NAME=greater explosion
+ID=i_bottle_empty
+TYPE=T_POTION
+TDATA1=0
+RESOURCES=i_reag_sulfur_ash 5, i_reag_mandrake_root 2, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 76.0
+VALUE=75
+ON=@Click
+   f_potion_click125a
+
+ON=@Create
+  MORE1=s_explosion
+  MORE2=100.0
+  COLOR=0486
+
+ON=@SpellEffect
+  if ( <REGION.FLAGS> & region_flag_guarded )
+     REMOVE
+     return 1
+  endif
+
+ON=@DClick
+
+  if ( <REGION.FLAGS> & region_flag_guarded )
+     SRC.SYSMESSAGE You can't use explosion potions in a guarded area.
+     return 1
+  endif	
+  
+  IF (<SRC.TAG0.XPOTPVP>==1)
+	SRC.SYSMESSAGE You can't use this yet.
+	return 1
+  endif
+
+  if (<src.findid.i_xpot_memory>)
+     SRC.MESSAGE You cant use another exposion potion yet!
+     return 1
+  else 
+     src.newitem=i_xpot_memory
+     src.act.cont=<src.uid>
+     return 0
+  endif
+
+  
+ON=@Timer
+
+  if ( <REGION.FLAGS> & region_flag_guarded )
+     SAY *poof*
+     remove
+     return 1
+  endif
+
+
+
+
+
+[ITEMDEF i_potion_StrengthGreat]
+ID	=i_bottle_empty
+NAME	=greater strength
+TYPE	=T_POTION
+TDATA1	=i_bottle_empty
+RESOURCES=i_reag_obsidian 3, i_reag_mandrake_root 2, i_bottle_empty
+SKILLMAKE=ALCHEMY 78.0
+VALUE	=63
+ON=@Click
+   f_potion_click125a
+ON=@Create
+  MORE1	=s_Strength
+  MORE2	=90.0
+  COLOR	=089
+
+[ITEMDEF i_potion_EmpowerGreat]
+ID	=i_bottle_empty
+NAME	=greater empower
+TYPE	=T_POTION
+TDATA1	=i_bottle_empty
+RESOURCES=i_reag_garlic 3, i_reag_mandrake_root 3, i_bottle_empty, i_reag_Dragons_heart 1
+SKILLMAKE=ALCHEMY 93.0
+VALUE	=63
+ON=@DClick
+  IF (<SRC.FINDID.i_emblaze_memory>)
+     SRC.SYSMESSAGE You cant use another emblaze yet!
+     RETURN 1
+  ELSE 
+     SRC.FINDID.i_rune_bless.REMOVE
+     f_potion_click125a
+     SRC.NEWITEM=i_emblaze_memory
+     SRC.ACT.CONT=<SRC.UID>
+     SRC.NEWITEM=i_emblaze_memory2
+     SRC.ACT.CONT=<SRC.UID>
+     SRC.ACT.LINK=<SRC.UID>
+     SRC.EVENTS +e_stat_potion
+     RETURN 0
+  ENDIF
+ON=@Create
+  MORE1	=s_Bless
+  MORE2	=150.0
+  COLOR	=030
+
+
+[ITEMDEF i_potion_Emblaze]
+ID	=i_bottle_empty
+NAME	=emblaze
+TYPE	=t_potion
+TDATA1	=i_bottle_empty
+RESOURCES=i_reag_garlic 4, i_reag_mandrake_root 4, i_bottle_empty, i_Balron_Bones 1
+SKILLMAKE=ALCHEMY 100.0
+VALUE	=63
+ON=@DClick
+  IF (<SRC.FINDID.i_emblaze_memory>)
+     SRC.SYSMESSAGE You cant use another emblaze yet!
+     RETURN 1
+  ELSE 
+     SRC.FINDID.i_rune_bless.REMOVE
+     f_potion_click125a
+     SRC.NEWITEM=i_emblaze_memory
+     SRC.ACT.CONT=<SRC.UID>
+     SRC.NEWITEM=i_emblaze_memory2
+     SRC.ACT.CONT=<SRC.UID>
+     SRC.ACT.LINK=<SRC.UID>
+     SRC.EVENTS +e_stat_potion
+     RETURN 0
+  ENDIF
+ON=@Create
+  MORE1 =s_bless
+  MORE2 =200.0
+  COLOR =07b5
+ 
+
+[ITEMDEF i_potion_Steelskin]
+NAME	=steel skin
+ID	=i_bottle_empty
+TYPE	=T_POTION
+TDATA1	=i_bottle_empty
+RESOURCES=i_reag_black_pearl 1, i_reag_pig_iron 4, i_reag_mandrake_root 2, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 80.0
+VALUE	=79
+ON=@Click
+   f_potion_click125a
+ON=@DClick
+   return <USEPOTION>
+ON=@Create
+  MORE1	=s_Steelskin
+  MORE2	=100.0
+  COLOR	=02e9
+
+
+
+[ITEMDEF i_potion_PoisonGreat]
+NAME	=greater poison
+ID	=i_bottle_empty
+TYPE	=T_POTION
+TDATA1	=i_bottle_empty
+RESOURCES=i_reag_Dragons_heart 3, i_reag_daemon_bone 20, i_reag_dragon_blood 20, i_acid_demon_blood 20,i_poisonous_eye 5, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 90.0
+VALUE	=73
+
+ON=@Click
+   f_potion_click125a
+ON=@Create
+  MORE1	=s_poison
+  MORE2	=70.0
+  COLOR	=0a3
+
+//Added for Poisoning via the Poison Skill
+ON=@DClick
+   IF <CONT.LAYER>=21
+      TARGET On which weapon do you want to apply the poison?
+   Else 
+      SRC.SYSMESSAGE The potion must be in your backpack for you to use it
+   EndIf
+//   SRC.SYSMESSAGE This skill is disabled...
+//   RETURN 1
+
+ON=@Targon_item
+IF ( (<SRC.TARG.TYPE>=t_weapon_fence)  || (<SRC.TARG.TYPE>=t_weapon_xbow) || (<SRC.TARG.TYPE>=t_weapon_bow) )
+   IF ( (<SRC.POISONING> >= 600 ) && (<SRC.TARG.TOPOBJ.UID>=<SRC.UID>) ) 
+      IF  <EVAL(<EVAL(-{10 50})>+<EVAL(<SRC.POISONING>/10)>)>>0
+         SRC.TARG.MORE2=<EVAL ( ( <EVAL (<SRC.POISONING>/4)> + <EVAL ({75 250})> ) / 100 )>
+         SRC.TARG.TAG.POISONLEVEL=3
+         SRC.SYSMESSAGE You successfully apply the poison on the weapon for <EVAL(<SRC.TARG.MORE2>)> charges!
+         SRC.SKILLCHECK_RUN Skill_Poisoning
+         IF ( <AMOUNT> > 1 )
+            AMOUNT=<EVAL (<AMOUNT>-1)>
+         Else 
+            REMOVE
+         EndIf     
+         SRC.NEWITEM i_bottle_empty
+         SRC.ACT.BOUNCE
+      Else
+         SRC.SYSMESSAGE You fail to apply poison on the item!
+         IF ( <AMOUNT> > 1 )
+	    AMOUNT=<EVAL (<AMOUNT>-1)>
+         Else
+            REMOVE
+         EndIf
+         SRC.NEWITEM i_bottle_empty
+         SRC.ACT.BOUNCE
+      EndIf
+   ELSE
+      SRC.SYSMESSAGE You are not skilled enough to apply this poison.
+   ENDIF
+Else 
+   SRC.SYSMESSAGE You can't apply poison on this item!
+EndIf
+RETURN 1
+
+ON=@Targon_char
+   SRC.SYSMESSAGE You can only apply this on weapons!
+   RETURN 1
+
+ON=@Targon_ground
+   SRC.SYSMESSAGE You can only apply this on weapons!
+   RETURN 1   
+
+
+[ITEMDEF i_potion_Mana]
+ID	=i_bottle_empty
+NAME	=mana refresh
+TYPE	=T_POTION
+TDATA1	=i_bottle_empty
+RESOURCES=i_reag_black_pearl 3, i_reag_worm_heart 6, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 84.0
+VALUE	=75	// 89
+ON=@Click
+   f_potion_click125a
+ON=@Create
+  MORE1	=s_mana
+  MORE2	=30.0
+  COLOR	=0c1
+
+
+[ITEMDEF i_potion_HealGreat]
+NAME	=greater heal
+ID	=i_bottle_empty
+TYPE	=T_POTION
+RESOURCES=i_reag_ginseng 4, i_reag_mandrake_root 2, i_bottle_EMPTY
+TDATA1	=i_bottle_empty
+SKILLMAKE=ALCHEMY 86.0
+VALUE	=65
+ON=@Click
+   f_potion_click125a
+ON=@Create
+  MORE1	=s_heal
+  MORE2	=90.0
+  COLOR	=038
+
+
+
+[ITEMDEF i_potion_ClevernessGreat]
+ID	=i_bottle_empty
+NAME	=greater cleverness
+TYPE	=T_POTION
+TDATA1	=i_bottle_empty
+RESOURCES=i_reag_worm_heart 3, i_reag_mandrake_root 2, i_bottle_empty
+SKILLMAKE=ALCHEMY 88.0
+VALUE	=63	// 65
+ON=@Click
+   f_potion_click125a
+ON=@Create
+  MORE1	=s_Cunning
+  MORE2	=90.0
+  COLOR	=062
+
+
+
+[ITEMDEF i_potion_PermanenceGreat]
+ID	=i_bottle_empty
+NAME	=greater permanence
+TYPE	=T_POTION
+RESOURCES=i_reag_blackmoor 3, i_reag_executioners_cap 3, i_reag_mandrake_root 2, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 90.0
+VALUE	=80
+ON=@Create
+  MORE2	=110.0
+  COLOR	=0f3
+ON=@DCLICK
+  VAR.f_permanence125a=<MORE2>
+  return <f_permanence125a>
+
+
+[ITEMDEF i_potion_Invisibility]
+ID=i_bottle_empty
+NAME=translucency
+TYPE=T_POTION
+TDATA1=i_bottle_empty
+RESOURCES=i_reag_dead_wood 5, i_reag_spider_silk 5, i_reag_mandrake_root 2, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 95.0
+VALUE=100
+ON=@Click
+   f_potion_click125a
+ON=@Create
+  MORE1	=s_invisibility
+  MORE2	=40.0
+  COLOR	=08fd
+
+
+[ITEMDEF i_potion_Shrink]
+ID=i_bottle_empty
+NAME=shrink
+TYPE=T_POTION
+TDATA1=i_bottle_empty
+RESOURCES=i_reag_blackmoor 5, i_reag_pumice 5, i_reag_mandrake_root 2, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 97.0
+VALUE=103
+
+ON=@Click
+   f_potion_click125a
+ON=@Create
+  MORE1	=s_shrink
+  MORE2	=100.0
+  COLOR	=02a6
+  
+ON=@DCLICK
+if ( <CONT.TOPOBJ.UID> != <SRC.UID> )
+   src.sysmessage You must have the potion in your pack.
+   return 1
+endif
+TARGET=Which animal would you like to shrink?
+RETURN 1
+
+ON=@TARGON_GROUND
+   SRC.SYSMESSAGE That's no animal!
+   RETURN 1
+
+ON=@TARGON_ITEM
+   SRC.SYSMESSAGE That's no animal!
+   RETURN 1
+
+ON=@TARGON_CHAR
+   if ( <TOPOBJ.UID> != <SRC.UID> )
+     SRC.SYSMESSAGE You must have the potion in your pack.
+     return 1
+   endif
+
+   if !(<SRC.TARG.ISMYPET>)
+      SRC.SYSMESSAGE The animal must be loyal to you!
+      return 1
+   endif
+
+   IF ( <SRC.TARG.NPC> == BRAIN_DRAGON )
+     SRC.SYSMESSAGE You can't shrink dragons with such a potion.
+     return 1
+   ENDIF
+
+//Pack Horse Item Check
+   IF ( <SRC.TARG.BODY> == c_horse_pack )
+     IF (0<SRC.TARG.FINDLAYER(21).FINDCONT(0)>)
+        SRC.SYSMESSAGE You can't shrink it while it still has items!
+        RETURN 1
+     ELSE
+        SRC.SYSMESSAGE You check it has no items, and finding it doesn't, carry on.
+     ENDIF
+   ENDIF
+
+   IF ( strcmp( "<SRC.TARG.TAG.GOLEM>", ""  ) )
+        SRC.SYSMESSAGE You can't shrink golems.
+        return 1
+   ENDIF
+
+   IF !( (<SRC.TARG.NPC> == BRAIN_ANIMAL) || (<SRC.TARG.NPC> == BRAIN_MONSTER) )
+     SRC.SYSMESSAGE That's not an animal!
+     return 1
+   ENDIF
+
+   if ( !<src.targ.canseelos> || ( <src.targ.distance> > 2 ) )
+     src.sysmessage They are too far away.
+     return 1
+   endif
+   
+   if (<src.isgm>)
+       SERV.LOG GM <src.account> <src.name> is using a shrink on <src.targ.uid> <src.targ.name>
+   ENDIF
+   
+   IF ((<SRC.TARG.ID>=C_HORSE_GRAY_DONATOR)||(<SRC.TARG.ID>=C_HORSE_BROWN_LT_DONATOR)||(<SRC.TARG.ID>=C_HORSE_BROWN_DK_DONATOR)||(<SRC.TARG.ID>=C_HORSE_TAN_DONATOR)||(<SRC.TARG.ID>=C_LLAMA_DONATOR)||(<SRC.TARG.ID>=C_OSTARD_FOREST_DONATOR)||(<SRC.TARG.ID>=C_OSTARD_DESERT_DONATOR)||(<SRC.TARG.ID>=C_OSTARD_ZOSTRICH_DONATOR) || (<SRC.TARG.ID>=c_polar_bear_donator)||(<SRC.TARG.ID>=c_casual_horse_donator)||(<SRC.TARG.ID>=c_armored_steed_donator)||(<SRC.TARG.ID>=c_flame_steed_donator)||(<SRC.TARG.ID>=c_cusidhe_donator)||(<SRC.TARG.ID>=c_lion_wings_donator)||(<SRC.TARG.ID>=c_billy_goat_donator)||(<SRC.TARG.ID>=c_raptor_light_donator)||(<SRC.TARG.ID>=c_ostrich_donator)||(<SRC.TARG.ID>=c_grizzly_polar_bear_donator)||(<SRC.TARG.ID>=c_raptor_donator))
+   SRC.SYSMESSAGE Your pet has been shrunk!
+   CONSUMEPOTION
+   SRC.TARG.SHRINK
+   Src.bounce <uid.<src.targ.actarg1>>
+   obj = <uid.<src.targ.actarg1>>
+   obj.attr=05
+   SERV.LOG :DONATOR MOUNT SHRINK: <src.account> <src.name> <src.uid> is shrinking a donator mount <src.targ.uid> <src.targ.id> <src.targ.name> at <src.targ.p>.. New figurine UID is <uid.<src.targ.actarg1>>
+   return 1
+   endif
+   
+   IF ((<SRC.TARG.ID>=c_retribution_steed)||(<SRC.TARG.ID>=c_retribution_zostrich)||(<SRC.TARG.ID>=c_ice_orn)||(<SRC.TARG.ID>=c_ice_llama)||(<SRC.TARG.ID>=c_ice_zostrich)||(<SRC.TARG.ID>=c_ice_horse)||(<SRC.TARG.ID>=c_fire_llama)||(<SRC.TARG.ID>=c_fire_steed)||(<SRC.TARG.ID>=c_fire_orn)||(<SRC.TARG.ID>=c_fire_zostrich)||(<SRC.TARG.ID>=c_llama_of_the_sun)||(<SRC.TARG.ID>=c_oclock_of_the_sun)||(<SRC.TARG.ID>=c_zostrich_of_the_sun)||(<SRC.TARG.ID>=c_orn_of_the_sun)||(<SRC.TARG.ID>=c_vengeance_steed)||(<SRC.TARG.ID>=c_vengeance_zostrich)||(<SRC.TARG.ID>=c_jungle_steed)||(<SRC.TARG.ID>=c_jungle_oclock)||(<SRC.TARG.ID>=c_steed_of_the_moon)||(<SRC.TARG.ID>=c_oclock_of_the_moon)||(<SRC.TARG.ID>=c_llama_of_the_moon)||(<SRC.TARG.ID>=c_orn_of_the_moon)||(<SRC.TARG.ID>=c_zostrich_of_the_moon)||(<SRC.TARG.ID>=c_death_oclock)||(<SRC.TARG.ID>=c_death_steed)||(<SRC.TARG.ID>=c_acid_orn)||(<SRC.TARG.ID>=c_acid_llama)||(<SRC.TARG.ID>=c_acid_zostrich)||(<SRC.TARG.ID>=c_acid_steed)||(<SRC.TARG.ID>=c_ethereal_orn)||(<SRC.TARG.ID>=c_ethereal_horse)||(<SRC.TARG.ID>=c_ethereal_llama)||(<SRC.TARG.ID>=c_ethereal_zostrich)||(<SRC.TARG.ID>=c_horse_darkonian)||(<SRC.TARG.ID>=c_horse_shadow)||(<SRC.TARG.ID>=c_unicorn)||(<SRC.TARG.ID>=c_mustang_warped)||(<SRC.TARG.ID>=c_nightmare)||(<SRC.TARG.ID>=c_vampiric_horse)||(<SRC.TARG.ID>=c_vampiric_orn)||(<SRC.TARG.ID>=c_vampiric_zostrich)||(<SRC.TARG.ID>=c_vampiric_llama)||(<SRC.TARG.ID>=c_flamingo_orn)||(<SRC.TARG.ID>=c_flamingo_horse)||(<SRC.TARG.ID>=c_flamingo_zostrich)||(<SRC.TARG.ID>=c_flamingo_llama))
+	SRC.SYSMESSAGE Your pet has been shrunk!
+    CONSUMEPOTION
+    SRC.TARG.SHRINK
+    SERV.LOG :MOUNT SHRINK: <src.account> <src.name> <src.uid> is shrinking a <src.targ.uid> <src.targ.id> <src.targ.name> at <src.targ.p>.. New figurine UID is <uid.<src.targ.actarg1>>
+	RETURN 1
+	ENDIF
+  
+   SRC.SYSMESSAGE Your pet has been shrunk!
+   CONSUMEPOTION
+   SRC.TARG.SHRINK
+   return 1
+
+[ITEMDEF i_potion_ShrinkGreat]
+ID=i_bottle_empty
+NAME=greater shrink
+TYPE=T_POTION
+TDATA1=i_bottle_empty
+RESOURCES=i_reag_blackmoor 10, i_reag_pumice 10, i_reag_mandrake_root 10, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 100.0
+VALUE=155
+ON=@Click
+   f_potion_click125a
+ON=@Create
+  MORE1	=s_shrink
+  MORE2	=100.0
+  COLOR	=02a6
+
+ON=@DCLICK
+if ( <TOPOBJ.UID> != <SRC.UID> )
+   src.sysmessage You must have the potion in your pack.
+   return 1
+endif
+TARGET=Which animal would you like to shrink?
+RETURN 1
+
+ON=@TARGON_GROUND
+   SRC.SYSMESSAGE That's no animal!
+   RETURN 1
+
+ON=@TARGON_ITEM
+   SRC.SYSMESSAGE That's no animal!
+   RETURN 1
+
+ON=@TARGON_CHAR
+   if ( <CONT.TOPOBJ.UID> != <SRC.UID> )
+     SRC.SYSMESSAGE You must have the potion in your pack.
+     return 1
+   endif
+
+   if !(<SRC.TARG.ISMYPET>)
+      SRC.SYSMESSAGE The animal must be loyal to you!
+      return 1
+   endif
+
+   IF !( (<SRC.TARG.NPC> == BRAIN_ANIMAL) || (<SRC.TARG.NPC> == BRAIN_MONSTER) || (<SRC.TARG.NPC> == BRAIN_DRAGON) )
+     SRC.SYSMESSAGE You can't shrink that!
+     return 1
+   ENDIF
+
+//Pack Horse Item Check
+   IF ( <SRC.TARG.BODY> == c_horse_pack )
+     IF (0<SRC.TARG.FINDLAYER(21).FINDCONT(0)>)
+        SRC.SYSMESSAGE You can't shrink it while it still has items!
+        RETURN 1
+     ELSE
+        SRC.SYSMESSAGE You check it has no items, and finding it doesn't, carry on.
+     ENDIF
+   ENDIF
+
+   if ( !<src.targ.canseelos> || ( <src.targ.distance> > 2 ) )
+     src.sysmessage They are too far away.
+     return 1
+   endif
+
+   IF ( strcmp( "<SRC.TARG.TAG.GOLEM>", ""  ) )
+      	CONSUMEPOTION
+      	LOCAL.GOLEMID=i_<STRSUB 2 STRLEN(<SRC.TARG.BASEID>) <SRC.TARG.BASEID>>
+    	SRC.TARG.SHRINK
+    	TRY uid.<src.targ.actarg1>.ID=<LOCAL.GOLEMID>
+    	TRY uid.<src.targ.actarg1>.TYPE=T_GOLEM
+    	Src.bounce <uid.<src.targ.actarg1>>
+    	return 1
+   ENDIF
+   
+      if (<src.isgm>)
+          SERV.LOG GM <src.account> <src.name> is using a shrink on <src.targ.uid> <src.targ.name>
+   ENDIF
+   
+   IF ((<SRC.TARG.ID>=C_HORSE_GRAY_DONATOR)||(<SRC.TARG.ID>=C_HORSE_BROWN_LT_DONATOR)||(<SRC.TARG.ID>=C_armor_steed_DONATOR)||(<SRC.TARG.ID>=C_HORSE_BROWN_DK_DONATOR)||(<SRC.TARG.ID>=C_HORSE_TAN_DONATOR)||(<SRC.TARG.ID>=C_LLAMA_DONATOR)||(<SRC.TARG.ID>=C_OSTARD_FOREST_DONATOR)||(<SRC.TARG.ID>=C_OSTARD_DESERT_DONATOR)||(<SRC.TARG.ID>=C_OSTARD_ZOSTRICH_DONATOR))
+   SRC.SYSMESSAGE Your pet has been shrunk!
+   CONSUMEPOTION
+   SRC.TARG.SHRINK
+   Src.bounce <uid.<src.targ.actarg1>>
+   obj = <uid.<src.targ.actarg1>>
+   obj.attr=05
+   SERV.LOG :DONATOR MOUNT SHRINK: <src.account> <src.name> <src.uid> is shrinking a donator mount <src.targ.uid> <src.targ.id> <src.targ.name>. New figurine UID is <uid.<src.targ.actarg1>>
+   return 1
+   endif
+   
+      IF ((<SRC.TARG.ID>=c_retribution_steed)||(<SRC.TARG.ID>=c_retribution_zostrich)||(<SRC.TARG.ID>=c_ice_orn)||(<SRC.TARG.ID>=c_ice_llama)||(<SRC.TARG.ID>=c_ice_zostrich)||(<SRC.TARG.ID>=c_ice_horse)||(<SRC.TARG.ID>=c_fire_llama)||(<SRC.TARG.ID>=c_fire_steed)||(<SRC.TARG.ID>=c_fire_orn)||(<SRC.TARG.ID>=c_fire_zostrich)||(<SRC.TARG.ID>=c_llama_of_the_sun)||(<SRC.TARG.ID>=c_oclock_of_the_sun)||(<SRC.TARG.ID>=c_zostrich_of_the_sun)||(<SRC.TARG.ID>=c_orn_of_the_sun)||(<SRC.TARG.ID>=c_vengeance_steed)||(<SRC.TARG.ID>=c_vengeance_zostrich)||(<SRC.TARG.ID>=c_jungle_steed)||(<SRC.TARG.ID>=c_jungle_oclock)||(<SRC.TARG.ID>=c_steed_of_the_moon)||(<SRC.TARG.ID>=c_oclock_of_the_moon)||(<SRC.TARG.ID>=c_llama_of_the_moon)||(<SRC.TARG.ID>=c_orn_of_the_moon)||(<SRC.TARG.ID>=c_zostrich_of_the_moon)||(<SRC.TARG.ID>=c_death_oclock)||(<SRC.TARG.ID>=c_death_steed)||(<SRC.TARG.ID>=c_acid_orn)||(<SRC.TARG.ID>=c_acid_llama)||(<SRC.TARG.ID>=c_acid_zostrich)||(<SRC.TARG.ID>=c_acid_steed)||(<SRC.TARG.ID>=c_ethereal_orn)||(<SRC.TARG.ID>=c_ethereal_horse)||(<SRC.TARG.ID>=c_ethereal_llama)||(<SRC.TARG.ID>=c_ethereal_zostrich)||(<SRC.TARG.ID>=c_horse_darkonian)||(<SRC.TARG.ID>=c_horse_shadow)||(<SRC.TARG.ID>=c_unicorn)||(<SRC.TARG.ID>=c_mustang_warped)||(<SRC.TARG.ID>=c_nightmare)||(<SRC.TARG.ID>=c_vampiric_horse)||(<SRC.TARG.ID>=c_vampiric_orn)||(<SRC.TARG.ID>=c_vampiric_zostrich)||(<SRC.TARG.ID>=c_vampiric_llama)||(<SRC.TARG.ID>=c_flamingo_orn)||(<SRC.TARG.ID>=c_flamingo_horse)||(<SRC.TARG.ID>=c_flamingo_zostrich)||(<SRC.TARG.ID>=c_flamingo_llama))
+	SRC.SYSMESSAGE Your pet has been shrunk!
+    CONSUMEPOTION
+    SRC.TARG.SHRINK
+    SERV.LOG :MOUNT SHRINK: <src.account> <src.name> <src.uid> is shrinking a <src.targ.uid> <src.targ.id> <src.targ.name>. New figurine UID is <uid.<src.targ.actarg1>>
+	RETURN 1
+	ENDIF
+   
+   SRC.SYSMESSAGE Your pet has been shrunk!
+   CONSUMEPOTION
+   SRC.TARG.SHRINK
+   return 1
+
+
+[ITEMDEF i_potion_ManaGreat]
+ID	=i_bottle_empty
+NAME	=greater mana refresh
+TYPE	=T_POTION
+TDATA1	=i_bottle_empty
+RESOURCES=i_reag_black_pearl 3, i_reag_worm_heart 6, i_reag_mandrake_root 3, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 100.0
+VALUE	=100	// 126
+ON=@Create
+  MORE1	=s_mana
+  MORE2	=45.0
+  COLOR	=0c1
+
+
+
+[ITEMDEF i_potion_PoisonDeadly]
+NAME	=deadly poison
+ID	=i_bottle_empty
+TYPE	=T_POTION
+TDATA1	=i_bottle_empty
+RESOURCES=i_reag_Dragons_heart 5, i_reag_daemon_bone 40, i_reag_dragon_blood 40, i_acid_demon_blood 40,i_poisonous_eye 10, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 105.0
+VALUE	=90	// 117
+ON=@Click
+   f_potion_click125a
+ON=@Create
+  MORE1	=s_poison
+  MORE2	=70.0
+  COLOR	=0487
+
+//Added for Poisoning via the Poison Skill
+ON=@DClick
+   IF <CONT.LAYER>=21
+      TARGET On which weapon do you want to apply the poison?
+   Else 
+      SRC.SYSMESSAGE The potion must be in your backpack for you to use it
+   EndIf
+//   SRC.SYSMESSAGE This skill is disabled...
+//   RETURN 1
+
+ON=@Targon_item
+IF ( (<SRC.TARG.TYPE>=t_weapon_fence)  || (<SRC.TARG.TYPE>=t_weapon_xbow) || (<SRC.TARG.TYPE>=t_weapon_bow) )
+   IF ( (<SRC.POISONING> >= 850) && (<SRC.TARG.TOPOBJ.UID> = <SRC.UID>) )
+      IF  <EVAL(<EVAL(-{10 50})>+<EVAL(<SRC.POISONING>/10)>)>>0               
+         SRC.TARG.MORE2=<EVAL ( ( <EVAL (<SRC.POISONING>/4)> + <EVAL ({75 250})> ) / 100 )>
+         SRC.TARG.TAG.POISONLEVEL=4
+         SRC.SYSMESSAGE You successfully apply the poison on the weapon for <EVAL(<SRC.TARG.MORE2>)> charges!
+         SRC.SKILLCHECK_RUN Skill_Poisoning
+         IF ( <AMOUNT> > 1 )
+            AMOUNT=<EVAL ( <AMOUNT>-1 )>
+         Else 
+            REMOVE
+         EndIf     
+         SRC.NEWITEM i_bottle_empty
+         SRC.ACT.BOUNCE
+      Else
+         SRC.SYSMESSAGE You fail to apply poison on the item!
+         IF ( <AMOUNT> > 1 )
+	    AMOUNT=<EVAL ( <AMOUNT>-1 )>
+	 Else
+            REMOVE
+	 EndIf   
+         SRC.NEWITEM i_bottle_empty
+         SRC.ACT.BOUNCE
+      EndIf
+   ELSE
+      SRC.SYSMESSAGE You are not skilled enough to apply this poison.
+   ENDIF
+Else 
+  SRC.SYSMESSAGE You can't apply poison on this item!
+EndIf
+RETURN 1
+
+ON=@Targon_char
+   SRC.SYSMESSAGE You can only apply this on weapons!
+   RETURN 1
+   
+ON=@Targon_ground
+   SRC.SYSMESSAGE You can only apply this on weapons!
+   RETURN 1
+
+
+[ITEMDEF i_potion_Sustenance]
+// This potion serves to fill you up. (Remember, healing rate depends on how well fed you are!)
+// It comes in multiple strengths:
+// Greater: RESOURCES=2 i_reag_ginseng, 2 i_reag_mandrake_root, i_bottle_EMPTY
+NAME=Sustenance
+ID=i_bottle_WHITE
+TYPE=T_POTION
+TDATA1=i_bottle_empty
+RESOURCES=i_reag_ginseng, i_reag_mandrake_root, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 60.1
+
+ON=@Create
+MORE1=s_Sustenance
+MORE2=60.0
+
+
+// ************************************************************
+// NEW POTIONS
+// ************************************************************
+
+[ITEMDEF i_potion_bodypreserve]
+ID=i_bottle_RED
+NAME=Body Preserver
+TYPE=T_NORMAL
+RESOURCES=i_reag_volcanic_ash 6, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 50.0
+ON=@Create
+  COLOR=color_violet_lt
+ON=@DCLICK
+  TARGET Which body do you want to preserve?
+  RETURN 1
+
+ON=@TARGON_ITEM
+if ( <SRC.TARG.TYPE> != t_corpse )
+   SRC.MESSAGE That is not a body!
+   return 1
+endif
+SRC.TARG.TIMER=0400
+SRC.MESSAGE Body has been preserved for a bit longer by the potion!
+REMOVE
+RETURN 1
+
+
+[ITEMDEF i_potion_greaterpreserve]
+ID=i_bottle_RED
+NAME=Greater Preserve
+TYPE=T_NORMAL
+RESOURCES=i_reag_volcanic_ash 6, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 90.0
+ON=@Create
+  COLOR=color_violet_lt
+ON=@DCLICK
+  TARGET Which body do you want to preserve?
+  RETURN 1
+ON=@TARGON_ITEM
+  if ( <SRC.TARG.TYPE> != t_corpse )
+    SRC.MESSAGE That is not a body!
+    RETURN 1
+  endif
+  SRC.TARG.TIMER=1200
+  SRC.MESSAGE Body has been preserved for a lot longer by the potion!
+  REMOVE
+  RETURN 1
+
+
+
+[ITEMDEF i_potion_preserve]
+ID	=i_bottle_RED
+NAME	=body preserver
+TYPE	=T_NORMAL
+RESOURCES=i_reag_garlic 2, i_reag_executioners_cap 1, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 58.0
+VALUE	=34
+ON=@Create
+  COLOR=color_violet_lt
+ON=@DCLICK
+  SRC.SYSMESSAGE This potion is not implemented yet.
+  return 1
+
+
+
+
+[ITEMDEF i_potion_Gender]	// This potion permanently changes your gender.
+ID	=i_bottle_empty
+NAME	=gender swap
+TYPE	=T_POTION
+TDATA1	=i_bottle_empty
+RESOURCES=i_reag_blackmoor 6, i_reag_ginseng 1, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 75.0
+VALUE	=64
+ON=@Create
+MORE1=s_Gender_Swap
+MORE2=100.0
+ON=@DClick
+   SRC.SYSMESSAGE This potion is not implemented yet.
+   return 1
+
+
+
+
+
+
+
+[FUNCTION f_permanence125a]
+  VAR.PERM=0
+  f_permanence_layer125a 44
+  f_permanence_layer125a 32		// stats
+  f_permanence_layer125a 33		// reactive
+  f_permanence_layer125a 34		// night sight
+  f_permanence_layer125a 35		// protection
+  f_permanence_layer125a 36		// incognito
+  f_permanence_layer125a 37		// magic reflection
+  f_permanence_layer125a 39		// invis
+  f_permanence_layer125a 40		// poly
+
+  if ( <VAR.PERM> == 0 )
+     src.sysmessage Nothing seems to happen as you quaff the permanence potion.
+  endif
+  CONSUMEPOTION
+  return 1
+
+[FUNCTION f_permanence_layer125a]  
+  if ( <src.findlayer(<args>).uid> )
+     if ( 0<src.tag.perm.<args>> == 0 )
+     elseif ( <src.findlayer(<args>).uid> == <src.tag.perm.<args>> )
+        return 0
+     endif
+
+     VAR.PERM=<eval (<VAR.PERM>+1)>
+     try src.findlayer.<args>.timer=<eval ( (<src.findlayer(<args>).timer> * (10.0+<var.f_permanence125a>))/300)>
+     try src.tag.perm.<args>	=<src.findlayer(<args>).uid>
+     src.sysmessage The <src.findlayer(<args>).name> on you goes stronger.
+  endif
+
+
+
+//********************************************************************//
+//                              REAGENTS                              //
+//********************************************************************//
+[ITEMDEF i_Mongbat_Jaw]
+ID=01b14
+NAME=Mongbat Jaw
+TYPE=T_NORMAL
+ARMOR=5
+DYE=0
+VALUE=20
+
+on=@create
+COLOR=0909
+
+CATEGORY=Alchemy
+SUBSECTION=Reagents
+DESCRIPTION=Mongbat Jaw
+
+[ITEMDEF i_Orc_spine]
+ID=01b1b
+NAME=orc spine
+TYPE=T_NORMAL
+ARMOR=5
+DYE=0
+VALUE=30
+
+on=@create
+COLOR=0909
+
+CATEGORY=Alchemy
+SUBSECTION=Reagents
+DESCRIPTION=Orc Spine
+
+
+[ITEMDEF i_reag_Dragons_heart]
+ID=i_reag_worm_heart
+NAME=Dragon Heart%s
+TYPE=T_REAGENT
+DYE=0
+VALUE=500
+
+ON=@CREATE
+COLOR=04d5
+
+ON=@CLICK
+RETURN <replace_reagents>
+
+CATEGORY=Alchemy
+SUBSECTION=Reagents
+DESCRIPTION=Dragon Heart
+
+
+[ITEMDEF i_Balron_Bones]
+ID=i_reag_daemon_bone
+NAME=Balron Bone%s
+TYPE=T_REAGENT
+DYE=0
+VALUE=750
+
+ON=@CREATE
+COLOR=0794
+
+ON=@CLICK
+RETURN <replace_reagents>
+
+CATEGORY=Alchemy
+SUBSECTION=Reagents
+DESCRIPTION=Balron Bone
+
+
+[FUNCTION replace_reagents]
+IF (<TYPE> == T_NORMAL)
+SRC.NEWITEM <BASEID>
+SRC.ACT.BOUNCE
+REMOVE
+RETURN 1
+ENDIF
+RETURN 0
+
+
+//********************************************************************//
+//                        INCOMPLETE POTIONS                          //
+//********************************************************************//
+[ITEMDEF i_potion_Beastform]
+// This potion polymorphs you into an animal for a while.
+// The animal it turns you into is determined when you make the potion (you can use taste id to determine which animal it does).
+ID=i_bottle_WHITE
+NAME=Beastform
+TYPE=T_POTION
+TDATA1=i_bottle_empty
+
+RESOURCES=i_reag_blood_moss, i_reag_ginseng, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 95.1
+
+ON=@Create
+MORE1=s_BeastForm
+MORE2=60.0
+
+[ITEMDEF i_potion_Chameleon]
+// This potion makes your skin match the colors of whatever is behind you.
+ID=i_bottle_WHITE
+NAME=Chameleon skin
+TYPE=T_POTION
+TDATA1=i_bottle_empty
+
+RESOURCES=i_reag_garlic, i_reag_spider_silk, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 95.1
+
+ON=@Create
+MORE1=s_Chameleon
+MORE2=60.0
+
+
+[ITEMDEF i_potion_Clumsiness]
+// This potion lowers your dexterity temporarily.
+ID=i_bottle_WHITE
+NAME=Clumsiness
+TYPE=T_POTION
+TDATA1=i_bottle_empty
+
+RESOURCES=i_reag_blood_moss, i_reag_blackmoor, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 95.1
+
+ON=@Create
+MORE1=s_Clumsy
+MORE2=70.0
+
+
+[ITEMDEF i_potion_Confusion]
+// This potion lowers your intelligence temporarily.
+ID=i_bottle_WHITE
+NAME=Confusion
+TYPE=T_POTION
+TDATA1=i_bottle_empty
+
+RESOURCES=i_reag_Nightshade, i_reag_fertile_dirt, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 95.1
+
+ON=@Create
+MORE1=s_feeblemind
+MORE2=50.0
+
+
+[ITEMDEF i_potion_Forget_Less]
+ID=i_bottle_WHITE
+NAME=Lesser Forgetfulness
+TYPE=T_POTION
+TDATA1=i_bottle_empty
+RESOURCES=i_reag_blackmoor, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 15.1
+
+ON=@Create
+MORE1=s_forget
+MORE2=40.0
+
+
+[ITEMDEF i_potion_Forget]
+ID=i_bottle_WHITE
+NAME=Forgetfulness
+TYPE=T_POTION
+TDATA1=i_bottle_empty
+RESOURCES=i_reag_blackmoor, i_reag_blackmoor, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 30.1
+
+ON=@Create
+MORE1=s_forget
+MORE2=60.0
+
+
+[ITEMDEF i_potion_Forget_Great]
+// This potion permanently lowers one skill.
+// You can tell which skill the potion lowers by tasting it.
+ID=i_bottle_WHITE
+NAME=Greater Forgetfulness
+TYPE=T_POTION
+TDATA1=i_bottle_empty
+RESOURCES=i_reag_blackmoor, 2 i_reag_blackmoor, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 70.1
+
+ON=@Create
+MORE1=s_forget
+MORE2=100.0
+
+
+[ITEMDEF i_potion_Trance]
+// This potion temporarily increases your meditation skill.
+ID=i_bottle_WHITE
+NAME=Trance
+TYPE=T_POTION
+TDATA1=i_bottle_empty
+RESOURCES=i_reag_black_pearl,  2 i_reag_blackmoor, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 15.1
+
+ON=@Create
+MORE1=s_Trance
+MORE2=50.0
+
+
+[ITEMDEF i_potion_Trance_Great]
+// This potion temporarily increases your meditation skill.
+ID=i_bottle_WHITE
+NAME=Greater Trance
+TYPE=T_POTION
+TDATA1=i_bottle_empty
+RESOURCES=i_reag_black_pearl, i_reag_mandrake_root, 2 i_reag_blackmoor, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 15.1
+
+ON=@Create
+MORE1=s_Trance
+MORE2=100.0
+
+
+[ITEMDEF i_potion_Monster]
+// This potion polymorphs you into a monster for a while.
+// The monster it turns you into is determined when you make the potion (you can use taste id to determine which animal it does).
+NAME=Monster form
+ID=i_bottle_WHITE
+TYPE=T_POTION
+TDATA1=i_bottle_empty
+RESOURCES=i_reag_blood_moss, i_reag_mandrake_root, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 15.1
+
+ON=@Create
+MORE1=s_Monster_Form
+MORE2=100.0
+
+
+[ITEMDEF i_potion_Particle]
+// This potion turns you into an immobile, but untargetable particle system for a while.
+NAME=Invisibility
+ID=i_bottle_WHITE
+TYPE=T_POTION
+TDATA1=i_bottle_empty
+RESOURCES=i_reag_black_pearl, i_reag_blood_moss, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 90.1
+
+ON=@Create
+MORE1=s_Particle_Form
+MORE2=60.0
+
+
+[ITEMDEF i_potion_Shield]
+// This potion erects a temporary force field around you. Nobody approaching will be able to get within 1 tile of you, though you can move close to them if you wish.
+NAME=Shield
+ID=i_bottle_WHITE
+TYPE=T_POTION
+TDATA1=i_bottle_empty
+RESOURCES=i_reag_garlic, i_reag_sulfur_ash, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 15.1
+
+ON=@Create
+MORE1=s_Shield
+MORE2=100.0
+
+
+[ITEMDEF i_potion_Weakness]
+// This potion temporarily lowers your strength.
+NAME=Weakness
+ID=i_bottle_WHITE
+TYPE=T_POTION
+TDATA1=i_bottle_empty
+RESOURCES=i_reag_mandrake_root, i_reag_blackmoor, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 15.1
+
+ON=@Create
+MORE1=s_weaken
+MORE2=100.0
+
+
+[COMMENT ITEMDEF i_potion_FloatLess]
+ID=i_bottle_WHITE
+NAME=Lesser Float
+TYPE=T_POTION
+TDATA1=i_bottle_empty
+RESOURCES=i_reag_pumice 1, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 15.1
+
+ON=@Create
+MORE1=s_Float
+MORE2=30.0
+COLOR=COLOR_CYAN
+
+
+[COMMENT ITEMDEF i_potion_Float]
+ID=i_bottle_WHITE
+NAME=Float
+TYPE=T_POTION
+TDATA1=i_bottle_empty
+RESOURCES=i_reag_pumice 3, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 35.1
+
+ON=@Create
+MORE1=s_Float
+MORE2=50.0
+COLOR=COLOR_CYAN
+
+
+[COMMENT ITEMDEF i_potion_FloatGreat]
+ID=i_bottle_WHITE
+NAME=Greater Float
+TYPE=T_POTION
+TDATA1=i_bottle_empty
+RESOURCES=i_reag_pumice 6, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 65.1
+
+ON=@Create
+MORE1=s_Float
+MORE2=100.0
+COLOR=COLOR_CYAN
+
+
+[COMMENT ITEMDEF i_potion_Lava]
+ID=i_bottle_RED
+NAME=Lava Bomb
+TYPE=T_POTION
+TDATA1=0
+
+RESOURCES=i_reag_volcanic_ash 6, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 95.1
+
+ON=@Create
+MORE1=s_lava
+MORE2=50.0
+COLOR=color_violet_lt
+
+[ITEMDEF i_hope]
+ID=01f29
+NAME=Hope Timer
+TYPE=t_eq_script
+
+ON=@EQUIP
+   cont.sysmessage @0b4e Your heart fills with hope...
+   TIMER=900
+
+ON=@TIMER
+    cont.sysmessage @0b4e A sense of foreboding returns...
+    cont.CONSUME i_light_source
+    REMOVE
+    RETURN 1
+
+[ITEMDEF i_potion_hope]
+ID	=i_bottle_empty
+NAME	=hope
+TYPE	=t_normal
+TDATA1	=i_bottle_empty
+SKILLMAKE=ALCHEMY 115.0
+RESOURCES=i_potion_Emblaze, i_potion_SteelSkin, i_bottle_empty, i_potion_EmpowerGreat, i_potion_PermanenceGreat, i_Balron_Bones 10, i_angel_dust 10 
+VALUE	=63
+ON=@DClick
+  IF (<SRC.FINDID.i_hope.uid>)
+     SRC.SYSMESSAGE You cant use another hope yet!
+     RETURN 1
+  ELSE 
+     if !(<SRC.FINDID.i_hope.UID>)
+      SERV.NEWITEM i_hope
+      NEW.EQUIP <SRC.UID>
+      SERV.NEWITEM i_light_source
+      NEW.EQUIP <SRC.UID>
+      REMOVE
+      RETURN 1
+     ENDIF
+
+ON=@Create
+  COLOR =0b4e
+
+[EOF]

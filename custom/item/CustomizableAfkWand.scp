@@ -1,0 +1,26 @@
+[ITEMDEF i_antiafk]
+ID=i_wand_2
+NAME=Custom AFK Checker
+TYPE=t_normal
+
+ON=@CREATE
+   COLOR=07a0
+   TAG.antiafk=A-F-K M-A-C-R-O C-H-E-C-K P-L-E-A-S-E R-E-S-P-O-N-D
+   Tag.color=38
+
+ON=@DCLICK
+   TARGET Select your target.
+   RETURN 1
+
+ON=@TARGON_CHAR
+   var.afk2=<tag.color>
+   SRC.TARG.AntiAfk <TAG.antiafk>
+   SERV.LOG <SRC.NAME> is afk testing <SRC.TARG.NAME>
+   return 1
+
+[FUNCTION AntiAfk]
+SAYUA <var.afk2> 03 0 0 <args>
+var.afk2=
+return 1
+
+[EOF]

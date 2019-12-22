@@ -1,0 +1,269 @@
+// #-----------#
+// # CHANGELOG #
+// #-----------#
+//
+// 19/08/18 - Wigifer - Removed random loot from these monsters, ready for conversion to the new f_central_loot table.
+
+[FUNCTION SAY_NOTHING]
+
+[EVENTS e_dk]
+ON = @Click
+   KARMA	= -100
+
+ON = @NPCSeeNewPlayer
+   if !( 0<SRC.TAG.DK.RANK> )
+      SAY Die, scum!
+      ATTACK
+      return 1
+   endif
+   doswitch <EVAL (0<SRC.TAG.DK.RANK>)>
+      SAY_NOTHING
+      SAY_NOTHING
+      SAY_NOTHING
+      SAY_NOTHING
+      SAY Well met, Sir Knight.
+      SAY Well met, Sir Squire.
+      SAY Milord...
+      SAY Hail milord Baron...
+      SAY Hail milord Viscount...
+      SAY I bow to thee <SRC.NAME>
+      SAY We serve you <SRC.NAME>
+      SAY Your Command milord Marquis?
+   enddo
+   return 0
+
+
+[EVENTS e_hk]
+ON = @Click
+   KARMA	= -1000
+
+ON = @NPCSeeNewPlayer
+   if ( 0<SRC.TAG.DK.RANK> )
+      dorand 3
+         SAY I shall avenge my brothers!
+         SAY Die, spawn of darkness!
+         SAY For the heavens, thou shalt perish!
+      enddo
+      ATTACK
+      return 1
+   endif
+   return 0
+
+
+
+
+
+[CHARDEF c_hk_warrior]
+ID=C_MAN
+NAME=#NAMES_HOLYKNIGHT the Holy Knight
+SOUND=snd_HUMAN_M_DIE_01
+DAM=30,40
+ARMOR=60
+AVERSIONS=t_TRAP,t_eerie_stuff
+TEVENTS=e_hk
+
+
+ON=@Create
+  TAG.FACTION		= faction_hk
+  TAG.FACTION.RANK	= 1
+  COLOR		= colors_skin
+  STR		= {250 300}
+  DEX		= {80 110}
+  INT		= {71 85}
+  NPC		= brain_human
+  PARRYING	= {75.0 80.0}
+  SWORDSMANSHIP	= {80.0 90.0}
+  MACEFIGHTING	= {80.0 90.0}
+  FENCING	= {80.0 90.0}
+  WRESTLING	= {87.0 90.0}
+  MAGICRESISTANCE={65.0 88.0}
+  TACTICS	= {80.0 90.0}
+  DETECTION	= {40.0 50.0}
+  ANATOMY       = {70.0 90.0}
+  FAME		= 3000
+  KARMA		= -1000
+
+  ITEMNEWBIE=random_male_hair
+  COLOR=colors_hair
+  ITEMNEWBIE=random_facial_hair
+  COLOR=match_hair
+
+  ITEMNEWBIE={ i_ringmail_gloves_stronghold 1 i_platemail_gloves_stronghold 1 }
+  ITEMNEWBIE={ i_chainmail_coif_stronghold 1 i_platemail_helm_stronghold 1 }
+  ITEMNEWBIE={ i_ringmail_sleeves_stronghold 1 i_platemail_arms_stronghold 1 }
+  ITEMNEWBIE=i_platemail_gorget_stronghold
+  ITEMNEWBIE={ i_chainmail_tunic_stronghold 1 i_platemail_chest_stronghold 1 }
+  ITEMNEWBIE={ i_chainmail_leggings_stronghold 1 i_platemail_leggings_stronghold 1 }
+  ITEMNEWBIE={ i_sword_long_b_stronghold 2  i_mace_war_stronghold 1  i_halberd_stronghold 1 }
+  ITEMNEWBIE={ i_shield_round_stronghold 1  i_shield_heater_stronghold 1 }
+  ITEMNEWBIE=i_CAPE
+  COLOR=color_o_stronghold
+  ITEMNEWBIE=i_SASH
+  COLOR=color_o_stronghold
+
+CATEGORY	= Memory UO
+SUBSECTION	= Holy Knights
+DESCRIPTION	= Holy Knight Warrior
+
+
+
+[CHARDEF c_hk_archer]
+ID		= C_MAN
+NAME		= #NAMES_DREAD_LORD the Holy Archer
+SOUND		= snd_HUMAN_M_DIE_01
+DAM		= 10,20
+ARMOR		= 45
+AVERSIONS	= t_TRAP,t_eerie_stuff
+TEVENTS		= e_dk
+
+
+CATEGORY	= Memory UO
+SUBSECTION	= Holy Knights
+DESCRIPTION	= Holy Knight Archer
+
+ON=@Create
+  TAG.FACTION		= faction_dk
+  TAG.FACTION.RANK	= 1
+  COLOR		= colors_skin
+  STR		= {250 300}
+  DEX		= {80 90}
+  INT		= {71 85}
+  NPC		= brain_human
+  PARRYING	= {75.0 80.0}
+  ARCHERY	= {60.0 82.0}
+  MAGICRESISTANCE={65.0 88.0}
+  TACTICS	= {60.0 80.0}
+  ANATOMY	= {60.0 80.0}
+  DETECTION	={40.0 50.0}
+  FAME		= 3000
+  KARMA		= -1000
+
+  ITEMNEWBIE	= random_male_hair
+    COLOR	= colors_hair
+  ITEMNEWBIE	= random_facial_hair
+    COLOR	= match_hair
+  ITEMNEWBIE	= i_RINGMAIL_TUNIC_stronghold
+  ITEMNEWBIE	= i_RINGMAIL_GLOVES_stronghold
+  ITEMNEWBIE	= i_RINGMAIL_SLEEVES_stronghold
+  ITEMNEWBIE	= i_RINGMAIL_leggings_stronghold
+  ITEMNEWBIE	= i_boots_calf
+  ITEMNEWBIE	= i_bow
+  ITEMNEWBIE	= i_CAPE
+    COLOR	= color_o_stronghold
+  ITEMNEWBIE	= i_SASH
+    COLOR	= color_o_stronghold
+  ITEM		= i_arrow,{20 45}
+
+
+[CHARDEF c_dk_archer]
+ID		= C_MAN
+NAME		= #NAMES_DREAD_LORD the Dark Archer
+SOUND		= snd_HUMAN_M_DIE_01
+DAM		= 10,20
+ARMOR		= 45
+AVERSIONS	= t_TRAP,t_eerie_stuff
+TEVENTS		= e_dk
+
+
+CATEGORY	= Memory UO
+SUBSECTION	= Holy Knights
+DESCRIPTION	= Holy Knight Archer
+
+
+ON=@Create
+  TAG.FACTION		= faction_dk
+  TAG.FACTION.RANK	= 1
+  COLOR		= colors_skin
+  STR		= {250 300}
+  DEX		= {80 90}
+  INT		= {71 85}
+  NPC		= brain_human
+  PARRYING	= {75.0 80.0}
+  ARCHERY	= {60.0 82.0}
+  MAGICRESISTANCE={65.0 88.0}
+  TACTICS	= {60.0 80.0}
+  ANATOMY	= {60.0 80.0}
+  DETECTION	={40.0 50.0}
+  FAME		= 3000
+  KARMA		= -100
+
+  ITEMNEWBIE	= random_male_hair
+    COLOR	= colors_hair
+  ITEMNEWBIE	= random_facial_hair
+    COLOR	= match_hair
+  ITEMNEWBIE	= i_RINGMAIL_TUNIC_terathane
+  ITEMNEWBIE	= i_RINGMAIL_GLOVES_terathane
+  ITEMNEWBIE	= i_RINGMAIL_SLEEVES_terathane
+  ITEMNEWBIE	= i_RINGMAIL_leggings_terathane
+  ITEMNEWBIE	= i_boots_calf
+  ITEMNEWBIE	= i_bow
+  ITEMNEWBIE	= i_CAPE
+    COLOR	= color_o_terathane
+  ITEMNEWBIE	= i_SASH
+    COLOR	= color_o_terathane
+  ITEM		= i_arrow,{20 45}
+
+
+[CHARDEF c_dk_warrior]
+ID	= C_MAN
+NAME	= #NAMES_DREAD_LORD the Dark Warrior
+SOUND	= snd_HUMAN_M_DIE_01
+DAM	= 20,30
+ARMOR	= 55
+AVERSIONS=t_TRAP,t_eerie_stuff
+TEVENTS	= e_dk
+
+
+CATEGORY	= Memory UO
+SUBSECTION	= Dark Knights
+DESCRIPTION	= Dark Knight Warrior
+
+ON=@Create
+  TAG.FACTION		= faction_hk
+  TAG.FACTION.RANK	= 1
+  COLOR		= colors_skin
+  STR		= {200 300}
+  DEX		= {80 110}
+  INT		= {71 85}
+  NPC		= brain_human
+  PARRYING	= {75.0 80.0}
+  SWORDSMANSHIP	= {60.0 70.0}
+  WRESTLING	= {67.0 90.0}
+  MAGICRESISTANCE={65.0 88.0}
+  TACTICS	= {60.0 80.0}
+  POISONING	= {90.0 100.0}
+  DETECTION	={40.0 50.0}
+  ANATOMY       = {40.0 50.0}
+  FAME		= 3000
+  KARMA		= -100
+
+  ITEMNEWBIE=random_male_hair
+  COLOR=colors_hair
+  ITEMNEWBIE=random_facial_hair
+  COLOR=match_hair
+
+  ITEM=m_posdef_army
+
+  ITEMNEWBIE=random_male_hair
+  COLOR=colors_hair
+  ITEMNEWBIE=random_facial_hair
+  COLOR=match_hair
+
+  ITEMNEWBIE={ i_ringmail_gloves_terathane 1 i_platemail_gloves_terathane 1 }
+  ITEMNEWBIE={ i_chainmail_coif_terathane 1 i_platemail_helm_terathane 1 }
+  ITEMNEWBIE={ i_ringmail_sleeves_terathane 1 i_platemail_arms_terathane 1 }
+  ITEMNEWBIE=i_platemail_gorget_terathane
+  ITEMNEWBIE={ i_chainmail_tunic_terathane 1 i_platemail_chest_terathane 1 }
+  ITEMNEWBIE={ i_chainmail_leggings_terathane 1 i_platemail_leggings_terathane 1 }
+  ITEMNEWBIE={ i_sword_long_b_terathane 2  i_mace_war_terathane 1  i_halberd_terathane 1 }
+  ITEMNEWBIE={ i_shield_round_terathane 1  i_shield_heater_terathane 1 }
+  ITEMNEWBIE=i_CAPE
+  COLOR=color_o_terathane
+  ITEMNEWBIE=i_SASH
+  COLOR=color_o_terathane
+
+
+[EOF]
+
+
+

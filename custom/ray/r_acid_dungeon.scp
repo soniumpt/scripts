@@ -1,0 +1,1849 @@
+/////////////////
+//Base Monster//
+///////////////
+
+[CHARDEF 125]
+DEFNAME=c_ice_giant
+NAME=Ice Giant
+SOUND=snd_MONSTER_OGRE1
+ICON=i_pet_OGRE
+CAN=MT_WALK|MT_USEHANDS
+DAM=5,20
+ARMOR=16
+RESOURCES=6 i_ribs_raw
+FOODTYPE=15 t_meat_raw
+
+ON=@Create
+NPC=brain_monster
+STR={165 195}
+DEX={46 65}
+INT={69 83}
+PARRYING={45.0 55.0}
+MAGICRESISTANCE={45.0 60.0}
+TACTICS={60.0 70.0}
+WRESTLING={70.0 80.0}
+FAME=4500
+KARMA={-1000 -1999}
+
+/////////////
+//Ice Boss//
+///////////
+
+[ITEMDEF i_dot_stamina]
+NAME=Stamina Leech
+ID=i_blood_pool_large
+TYPE=t_eq_script
+WEIGHT=0
+
+ON=@CREATE
+ATTR=attr_invis|attr_decay
+TIMER=1
+MOREY=30
+MORE=2
+
+ON=@UNEQUIP
+CONT.SYSMESSAGE @060 <name> faded.
+
+ON=@TIMER
+IF (<MOREY> <= 0)
+REMOVE
+RETURN 1
+ENDIF
+
+MOREY = (<MOREY> - 1)
+CONT.STAM_CHANGE -<MORE>
+CONT.EFFECT 3,i_fx_heal_effect,4,16,6,60, 1
+TIMER 1
+RETURN 1
+
+ON=@EQUIP
+IF (<ISNPC>)
+REMOVE
+ENDIF
+
+[FUNCTION f_ai_get_target_srcuid]
+IF <ISEMPTY <ARGS>>
+LOCAL.UID =<SRC.UID>
+ELSE
+LOCAL.UID=<ARGS>
+ENDIF
+
+[FUNCTION f_ai_try_hitstam_dot]
+CALL f_ai_get_target_srcuid <ARGS>
+TRYSRC <UID> f_ai_klytius_curse <LOCAL.UID>
+RETURN 1
+
+[FUNCTION f_ai_klytius_curse]
+IF <UID.<ARGS>.RESTEST 1 i_dot_stamina>
+RETURN 0
+ENDIF
+SERV.NEWITEM i_dot_stamina
+NEW.LINK <SRC.UID>
+NEW.CONT <ARGS>
+NEW.NAME Curse of Klytius
+NEW.MORE=RAND(2,7)
+LOCAL.TIME=<EVAL 180+-(<UID.<ARGS>.MAGICRESISTANCE> / 10)>
+IF <EVAL <LOCAL.TIME>> < 0
+LOCAL.TIME=30
+ELSEIF <EVAL <LOCAL.TIME>> > 180
+LOCAL.TIME=180
+ENDIF
+NEW.MOREY=<EVAL <LOCAL.TIME>>
+TRY UID.<ARGS>.SYSMESSAGE You feel a strange weakness.
+TRY UID.<ARGS>.EFFECT 3,i_fx_vortex,4,16,6,060
+RETURN 1
+
+[FUNCTION ai_cold_spikes]
+FORCLIENTS 12
+IF (<UID>!=<SRC>)
+EFFECT 3, i_effect_spikes, 1, 12, 0, 0
+SPELLEFFECT S_HARM ,2000,<UID>
+SRC.SYSMESSAGE @060 The frost spikes hit you hard on the legs.
+ENDIF
+ENDFOR
+
+[CHARDEF c_ice_giant_boss]
+NAME=Klytius, The Frost Giant
+ID=c_ice_giant
+SOUND=snd_MONSTER_OGRE1
+CAN=mt_walk|mt_run
+DAM=40,60
+ARMOR=200
+
+CATEGORY=Imperial uo 
+SUBSECTION=Ice Dungeon Monsters
+DESCRIPTION=Klytius, The Frost Giant
+
+ON=@CREATE
+NPC=brain_berserk
+KARMA=-10000
+FAME=10000
+STR=600
+DEX=300
+INT=1200
+MAXHITS=10000
+MAXSTAM=4000
+MAXMANA=30000
+
+EVENTS +e_AI_vulner_physical
+EVENTS +e_AI_immune_magic
+
+on=@NPCRestock
+
+on=@GetHit
+
+IF (RAND(100) < 30)
+REGION.ALLCLIENTS ai_cold_spikes
+f_ai_try_hitstam_dot
+ENDIF
+
+LOCAL.HITSP=<PVAL <HITS> <MAXHITS> 100>
+
+IF (<ISEVENT.e_AI_vulner_magic> ) && ( <tag0._countDMG> > 1000 )
+EVENTS +e_AI_vulner_physical
+EVENTS +e_AI_immune_magic
+EVENTS -e_AI_vulner_magic
+EVENTS -e_AI_immune_physical
+TAG0._countDMG=
+EMOTE skin is tarnishing
+
+ELSEIF (<ISEVENT.e_AI_vulner_physical> ) && ( <tag0._countDMG> > 1000 )
+EVENTS -e_AI_vulner_physical
+EVENTS -e_AI_immune_magic
+EVENTS +e_AI_vulner_magic
+EVENTS +e_AI_immune_physical
+TAG0._countDMG=
+EMOTE skin is shimmering
+ENDIF
+TAG0._countDMG += <ARGN1>
+
+
+
+////////////////
+//Ice Dungeon//
+//////////////
+
+[FUNCTION lizard_cold]
+IF ( <DISTANCE> > 10 )
+RETURN 0
+ENDIF
+SYSMESSAGE @060 You feel a deadly cold wind embracing you...
+LOCAL.DAM=<EVAL({ 10 30 })>
+IF (<HITS> < <LOCAL.DAM>)
+HITS=0
+ELSE
+HITS=<eval (<HITS> - <LOCAL.DAM>)>
+ef_ice_winds
+ENDIF
+
+
+[FUNCTION cold_damage_all]
+FORCHARS 12
+IF (<UID>!=<SRC>)
+EFFECT 3, i_fx_glow_spike, 1, 12, 0, 060
+SPELLEFFECT S_HARM ,2000,<uid>
+SRC.SYSMESSAGE @060 A deadly cold wind embraces you.
+ENDIF
+ENDFOR
+
+[FUNCTION cold_resistance_total]
+SRC.SYSMESSAGE @060 You see <NAME> getting stronger. This is not the right weapon against it.
+HITS=<EVAL (<HITS> + 50)>
+STAMINA=<EVAL (<STAMINA> + 100)>
+RETURN 1
+
+[CHARDEF c_frost_lizard]
+DEFNAME=c_frost_lizard
+NAME=Frost Lizard
+ID=c_ALLIGATOR
+SOUND=snd_MONSTER_LAVALIZARD1
+ICON=i_pet_CROC
+DAM=2,28
+ARMOR=20
+RESOURCES=6 i_ribs_raw, 12 i_hide
+
+TEVENTS=e_poison_resist
+
+CATEGORY=Imperial uo 
+SUBSECTION=Ice Dungeon Monsters
+DESCRIPTION=Frost Lizard
+
+ON=@Create
+COLOR=077b
+NPC=brain_monster
+
+STR={400 550}
+DEX={110 150}
+INT={120 140}
+
+PARRYING={80.0 90.0}
+MAGERY={100.0 150.0}
+MAGICRESISTANCE={180.0 200.0}
+TACTICS={80.0 100.0}
+WRESTLING={95.0 100.0}
+TAMING=300.0
+
+FAME={4000 5000}
+KARMA={-5000 -5999}
+
+ON=@GETHIT
+IF (RAND(100) < 30)
+REGION.ALLCLIENTS lizard_cold
+ENDIF
+
+ON=@NPCRestock
+ITEM=i_gold,{800 1050}
+ITEM=i_reward_ticket,{100 270}
+ITEM={random_UPPER_MERC 1 0 20} // 5%
+ITEM={random_rare_2 1 0 100} // 1%
+ITEM={random_rare_3 1 0 200} // 0.5%
+ITEM={random_LOWER_MERC 1 0 10} //10%
+ITEM={i_luck_stone 1 0 50} //2%
+ITEM=random_potion
+ITEM=random_potion
+ITEM=random_scroll
+ITEM=i_frost_lizard_scale, {2 4}
+ITEM=i_fig_mound_maggots,R30
+
+[CHARDEF c_ice_titan]
+DEFNAME=c_ice_titan
+NAME=Ice Titan
+ID=c_titan
+ICON=i_pet_Titan
+SOUND=snd_MONSTER_ETTIN1
+DAM=40,50
+ARMOR=25
+CAN=MT_WALK|MT_RUN|MT_USEHANDS
+
+TEVENTS=e_poison_resist
+TEVENTS=e_dispeller
+
+CATEGORY=Imperial uo 
+SUBSECTION=Ice Dungeon Monsters
+DESCRIPTION=Ice Titan
+
+ON=@Create
+COLOR=077b
+NPC=brain_monster
+
+STR={2500 2700}
+DEX={200 250}
+INT={280 305}
+
+PARRYING={100.0 150.0}
+MAGERY={100.0 150.0}
+MAGICRESISTANCE={180.0 200.0}
+TACTICS={180.0 200.0}
+WRESTLING={95.0 100.0}
+TAMING=300.0
+
+FAME={5000 6000}
+KARMA={-5000 -5999}
+
+ON=@GETHIT
+IF (RAND(100) < 20)
+EMOTE The <NAME> is grunting.
+cold_damage_all
+ELSEIF (<SRC.FINDLAYER(LAYER_HAND1).TDATA1>==mat_skargard)
+cold_resistance_total
+ELSEIF (<SRC.FINDLAYER(LAYER_HAND1).MOREM>==67)
+cold_resistance_total
+ELSEIF (<SRC.FINDLAYER(LAYER_HAND1).MOREM>==3)
+cold_resistance_total
+ELSEIF (<SRC.FINDLAYER(LAYER_HAND1).MOREM>==131)
+cold_resistance_total
+ENDIF
+
+ON=@NPCRestock
+ITEM=i_gold, {6000 9000}
+ITEM={random_UPPER_MERC 1 0 5} //20%
+ITEM={random_rare_2 1 0 20} // 5%
+ITEM={random_rare_3 1 0 20} // 5%
+ITEM={rare_magicals 1 0 50} // 2%
+ITEM={random_user_ar_low 1 0 100} // 1%
+ITEM={random_LOWER_MERC 1 0 5} //20%
+ITEM={i_luck_stone 1 0 10} //10%
+ITEM=random_potion,{1 2}
+ITEM=random_scroll,{1 2}
+ITEM=i_reward_ticket,{300 350}
+ITEM=i_ice_titan_eye, {1 2}
+ITEM=i_fig_mummy,R10
+
+
+/////////////////
+//Acid Dungeon//
+///////////////
+
+[EVENTS e_poison_resist]
+ON=@SPELLEFFECT
+IF ((<ARGN> == 20) || (<ARGN> == 39))
+SAY @09f6 The poison is absorbed into the <NAME>'s blood...
+RETURN 1
+ENDIF
+
+[EVENTS e_poison_caster_weak]
+ON=@GETHIT
+IF (RAND(100) < 30) && !(<SRC.FLAGS> &statf_poisoned)
+SRC.SPELLEFFECT S_POISON,300,<UID>
+RETURN 1
+ENDIF
+
+[EVENTS e_poison_caster_medium]
+ON=@GETHIT
+IF (RAND(100) < 60) && !(<SRC.FLAGS> &statf_poisoned)
+SRC.SPELLEFFECT S_POISON,800,<UID>
+RETURN 1
+ENDIF
+
+[EVENTS e_poison_caster_strong]
+ON=@GETHIT
+IF (RAND(100) < 80) && !(<SRC.FLAGS> &statf_poisoned)
+SRC.SPELLEFFECT S_POISON,9000,<UID>
+RETURN 1
+ENDIF
+
+/////////////
+//Monsters//
+///////////
+
+/////////////
+//Toxic Rat//
+////////////
+
+[CHARDEF c_toxic_rat]
+DEFNAME=c_toxic_rat
+ID=c_rat_giant
+NAME=Toxic Rat
+SOUND=snd_MONSTER_GRAT1
+ICON=i_pet_rat_2
+DAM=10,30
+ARMOR=10
+RESOURCES=10 i_ribs_raw
+CAN=MT_WALK|MT_RUN|MT_USEHANDS
+
+TEVENTS=e_poison_resist
+TEVENTS=e_poison_caster_weak
+
+CATEGORY=Imperial uo
+SUBSECTION=Acid Dungeon Monsters
+DESCRIPTION=Toxic Rat
+
+ON=@Create
+COLOR=0a43
+NPC=brain_monster
+STR={250 350}
+DEX={120 160}
+INT={100 120}
+
+PARRYING={45.0 55.0}
+MAGERY={100.0 120.0}
+MAGICRESISTANCE={50.0 60.0}
+TACTICS={70.0 80.0}
+WRESTLING={60.0 70.0}
+ 
+FAME={100 2000}
+KARMA={-5000 -5999}
+
+ITEMNEWBIE=i_spellbook
+ADDSPELL=s_poison
+ADDSPELL=s_poison_field
+
+ON=@NPCRESTOCK
+ITEM=i_gold, {350 600}
+ITEM={random_UPPER_MERC 1 0 20} // 5%
+ITEM={random_rare_2 1 0 100} // 1%
+ITEM={random_rare_3 1 0 200} // 0.5%
+ITEM={i_rats_tail 1 0 4} // 20%
+ITEM={random_LOWER_MERC 1 0 10} //10%
+ITEM={i_luck_stone 1 0 50} //2%
+ITEM=random_potion
+ITEM=random_scroll
+ITEM=i_reward_ticket,{50 70}
+ITEM=i_fig_fleshrenderer,R20
+
+ON=@DEATH
+IF (RAND(100) < 3) // Chance de Dropar. Assim é 5%
+SERV.NEWITEM=i_imperial_ACID_key  // ID da chave que vai dropar
+NEW.CONT=<SRC.UID>
+
+
+/////////////////
+//Toxic Spider//
+///////////////
+
+[CHARDEF c_toxic_spider]
+DEFNAME=c_toxic_spider
+ID=c_spider_giant
+NAME=Toxic Spider
+SOUND=snd_MONSTER_GISPIDR1
+ICON=i_pet_spider_giant
+DAM=10,30
+ARMOR=15
+RESOURCES=10 i_ribs_raw
+CAN=MT_WALK|MT_RUN|MT_USEHANDS
+
+TEVENTS=e_poison_resist
+TEVENTS=e_poison_caster_weak
+
+CATEGORY=Imperial uo
+SUBSECTION=Acid Dungeon Monsters
+DESCRIPTION=Toxic Spider
+
+ON=@Create
+COLOR=0a43
+NPC=brain_monster
+STR={250 350}
+DEX={120 160}
+INT={100 120}
+
+PARRYING={45.0 55.0}
+MAGERY={100.0 120.0}
+MAGICRESISTANCE={50.0 60.0}
+TACTICS={70.0 80.0}
+WRESTLING={60.0 70.0}
+ 
+FAME={100 2000}
+KARMA={-5000 -5999}
+
+ITEMNEWBIE=i_spellbook
+ADDSPELL=s_poison
+ADDSPELL=s_poison_field
+   
+ON=@NPCRESTOCK
+ITEM=i_gold, {350 600}
+ITEM={random_UPPER_MERC 1 0 20} // 5%
+ITEM={random_rare_2 1 0 100} // 1%
+ITEM={random_rare_3 1 0 200} // 0.5%
+ITEM={i_spiders_eye 1 0 4} // 20%
+ITEM={random_LOWER_MERC 1 0 10} //10%
+ITEM={i_luck_stone 1 0 50} //2%
+ITEM=random_potion
+ITEM=random_scroll
+ITEM=i_reward_ticket,{50 70}
+ITEM=i_fig_fleshrenderer,R20
+
+
+
+ON=@DEATH
+IF (RAND(100) < 5) // Chance de Dropar. Assim é 5%
+SERV.NEWITEM=i_imperial_ACID_key  // ID da chave que vai dropar
+NEW.CONT=<SRC.UID>
+
+
+/////////////////
+//Toxic Widow///
+///////////////
+
+[CHARDEF c_toxic_widow]
+DEFNAME=c_toxic_widow
+ID=c_giant_black_widow
+NAME=Toxic Widow
+SOUND=snd_MONSTER_GISPIDR1
+ICON=i_pet_spiderlord
+DAM=25,50
+ARMOR=10
+RESOURCES=10 i_ribs_raw
+CAN=MT_WALK|MT_RUN|MT_USEHANDS
+
+TEVENTS=e_poison_resist
+TEVENTS=e_poison_caster_strong
+
+CATEGORY=Imperial uo
+SUBSECTION=Acid Dungeon Monsters
+DESCRIPTION=Toxic Widow
+
+ON=@Create
+COLOR=0a43
+NPC=brain_monster
+STR={1200 1300}
+DEX={150 180}
+INT={640 660}
+
+PARRYING={70.0 100.0}
+MAGICRESISTANCE={50.0 60.0}
+TACTICS={80.0 100.0}
+WRESTLING={90.0 100.0}
+TAMING=300.0
+FAME={100 6000}
+KARMA={-5000 -5999}
+
+ON=@NPCRESTOCK
+ITEM=i_gold, {3000 4000}
+ITEM={random_UPPER_MERC 1 0 10} // 10%
+ITEM={i_venomous_tooth 1 0 10} // 10%
+ITEM={random_rare_2 1 0 20} // 5% 
+ITEM={random_rare_3 1 0 20} // 5%
+ITEM={rare_magicals 1 0 100} // 1%
+ITEM={random_LOWER_MERC 1 0 7} //14%
+ITEM={i_luck_stone 1 0 50} //2%
+ITEM=random_potion,{1 2}
+ITEM=random_scroll,{1 2}
+ITEM=i_reward_ticket,{100 120}
+ITEM=i_fig_fleshrenderer,R20
+
+
+ON=@DEATH
+IF (RAND(100) < 5) // Chance de Dropar. Assim é 5%
+SERV.NEWITEM=i_imperial_ACID_key  // ID da chave que vai dropar
+NEW.CONT=<SRC.UID>
+
+
+///////////////////
+//Toxic Basilisk///
+//////////////////
+
+[CHARDEF c_toxic_basilisk]
+DEFNAME=c_toxic_basilisk
+ID=c_snake_giant
+NAME=Toxic Basilisk
+SOUND=snd_MONSTER_SEASERP1
+ICON=i_pet_snake_giant
+DAM=25,50
+ARMOR=10
+RESOURCES=10 i_ribs_raw
+CAN=MT_WALK|MT_RUN|MT_USEHANDS
+
+TEVENTS=e_poison_resist
+TEVENTS=e_poison_caster_strong
+
+CATEGORY=Imperial uo
+SUBSECTION=Acid Dungeon Monsters
+DESCRIPTION=Toxic Basilisk
+
+ON=@Create
+COLOR=0a43
+NPC=brain_monster
+STR={1200 1300}
+DEX={150 180}
+INT={640 660}
+
+PARRYING={70.0 100.0}
+MAGICRESISTANCE={50.0 60.0}
+TACTICS={80.0 100.0}
+WRESTLING={90.0 100.0}
+TAMING=300.0
+FAME={100 6000}
+KARMA={-5000 -5999}
+
+ON=@NPCRESTOCK
+ITEM=i_gold, {3000 4000}
+ITEM={random_UPPER_MERC 1 0 10} // 10%
+ITEM={i_venomous_tooth 1 0 10} // 10%
+ITEM={random_rare_2 1 0 20} // 5% 
+ITEM={random_rare_3 1 0 20} // 5%
+ITEM={rare_magicals 1 0 100} // 1%
+ITEM={random_LOWER_MERC 1 0 7} //14%
+ITEM={i_luck_stone 1 0 50} //2%
+ITEM=random_potion,{1 2}
+ITEM=random_scroll,{1 2}
+ITEM=i_reward_ticket,{100 120}
+ITEM=i_fig_fleshrenderer,R20
+
+ON=@DEATH
+IF (RAND(100) < 5) // Chance de Dropar. Assim é 5%
+SERV.NEWITEM=i_imperial_ACID_key  // ID da chave que vai dropar
+NEW.CONT=<SRC.UID>
+
+
+///////////////
+//Acid Demon//
+/////////////
+
+[CHARDEF c_acid_demon]
+DEFNAME=c_acid_demon
+NAME=Acid Demon
+ID=c_daemon
+SOUND=snd_MONSTER_DAEMON1
+ICON=i_pet_dragon
+DAM=20,35
+ARMOR=50
+RESOURCES=9 i_ribs_raw, 8 i_reag_daemon_bone, 8 i_acid_demon_blood
+CAN=MT_WALK|MT_FLY|MT_USEHANDS
+
+TEVENTS=e_npc_daemon
+TEVENTS=e_poison_caster_medium
+
+CATEGORY=Imperial uo
+SUBSECTION=Acid Dungeon Monsters
+DESCRIPTION=Acid Demon
+
+ON=@Create
+NPC=brain_monster
+COLOR=0a43
+STR={1800 2000}
+DEX={175 255}
+INT=500
+
+PARRYING={90.0 100.0}
+MAGERY={90.0 100.0}
+MAGICRESISTANCE={50.0 60.0}
+TACTICS={100.0 120.0}
+WRESTLING={80.0 90.0}
+
+FAME={4000 8000}
+KARMA={-6000 -6999}
+
+ITEMNEWBIE=i_spellbook
+ADDSPELL=s_poison
+ADDSPELL=s_poison_field
+
+ON=@NPCRESTOCK
+ITEM=i_gold, {6000 9000}
+ITEM={random_UPPER_MERC 1 0 5} //20%
+ITEM={random_rare_2 1 0 10} // 10%
+ITEM={random_rare_3 1 0 10} // 10%
+ITEM={rare_magicals 1 0 50} // 2%
+ITEM={random_user_ar_low 1 0 50} // 2%
+ITEM={random_LOWER_MERC 1 0 5} //20%
+ITEM={i_luck_stone 1 0 10} //10%
+ITEM=random_potion,{1 2}
+ITEM=random_scroll,{1 2}
+ITEM=i_reward_ticket,{300 350}
+ITEM=i_fig_droppelganger,R8
+
+
+ON=@DEATH
+IF (RAND(100) < 12) // Chance de Dropar. Assim é 5%
+SERV.NEWITEM=i_imperial_ACID_key  // ID da chave que vai dropar
+NEW.CONT=<SRC.UID>
+ENDIF
+
+////////////////
+//Acid Dragon//
+//////////////
+
+[CHARDEF c_acid_dragon]
+DEFNAME=c_acid_dragon
+ID=0c
+NAME=Acid Dragon
+SOUND=snd_MONSTER_DRAGON1
+ICON=i_pet_DRAGON
+CAN=MT_WALK|MT_RUN|MT_FLY
+DAM=25,50
+ARMOR=75
+RESOURCES=20 i_ribs_raw, 8 i_reag_dragon_blood, 1 i_dragonhide_green, 1 i_reag_Dragons_heart
+
+TEVENTS=e_npc_dragon
+TEVENTS=e_poison_resist
+TEVENTS=e_poison_caster_medium
+TEVENTS=e_dispeller
+
+CATEGORY=Imperial uo
+SUBSECTION=Acid Dungeon Monsters
+DESCRIPTION=Acid Dragon
+
+ON=@Create
+NPC=brain_dragon
+COLOR=0487
+FAME={3000 9000}
+KARMA={-5000 -5999}
+STR={1200 1300}
+DEX={105 115}
+INT={140 150}
+PARRYING={55.0 95.0}
+MAGICRESISTANCE={99.0 120.0}
+TACTICS={98.0 100.0}
+WRESTLING={90.0 93.0}
+
+ITEMNEWBIE=i_spellbook
+ADDSPELL=s_poison
+ADDSPELL=s_poison_field
+
+ON=@NPCRESTOCK
+ITEM=i_gold, {4000 5000}
+ITEM={random_UPPER_MERC 1 0 10} //10%
+ITEM={random_rare_2 1 0 33} //3%
+ITEM={random_rare_3 1 0 33} //3%
+ITEM={rare_magicals 1 0 100} //1%
+ITEM={random_user_ar_low 1 0 100} // 1%
+ITEM={random_LOWER_MERC 1 0 5} //20%
+ITEM={i_luck_stone 1 0 10} //10%
+ITEM=random_potion,{1 2}
+ITEM=random_scroll,{1 2}
+ITEM=i_reward_ticket,{300 350}
+ITEM=i_fig_droppelganger,R8
+
+
+ON=@DEATH
+IF (RAND(100) < 14) // Chance de Dropar. Assim é 5%
+SERV.NEWITEM=i_imperial_ACID_key  // ID da chave que vai dropar
+NEW.CONT=<SRC.UID>
+ENDIF
+
+
+//////////////////
+//Acid Gargoyle//
+////////////////
+
+[CHARDEF c_acid_gargoyle]
+DEFNAME=c_acid_gargoyle
+ID=c_gargoyle
+NAME=Acid Gargoyle
+SOUND=snd_MONSTER_GARGYL1
+ICON=i_pet_GARG
+ANIM=03fbc7f
+CAN=MT_WALK|MT_RUN|MT_FLY|MT_USEHANDS
+DAM=6,25
+ARMOR=25
+RESOURCES=8 i_ribs_raw
+
+TEVENTS=e_poison_resist
+TEVENTS=e_dispeller
+
+CATEGORY=Imperial uo
+SUBSECTION=Acid Dungeon Monsters
+DESCRIPTION=Acid Gargoyle
+
+ON=@Create
+NPC=brain_monster
+COLOR=09f6
+FAME={100 200}
+KARMA={-4000 -4999}
+STR={340 350}
+DEX={90 105}
+INT={140 150}
+PARRYING={35.0 45.0}
+MAGERY={70.0 85.0}
+MAGICRESISTANCE={70.0 85.0}
+TACTICS={50.0 70.0}
+WRESTLING={70.0 80.0}
+TAMING={250.0 260.0}
+
+ITEMNEWBIE=i_spellbook
+ADDSPELL=s_poison
+ADDSPELL=s_poison_field
+
+ON=@NPCRESTOCK
+ITEM=i_gold, {1100 1300}
+ITEM={random_UPPER_MERC 1 0 5} //20%
+ITEM={i_luck_stone 1 0 10} //10%
+ITEM={random_rare_2 1 0 50} //2%
+ITEM={random_rare_3 1 0 50} //2%
+ITEM={rare_magicals 1 0 100} //1%
+ITEM=i_reward_ticket,{80 120}
+ITEM=i_fig_fireant_worker,R18
+
+ON=@DEATH
+IF (RAND(100) < 8) // Chance de Dropar. Assim é 5%
+SERV.NEWITEM=i_imperial_ACID_key  // ID da chave que vai dropar
+NEW.CONT=<SRC.UID>
+ENDIF
+
+///////////////////
+//Acid Elemental//
+/////////////////
+
+[CHARDEF c_acid_elemental]
+DEFNAME=c_acid_elemental
+NAME=Acid Elemental
+ID=c_elem_air
+SOUND=snd_ELEMENTL_WATREL1
+ICON=i_pet_elem_air
+CAN=MT_WALK|MT_RUN
+DAM=9,31
+ARMOR=35
+TEVENTS=e_poison_resist
+
+CATEGORY=Imperial uo
+SUBSECTION=Acid Dungeon Monsters
+DESCRIPTION=Poison Elemental
+
+ON=@Create
+NPC=brain_monster
+COLOR=09f6
+
+STR={565 645}
+DEX={80 110}
+INT={300 450}
+
+PARRYING={75.0 85.0}
+MAGERY={110.0 120.0}
+MAGICRESISTANCE={65.0 80.0}
+TACTICS={90.0 100.0}
+WRESTLING={90.0 100.0}
+FAME={3000 9000}
+KARMA={-5000 -5999}
+
+ITEMNEWBIE=i_spellbook
+ADDSPELL=s_poison
+ADDSPELL=s_poison_field
+
+ON=@NPCRestock
+ITEM=i_potion_poison,{1 2}
+ITEM=i_gold,{1000 2000}
+ITEM={i_potion_PoisonGreat 1 0 100} // 1%
+ITEM={random_UPPER_MERC 1 0 50} //2%
+ITEM={random_LOWER_MERC 1 0 50} //2%
+ITEM={i_luck_stone 1 0 50} //2%
+ITEM=i_reward_ticket,{60 140}
+ITEM=i_fig_fireant_worker,R12
+
+
+ON=@DEATH
+IF (RAND(100) < 8) // Chance de Dropar. Assim é 5%
+SERV.NEWITEM=i_imperial_ACID_key  // ID da chave que vai dropar
+NEW.CONT=<SRC.UID>
+ENDIF
+
+
+
+///////////////////////////////
+//Infected Skeleton Magician//
+/////////////////////////////
+
+[CHARDEF c_infected_skeleton_mage]
+DEFNAME=c_infected_skeleton_mage
+NAME=Infected Skeleton Magician
+ID=c_skeleton
+SOUND=snd_MONSTER_SKLETN1
+ICON=i_pet_SKELETON
+DAM=15,20
+ARMOR=20
+RESOURCES=8 i_reag_bone
+
+TEVENTS=e_poison_resist
+TEVENTS=e_poison_caster_weak
+
+CATEGORY=Imperial uo
+SUBSECTION=Acid Dungeon Monsters
+DESCRIPTION=Infected Skeleton Magician
+
+ON=@Create
+COLOR=0a43
+NPC=brain_monster
+STR={90 110}
+DEX={81 95}
+INT={450 500}
+
+MAGICRESISTANCE={90.0 95.0}
+TACTICS={80.0 90.0}
+WRESTLING={40.0 55.0}
+MACEFIGHTING={75.0 95.0}
+MAGERY={85.0 95.0}
+
+KARMA={-3000 -5000}
+FAME={2000 4000}
+
+ITEMNEWBIE=i_spellbook
+ADDSPELL=s_poison
+ADDSPELL=s_poison_field
+
+ON=@NPCRestock
+ITEM=i_gold,{90 150}
+ITEM=loot_reagents_easy
+ITEM={random_LOWER_MERC 1 0 50} //2%
+ITEM={i_luck_stone 1 0 50} //2%
+ITEM=i_reward_ticket,{20 40}
+ITEM=random_scroll,{1 2}
+ITEM=i_fig_fandancer,R15
+
+ON=@DEATH
+IF (RAND(100) < 5) // Chance de Dropar. Assim é 5%
+SERV.NEWITEM=i_imperial_ACID_key  // ID da chave que vai dropar
+NEW.CONT=<SRC.UID>
+ENDIF
+
+/////////////////////////////
+//Infected Skeleton Archer//
+///////////////////////////
+
+[CHARDEF c_infected_skeleton_archer]
+DEFNAME=c_infected_skeleton_archer
+NAME=Infected Skeleton Archer
+ID=C_SKELETON_W_AXE
+CAN=MT_WALK|MT_RUN|MT_EQUIP
+DAM=6,20
+ARMOR=12
+RESOURCES=8 i_reag_bone, 1 i_infected_spine
+
+TEVENTS=e_poison_resist
+TEVENTS=e_poison_caster_medium
+
+CATEGORY=Imperial uo
+SUBSECTION=Acid Dungeon Monsters
+DESCRIPTION=Infected Skeleton Archer
+
+ON=@Create
+COLOR=09f6
+NPC=brain_monster
+FAME={100 2000}
+KARMA={-1999 -4999}
+STR={200 250}
+DEX={130 140}
+INT={60 70}
+ARCHERY={95.0 100.0}
+PARRYING={45.0 55.0}
+MAGICRESISTANCE={45.0 60.0}
+TACTICS={45.0 60.0}
+WRESTLING={45.0 55.0}
+
+ON=@NPCRestock
+ITEMNEWBIE=i_bow_pine
+ITEM=i_arrow,{10 20}
+ITEM=i_potion_poison,{1 2}
+ITEM=i_gold,{200 250}
+ITEM={random_UPPER_MERC 1 0 50} //2%
+ITEM={random_LOWER_MERC 1 0 50} //2%
+ITEM={i_luck_stone 1 0 50} //2%
+ITEM=i_reward_ticket,{50 120}
+ITEM=i_fig_fandancer,R15
+
+ON=@DEATH
+IF (RAND(100) < 5) // Chance de Dropar. Assim é 5%
+SERV.NEWITEM=i_imperial_ACID_key  // ID da chave que vai dropar
+NEW.CONT=<SRC.UID>
+ENDIF
+
+//////////////////////////////
+//Infected Skeleton Soldier//
+////////////////////////////
+
+[CHARDEF c_infected_skeleton_soldier]
+DEFNAME=c_infected_skeleton_soldier
+ID=c_skeleton
+NAME=Infected Skeleton Soldier
+SOUND=snd_MONSTER_SKLETN1
+ICON=i_pet_SKELETON
+CAN=MT_WALK
+DAM=2,8
+ARMOR=8
+RESOURCES=8 i_reag_bone, 1 i_infected_spine
+
+TEVENTS=e_poison_resist
+TEVENTS=e_poison_caster_medium
+
+CATEGORY=Imperial uo
+SUBSECTION=Acid Dungeon Monsters
+DESCRIPTION=Infected Skeleton Soldier
+
+ON=@Create
+COLOR=09f6
+NPC=brain_monster
+FAME={100 2000}
+KARMA={-999 -4999}
+STR={200 250}
+DEX={56 75}
+INT={450 500}
+PARRYING={45.0 55.0}
+MAGICRESISTANCE={45.0 60.0}
+TACTICS={45.0 50.0}
+WRESTLING={45.0 55.0}
+
+ON=@NPCRestock
+ITEM=i_potion_poison,{1 2}
+ITEM=i_gold,{300 350}
+ITEM={i_potion_PoisonGreat 1 0 100} // 1%
+ITEM={random_UPPER_MERC 1 0 50} //2%
+ITEM={random_LOWER_MERC 1 0 50} //2%
+ITEM={i_luck_stone 1 0 50} //2%
+ITEM=i_reward_ticket,{50 120}
+ITEM=i_fig_fandancer,R15
+
+
+ON=@DEATH
+IF (RAND(100) < 5) // Chance de Dropar. Assim é 5%
+SERV.NEWITEM=i_imperial_ACID_key  // ID da chave que vai dropar
+NEW.CONT=<SRC.UID>
+ENDIF
+
+///////////////////////////
+//Infected Skeleton Hero//
+/////////////////////////
+
+[CHARDEF c_infected_skeleton_hero]
+DEFNAME=c_infected_skeleton_hero
+NAME=Infected Skeleton Hero
+ID=c_skeleton_w_sword
+DAM=20,35
+ARMOR=40
+RESOURCES=8 i_reag_bone, 1 i_infected_spine
+
+TEVENTS=e_poison_resist
+TEVENTS=e_poison_caster_strong
+TEVENTS=e_dispeller
+
+CATEGORY=Imperial uo
+SUBSECTION=Acid Dungeon Monsters
+DESCRIPTION=Infected Skeleton Hero
+
+ON=@Create
+COLOR=09f6
+NPC=brain_monster
+FAME={100 2000}
+KARMA={-3000 -3999}
+STR={460 500}
+DEX={140 160}
+INT={450 500}
+PARRYING={85.0 95.0}
+MAGICRESISTANCE={85.0 90.0}
+TACTICS={95.0 100.0}
+WRESTLING={95.0 100.0}
+
+ON=@NPCRestock
+ITEM=i_potion_poison,{1 2}
+ITEM=i_gold,{2000 2500}
+ITEM={i_potion_PoisonGreat 1 0 10} // 10%
+ITEM={random_UPPER_MERC 1 0 5} //20%
+ITEM={i_luck_stone 1 0 10} //10%
+ITEM=i_reward_ticket,{120 150}
+ITEM=i_fig_fandancer,R10
+
+ON=@DEATH
+IF (RAND(100) < 9) // Chance de Dropar. Assim é 5%
+SERV.NEWITEM=i_imperial_ACID_key  // ID da chave que vai dropar
+NEW.CONT=<SRC.UID>
+ENDIF
+
+////////////////
+//Toxic Harpy//
+//////////////
+
+[CHARDEF c_toxic_harpy]
+DEFNAME=c_toxic_harpy
+ID=c_harpy
+NAME=Toxic Harpy
+SOUND=snd_MONSTER_HARPY1
+ICON=i_pet_HARPY
+DAM=10,15
+ARMOR=18
+CAN=MT_WALK|MT_FLY|MT_FEMALE|MT_USEHANDS
+RESOURCES=9 i_ribs_raw,50 i_feather
+
+TEVENTS=e_npc_harpy
+TEVENTS=e_poison_resist
+TEVENTS=e_poison_caster_medium
+
+CATEGORY=Imperial uo
+SUBSECTION=Acid Dungeon Monsters
+DESCRIPTION=Toxic Harpy
+
+ON=@Create
+COLOR=09f6
+NPC=brain_monster
+FAME={300 1000}
+KARMA={-2000 -2999}
+STR={200 300}
+DEX={86 110}
+INT={51 77}
+PARRYING={75.0 90.0}
+MAGICRESISTANCE={100.0 105.0}
+TACTICS={80.0 100.0}
+WRESTLING={95.0 100.0}
+
+ON=@NPCRestock
+ITEM=i_potion_poison,{1 2}
+ITEM=i_gold,{250 350}
+ITEM={i_potion_PoisonGreat 1 0 100} // 1%
+ITEM={random_UPPER_MERC 1 0 50} //2%
+ITEM={random_LOWER_MERC 1 0 50} //2%
+ITEM={i_luck_stone 1 0 50} //2%
+ITEM=i_reward_ticket,{50 120}
+ITEM=i_toxic_feather,5
+ITEM=i_fig_fleshrenderer,R20
+
+ON=@DEATH
+IF (RAND(100) < 8) // Chance de Dropar. Assim é 5%
+SERV.NEWITEM=i_imperial_ACID_key  // ID da chave que vai dropar
+NEW.CONT=<SRC.UID>
+ENDIF
+
+////////////////////
+//Poisonous Gazer//
+//////////////////
+
+[CHARDEF c_poisonous_gazer]
+DEFNAME=c_poisonous_gazer
+NAME=Poisonous Gazer
+ID=c_gazer
+SOUND=snd_MONSTER_GAZER1
+CAN=MT_WALK|MT_FLY
+DAM=10,31
+ARMOR=40
+
+TEVENTS=e_teleporter
+TEVENTS=e_poison_resist
+TEVENTS=e_poison_caster_medium
+
+CATEGORY=Imperial uo
+SUBSECTION=Acid Dungeon Monsters
+DESCRIPTION=Poisonous Gazer
+
+ON=@Create
+COLOR=09f6
+NPC=brain_monster
+FAME={600 1000}
+KARMA={-4000 -4999}
+STR={400 450}
+DEX={300 325}
+INT={100 100}
+PARRYING={65.0 75.0}
+MAGERY={90.0 100.0}
+MAGICRESISTANCE={85.0 100.0}
+TACTICS={80.0 100.0}
+WRESTLING={80.0 100.0}
+
+ON=@NPCRESTOCK
+ITEM=i_gold, {1500 1700}
+ITEM={random_UPPER_MERC 1 0 12} //8%
+ITEM={random_rare_2 1 0 100} // 1%
+ITEM={random_rare_3 1 0 200} // 0.5%
+ITEM={random_LOWER_MERC 1 0 12} //8%
+ITEM={i_luck_stone 1 0 50} //2%
+ITEM=random_potion
+ITEM=random_potion
+ITEM=random_scroll
+ITEM=i_potion_poison,2
+ITEM=i_reward_ticket,{100 220}
+ITEM=i_poisonous_eye
+ITEM=i_fig_fireant_worker,R12
+
+ON=@DEATH
+IF (RAND(100) < 8) // Chance de Dropar. Assim é 5%
+SERV.NEWITEM=i_imperial_ACID_key  // ID da chave que vai dropar
+NEW.CONT=<SRC.UID>
+ENDIF
+
+////////////////////
+//Poisonous Shade//
+//////////////////
+
+[CHARDEF c_poisonous_spectre]
+DEFNAME=c_poisonous_spectre
+NAME=Poisonous Spectre
+ID=c_spectre
+SOUND=snd_MONSTER_GHOST1
+CAN=MT_WALK|MT_GHOST
+DAM=6,12
+ARMOR=40
+
+TEVENTS=e_teleporter
+TEVENTS=e_poison_resist
+TEVENTS=e_poison_caster_weak
+
+CATEGORY=Imperial uo
+SUBSECTION=Acid Dungeon Monsters
+DESCRIPTION=Poisonous Spectre
+
+ON=@Create
+COLOR=09f6
+NPC=brain_monster
+FAME={600 1000}
+KARMA={-4000 -4999}
+STR={550 650}
+DEX={300 325}
+INT={100 100}
+PARRYING={65.0 75.0}
+MAGERY={90.0 100.0}
+MAGICRESISTANCE={85.0 90.0}
+TACTICS={80.0 100.0}
+WRESTLING={80.0 85.0}
+
+ON=@NPCRESTOCK
+ITEM=i_gold, {700 900}
+ITEM={random_UPPER_MERC 1 0 12} //8%
+ITEM={random_rare_2 1 0 100} // 1%
+ITEM={random_rare_3 1 0 200} // 0.5%
+ITEM={random_LOWER_MERC 1 0 12} //8%
+ITEM={i_luck_stone 1 0 50} //2%
+ITEM=random_potion
+ITEM=random_potion
+ITEM=random_scroll
+ITEM=i_potion_poison,2
+ITEM=i_reward_ticket,{100 220}
+ITEM=i_fig_fireant_worker,R12
+
+
+ON=@DEATH
+IF (RAND(100) < 7) // Chance de Dropar. Assim é 5%
+SERV.NEWITEM=i_imperial_ACID_key  // ID da chave que vai dropar
+NEW.CONT=<SRC.UID>
+ENDIF
+
+/////////////////
+//Toxicant Imp//
+///////////////
+
+[CHARDEF c_toxicant_imp]
+DEFNAME=c_toxicant_imp
+NAME=Toxicant Imp
+ID=c_mongbat
+SOUND=snd_MONSTER_GARGYL1
+CAN=MT_WALK|MT_FLY|MT_USEHANDS
+DAM=6,17
+ARMOR=40
+
+TEVENTS=e_poison_resist
+
+CATEGORY=Imperial uo
+SUBSECTION=Acid Dungeon Monsters
+DESCRIPTION=Toxicant Imp
+
+ON=@Create
+COLOR=09f6
+NPC=brain_monster
+FAME={600 1000}
+KARMA={-4000 -4999}
+STR={100 150}
+DEX={300 325}
+INT={100 100}
+PARRYING={65.0 75.0}
+MAGERY={90.0 100.0}
+MAGICRESISTANCE={40.0 50.0}
+TACTICS={50.0 80.0}
+WRESTLING={60.0 70.0}
+
+ON=@NPCRESTOCK
+ITEM=i_gold, {100 170}
+ITEM={random_rare_2 1 0 100} // 1%
+ITEM={random_LOWER_MERC 1 0 50} //2%
+ITEM={i_luck_stone 1 0 50} //2%
+ITEM=random_potion
+ITEM=random_scroll
+ITEM=i_reward_ticket,{50 70}
+ITEM=i_fig_fleshrenderer,R20
+
+ON=@DEATH
+IF (RAND(100) < 7) // Chance de Dropar. Assim é 5%
+SERV.NEWITEM=i_imperial_ACID_key  // ID da chave que vai dropar
+NEW.CONT=<SRC.UID>
+ENDIF
+
+//Mid Bosses
+
+//////////////////////////
+//Noxious Ophidian Mage//
+////////////////////////
+
+[CHARDEF c_noxious_ophidian_mage]
+DEFNAME=c_noxious_ophidian_mage
+NAME=Noxious Ophidian Mage
+ID=c_ophidian_mage
+SOUND=snd_MONSTER_OPHIDIAN_MAGE1
+ICON=i_pet_ophid_mage
+CAN=MT_WALK|MT_USEHANDS
+
+DAM=30,35
+ARMOR=15
+RESOURCES=8 i_ribs_raw
+
+TEVENTS=e_ophidian
+TEVENTS=e_poison_resist
+TEVENTS=e_poison_caster_medium
+TEVENTS=e_dispeller
+
+CATEGORY=Imperial uo
+SUBSECTION=Acid Dungeon Monsters
+DESCRIPTION=Noxious Ophidian Mage (Mid Boss)
+
+ON=@Create
+COLOR=09f6
+NPC=brain_monster
+FAME={100 2000}
+KARMA={-4000 -4999}
+
+STR=2000
+DEX=120
+INT=500
+
+PARRYING={65.0 87.0}
+MAGERY={400.0 500.0}
+MAGICRESISTANCE={105.0 120.0}
+TACTICS={65.0 87.0}
+WRESTLING={20.0 60.0}
+
+ITEMNEWBIE=i_spellbook	// knows fire type spells.
+ADDSPELL=s_feeblemind
+ADDSPELL=s_lightning
+ADDSPELL=s_poison
+ADDSPELL=s_curse
+ADDSPELL=s_flamestrike
+ADDSPELL=s_magic_arrow
+
+ON=@NPCRESTOCK
+ITEM=i_gold,{7000 7500}
+ITEM=i_reward_ticket,750
+ITEM=random_UPPER_MERC,{1 2}
+ITEM=random_LOWER_MERC,{1 2}
+ITEM={i_luck_stone 1 0 2} //50 %
+ITEM=i_potion_poison,{3 4}
+ITEM={i_potion_PoisonGreat 1 0 5} // 20%
+ITEM=i_reag_bone,{10 15}
+ITEM=Random_Potion,{5 6}
+ITEM=random_scroll,{3 4}
+ITEM={random_rare_1 1 0 3} //  33%
+ITEM={random_rare_3 1 0 25} // 4%
+ITEM={rare_magicals 1 0 50} // 2%
+ITEM={random_user_ar_low 1 0 50} // 2%
+ITEM=i_acid_rune2
+ITEM=i_fig_fireant_worker,R18
+
+
+ON=@DEATH
+IF (RAND(100) < 7) // Chance de Dropar. Assim é 5%
+SERV.NEWITEM=i_imperial_ACID_key  // ID da chave que vai dropar
+NEW.CONT=<SRC.UID>
+ENDIF
+
+/////////////////////////////
+//Noxious Ophidian Warrior//
+///////////////////////////
+
+[CHARDEF c_noxious_ophidian_warrior]
+DEFNAME=c_noxious_ophidian_warrior
+NAME=Noxious Ophidian Warrior
+ID=c_ophidian_warrior
+SOUND=snd_MONSTER_OPHIDIAN_WARRIOR1
+ICON=i_pet_ophid_war
+CAN=MT_WALK|MT_USEHANDS
+
+DAM=35,45
+ARMOR=18
+
+TEVENTS=e_ophidian
+TEVENTS=e_poison_resist
+TEVENTS=e_poison_caster_medium
+TEVENTS=e_dispeller
+
+CATEGORY=Imperial uo
+SUBSECTION=Acid Dungeon Monsters
+DESCRIPTION=Noxious Ophidian Warrior (Mid Boss)
+
+ON=@Create
+COLOR=09f6
+NPC=brain_monster
+FAME={100 2000}
+KARMA={-3000 -3999}
+
+
+STR=2000
+DEX=160
+INT=500
+
+PARRYING={60.0 85.0}
+MAGERY={70.0 95.0}
+MAGICRESISTANCE={70.0 85.0}
+TACTICS={75.0 90.0}
+SWORDSMANSHIP={60.0 85.0}
+WRESTLING=100.0
+
+ON=@NPCRESTOCK
+ITEM=i_gold,{7000 7500}
+ITEM=i_reward_ticket,750
+ITEM=random_UPPER_MERC,{1 2}
+ITEM=random_LOWER_MERC,{1 2}
+ITEM={i_luck_stone 1 0 2} //50 %
+ITEM=i_potion_poison,{3 4}
+ITEM={i_potion_PoisonGreat 1 0 5} // 20%
+ITEM=i_reag_bone,{10 15}
+ITEM=Random_Potion,{5 6}
+ITEM=random_scroll,{3 4}
+ITEM={random_rare_1 1 0 3} // 33%
+ITEM={random_rare_3 1 0 25} // 4%
+ITEM={rare_magicals 1 0 50} // 2%
+ITEM={random_user_ar_low 1 0 50} // 2%
+ITEM=i_acid_rune1
+ITEM=i_fig_fireant_worker,R18
+
+
+ON=@DEATH
+IF (RAND(100) < 7) // Chance de Dropar. Assim é 5%
+SERV.NEWITEM=i_imperial_ACID_key  // ID da chave que vai dropar
+NEW.CONT=<SRC.UID>
+ENDIF
+
+//Final Boss
+
+///////////////////////
+//Acid Skeleton King//
+/////////////////////
+
+[ITEMDEF 03ebb]
+DEFNAME=i_mt_skeletal_mount
+TYPE=T_EQ_HORSE
+LAYER=layer_horse
+TDATA3=c_skeletal_mount
+
+[CHARDEF c_acid_skeleton_king]
+DEFNAME=c_acid_skeleton_king
+ID=C_MAN
+NAME=Acid Skeleton King
+SOUND=snd_HUMAN_M_DIE_01
+DAM=20,30
+ARMOR=20
+
+TEVENTS=e_poison_resist
+TEVENTS=e_dispeller
+TEVENTS=e_poison_caster_strong
+
+CATEGORY=Imperial uo
+SUBSECTION=Acid Dungeon Monsters
+DESCRIPTION=Acid Skeleton King (Final Boss)
+
+ON=@Create
+NPC=brain_monster
+STR=10000
+DEX=1000
+INT=1000
+SWORDSMANSHIP={250.0 251.0}
+WRESTLING={250.0 251.0}
+MAGICRESISTANCE={250.0 251.0}
+TACTICS={250.0 251.0}
+ANATOMY={250.0 251.0}
+FAME=9000
+KARMA=-10000
+
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+
+ITEMNEWBIE=i_bone_gloves
+COLOR=09f6
+ITEMNEWBIE=i_bone_helmet
+COLOR=09f6
+ITEMNEWBIE=i_bone_chest
+COLOR=09f6
+ITEMNEWBIE=i_bone_arms
+COLOR=09f6
+ITEMNEWBIE=i_bone_leggings
+COLOR=09f6
+ITEMNEWBIE=i_halberd_bloodrock
+COLOR=09f6
+ITEMNEWBIE=i_cape
+COLOR=1
+ITEMNEWBIE=i_boots_calf
+COLOR=1
+ITEMNEWBIE=i_sash
+COLOR=1
+ITEMNEWBIE=i_mt_skeletal_mount
+
+ON=@NPCRESTOCK
+ITEM=i_gold,{22000 25000}
+ITEM=i_reward_ticket,3000
+ITEM=random_UPPER_MERC,{1 2}
+ITEM=random_LOWER_MERC,{2 3}
+ITEM=i_luck_stone,{1 2}
+ITEM=i_potion_poison,{3 4}
+ITEM=i_potion_PoisonGreat
+ITEM=i_potion_PoisonDeadly
+ITEM=i_reag_bone,{10 15}
+ITEM=i_infected_spine
+ITEM=acid_dungeon
+ITEM=Random_Potion,{5 6}
+ITEM=random_scroll,{3 4}
+ITEM=i_fig_fleshgolem
+
+ON=@DEATH
+IF (RAND(100) < 50)
+NEWNPC=c_skeletal_mount
+ENDIF
+IF (RAND(100) < 75) // Chance de Dropar. Assim é 5%
+SERV.NEWITEM=i_imperial_ACID_key  // ID da chave que vai dropar
+NEW.CONT=<SRC.UID>
+ENDIF
+
+SERV.NEWITEM=i_timer_gate2
+NEW.P=6519,381,1
+NEW.MOREP=4307,984
+
+/////////////
+//Reagents//
+///////////
+
+[ITEMDEF i_spiders_eye]
+NAME=Spider's Eye's
+ID=i_virtstone_3
+WEIGHT=4
+TYPE=t_reagent
+
+CATEGORY=Imperial uo
+SUBSECTION=Acid Dungeon Reagents
+DESCRIPTION=Spider's Eye's
+
+ON=@CREATE
+COLOR=0481
+
+[ITEMDEF i_venomous_tooth]
+NAME=Venomous Tooth
+ID=i_shell
+WEIGHT=4
+TYPE=t_reagent
+
+CATEGORY=Imperial uo
+SUBSECTION=Acid Dungeon Reagents
+DESCRIPTION=Venomous Tooth
+
+ON=@CREATE
+COLOR=09f6
+
+[ITEMDEF i_acid_demon_blood]
+NAME=Acid Demon's Blood
+ID=i_reag_blood_vial
+WEIGHT=2
+TYPE=t_reagent
+
+CATEGORY=Imperial uo
+SUBSECTION=Acid Dungeon Reagents
+DESCRIPTION=Acid Demon's Blood
+
+ON=@CREATE
+COLOR=09f6
+
+[ITEMDEF i_rats_tail]
+NAME=Rat's Tail
+ID=i_bone_spine
+WEIGHT=4
+TYPE=t_reagent
+
+CATEGORY=Imperial uo
+SUBSECTION=Acid Dungeon Reagents
+DESCRIPTION=Rat's Tail
+
+ON=@CREATE
+COLOR=0a43
+
+[ITEMDEF i_infected_spine]
+NAME=Infected Skeleton Spine
+ID=i_bone_spine
+WEIGHT=3
+TYPE=t_reagent
+
+CATEGORY=Imperial uo
+SUBSECTION=Acid Dungeon Reagents
+DESCRIPTION=Infected Skeleton Spine
+
+ON=@CREATE
+COLOR=010e
+
+[ITEMDEF i_poisonous_eye]
+NAME=Poisonous Eye's
+ID=i_virtstone_3
+TYPE=t_reagent
+WEIGHT=1
+VALUE=100
+
+CATEGORY=Imperial uo
+SUBSECTION=Acid Dungeon Reagents
+DESCRIPTION=Poisonous Eye's
+
+ON=@CREATE
+COLOR=010e
+
+[ITEMDEF i_toxic_feather]
+ID=i_feather
+TYPE=t_reagent
+NAME=Toxic Feather´s
+WEIGHT=1
+VALUE=200
+
+CATEGORY=Imperial uo
+SUBSECTION=Acid Dungeon Reagents
+DESCRIPTION=Toxic Feather's
+
+ON=@CREATE
+COLOR=010e
+
+[ITEMDEF i_frost_lizard_scale]
+ID=i_reag_serpent_scale
+NAME=Frost Lizard Scale's
+TYPE=t_reagent
+WEIGHT=4
+
+CATEGORY=Imperial uo
+SUBSECTION=Acid Dungeon Reagents
+DESCRIPTION=Frost Lizard Scale's
+
+ON=@Create
+COLOR=077b
+
+
+[ITEMDEF i_ice_titan_eye]
+ID=i_virtstone_3
+NAME=Ice Titan Eye's
+TYPE=t_reagent
+WEIGHT=4
+VALUE=300
+
+CATEGORY=Imperial uo
+SUBSECTION=Acid Dungeon Reagents
+DESCRIPTION=Ice Titan Eye's
+
+ON=@CREATE
+COLOR=077d
+
+/////////////
+//Template//
+///////////
+
+[TEMPLATE acid_dungeon]
+CATEGORY=Imperial uo
+SUBSECTION=Acid Dungeon Item Templates
+DESCRIPTION=Acid Dungeon Boss
+CONTAINER=i_bag
+ITEM=random_rare_2
+ITEM=random_rare_1
+ITEM=random_rare_1
+ITEM={random_rare_3 1 0 10} // 10%
+ITEM={rare_magicals 1 0 20} // 5%
+ITEM={random_user_ar_low 1 0 20} // 5%
+
+
+//////////
+//Runes//
+////////
+
+[ITEMDEF i_acid_rune1]
+ID=i_rune_marker
+NAME=Part of a Skeleton's King Travel Rune
+TYPE=T_NORMAL
+VALUE=1000
+
+CATEGORY=Imperial uo
+SUBSECTION=Acid Dungeon Items
+DESCRIPTION=Part of a Skeleton's King Travel Rune 1
+
+ON=@CREATE
+COLOR=09f6
+MORE1=1
+
+ON=@CLICK
+SRC.SYSMESSAGE Be careful...
+
+ON=@DCLICK
+IF (<MORE1> == 1)
+TARGET What do you wanna do with the rune?
+ELSE
+SRC.MESSAGE You can't use this rune.
+ENDIF
+RETURN 1
+
+ON=@TARGON_ITEM
+IF (<SRC.TARG.BASEID>==i_acid_rune2) && <CONT.LAYER>=21
+SRC.NEWITEM i_acid_rune3
+SRC.ACT.BOUNCE
+EF_SPIRITS
+SRC.SYSMESSAGE You have created an entire Skeleton's King Travel Rune.
+SRC.FINDID.i_acid_rune2.REMOVE
+REMOVE
+ELSE
+SRC.SYSMESSAGE The rune burns your hand.
+SRC.SPELLEFFECT S_HARM,500,<UID>
+ENDIF
+RETURN 1
+
+ON=@TARGON_GROUND
+SRC.SYSMESSAGE The rune burns your hand.
+SRC.SPELLEFFECT S_HARM,500,<UID>
+RETURN 1
+
+ON=@TARGON_CHAR
+SRC.SYSMESSAGE The rune burns your hand.
+SRC.SPELLEFFECT S_HARM,500,<UID>
+RETURN 1
+
+ON=@TARGON_CANCEL
+SRC.SYSMESSAGE The rune burns your hand.
+SRC.SPELLEFFECT S_HARM,500,<UID>
+RETURN 1
+
+[ITEMDEF i_acid_rune2]
+ID=i_rune_marker
+NAME=Part of a Skeleton's King Travel Rune
+TYPE=t_normal
+
+CATEGORY=Imperial uo
+SUBSECTION=Acid Dungeon Items
+DESCRIPTION=Part of a Skeleton's King Travel Rune 2
+
+ON=@CREATE
+COLOR=0480
+MORE1=1
+
+ON=@CLICK
+SRC.SYSMESSAGE Be careful...
+
+ON=@DCLICK
+IF (<MORE1> == 1)
+TARGET What do you wanna do with the rune?
+ELSE
+SRC.MESSAGE You can't use this rune.
+ENDIF
+RETURN 1
+
+ON=@TARGON_ITEM
+IF (<SRC.TARG.BASEID>==i_acid_rune1) && <CONT.LAYER>=21
+SRC.NEWITEM i_acid_rune3
+SRC.ACT.BOUNCE
+EF_SPIRITS
+SRC.SYSMESSAGE You have created an entire Skeleton's King Travel Rune.
+SRC.FINDID.i_acid_rune1.REMOVE
+REMOVE
+ELSE
+SRC.SYSMESSAGE The rune burns your hand.
+SRC.SPELLEFFECT S_HARM,500,<UID>
+ENDIF
+RETURN 1
+
+ON=@TARGON_GROUND
+SRC.SYSMESSAGE The rune burns your hand.
+SRC.SPELLEFFECT S_HARM,500,<UID>
+RETURN 1
+
+ON=@TARGON_CHAR
+SRC.SYSMESSAGE The rune burns your hand.
+SRC.SPELLEFFECT S_HARM,500,<UID>
+RETURN 1
+
+ON=@TARGON_CANCEL
+SRC.SYSMESSAGE The rune burns your hand.
+SRC.SPELLEFFECT S_HARM,500,<UID>
+RETURN 1
+
+[ITEMDEF i_acid_rune3]
+ID=i_rune_marker
+NAME=Skeleton's King Travel Rune
+TYPE=t_normal
+
+CATEGORY=Imperial uo
+SUBSECTION=Acid Dungeon Items
+DESCRIPTION=Skeleton's King Travel Rune
+
+ON=@CREATE
+COLOR=0790
+
+ON=@CLICK
+SRC.SYSMESSAGE There's only one use left.
+
+ON=@DCLICK
+DIALOG d_acid_rune
+RETURN 1
+
+[DIALOG d_acid_rune]
+0,0 
+
+resizepic 190 175 5054 355 160 
+resizepic 200 185 3000 335 140  
+
+dtext 210 210 0000 Would you like to open the gate now?
+ 
+dtext 255 240 0000 Yes.
+button 220 240 4005 4006 1 0 1 
+
+dtext 255 270 0000 Not now.
+button 220 270 4005 4006 1 0 2
+ 
+[DIALOG d_acid_rune BUTTON]
+
+ON=1
+IF (<SRC.RESTEST i_acid_rune3>)
+SRC.FINDID.i_acid_rune3.REMOVE
+SRC.SYSMESSAGE You have opened a gate to Boss Room.
+f_acidnewgate125a
+ENDIF
+RETURN 1
+ELSE
+SRC.SYSMESSAGE You must have the rune in your backpack.
+RETURN 1
+
+[FUNCTION f_acidnewgate125a]
+SRC.NEWITEM=i_timer_gate
+SRC.ACT.P=<SRC.P>
+SRC.ACT.ATTR=attr_decay|attr_static
+RETURN 1
+
+[ITEMDEF i_timer_gate]
+ID=i_moongate_blue
+NAME=Gate to Boss Room
+TYPE=t_normal
+
+ON=@CREATE
+TIMER=120
+COLOR=09f6
+
+ON=@STEP
+SRC.GO 6519,383
+SERV.NEWITEM M_acidboss_Delay
+NEW.LINK = <SRC.UID>
+SRC.EQUIP <NEW.UID>
+SRC.SYSMESSAGE @09f6 You have been teleported to the Acid Dungeon Boss Room.
+SRC.SYSMESSAGE @09f6 You have 1 Hour before being automatically teleported out.
+RETURN 1
+
+ON=@TIMER
+REMOVE
+
+[ITEMDEF i_timer_gate2]
+ID=i_moongate_blue
+NAME=Gate to Lycaeum
+TYPE=t_normal
+
+ON=@CREATE
+TIMER=720
+COLOR=09f6
+
+ON=@STEP
+IF (<SRC.FINDID.m_acidboss_delay>)
+SRC.FINDID.m_acidboss_delay.remove
+ENDIF
+SRC.GO 4306,984
+
+ON=@TIMER
+REMOVE
+return 1
+
+[ItemDef M_acidboss_Delay]
+id=i_memory
+Name=Acid Boss Delay
+type=t_eq_script
+
+ON=@Create
+TIMER = 3600
+
+ON=@Timer
+IF !(STRCMP(<CONT.REGION.NAME>, Acid Dungeon [Boss Room]))
+TRYSRC <LINK.UID> src.go 4310,1009
+REMOVE
+ELSE
+REMOVE
+RETURN 1
+ENDIF

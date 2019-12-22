@@ -1,0 +1,282 @@
+//By Wren for BFUO
+//Jan 9 '04 - Wren - Made Changes to wand to try to solve disappearing of wand
+
+[itemdef i_beast_stone]
+Name= Beast Stone
+ID=i_guildstone
+Type=T_Normal
+
+On=@Create
+   color=007a3
+
+on=@Dclick
+  serv.newitem=i_beast_fx
+  new.attr=attr_static|attr_decay 
+  new.timer=1 
+  new.p=<src.p>
+if !(<src.body>==c_Moloch)
+  src.consume i_beast_form_pvp
+  src.consume i_liche_form
+  src.consume i_wraith_form
+  src.consume i_vampire_form
+  serv.newitem i_beast_form_pvp
+  new.timer=1
+  src.equip <new>
+  src.updatex
+else
+  src.consume i_beast_form_pvp
+  src.updatex
+endif
+
+[itemdef i_beast_form_pvp]
+NAME=Beast Form
+ID=i_memory 
+TYPE=t_eq_script
+LAYER=layer_special
+TDATA1=mat_memory
+tag.energyresist=75
+tag.fireresist=25
+tag.poisonresist=25
+tag.coldresist=0
+
+ON=@Equip
+src.f_armour_effect_update 0
+  src.body=c_Moloch
+  src.color=0
+  src.events +e_beast_form_pvp
+  src.tag.wrestlingbackup = <src.wrestling>
+  src.wrestling = 100.0
+
+ON=@UnEquip
+src.f_armour_effect_update 0
+  src.body=<src.obody>
+  src.color=<src.oskin>
+  src.events -e_beast_form_pvp
+  src.wrestling = <src.tag.wrestlingbackup>
+  src.tag.wrestlingbackup
+
+ON=@Timer
+cont.hits += 2
+if (<cont.hits> > <cont.maxhits>)
+  cont.hits=<cont.maxhits>
+endif
+timer=1
+return 1
+
+[events e_beast_form_pvp]
+ON=@Hit
+argn1 += <argn1>/4
+
+ON=@Spellcast
+if !((<argn>==606) || (<argn>==607) || (<argn>==613) || (<argn>==616))
+  src.sysmessage You can't do that in your current state
+  return 1
+endif
+
+on=@death
+  src.consume i_beast_form_pvp
+  src.updatex
+
+
+[itemdef i_beast_fx]
+defname=i_beast_fx
+name=beast fx
+id=i_fx_smoke
+
+on=@create
+color=colors_neutral
+
+[ITEMDEF i_wand_kill]
+NAME=Move Character Wand
+ID=i_wand_2
+TYPE=T_WAND
+WEIGHT=1
+CATEGORY=Imperial uo
+SUBSECTION=GM Items
+DESCRIPTION=Move Character Wand
+
+ON=@Create
+   COLOR=0785
+   ATTR= 05
+
+ON=@DClick
+   EQUIP
+   LINK = 04fffffff	//clear the link
+   TARGET Select the player you would like to smite.
+   RETURN 1
+
+ON=@TARGON_Char
+SRC.TARG.KILL
+EMOTE smite <src.targ.name>
+   RETURN 1
+   
+[ITEMDEF i_wand_stone]
+NAME=Stone Character Wand
+ID=i_wand_2
+TYPE=T_WAND
+WEIGHT=1
+CATEGORY=Imperial uo
+SUBSECTION=GM Items
+DESCRIPTION=Stone Character Wand
+
+ON=@Create
+   COLOR=0785
+   ATTR= 05
+
+ON=@DClick
+   EQUIP
+   TARGET Select the player you would like to stone.
+   RETURN 1
+
+ON=@TARGON_Char
+SERV.LOG <src.account><Src.name> is stoning <src.targ.name> <src.targ.uid> <src.targ.account>
+
+STAFFLOG <src.account><Src.name> is stoning <src.targ.name> <src.targ.uid> <src.targ.account>
+
+src.targ.stone 
+   RETURN 1
+
+ON=@TARGON_item
+src.sysmessage epic fail
+   RETURN 1
+
+
+[ITEMDEF i_wand_Mover]
+NAME=Move Character Wand
+ID=i_wand_2
+TYPE=T_WAND
+WEIGHT=1
+CATEGORY=Imperial uo
+SUBSECTION=GM Items
+DESCRIPTION=Move Character Wand
+
+ON=@Create
+   COLOR=0785
+   ATTR= 05
+
+ON=@DClick
+   EQUIP
+   LINK = 04fffffff	//clear the link
+   TARGET Select the player you would like to move.
+   RETURN 1
+
+ON=@TARGON_Char
+   IF ( <LINK> == 04fffffff )
+      LINK = <SRC.TARG.UID>	
+      TARGETG Where would you like to move them?
+   ELSE
+      SRC.ANIM 9
+      LINK.GO <SRC.TARG.P>
+      LINK = 04fffffff
+   ENDIF   
+   RETURN 1
+
+ON=@TARGON_item
+   IF ( <LINK> == 04fffffff )
+      SRC.SYSMESSAGE You can only move players with this wand.
+   ELSE
+      SRC.ANIM 9
+      LINK.GO <SRC.TARG.P>
+      LINK = 04fffffff
+   ENDIF
+   RETURN 1
+
+ON=@TARGON_ground
+   IF ( <LINK> == 04fffffff )
+      SRC.SYSMESSAGE You can only move players with this wand.
+   ELSE
+      SERV.LOG <src.account><src.name> is moving <link.name> <link.uid> <link.account> to <SRC.TARGP>
+      STAFFLOG <src.account><src.name> is moving <link.name> <link.uid> <link.account> to <SRC.TARGP>
+      SRC.ANIM 9
+      LINK.GO <SRC.TARGP>
+      LINK = 04fffffff
+   ENDIF
+   RETURN 1
+
+
+[ITEMDEF i_staff_Mover]
+NAME=Staff of Malevolence
+ID=i_staff_black
+TYPE=T_WAND
+WEIGHT=1
+CATEGORY=Imperial uo
+SUBSECTION=GM Items
+DESCRIPTION=Move Character Staff
+
+ON=@Create
+   COLOR=0846
+   ATTR= 05
+
+ON=@DClick
+   EQUIP
+   LINK = 04fffffff	//clear the link
+   TARGET Select the player you would like to move.
+   RETURN 1
+
+ON=@TARGON_Char
+   IF ( <LINK> == 04fffffff )
+      LINK = <SRC.TARG.UID>	
+      TARGETG Where would you like to move them?
+   ELSE
+      SRC.ANIM 9
+      LINK.GO <SRC.TARG.P>	
+      LINK = 04fffffff
+   ENDIF   
+   RETURN 1
+
+ON=@TARGON_item
+   IF ( <LINK> == 04fffffff )
+      SRC.SYSMESSAGE You can only move players with this wand.
+   ELSE
+      SRC.ANIM 9
+      LINK.GO <SRC.TARG.P>
+      LINK = 04fffffff
+   ENDIF
+   RETURN 1
+
+ON=@TARGON_ground
+   IF ( <LINK> == 04fffffff )
+      SRC.SYSMESSAGE You can only move players with this wand.
+   ELSE
+      SRC.ANIM 9
+      LINK.GO <SRC.TARGP>
+      LINK = 04fffffff
+   ENDIF
+   RETURN 1
+
+   
+
+
+//[ITEMDEF i_wand_oompa]
+//NAME=Oompa Loompa Wand
+//ID=i_wand_2
+//TYPE=T_WAND
+//WEIGHT=1
+//CATEGORY=Provisions - GM Items
+//DESCRIPTION=Oompa Loompa Wand
+
+//ON=@Create
+//   COLOR=025
+//   ATTR= 05
+
+//ON=@DClick
+//   EQUIP
+//   TARGET the Oompa Loompa you would like to lead.
+//   RETURN 1
+
+//ON=@TARGON_Char
+//   IF STRMATCH("Oompa Loompa", "<SRC.TARG.NAME>")
+//      SRC.TARG.GO 4559,1374,8
+//      SRC.GO 4559,1374,8
+//   ElSE
+//      SRC.SYSMESSAGE That is not an Oompa Loompa.
+//   ENDIF
+   
+//ON=@TARGON_item
+//   RETURN 1
+
+//ON=@TARGON_ground
+//   RETURN 1
+
+  
+[eof]

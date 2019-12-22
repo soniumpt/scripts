@@ -1,0 +1,550 @@
+// Honest Joes Fresh Lamb
+// ----------------------
+//
+// Version 1.0
+//
+// CHANGELOG
+// ---------
+// 
+// Version 1.0, 13th September 2006: Full flesh given to script alongside the
+//                                   "Delivery Core.scp", for perfect functionality.
+//
+// CONTENTS
+// --------
+//
+// Contained within is:
+// - Delivery Boy (Delivery Mission)
+//
+// IMPORTANT NOTES
+// ---------------
+//
+// - All exclusive items are prefixed with "hjfl" in the ITEMDEF or CHARDEF
+//
+
+
+//------------------------------
+//-            Base            -
+//------------------------------
+
+// Premise
+// -------
+// 
+// This section contains the default NPC's of the company.
+// Above each will be a mini-profile should anyone wish to add to the system.
+// 
+
+// NAME: Honest Joe
+// POSITION: Company CEO
+// AGE: 40
+// ALIGNMENT: Chaotic Evil
+// LIKES: Making Money, Killing off the Competition
+// DISLIKES: Justice
+// ATTITUDE: Street Wise, thinks money is the only important thing
+
+[CHARDEF c_h_hjfl_honest_joe]
+ID=c_man
+NAME=Honest Joe
+DAM=5,12 
+ARMOR=200
+
+DESIRES=i_gold,e_notoriety,t_magic
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+TSPEECH=hjflhonestjoe
+TSPEECH=spk_human_default
+
+
+TEVENTS=e_Human_HearUnk
+TEVENTS=e_Human_Needs
+TEVENTS=e_Human_Refuse
+TEVENTS=e_Human_Environ
+
+CATEGORY=Company Core
+SUBSECTION=Honest Joes
+DESCRIPTION=Honest Joe
+
+ON=@CREATE
+   NPC=brain_human
+   COLOR=0401
+   STR=900
+   INT=300
+   DEX=100
+   WRESTLING=1000
+   TACTICS=1000
+   MAGERY=1000
+   NECROMANCY=1000
+   EVALUATINGINTEL=1000
+   MAGICRESISTANCE=1000
+   ITEMNEWBIE=i_shirt_fancy
+   ATTR=05
+   COLOR=0799
+   ITEMNEWBIE=i_pants_long
+   ATTR=05
+   COLOR=0799
+   ITEMNEWBIE=i_boots_calf
+   COLOR=0799
+   ITEMNEWBIE=i_hair_short
+   TIMER=-1
+   COLOR=01
+   ITEMNEWBIE=i_beard_vandyke
+   COLOR=01
+   
+   
+[SPEECH hjflhonestjoe]
+ON=*delivery*
+ON=*retrieval*
+ON=*job*
+   SAY Those and other jobs you can find on the Job Notice Board beside me!
+   
+ON=*employment*
+ON=*employed*
+   IF (<SRC.TAG.HASBEENSACKEDBY> & NPCE_HonJoeFreshLamb)
+      SAY We don't re-employ retards.
+   ELSE
+      SAY We're not looking for any workers yet... But come back on the 16th...
+   ENDIF
+      
+ON=*hen*ridin spinnaz*
+   SAY Also cockerels.
+   
+ON=*wig*ridin spinnaz*
+   SAY Also easter eggs.
+   
+ON=*wren*ridin spinnaz*
+   SAY Also gumps.
+   
+ON=*NEDM*
+   EMOTE look at <SRC.NAME> as if <SRC.NAME> set fire to a cat...
+
+
+
+
+// NAME: Sarah
+// POSITION: Employee
+// AGE: 15
+// ALIGNMENT: Lawful Evil
+// LIKES: Games, Underage Drinking, Underage Sex with rich men
+// DISLIKES: Work
+// ATTITUDE: Street Wise, but very young and ignorant
+
+[CHARDEF c_h_hjfl_sarah]
+ID=c_woman
+NAME=Sarah
+DAM=5,12 
+ARMOR=200
+
+DESIRES=i_gold,e_notoriety,t_magic
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+TSPEECH=hjflsarah
+TSPEECH=spk_human_default
+
+
+TEVENTS=e_Human_HearUnk
+TEVENTS=e_Human_Needs
+TEVENTS=e_Human_Refuse
+TEVENTS=e_Human_Environ
+
+CATEGORY=Company Core
+SUBSECTION=Honest Joes
+DESCRIPTION=Sarah
+
+ON=@CREATE
+   NPC=brain_vendor
+   COLOR=0401
+   STR=900
+   INT=300
+   DEX=100
+   WRESTLING=1000
+   TACTICS=1000
+   MAGERY=1000
+   NECROMANCY=1000
+   EVALUATINGINTEL=1000
+   MAGICRESISTANCE=1000
+   ITEMNEWBIE=i_kimono
+   ATTR=05
+   COLOR=0799
+   ITEMNEWBIE=i_boots_calf
+   COLOR=0799
+   ITEMNEWBIE=i_hair_lf
+   TIMER=-1
+   COLOR=045e
+
+ON=@NPCRESTOCK   
+   SELL=VENDOR_S_HJFL_BUCS
+   
+[SPEECH hjflsarah]
+ON=*delivery*
+ON=*retrieval*
+ON=*job*
+   IF (<SRC.BODY>==c_man)
+      IF (<SRC.BANKBALANCE> > 500000)
+         SAY Ooh look at you... A rich stud with <EVAL <SRC.BANKBALANCE>> behind him... How about you come with me instead?
+      ELSE
+         SAY Yeah speak to Joe. Flipping pauper.
+      ENDIF
+   ELSE
+      IF (<SRC.BANKBALANCE> > 750000)
+         SAY Hmm... I've never been with another woman... But with <EVAL <SRC.BANKBALANCE>> gold at your disposal...
+      ELSE
+         SAY Yeah speak to Joe. Flipping pauper.
+      ENDIF
+   ENDIF
+      
+   
+ON=*employment*
+ON=*employed*
+   IF (<SRC.BODY>==c_man)
+      IF (<SRC.BANKBALANCE> > 500000)
+         SAY I might only be 15, but how about you and me... And your <EVAL <SRC.BANKBALANCE>> gold... Have some fun?...
+      ELSE
+         SAY Yeah speak to Joe. Flipping pauper.
+      ENDIF
+   ELSE
+      IF (<SRC.BANKBALANCE> > 750000)
+         SAY Just because my breasts aren't as big as yours doesn't mean you can look down at me in this job...
+      ELSE
+         SAY Yeah speak to Joe. Flipping pauper.
+      ENDIF
+   ENDIF
+
+ON=*buy*
+ON=*supplies*
+ON=*wares*
+   IF (<SRC.FLAGS> & statf_dead)
+      SRC.SYSMESSAGE @025 The dead cannot make transactions, friend...
+      RETURN 1
+   ENDIF
+   IF (0<VAR.VENDOR_ESTOP>=1)
+     IF (<SRC.ACCOUNT.PLEVEL> <= 1)
+        SAY Temporarily Closed due to command of Lord British.
+        RETURN 1
+     ENDIF
+   ENDIF
+
+  if ( <vendor_restock> )
+     return 1
+  endif
+  vendor_reprice
+  
+  IF <FINDLAYER.27.UID>
+     f_vendorhack_container_dupe <FINDLAYER.27.UID>
+  ENDIF
+  
+  BUY
+
+
+ON=*sell*
+ON=*thou*purchase*
+ON=*you*purchase*
+ON=*you*buy*
+ON=*I*sale*
+ON=*refund*
+ON=*money back*
+   IF (<SRC.FLAGS> & statf_dead)
+      SRC.SYSMESSAGE @025 The dead cannot make transactions, friend...
+      RETURN 1
+   ENDIF
+   SAY Sorry <SRC.SEX sir/madam>, but we don't do refunds.
+
+
+
+
+//------------------------------
+//-       Items For Sale       -
+//------------------------------
+
+[ITEMDEF i_hjfl_goats_milk]
+ID=i_glass_of_milk
+NAME=goats milk
+TYPE=t_food
+WEIGHT=0.1
+VALUE=25
+
+CATEGORY=Company Retail Items
+SUBSECTION=Honest Joes Fresh Lamb
+DESCRIPTION=Goats Milk
+
+ON=@CREATE
+   TAG.ISDRINK=1
+
+
+[ITEMDEF i_hjfl_hot_chocolate]
+ID=i_glass_of_liquor
+NAME=Joes Hot Chocolate
+TYPE=t_food
+WEIGHT=0.1
+VALUE=25
+
+CATEGORY=Company Retail Items
+SUBSECTION=Honest Joes Fresh Lamb
+DESCRIPTION=Joes Hot Chocolate
+
+ON=@CREATE
+   TAG.ISDRINK=1
+   COLOR=096d
+   
+   
+[ITEMDEF i_hjfl_pork_bite]
+ID=09D0
+NAME=pork bite
+TYPE=t_food
+WEIGHT=0.2
+VALUE=45
+
+CATEGORY=Company Retail Items
+SUBSECTION=Honest Joes Fresh Lamb
+DESCRIPTION=Pork Bite
+
+ON=@CREATE
+   COLOR=0971
+
+
+[ITEMDEF i_hjfl_lambpie]
+ID=01042
+NAME=Joes Lamb Pie
+TYPE=t_food
+WEIGHT=0.3
+VALUE=65
+
+CATEGORY=Company Retail Items
+SUBSECTION=Honest Joes Fresh Lamb
+DESCRIPTION=Joes Lamb Pie
+
+ON=@CREATE
+   COLOR=0971
+
+
+[ITEMDEF i_hjfl_lamb_joint]
+ID=i_ham
+NAME=Joes Lamb Joint with Gravy
+TYPE=t_food
+WEIGHT=0.5
+VALUE=125
+
+CATEGORY=Company Retail Items
+SUBSECTION=Honest Joes Fresh Lamb
+DESCRIPTION=Joes Lamb Joint
+
+ON=@CREATE
+   COLOR=083d
+
+
+[ITEMDEF i_hjfl_wedges_medium]
+ID=012ac
+NAME=Joes Potato Wedges (Medium)
+TYPE=t_food
+WEIGHT=0.3
+VALUE=55
+
+CATEGORY=Company Retail Items
+SUBSECTION=Honest Joes Fresh Lamb
+DESCRIPTION=Medium Wedges
+
+ON=@CREATE
+   COLOR=0793
+
+
+[ITEMDEF i_hjfl_wedges_large]
+ID=i_pouch
+NAME=Joes Potato Wedges (Large)
+TYPE=t_food
+WEIGHT=0.4
+VALUE=85
+
+CATEGORY=Company Retail Items
+SUBSECTION=Honest Joes Fresh Lamb
+DESCRIPTION=Large Wedges
+
+ON=@CREATE
+   COLOR=084d
+
+
+[TEMPLATE VENDOR_S_HJFL_BUCS]
+CATEGORY	= Vendor Templates
+SUBSECTION	= Sell Templates
+DESCRIPTION	= HJFL Bucs Den
+
+SELL=i_hjfl_goats_milk,{8,20}
+SELL=i_hjfl_hot_chocolate,{8,20}
+SELL=i_hjfl_pork_bite,{8,20}
+SELL=i_hjfl_lambpie,{8,20}
+SELL=i_hjfl_lamb_joint,{8,20}
+SELL=i_hjfl_wedges_medium,{8,20}
+SELL=i_hjfl_wedges_large,{8,20}
+
+
+//------------------------------
+//-   Basic Employment Board   -
+//------------------------------
+   
+   
+[ITEMDEF i_job_board_hjfl]
+ID=i_bulletin_board
+NAME=Honest Joes Fresh Lamb Deliveries
+TYPE=t_container
+
+ON=@CREATE
+   TIMER=60
+
+ON=@CLICK
+   MESSAGE <NAME> Job Notice Board (<RESCOUNT> jobs)
+   RETURN 1
+   
+ON=@DCLICK
+   IF (0<SRC.TAG.HASBEENSACKEDBY> & NPCE_HonJoeFreshLamb)
+      SRC.MESSAGE You can no longer take jobs for Honest Joe due to your being sacked...
+      RETURN 1
+   ELSEIF !(0<SRC.TAG.COMPANIESEMPLOYEDBY> & NPCE_HonJoeFreshLamb)
+      SRC.MESSAGE You are not currently employed by Honest Joe!
+      RETURN 1
+   ELSEIF (0<SRC.TAG.COMPANIESEMPLOYEDBY> & NPCE_VespRoastChick)
+      SRC.MESSAGE Joe wouldn't let you work for him anyhow...
+      RETURN 1      
+   ELSEIF (0<SRC.TAG.NPCE_HonJoeFreshLamb.REP> > 0)
+      DIALOG d_job_notice_board
+            RETURN 1
+   ELSE
+      SRC.MESSAGE Upon inspecting the board, you notice that you are not high enough ranked for jobs yet...
+      RETURN 1
+   ENDIF
+   
+ON=@TIMER
+   IF (<RESCOUNT> >= 9)
+      TIMER=60
+      RETURN 1
+   ENDIF
+   SERV.NEWITEM i_job_hjfl
+   IF (0<VAR.REMOVEJOB>)
+      NEW.REMOVE
+      VAR.REMOVEJOB=
+   ELSE
+      NEW.CONT <UID>
+   ENDIF
+   TIMER=60
+   RETURN 1
+
+
+[ITEMDEF i_job_hjfl]
+ID=i_giftbox
+TYPE=t_normal
+WEIGHT=1
+NAME=HJFL Job (Delivery)
+
+ON=@CREATE
+   VAR.KARMAMIN=-10000
+   VAR.KARMAMAX=10000
+   VAR.GUARDED=0
+   VAR.UNGUARDED=1
+   VAR.JOBITEM=<UID>
+   f_job_target
+   TAG.DELIVERYITEM=i_hjfl_delivery
+   TAG.COMPANY=NPCE_HonJoeFreshLamb
+   TAG.JOBTYPE=Delivery
+
+ON=@TIMER
+   REMOVE
+   RETURN 1
+
+  
+   
+[ITEMDEF i_hjfl_delivery]
+ID=i_pouch
+TYPE=t_delivery_company
+ 
+ON=@CREATE
+   COLOR=07a1
+   TAG.ISFOOD=1
+   DORAND 8
+      NAME Honest Joes Mega Bucket
+      NAME lamb pie and a carton of goats milk
+      NAME 2 lamb pies, a carton of goats milk, and a hot chocolate
+      NAME 4 lamb bites, medium wedges, and a hot chocolate
+      NAME Honest Joes Supreme Meal for One
+      NAME Honest Joes Romance of the Lambs for Two
+      NAME Joes Lamb Joint, large wedges, and a carton of goats milk
+      NAME Joes Lamb Joint, 2 lamb bites, 2 medium wedges, and 2 hot chocolates
+   ENDDO
+   
+ON=@CLICK
+   MESSAGE Delivery from Honest Joes Fresh Lamb (<NAME>)
+   RETURN 1
+
+
+
+//------------------------------
+//-    Blood Out, Blood In     -
+//------------------------------
+
+   
+[FUNCTION f_bloodout_part_1]
+   VAR.QUESTHASOPTIONS=1
+   VAR.QUESTOPTION1=Blood out, boss... Blood out...
+   VAR.QUESTOPTION2=Nah, I've got no time for this kind of thing...
+   TAG.QUESTOPTION1.SELECTION=f_bloodout_part_1_confirmed
+   TAG.QUESTOPTION2.SELECTION=
+   TAG.QUESTCONFIRM.SELECTION=
+   VAR.QUESTTITLE=Blood Out, Blood In
+   VAR.QUESTPICTURE=2505
+   VAR.QUESTLINE1=Now look here son, if you want in, then I'll keep it simple...
+   VAR.QUESTLINE2=In order for me to trust you, you have to do a little something in
+   VAR.QUESTLINE3=return... Ya know, blood out, blood in...
+   VAR.QUESTLINE4=Sarah's only 15 and already she's acting like a whore to some rich
+   VAR.QUESTLINE5=motherf... Sorry... I get agitated... Anyhow... You can find him in Skara Brae.
+   VAR.QUESTLINE6=He goes by the name of Dr. Collins. Kill him. 
+   VAR.QUESTLINE7=
+   VAR.QUESTLINE8=Oh, and yes he is blue karma... If you've got a problem with that, then say now
+   VAR.QUESTLINE9=before I waste any more time on you...
+   VAR.QUESTLINE10=
+   VAR.QUESTLINE11=
+   VAR.QUESTCONFIRMSECTION=
+   DIALOG d_quest_standard   
+
+
+[FUNCTION f_bloodout_part_1_confirmed]
+IF (0<SRC.TAG.COMPANIESEMPLOYEDBY> & NPCE_VespRoastChick)
+   SRC.MESSAGE You go to accept the job, but Joe notices your VRC employment badge...
+   RETURN 1
+ENDIF
+SRC.TAG.NPC_QUEST_START_2 = <eval ( <SRC.TAG.NPC_QUEST_START_2> | NPCQ_HJFLEmployQues1 )>
+
+
+
+//------------------------------
+//-         To Be Free         -
+//------------------------------
+
+   
+[FUNCTION f_tobefree_part_1]
+   VAR.QUESTHASOPTIONS=1
+   VAR.QUESTOPTION1=Fine, I'll do it... But you owe me...
+   VAR.QUESTOPTION2=I'd rather keep my job, thanks bitch.
+   TAG.QUESTOPTION1.SELECTION=f_tobefree_part_1_confirmed
+   TAG.QUESTOPTION2.SELECTION=
+   TAG.QUESTCONFIRM.SELECTION=
+   VAR.QUESTTITLE=To Be Free
+   VAR.QUESTPICTURE=2505
+   VAR.QUESTLINE1=Look, I don't care about what you say about my age, and heck, I
+   VAR.QUESTLINE2=don't care what the law says... I can do what I want. Or at least
+   VAR.QUESTLINE3=I could if Joe wasn't always so damn overprotective of me!
+   VAR.QUESTLINE4=It makes me want to SCREAM! But I have an idea...
+   VAR.QUESTLINE5=
+   VAR.QUESTLINE6=That bastard Charlie near Destard has been spying on me, finding out where
+   VAR.QUESTLINE7=I'm meeting people. Obviously I can't kill him, he's a regular customer and
+   VAR.QUESTLINE8=Joe would get suspicious... So I want you to find something incriminating on
+   VAR.QUESTLINE9=him. Something associating him with that bitch Marie from Vesper... My friend
+   VAR.QUESTLINE10=Steve back in Serpents Hold might be able to "Provide" you with something...
+   VAR.QUESTLINE11=If he gets funny though, you know what to do...
+   VAR.QUESTCONFIRMSECTION=
+   DIALOG d_quest_standard   
+
+
+[FUNCTION f_tobefree_part_1_confirmed]
+IF (0<SRC.TAG.COMPANIESEMPLOYEDBY> & NPCE_VespRoastChick)
+   SRC.MESSAGE You go to accept the job, but Sarah notices your VRC employment badge...
+   RETURN 1
+ENDIF
+SRC.TAG.NPC_QUEST_START_2 = <eval ( <SRC.TAG.NPC_QUEST_START_2> | NPCQ_HJFLToBeFree )>
+
+
+[EOF]

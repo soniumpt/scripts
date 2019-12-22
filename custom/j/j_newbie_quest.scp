@@ -1,0 +1,351 @@
+// CHANGELOG
+// =========
+//
+// 18/08/18 - Wigifer - Removed references to e_all_npc 
+//
+
+// *** Quest ***
+
+// *** Newbie Introduction Quest ***
+// *** Note: A reference is made in spk_player, to catch the yell. ***
+// *** Note: A *lot* is in k_cmd_player.scp, triggered when the client uses a function ***
+
+// *** NPC and Speech ***
+
+[CHARDEF c_newbie_david]
+NAME = David
+ID = c_man
+TSPEECH = s_newbiedavid
+
+CATEGORY=NPC Quests
+SUBSECTION=Newbie Intro Quest
+DESCRIPTION=David  
+
+ON=@CREATE
+  COLOR = 0333
+  KARMA = {5000 5999}
+  FAME = {2000 4000}
+  HITS = {1500 1700}
+  STR = {800 900}
+  DEX = {100 120}
+  INT = {200 300}
+  PARRYING = {80.0 100.0}
+  MAGICRESISTANCE = {100.0 120.0}
+  TACTICS = 100.0
+  WRESTLING = 100.0
+  MACEFIGHTING = 100.0
+  FENCING = 100.0
+  SWORDSMANSHIP = 100.0
+  NPC=brain_human
+  ITEMNEWBIE = i_shirt_fancy
+  COLOR=032
+  ITEMNEWBIE = i_pants_long
+  COLOR=055
+  ITEMNEWBIE = random_shoes
+  ITEMNEWBIE = random_male_hair
+  COLOR=015e
+
+  
+ON=@NPCRestock
+  ITEM=i_gold,{100 250}
+
+ON=@CLICK
+  MESSAGE @030 [New Players Double Click Me for a Quest!]
+  MESSAGE @07a1 [Quest Giver]
+  
+ON=@DCLICK
+  IF !(<SRC.TAG0.NPC_QUEST_START_3> & NPCQ_NewbieQuest_1)
+     SRC.f_newbie_introduction_1
+  ELSEIF ( !(<SRC.TAG0.NPC_QUEST_DONE_3> & NPCQ_NewbieQuest_1) && (<SRC.TAG0.NEWBIEQUESTPHASE>=7) )
+     SRC.f_newbie_introduction_1_conclusion
+  ELSE
+     SRC.SYSMESSAGE You have already completed all quests available from this NPC
+  ENDIF
+     
+
+
+
+
+[SPEECH s_newbiedavid]
+ON=*hello*
+ON=*hi*
+ON=*quest*
+ON=*reward*
+ON=*salut*
+ON=*bonjour*
+  IF !(<SRC.TAG0.NPC_QUEST_START_3> & NPCQ_NewbieQuest_1)
+     SRC.f_newbie_introduction_1
+  ELSEIF ( !(<SRC.TAG0.NPC_QUEST_DONE_3> & NPCQ_NewbieQuest_1) && (<SRC.TAG0.NEWBIEQUESTPHASE>=7) )
+     SRC.f_newbie_introduction_1_conclusion
+  ELSE
+     SRC.SYSMESSAGE @07a9 You have already completed all quests available from this NPC
+  ENDIF
+
+
+// *** Player Memory Object ***
+
+[ITEMDEF i_newbie_introduction_1_memory]
+ID=i_memory
+TYPE=t_eq_script
+NAME=Newbie Intro Quest
+
+ON=@CREATE
+   TIMER=1
+   
+ON=@EQUIP
+   SRC.SYSMESSAGE Note: If you leave Ocllo, this quest will be cancelled.
+   LINK = <SRC.UID>
+
+ON=@TIMER
+   IF !(STRMATCH( "Ocllo", "<CONT.REGION.NAME>" ))
+       TRYSRC <LINK> DIALOGCLOSE d_newbie_introduction_1_1
+       TRYSRC <LINK> DIALOGCLOSE d_newbie_introduction_1_2
+       TRYSRC <LINK> DIALOGCLOSE d_newbie_introduction_1_3
+       TRYSRC <LINK> DIALOGCLOSE d_newbie_introduction_1_4
+       TRYSRC <LINK> DIALOGCLOSE d_newbie_introduction_1_5
+       TRYSRC <LINK> DIALOGCLOSE d_newbie_introduction_1_6
+       TRYSRC <LINK> DIALOGCLOSE d_newbie_introduction_1_7       
+       CONT.SYSMESSAGE @07a0 You have left Ocllo and the Newbie Quest has been removed from your quest log.
+       CONT.f_newbie_introduction_1_reset
+       REMOVE
+   ELSE
+      TIMER=1
+   ENDIF
+   RETURN 1
+   
+ON=@DESTROY
+
+// *** FUNCTIONS ***
+
+[FUNCTION f_newbie_introduction_1]
+   VAR.QUESTHASOPTIONS=1
+   VAR.QUESTOPTION1=I would like to learn from you!
+   VAR.QUESTOPTION2=Nope. Know everything.
+   TAG.QUESTOPTION1.SELECTION=f_newbie_introduction_1_confirm
+   TAG.QUESTOPTION2.SELECTION=
+   TAG.QUESTCONFIRM.SELECTION=f_newbie_introduction_1_confirm
+   VAR.QUESTTITLE=New Players Quest
+   VAR.QUESTPICTURE=6227
+   VAR.QUESTLINE1=Hello there new player! You've done well by beginning this quest.
+   VAR.QUESTLINE2=Other people around the world, like me, can begin quests just by
+   VAR.QUESTLINE3=being double clicked or said quest to.
+   VAR.QUESTLINE4=Just look out for the [QUEST GIVER] tag above our heads.
+   VAR.QUESTLINE5=Would you like a short tutorial on the key functions of the server?
+   VAR.QUESTLINE6=
+   VAR.QUESTLINE7=
+   VAR.QUESTLINE8=
+   VAR.QUESTLINE9=
+   VAR.QUESTOBJECTIVE=Follow the instructions given in the dialogs...
+   VAR.QUESTREWARD=2,000 Gold, Satisfaction of knowing what to do...
+   VAR.QUESTCONFIRMSECTION=I shall do as you ask!
+   DIALOG d_quest_postwipe
+
+[FUNCTION f_newbie_introduction_1_conclusion]
+   VAR.QUESTHASOPTIONS=0
+   VAR.QUESTOPTION1=
+   VAR.QUESTOPTION2=
+   TAG.QUESTOPTION1.SELECTION=
+   TAG.QUESTOPTION2.SELECTION=
+   TAG.QUESTCONFIRM.SELECTION=f_newbie_introduction_1_complete
+   VAR.QUESTTITLE=New Players Quest
+   VAR.QUESTPICTURE=6227
+   VAR.QUESTLINE1=Well done. Any time you're lost for commands or get lost, 
+   VAR.QUESTLINE2=remember to use world chat or the page function!
+   VAR.QUESTLINE3=
+   VAR.QUESTLINE4=
+   VAR.QUESTLINE5=
+   VAR.QUESTLINE6=
+   VAR.QUESTLINE7=
+   VAR.QUESTLINE8=
+   VAR.QUESTLINE9=
+   VAR.QUESTOBJECTIVE=Claim your reward by clicking below.
+   VAR.QUESTREWARD=2,000 Gold, Satisfaction of knowing what to do...
+   VAR.QUESTCONFIRMSECTION=Thank you for your assistance!
+   DIALOG d_quest_postwipe
+   
+[FUNCTION f_newbie_introduction_1_confirm]
+   SRC.TAG.NPC_QUEST_START_3 = <HVAL (<SRC.TAG0.NPC_QUEST_START_3> | NPCQ_NewbieQuest_1)>
+   SRC.TAG.NEWBIEQUESTPHASE=1
+   SRC.NEWITEM i_newbie_introduction_1_memory
+   SRC.ACT.EQUIP
+   SRC.SYSMESSAGE You have accepted this quest.
+   DIALOG d_newbie_introduction_1_1
+   
+[FUNCTION f_newbie_introduction_1_part1_done]
+   SRC.TAG.NEWBIEQUESTPHASE=2
+   DIALOGCLOSE d_newbie_introduction_1_1
+   DIALOG d_newbie_introduction_1_2   
+
+[FUNCTION f_newbie_introduction_1_part2_done]
+   SRC.TAG.NEWBIEQUESTPHASE=3
+   DIALOGCLOSE d_newbie_introduction_1_2
+   DIALOG d_newbie_introduction_1_3   
+
+[FUNCTION f_newbie_introduction_1_part3_done]
+   SRC.TAG.NEWBIEQUESTPHASE=4
+   DIALOGCLOSE d_newbie_introduction_1_3
+   DIALOG d_newbie_introduction_1_4   
+
+[FUNCTION f_newbie_introduction_1_part4_done]
+   SRC.TAG.NEWBIEQUESTPHASE=5
+   DIALOGCLOSE d_newbie_introduction_1_4
+   DIALOG d_newbie_introduction_1_5   
+
+[FUNCTION f_newbie_introduction_1_part5_done]
+   SRC.TAG.NEWBIEQUESTPHASE=6
+   DIALOGCLOSE d_newbie_introduction_1_5
+   DIALOG d_newbie_introduction_1_6  
+
+[FUNCTION f_newbie_introduction_1_part6_done]
+   SRC.TAG.NEWBIEQUESTPHASE=7
+   DIALOGCLOSE d_newbie_introduction_1_6
+   DIALOG d_newbie_introduction_1_7
+
+[FUNCTION f_newbie_introduction_1_complete]
+   SRC.TAG.NPC_QUEST_DONE_3 = <HVAL (<SRC.TAG0.NPC_QUEST_DONE_3> | NPCQ_NewbieQuest_1)>
+   SRC.TAG.NEWBIEQUESTPHASE=
+   SRC.DIALOGCLOSE d_newbie_introduction_1_7
+   SRC.ARROWQUEST
+   SERV.NEWITEM i_gold
+   NEW.AMOUNT 2000
+   NEW.BOUNCE <SRC.UID>
+   SRC.SYSMESSAGE @07a0 You have completed the Newbie Quest. You have been rewarded 2,000 gold.
+   
+[FUNCTION f_newbie_introduction_1_reset]   
+   TAG.NPC_QUEST_START_3 = <HVAL (<TAG0.NPC_QUEST_START_3> &~ NPCQ_NewbieQuest_1)>
+   TAG.NPC_QUEST_DONE_3 = <HVAL (<TAG0.NPC_QUEST_DONE_3> &~ NPCQ_NewbieQuest_1)>
+   DIALOGCLOSE d_newbie_introduction_1_1
+   DIALOGCLOSE d_newbie_introduction_1_2
+   DIALOGCLOSE d_newbie_introduction_1_3
+   DIALOGCLOSE d_newbie_introduction_1_4
+   DIALOGCLOSE d_newbie_introduction_1_5
+   DIALOGCLOSE d_newbie_introduction_1_6
+   DIALOGCLOSE d_newbie_introduction_1_7
+   TAG.NEWBIEQUESTPHASE=
+   SYSMESSAGE @07a0 The Newbie Quest has been abandoned.
+   
+// *** GUMPS ***   
+   
+[DIALOG d_newbie_introduction_1_1]
+0,300
+NOMOVE
+NOCLOSE
+resizepic 0 0 0A3C 250 150 
+dtext 10 10 025 So first of all, try using a basic
+dtext 10 30 025 command like yell! This will show
+dtext 10 50 025 your text across the server. Say
+dtext 10 70 025 something to everyone now by
+dtext 10 90 025 typing a !, then a space, then your
+dtext 10 110 025 text.
+
+[DIALOG d_newbie_introduction_1_1 TEXT]
+
+
+[DIALOG d_newbie_introduction_1_1 BUTTON]
+
+[DIALOG d_newbie_introduction_1_2]
+0,300
+NOMOVE
+NOCLOSE
+resizepic 0 0 0A3C 250 150 
+dtext 10 10 025 Excellent! Next lets look at the
+dtext 10 30 025 core component of Burstfire UO:
+dtext 10 50 025 Your Travel Papers! Open this up
+dtext 10 70 025 by typing in .papers
+
+[DIALOG d_newbie_introduction_1_2 TEXT]
+
+
+[DIALOG d_newbie_introduction_1_2 BUTTON]
+
+
+[DIALOG d_newbie_introduction_1_3]
+0,300
+NOMOVE
+NOCLOSE
+resizepic 0 0 0A3C 250 150 
+dtext 10 10 025 These are your travel papers. You
+dtext 10 30 025 can get information on stats, karma,
+dtext 10 50 025 fame, your guild...
+dtext 10 70 025 Click around and get used to it.
+dtext 10 90 025 Try selecting "Character Info" and
+dtext 10 110 025 then "Total Stats" to set max stats.
+
+[DIALOG d_newbie_introduction_1_3 TEXT]
+
+
+[DIALOG d_newbie_introduction_1_3 BUTTON]
+
+
+[DIALOG d_newbie_introduction_1_4]
+0,300
+NOMOVE
+NOCLOSE
+resizepic 0 0 0A3C 250 150 
+dtext 10 10 025 Here you can set your maximum stats.
+dtext 10 30 025 Strength relates to Hit Points.
+dtext 10 50 025 Dexterity relates to Stamina.
+dtext 10 70 025 Intelligence relates to Mana.
+dtext 10 90 025 For now, close this dialog.
+
+
+[DIALOG d_newbie_introduction_1_4 TEXT]
+
+
+[DIALOG d_newbie_introduction_1_4 BUTTON]
+
+
+[DIALOG d_newbie_introduction_1_5]
+0,300
+NOMOVE
+NOCLOSE
+resizepic 0 0 0A3C 250 150 
+dtext 10 10 025 On Memory Shard, death is a regular
+dtext 10 30 025 occurrence. You can revive to begin
+dtext 10 50 025 with by visiting a healer or finding 
+dtext 10 70 025 a resurrection stone. Find a healer
+dtext 10 90 025 and ask about "Death".
+
+
+[DIALOG d_newbie_introduction_1_5 TEXT]
+
+
+[DIALOG d_newbie_introduction_1_5 BUTTON]
+
+
+[DIALOG d_newbie_introduction_1_6]
+0,300
+NOMOVE
+NOCLOSE
+resizepic 0 0 0A3C 250 150 
+dtext 10 10 025 When dead, talk to a healer in War
+dtext 10 30 025 mode (Press tab) or double-click the
+dtext 10 50 025 resurrect stone. You lose anything on
+dtext 10 70 025 your person, so store anything you
+dtext 10 90 025 want to keep in your bank! Find a
+dtext 10 110 025 banker and say "Banker Bank".
+
+
+[DIALOG d_newbie_introduction_1_6 TEXT]
+
+
+[DIALOG d_newbie_introduction_1_6 BUTTON]
+
+
+[DIALOG d_newbie_introduction_1_7]
+0,300
+NOMOVE
+NOCLOSE
+resizepic 0 0 0A3C 250 150 
+dtext 10 10 025 Your bank has a weight limit, as you
+dtext 10 30 025 can see in the lower left. Later on,
+dtext 10 50 025 you can store items in a house.
+dtext 10 70 025 Go back to the quest giver and
+dtext 10 90 025 double click him (or say "quest"
+dtext 10 110 025 or "reward"), to complete this tutorial.
+
+
+[DIALOG d_newbie_introduction_1_7 TEXT]
+
+
+[DIALOG d_newbie_introduction_1_7 BUTTON]

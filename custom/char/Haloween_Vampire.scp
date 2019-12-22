@@ -1,0 +1,106 @@
+// #-----------#
+// # CHANGELOG #
+// #-----------#
+//
+// 18/08/18 - Wigifer - Removed random loot from these monsters, ready for conversion to the new f_central_loot table.
+
+
+[CHARDEF C_vbat]
+DEFNAME=C_vbat
+NAME=Vampire Bat
+ID=c_BIRD
+ICON=i_pet_BIRD
+
+DAM=5,13
+ARMOR=5,10
+RESOURCES=2 i_ribs_raw
+
+CAN=MT_WALK|MT_FLY
+
+FOODTYPE=25 t_crops, 25 t_grain
+DESIRES=C_BIRD_CROW,t_crops
+AVERSIONS=e_carnivores,r_water,i_scarecrow
+
+ON=@Create
+COLOR=001
+STR=100
+DEX=600
+INT=600
+
+MAGERY={160.0 160.0}
+MAGICRESISTANCE={70.0 85.0}
+TACTICS=50.0
+WRESTLING=70.0
+FAME={50 100}
+KARMA={-3001 -3006}
+NPC=brain_monster
+
+ITEMNEWBIE=i_spellbook
+ADDSPELL=s_harm
+
+CATEGORY=Memory UO
+SUBSECTION=Halloween
+DESCRIPTION=Vampire Bats
+
+
+
+[CHARDEF c_m_Vampire]
+DEFNAME=c_m_c_m_Vampire
+NAME=#NAMES_HUMANMALE The Vampire
+ID=c_Man
+DAM=6,17
+ARMOR=20
+RESOURCES=8 i_ribs_raw
+FOODTYPE=15 t_meat_raw
+DESIRES=i_gold
+
+
+ON=@Create
+
+STR={300 300}
+DEX={300 300}
+INT={800 800}
+//ALIGNMENT=EVIL
+//SPELLCIRCLES=5,7
+
+PARRYING={80.0 90.0}
+MAGERY={160.0 160.0}
+MAGICRESISTANCE={150.0 150.0}
+TACTICS={90.0 100.0}
+Wrestling={60.0 80.0}
+MAGICRESISTANCE=160.0
+
+NPC=BRAIN_MONSTER
+
+FAME={1000 2000}
+KARMA={-3001 -4000}
+
+ITEMNEWBIE=i_spellbook
+ADDSPELL=s_mana_drain
+ADDSPELL=s_paralyze
+ADDSPELL=s_mass_curse
+
+on=@gethit
+IF (<HITPOINTS> <25) 
+EFFECT = 1, 0, 6, 15, 1 
+NEWNPC=c_a_direwolf
+NEWNPC=c_a_direwolf
+NEWNPC=c_a_direwolf
+NEWNPC=c_a_direwolf
+REMOVE 1
+endif 
+
+ON=@NPCRestock
+ITEMNEWBIE=0170f
+ITEMNEWBIE=0152e
+COLOR=0001
+ITEMNEWBIE=01efe
+COLOR=08fd
+ITEMNEWBIE=01530
+COLOR=0001
+
+CATEGORY=Memory UO
+SUBSECTION=Halloween
+DESCRIPTION=Vampire
+
+[eof]

@@ -1,0 +1,713 @@
+//WREN - MAY 04 2004 - MAJOR OVERHAUL AND SIMPLIFICATION OF SCRIPT.  ADDED RESISTANCES FOR EVERY MAT TYPE.
+
+
+[DEFNAME def_armourbreak_ar]
+def_ar_pine		5
+def_ar_copper		5
+def_ar_eucalyptus	10
+def_ar_tin		10
+def_ar_rose		15
+def_ar_holly		15
+def_ar_pure_copper	15
+def_ar_oak		20
+def_ar_iron		20
+def_ar_ironwood		25
+def_ar_ferrum		25
+def_ar_mahogany		30
+def_ar_bronze		30
+def_ar_cherry		35
+def_ar_brass		35
+def_ar_flesh		40
+def_ar_composite	40
+def_ar_myst		40
+def_ar_steel		40
+def_ar_chrome		40
+def_ar_drake 		40
+def_ar_interleaved	45
+def_ar_silver		45
+def_ar_red		45
+def_ar_green		45
+def_ar_gold		50
+def_ar_ice		50
+def_ar_agapite     	55
+def_ar_shadow 		55
+def_ar_terathane	55
+def_ar_titanium		60
+def_ar_verminard	65
+def_ar_stronghold	65
+def_ar_verite      	65
+def_ar_valorite 	65
+def_ar_skargard		70
+def_ar_crystal		70
+def_ar_adamantine	75
+def_ar_celestium	80
+def_ar_entit   		80
+def_ar_enhanced 	100
+def_ar_bloodrk		100
+def_ar_blackrock	100
+def_ar_bloodrock	100
+def_ar_phoenix		100
+
+
+[DEFNAME def_armourbreak_wpn]
+def_wpn_pine		5
+def_wpn_copper		5
+def_wpn_eucalyptus	10
+def_wpn_tin		10
+def_wpn_rose		15
+def_wpn_holly		15
+def_wpn_pure_copper	15
+def_wpn_oak		20
+def_wpn_iron		20
+def_wpn_ironwood	25
+def_wpn_ferrum		25
+def_wpn_mahogany	30
+def_wpn_bronze		30
+def_wpn_cherry		35
+def_wpn_brass		35
+def_wpn_flesh		40
+def_wpn_composite	40
+def_wpn_myst		40
+def_wpn_steel		40
+def_wpn_chrome		40
+def_wpn_drake 		40
+def_wpn_interleaved	45
+def_wpn_silver		45
+def_wpn_red		45
+def_wpn_green		45
+def_wpn_gold		50
+def_wpn_ice		50
+def_wpn_agapite    	55
+def_wpn_shadow 		55
+def_wpn_terathane	55
+def_wpn_titanium	60
+def_wpn_verminard	65
+def_wpn_stronghold	65
+def_wpn_verite  	65
+def_wpn_valorite	65
+def_wpn_skargard	70
+def_wpn_crystal		70
+def_wpn_adamantine	75
+def_wpn_celestium	80
+def_wpn_entit   	80
+def_wpn_enhanced	100
+def_wpn_bloodrk		100
+def_wpn_blackrock	100
+def_wpn_bloodrock	100
+def_wpn_phoenix		100
+
+
+
+[FUNCTION DAMAGEMESSAGE]
+  SYSMESSAGE @0196 <args>
+
+
+[FUNCTION f_damage_toapply125a]
+if ( <src.act.findLAYER( layer_hand2 ).ISWEAPON> )
+	if ( (<src.act.findLAYER.LAYER_hand2.weight> < 70)  )
+		var.damagetoapply = 1
+	elseif ( (<src.act.findLAYER.LAYER_hand2.weight> < 120)  )
+		var.damagetoapply = <eval ({1 2})>
+	elseif ( (<src.act.findLAYER.LAYER_hand2.weight> < 190)  )
+		var.damagetoapply = <eval ({1 3})>
+	endif
+
+
+	IF (<src.act.findLAYER.LAYER_hand2.TDATA1> == mat_phoenix )
+		VAR.WEAPON_MATERIAL=def_wpn_phoenix
+	ELSEIF (<src.act.findLAYER.LAYER_hand2.TDATA1> == mat_bloodrock )
+		VAR.WEAPON_MATERIAL=def_wpn_bloodrock
+	ELSEIF (<src.act.findLAYER.LAYER_hand2.TDATA1> == mat_bloodrk )
+                src.act.findLAYER.LAYER_hand2.TDATA1 = mat_bloodrock
+		VAR.WEAPON_MATERIAL=def_wpn_bloodrk
+	ELSEIF (<src.act.findLAYER.LAYER_hand2.TDATA1> == mat_blackrock )
+		VAR.WEAPON_MATERIAL=def_wpn_blackrock
+	ELSEIF (<src.act.findLAYER.LAYER_hand2.TDATA1> == mat_enhanced )
+		VAR.WEAPON_MATERIAL=def_wpn_enhanced
+	ELSEIF (<src.act.findLAYER.LAYER_hand2.TDATA1> == mat_entit )
+		VAR.WEAPON_MATERIAL=def_wpn_entit
+	ELSEIF (<src.act.findLAYER.LAYER_hand2.TDATA1> == mat_celestium )
+		VAR.WEAPON_MATERIAL=def_wpn_celestium
+	ELSEIF (<src.act.findLAYER.LAYER_hand2.TDATA1> == mat_adamantine )
+		VAR.WEAPON_MATERIAL=def_wpn_adamantine
+	ELSEIF (<src.act.findLAYER.LAYER_hand2.TDATA1> == mat_crystal )
+		VAR.WEAPON_MATERIAL=def_wpn_crystal
+	ELSEIF (<src.act.findLAYER.LAYER_hand2.TDATA1> == mat_skargard )
+		VAR.WEAPON_MATERIAL=def_wpn_skargard
+	ELSEIF (<src.act.findLAYER.LAYER_hand2.TDATA1> == mat_valorite )
+		VAR.WEAPON_MATERIAL=def_wpn_valorite
+	ELSEIF (<src.act.findLAYER.LAYER_hand2.TDATA1> == mat_verite )
+		VAR.WEAPON_MATERIAL=def_wpn_verite
+	ELSEIF (<src.act.findLAYER.LAYER_hand2.TDATA1> == mat_stronghold )
+		VAR.WEAPON_MATERIAL=def_wpn_stronghold
+	ELSEIF (<src.act.findLAYER.LAYER_hand2.TDATA1> == mat_verminard )
+		VAR.WEAPON_MATERIAL=def_wpn_verminard
+	ELSEIF (<src.act.findLAYER.LAYER_hand2.TDATA1> == mat_titanium )
+		VAR.WEAPON_MATERIAL=def_wpn_titanium
+	ELSEIF (<src.act.findLAYER.LAYER_hand2.TDATA1> == mat_terathane )
+		VAR.WEAPON_MATERIAL=def_wpn_terathane
+	ELSEIF (<src.act.findLAYER.LAYER_hand2.TDATA1> == mat_shadow )
+		VAR.WEAPON_MATERIAL=def_wpn_shadow
+	ELSEIF (<src.act.findLAYER.LAYER_hand2.TDATA1> == mat_agapite )
+		VAR.WEAPON_MATERIAL=def_wpn_agapite
+	ELSEIF (<src.act.findLAYER.LAYER_hand2.TDATA1> == mat_ice )
+		VAR.WEAPON_MATERIAL=def_wpn_ice
+	ELSEIF (<src.act.findLAYER.LAYER_hand2.TDATA1> == mat_gold )
+		VAR.WEAPON_MATERIAL=def_wpn_gold
+	ELSEIF (<src.act.findLAYER.LAYER_hand2.TDATA1> == mat_green )
+		VAR.WEAPON_MATERIAL=def_wpn_green
+	ELSEIF (<src.act.findLAYER.LAYER_hand2.TDATA1> == mat_red )
+		VAR.WEAPON_MATERIAL=def_wpn_red
+	ELSEIF (<src.act.findLAYER.LAYER_hand2.TDATA1> == mat_silver )
+		VAR.WEAPON_MATERIAL=def_wpn_silver
+	ELSEIF (<src.act.findLAYER.LAYER_hand2.TDATA1> == mat_interleaved )
+		VAR.WEAPON_MATERIAL=def_wpn_interleaved
+	ELSEIF (<src.act.findLAYER.LAYER_hand2.TDATA1> == mat_drake )
+		VAR.WEAPON_MATERIAL=def_wpn_drake
+	ELSEIF (<src.act.findLAYER.LAYER_hand2.TDATA1> == mat_chrome )
+		VAR.WEAPON_MATERIAL=def_wpn_chrome
+	ELSEIF (<src.act.findLAYER.LAYER_hand2.TDATA1> == mat_steel )
+		VAR.WEAPON_MATERIAL=def_wpn_steel
+	ELSEIF (<src.act.findLAYER.LAYER_hand2.TDATA1> == mat_myst )
+		VAR.WEAPON_MATERIAL=def_wpn_myst
+	ELSEIF (<src.act.findLAYER.LAYER_hand2.TDATA1> == mat_composite )
+		VAR.WEAPON_MATERIAL=def_wpn_composite
+	ELSEIF (<src.act.findLAYER.LAYER_hand2.TDATA1> == mat_brass )
+		VAR.WEAPON_MATERIAL=def_wpn_brass
+	ELSEIF (<src.act.findLAYER.LAYER_hand2.TDATA1> == mat_cherry )
+		VAR.WEAPON_MATERIAL=def_wpn_cherry
+	ELSEIF (<src.act.findLAYER.LAYER_hand2.TDATA1> == mat_bronze )
+		VAR.WEAPON_MATERIAL=def_wpn_bronze
+	ELSEIF (<src.act.findLAYER.LAYER_hand2.TDATA1> == mat_mahogany )
+		VAR.WEAPON_MATERIAL=def_wpn_mahogany
+	ELSEIF (<src.act.findLAYER.LAYER_hand2.TDATA1> == mat_ferrum )
+		VAR.WEAPON_MATERIAL=def_wpn_ferrum
+	ELSEIF (<src.act.findLAYER.LAYER_hand2.TDATA1> == mat_ironwood )
+		VAR.WEAPON_MATERIAL=def_wpn_ironwood
+	ELSEIF (<src.act.findLAYER.LAYER_hand2.TDATA1> == mat_iron )
+		VAR.WEAPON_MATERIAL=def_wpn_iron
+	ELSEIF (<src.act.findLAYER.LAYER_hand2.TDATA1> == mat_oak )
+		VAR.WEAPON_MATERIAL=def_wpn_oak
+	ELSEIF (<src.act.findLAYER.LAYER_hand2.TDATA1> == mat_pure_copper )
+		VAR.WEAPON_MATERIAL=def_wpn_copper
+	ELSEIF (<src.act.findLAYER.LAYER_hand2.TDATA1> == mat_holly )
+		VAR.WEAPON_MATERIAL=def_wpn_holly
+	ELSEIF (<src.act.findLAYER.LAYER_hand2.TDATA1> == mat_rose )
+		VAR.WEAPON_MATERIAL=def_wpn_rose
+	ELSEIF (<src.act.findLAYER.LAYER_hand2.TDATA1> == mat_tin )
+		VAR.WEAPON_MATERIAL=def_wpn_tin
+	ELSEIF (<src.act.findLAYER.LAYER_hand2.TDATA1> == mat_eucalyptus )
+		VAR.WEAPON_MATERIAL=def_wpn_eucalyptus
+	ELSEIF (<src.act.findLAYER.LAYER_hand2.TDATA1> == mat_copper )
+		VAR.WEAPON_MATERIAL=def_wpn_copper
+	ELSEIF (<src.act.findLAYER.LAYER_hand2.TDATA1> == mat_pine )
+		VAR.WEAPON_MATERIAL=def_wpn_pine
+	ELSE
+		VAR.WEAPON_MATERIAL=0
+	ENDIF
+
+
+elseif ( <src.act.findLAYER( layer_hand1 ).ISWEAPON> )
+	if ( (<src.act.findLAYER.LAYER_hand1.weight> < 70)  )
+		var.damagetoapply = 1
+	elseif ( (<src.act.findLAYER.LAYER_hand1.weight> < 120)  )
+		var.damagetoapply = <eval ({1 2})>
+	elseif ( (<src.act.findLAYER.LAYER_hand1.weight> < 190)  )
+		var.damagetoapply = <eval ({1 3})>
+	endif
+
+
+	IF (<src.act.findLAYER.LAYER_hand1.TDATA1> == mat_phoenix )
+		VAR.WEAPON_MATERIAL=def_wpn_phoenix
+	ELSEIF (<src.act.findLAYER.LAYER_hand1.TDATA1> == mat_bloodrock )
+		VAR.WEAPON_MATERIAL=def_wpn_bloodrock
+	ELSEIF (<src.act.findLAYER.LAYER_hand1.TDATA1> == mat_bloodrk )
+		src.act.findLAYER.LAYER_hand1.TDATA1 = mat_bloodrock
+		VAR.WEAPON_MATERIAL=def_wpn_bloodrk
+	ELSEIF (<src.act.findLAYER.LAYER_hand1.TDATA1> == mat_blackrock )
+		VAR.WEAPON_MATERIAL=def_wpn_blackrock
+	ELSEIF (<src.act.findLAYER.LAYER_hand1.TDATA1> == mat_enhanced )
+		VAR.WEAPON_MATERIAL=def_wpn_enhanced
+	ELSEIF (<src.act.findLAYER.LAYER_hand1.TDATA1> == mat_entit )
+		VAR.WEAPON_MATERIAL=def_wpn_entit
+	ELSEIF (<src.act.findLAYER.LAYER_hand1.TDATA1> == mat_celestium )
+		VAR.WEAPON_MATERIAL=def_wpn_celestium
+	ELSEIF (<src.act.findLAYER.LAYER_hand1.TDATA1> == mat_adamantine )
+		VAR.WEAPON_MATERIAL=def_wpn_adamantine
+	ELSEIF (<src.act.findLAYER.LAYER_hand1.TDATA1> == mat_crystal )
+		VAR.WEAPON_MATERIAL=def_wpn_crystal
+	ELSEIF (<src.act.findLAYER.LAYER_hand1.TDATA1> == mat_skargard )
+		VAR.WEAPON_MATERIAL=def_wpn_skargard
+	ELSEIF (<src.act.findLAYER.LAYER_hand1.TDATA1> == mat_valorite )
+		VAR.WEAPON_MATERIAL=def_wpn_valorite
+	ELSEIF (<src.act.findLAYER.LAYER_hand1.TDATA1> == mat_verite )
+		VAR.WEAPON_MATERIAL=def_wpn_verite
+	ELSEIF (<src.act.findLAYER.LAYER_hand1.TDATA1> == mat_stronghold )
+		VAR.WEAPON_MATERIAL=def_wpn_stronghold
+	ELSEIF (<src.act.findLAYER.LAYER_hand1.TDATA1> == mat_verminard )
+		VAR.WEAPON_MATERIAL=def_wpn_verminard
+	ELSEIF (<src.act.findLAYER.LAYER_hand1.TDATA1> == mat_titanium )
+		VAR.WEAPON_MATERIAL=def_wpn_titanium
+	ELSEIF (<src.act.findLAYER.LAYER_hand1.TDATA1> == mat_terathane )
+		VAR.WEAPON_MATERIAL=def_wpn_terathane
+	ELSEIF (<src.act.findLAYER.LAYER_hand1.TDATA1> == mat_shadow )
+		VAR.WEAPON_MATERIAL=def_wpn_shadow
+	ELSEIF (<src.act.findLAYER.LAYER_hand1.TDATA1> == mat_agapite )
+		VAR.WEAPON_MATERIAL=def_wpn_agapite
+	ELSEIF (<src.act.findLAYER.LAYER_hand1.TDATA1> == mat_ice )
+		VAR.WEAPON_MATERIAL=def_wpn_ice
+	ELSEIF (<src.act.findLAYER.LAYER_hand1.TDATA1> == mat_gold )
+		VAR.WEAPON_MATERIAL=def_wpn_gold
+	ELSEIF (<src.act.findLAYER.LAYER_hand1.TDATA1> == mat_green )
+		VAR.WEAPON_MATERIAL=def_wpn_green
+	ELSEIF (<src.act.findLAYER.LAYER_hand1.TDATA1> == mat_red )
+		VAR.WEAPON_MATERIAL=def_wpn_red
+	ELSEIF (<src.act.findLAYER.LAYER_hand1.TDATA1> == mat_silver )
+		VAR.WEAPON_MATERIAL=def_wpn_silver
+	ELSEIF (<src.act.findLAYER.LAYER_hand1.TDATA1> == mat_interleaved )
+		VAR.WEAPON_MATERIAL=def_wpn_interleaved
+	ELSEIF (<src.act.findLAYER.LAYER_hand1.TDATA1> == mat_drake )
+		VAR.WEAPON_MATERIAL=def_wpn_drake
+	ELSEIF (<src.act.findLAYER.LAYER_hand1.TDATA1> == mat_chrome )
+		VAR.WEAPON_MATERIAL=def_wpn_chrome
+	ELSEIF (<src.act.findLAYER.LAYER_hand1.TDATA1> == mat_steel )
+		VAR.WEAPON_MATERIAL=def_wpn_steel	
+	ELSEIF (<src.act.findLAYER.LAYER_hand1.TDATA1> == mat_myst )
+		VAR.WEAPON_MATERIAL=def_wpn_myst
+	ELSEIF (<src.act.findLAYER.LAYER_hand1.TDATA1> == mat_composite )
+		VAR.WEAPON_MATERIAL=def_wpn_composite
+	ELSEIF (<src.act.findLAYER.LAYER_hand1.TDATA1> == mat_brass )
+		VAR.WEAPON_MATERIAL=def_wpn_brass
+	ELSEIF (<src.act.findLAYER.LAYER_hand1.TDATA1> == mat_cherry )
+		VAR.WEAPON_MATERIAL=def_wpn_cherry
+	ELSEIF (<src.act.findLAYER.LAYER_hand1.TDATA1> == mat_bronze )
+		VAR.WEAPON_MATERIAL=def_wpn_bronze
+	ELSEIF (<src.act.findLAYER.LAYER_hand1.TDATA1> == mat_mahogany )
+		VAR.WEAPON_MATERIAL=def_wpn_mahogany
+	ELSEIF (<src.act.findLAYER.LAYER_hand1.TDATA1> == mat_ferrum )
+		VAR.WEAPON_MATERIAL=def_wpn_ferrum
+	ELSEIF (<src.act.findLAYER.LAYER_hand1.TDATA1> == mat_ironwood )
+		VAR.WEAPON_MATERIAL=def_wpn_ironwood
+	ELSEIF (<src.act.findLAYER.LAYER_hand1.TDATA1> == mat_iron )
+		VAR.WEAPON_MATERIAL=def_wpn_iron
+	ELSEIF (<src.act.findLAYER.LAYER_hand1.TDATA1> == mat_oak )
+		VAR.WEAPON_MATERIAL=def_wpn_oak
+	ELSEIF (<src.act.findLAYER.LAYER_hand1.TDATA1> == mat_pure_copper )
+		VAR.WEAPON_MATERIAL=def_wpn_copper
+	ELSEIF (<src.act.findLAYER.LAYER_hand1.TDATA1> == mat_holly )
+		VAR.WEAPON_MATERIAL=def_wpn_holly
+	ELSEIF (<src.act.findLAYER.LAYER_hand1.TDATA1> == mat_rose )
+		VAR.WEAPON_MATERIAL=def_wpn_rose
+	ELSEIF (<src.act.findLAYER.LAYER_hand1.TDATA1> == mat_tin )
+		VAR.WEAPON_MATERIAL=def_wpn_tin
+	ELSEIF (<src.act.findLAYER.LAYER_hand1.TDATA1> == mat_eucalyptus )
+		VAR.WEAPON_MATERIAL=def_wpn_eucalyptus
+	ELSEIF (<src.act.findLAYER.LAYER_hand1.TDATA1> == mat_copper )
+		VAR.WEAPON_MATERIAL=def_wpn_copper
+	ELSEIF (<src.act.findLAYER.LAYER_hand1.TDATA1> == mat_pine )
+		VAR.WEAPON_MATERIAL=def_wpn_pine
+	ELSE
+		VAR.WEAPON_MATERIAL=0
+	ENDIF
+
+else
+	var.damagetoapply = 1
+	VAR.WEAPON_MATERIAL=def_wpn_flesh
+endif
+RETURN 1
+
+
+[FUNCTION f_layertohit125a]
+var.randomlayer = <eval rand(130)>
+if ( 0 )
+elseif ( <var.randomlayer> < 12 )
+  if ( (<FINDLAYER.LAYER_pants.TYPE> == T_ARMOR)  )
+       var.layertohit = layer_pants
+       return 1
+  endif
+elseif ( <var.randomlayer> < 24 )
+  if ( (<FINDLAYER.LAYER_collar.TYPE> == T_ARMOR)  )
+       var.layertohit = layer_collar
+       return 1
+  endif
+elseif ( <var.randomlayer> < 36 )
+  if ( (<FINDLAYER.LAYER_chest.TYPE> == T_ARMOR)  )
+       var.layertohit = layer_chest
+       return 1
+  endif
+elseif ( <var.randomlayer> < 48 )
+  if ( (<FINDLAYER.LAYER_LEGS.TYPE> == T_ARMOR)  )
+       var.layertohit = layer_legs
+       return 1
+  endif
+elseif ( <var.randomlayer> < 60 )
+  if ( (<FINDLAYER.LAYER_gloves.TYPE> == T_ARMOR)  )
+       var.layertohit = layer_gloves
+       return 1
+  endif
+elseif ( <var.randomlayer> < 72 )
+  if ( (<FINDLAYER.LAYER_arms.TYPE> == T_ARMOR)  )
+       var.layertohit = layer_arms
+       return 1
+  endif
+elseif ( <var.randomlayer> < 80 )
+  if ( (<FINDLAYER.LAYER_helm.TYPE> == T_ARMOR)  )
+       var.layertohit = layer_helm
+       return 1
+  endif
+elseif ( <var.randomlayer> < 100 )
+  if ( (<FINDLAYER.LAYER_hand2.TYPE> == T_shield)  )
+       	var.layertohit = layer_hand2
+       	return 1
+  elseif ( <findlayer( layer_hand2 ).ISWEAPON> )
+  	var.layertohit = layer_hand2
+       	return 1
+  endif
+elseif ( <var.randomlayer> <= 115 )
+  if ( <findlayer( layer_hand1 ).ISWEAPON> )
+  	var.layertohit = layer_hand1
+       	return 1
+  endif
+elseif ( <var.randomlayer> <= 130 )
+  If ( (<FINDLAYER.LAYER_shirt.TYPE> == T_ARMOR)  )
+  	var.layertohit = LAYER_shirt
+       	return 1
+  endif
+else
+return 0
+endif
+var.layertohit = nolayer
+return 1
+
+
+
+
+
+
+
+[FUNCTION f_damage_apply125a]
+
+///////////////////////DISABLE SOME WEAPONS FROM DAMAGING ARMOR///////////////////
+if (<src.act.findLAYER(layer_hand2)>)
+	If ((<src.act.findLAYER(layer_hand2).BASEID>)=i_dagger_copper)
+	   RETURN 1
+	ElseIf ((<src.act.findLAYER(layer_hand2).BASEID>)=i_pickaxe)       
+	   RETURN 1
+	ElseIf ((<src.act.findLAYER(layer_hand2).BASEID>)=i_sword_katana_wood)
+	   RETURN 1
+	ElseIf ((<src.act.findLAYER(layer_hand2).BASEID>)=i_cleaver_meat)
+	   RETURN 1
+	ElseIf ((<src.act.findLAYER(layer_hand2).BASEID>)=i_knife_skinning)
+	   RETURN 1
+	ElseIf ((<src.act.findLAYER(layer_hand2).BASEID>)=i_knife_butcher)
+	   RETURN 1
+endif
+if (<src.act.findLAYER(layer_hand1)>)
+	ElseIf ((<src.act.findLAYER(layer_hand1).BASEID>)=i_dagger_copper)
+	   RETURN 1
+	ElseIf ((<src.act.findLAYER(layer_hand1).BASEID>)=i_pickaxe)
+	   RETURN 1
+	ElseIf ((<src.act.findLAYER(layer_hand1).BASEID>)=i_sword_katana_wood)
+	   RETURN 1
+	ElseIf ((<src.act.findLAYER(layer_hand1).BASEID>)=i_cleaver_meat)
+	   RETURN 1
+	ElseIf ((<src.act.findLAYER(layer_hand1).BASEID>)=i_knife_skinning)
+	   RETURN 1
+	ElseIf ((<src.act.findLAYER(layer_hand1).BASEID>)=i_knife_butcher)
+	   RETURN 1
+EndIf
+
+
+////////////////////////CHECK BASE CHANCE BEFORE MOVING ON////////////////////////
+if ( <VAR.WPN.TYPE> == 0 )								// WRESTLING
+	if ( (rand(100) > 5) )
+		RETURN 1
+	endif 
+        if  (<src.act.str> < 50) 
+        	RETURN 1
+        endif 
+
+        if  (<src.act.str> < 100) 
+        	if ( (rand(10) < 5) ) 
+            		RETURN 1
+            	endif 
+        endif
+elseif ( <VAR.WPN.TYPE> == t_weapon_fence )						// FENCING
+    if ( (rand(100) > 10) ) 
+	RETURN 1
+    ENDIF
+elseif ( (<VAR.WPN.TYPE> == t_weapon_sword) | (<VAR.WPN.TYPE> == t_weapon_axe) )	// SWORDSMANSHIP
+    if ( (rand(100) > 12) ) 
+	RETURN 1
+    ENDIF
+elseif ( (<VAR.WPN.TYPE> == t_weapon_bow) | (<VAR.WPN.TYPE> == t_weapon_xbow) )		//ARCHERY
+    if ( (rand(100) > 10) ) 
+	RETURN 1
+    ENDIF
+else											// MACE FIGHTING
+    if ( (rand(100) > 15) ) 
+	RETURN 1
+    ENDIF
+endif
+
+
+/////////////////////////LOOK FOR A LAYER TO HIT//////////////////////////
+
+f_layertohit125a
+
+
+////////////////////SEE IF WE SELECTED A VALID LAYER//////////////////////
+IF ( !strcmpi( "<var.layertohit>", "nolayer" ) )
+	RETURN 1
+endif
+
+
+//////////////////////////ARMOR MAT RESISTANCES AND SPECIAL ITEMS///////////////////
+IF ( STRMATCH( "<FINDLAYER.<var.layertohit>.baseid>", "i_gloves_might") )
+	RETURN 1
+ELSEIF ( STRMATCH( "<FINDLAYER.<var.layertohit>.baseid>", "i_ringmail_gloves_might") )
+	RETURN 1
+ELSEIF ( STRMATCH( "<FINDLAYER.<var.layertohit>.baseid>", "i_gauntlets_might") )
+	RETURN 1
+ELSEIF ( STRMATCH( "<FINDLAYER.<var.layertohit>.baseid>", "i_floppy_brilliance") )
+	RETURN 1
+ELSEIF ( STRMATCH( "<FINDLAYER.<var.layertohit>.baseid>", "i_tricorne_brilliance") )
+	RETURN 1
+ELSEIF ( STRMATCH( "<FINDLAYER.<var.layertohit>.baseid>", "i_circlet_brilliance") )
+	RETURN 1
+ELSEIF ( STRMATCH( "<FINDLAYER.<var.layertohit>.baseid>", "i_helm_brilliance") )
+	RETURN 1
+ELSEIF ( STRMATCH( "*mytheril*", "<FINDLAYER.<var.layertohit>.baseid>") )
+	RETURN 1
+ELSEIF (<FINDLAYER.<var.layertohit>.TDATA1> == mat_phoenix )
+	VAR.ARMOR_MATERIAL=def_ar_phoenix
+ELSEIF (<FINDLAYER.<var.layertohit>.TDATA1> == mat_bloodrock )
+	VAR.ARMOR_MATERIAL=def_ar_bloodrock
+ELSEIF (<FINDLAYER.<var.layertohit>.TDATA1> == mat_bloodrk )
+	FINDLAYER.<var.layertohit>.TDATA1 = mat_bloodrock
+	VAR.ARMOR_MATERIAL=def_ar_bloodrk
+ELSEIF (<FINDLAYER.<var.layertohit>.TDATA1> == mat_blackrock )
+	VAR.ARMOR_MATERIAL=def_ar_blackrock
+ELSEIF (<FINDLAYER.<var.layertohit>.TDATA1> == mat_enhanced )
+	VAR.ARMOR_MATERIAL=def_ar_enhanced
+ELSEIF (<FINDLAYER.<var.layertohit>.TDATA1> == mat_entit )
+	VAR.ARMOR_MATERIAL=def_ar_entit
+ELSEIF (<FINDLAYER.<var.layertohit>.TDATA1> == mat_celestium )
+	VAR.ARMOR_MATERIAL=def_ar_celestium
+ELSEIF (<FINDLAYER.<var.layertohit>.TDATA1> == mat_adamantine )
+	VAR.ARMOR_MATERIAL=def_ar_adamantine
+ELSEIF (<FINDLAYER.<var.layertohit>.TDATA1> == mat_crystal )
+	VAR.ARMOR_MATERIAL=def_ar_crystal
+ELSEIF (<FINDLAYER.<var.layertohit>.TDATA1> == mat_skargard )
+	VAR.ARMOR_MATERIAL=def_ar_skargard
+ELSEIF (<FINDLAYER.<var.layertohit>.TDATA1> == mat_valorite )
+	VAR.ARMOR_MATERIAL=def_ar_valorite
+ELSEIF (<FINDLAYER.<var.layertohit>.TDATA1> == mat_verite )
+	VAR.ARMOR_MATERIAL=def_ar_verite
+ELSEIF (<FINDLAYER.<var.layertohit>.TDATA1> == mat_stronghold )
+	VAR.ARMOR_MATERIAL=def_ar_stronghold
+ELSEIF (<FINDLAYER.<var.layertohit>.TDATA1> == mat_verminard )
+	VAR.ARMOR_MATERIAL=def_ar_verminard
+ELSEIF (<FINDLAYER.<var.layertohit>.TDATA1> == mat_titanium )
+	VAR.ARMOR_MATERIAL=def_ar_titanium
+ELSEIF (<FINDLAYER.<var.layertohit>.TDATA1> == mat_terathane )
+	VAR.ARMOR_MATERIAL=def_ar_terathane
+ELSEIF (<FINDLAYER.<var.layertohit>.TDATA1> == mat_shadow )
+	VAR.ARMOR_MATERIAL=def_ar_shadow
+ELSEIF (<FINDLAYER.<var.layertohit>.TDATA1> == mat_agapite )
+	VAR.ARMOR_MATERIAL=def_ar_agapite
+ELSEIF (<FINDLAYER.<var.layertohit>.TDATA1> == mat_ice )
+	VAR.ARMOR_MATERIAL=def_ar_ice
+ELSEIF (<FINDLAYER.<var.layertohit>.TDATA1> == mat_gold )
+	VAR.ARMOR_MATERIAL=def_ar_gold
+ELSEIF (<FINDLAYER.<var.layertohit>.TDATA1> == mat_green )
+	VAR.ARMOR_MATERIAL=def_ar_green
+ELSEIF (<FINDLAYER.<var.layertohit>.TDATA1> == mat_red )
+	VAR.ARMOR_MATERIAL=def_ar_red
+ELSEIF (<FINDLAYER.<var.layertohit>.TDATA1> == mat_silver )
+	VAR.ARMOR_MATERIAL=def_ar_silver
+ELSEIF (<FINDLAYER.<var.layertohit>.TDATA1> == mat_interleaved )
+	VAR.ARMOR_MATERIAL=def_ar_interleaved
+ELSEIF (<FINDLAYER.<var.layertohit>.TDATA1> == mat_drake )
+	VAR.ARMOR_MATERIAL=def_ar_drake
+ELSEIF (<FINDLAYER.<var.layertohit>.TDATA1> == mat_chrome )
+	VAR.ARMOR_MATERIAL=def_ar_chrome
+ELSEIF (<FINDLAYER.<var.layertohit>.TDATA1> == mat_steel )
+	VAR.ARMOR_MATERIAL=def_ar_steel
+ELSEIF (<FINDLAYER.<var.layertohit>.TDATA1> == mat_myst )
+	VAR.ARMOR_MATERIAL=def_ar_myst
+ELSEIF (<FINDLAYER.<var.layertohit>.TDATA1> == mat_composite )
+	VAR.ARMOR_MATERIAL=def_ar_composite
+ELSEIF (<FINDLAYER.<var.layertohit>.TDATA1> == mat_brass )
+	VAR.ARMOR_MATERIAL=def_ar_brass
+ELSEIF (<FINDLAYER.<var.layertohit>.TDATA1> == mat_cherry )
+	VAR.ARMOR_MATERIAL=def_ar_cherry
+ELSEIF (<FINDLAYER.<var.layertohit>.TDATA1> == mat_bronze )
+	VAR.ARMOR_MATERIAL=def_ar_bronze
+ELSEIF (<FINDLAYER.<var.layertohit>.TDATA1> == mat_mahogany )
+	VAR.ARMOR_MATERIAL=def_ar_mahogany
+ELSEIF (<FINDLAYER.<var.layertohit>.TDATA1> == mat_ferrum )
+	VAR.ARMOR_MATERIAL=def_ar_ferrum
+ELSEIF (<FINDLAYER.<var.layertohit>.TDATA1> == mat_ironwood )
+	VAR.ARMOR_MATERIAL=def_ar_ironwood
+ELSEIF (<FINDLAYER.<var.layertohit>.TDATA1> == mat_iron )
+	VAR.ARMOR_MATERIAL=def_ar_iron
+ELSEIF (<FINDLAYER.<var.layertohit>.TDATA1> == mat_oak )
+	VAR.ARMOR_MATERIAL=def_ar_oak
+ELSEIF (<FINDLAYER.<var.layertohit>.TDATA1> == mat_pure_copper )
+	VAR.ARMOR_MATERIAL=def_ar_copper
+ELSEIF (<FINDLAYER.<var.layertohit>.TDATA1> == mat_holly )
+	VAR.ARMOR_MATERIAL=def_ar_holly
+ELSEIF (<FINDLAYER.<var.layertohit>.TDATA1> == mat_rose )
+	VAR.ARMOR_MATERIAL=def_ar_rose
+ELSEIF (<FINDLAYER.<var.layertohit>.TDATA1> == mat_tin )
+	VAR.ARMOR_MATERIAL=def_ar_tin
+ELSEIF (<FINDLAYER.<var.layertohit>.TDATA1> == mat_eucalyptus )
+	VAR.ARMOR_MATERIAL=def_ar_eucalyptus
+ELSEIF (<FINDLAYER.<var.layertohit>.TDATA1> == mat_copper )
+	VAR.ARMOR_MATERIAL=def_ar_copper
+ELSEIF (<FINDLAYER.<var.layertohit>.TDATA1> == mat_pine )
+	VAR.ARMOR_MATERIAL=def_ar_pine
+ELSE
+	VAR.ARMOR_MATERIAL=0
+ENDIF
+  
+/////////////////////IF WE HAVE A VALID LAYER CALCULATE AMOUNT TO DAMAGE///////////////////
+f_damage_toapply125a
+
+
+/////////////////////SEE IF THE WEAPON CAN DAMAGE THE ARMOR//////////////////////////
+IF (<EVAL <VAR.ARMOR_MATERIAL>>=100)
+	RETURN 1
+Endif
+
+If !(<EVAL <VAR.ARMOR_MATERIAL>> <= <EVAL <VAR.WEAPON_MATERIAL>>)
+	RETURN 1
+EndIf
+
+
+///////////////////////////IF WE'VE NOT BEEN THROWN OUT BY NOW APPLY DAMAGE/////////////////
+IF ( !strcmpi( "<var.layertohit>", "layer_legs" ) )
+	IF (<FINDLAYER.layer_legs.MORE1L> <= <var.damagetoapply> )
+		DAMAGEMESSAGE <src.act.NAME> destroys your <findlayer.layer_legs.name>
+                src.act.DAMAGEMESSAGE You destroy <name>'s <findlayer.layer_legs.name>
+                findlayer.layer_legs.remove
+                SOUND 0140
+        ELSE
+                findlayer.layer_legs.MORE1L = <eval (<findlayer.layer_legs.MORE1L> - <var.damagetoapply>)>
+                DAMAGEMESSAGE <src.act.name> damages your <findlayer.layer_legs.name> by <var.damagetoapply>
+                src.act.DAMAGEMESSAGE You damage <name>'s <findlayer.layer_legs.name>
+                SOUND 0056
+        ENDIF
+ELSEIF ( !strcmpi( "<var.layertohit>", "layer_pants" ) )
+	IF (<FINDLAYER.layer_pants.MORE1L> <= <var.damagetoapply> )
+		DAMAGEMESSAGE <src.act.NAME> destroys your <findlayer.layer_pants.name>
+		src.act.DAMAGEMESSAGE You destroy <name>'s <findlayer.layer_pants.name>
+		findlayer.layer_pants.remove
+		SOUND 0140
+	ELSE
+		findlayer.layer_pants.MORE1L = <eval (<findlayer.layer_pants.MORE1L> - <var.damagetoapply>)>
+		DAMAGEMESSAGE <src.act.name> damages your <findlayer.layer_pants.name> by <var.damagetoapply>
+		src.act.DAMAGEMESSAGE You damage <name>'s <findlayer.layer_pants.name>
+		SOUND 0056
+	ENDIF
+ELSEIF ( !strcmpi( "<var.layertohit>", "layer_collar" ) )
+	IF (<FINDLAYER.layer_collar.MORE1L> <= <var.damagetoapply> )
+		DAMAGEMESSAGE <src.act.NAME> destroys your <findlayer.layer_collar.name>
+		src.act.DAMAGEMESSAGE You destroy <name>'s <findlayer.layer_collar.name>
+		findlayer.layer_collar.remove
+		SOUND 0140
+	ELSE
+		findlayer.layer_collar.MORE1L = <eval (<findlayer.layer_collar.MORE1L> - <var.damagetoapply>)>
+		DAMAGEMESSAGE <src.act.name> damages your <findlayer.layer_collar.name> by <var.damagetoapply>
+		src.act.DAMAGEMESSAGE You damage <name>'s <findlayer.layer_collar.name>
+		SOUND 0056
+	ENDIF
+ELSEIF ( !strcmpi( "<var.layertohit>", "layer_chest" ) )
+	IF (<FINDLAYER.layer_chest.MORE1L> <= <var.damagetoapply> )
+		DAMAGEMESSAGE <src.act.NAME> destroys your <findlayer.layer_chest.name>
+                src.act.DAMAGEMESSAGE You destroy <name>'s <findlayer.layer_chest.name>
+                findlayer.layer_chest.remove
+                SOUND 0140
+	ELSE
+                findlayer.layer_chest.MORE1L = <eval (<findlayer.layer_chest.MORE1L> - <var.damagetoapply>)>
+                DAMAGEMESSAGE <src.act.name> damages your <findlayer.layer_chest.name> by <var.damagetoapply>
+                src.act.DAMAGEMESSAGE You damage <name>'s <findlayer.layer_chest.name>
+                SOUND 0056
+	ENDIF
+ELSEIF ( !strcmpi( "<var.layertohit>", "LAYER_shirt" ) )
+	IF (<FINDLAYER.LAYER_shirt.MORE1L> <= <var.damagetoapply> )
+		DAMAGEMESSAGE <src.act.NAME> destroys your <findlayer.LAYER_shirt.name>
+                src.act.DAMAGEMESSAGE You destroy <name>'s <findlayer.LAYER_shirt.name>
+                findlayer.LAYER_shirt.remove
+                SOUND 0140
+	ELSE
+                findlayer.LAYER_shirt.MORE1L = <eval (<findlayer.LAYER_shirt.MORE1L> - <var.damagetoapply>)>
+                DAMAGEMESSAGE <src.act.name> damages your <findlayer.LAYER_shirt.name> by <var.damagetoapply>
+                src.act.DAMAGEMESSAGE You damage <name>'s <findlayer.LAYER_shirt.name>
+                SOUND 0056
+	ENDIF
+ELSEIF ( !strcmpi( "<var.layertohit>", "layer_gloves" ) )
+	IF (<FINDLAYER.layer_gloves.MORE1L> <= <var.damagetoapply> )
+                DAMAGEMESSAGE <src.act.NAME> destroys your <findlayer.layer_gloves.name>
+                src.act.DAMAGEMESSAGE You destroy <name>'s <findlayer.layer_gloves.name>
+                findlayer.layer_gloves.remove
+                SOUND 0140
+	ELSE
+                findlayer.layer_gloves.MORE1L = <eval (<findlayer.layer_gloves.MORE1L> - <var.damagetoapply>)>
+                DAMAGEMESSAGE <src.act.name> damages your <findlayer.layer_gloves.name> by <var.damagetoapply>
+                src.act.DAMAGEMESSAGE You damage <name>'s <findlayer.layer_gloves.name>
+                SOUND 0056
+	ENDIF
+ELSEIF ( !strcmpi( "<var.layertohit>", "layer_arms" ) )
+	IF (<FINDLAYER.layer_arms.MORE1L> <= <var.damagetoapply> )
+                DAMAGEMESSAGE <src.act.NAME> destroys your <findlayer.layer_arms.name>
+                src.act.DAMAGEMESSAGE You destroy <name>'s <findlayer.layer_arms.name>
+                findlayer.layer_arms.remove
+                SOUND 0140
+	ELSE
+                findlayer.layer_arms.MORE1L = <eval (<findlayer.layer_arms.MORE1L> - <var.damagetoapply>)>
+                DAMAGEMESSAGE <src.act.name> damages your <findlayer.layer_arms.name> by <var.damagetoapply>
+                src.act.DAMAGEMESSAGE You damage <name>'s <findlayer.layer_arms.name>
+                SOUND 0056
+	ENDIF
+ELSEIF ( !strcmpi( "<var.layertohit>", "layer_helm" ) )
+	IF (<FINDLAYER.layer_helm.MORE1L> <= <var.damagetoapply> )
+                DAMAGEMESSAGE <src.act.NAME> destroys your <findlayer.layer_helm.name>
+                src.act.DAMAGEMESSAGE You destroy <name>'s <findlayer.layer_helm.name>
+                findlayer.layer_helm.remove
+                SOUND 0140
+	ELSE
+                findlayer.layer_helm.MORE1L = <eval (<findlayer.layer_helm.MORE1L> - <var.damagetoapply>)>
+                DAMAGEMESSAGE <src.act.name> damages your <findlayer.layer_helm.name> by <var.damagetoapply>
+                src.act.DAMAGEMESSAGE You damage <name>'s <findlayer.layer_helm.name>
+                SOUND 0056
+	ENDIF
+ELSEIF ( !strcmpi( "<var.layertohit>", "layer_hand2" ) )
+	IF (<FINDLAYER.layer_hand2.MORE1L> <= <var.damagetoapply> )
+                DAMAGEMESSAGE <src.act.NAME> destroys your <findlayer.layer_hand2.name>
+                src.act.DAMAGEMESSAGE You destroy <name>'s <findlayer.layer_hand2.name>
+                findlayer.layer_hand2.remove
+                SOUND 0140
+	ELSE
+                findlayer.layer_hand2.MORE1L = <eval (<findlayer.layer_hand2.MORE1L> - <var.damagetoapply>)>
+                DAMAGEMESSAGE <src.act.name> damages your <findlayer.layer_hand2.name> by <var.damagetoapply>
+                src.act.DAMAGEMESSAGE You damage <name>'s <findlayer.layer_hand2.name>
+                SOUND 0056
+	ENDIF
+ELSEIF ( !strcmpi( "<var.layertohit>", "layer_hand1" ) )
+	IF (<FINDLAYER.layer_hand1.MORE1L> <= <var.damagetoapply> )
+                DAMAGEMESSAGE <src.act.NAME> destroys your <findlayer.layer_hand1.name>
+                src.act.DAMAGEMESSAGE You destroy <name>'s <findlayer.layer_hand1.name>
+                findlayer.layer_hand1.remove
+                SOUND 0140
+	ELSE
+                findlayer.layer_hand1.MORE1L = <eval (<findlayer.layer_hand1.MORE1L> - <var.damagetoapply>)>
+                DAMAGEMESSAGE <src.act.name> damages your <findlayer.layer_hand1.name> by <var.damagetoapply>
+                src.act.DAMAGEMESSAGE You damage <name>'s <findlayer.layer_hand1.name>
+                SOUND 0056
+	ENDIF
+ENDIF
+RETURN 1
+
+[EOF]

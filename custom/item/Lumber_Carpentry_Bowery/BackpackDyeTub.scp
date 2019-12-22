@@ -1,0 +1,46 @@
+//-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-
+//-X-Backpack Dye Tub - Dyes your backpack and can't dye others..	-X-
+//-X-08-03-2004								-X-
+//-X-									-X-
+//-X-		xT							-X-
+//-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-X-
+
+//June 14 '04 - Wren to add Targon_char event to keep people from dying hair
+
+
+[ITEMDEF i_dye_tub_backpack]
+DEFNAME=i_dye_tub_backpack
+ID=i_dye_tub
+NAME=Backpack Dye Tub
+TYPE=T_DYE_VAT
+SKILLMAKE=CARPENTRY 80.0, t_carpentry
+RESOURCES=5 i_log_pine, 5 i_nails
+
+ON=@CREATE
+	COLOR=0
+
+ON=@DCLICK
+	if ( <src.targ.topobj.uid> != <src.uid> )	//check if the dye tub its in your backpack
+		SRC.MESSAGE The Backpack Dye Tub must be in your backpack!
+		return 1
+	endif
+		target					//target
+		return 1
+
+ON=@TARGON_ITEM
+	if ( <src.targ.topobj.uid> != <src.uid> )	// check if the backpack its in you
+		SRC.SYSMESSAGE You can't dye that.
+		return 1
+	endif
+	if ( <SRC.TARG.baseid> ) != i_backpack		// check if its a backpack
+		SRC.SYSMESSAGE You can't dye that.
+		return 1
+	elseif ( <src.targ.attr> = 014 )
+		src.targ.color = <color>		// dyes
+		remove
+	endif
+
+ON=@TARGON_CHAR
+	SRC.SYSMESSAGE You can't dye that.
+	return 1
+

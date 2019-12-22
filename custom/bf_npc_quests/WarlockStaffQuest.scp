@@ -1,0 +1,212 @@
+//Quest by Sqweak
+
+//// Witches
+[CHARDEF c_h_warlock_Quest]
+   DEFNAME=c_h_warlock_Quest
+   NAME=Mag
+   ID=C_MAN
+   DAM=20,35
+   ARMOR=40,60
+   CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_MALE
+   
+   TSPEECH=spk_human_prime
+   TSPEECH=spk_human_default
+
+ON=@Create
+   NPC=BRAIN_MONSTER
+   Title=Warlock
+   COLOR=0599
+
+   STR={400 550}
+   DEX={120 150}
+   INT={500 600}
+
+   MAGICRESISTANCE={90.0 95.0}
+   TACTICS={70.0 90.0}
+   WRESTLING={40.0 55.0}
+   MAGERY={100.0 150.0}
+   NECROMANCY={100.0 150.0}
+   EVALUATINGINTEL={70.0 90.0}
+    
+   KARMA={-3000 -5000}
+   FAME={2500 4000}
+
+   ITEMNEWBIE=i_hair_long
+   COLOR=0
+
+   ITEMNEWBIE=i_spellbook
+   ADDSPELL=s_paralyze
+   ADDSPELL=s_lightning
+   ADDSPELL=s_energy_vortex
+
+ON=@SpellEffect
+   if ( (<argn1> == 38) || (<argn1> == 47) )
+      emote resist your spell
+      return 1
+   endif
+
+   IF (RAND(2) = 1)
+      EMOTE Absorb power from the attack and channels it into another minion.
+      NECROSUMMONHERE {c_skeleton 4 c_m_skeleton_knight 2 c_m_skeletonarcher 2 c_m_skeleton_mage 2 c_m_skeleton_hero 1}
+   ENDIF
+   
+ON=@GetHit
+   IF (RAND(10) = 1)
+      NECROSUMMONHERE {c_skeleton 4 c_m_skeleton_knight 2 c_m_skeletonarcher 2 c_m_skeleton_mage 2 c_m_skeleton_hero 1}
+   ENDIF
+ 
+ON=@NPCRestock
+   ITEM=i_robe
+   COLOR=0020
+   ITEM=i_hat_wizards
+   COLOR=0020
+   ITEM=i_boots_calf
+   COLOR=0020
+   ITEM=random_scroll, R3
+   ITEM=random_necro_item, R5
+   ITEM=i_Warlock_staff
+   ITEM=i_gold, {2000 3500}
+   
+   CONTAINER=i_bag
+   ITEM=i_reag_black_pearl,{ 1 5 }
+   ITEM=i_reag_blood_moss,{ 1 5 }
+   ITEM=i_reag_garlic,{ 1 5 }
+   ITEM=i_reag_ginseng,{ 1 5 }
+   ITEM=i_reag_mandrake_root,{ 1 5 }
+   ITEM=i_reag_nightshade,{ 1 5 }
+   ITEM=i_reag_sulfur_ash,{ 1 5 }
+   ITEM=i_reag_spider_silk,{ 1 5 }
+   ITEM=i_reag_bone,{10 20}
+
+CATEGORY=Imperial uo
+SUBSECTION=Quests 
+DESCRIPTION=(Witches) Warlock
+
+
+[ITEMDEF i_Warlock_staff]
+NAME=Warlock Staff
+ID=013f9
+
+CATEGORY=Imperial uo
+SUBSECTION=Quests 
+DESCRIPTION=(Warlock staff) Staff
+
+ON=@CREATE
+   COLOR=0020
+
+
+[CHARDEF c_h_staff_collector] 
+DEFNAME=c_h_staff_collector
+NAME=Darcey
+ID=C_MAN 
+DAM=15,20 
+ARMOR=20 
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_RUN|MT_MALE
+
+
+
+TSPEECH=jobstaffcollector
+
+CATEGORY=Imperial uo
+SUBSECTION=Quests 
+DESCRIPTION=(Witches) Staff collector
+
+TEVENTS=e_npc_quest
+ON=@Create 
+   NPC=brain_human 
+   TITLE=Staff Collector
+   COLOR=colors_skin 
+
+   STR={151 165} 
+   DEX={80 120} 
+   INT={151 165} 
+
+   DETECTION={90.0 100.0} 
+   FENCING={90.0 100.0} 
+   PARRYING={90.0 100.0} 
+   SWORDSMANSHIP={90.0 100.0} 
+   WRESTLING={90.0 100.0} 
+   MACEFIGHTING={90.0 100.0} 
+   MAGICRESISTANCE={90.0 100.0} 
+   TACTICS={90.0 100.0} 
+
+   ITEMNEWBIE=random_male_hair 
+   COLOR=colors_hair 
+   ITEMNEWBIE=random_facial_hair 
+   COLOR=match_hair 
+
+on=@hit 
+   FLAGS=000000005 
+   return 1 
+  
+on=@gethit 
+   FLAGS=000000005 
+   return 1 
+
+on=@damage 
+   FLAGS=000000005 
+   return 1 
+
+ON=@NPCRestock
+   ITEM=i_shirt_fancy
+   ITEM=i_cape
+   COLOR=0f7
+   ITEM=random_pants 
+   COLOR=005
+   ITEM=random_shoes
+   COLOR=0f7
+   ITEM=i_staff_gnarled
+
+
+[SPEECH jobstaffcollector] 
+on=hi 
+on=hello
+on=hail
+on=sawat dee
+on=Greetings
+on=staff
+on=*quest*
+   IF ( <SRC.TAG.NPC_QUEST_DONE> & NPCQ_Warlock )
+      SAY You have already done this quest! 
+   ELSEIF ( <SRC.TAG.NPC_QUEST_START> & NPCQ_Warlock )
+      SAY You are already on this quest! You need to get a Warlock's Staff from Mag and return it to me.
+   ELSE 
+      SAY I am a collector off staves and recently one has went missing from my collection, a rare Warlock's Staff, I believe a Warlock named Mag has taken it... I will pay 4000gps for its return. Find it come back to me and say "Reward" and I will pay you.
+      SRC.TAG.NPC_QUEST_START = <eval ( <SRC.TAG.NPC_QUEST_START> | NPCQ_Warlock )>
+   ENDIF
+   RETURN 1
+
+on=*info*
+on=*where*
+on=*Mag*
+   SAY He often visits Cove to practice the dark arts.  You can probably find him there...
+   
+On=ok
+on=sure
+   SAY=Oh! Thank you.
+   
+on=*reward* 
+on=rangval
+on=*collect*
+on=sa soam 
+   IF !( <SRC.TAG.NPC_QUEST_START> & NPCQ_Warlock )
+      SAY I must know if you will help me before I give you the
+      SAY information <SRC.SEX milord/milady>
+   ELSEIF (( <SRC.TAG.NPC_QUEST_START> & NPCQ_Warlock ) && !<SRC.RESTEST 1 i_Warlock_staff>)
+      SAY I do not see the staff.  I will not be cheated!
+   ELSEIF <SRC.RESTEST 1 i_Warlock_staff>
+      SRC.NEWITEM=i_gold 
+      SRC.ACT.AMOUNT=4000
+      SRC.ACT.BOUNCE 
+      SOUND=01FC 
+      SRC.SYSMESSAGE=You are now 4000 gps richer. 
+      SRC.consume i_Warlock_staff
+      SRC.TAG.NPC_QUEST_START = <eval ( <SRC.TAG.NPC_QUEST_START> &~ NPCQ_Warlock )>
+      SRC.TAG.NPC_QUEST_DONE = <eval ( <SRC.TAG.NPC_QUEST_DONE> | NPCQ_Warlock )>
+      ANNOUNCE An Evil Warlock as been vanquished by  <SRC.NAME>.
+      Remove
+   ENDIF
+   RETURN 1 
+
+
+[EOF]

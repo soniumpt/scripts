@@ -1,0 +1,1879 @@
+//---------------------------Dungeon of the Dragon---------------------------
+//-									    -
+//------------------------By James "Wigifer" Timbrell------------------------
+//- 									    -
+//-------------Basis stolen from various games I've been playing-------------
+//-                                                                         -
+//----------------------*Hint* Breath of Fire III *Hint*---------------------
+
+
+//-------------------Board and System for Light hack check-------------------
+
+[ITEMDEF i_lighthack_board]
+ID=i_bulletin_board
+NAME=Lighthack Board
+
+CATEGORY=Imperial uo
+SUBSECTION=Dungeon of the Dragon Checks
+DESCRIPTION=Lighthack Board
+
+ON=@CREATE
+COLOR=025
+
+[Itemdef i_lighthack_post]
+ID=0eb0
+Type=t_message
+
+[Function f_post_lightmessage]
+  SERV.NEWITEM i_lighthack_post
+  NEW.TYPE = t_message
+  NEW.NAME = Lighthack Detected
+  NEW.P = 35,2
+  NEW.AUTHOR = <src.name>
+  NEW.BODY.0 = <src.name> failed the
+  NEW.BODY.1 = lighthack test.
+  NEW.BODY.2 = Test carried out 5 times.
+  NEW.BODY.3 = Reasonable assumption of lighthack.
+  NEW.SRC=<src.uid>
+  tryp 2 NEW.CONT = uid_lighthackboard
+
+[Function f_post_lightmessage2]
+  SERV.NEWITEM i_lighthack_post
+  NEW.TYPE = t_message
+  NEW.NAME = Lighthack Detected
+  NEW.P = 35,2
+  NEW.AUTHOR = <src.name>
+  NEW.BODY.0 = <src.name> failed the
+  NEW.BODY.1 = lighthack test.
+  NEW.BODY.2 = Test carried out 10 times.
+  NEW.BODY.3 = 99.9% likelihood of lighthack.
+  NEW.LINK=<src.uid>
+  tryp 2 NEW.CONT = uid_lighthackboard
+
+  
+[Defname d_lighthackboard]
+uid_lighthackboard = 043ec044e //uid will be needed for this
+
+
+//-------------------------Basic Type Defs for items-------------------------
+
+
+[TYPEDEF T_dragon_switch]
+ON=@CLICK
+   MESSAGE A finely made switch, seemingly crafted from a strange alloy...
+   RETURN 1
+ON=@DCLICK
+   IF (0<SRC.TAG.DRAGON.QUEST>=2)
+      SRC.SYSMESSAGE @32 You feel your guilt run through you and decide not to enter...
+   ELSE
+      SRC.EMOTE flick the switch and fall through a trapdoor below...
+      SRC.GO 5411,323,0,15
+      SRC.TAG.DRAGON.QUEST=1
+   ENDIF
+   RETURN 1
+
+[TYPEDEF T_dragon_telepad]
+ON=@STEP
+//   IF (0<SRC.TAG.DRAGON.QUEST>=0)
+//      SRC.GO 5411,323,0,15
+//      SRC.SAY You have entered this dungeon illegally. Page asking for Admin Wigifer.
+//      SRC.SAY In most cases you will be teleported out and left to enter normally.
+//   ELSE
+     GO 5411,323,0,15
+//   ENDIF
+//   RETURN 1
+
+[TYPEDEF T_dragon_lighthack_fail]
+ON=@DCLICK
+   SRC.TAG.DRAGON.LIGHTHACK=(0<SRC.TAG.DRAGON.LIGHTHACK>+1)
+   SRC.SAY You think this is the wrong tile...
+   IF (0<SRC.TAG.DRAGON.LIGHTHACK>==05)
+   f_post_lightmessage
+   ELSEIF (0<SRC.TAG.DRAGON.LIGHTHACK>==09)
+   f_post_lightmessage2
+   ENDIF
+   RETURN 1
+
+[TYPEDEF t_dragon_switch_door]
+ON=@CLICK
+   MESSAGE The door seems to be run by a mechanism...
+   RETURN 1
+ON=@DCLICK
+   IF (0<SRC.TAG.DRAGON.SWITCH.YELLOW>=1)
+      SRC.GO 5563,347,0,15
+      SRC.EMOTE watch as the switchs reset...
+      SRC.TAG.DRAGON.SWITCH.PURPLE=0
+      SRC.TAG.DRAGON.SWITCH.BLUE=0
+      SRC.TAG.DRAGON.SWITCH.ORANGE=0
+      SRC.TAG.DRAGON.SWITCH.RED=0
+      SRC.TAG.DRAGON.SWITCH.YELLOW=0
+   ELSE
+      SRC.EMOTE push against the door but with no luck...
+      SRC.SAY Maybe these switches will aid me...
+      ENDIF
+   RETURN 1
+      
+[TYPEDEF T_dragon_tag_reset]
+ON=@DCLICK
+   SRC.TAG.DRAGON.LIGHTHACK=0
+   SRC.TAG.DRAGON.WAND=0
+   SRC.TAG.DRAGON.REI=0
+   SRC.TAG.DRAGON.QUEST=0
+   SRC.SYSMESSAGE @32 Tags reset for Dragon Dungeon
+   RETURN 1
+
+
+
+//-----------------------------Items for Dungeon-----------------------------
+
+
+[ITEMDEF i_dragon_telepad]
+NAME=Dragon Dungeon Exit
+ID=049b
+TYPE=t_dragon_telepad
+CATEGORY=Imperial uo
+SUBSECTION=Dungeon of the Dragon Dungeon Items
+DESCRIPTION=Telepad (Exit)
+
+ON=@CREATE
+   ATTR=00085
+
+[ITEMDEF i_dragon_switch]
+NAME=Strange Lever
+ID=0108e
+TYPE=t_dragon_Switch
+CATEGORY=Imperial uo
+SUBSECTION=Dungeon of the Dragon Dungeon Items
+DESCRIPTION=Strange Lever (Entrance)
+
+[ITEMDEF i_dragon_lighthack_fail]
+NAME=Dragon Dungeon Exit
+ID=049b
+TYPE=t_dragon_lighthack_fail
+CATEGORY=Imperial uo
+SUBSECTION=Dungeon of the Dragon Dungeon Checks
+DESCRIPTION=Lighthack Test Wrong Tile
+
+
+[ITEMDEF i_door_dragon_switch]
+NAME=Mechanically Sealed Door
+ID=i_door_wood
+TYPE=t_dragon_switch_door
+CATEGORY=Imperial uo
+SUBSECTION=Dungeon of the Dragon Riddle Puzzle
+DESCRIPTION=Door to Level 2
+
+[ITEMDEF i_dragon_tag_reset]
+NAME=Dragon Tag Resetter
+ID=0108e
+TYPE=t_dragon_tag_reset
+CATEGORY=Imperial uo
+SUBSECTION=Dungeon of the Dragon Gm Items
+DESCRIPTION=Tag Resetter
+
+
+//--------------------------Riddle Puzzle Switches---------------------------
+
+
+[ITEMDEF i_dragon_purple_switch]
+NAME=Purple Switch
+ID=0108e
+TYPE=t_dragon_purple_switch
+
+ON=@CREATE
+   COLOR=0781
+
+CATEGORY=Imperial uo
+SUBSECTION=Dungeon of the Dragon Riddle Puzzle
+DESCRIPTION=Purple Switch
+
+
+[ITEMDEF i_dragon_red_switch]
+NAME=Red Switch
+ID=0108e
+TYPE=t_dragon_red_switch
+
+ON=@CREATE
+   COLOR=025
+
+CATEGORY=Imperial uo
+SUBSECTION=Dungeon of the Dragon Riddle Puzzle
+DESCRIPTION=Red Switch
+
+
+[ITEMDEF i_dragon_blue_switch]
+NAME=Blue Switch
+ID=0108e
+TYPE=t_dragon_blue_switch
+
+ON=@CREATE
+   COLOR=07a0
+
+CATEGORY=Imperial uo
+SUBSECTION=Dungeon of the Dragon Riddle Puzzle
+DESCRIPTION=Blue Switch
+
+
+[ITEMDEF i_dragon_yellow_switch]
+NAME=Yellow Switch
+ID=0108e
+TYPE=t_dragon_yellow_switch
+
+ON=@CREATE
+   COLOR=035
+
+CATEGORY=Imperial uo
+SUBSECTION=Dungeon of the Dragon Riddle Puzzle
+DESCRIPTION=Yellow Switch
+
+
+[ITEMDEF i_dragon_Orange_switch]
+NAME=Orange Switch
+ID=0108e
+TYPE=t_dragon_orange_switch
+
+ON=@CREATE
+   COLOR=077c
+
+CATEGORY=Imperial uo
+SUBSECTION=Dungeon of the Dragon Riddle Puzzle
+DESCRIPTION=Orange Switch
+
+
+//------------------------Riddle Puzzle Switch Types-------------------------
+
+
+[TYPEDEF t_dragon_purple_switch]
+ON=@DCLICK
+   SRC.TAG.DRAGON.SWITCH.PURPLE=1
+   SRC.SAY *Click*
+   RETURN 1
+
+
+[TYPEDEF t_dragon_blue_switch]
+ON=@DCLICK
+   IF (0<SRC.TAG.DRAGON.SWITCH.PURPLE>=1)
+      SRC.TAG.DRAGON.SWITCH.BLUE=1
+      SRC.SAY *Click*
+   ENDIF
+   RETURN 1
+
+
+[TYPEDEF t_dragon_orange_switch]
+ON=@DCLICK
+   IF (0<SRC.TAG.DRAGON.SWITCH.PURPLE>=1)
+      IF (0<SRC.TAG.DRAGON.SWITCH.BLUE>=1)
+         SRC.TAG.DRAGON.SWITCH.ORANGE=1
+         SRC.SAY *Click*
+      ELSE
+         SRC.TAG.DRAGON.SWITCH.PURPLE=0
+         SRC.TAG.DRAGON.SWITCH.BLUE=0
+         SRC.SAY *Click*
+      ENDIF
+      SRC.SAY *Click*
+   ENDIF
+   RETURN 1
+
+
+[TYPEDEF t_dragon_red_switch]
+ON=@DCLICK
+   IF (0<SRC.TAG.DRAGON.SWITCH.PURPLE>=1)
+      IF (0<SRC.TAG.DRAGON.SWITCH.BLUE>=1)
+         IF (0<SRC.TAG.DRAGON.SWITCH.ORANGE>=1)
+            SRC.TAG.DRAGON.SWITCH.RED=1
+            SRC.SAY *Click*
+         ELSE
+            SRC.TAG.DRAGON.SWITCH.PURPLE=0
+            SRC.TAG.DRAGON.SWITCH.BLUE=0
+            SRC.SAY *Click*
+         ENDIF
+      ELSE
+         SRC.TAG.DRAGON.SWITCH.PURPLE=0
+         SRC.SAY *Click*
+      ENDIF
+      SRC.SAY *Click*
+   ENDIF
+   RETURN 1
+
+
+[TYPEDEF t_dragon_yellow_switch]
+ON=@DCLICK
+   IF (0<SRC.TAG.DRAGON.SWITCH.PURPLE>=1)
+      IF (0<SRC.TAG.DRAGON.SWITCH.BLUE>=1)
+         IF (0<SRC.TAG.DRAGON.SWITCH.ORANGE>=1)
+            IF (0<SRC.TAG.DRAGON.SWITCH.RED>=1)
+               SRC.TAG.DRAGON.SWITCH.YELLOW=1
+               SRC.SAY *Click*
+            ELSE
+               SRC.TAG.DRAGON.SWITCH.PURPLE=0
+               SRC.TAG.DRAGON.SWITCH.BLUE=0
+               SRC.TAG.DRAGON.SWITCH.ORANGE=0
+               SRC.SAY *Click*
+            ENDIF
+         ELSE
+            SRC.TAG.DRAGON.SWITCH.PURPLE=0
+            SRC.TAG.DRAGON.SWITCH.BLUE=0
+            SRC.SAY *Click*
+         ENDIF
+      ELSE
+         SRC.TAG.DRAGON.SWITCH.PURPLE=0
+         SRC.SAY *Click*
+      ENDIF
+      SRC.SAY *Click*
+   ENDIF
+   RETURN 1
+
+
+//------------------------------Items for quest------------------------------
+
+
+[ITEMDEF i_wand_dragon_nina]
+NAME=Nina's Healing Wand
+ID=i_wand
+CATEGORY=Imperial uo
+SUBSECTION=Dungeon of the Dragon Quest Items
+DESCRIPTION=Nina's Wand
+
+ON=@DCLICK
+   SRC.SAY You decide not to meddle with the wand despite temptation...
+   RETURN 1
+
+
+[ITEMDEF i_key_dragon_teepo]
+NAME=Key to Myria's Chamber
+ID=i_key_gold
+CATEGORY=Imperial uo
+SUBSECTION=Dungeon of the Dragon Quest Items
+DESCRIPTION=Key to Myria's Chamber
+
+ON=@DCLICK
+   SRC.SYSMESSAGE What do you wish to use this key on?
+   TARGET
+   
+ON=@TARGON_ITEM
+   IF (<SRC.TARG.BASEID>=i_door_dragon_myria)
+   SRC.GO 1000,1000
+   ELSE
+   SRC.SYSMESSAGE This is not the door that this key is for!
+   ENDIF
+
+[ITEMDEF i_door_dragon_myria]
+NAME=Door to the Goddess
+ID=i_door_wood
+CATEGORY=Imperial uo
+SUBSECTION=Dungeon of the Dragon Quest Items
+DESCRIPTION=Door to Myria's Chamber
+
+ON=@CREATE
+   COLOR=07a0
+   
+ON=@DCLICK
+   SRC.SYSMESSAGE The door is locked tight...
+   RETURN 1
+
+
+[ITEMDEF i_key_dragon_nina]
+NAME=A key to some kind of chest...
+ID=i_key_gold
+CATEGORY=Imperial uo
+SUBSECTION=Dungeon of the Dragon Quest Items
+DESCRIPTION=Key to Dragon Chest
+
+ON=@DCLICK
+   SRC.SYSMESSAGE What do you wish to use this key on?
+   TARGET
+   
+ON=@TARGON_ITEM
+   IF (<SRC.TARG.BASEID>=i_chest_dragon_nina)
+   SRC.SAY You notice a small key and some gold inside the chest..
+   CONSUME
+   SRC.NEWITEM=i_key_dragon_boss
+   SRC.NEWITEM=i_GOLD 
+   SRC.ACT.AMOUNT=2000
+   SRC.ACT.BOUNCE 
+   ELSE
+   SRC.SYSMESSAGE This is not the chest that this key is for!
+   ENDIF
+
+[ITEMDEF i_chest_dragon_nina]
+NAME=Chest of the Dragons
+ID=i_chest_iron
+CATEGORY=Imperial uo
+SUBSECTION=Dungeon of the Dragon Quest Items
+DESCRIPTION=Dragon Chest
+
+ON=@CREATE
+   COLOR=07a0
+   
+ON=@DCLICK
+   SRC.SYSMESSAGE The chest is locked tight...
+   RETURN 1
+
+
+[ITEMDEF i_key_dragon_boss]
+NAME=A key to some kind of door...
+ID=i_key_gold
+CATEGORY=Imperial uo
+SUBSECTION=Dungeon of the Dragon Quest Items
+DESCRIPTION=Key to Teepos Lair
+
+ON=@DCLICK
+   SRC.SYSMESSAGE What do you wish to use this key on?
+   TARGET
+   
+ON=@TARGON_ITEM
+   IF (<SRC.TARG.BASEID>=i_chest_dragon_nina)
+   SRC.SAY You unlock the door...
+   SRC.TAG.DRAGON.TEEPO=1
+   ELSE
+   SRC.SYSMESSAGE This is not the chest that this key is for!
+   ENDIF
+
+
+[ITEMDEF i_door_dragon_boss]
+NAME=Door to a Lair
+ID=i_door_wood
+CATEGORY=Imperial uo
+SUBSECTION=Dungeon of the Dragon Quest Items
+DESCRIPTION=Door to Teepos Lair
+
+ON=@CREATE
+   COLOR=0796
+   
+ON=@DCLICK
+   IF (0<SRC.TAG.DRAGON.TEEPO>=1)
+   RETURN 0
+   ELSE
+   SRC.SYSMESSAGE The door is locked tight...
+   RETURN 1
+   ENDIF
+
+
+[ITEMDEF i_book_dragon_rei]
+NAME=Rei's Journal about Myria
+ID=i_BOOK_OPEN
+
+CATEGORY=Imperial uo
+SUBSECTION=Dungeon of the Dragon Quest Items
+DESCRIPTION=Rei's Journal
+
+ON=@Create
+MORE=b_dragon_rei
+
+[BOOK b_dragon_rei]
+PAGES=18
+TITLE=Rei's Journal
+AUTHOR=Rei
+
+[BOOK b_dragon_rei 1]    
+Well we fought
+Myria... She said
+the dragon gods
+were the one 
+thing stopping
+her from total
+control of the
+
+[BOOK b_dragon_rei 2]    
+world... Teepo
+fought along
+side her for her
+dream... Why,
+my friend...
+Well don't this
+just beat all.
+
+[BOOK b_dragon_rei 3]
+Garr's actually
+having an effect
+on me. I can't
+believe Ryu
+let him come with
+us, but he did
+pull through I
+
+[BOOK b_dragon_rei 4]
+spose. Ah damn,
+anyhow, where
+was I...
+So Myria said
+us mortals were
+gonna kill the
+world...
+
+[BOOK b_dragon_rei 5]
+Ryu said to her
+that it wasn't
+up for her to
+decide anymore.
+I was actually
+more interested
+in the techno
+
+[BOOK b_dragon_rei 6]
+stuff around
+us. Momo said
+it was amazing
+all this stuff
+from the past.
+Myria said it
+all was a part
+
+[BOOK b_dragon_rei 7]
+of an empire
+which long since
+killed itself
+off. I spose I
+gotta admire her
+honesty... But
+Anyways,
+
+[BOOK b_dragon_rei 8]
+We'd long since
+laid teepo to
+rest... Well...
+We thought we
+did... Ryu was
+never sure...
+Dragons are
+
+[BOOK b_dragon_rei 9]
+hella strange
+things. 
+'Parrently the
+ones we see now
+were human made
+by that tech
+empire thing.
+
+[BOOK b_dragon_rei 10]
+But Teepo could
+easily got out.
+Heard a rumour
+bout him not
+so long ago.
+Summit bout a
+techno thing
+
+[BOOK b_dragon_rei 11]
+leadin to a
+land in some
+other dimension.
+Hell if I know.
+So, we've come
+here. Hell
+knows where
+
+[BOOK b_dragon_rei 12]
+Momo is, she
+probably went
+to the wrong
+damn place...
+Don't this just
+beat all...
+
+[BOOK b_dragon_rei 13]
+The others are
+around, lookin
+for Teepo,
+but heaven
+knows where
+he is.
+
+[BOOK b_dragon_rei 14]
+Agh, I was
+writing about
+Myria, weren't
+I. Anyhow, we
+fought her,
+beat her, and
+she didn't know
+
+[BOOK b_dragon_rei 15]
+what hit her.
+We talked to
+the Oracle
+after. She
+said Deis and
+Myria'd gone.
+Somewhere new.
+
+[BOOK b_dragon_rei 16]
+Maybe they
+brought Teepo
+here or
+sumthin.
+Hell if I know.
+
+[BOOK b_dragon_rei 17]
+Still, dunno
+whether Myria
+and Deis are
+planning on
+anything or
+just takin a
+holiday...
+
+[BOOK b_dragon_rei 18]
+Gods taking a
+holiday...
+Ain't that a
+thought...
+
+
+//------------------------NPC Monsters and Summonings------------------------
+
+//------------------------------Dragon Summoners-----------------------------
+
+[NAMES NAMES_DRAGON_SORCERESS]
+5
+Delane
+Ariel
+Luisa
+Helena
+Geri
+
+
+[CHARDEF c_sorceress_weyr]
+ID=c_woman
+NAME=#NAMES_DRAGON_SORCERESS the Dragon Summoner
+ARMOR=75
+SOUND=snd_human_f_die_01
+
+AVERSIONS=c_daemon
+
+CATEGORY=Imperial uo
+SUBSECTION=Dungeon of the Dragon NPC'S
+DESCRIPTION=Weyr the Dragon Summoner
+
+ON=@Create
+  COLOR		= 08a5
+  STR		= 1050
+  DEX		= 120
+  INT		= 225
+  NPC		= brain_monster
+  MACEFIGHTING	= 95.0
+  TACTICS	= 90.0
+  ANATOMY       = 90.0
+  MAGERY        = 100.0
+  FAME		= 3000
+  KARMA	        = -3000
+  ITEM		= i_hat_wizards
+  COLOR		= 025
+  ITEM		= i_dress_full
+  COLOR		= 025
+  ITEM		= i_boots_thigh
+  ITEMNEWBIE=i_spellbook
+  COLOR=025
+  NAME=Dragon Tome
+  ADDSPELL=s_flamestrike
+  ADDSPELL=s_summon_daemon
+
+  
+ON=@NPCRESTOCK
+   ITEM=i_gold,{850 950}
+   ITEM=random_rare_1,R100
+   CONTAINER=i_bag
+   ITEM=i_reag_black_pearl,{ 5 15 }
+   ITEM=i_reag_blood_moss,{ 5 15 }
+   ITEM=i_reag_garlic,{ 5 15 }
+   ITEM=i_reag_ginseng,{ 5 15 }
+   ITEM=i_reag_mandrake_root,{ 5 15 }
+   ITEM=i_reag_nightshade,{ 5 15 }
+   ITEM=i_reag_sulfur_ash,{ 5 15 }
+   ITEM=i_reag_spider_silk,{ 5 15 }
+
+ON=@SPELLCAST
+   IF (<ARGN>==61)
+      IF (<SRC.FINDID.M_DRAGSUMMONER>)
+         RETURN 1
+      ENDIF
+      NECROSUMMONHERE c_dragon_conjured
+      SAY Kal Xen Corp Des Flam 
+      SRC.NEWITEM		= M_DRAGSUMMONER
+      SRC.ACT.CONT		= <SRC.UID>
+      SRC.ACT.TIMER 		= 300
+      RETURN 1
+   ENDIF
+
+[ITEMDEF M_DRAGSUMMONER]
+ID=i_memory
+NAME=Dragon Summon
+type=t_eq_script
+
+ON=@Timer
+   REMOVE
+   RETURN 1
+
+[CHARDEF c_dragon_conjured]
+ID		= c_dragon_green
+NAME		= #NAMES_DRAGON the Dragon
+SOUND		= snd_MONSTER_DRAGON1
+ICON		= i_pet_DRAGON
+ANIM		= 03f9c7f
+CAN		= MT_WALK|MT_RUN|MT_FLY|MT_FIRE_IMMUNE
+DAM		= 17,32
+ARMOR		= 75
+RESOURCES	= 20 i_ribs_raw, 8 i_reag_dragon_blood, 1 i_reag_Dragons_heart
+FOODTYPE	= 80 t_meat_raw
+DESIRES		= i_gold
+AVERSIONS	= r_water,r_civilization
+TEVENTS		= e_npc_dragon
+
+CATEGORY=Imperial uo
+SUBSECTION=Dungeon of the Dragon NPC'S
+DESCRIPTION=Summoned Dragon
+ON = @Create
+  TAG.NAME.SUFFIX =, the summoned Dragon
+  NPC		= brain_dragon
+  COLOR		= 00487
+  FAME		= {3000 9000}
+  KARMA		= -5000
+  STR		= {1200 1300}
+  DEX		= {105 115}
+  INT		= {435 475}
+  PARRYING	= {55.0 95.0}
+  MAGICRESISTANCE={99.0 120.0}
+  TACTICS	= {98.0 100.0}
+  WRESTLING	= {90.0 93.0}
+
+ON=@DEATH
+   loot_DRAGON
+   loot_dragonrares_Med
+
+//-----------------------------------Ninjas----------------------------------
+
+
+[CHARDEF c_dragon_ninja_sword_f]
+ID=c_woman
+NAME=Dragon Ninja
+DAM=14,21
+ARMOR=75
+SOUND=snd_human_f_die_01
+
+AVERSIONS=c_daemon
+CATEGORY=Imperial uo
+SUBSECTION=Dungeon of the Dragon NPC'S
+DESCRIPTION=Female Ninja (Sword)
+
+ON=@Create
+  COLOR		= colors_skin
+  STR		= 850
+  DEX		= 150
+  INT		= 115
+  NPC		= brain_monster
+  SWORDSMANSHIP	= 95.0
+  TACTICS	= 90.0
+  ANATOMY       = 90.0
+  MAGERY        = 100.0
+  FAME		= 3000
+  KARMA	        = -3000
+  ITEM		= i_hair_long
+  COLOR		= 0747
+  ITEMNEWBIE	= i_pants_long
+  COLOR		= 01
+  ITEMNEWBIE	= i_shirt_fancy
+  COLOR		= 01
+  ITEMNEWBIE	= i_boots_thigh
+  COLOR		= 01
+  ITEMNEWBIE	= i_spellbook
+  COLOR		= 025
+  NAME		= Ninja Tome
+  ADDSPELL	= s_magic_arrow
+  ITEMNEWBIE	= i_katana_phoenix
+  ATTR		= 05
+  NAME		= Dragon Katana
+  COLOR		= 0486
+  
+ON=@NPCRESTOCK
+   ITEM=random_scroll
+
+ON=@SPELLCAST
+   IF (<ARGN>==5)
+      EMOTE throw a shuriken, streaked in flames.
+   ENDIF
+
+on=@death
+y_region_loot_death
+y_region_loot_calculator
+addlootgold ,<eval (<str>*2)>
+addlootitem ,loot_newrares_Easy,1
+addlootrandom ,200,300,1,random_rare_1
+addlootmisc 3,random_jewel
+addlootrandom ,2,4,1,random_scroll
+addlootmisc <eval (<str>/10)>, i_reward_ticket
+   
+   
+[CHARDEF c_dragon_ninja_sword_m]
+ID=c_man
+NAME=Dragon Ninja
+DAM=14,21
+ARMOR=75
+SOUND=snd_human_m_die_01
+
+AVERSIONS=c_daemon
+CATEGORY=Imperial uo
+SUBSECTION=Dungeon of the Dragon NPC'S
+DESCRIPTION=Male Ninja (Sword)
+
+ON=@Create
+  COLOR		= colors_skin
+  STR		= 850
+  DEX		= 150
+  INT		= 115
+  NPC		= brain_monster
+  SWORDSMANSHIP	= 95.0
+  TACTICS	= 90.0
+  ANATOMY       = 90.0
+  MAGERY        = 100.0
+  FAME		= 3000
+  KARMA	        = -3000
+  ITEM		= i_hair_short
+  COLOR		= 0747
+  ITEMNEWBIE	= i_pants_long
+  COLOR		= 01
+  ITEMNEWBIE	= i_shirt_fancy
+  COLOR		= 01
+  ITEMNEWBIE	= i_boots_thigh
+  COLOR		= 01
+  ITEMNEWBIE	= i_spellbook
+  COLOR		= 025
+  NAME		= Ninja Tome
+  ADDSPELL	= s_magic_arrow
+  ITEMNEWBIE	= i_katana_phoenix
+  ATTR		= 05
+  NAME		= Dragon Katana
+  COLOR		= 0486
+  
+ON=@NPCRESTOCK
+   ITEM=random_jewel
+   ITEM=random_scroll
+
+ON=@SPELLCAST
+   IF (<ARGN>==5)
+      EMOTE throw a shuriken, streaked in flames.
+   ENDIF
+
+on=@death
+y_region_loot_death
+y_region_loot_calculator
+addlootgold ,<eval (<str>*2)>
+addlootitem ,loot_newrares_Easy,1
+addlootrandom ,200,300,1,random_rare_1
+addlootmisc 3,random_jewel
+addlootrandom ,2,4,1,random_scroll
+addlootmisc <eval (<str>/10)>, i_reward_ticket
+
+
+[CHARDEF c_dragon_ninja_staff_f]
+ID=c_woman
+NAME=Dragon Ninja
+DAM=14,21
+ARMOR=75
+SOUND=snd_human_f_die_01
+
+AVERSIONS=c_daemon
+CATEGORY=Imperial uo
+SUBSECTION=Dungeon of the Dragon NPC'S
+DESCRIPTION=Female Ninja (Staff)
+
+ON=@Create
+  COLOR		= colors_skin
+  STR		= 850
+  DEX		= 150
+  INT		= 115
+  NPC		= brain_monster
+  MACEFIGHTING 	= 95.0
+  TACTICS	= 90.0
+  ANATOMY       = 90.0
+  MAGERY        = 100.0
+  FAME		= 3000
+  KARMA	        = -3000
+  ITEM		= i_hair_long
+  COLOR		= 0747
+  ITEMNEWBIE	= i_pants_long
+  COLOR		= 01
+  ITEMNEWBIE	= i_shirt_fancy
+  COLOR		= 01
+  ITEMNEWBIE	= i_boots_thigh
+  COLOR		= 01
+  ITEMNEWBIE	= i_spellbook
+  COLOR		= 025
+  NAME		= Ninja Tome
+  ADDSPELL	= s_magic_arrow
+  ITEMNEWBIE	= i_staff_quarter_cherry
+  ATTR		= 05
+  NAME		= Dragon Quarterstaff
+  COLOR		= 0486
+  
+ON=@NPCRESTOCK
+   ITEM=random_jewel
+   ITEM=random_scroll
+
+ON=@SPELLCAST
+   IF (<ARGN>==5)
+      EMOTE throw a shuriken, streaked in flames.
+   ENDIF
+
+on=@death
+y_region_loot_death
+y_region_loot_calculator
+addlootgold ,<eval (<str>*2)>
+addlootitem ,loot_newrares_Easy,1
+addlootrandom ,200,300,1,random_rare_1
+addlootmisc 3,random_jewel
+addlootrandom ,2,4,1,random_scroll
+addlootmisc <eval (<str>/10)>, i_reward_ticket
+
+
+[CHARDEF c_dragon_ninja_staff_m]
+ID=c_man
+NAME=Dragon Ninja
+DAM=14,21
+ARMOR=75
+SOUND=snd_human_m_die_01
+
+AVERSIONS=c_daemon
+CATEGORY=Imperial uo
+SUBSECTION=Dungeon of the Dragon NPC'S
+DESCRIPTION=Male Ninja (Staff)
+
+ON=@Create
+  COLOR		= colors_skin
+  STR		= 850
+  DEX		= 150
+  INT		= 115
+  NPC		= brain_monster
+  MACEFIGHTING 	= 95.0
+  TACTICS	= 90.0
+  ANATOMY       = 90.0
+  MAGERY        = 100.0
+  FAME		= 3000
+  KARMA	        = -3000
+  ITEM		= i_hair_short
+  COLOR		= 0747
+  ITEMNEWBIE	= i_pants_long
+  COLOR		= 01
+  ITEMNEWBIE	= i_shirt_fancy
+  COLOR		= 01
+  ITEMNEWBIE	= i_boots_thigh
+  COLOR		= 01
+  ITEMNEWBIE	= i_spellbook
+  COLOR		= 025
+  NAME		= Ninja Tome
+  ADDSPELL	= s_magic_arrow
+  ITEMNEWBIE	= i_staff_quarter_cherry
+  ATTR		= 05
+  NAME		= Dragon Quarterstaff
+  COLOR		= 0486
+  
+ON=@NPCRESTOCK
+   ITEM=random_jewel
+   ITEM=random_scroll
+
+ON=@SPELLCAST
+   IF (<ARGN>==5)
+      EMOTE throw a shuriken, streaked in flames.
+   ENDIF
+
+on=@death
+y_region_loot_death
+y_region_loot_calculator
+addlootgold ,<eval (<str>*2)>
+addlootitem ,loot_newrares_Easy,1
+addlootrandom ,200,300,1,random_rare_1
+addlootmisc 3,random_jewel
+addlootrandom ,2,4,1,random_scroll
+addlootmisc <eval (<str>/10)>, i_reward_ticket
+
+
+[CHARDEF c_dragon_ninja_lord]
+ID=c_man
+NAME=Katzbalger
+DAM=14,28
+ARMOR=75
+SOUND=snd_human_m_die_01
+
+AVERSIONS=c_daemon
+CATEGORY=Imperial uo
+SUBSECTION=Dungeon of the Dragon NPC'S
+DESCRIPTION=Katzbalger
+
+ON=@Create
+  TAG.NAME.HUE	= 015
+  TAG.NAME.SUFFIX =, Dragon Ninja Lord
+  COLOR		= colors_skin
+  STR		= 1000
+  DEX		= 190
+  INT		= 115
+  NPC		= brain_monster
+  MACEFIGHTING	= 95.0
+  TACTICS	= 90.0
+  ANATOMY       = 90.0
+  MAGERY        = 100.0
+  FAME		= 3000
+  KARMA	        = -3000
+  ITEM		= i_hair_short
+  COLOR		= 0747
+  ITEMNEWBIE	= i_pants_long
+  COLOR		= 01
+  ITEMNEWBIE	= i_shirt_fancy
+  COLOR		= 01
+  ITEMNEWBIE	= i_boots_thigh
+  COLOR		= 0486
+  ITEMNEWBIE	= i_spellbook
+  COLOR		= 025
+  NAME		= Ninja Tome
+  ADDSPELL	= s_magic_arrow
+  ADDSPELL	= s_dispel
+  ADDSPELL	= s_polymorph
+  ADDSPELL	= s_meteor_swarm
+  ITEMNEWBIE	= i_staff_quarter_cherry
+  ATTR		= 05
+  NAME		= Dragon Grand Quarterstaff
+  COLOR		= 0486
+  
+ON=@NPCRESTOCK
+   ITEM=i_gold,{1000 1100}
+   ITEM=random_rare_1
+   ITEM=random_jewel
+   ITEM=random_scroll
+
+ON=@SPELLCAST
+   IF (<ARGN>==5)
+      EMOTE throw a shuriken, streaked in flames.
+   ENDIF
+
+on=@death
+y_region_loot_death
+y_region_loot_calculator
+addlootgold ,<eval (<str>*2)>
+addlootitem ,loot_newrares_Easy,1
+addlootrandom ,200,300,1,random_rare_2
+addlootmisc 3,random_jewel
+addlootrandom ,2,4,1,random_scroll
+addlootmisc <eval (<str>/10)>, i_reward_ticket
+
+[CHARDEF c_ninja_wolf]
+ID=c_wolf
+NAME=Ninja Wolf
+SOUND=snd_ANIMALS_WOLF1
+ICON=i_pet_wolf_gray
+
+DAM=10,18
+ARMOR=25
+RESOURCES=3 i_ribs_raw, 3 i_fur_light
+
+CAN=MT_WALK|MT_RUN
+
+FOODTYPE=15 t_meat_raw
+DESIRES=c_wolf
+AVERSIONS=r_civilization
+CATEGORY=Imperial uo
+SUBSECTION=Dungeon of the Dragon NPC'S
+DESCRIPTION=Ninja Wolf
+
+ON=@Create
+COLOR=colors_gray
+STR={150 220}
+DEX={130 150}
+INT={30 55}
+
+PARRYING={95.0 115.0}
+MAGICRESISTANCE={50.0 85.0}
+TACTICS={95.0 100.0}
+WRESTLING={105.0 110.0}
+ARMSLORE=100.0
+TAMING=104.0
+
+NPC=brain_animal
+
+FAME=1200
+KARMA={-2000 -3999}
+
+ON=@NPCRESTOCK
+   ITEM=i_gold,{100 250}
+
+
+//------------------------------------Goos-----------------------------------
+
+
+[CHARDEF c_goo_trooper]
+ID=c_slime
+NAME=Goo Trooper
+SOUND=snd_MONSTER_SLIME1
+ICON=i_pet_SLIME
+ANIM=060c7f
+CAN=MT_WALK
+
+DAM=10,15
+ARMOR=4
+//RESOURCES=5 t_eerie_stuff
+FOODTYPE=35 t_meat_raw,t_garbage,t_leather,t_food,t_fruit,t_cloth,t_crops
+DESIRES=c_goo_king
+CATEGORY=Imperial uo
+SUBSECTION=Dungeon of the Dragon NPC'S
+DESCRIPTION=Goo Trooper
+
+ON=@Create
+NPC=brain_monster
+FAME={100 1000}
+KARMA={-999 -1999}
+//ALIGNMENT=EVIL
+COLOR=075
+
+STR={122 340}
+DEX={86 91}
+INT={16 20}
+
+PARRYING={15.0 21.0}
+MAGICRESISTANCE={15.0 20.0}
+TACTICS={19.0 34.0}
+WRESTLING={79.0 84.0}
+POISONING={30.0 50.0}
+
+ON=@NPCRestock
+ITEM=i_gold,{95 115}
+ITEM=loot_newrares_Easy
+ITEM=i_floppy_brilliance,R160
+
+
+[CHARDEF c_goo_mage]
+ID=c_slime
+NAME=Goo Mage
+SOUND=snd_MONSTER_SLIME1
+ICON=i_pet_SLIME
+ANIM=060c7f
+CAN=MT_WALK
+
+DAM=10,15
+ARMOR=4
+//RESOURCES=5 t_eerie_stuff
+FOODTYPE=35 t_meat_raw,t_garbage,t_leather,t_food,t_fruit,t_cloth,t_crops
+DESIRES=c_goo_king
+CATEGORY=Imperial uo
+SUBSECTION=Dungeon of the Dragon NPC'S
+DESCRIPTION=Goo Mage
+
+ON=@Create
+NPC=brain_monster
+FAME={100 1000}
+KARMA={-999 -1999}
+//ALIGNMENT=EVIL
+COLOR=065
+
+STR={72 90}
+DEX={86 91}
+INT={80 90}
+
+PARRYING={15.0 21.0}
+MAGICRESISTANCE={15.0 20.0}
+TACTICS={19.0 34.0}
+WRESTLING={79.0 84.0}
+POISONING={30.0 50.0}
+MAGERY=100.0
+
+ITEMNEWBIE=i_full_spellbook
+
+ON=@NPCRestock
+ITEM=i_gold,{65 75}
+ITEM=loot_newrares_Easy
+ITEM=i_floppy_brilliance,R160
+
+
+[CHARDEF c_goo_king]
+ID=c_slime
+NAME=Goo King
+SOUND=snd_MONSTER_SLIME1
+ICON=i_pet_SLIME
+ANIM=060c7f
+CAN=MT_WALK
+
+DAM=22,24
+ARMOR=70
+//RESOURCES=5 t_eerie_stuff
+FOODTYPE=35 t_meat_raw,t_garbage,t_leather,t_food,t_fruit,t_cloth,t_crops
+DESIRES=c_goo_king
+CATEGORY=Imperial uo
+SUBSECTION=Dungeon of the Dragon NPC'S
+DESCRIPTION=Goo King
+
+ON=@Create
+NPC=brain_monster
+FAME={2000 4000}
+KARMA={-4999 -5999}
+//ALIGNMENT=EVIL
+COLOR=07a0
+
+STR={722 740}
+DEX={120 140}
+INT={66 80}
+
+PARRYING={95.0 121.0}
+MAGICRESISTANCE={85.0 90.0}
+MAGERY=100.0
+TACTICS={109.0 114.0}
+WRESTLING={129.0 134.0}
+POISONING={80.0 100.0}
+
+ON=@NPCRestock
+ITEM=i_gold,{805 855}
+ITEM=loot_newrares_Easy
+ITEM=i_floppy_brilliance,R160
+
+
+
+//------------------------NPC Characters and Stockers------------------------
+
+[CHARDEF c_h_rei]
+ID=C_MAN
+NAME=Rei
+ARMOR=95
+SOUND=snd_HUMAN_M_DIE_01
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+TSPEECH=dragonrei
+CATEGORY=Imperial uo
+SUBSECTION=Dungeon of the Dragon NPC'S
+DESCRIPTION=Rei
+
+ON=@Create
+  COLOR		= 08a5
+  STR		= 1050
+  DEX		= 120
+  INT		= 95
+  NPC		= brain_monster
+  SWORDSMANSHIP	= 90.0
+  TACTICS	= 90.0
+  ANATOMY       = 90.0
+  FAME		= 3000
+  KARMA	        = 2000
+
+  ITEMNEWBIE=i_hair_short
+  COLOR=06bf
+  ITEMNEWBIE=i_dagger_titanium
+  ATTR=00005
+  NAME=Sai
+  ITEMNEWBIE=i_pants_long
+  COLOR=0838
+  ITEMNEWBIE=i_bandana
+  COLOR=001b
+  ITEMNEWBIE=i_boots_calf 
+
+ON=@DEATH
+  ACT.EMOTE feel a force pull you away from the dungeon...
+  ANNOUNCE Let not <ACT.NAME>, who murdered an ally in cold blood and without thought, go rewarded...
+  ACT.GO 2603,466,60
+  ACT.TAG.DRAGON.QUEST=2
+  RETURN 0
+
+
+[CHARDEF c_h_ryu]
+ID=C_MAN
+NAME=Ryu
+ARMOR=95
+SOUND=snd_HUMAN_M_DIE_01
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+TSPEECH=dragonryu
+CATEGORY=Imperial uo
+SUBSECTION=Dungeon of the Dragon NPC'S
+DESCRIPTION=Ryu
+
+ON=@Create
+  COLOR		= colors_skin
+  STR		= 1050
+  DEX		= 120
+  INT		= 95
+  NPC		= brain_monster
+  SWORDSMANSHIP	= 90.0
+  TACTICS	= 90.0
+  ANATOMY       = 90.0
+  FAME		= 3000
+  KARMA	        = 2000
+
+  ITEMNEWBIE=i_hair_short
+  COLOR=0543
+  ITEMNEWBIE=i_sword_long_titanium
+  ATTR=00005
+  NAME=Bastard Sword
+  ITEMNEWBIE=i_pants_long
+  COLOR=00c5
+  ITEMNEWBIE=i_shirt_plain
+  ITEMNEWBIE=i_boots_calf 
+
+ON=@DEATH
+  ACT.EMOTE feel a force pull you away from the dungeon...
+  ANNOUNCE Let not <ACT.NAME>, who murdered an ally in cold blood and without thought, go rewarded...
+  ACT.GO 2603,466,60
+  ACT.TAG.DRAGON.QUEST=2
+  RETURN 0
+
+
+[CHARDEF c_h_nina]
+ID=C_WOMAN
+NAME=Nina
+ARMOR=65
+SOUND=snd_HUMAN_F_DIE_01
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+TSPEECH=dragonnina
+CATEGORY=Imperial uo
+SUBSECTION=Dungeon of the Dragon NPC'S
+DESCRIPTION=Nina
+
+ON=@Create
+  COLOR		= 083ea
+  STR		= 1050
+  DEX		= 120
+  INT		= 1000
+  NPC		= brain_monster
+  WRESTLING	= 20.0
+  TACTICS	= 90.0
+  ANATOMY       = 90.0
+  MAGERY        = 100.0
+  FAME		= 3000
+  KARMA	        = 2000
+
+  ITEMNEWBIE=i_hair_long
+  COLOR=0466
+  ITEMNEWBIE=i_bandanna
+  COLOR=0543
+  ITEMNEWBIE=i_pants_long
+  COLOR=01
+  ITEMNEWBIE=01ffe
+  COLOR=0543
+  ITEMNEWBIE=i_boots_calf
+
+ON=@DEATH
+  ACT.EMOTE feel a force pull you away from the dungeon...
+  ANNOUNCE Let not <ACT.NAME>, who murdered an ally in cold blood and without thought, go rewarded...
+  ACT.GO 2603,466,60
+  ACT.TAG.DRAGON.QUEST=2
+  RETURN 0
+     
+
+//----------------------------Monsters and Bosses----------------------------
+
+[CHARDEF c_h_dragon_teepo]
+ID=C_MAN
+NAME=Teepo
+ARMOR=95
+SOUND=snd_HUMAN_M_DIE_01
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+TSPEECH=dragonteepo
+CATEGORY=Imperial uo
+SUBSECTION=Dungeon of the Dragon Monsters and Bosses
+DESCRIPTION=Teepo	
+
+ON=@Create
+  COLOR		= colors_skin
+  STR		= 1050
+  DEX		= 120
+  INT		= 95
+  NPC		= brain_monster
+  SWORDSMANSHIP	= 90.0
+  TACTICS	= 90.0
+  ANATOMY       = 90.0
+  FAME		= 3000
+  KARMA  	= 7000
+
+  ITEMNEWBIE=i_hair_long
+  COLOR=0969
+  ITEMNEWBIE=i_sword_long_b_titanium
+  ATTR=00005
+  NAME=Damascus Sword
+  ITEMNEWBIE=i_pants_long
+  COLOR=048b
+  ITEMNEWBIE=i_shirt_fancy
+  COLOR=048b
+  ITEMNEWBIE=i_sash
+  COLOR=077c
+  ITEMNEWBIE=i_boots_calf
+  
+ON=@Death
+  IF (0<SRC.TAG.DRAGON.TEEPO>=0)
+     ACT.EMOTE feel a force pull you away from the dungeon...
+     ANNOUNCE Let not <ACT.NAME>, who murdered a demi-god in cold blood and without thought, go rewarded...
+     ACT.GO 2603,466,60
+     ACT.TAG.DRAGON.QUEST=2
+     RETURN 0
+  ELSEIF (0<SRC.TAG.DRAGON.TEEPO>=1)
+     ACT.EMOTE feel a force pull you away from the dungeon...
+     ANNOUNCE Let not <ACT.NAME>, who murdered a demi-god in cold blood and without thought, go rewarded...
+     ACT.GO 2603,466,60
+     ACT.TAG.DRAGON.QUEST=2
+     RETURN 0
+  ELSEIF (0<SRC.TAG.DRAGON.TEEPO>=2)
+     ACT.EMOTE feel a force pull you away from the dungeon...
+     ANNOUNCE Let not <ACT.NAME>, who murdered a demi-god in cold blood and without thought, go rewarded...
+     ACT.GO 2603,466,60
+     ACT.TAG.DRAGON.QUEST=2
+     RETURN 0
+  ELSEIF (0<SRC.TAG.DRAGON.TEEPO>=3)
+     NEWITEM i_transform_smoke
+     COLOR=01
+     SRC.ACT.P	= <P>
+     NEWNPC c_dragon_teepo
+     SRC.ACT.P = <P>
+     REMOVE  	
+     RETURN 0
+  ELSE
+     EMOTE feel the wrath of a betrayed demi-god...
+     ACT.KILL
+     ACT.GO 2603,466,60
+     ACT.TAG.DRAGON.QUEST=2
+     RETURN 0
+  ENDIF
+  RETURN 1
+  
+
+[CHARDEF c_dragon_teepo]
+DEFNAME		= c_dragon_teepo
+ID		= c_DRAGON_RED
+NAME		= Weyr
+SOUND		= snd_MONSTER_DRAGON1
+ICON		= i_pet_dragon
+DAM		= 25,50
+ARMOR		= 70
+RESOURCES	= 99 i_ribs_raw,8 i_reag_dragon_blood,2 i_reag_Dragons_heart
+CAN		= MT_WALK|MT_FLY|MT_RUN|MT_FIRE_IMMUNE
+FOODTYPE	= 80 t_meat_raw
+DESIRES		= i_gold
+AVERSIONS	= r_water,r_civilization
+TEVENTS		= e_npc_dragon
+
+CATEGORY=Imperial uo
+SUBSECTION=Dungeon of the Dragon Monsters and Bosses
+DESCRIPTION=Weyr
+
+ON = @Create
+  NPC		  = brain_dragon
+  COLOR		  = 0846
+  FAME		  = {3000 9000}
+  KARMA		  = {-5000 -5999}
+  STR		  = {2525 2940}
+  DEX		  = {105 140}
+  INT		  = {435 475}
+  PARRYING	  = {85.0 125.0}
+  MAGICRESISTANCE = {199.0 250.0}
+  TACTICS	  = {198.0 200.0}
+  WRESTLING	  = {125.0 150.0}
+  MAGERY          = 50.0
+  EVALUATINGINTEL = 100.0
+
+ON=@NPCRestock
+  ITEM		= filthy_rich_monster_backpack
+  ITEM		= random_jewel, {1 4}, R2
+  ITEM		= i_gold,{4000 6000}
+  ITEM=loot_newrares_hard
+
+ON=@Death
+  ACT.EMOTE watch as the spirit of Teepo releases itself into the sky...
+  ANNOUNCE <ACT.NAME> has decided the fate of the Dragon Demi-God Teepo...
+  ACT.GO 5615,273,0,10
+  SRC.NEWITEM=i_gold
+  SRC.ACT.AMOUNT=10000
+  SRC.ACT.BOUNCE
+  SRC.NEWITEM=i_flesh_head
+  SRC.ACT.NAME=Head of Teepo
+
+  addlootrandom ,10,20,1,random_jewel
+  addlootrandom ,200,250,1,random_rare_2
+  addlootrandom ,125,175,1,i_luck_stone
+  addlootrandom ,150,225,1,i_gobletrare1
+  addlootrandom ,200,250,1,i_goldenchest
+  RETURN 0
+
+
+[CHARDEF c_dragon_myria]
+DEFNAME		= c_dragon_myria
+ID		= c_DRAGON_RED
+NAME		= Myria
+SOUND		= snd_MONSTER_DRAGON1
+ICON		= i_pet_dragon
+DAM		= 25,50
+ARMOR		= 70
+RESOURCES	= 99 i_ribs_raw,8 i_reag_dragon_blood,2 i_reag_Dragons_heart
+CAN		= MT_WALK|MT_FLY|MT_RUN|MT_FIRE_IMMUNE
+FOODTYPE	= 80 t_meat_raw
+DESIRES		= i_gold
+AVERSIONS	= r_water,r_civilization
+TEVENTS		= e_npc_dragon
+
+CATEGORY=Imperial uo
+SUBSECTION=Dungeon of the Dragon Monsters and Bosses
+DESCRIPTION=Myria
+
+ON = @Create
+  NPC		  = brain_dragon
+  COLOR		  = 0846
+  FAME		  = {3000 9000}
+  KARMA		  = {-5000 -5999}
+  STR		  = {2925 3240}
+  DEX		  = {95 100}
+  INT		  = {435 475}
+  PARRYING	  = {105.0 125.0}
+  MAGICRESISTANCE = {100.0 150.0}
+  TACTICS	  = {198.0 200.0}
+  WRESTLING	  = {125.0 150.0}
+  MAGERY          = 80.0
+  EVALUATINGINTEL = 100.0
+
+ON=@NPCRestock
+  ITEM		= filthy_rich_monster_backpack
+  ITEM		= random_jewel, {1 4}, R2
+  ITEM		= i_gold,{4000 6000}
+  ITEM=loot_newrares_hard
+
+ON=@Death
+  ACT.EMOTE cut the head off of the Goddess Myria as the body reforms into a human.
+  ANNOUNCE <ACT.NAME> has defeated the Goddess Myria, and protected the lands
+  ANNOUNCE for another day.
+  ACT.GO 5615,273,0,10
+  SRC.NEWITEM=i_gold
+  SRC.ACT.AMOUNT=25000
+  SRC.ACT.BOUNCE
+  SRC.NEWITEM=i_flesh_head
+  SRC.ACT.NAME=Head of Myria
+
+  loot_DRAGON
+  loot_dragonrares_Med
+  
+  RETURN 0
+
+
+
+//------------------------------Speech Sections------------------------------
+
+[SPEECH dragonrei]
+ON=*hello*
+ON=*hi*
+ON=*bonjour*
+ON=*salut*
+   IF <SRC.BODY>=c_man
+      DORAND 3
+      SAY Hey there!
+      EMOTE scratch the back of his head.
+      SAY Hi!
+      ENDDO
+      RETURN 1
+   ELSE
+      DORAND 3
+      SAY Whoa! Hey there lady!
+      EMOTE scratch the back of his head nervously.
+      SAY Uh... Hi... Um... I'm Rei...
+      ENDDO
+      RETURN 1
+ON=*dragon*
+   SAY Which one?
+ON=*god*
+   SAY Mmm, I was once told true dragons were gods of sorts...
+ON=Well don't that just beat all
+ON=Well dont that just beat all
+   SAY Hey! That's my line!
+ON=*deis*
+   SAY Ah, she was a goddess... She still held faith in our world...
+ON=*myria*
+   IF (0<SRC.TAG.DRAGON.REI>=0)
+      SAY Don't remind me of that name... She once tried to control the world... Read this...
+      SRC.NEWITEM=i_book_dragon_rei
+      SRC.ACT.BOUNCE
+      SRC.TAG.DRAGON.REI=1
+      RETURN 1
+   ELSEIF (0<SRC.TAG.DRAGON.REI>=1)
+      SAY Well don't that just beat all? Read the book and yer still clueless...
+      RETURN 1
+   ENDIF
+ON=*ryu*
+   SAY Hell if I know where he is. Went off with Nina somewhere...
+   RETURN 1
+ON=*teepo*
+   IF (0<SRC.TAG.DRAGON.REI>=0)
+      SAY Heard a rumour he was here... Hope Myria ain't got to him...
+      RETURN 1
+   ELSEIF (0<SRC.TAG.DRAGON.REI>=1)
+      SAY Last I heard he was here. I got a bad feelin bout him though...
+      RETURN 1
+   ENDIF
+ON=*nina*
+   SAY She went off ahead to look for something.
+ON=*garr*
+   SAY Still don't trust him 'cause of what he did to Ryu...
+ON=*momo*
+   SAY She's a nice girl I spose... Bit mad... Not seen her round though.
+ON=*healing wand*
+ON=*wand*
+   IF (0<SRC.TAG.DRAGON.WAND>=0)
+      SAY What about it?
+      RETURN 1
+   ELSEIF (0<SRC.TAG.DRAGON.WAND>=1)
+      SAY Gawd damn she forget it again? Here ya go... Always carry a spare for her...
+      SRC.NEWITEM=i_wand_dragon_nina
+      SRC.ACT.BOUNCE
+      SAY Take it to her before she start her whinin' again.
+      SRC.TAG.DRAGON.WAND=2
+      RETURN 1
+   ELSEIF (0<SRC.TAG.DRAGON.WAND>=2)
+      SAY Gawd damn, you not lost it have ya? Only carried the one...
+      RETURN 1
+   ELSEIF (0<SRC.TAG.DRAGON.WAND>=3)
+      SAY Ain't ya already given it to her? Jeez man...
+      RETURN 1
+   ENDIF
+   RETURN 1
+
+[SPEECH dragonryu]
+ON=*hello*
+ON=*hi*
+ON=*bonjour*
+ON=*salut*
+   IF <SRC.BODY>=c_man
+      DORAND 2
+      SAY Hail.
+      SAY Hi!
+      ENDDO
+      RETURN 1
+   ELSE
+      BOW
+      SAY Hello Milady
+      RETURN 1
+ON=*dragon*
+   SAY Mmm, yes I am a dragon...
+ON=*rei*
+   SAY We kinda left him back there. Nina was in a hurry...
+ON=*teepo*
+   SAY Mmm, me, him and Rei used to be friends... Long story...
+ON=*nina*
+   SAY Ah, lovely Nina...
+   EMOTE smile
+ON=*garr*
+   SAY Despite what my friends will have you think, he's very nice...
+ON=*momo*
+   SAY I thought I saw her around... But she's not caught up with us...
+ON=*healing wand*
+ON=*wand*
+   IF (0<SRC.TAG.DRAGON.WAND>=0)
+      SAY What about it?
+      RETURN 1
+   ELSEIF (0<SRC.TAG.DRAGON.WAND>=1)
+      SAY Nina needs it... I kinda got cut, but she thinks I'm gonna die from it...
+      RETURN 1
+   ELSEIF (0<SRC.TAG.DRAGON.WAND>=2)
+      SAY Hey, if you have it can you tell Nina you have it?
+      RETURN 1
+   ELSEIF (0<SRC.TAG.DRAGON.WAND>=3)
+      SAY Thanks, she was panicking about me and the wand no end...
+      RETURN 1
+   ENDIF
+   
+[SPEECH dragonteepo]
+ON=*hello*
+ON=*hi*
+ON=*hey*
+   IF (0<SRC.TAG.DRAGON.TEEPO>=0)
+      EMOTE stand silently...
+   ELSEIF (0<SRC.TAG.DRAGON.TEEPO>=1)
+      SAY So... This is my fate being decided... Should I end here?
+      SAY A simple yes or no...
+      SRC.TAG.DRAGON.TEEPO=2
+   ELSEIF (0<SRC.TAG.DRAGON.TEEPO>=2)
+      SAY I await your decision...
+   ELSEIF (0<SRC.TAG.DRAGON.TEEPO>=3)
+      SAY We shall end this now! No more talk!
+   ELSEIF (0<SRC.TAG.DRAGON.TEEPO>=4)   
+      EMOTE appear hollow and ghostly, as if he is already dead...
+   ELSEIF (0<SRC.TAG.DRAGON.TEEPO>=5)
+      SAY Hello my friend...
+   ELSEIF (0<SRC.TAG.DRAGON.TEEPO>=6)
+      SAY My friend I cannot thank you enough for stopping Myria...
+      EMOTE shake your hand firmly
+   ENDIF
+
+ON=*yes*
+   IF (0<SRC.TAG.DRAGON.TEEPO>=0)
+      EMOTE stand silently...
+      RETURN 0
+   ELSEIF (0<SRC.TAG.DRAGON.TEEPO>=2)
+      SAY Then you must kill me! I shall never end without a fight!
+      GO 5830,349,15,10
+      SRC.GO 5830,355,15,10
+      ATTACK
+      SRC.TAG.DRAGON.TEEPO=3
+   ELSEIF (0<SRC.TAG.DRAGON.TEEPO>=3)
+      SAY Fight me then!
+   ELSE
+      SAY Yes to what?...
+   ENDIF
+   RETURN 0
+  
+ON=*no*
+   IF (0<SRC.TAG.DRAGON.TEEPO>=0)
+      EMOTE stand silently...
+   ELSEIF (0<SRC.TAG.DRAGON.TEEPO>=2)
+      SAY Then only one other answer is left... Myria... Take this...
+      EMOTE hand you a key
+      SAY This key will allow you into her chamber...
+      SRC.NEWITEM=i_key_dragon_teepo
+      SRC.ACT.BOUNCE
+      SRC.TAG.DRAGON.TEEPO=5
+   ELSEIF (0<SRC.TAG.DRAGON.TEEPO>=3)
+      SAY You cannot change your mind now!
+   ELSE
+      SAY No to what?...
+   ENDIF
+   RETURN 0
+
+ON=*ryu*
+   IF (0<SRC.TAG.DRAGON.TEEPO>=0)
+      EMOTE stand silently...
+      RETURN 0
+   ELSEIF (0<SRC.TAG.DRAGON.TEEPO>=5)
+      SAY If anything, he is more my brother in blood than anything else...
+      RETURN 0
+   ELSEIF (0<SRC.TAG.DRAGON.TEEPO>=6)
+      SAY Mmm...
+      RETURN 0      
+   ENDIF
+
+ON=*rei*
+   IF (0<SRC.TAG.DRAGON.TEEPO>=0)
+      EMOTE stand silently...
+      RETURN 0
+   ELSEIF (0<SRC.TAG.DRAGON.TEEPO>=5)
+      SAY Ah, yes... My "Brother"...
+      RETURN 0
+   ELSEIF (0<SRC.TAG.DRAGON.TEEPO>=6)
+      SAY Apologise to him for me please...
+      RETURN 0      
+   ENDIF
+
+ON=*myria*
+   IF (0<SRC.TAG.DRAGON.TEEPO>=0)
+      EMOTE stand silently...
+      RETURN 0
+   ELSEIF (0<SRC.TAG.DRAGON.TEEPO>=5)
+      SAY Tis a shame... In protecting our world she feels she must destroy yours...
+      RETURN 0
+   ELSEIF (0<SRC.TAG.DRAGON.TEEPO>=6)
+      SAY Tis a shame... In protecting our world she feels she must destroy yours...
+      RETURN 0      
+   ENDIF
+
+ON=*deis*
+   IF (0<SRC.TAG.DRAGON.TEEPO>=0)
+      EMOTE stand silently...
+      RETURN 0
+   ELSEIF (0<SRC.TAG.DRAGON.TEEPO>=5)
+      SAY She was good looking for a goddess...
+      RETURN 0
+   ELSEIF (0<SRC.TAG.DRAGON.TEEPO>=6)
+      SAY She was good looking for a goddess...
+      RETURN 0      
+   ENDIF
+
+ON=*nina*
+   IF (0<SRC.TAG.DRAGON.TEEPO>=0)
+      EMOTE stand silently...
+      RETURN 0
+   ELSEIF (0<SRC.TAG.DRAGON.TEEPO>=5)
+      SAY She so has Ryu under her thumb...
+      RETURN 0
+   ELSEIF (0<SRC.TAG.DRAGON.TEEPO>=6)
+      SAY She so has Ryu under her thumb...
+      RETURN 0      
+   ENDIF
+
+ON=*momo*
+   IF (0<SRC.TAG.DRAGON.TEEPO>=0)
+      EMOTE stand silently...
+      RETURN 0
+   ELSEIF (0<SRC.TAG.DRAGON.TEEPO>=5)
+      SAY Can't say I know her too well.
+      RETURN 0
+   ELSEIF (0<SRC.TAG.DRAGON.TEEPO>=6)
+      SAY Can't say I know her too well.
+      RETURN 0      
+   ENDIF
+
+ON=*garr*
+   IF (0<SRC.TAG.DRAGON.TEEPO>=0)
+      EMOTE stand silently...
+      RETURN 0
+   ELSEIF (0<SRC.TAG.DRAGON.TEEPO>=5)
+      SAY Mmm... The former Dragon-Slayer...
+      RETURN 0
+   ELSEIF (0<SRC.TAG.DRAGON.TEEPO>=6)
+      SAY Mmm... The former Dragon-Slayer...
+      RETURN 0      
+   ENDIF
+
+[SPEECH dragonnina]
+ON=*hello*
+ON=*hi*
+ON=*bonjour*
+ON=*salut*
+   IF <SRC.BODY>=c_man
+      DORAND 3
+      SAY Hello!...
+      EMOTE look flustered
+      SAY Eek! Wow... Uh... Damn, must get back to finding my wand...
+      ENDDO
+      RETURN 1
+   ELSE
+      DORAND 3
+      SAY Hmph. Hello...
+      EMOTE look at you threateningly
+      SAY Where's my wand... Where did I leave it...
+      ENDDO
+      RETURN 1
+   ENDIF
+ON=*dragon*
+   SAY You know Ryu has a dragon form which is sooooooooo cute...
+ON=*god*
+   SAY Mmm, I have my own personal god...
+   EMOTE wink at Ryu
+ON=*deis*
+   SAY Ugh... She sooooooooo eyed up Ryu...
+ON=*myria*
+   SAY Evil person. Awful dress sense.
+ON=*ryu*
+   EMOTE giggle
+ON=*teepo*
+   IF (0<SRC.TAG.DRAGON.REI>=0)
+      SAY Heard a rumour he was here... Hope Myria ain't got to him...
+      RETURN 1
+   ELSEIF (0<SRC.TAG.DRAGON.REI>=1)
+      SAY Last I heard he was here. I got a bad feelin bout him though...
+      RETURN 1
+   ENDIF
+ON=*rei*
+   SAY He has such an ego...
+ON=*garr*
+   SAY He's just a big teddy bear...
+ON=*momo*
+   SAY Crazy girl. Can't even dress well...
+ON=*healing wand*
+ON=*wand*
+   IF (0<SRC.TAG.DRAGON.WAND>=0)
+      SAY Oh, can you help me look for it? Ryu might remember where it is...
+      SAY He hurt himself and I think he needs treating as soon as possible...
+      SRC.TAG.DRAGON.WAND=1
+   ELSEIF (0<SRC.TAG.DRAGON.WAND>=1)
+      SAY Hurry hurry. he's looking really ill!
+   ELSEIF (0<SRC.TAG.DRAGON.WAND>=2)
+      SAY YAY! EXCELLENT!
+      EMOTE tap Ryus leg with the wand.
+      SAY This is my way of saying thanks..
+      SRC.TAG.DRAGON.WAND=3
+      SRC.CONSUME i_wand_dragon_nina
+      SRC.NEWITEM=i_key_dragon_nina 
+      SRC.ACT.BOUNCE
+   ELSEIF (0<SRC.TAG.DRAGON.WAND>=3)
+      SAY I already have it though...
+   ENDIF
+   RETURN 1
+   
+   
+[EOF]

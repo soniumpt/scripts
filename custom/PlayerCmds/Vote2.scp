@@ -1,0 +1,400 @@
+//----------------------------------------------------------------
+//
+//Voting system:V:1.0(and it better not go beyond this one...)
+//by Raistilin Majere (Raistilin@uo.UOProject.com)
+//
+//----------------------------------------------------------------
+
+//[PLEVEL 1]
+//VOTE2
+
+[PLEVEL 2]
+VOTESTAFF2
+
+
+[FUNCTION VoteStaff2]
+
+If ( <SRC.ISGM>=1 )
+      DIALOG d_votestaff_2
+EndIf
+
+[DIALOG d_votestaff_2]//Main Dialog
+
+0,0
+page 0
+gumppic  250 250  2620//top left corner
+gumppic  620 250  2622//top right corner
+gumppic  260 250  2621//top center bar
+gumppic  360 250  2621//top center bar
+gumppic  260 260  2624//center
+gumppic  360 260  2624//center
+gumppic  250 260  2623//left border
+gumppic  618 260  2625//right border
+gumppic  260 460  2627//lower center bar
+gumppic  360 460  2627//lower center bar
+gumppic  250 460  2626//lower left corner
+gumppic  620 460  2628//lower right corner
+
+dtext    295 265 137 Set the details for the vote function here!
+
+page 1
+
+dtext    270 330 10  Start a new Poll:
+dtext    270 350 137 WARNING this will clean the old one!
+button   550 330 2472 2473 1 2 1//voting buttons
+
+dtext    270 390 10  Click here to leave:
+button   550 390 2472 2473 1 0 2//voting buttons
+
+[DIALOG d_votestaff_2 BUTTON]
+
+ON=1
+
+SERV.WRITEFILE c:\TheUOProject\sphere\polls\vote.txt <SERV.RTIME>--Question:<UID.043f43755.TAG.Question>
+
+If (<EVAL <EVAL <EVAL 0<UID.043f43755.TAG.Vote1>>+<EVAL 0<UID.043f43755.TAG.Vote2>>+<EVAL 0<UID.043f43755.TAG.Vote3>>+<EVAL 0<UID.043f43755.TAG.Vote4>>>>=0)
+     SERV.WRITEFILE c:\TheUOProject\sphere\polls\vote.txt <UID.043f43755.TAG.Option1>:0%
+  Else
+     SERV.WRITEFILE c:\TheUOProject\sphere\polls\vote.txt  <UID.043f43755.TAG.Option1>:<EVAL <EVAL <EVAL 0<UID.043f43755.TAG.Vote1>>*100>/<EVAL <EVAL <EVAL 0<UID.043f43755.TAG.Vote1>>+<EVAL 0<UID.043f43755.TAG.Vote2>>+<EVAL 0<UID.043f43755.TAG.Vote3>>+<EVAL 0<UID.043f43755.TAG.Vote4>>>>>% 
+EndIf
+
+If (<EVAL <EVAL <EVAL 0<UID.043f43755.TAG.Vote1>>+<EVAL 0<UID.043f43755.TAG.Vote2>>+<EVAL 0<UID.043f43755.TAG.Vote3>>+<EVAL 0<UID.043f43755.TAG.Vote4>>>>=0)
+     SERV.WRITEFILE c:\TheUOProject\sphere\polls\vote.txt <UID.043f43755.TAG.Option2>:0%
+  Else
+     SERV.WRITEFILE c:\TheUOProject\sphere\polls\vote.txt  <UID.043f43755.TAG.Option2>:<EVAL <EVAL <EVAL 0<UID.043f43755.TAG.Vote2>>*100>/<EVAL <EVAL <EVAL 0<UID.043f43755.TAG.Vote1>>+<EVAL 0<UID.043f43755.TAG.Vote2>>+<EVAL 0<UID.043f43755.TAG.Vote3>>+<EVAL 0<UID.043f43755.TAG.Vote4>>>>>%
+EndIf
+
+If (<EVAL <EVAL <EVAL 0<UID.043f43755.TAG.Vote1>>+<EVAL 0<UID.043f43755.TAG.Vote2>>+<EVAL 0<UID.043f43755.TAG.Vote3>>+<EVAL 0<UID.043f43755.TAG.Vote4>>>>=0)
+     SERV.WRITEFILE c:\TheUOProject\sphere\polls\vote.txt <UID.043f43755.TAG.Option3>:0%
+  Else
+     SERV.WRITEFILE c:\TheUOProject\sphere\polls\vote.txt  <UID.043f43755.TAG.Option3>:<EVAL <EVAL <EVAL 0<UID.043f43755.TAG.Vote3>>*100>/<EVAL <EVAL <EVAL 0<UID.043f43755.TAG.Vote1>>+<EVAL 0<UID.043f43755.TAG.Vote2>>+<EVAL 0<UID.043f43755.TAG.Vote3>>+<EVAL 0<UID.043f43755.TAG.Vote4>>>>>%
+EndIf
+
+If (<EVAL <EVAL <EVAL 0<UID.043f43755.TAG.Vote1>>+<EVAL 0<UID.043f43755.TAG.Vote2>>+<EVAL 0<UID.043f43755.TAG.Vote3>>+<EVAL 0<UID.043f43755.TAG.Vote4>>>>=0)
+     SERV.WRITEFILE c:\TheUOProject\sphere\polls\vote.txt <UID.043f43755.TAG.Option4>:0%
+  Else
+     SERV.WRITEFILE c:\TheUOProject\sphere\polls\vote.txt <UID.043f43755.TAG.Option4>:<EVAL <EVAL <EVAL 0<UID.043f43755.TAG.Vote4>>*100>/<EVAL <EVAL <EVAL 0<UID.043f43755.TAG.Vote1>>+<EVAL 0<UID.043f43755.TAG.Vote2>>+<EVAL 0<UID.043f43755.TAG.Vote3>>+<EVAL 0<UID.043f43755.TAG.Vote4>>>>>%
+EndIf     
+
+UID.043f43755.TAG.Vote1=0
+UID.043f43755.TAG.Vote2=0
+UID.043f43755.TAG.Vote3=0
+UID.043f43755.TAG.Vote4=0
+UID.043f43755.TAG.Option1=
+UID.043f43755.TAG.Option2=
+UID.043f43755.TAG.Option3=
+UID.043f43755.TAG.Option4=
+UID.043f43755.TAG.Voted2=<Eval <Eval <UID.043f43755.TAG.Voted2>>+1>
+dialog d_votestaff2_2
+
+[DIALOG d_votestaff2_2]//Main Dialog
+
+0,0
+page 0
+gumppic  250 250  2620//top left corner
+gumppic  620 250  2622//top right corner
+gumppic  260 250  2621//top center bar
+gumppic  360 250  2621//top center bar
+gumppic  260 260  2624//center
+gumppic  360 260  2624//center
+gumppic  250 260  2623//left border
+gumppic  618 260  2625//right border
+gumppic  260 460  2627//lower center bar
+gumppic  360 460  2627//lower center bar
+gumppic  250 460  2626//lower left corner
+gumppic  620 460  2628//lower right corner
+
+page 1
+
+dtext    270 300 10  Question:
+gumppic  337 297 1143
+textentry 347 300 350 20 255 1 1
+
+dtext    270 330 10  Option 1:
+gumppic  337 327 2440
+textentry 347 330 350 20 255 2 2
+
+dtext    270 360 10  Option 2:
+gumppic  337 357 2440
+textentry 347 360 350 20 255 3 3
+
+dtext    270 390 10  Option 3:
+gumppic  337 387 2440
+textentry 347 390 350 20 255 4 4
+
+dtext    270 420 10  Option 4:
+gumppic  337 417 2440
+textentry 347 420 350 20 255 5 5
+
+dtext    295 265 137 Set the details for the vote function here!
+
+button   420 445 2452 2451 1 0 1//okay button
+
+[DIALOG d_votestaff2_2 TEXT]
+<VAR.BLANKLINE>
+<VAR.BLANKLINE>
+<VAR.BLANKLINE>
+<VAR.BLANKLINE>
+<VAR.BLANKLINE>
+<VAR.BLANKLINE>
+
+[DIALOG d_votestaff2_2 BUTTON]
+
+ON=1
+Sysmessage @50 You have entered the values for a new poll.
+
+UID.043f43755.TAG.Question=<ARGTXT[1]>
+
+If !(strcmpi("<ARGTXT[2]>",""))
+     UID.043f43755.TAG.Op1=0
+   Else
+       UID.043f43755.TAG.Option1=<ARGTXT[2]>
+       UID.043f43755.TAG.Op1=1
+EndIf
+
+If !(strcmpi("<ARGTXT[3]>",""))
+     UID.043f43755.TAG.Op2=0
+   Else
+       UID.043f43755.TAG.Option2=<ARGTXT[3]>
+       UID.043f43755.TAG.Op2=1
+EndIf
+
+If !(strcmpi("<ARGTXT[4]>",""))
+     UID.043f43755.TAG.Op3=0
+   Else
+       UID.043f43755.TAG.Option3=<ARGTXT[4]>
+       UID.043f43755.TAG.Op3=1
+EndIf
+
+If !(strcmpi("<ARGTXT[5]>",""))
+     UID.043f43755.TAG.Op4=0
+   Else
+       UID.043f43755.TAG.Option4=<ARGTXT[5]>
+       UID.043f43755.TAG.Op4=1
+EndIf
+
+
+[ITEMDEF i_stone_vote]
+DEFNAME=i_stone_vote
+ID=i_gravestone
+NAME=DO NOT DELETE THIS YOU BASTARDS!
+WEIGHT=50000
+Type=t_normal
+
+ON=@Create
+    Type=t_normal
+    Color=0aef
+    Timer=-1
+    ATTR=08010
+
+ON=@Click
+    SAY DO NOT DELETE THIS!!
+
+[FUNCTION VOTE2]
+
+DIALOG d_vote2
+
+[DIALOG d_vote2]//Main Dialog
+
+0,0
+page 0
+gumppic  250 250  2620//top left corner
+gumppic  620 250  2622//top right corner
+gumppic  260 250  2621//top center bar
+gumppic  360 250  2621//top center bar
+gumppic  260 260  2624//center
+gumppic  360 260  2624//center
+gumppic  250 260  2623//left border
+gumppic  618 260  2625//right border
+gumppic  260 460  2627//lower center bar
+gumppic  360 460  2627//lower center bar
+gumppic  250 460  2626//lower left corner
+gumppic  620 460  2628//lower right corner
+
+dtext    395 265 137 Player's voice!
+dtext    270 290 10  Question:
+dtext    335 290 10 <UID.043f43755.TAG.Question>
+dtext    270 315 45 Options:
+dtext    415 315 45 Percentage:
+dtext    565 315 45 Vote:
+
+dtext    270 350 50  <UID.043f43755.TAG.Option1>
+dtext    270 370 50  <UID.043f43755.TAG.Option2>
+dtext    270 390 50  <UID.043f43755.TAG.Option3>
+dtext    270 410 50  <UID.043f43755.TAG.Option4>
+
+If ( <EVAL <EVAL <EVAL 0<UID.043f43755.TAG.Vote1>>+<EVAL 0<UID.043f43755.TAG.Vote2>>+<EVAL 0<UID.043f43755.TAG.Vote3>>+<EVAL 0<UID.043f43755.TAG.Vote4>>>>=0)
+      dtext    435 350 50  0%
+  Else
+      dtext   435 350 50  <EVAL <EVAL <EVAL 0<UID.043f43755.TAG.Vote1>>*100>/<EVAL <EVAL <EVAL 0<UID.043f43755.TAG.Vote1>>+<EVAL 0<UID.043f43755.TAG.Vote2>>+<EVAL 0<UID.043f43755.TAG.Vote3>>+<EVAL 0<UID.043f43755.TAG.Vote4>>>>>%
+
+EndIf
+
+If ( <EVAL <EVAL <EVAL 0<UID.043f43755.TAG.Vote1>>+<EVAL 0<UID.043f43755.TAG.Vote2>>+<EVAL 0<UID.043f43755.TAG.Vote3>>+<EVAL 0<UID.043f43755.TAG.Vote4>>>>=0)
+      dtext    435 370 50  0%
+  Else
+      dtext    435 370 50  <EVAL <EVAL <EVAL 0<UID.043f43755.TAG.Vote2>>*100>/<EVAL <EVAL <EVAL 0<UID.043f43755.TAG.Vote1>>+<EVAL 0<UID.043f43755.TAG.Vote2>>+<EVAL 0<UID.043f43755.TAG.Vote3>>+<EVAL 0<UID.043f43755.TAG.Vote4>>>>>%
+EndIf
+
+If ( <EVAL <EVAL <EVAL 0<UID.043f43755.TAG.Vote1>>+<EVAL 0<UID.043f43755.TAG.Vote2>>+<EVAL 0<UID.043f43755.TAG.Vote3>>+<EVAL 0<UID.043f43755.TAG.Vote4>>>>=0)
+      dtext    435 390 50  0%
+  Else
+      dtext    435 390 50  <EVAL <EVAL <EVAL 0<UID.043f43755.TAG.Vote3>>*100>/<EVAL <EVAL <EVAL 0<UID.043f43755.TAG.Vote1>>+<EVAL 0<UID.043f43755.TAG.Vote2>>+<EVAL 0<UID.043f43755.TAG.Vote3>>+<EVAL 0<UID.043f43755.TAG.Vote4>>>>>%
+EndIf
+
+If ( <EVAL <EVAL <EVAL 0<UID.043f43755.TAG.Vote1>>+<EVAL 0<UID.043f43755.TAG.Vote2>>+<EVAL 0<UID.043f43755.TAG.Vote3>>+<EVAL 0<UID.043f43755.TAG.Vote4>>>>=0)
+      dtext    435 410 50  0%
+  Else
+      dtext    435 410 50  <EVAL <EVAL <EVAL 0<UID.043f43755.TAG.Vote4>>*100>/<EVAL <EVAL <EVAL 0<UID.043f43755.TAG.Vote1>>+<EVAL 0<UID.043f43755.TAG.Vote2>>+<EVAL 0<UID.043f43755.TAG.Vote3>>+<EVAL 0<UID.043f43755.TAG.Vote4>>>>>%
+EndIf
+
+dtext    480 350 50  ( <EVAL 0<UID.043f43755.TAG.Vote1>> )
+dtext    480 370 50  ( <EVAL 0<UID.043f43755.TAG.Vote2>> )
+dtext    480 390 50  ( <EVAL 0<UID.043f43755.TAG.Vote3>> )
+dtext    480 410 50  ( <EVAL 0<UID.043f43755.TAG.Vote4>> )
+
+button   420 440 2452 2451 1 0 10//okay button
+
+button   580 355 2361 2360 1 0 1//voting buttons
+button   580 375 2361 2360 1 0 2
+button   580 395 2361 2360 1 0 3
+button   580 415 2361 2360 1 0 4
+
+[DIALOG d_vote2 BUTTON]
+
+ON=1//voting button
+
+IF !(strcmpi("<SRC.TAG.VOTED2>",""))
+     SRC.TAG.VOTED2=0
+EndIf
+
+If (<UID.043f43755.TAG.Op1>=1)
+    LOCAL.STATISTICS=0
+     IF (<eval <SRC.ACCOUNT.CHAR.0.TAG.VOTED2>>=<Eval <UID.043f43755.TAG.Voted2>>)
+          SYSMESSAGE You have already voted!
+          LOCAL.STATISTICS=<eval <LOCAL.STATISTICS>+1>
+         ElseIF (<eval <SRC.ACCOUNT.CHAR.1.TAG.VOTED2>>=<Eval <UID.043f43755.TAG.Voted2>>)
+                 SYSMESSAGE You have already voted!
+                 LOCAL.STATISTICS=<eval <LOCAL.STATISTICS>+1>
+               ElseIF (<eval <SRC.ACCOUNT.CHAR.2.TAG.VOTED2>>=<Eval <UID.043f43755.TAG.Voted2>>)
+                        SYSMESSAGE You have already voted!
+                        LOCAL.STATISTICS=<eval <LOCAL.STATISTICS>+1>
+                      ElseIF (<eval <SRC.ACCOUNT.CHAR.3.TAG.VOTED2>>=<Eval <UID.043f43755.TAG.Voted2>>)
+                               SYSMESSAGE You have already voted!
+                               LOCAL.STATISTICS=<eval <LOCAL.STATISTICS>+1>
+                            ElseIF (<eval <SRC.ACCOUNT.CHAR.4.TAG.VOTED2>>=<Eval <UID.043f43755.TAG.Voted2>>)
+			             SYSMESSAGE You have already voted!
+                                     LOCAL.STATISTICS=<eval <LOCAL.STATISTICS>+1>
+     EndIf
+    If (( <eval <LOCAL.STATISTICS>>=0 ) && (<UID.043f43755.TAG.Op1>=1) )
+          UID.043f43755.TAG.Vote1=<eval (<UID.043f43755.TAG.Vote1>+1)>//see if it works withouth TRY before Uid
+	  SRC.TAG.VOTED2 = <Eval <UID.043f43755.TAG.Voted2>>
+          SYSMESSAGE You voted for option number 1.
+    EndIf
+  Else
+      SYSMESSAGE You can't vote for this!
+EndIf
+
+ON=2
+
+IF !(strcmpi("<SRC.tag.voted2>",""))
+     SRC.tag.voted2=0
+EndIf
+
+If (<UID.043f43755.TAG.Op2>=1)
+    LOCAL.STATISTICS=0
+     IF (<eval <SRC.ACCOUNT.CHAR.0.tag.voted2>>=<Eval <UID.043f43755.tag.voted2>>)
+          SYSMESSAGE You have already voted!
+          LOCAL.STATISTICS=<eval <LOCAL.STATISTICS>+1>
+         ElseIF (<eval <SRC.ACCOUNT.CHAR.1.tag.voted2>>=<Eval <UID.043f43755.tag.voted2>>)
+                 SYSMESSAGE You have already voted!
+                 LOCAL.STATISTICS=<eval <LOCAL.STATISTICS>+1>
+               ElseIF (<eval <SRC.ACCOUNT.CHAR.2.tag.voted2>>=<Eval <UID.043f43755.tag.voted2>>)
+                        SYSMESSAGE You have already voted!
+                        LOCAL.STATISTICS=<eval <LOCAL.STATISTICS>+1>
+                      ElseIF (<eval <SRC.ACCOUNT.CHAR.3.tag.voted2>>=<Eval <UID.043f43755.tag.voted2>>)
+                               SYSMESSAGE You have already voted!
+                               LOCAL.STATISTICS=<eval <LOCAL.STATISTICS>+1>
+                            ElseIF (<eval <SRC.ACCOUNT.CHAR.4.tag.voted2>>=<Eval <UID.043f43755.tag.voted2>>)
+			             SYSMESSAGE You have already voted!
+                                     LOCAL.STATISTICS=<eval <LOCAL.STATISTICS>+1>
+     EndIf
+    If (( <eval <LOCAL.STATISTICS>>=0 ) && (<UID.043f43755.TAG.Op2>=1) )
+          UID.043f43755.TAG.Vote2=<eval (<UID.043f43755.TAG.Vote2>+1)>//see if it works withouth TRY before Uid
+	  SRC.tag.voted2 = <Eval <UID.043f43755.tag.voted2>>
+          SYSMESSAGE You voted for option number 2.
+    EndIf
+  Else
+      SYSMESSAGE You can't vote for this!
+EndIf
+
+ON=3
+
+IF !(strcmpi("<SRC.tag.voted2>",""))
+     SRC.tag.voted2=0
+EndIf
+
+If (<UID.043f43755.TAG.Op3>=1)
+
+    LOCAL.STATISTICS=0
+     IF (<eval <SRC.ACCOUNT.CHAR.0.tag.voted2>>=<Eval <UID.043f43755.tag.voted2>>)
+          SYSMESSAGE You have already voted!
+          LOCAL.STATISTICS=<eval <LOCAL.STATISTICS>+1>
+         ElseIF (<eval <SRC.ACCOUNT.CHAR.1.tag.voted2>>=<Eval <UID.043f43755.tag.voted2>>)
+                 SYSMESSAGE You have already voted!
+                 LOCAL.STATISTICS=<eval <LOCAL.STATISTICS>+1>
+               ElseIF (<eval <SRC.ACCOUNT.CHAR.2.tag.voted2>>=<Eval <UID.043f43755.tag.voted2>>)
+                        SYSMESSAGE You have already voted!
+                        LOCAL.STATISTICS=<eval <LOCAL.STATISTICS>+1>
+                      ElseIF (<eval <SRC.ACCOUNT.CHAR.3.tag.voted2>>=<Eval <UID.043f43755.tag.voted2>>)
+                               SYSMESSAGE You have already voted!
+                               LOCAL.STATISTICS=<eval <LOCAL.STATISTICS>+1>
+                            ElseIF (<eval <SRC.ACCOUNT.CHAR.4.tag.voted2>>=<Eval <UID.043f43755.tag.voted2>>)
+			             SYSMESSAGE You have already voted!
+                                     LOCAL.STATISTICS=<eval <LOCAL.STATISTICS>+1>
+     EndIf
+    If (( <eval <LOCAL.STATISTICS>>=0 ) && (<UID.043f43755.TAG.Op3>=1) )
+
+          UID.043f43755.TAG.Vote3=<eval (<UID.043f43755.TAG.Vote3>+1)>//see if it works withouth TRY before Uid
+	  SRC.tag.voted2 = <Eval <UID.043f43755.tag.voted2>>
+          SYSMESSAGE You voted for option number 3.
+    EndIf
+  Else
+      SYSMESSAGE You can't vote for this!
+EndIf
+
+ON=4
+
+IF !(strcmpi("<SRC.tag.voted2>",""))
+     SRC.tag.voted2=0
+
+EndIf
+
+If (<UID.043f43755.TAG.Op4>=1)
+    LOCAL.STATISTICS=0
+     IF (<eval <SRC.ACCOUNT.CHAR.0.tag.voted2>>=<Eval <UID.043f43755.tag.voted2>>)
+          SYSMESSAGE You have already voted!
+          LOCAL.STATISTICS=<eval <LOCAL.STATISTICS>+1>
+         ElseIF (<eval <SRC.ACCOUNT.CHAR.1.tag.voted2>>=<Eval <UID.043f43755.tag.voted2>>)
+                 SYSMESSAGE You have already voted!
+                 LOCAL.STATISTICS=<eval <LOCAL.STATISTICS>+1>
+               ElseIF (<eval <SRC.ACCOUNT.CHAR.2.tag.voted2>>=<Eval <UID.043f43755.tag.voted2>>)
+                        SYSMESSAGE You have already voted!
+                        LOCAL.STATISTICS=<eval <LOCAL.STATISTICS>+1>
+                      ElseIF (<eval <SRC.ACCOUNT.CHAR.3.tag.voted2>>=<Eval <UID.043f43755.tag.voted2>>)
+                               SYSMESSAGE You have already voted!
+                               LOCAL.STATISTICS=<eval <LOCAL.STATISTICS>+1>
+                            ElseIF (<eval <SRC.ACCOUNT.CHAR.4.tag.voted2>>=<Eval <UID.043f43755.tag.voted2>>)
+			             SYSMESSAGE You have already voted!
+                                     LOCAL.STATISTICS=<eval <LOCAL.STATISTICS>+1>
+     EndIf
+    If (( <eval <LOCAL.STATISTICS>>=0 ) && (<UID.043f43755.TAG.Op4>=1) ))
+          UID.043f43755.TAG.Vote4=<eval (<UID.043f43755.TAG.Vote4>+1)>//see if it works withouth TRY before Uid
+	  SRC.tag.voted2 = <Eval <UID.043f43755.tag.voted2>>
+          SYSMESSAGE You voted for option number 4.
+    EndIf
+  Else
+      SYSMESSAGE You can't vote for this!
+EndIf
+
+[EOF]

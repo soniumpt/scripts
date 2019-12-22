@@ -1,0 +1,550 @@
+// Warman (sarmag@mail.telepac.pt) for MPZ UO Shard
+
+[DEFNAME COLOR_WOOD]
+color_o_pine           0
+color_o_eucalyptus     02e
+color_o_rose         088
+color_o_holly        0300
+color_o_oak        021e
+color_o_ironwood    0763
+color_o_mahogany    0608
+color_o_cherry        0151
+color_o_whiteoak 07b5
+
+color_o_interleaved     090
+color_o_composite    0488
+color_o_imbued           025
+color_o_myst            07a0
+
+
+[ITEMDEF 0de1]    //Kindling
+DEFNAME        = i_kindling
+TYPE        = T_KINDLING
+RESOURCES    = 1 I_LOG
+SKILLMAKE    = LUMBERJACKING 0.1
+REPLICATE    = 0
+VALUE        = 1
+WEIGHT        = 1
+CATEGORY    = Provisions - Miscellaneous
+SUBSECTION    = Campfires
+DESCRIPTION    = Kindling
+DUPELIST    = 0de2
+
+
+[ITEMDEF 01bdd]
+DEFNAME        = i_log
+NAME        = log%s
+VALUE        = 1
+TYPE        = T_LOG
+WEIGHT        = 2
+DUPELIST    = 01bde,01bdf,01be0,01be1,01be2
+ON = @DClick
+  SRC.SYSMESSAGE You must use an apropriate tool to work the wood.
+  return 1
+
+
+[ITEMDEF i_log_pine]
+ID        = i_log
+NAME        = pine log%s
+SKILLMAKE    = LUMBERJACKING 20.1
+TDATA1        = i_board_pine
+VALUE        = 2
+WEIGHT        = 2
+ON = @Create
+  COLOR        = color_o_pine
+ON = @DClick
+  SRC.SYSMESSAGE You must use an apropriate tool to work the wood.
+  return 1
+
+
+[ITEMDEF i_log_eucalyptus]
+ID        = i_log
+NAME        = eucalyptus log%s
+SKILLMAKE    = LUMBERJACKING 30.0
+TDATA1        = i_board_eucalyptus
+VALUE        = 4
+WEIGHT        = 2
+ON = @Create
+  COLOR        = color_o_eucalyptus
+ON = @DClick
+  SRC.SYSMESSAGE You must use an apropriate tool to work the wood.
+  return 1
+
+
+[ITEMDEF i_log_rose]
+ID        = i_log
+NAME        = rose log%s
+SKILLMAKE    = LUMBERJACKING 50.0
+TDATA1        = i_board_rose
+VALUE        = 7
+WEIGHT        = 2
+ON = @Create
+  COLOR        = color_o_rose
+ON = @DClick
+  SRC.SYSMESSAGE You must use an apropriate tool to work the wood.
+  return 1
+
+
+[ITEMDEF i_log_holly]
+ID        = i_log
+NAME        = holly log%s
+SKILLMAKE    = LUMBERJACKING 55.0
+TDATA1        = i_board_holly
+VALUE        = 8
+WEIGHT        = 2
+ON = @Create
+  COLOR        = color_o_holly
+ON = @DClick
+  SRC.SYSMESSAGE You must use an apropriate tool to work the wood.
+  return 1
+
+
+[ITEMDEF i_log_oak]
+ID        = i_log
+NAME        = oak log%s
+SKILLMAKE    = LUMBERJACKING 65.0
+TDATA1        = i_board_oak
+VALUE        = 9
+WEIGHT        = 2
+ON = @Create
+  COLOR        = color_o_oak
+ON = @DClick
+  SRC.SYSMESSAGE You must use an apropriate tool to work the wood.
+  return 1
+
+
+[ITEMDEF i_log_ironwood]
+ID        = i_log
+NAME        = ironwood log%s
+SKILLMAKE    = LUMBERJACKING 70.0
+TDATA1        = i_board_ironwood
+VALUE        = 15
+WEIGHT        = 2
+ON=@Create
+  COLOR        = color_o_ironwood
+ON = @DClick
+  SRC.SYSMESSAGE You must use an apropriate tool to work the wood.
+  return 1
+
+
+[ITEMDEF i_log_mahogany]
+ID        = i_log
+NAME        = mahogany log
+SKILLMAKE    = LUMBERJACKING 85.0
+TDATA1        = i_board_mahogany
+VALUE        = 20
+WEIGHT        = 2
+ON=@Create
+  COLOR        = color_o_mahogany
+ON = @DClick
+  SRC.SYSMESSAGE You must use an apropriate tool to work the wood.
+  return 1
+
+
+[ITEMDEF i_log_cherry]
+ID        = i_log
+NAME        = cherry log
+SKILLMAKE    = LUMBERJACKING 95.0
+TDATA1        = i_board_cherry
+VALUE        = 30
+WEIGHT        = 2
+ON=@Create
+  COLOR        = color_o_cherry
+ON = @DClick
+  SRC.SYSMESSAGE You must use an apropriate tool to work the wood.
+  return 1
+  
+[ITEMDEF i_log_whiteoak]
+ID        = i_log
+NAME        = white oak log
+SKILLMAKE    = LUMBERJACKING 100.0
+TDATA1        = i_board_whiteoak
+VALUE        = 35
+WEIGHT        = 2
+ON=@Create
+  COLOR        = color_o_whiteoak
+ON = @DClick
+  SRC.SYSMESSAGE You must use an apropriate tool to work the wood.
+  return 1
+
+
+// not extractable
+[ITEMDEF i_log_interleaved]
+ID        = i_log
+NAME        = interleaved wood
+SKILLMAKE    = BOWCRAFT 60.0, ARMSLORE 30.0, t_weapon_fence
+RESOURCES    = 6 i_log_eucalyptus, 3 i_log_rose
+TDATA1        = 0
+VALUE        = 12
+ON = @Create
+  COLOR        = color_o_interleaved
+  AMOUNT    = 4
+ON = @DClick
+  SRC.SYSMESSAGE You must use an apropriate tool to work the wood.
+  return 1
+
+
+// not extractable
+[ITEMDEF i_log_composite]
+ID        = i_log
+NAME        = composite wood log%s
+SKILLMAKE    = BOWCRAFT 100.0, ARMSLORE 40.0, t_weapon_fence
+RESOURCES    = 6 i_log_mahogany, 4 i_log_ironwood, 2 i_log_cherry
+TDATA1        = 0
+VALUE        = 35
+ON = @Create
+  COLOR        = color_o_composite
+  AMOUNT    = 4
+ON = @DClick
+  SRC.SYSMESSAGE You must use an apropriate tool to work the wood.
+  return 1
+
+
+// not extractable
+[ITEMDEF i_imbued_cherry]
+ID              =i_log
+NAME            =imbued cherry Wood
+SKILLMAKE       =ALCHEMY 500, BOWCRAFT 1000, ARMSLORE 1000, t_mortar
+RESOURCES       =1 i_log_cherry, 10 i_reag_dragon_blood, 10 i_reag_daemon_bone, 10 i_reag_ectoplasm_vial, 1 i_bottle_empty
+WEIGHT          =2
+ON = @Create
+  COLOR         =color_o_imbued
+ON = @DClick
+  SRC.SYSMESSAGE You must use an apropriate tool to work the wood.
+  return 1
+
+
+// not extractable
+[ITEMDEF i_log_myst]
+ID        = i_log
+NAME        = Myst log%s
+SKILLMAKE    = LUMBERJACKING 100.0
+TDATA1        = i_board_myst
+VALUE        = 8
+WEIGHT        = 2
+ON = @Create
+  COLOR        = color_o_myst
+ON = @DClick
+  SRC.SYSMESSAGE You must use an appropriate tool to work the wood.
+  return 1
+  
+  //********************************************************************//
+  //                            BLOODOAK                               //
+//********************************************************************// 
+// not extractable
+[ITEMDEF i_log_bloodoak]
+ID        = i_log
+NAME        = blood oak log%s
+RESOURCES=i_log_whiteoak 1, i_reag_blood_vial 2, i_reag_ginseng 5, i_reag_blood_spawn 1
+SKILLMAKE    = BOWCRAFT 150.0, ARMSLORE 150.0, t_weapon_fence
+TDATA1        = i_board_bloodoak
+VALUE        = 8
+WEIGHT        = 2
+ON = @Create
+  COLOR        = color_o_bloodrock
+ON = @DClick
+  SRC.SYSMESSAGE You must use an appropriate tool to work the wood.
+  return 1
+
+
+//***** distributions of logs/resources ******
+[REGIONRESOURCE mr_kindling]    
+SKILL=0.1 100.0
+AMOUNT=1 10
+REAP=i_kindling
+REGEN=60*60*10
+
+
+[REGIONRESOURCE mr_pine]    
+SKILL=0.2 100.0
+AMOUNT=5 30
+REAP=i_log_pine
+REGEN=60*60*10
+
+
+[REGIONRESOURCE mr_eucalyptus]
+SKILL=20.0 80.0
+AMOUNT=5 20
+REAP=i_log_eucalyptus
+REGEN=60*60*10
+
+
+[REGIONRESOURCE mr_holly]
+SKILL=55.0 90.0
+AMOUNT=2 15
+REAP=i_log_holly
+REGEN=60*60*10
+
+
+[REGIONRESOURCE mr_rose]
+SKILL=50.0 90.0
+AMOUNT=2 15
+REAP=i_log_rose
+REGEN=60*60*10
+
+
+[REGIONRESOURCE mr_oak]
+// t_tree
+SKILL=65.0 100.0
+AMOUNT=2 15
+REAP=i_log_oak
+REGEN=60*60*10
+
+
+[REGIONRESOURCE mr_ironwood]
+// t_tree
+SKILL=70.0 100.0
+AMOUNT=2 10
+REAP=i_log_ironwood
+REGEN=60*60*10
+
+
+[REGIONRESOURCE mr_mahogany]
+// t_tree
+SKILL=85.0 100.0
+AMOUNT=2 10
+REAP=i_log_mahogany
+REGEN=60*60*10
+
+
+[REGIONRESOURCE mr_cherry]
+// t_tree
+SKILL=95.0 100.0
+AMOUNT=1 5
+REAP=i_log_cherry
+REGEN=60*60*10
+
+
+[REGIONRESOURCE mr_myst]
+// t_tree
+SKILL=100.0 100.0
+AMOUNT=1
+REAP=i_log_myst
+REGEN=60*60*10
+
+[REGIONRESOURCE mr_whiteoak]
+// t_tree
+SKILL=100.0 100.0
+AMOUNT=1
+REAP=i_log_whiteoak
+REGEN=60*60*10
+
+//************* boards ***************
+
+
+[ITEMDEF 01bd7]
+//DEFNAME2=lumber
+NAME=board
+DEFNAME=i_board
+RESOURCES=1 i_log
+SKILLMAKE=1 carpentry, t_carpentry
+VALUE=2
+WEIGHT=1
+TYPE=T_board
+CATEGORY=Items by Professions
+SUBSECTION=Archers/Bowyers
+DESCRIPTION=board
+DUPELIST=01bd8,01bd9,01bda,01bdb,01bdc
+
+
+[ITEMDEF i_board_pine]
+ID=i_board
+NAME=pine board
+RESOURCES=1 i_log_pine
+SKILLMAKE=20.0 CARPENTRY, t_carpentry
+TDATA1=10.0
+TDATA2=30.0
+
+CATEGORY=Items by Professions
+SUBSECTION=Carpenters
+DESCRIPTION=pine board
+ON=@Create
+COLOR=color_o_pine
+
+
+[ITEMDEF i_board_eucalyptus]
+ID=i_board
+NAME=eucalyptus board
+RESOURCES=1 i_log_eucalyptus
+SKILLMAKE=20.0 CARPENTRY, t_carpentry
+TDATA1=10.0
+TDATA2=30.0
+
+CATEGORY=Items by Professions
+SUBSECTION=Carpenters
+DESCRIPTION=eucalyptus board
+ON=@Create
+COLOR=color_o_eucalyptus
+
+
+[ITEMDEF i_board_rose]
+NAME=Rose board
+ID=i_board
+RESOURCES=i_log_rose
+SKILLMAKE=50.0 CARPENTRY, t_carpentry
+TDATA1=40.0
+TDATA2=60.0
+
+CATEGORY=Items by Professions
+SUBSECTION=Carpenters
+DESCRIPTION=Rose board
+ON=@Create
+COLOR=color_o_rose
+
+
+[ITEMDEF i_board_holly]
+NAME=holly board
+ID=i_board
+RESOURCES=i_log_holly
+SKILLMAKE=50.0 CARPENTRY, t_carpentry
+TDATA1=40.0
+TDATA2=60.0
+
+CATEGORY=Items by Professions
+SUBSECTION=Carpenters
+DESCRIPTION=Holly board
+ON=@Create
+COLOR=color_o_holly
+
+
+[ITEMDEF i_board_oak]
+NAME=Oak board
+ID=i_board
+RESOURCES=i_log_oak
+SKILLMAKE=65.0 CARPENTRY, t_carpentry
+TDATA1=60.0
+TDATA2=70.0
+
+CATEGORY=Items by Professions
+SUBSECTION=Carpenters
+DESCRIPTION=Oak board
+ON=@Create
+COLOR=color_o_oak
+
+
+[ITEMDEF i_board_interleaved]
+NAME=Interleaved board
+ID=i_board
+RESOURCES=i_log_interleaved
+SKILLMAKE=50.0 CARPENTRY, t_carpentry
+TDATA1=40.0
+TDATA2=60.0
+
+CATEGORY=Items by Professions
+SUBSECTION=Carpenters
+DESCRIPTION=interleaved board
+ON=@Create
+COLOR=color_o_interleaved
+
+
+[ITEMDEF i_board_ironwood]
+NAME=Ironwood board
+ID=i_board
+RESOURCES=i_log_ironwood
+SKILLMAKE=70.0 CARPENTRY, t_carpentry
+TDATA1=60.0
+TDATA2=80.0
+
+CATEGORY=Items by Professions
+SUBSECTION=Carpenters
+DESCRIPTION=Ironwood board
+ON=@Create
+COLOR=color_o_ironwood
+
+
+[ITEMDEF i_board_mahogany]
+NAME=Mahogany board
+ID=i_board
+RESOURCES=i_log_mahogany
+SKILLMAKE=85.0 CARPENTRY, t_carpentry
+TDATA1=80.0
+TDATA2=90.0
+
+CATEGORY=Items by Professions
+SUBSECTION=Carpenters
+DESCRIPTION=Mahogany board
+ON=@Create
+COLOR=color_o_mahogany
+
+
+[ITEMDEF i_board_cherry]
+ID=i_board
+NAME=Cherry board
+RESOURCES=i_log_cherry
+SKILLMAKE=100.0 CARPENTRY, t_carpentry
+TDATA1=90.0
+TDATA2=100.0
+
+CATEGORY=Items by Professions
+SUBSECTION=Carpenters
+DESCRIPTION=Cherry board
+ON=@Create
+COLOR=color_o_cherry
+
+
+[ITEMDEF i_board_composite]
+NAME=Composite board
+ID=i_board
+RESOURCES=i_log_composite
+SKILLMAKE=50.0 CARPENTRY, t_carpentry
+TDATA1=40.0
+TDATA2=60.0
+
+CATEGORY=Items by Professions
+SUBSECTION=Carpenters
+DESCRIPTION=Composite board
+ON=@Create
+COLOR=color_o_composite
+
+
+[ITEMDEF i_board_imbued]
+NAME=Imbued board
+ID=i_board
+RESOURCES=i_imbued_cherry
+SKILLMAKE=50.0 CARPENTRY, t_carpentry
+TDATA1=40.0
+TDATA2=60.0
+
+CATEGORY=Items by Professions
+SUBSECTION=Carpenters
+DESCRIPTION=Imbued Cherry board
+ON=@Create
+COLOR=color_o_imbued
+
+
+[ITEMDEF i_board_myst]
+NAME=Myst board
+ID=i_board
+RESOURCES=i_log_myst
+SKILLMAKE=50.0 CARPENTRY, t_carpentry
+TDATA1=40.0
+TDATA2=60.0
+
+[ITEMDEF i_board_whiteoak]
+NAME=White Oak board
+ID=i_board
+RESOURCES=i_log_whiteoak
+SKILLMAKE=50.0 CARPENTRY, t_carpentry
+TDATA1=40.0
+TDATA2=60.0
+
+CATEGORY=Items by Professions
+SUBSECTION=Carpenters
+DESCRIPTION=whiteoak board
+ON=@Create
+COLOR=color_o_whiteoak
+[ITEMDEF i_board_bloodoak]
+NAME=Blood Oak board
+ID=i_board
+RESOURCES=i_log_bloodoak
+SKILLMAKE=50.0 CARPENTRY, t_carpentry
+TDATA1=40.0
+TDATA2=60.0
+
+CATEGORY=Items by Professions
+SUBSECTION=Carpenters
+DESCRIPTION=bloodoak board
+ON=@Create
+COLOR=color_o_bloodrock
+
+[EOF]

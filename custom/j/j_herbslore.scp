@@ -1,0 +1,104 @@
+// Layout based on the itemid item in k_skill_lore
+
+[ITEMDEF i_skill_herbslore]
+ID	= i_memory
+NAME	= Skill: Herbs lore
+TYPE	= t_eq_script
+LAYER	= layer_special
+
+ON = @Init
+   TIMER	= 1
+
+ON = @Timer
+   if !( (<LINK.TYPE>==t_seed_burstfire_fruit) || (<LINK.TYPE>==t_fruit) )
+      CONT.SYSMESSAGE This does not seem to be plant life of any kind...
+      REMOVE
+      return 1
+   endif
+   LINK.TRIGGER @GetItemVars
+
+   if !( <LINK.ATTR> & attr_identified )
+      IF (<LINK.TYPE>==t_seed_burstfire_fruit)
+         if ( (!<CONT.ISGM>) && (<CONT.HERBLORE> < (<VAR.SKILL> - 250) ) )
+            CONT.SYSMESSAGE You struggle to classify the <LINK.NAME>.
+            VAR.SUCCESS=
+            REMOVE
+            return 1
+         endif
+      ENDIF 
+      CONT.SKILLCHECK_RUN Skill_HerbLore
+      LINK.ATTR	= <LINK.ATTR> | attr_identified
+      LINK.TRIGGER @Identify
+   endif
+     
+   if ( (!<CONT.ISGM>) && (rand(1000) >= ( 100 + <CONT.HERBLORE> )) )
+      CONT.SYSMESSAGE You can't think of anything.
+      VAR.SUCCESS=
+      REMOVE
+      RETURN 1
+   endif
+
+   VAR.SUCCESS=1
+   REMOVE
+   RETURN 1
+   
+ON=@UNEQUIP
+IF (0<VAR.SUCCESS>)
+   IF (<LINK.TYPE>==t_seed_burstfire_fruit)
+      VAR.SEEDNAME=<LINK.NAME>
+      LINK.TRIGGER @GETITEMVARS
+      CONT.DIALOG d_herbslore_seed_fruit
+   ELSEIF (<LINK.TYPE>==t_fruit)
+      IF (0<LINK.TAG.WEIGHT>)
+         CONT.SYSMESSAGE The weight of the <LINK.NAME> is <EVAL <LINK.TAG.WEIGHT>>
+      ELSE
+         CONT.SYSMESSAGE This appears to be an inferior shop-bought item...
+      ENDIF
+   ENDIF
+ENDIF   
+
+
+[DIALOG d_herbslore_seed_fruit]
+128,48
+page 0
+resizepic 0 0 3600 384 256
+page 1
+resizepic 64 20 5054 256 20
+DTEXT 130 20 10 Pictures of Growth
+f_seed_growth_pictures
+resizepic 64 120 5054 256 35
+DTEXT 118 128 10 Information
+f_herbslore_seed_fruit_information
+
+[DIALOG d_herbslore_seed_fruit TEXT]
+
+[DIALOG d_herbslore_seed_fruit BUTTON]
+
+
+[FUNCTION f_herbslore_seed_fruit_information]
+DTEXT 40 160 110 The <VAR.SEEDNAME> requires
+DTEXT 40 180 110 <eval (<VAR.SKILL> / 10)>% farming to plant.
+DTEXT 40 200 110 It will bear <VAR.FRUIT>s
+DTEXT 40 220 110 when successfully harvested
+
+[FUNCTION f_seed_growth_pictures]
+IF (0<VAR.GROWTHSTAGE.ONE>)
+  tilepic   30  60 <VAR.GROWTHSTAGE.ONE>
+  DTEXT 20 90 20 Stage 1
+ENDIF
+IF (0<VAR.GROWTHSTAGE.TWO>)
+  tilepic   100  60 <VAR.GROWTHSTAGE.TWO>
+  DTEXT 90 90 20 Stage 2
+ENDIF
+IF (0<VAR.GROWTHSTAGE.THREE>)
+  tilepic   170  60 <VAR.GROWTHSTAGE.THREE>
+  DTEXT 160 90 20 Stage 3
+ENDIF
+IF (0<VAR.GROWTHSTAGE.FOUR>)
+  tilepic   240  60 <VAR.GROWTHSTAGE.FOUR>
+  DTEXT 230 90 20 Stage 4
+ENDIF
+IF (0<VAR.GROWTHSTAGE.FIVE>)
+  tilepic   310  60 <VAR.GROWTHSTAGE.FIVE>
+  DTEXT 300 90 20 Stage 4
+ENDIF

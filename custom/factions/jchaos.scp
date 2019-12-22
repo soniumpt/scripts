@@ -1,0 +1,1412 @@
+//---------------------------Chaos Alignment Script--------------------------
+//-									    -
+//------------------------By James "Wigifer" Timbrell------------------------
+//-                                                                         -
+//---------------------------------------------------------------------------
+// 17/7/03 Tiff - Fixed the sys message for recruiting if you have below 75% tactics
+// 20/3/04 Wren - Changed so previous members cound rejoin and changed some ORDERSAY/DKSAY to CHAOSSAY
+
+[FUNCTION CHAOS_REGION ]
+   if ( 0 )
+   elseif ( !strcmpi( "<REGION.NAME>", "Buccaneer's Den" ) )
+      return 1
+   else
+      return 0
+   endif
+
+
+[FUNCTION CHAOSSAY]
+   SRC.SYSMESSAGE @015d "<args>"
+
+[EVENTS e_chaos_recruiter]
+ON=@GetHit
+   SAY By the powers of chaos I shall grant thee death!
+   SRC.KILL
+   return 1
+
+ON=@SpellEffect
+   SAY Your magic is not welcome.
+   SRC.SPELLEFFECT s_lightning 1000
+   return 1
+
+
+[DIALOG d_chaos_recruiter]
+100, 100
+
+PAGE 0
+  resizepic  0 0 5120 400 420
+  text 20 20 50 0
+  text 20 340 50 1
+
+  button 140 375 <eval bt_cancel_up> <eval bt_cancel_dn> 1 0 0
+  button 220 375 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+  htmlgump 20 60 360 260 2 1 1
+
+
+[DIALOG d_chaos_recruiter TEXT]
+Joining the Chaos Alignment
+Are you sure you want to walk the path of chaos?
+To learn more about <VAR.lt>B<var.gt>Chaos<var.lt>/B<var.gt>, visit their section on <var.lt>A href="Imperialuo.com"<var.gt>Imperial UO Site<var.lt>/A<var.gt>. <VAR.BREAK><VAR.BREAK>Be warned that once you join this faction you CAN be attacked by Orders inside a guard town and be killed. Although looting the rival faction body still gets you Criminal. And calling Guards when being attacked by Orders is ILLEGAL and can lead to Jail Sentences. Everything said above works for BOTH factions. <VAR.BREAK><VAR.BREAK>You should know that this is a choice for life - once you commit to the ways of Chaos you won't be able to join any other alignment in the game, and neither leave this one.
+
+[DIALOG d_chaos_recruiter BUTTON]
+ON = 0
+ON = 1
+   SRC.TAG.CHARISCHAOS = 1
+   SRC.CHAOSSAY So be it! You now walk the path of Chaos!
+   SRC.TAG.ALIGNMENT=alignment_chaos
+   SRC.CHAOSSAY You now have access to the Chaos Faction Chat by typing .f 
+   //IF !<SRC.FINDID.i_alignment_timer_check>
+     // SRC.NEWITEM i_alignment_timer_check
+     // SRC.ACT.CONT <SRC.UID> 
+   //ENDIF
+   return 1
+
+
+[SPEECH spk_chaos_recruiter]
+ON=hi
+ON=hello
+ON=hail
+ON=greeting
+ON=greetings
+   if ( <SRC.ISALIGNMENT_CHAOS> )
+      dorand 2
+         CHAOSSAY Greetings.
+         CHAOSSAY Hail.
+      enddo
+   else
+      dorand 2
+         CHAOSSAY Greetings. I take care of those who wish to JOIN our cause.
+         CHAOSSAY Hail. I take care of those who wish to JOIN our cause.
+      enddo
+   endif
+
+//ON=*shield*
+  // IF (<SRC.CHAOS_RANK>)
+	//	IF (!<SRC.FINDID.i_shield_chaos_2>)
+		//  CHAOSSAY Wear your shield with pride.
+		  //SRC.NEWITEM i_shield_chaos_2
+		  //SRC.ACT.BOUNCE
+		//ELSE
+			//CHAOSSAY You already have a shield.
+	//	ENDIF
+     // RETURN 1
+  // ELSE
+    //  CHAOSSAY How dare thee request that which thou may not touch!
+     // RETURN 1
+   //ENDIF
+
+
+
+ON=*join*
+
+IF (<SRC.ISMILITANT>)
+CHAOSSAY GET LOST. I shall not help you while you are member of a Militia!
+RETURN 1
+ENDIF
+
+   IF ( ( <SRC.TACTICS> < 75.0 ) && ( <SRC.MAGERY> < 75.0 ) )
+      CHAOSSAY You do not have enough knowledge of Tactics or Magery to be of any use.
+      return 1
+
+   ELSEIF (<SRC.ISACADEMY>)
+	SAY You still belong to the Academy. Resign and try again later.
+	RETURN 1
+
+   ELSEIF (<SRC.TAG0.SYNDICATE> == 01)
+	SAY You belong to the Syndicate. There's no turning back.
+	RETURN 1
+
+   ELSEIF (<SRC.TAG0.BROTHERHOOD> == 01)
+	SAY You belong to the Brotherhood. There's no turning back.
+	RETURN 1
+
+   ELSEIF (<SRC.TAG0.MERCENARY> == 01)
+	SAY You belong to the Mercenaries. There's no turning back.
+	RETURN 1
+
+   ELSEIF ((<SRC.TAG0.ALIGNMENT>=alignment_order) || (<EVAL <SRC.TAG0.CHARISORDER>> == 1))
+      CHAOSSAY It is order you've chosen, there's no turning back!
+      RETURN 1
+
+   ELSEIF (<SRC.TAG0.ALIGNMENT>=alignment_chaos)
+      CHAOSSAY Aren't we eager! You are already a member of Chaos!
+      RETURN 1  
+
+   ELSEIF (<EVAL <SRC.TAG0.CHARISCHAOS>> = 1)
+      CHAOSSAY Welcome back to our cause my friend.
+      SRC.TAG.ALIGNMENT = alignment_chaos
+      SRC.TAG.RECRUITER = <UID>
+      //IF !<SRC.FINDID.i_alignment_timer_check>
+      //   SRC.NEWITEM i_alignment_timer_check
+       //  SRC.ACT.CONT <SRC.UID> 
+      //ENDIF
+      RETURN 1
+   ELSE
+      SRC.TAG.RECRUITER = <UID>
+      SRC.HTMLDIALOG d_chaos_recruiter
+      RETURN 1
+   ENDIF
+
+
+
+//ON=*resign*
+//   if ( !<SRC.TAG.ALIGNMENT> == alignment_chaos )
+//      CHAOSSAY You have to be a member to resign.
+//      return 1
+//   elseif (<SRC.FINDID.i_alignment_timer_check.UID>)
+//      CHAOSSAY You have not served us long enough to leave...
+//      return 1
+//   else
+//      SRC.TAG.ALIGNMENT = alignment_none
+//      SRC.TAG.RECRUITER
+//      SRC.TAG.WASCHAOS = 01
+//      CHAOSSAY You are no longer a member of our fine society. Be on your way now.
+//      return 1
+//   endif
+
+
+ON=*rank*
+IF ( <SRC.ISDEAD> )
+EMOTE I can help only the living.
+RETURN 1
+
+IF (<SRC.ISMILITANT>)
+CHAOSSAY GET LOST. I shall not help you while you are member of a Militia!
+RETURN 1
+ENDIF
+
+ELSEIF (<SRC.ISCHAOS>)
+DIALOG d_chaos_profile
+RETURN 1
+
+ELSE
+SAY Stop wasting my time.
+ENDIF
+RETURN 1
+
+
+//   if !( <SRC.ISALIGNMENT_CHAOS> )
+//      SAY Stop wasting my time.
+//      return 1
+//   endif
+
+//   if ( 0<SRC.TAG.CHAOS.GOT> == 0 )
+//      SRC.TAG.CHAOS.GOT	= 0
+//   endif
+
+//   if ( <SRC.TAG.CHAOS.GOT> >= <SRC.CHAOS_RANK> )
+//      CHAOSSAY You already received equipment for this rank.
+//      return 1
+//   endif
+
+//   if ( !(<SRC.CHAOS_RANK> < 7)  && (<SRC.TAG.CHAOS.GOT> < 7) )
+//      SRC.NEWITEM i_shield_chaos_3
+//      SRC.ACT.BOUNCE
+//      CHAOSSAY There you go.
+//   ELSE
+//      CHAOSSAY You're not worthy of a reward yet...
+//   ENDIF
+
+//   SRC.TAG.CHAOS.GOT	= <SRC.CHAOS_RANK>
+//   return 1
+
+
+
+[CHARDEF c_chaos_recruiter]
+ID=C_MAN
+NAME=Fou-Lu
+SOUND=snd_HUMAN_M_DIE_01
+DAM=50,70
+ARMOR=90
+AVERSIONS=t_TRAP,t_eerie_stuff
+TSPEECH = spk_chaos_recruiter
+TEVENTS	= e_chaos_recruiter
+
+
+  
+CATEGORY	= Order and Chaos
+SUBSECTION	= Chaos
+DESCRIPTION	= Fou-Lu the Recruiter
+
+
+ON=@Create
+  TAG.NAME.SUFFIX	= ", the Recruitment Officer"
+  TAG.ALIGNMENT.RANK	= 6
+  TAG.ALIGNMENT	= alignment_chaos
+
+  INVUL 1
+  COLOR		= colors_skin
+  STR		= {100 150}
+  DEX		= {80 95}
+  INT		= {150 165}
+  NPC		= brain_monster
+  SWORDSMANSHIP	= {60.0 70.0}
+  WRESTLING	= {67.0 90.0}
+  MAGICRESISTANCE={65.0 88.0}
+  TACTICS	= {60.0 80.0}
+  POISONING	= {90.0 100.0}
+  ANATOMY       = {40.0 50.0}
+  FAME		= 3000
+     KARMA	= -100
+
+  ITEMNEWBIE=i_hair_long
+  COLOR=color_o_mytheril
+
+  ITEMNEWBIE=i_platemail_chest_shadow
+  ITEMNEWBIE=i_platemail_arms_shadow
+  ITEMNEWBIE=i_platemail_gloves_shadow
+  ITEMNEWBIE=i_platemail_leggings_shadow
+  ITEMNEWBIE=i_shield_chaos_2
+  ITEMNEWBIE=i_sword_long_verminard
+  ITEMNEWBIE=i_CAPE
+  COLOR=0770
+  ITEMNEWBIE=i_SASH
+  COLOR=0770
+
+
+
+
+[ITEMDEF i_robe_alignment_chaos]
+ID	= i_hooded_shroud
+NAME	= Chaos Elite Robe
+TYPE	= T_CLOTHING
+ARMOR	= 5
+DYE	= 0
+VALUE	= 500000
+
+ON = @Create
+  HITPOINTS	= 150
+  COLOR		= 0770
+  ATTR          = 05
+
+ON = @Equip
+   IF (<COLOR>=0770)
+      COLOR = 0770
+   ELSEIF (<COLOR> = 0770)
+      COLOR = 0770
+   ENDIF
+
+   if ( <CONT.findlayer.layer_hair.uid> )
+      CONT.findlayer.layer_hair.ATTR = (<CONT.findlayer.layer_hair.ATTR> | attr_invis)
+      CONT.findlayer.layer_hair.REMOVEFROMVIEW
+   endif
+   IF ( <SRC.TAG.ALIGNMENT>=alignment_chaos)
+      IF ( <EVAL <SRC.TAG0.REP.ALIGNMENT>> >= 5000)
+         CHAOSSAY You pull on the robe and pull the hood over your head...
+      ELSE
+         UNEQUIP
+         CHAOSSAY You need <eval 5000> order points to wear this!
+         RETURN 1
+      ENDIF
+   ELSE
+      UNEQUIP
+      SRC.SYSMESSAGE You are not a member of Chaos!
+      RETURN 1
+   ENDIF
+
+ON = @Unequip
+   if ( <CONT.findlayer.layer_hair.uid> )
+      CONT.findlayer.layer_hair.ATTR = (<CONT.findlayer.layer_hair.ATTR> & ~ attr_invis)
+      CONT.findlayer.layer_hair.UPDATE
+   endif
+   
+[ITEMDEF i_resurrect_stone_chaos]
+ID=0ed6
+NAME=Chaos Resurrection Stone
+
+CATEGORY=Imperial uo
+SUBSECTION=Chaos
+DESCRIPTION=Resurrection Stone
+
+ON=@CREATE
+   ATTR=010
+   COLOR=0770
+
+ON=@DClick
+   IF (<SRC.ISCHAOS>)
+      IF (<SRC.ISDEAD>)
+          SRC.RESURRECT
+          CHAOSSAY The ways of chaos flow through you once more...
+	  ELSE
+		  CHAOSSAY Check again, you are not dead!
+      ENDIF
+   ELSE
+      CHAOSSAY Only members of Chaos can use this stone.
+   ENDIF
+   RETURN 1
+
+[ITEMDEF i_shield_chaos_2]
+ID=i_shield_chaos
+TYPE=t_shield
+FLIP=1
+RESOURCES=4 i_ingot_silver, 8 i_ingot_shadow, 2 i_ingot_gold
+WEIGHT=1
+ARMOR=15
+REQSTR=0
+SKILLMAKE=BLACKSMITHING 1000, ARMSLORE 1000
+CATEGORY=Imperial uo
+SUBSECTION=chaos
+DESCRIPTION=chaos Shield
+
+ON=@Create
+	ATTR=05
+	HITPOINTS={101 115}
+
+ON=@EQUIP
+   IF ( <SRC.TAG.ALIGNMENT>=alignment_chaos)
+      CHAOSSAY You put on your shield and feel the way of chaos flow through you...
+      RETURN 0
+   ELSE
+      UNEQUIP
+      SRC.SYSMESSAGE You are not a member of chaos!
+      RETURN 1
+   ENDIF
+
+[ITEMDEF i_shield_chaos_3]
+ID=i_shield_chaos
+TYPE=t_shield
+NAME=Elite Chaos Shield
+FLIP=1
+RESOURCES=4 i_ingot_silver, 8 i_ingot_shadow, 2 i_ingot_gold
+WEIGHT=1
+ARMOR=25
+REQSTR=50
+SKILLMAKE=BLACKSMITHING 1000, ARMSLORE 1000
+CATEGORY=Imperial uo
+SUBSECTION=chaos
+DESCRIPTION=chaos Shield
+
+ON=@Create
+   ATTR=05
+   COLOR = 009b8
+   HITPOINTS={501 1015}
+
+ON=@EQUIP
+   IF <COLOR> = 0
+      COLOR = 0770
+   ENDIF
+
+   IF ( <SRC.TAG.ALIGNMENT>=alignment_chaos)
+      IF ( <EVAL <SRC.TAG0.REP.ALIGNMENT>> > 9999)
+         CHAOSSAY You put on your shield and feel the way of chaos flow through you...
+         RETURN 0
+      ELSE
+         CHAOSSAY Your rank is not high enough to be worthy to wear this shield!
+         UNEQUIP
+         RETURN 1
+      ENDIF
+   ELSE
+      UNEQUIP
+      SRC.SYSMESSAGE You are not a member of chaos!
+      RETURN 1
+   ENDIF
+
+[ITEMDEF i_war_horse_chaos]
+Name=Chaos War Horse
+ID=02124
+TYPE=T_FIGURINE
+TDATA3=c_war_horse_chaos
+VALUE=1000000
+CATEGORY=Imperial uo
+SUBSECTION=Character Icons
+DESCRIPTION=Chaos War Horse (tan)
+
+ON=@CREATE
+COLOR=0770
+MORE1=c_war_horse_chaos
+
+ON=@DCLICK
+if ( (<SRC.TARG.ATTR> & attr_move_never)
+      src.sysmessage You Cant Unshrink that
+      return 1
+ENDIF 
+
+[CHARDEF c_war_Horse_chaos]
+DEFNAME=c_war_horse_chaos
+ID=c_horse_tan
+NAME=Chaos War Horse
+SOUND=snd_ANIMALS_HORSE1
+ICON=i_pet_horse_tan
+ANIM=01fff
+CAN=MT_WALK|MT_RUN
+RESOURCES=15 i_ribs_raw, 10 i_hide
+FOODTYPE=55 t_crops,55 t_fruit,55 t_grain, 64 t_grass
+DAM=10,20
+ARMOR=20
+DESIRES=e_horses,c_man,c_woman
+TEVENTS=e_horses
+AVERSIONS=e_carnivores3
+
+ON=@Create
+COLOR=0770
+NPC=brain_animal
+FAME=50
+KARMA=8000
+STR={650 750}
+DEX={125 125}
+INT={90 100}
+
+PARRYING={85.0 95.0}
+MAGICRESISTANCE={195.0 230.0}
+TACTICS={90.0 100.0}
+WRESTLING={70.0 90.0}
+TAMING=100.0
+ARMSLORE=100.0
+
+ON=@DCLICK
+   COLOR=0770
+
+DESCRIPTION=Chaos War Horse
+SUBSECTION=New Steeds
+CATEGORY=Imperial uo
+
+
+[ITEMDEF i_mount_tub_chaos]
+ID	= 0fab
+NAME	= mount dying pigment
+VALUE	= 75000
+ON=@Create
+   COLOR	= 0770
+
+ON=@DClick
+   if ( !<SRC.findlayer(layer_horse).uid> )
+      src.sysmessage You are not mounted.
+      return 1
+   endif
+   if !( 0<SRC.TAG.ALIGNMENT>=alignment_chaos)
+      CHAOSSAY Only members of chaos may use this!
+      return 1
+   endif
+   SRC.ACT	= <SRC.findlayer(layer_horse).uid>
+   SRC.ACT.COLOR	= <COLOR>
+   SRC.ACT	= <SRC.ACT.MORE2>
+   SRC.ACT.COLOR	= <COLOR>
+   SRC.ACT.TAG.COLOR	= <COLOR>
+   src.act.events +e_dyed
+   src.sysmessage You spread the pigment over the <SRC.ACT.NAME>.
+   if ( !<SRC.ISGM> )
+      REMOVE
+   endif
+   return 1
+
+[CHARDEF c_chaos_vendor]
+NAME=Rei
+ID=C_MAN
+DESIRES=i_gold,e_notoriety
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_trainer
+TSPEECH=spk_needs
+TSPEECH=spk_rehello
+TSPEECH=spk_human_default
+TSPEECH=spk_chaos_vendor
+
+
+TEVENTS=e_Human_HearUnk
+TEVENTS=e_Human_Needs
+TEVENTS=e_Human_ConvInit
+TEVENTS=e_Human_Greet
+TEVENTS=e_Human_Space
+TEVENTS=e_Human_Refuse
+TEVENTS=e_Human_Environ
+
+ON=@Create
+INVUL
+NPC=brain_vendor
+COLOR=colors_skin
+STR={16 30}
+DEX={26 40}
+INT={31 45}
+
+EVALUATINGINTEL={45.0 68.0}
+WRESTLING={15.0 38.0}
+MAGICRESISTANCE={15.0 38.0}
+TACTICS={15.0 38.0}
+INSCRIPTION={50.0 70.0}
+
+ITEMNEWBIE=random_female_hair
+COLOR=colors_hair
+
+ON=@NPCRestock
+ITEM=RANDOM_LIGHT
+ITEMNEWBIE=i_robe_alignment_chaos
+ITEM=random_shoes
+COLOR=colors_neutral
+
+SELL=VENDOR_CHAOS_SELL
+BUY=VENDOR_CHAOS_BUY
+
+CATEGORY=Imperial uo
+SUBSECTION=Chaos
+DESCRIPTION=Chaos Vendor
+
+[TEMPLATE VENDOR_CHAOS_SELL]
+DEFNAME=VENDOR_CHAOS_SELL
+CATEGORY=Imperial uo
+SUBSECTION=Templates
+DESCRIPTION=Chaos Vendor
+//SELL=i_robe_alignment_chaos,{1 3}
+SELL=i_war_horse_chaos,{1 3}
+SELL=i_mount_tub_chaos,{1 3}
+SELL=i_potion_refresh,{51 100}
+SELL=i_potion_nightsight,{51 100}
+SELL=i_potion_heal,{51 100}
+SELL=i_potion_cure,{51 100}	
+SELL=i_reag_black_pearl,{500 500}
+SELL=i_reag_blood_moss,{500 500}
+SELL=i_reag_garlic,{500 500}
+SELL=i_reag_ginseng,{500 500}
+SELL=i_reag_mandrake_root,{500 500}
+SELL=i_reag_nightshade,{500 500}
+SELL=i_reag_sulfur_ash,{500 500}
+SELL=i_reag_spider_silk,{500 500}
+SELL=i_xbolt,{250 500}
+SELL=i_arrow,{250 500}
+
+[TEMPLATE VENDOR_CHAOS_BUY]
+DEFNAME=VENDOR_CHAOS_BUY
+CATEGORY=Imperial uo
+SUBSECTION=Templates
+DESCRIPTION=Chaos Vendor Buy
+BUY=i_bandage,{100 150}
+
+[SPEECH spk_chaos_vendor] 
+ON=*buy*
+IF (<SRC.TAG.ALIGNMENT>=alignment_chaos)
+   SAY It is a pleasure to serve thee...
+   BUY
+ELSE
+   SAY I only serve members of chaos!
+   return 1
+ENDIF
+
+
+[DIALOG d_chaos_profile]
+0,0
+page 0
+gumppic 128 112 9250
+gumppic 145 112 9251
+gumppic 572 112 9252
+gumppic 128 129 9253
+gumppic 572 129 9255
+gumppic 145 445 9257
+gumppic 572 445 9258
+gumppic 128 445 9256
+gumppic 145 129 9254
+gumppic 145 257 9254
+gumppic 273 129 9254
+gumppic 273 257 9254
+gumppic 446 129 9254
+gumppic 446 257 9254
+gumppic 446 129 9254
+gumppic 446 257 9254
+gumppic 401 129 9254
+gumppic 401 257 9254
+gumppic 145 320 9254
+gumppic 273 320 9254
+gumppic 446 320 9254
+gumppic 446 320 9254
+gumppic 401 320 9254
+gumppic 410 145 991
+gumppic 410 145 50993
+text 325 154 0 0
+text 187 378 0 1
+text 187 311 0 2
+text 187 346 0 3
+text 188 276 0 4
+text 217 192 0 5
+text 217 215 0 6
+text 217 239 0 7
+tilepic 282 153 7107
+button 169 279 1210 1209 1 0 1
+button 169 314 1210 1209 1 0 2
+button 169 349 1210 1209 1 0 3
+button 169 381 1210 1209 1 0 4
+
+[DIALOG d_chaos_profile text]
+The Chaos Faction
+Rank Prize
+Add Paperdoll Title
+Remove Paperdoll Title
+Add/Remove Name Title
+Chaos Points: <EVAL <SRC.TAG.REP.ALIGNMENT>> points
+Chaos Rank: <SRC.CHAOS_TITLE>
+PvP Deaths: <EVAL <SRC.TAG0.RATINGPVPD>>
+
+[DIALOG d_chaos_profile button]
+
+ON=1
+IF (<SRC.TAG0.ALIGNMENT.SHOWTITLE> == 01)
+SRC.SYSMESSAGE @463 You turn off your full title.
+SRC.TAG.ALIGNMENT.SHOWTITLE=0
+ELSE
+SRC.SYSMESSAGE @463 You turn on your full title.
+SRC.TAG.ALIGNMENT.SHOWTITLE=1
+ENDIF
+ELSE
+CHAOSSAY This command can only be used by faction members.
+ENDIF
+RETURN 1
+
+ON=2 //add
+IF ((<SRC.ISCHAOS>) || (<SRC.ISORDER>))
+SRC.TAG.NAME.SUFFIX	=
+CHAOSSAY Title added.
+ELSE
+CHAOSSAY This command can only be used by faction members.
+ENDIF
+RETURN 1
+
+ON=3 //remove
+IF ((<SRC.ISCHAOS>) || (<SRC.ISORDER>))
+SRC.TAG.NAME.SUFFIX=
+CHAOSSAY Title removed.
+ELSE
+CHAOSSAY This command can only be used by faction members.
+ENDIF
+RETURN 1
+
+
+ON=4
+
+IF (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 999) && (<SRC.TAG0.OCCLAIMED> < 01)
+
+CHAOSSAY Congratulations! You have advanced to the next rank.
+CHAOSSAY You got a Chaos Shield as a prize!
+SRC.TAG.OCCLAIMED=1
+CHAOSSAY Wear your shield with pride <SRC.SEX Brother\Sister>.
+SRC.NEWITEM i_shield_chaos_2
+SRC.ACT.BOUNCE
+
+
+ELSEIF (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 1999) && (<SRC.TAG.OCCLAIMED> == 01)
+
+CHAOSSAY Congratulations! You have advanced to the next rank.
+CHAOSSAY You can now use The Chaos Recall Magic. Type .factionhome to use it.
+SRC.TAG.OCCLAIMED=2
+
+
+ELSEIF (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 2999) && (<SRC.TAG.OCCLAIMED> == 02)
+
+CHAOSSAY Congratulations! You have advanced to the next rank.
+CHAOSSAY You can now use the Chaos Bindback Public Stone! Double click it and type .bindback upon death to be teleported back.
+SRC.TAG.OCCLAIMED=3
+
+ELSEIF (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 3999) && (<SRC.TAG.OCCLAIMED> == 03)
+
+CHAOSSAY Congratulations! You have advanced to the next rank.
+CHAOSSAY You got a Chaos Backpack and Hair Dye Tub as a prize in your bank!
+SRC.TAG.OCCLAIMED=4
+SERV.NEWITEM=i_hair_tub
+NEW.NAME=Chaos Hair Dye Tub
+NEW.ATTR=ATTR_NEWBIE
+NEW.COLOR=009b8
+NEW.MOREX=1
+NEW.BOUNCE
+SERV.NEWITEM=i_dye_tub_backpack
+NEW.NAME=Chaos Backpack Dye Tub
+NEW.ATTR=ATTR_NEWBIE
+NEW.COLOR=009b8
+NEW.MOREX=1
+NEW.BOUNCE
+
+
+ELSEIF (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 4999) && (<SRC.TAG.OCCLAIMED> == 04)
+
+CHAOSSAY Congratulations! You have advanced to the next rank.
+CHAOSSAY You got a Chaos Horse as a prize in your bank!
+SRC.TAG.OCCLAIMED=5
+SRC.NEWITEM=i_chaos_horse_deed
+SRC.ACT.CONT=<SRC.findlayer(layer_bankbox).uid>
+
+ELSEIF (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 5999) && (<SRC.TAG.OCCLAIMED> == 05)
+
+CHAOSSAY Congratulations! You have advanced to the next rank.
+CHAOSSAY You can now use The Chaos Public Travel Stone!
+SRC.TAG.OCCLAIMED=6
+
+ELSEIF (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 6999) && (<SRC.TAG.OCCLAIMED> == 06)
+
+CHAOSSAY Congratulations! You have advanced to the next rank.
+CHAOSSAY You got a Chaos Robe of Protection as a prize in your bank!
+SRC.TAG.OCCLAIMED=7
+SRC.NEWITEM=i_chaos_robe_protection
+SRC.ACT.CONT=<SRC.findlayer(layer_bankbox).uid>
+
+ELSEIF (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 7999) && (<SRC.TAG.OCCLAIMED> == 07)
+
+CHAOSSAY Congratulations! You have advanced to the next rank.
+CHAOSSAY You got a Personal Chaos Bind Stone Deed as a prize in your bank!
+SRC.TAG.OCCLAIMED=8
+SRC.NEWITEM=i_chaos_bindstone_deed
+SRC.ACT.CONT=<SRC.findlayer(layer_bankbox).uid>
+
+
+ELSEIF (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 8999) && (<SRC.TAG.OCCLAIMED> == 08)
+
+CHAOSSAY Congratulations! You have advanced to the next rank.
+CHAOSSAY You got a Personal Chaos Resurrection Deed as a prize in your bank!
+SRC.TAG.OCCLAIMED=9
+SRC.NEWITEM=i_chaos_ress_deed
+SRC.ACT.CONT=<SRC.findlayer(layer_bankbox).uid>
+
+ELSEIF (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 9999) && (<SRC.TAG.OCCLAIMED> == 09)
+
+CHAOSSAY Congratulations! You have advanced to the next rank.
+CHAOSSAY You got an Elite Chaos Shield as a prize in your bank!
+SRC.TAG.OCCLAIMED=10
+SRC.NEWITEM=i_shield_chaos_3
+SRC.ACT.CONT=<SRC.findlayer(layer_bankbox).uid>
+
+ELSEIF (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 10999) && (<SRC.TAG.OCCLAIMED> == 10)
+
+CHAOSSAY Congratulations! You have advanced to the next rank.
+CHAOSSAY You got 210k as a prize in your bank!
+SRC.TAG.OCCLAIMED=11
+SRC.NEWITEM=i_bag_Faction1100chaos
+SRC.ACT.CONT=<SRC.findlayer(layer_bankbox).uid>
+
+
+ELSEIF (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 11999) && (<SRC.TAG.OCCLAIMED> == 11)
+
+CHAOSSAY Congratulations! You have advanced to the next rank.
+CHAOSSAY You got a Newbied Elite Chaos Steed as a prize in your bank!
+SRC.TAG.OCCLAIMED=12
+SRC.NEWITEM=I_CHAOS_ELITE_STEED
+SRC.ACT.CONT=<SRC.findlayer(layer_bankbox).uid>
+SERV.B @015d Congratulations <SRC.NAME> for reaching the last Chaos Rank. <SRC.NAME>'s the newest Chaos Field Marshal!
+
+ELSE
+
+CHAOSSAY You don't have enough points to claim the next prize.
+
+ENDIF
+
+RETURN 1
+
+
+
+
+///Prizes///
+
+
+///Horse///
+
+[ITEMDEF i_chaos_horse_deed]
+DEFNAME= i_chaos_horse_deed
+ID=i_deed
+NAME=Chaos Horse Deed
+
+CATEGORY=Imperial uo
+SUBSECTION=Chaos Items
+DESCRIPTION=Chaos Horse (Deed)
+
+ON=@CREATE
+COLOR=0770
+
+ON=@DCLICK
+IF ( (<SRC.TARG.ATTR> & attr_move_never)
+SRC.SYSMESSAGE You can't unshrink that.
+RETURN 1
+
+ENDIF 
+IF <SRC.RESTEST i_chaos_horse_deed>
+SERV.NEWNPC c_chaos_horse
+LOCAL.NPC=<NEW.UID>
+SERV.NEWITEM i_memory
+NEW.COLOR=042
+NEW.LINK=<SRC.UID>
+NEW.CONT=<LOCAL.NPC>
+TRY UID.<LOCAL.NPC>.update
+SRC.CONSUME i_chaos_horse_deed 1
+ENDIF
+RETURN 1
+
+[CHARDEF c_chaos_horse]
+DEFNAME=c_chaos_horse
+ID=c_horse_gray
+NAME=Chaos Horse
+SOUND=snd_ANIMALS_HORSE1
+ICON=i_pet_horse_gray
+CAN=MT_WALK|MT_RUN
+RESOURCES=15 i_ribs_raw, 8 i_hide
+FOODTYPE=55 t_crops,55 t_fruit,55 t_grain, 64 t_grass
+DAM=10,20
+ARMOR=20
+
+ON=@Create
+COLOR=0770
+NPC=BRAIN_ANIMAL
+FAME=0
+STR={150 200}
+DEX={100 120}
+INT={10 50}
+
+PARRYING={40.0 55.0}
+MAGICRESISTANCE={60.0 80.0}
+TACTICS={50.0 60.0}
+WRESTLING={40.0 60.0}
+ARMSLORE=70.0
+
+CATEGORY=Imperial uo
+SUBSECTION=Chaos NPCs
+DESCRIPTION=Chaos Horse
+
+///Pack Horse///
+
+[ITEMDEF i_chaos_pack_horse_deed]
+DEFNAME= i_chaos_pack_horse_deed
+ID=i_deed
+NAME=Chaos Pack Horse Deed
+
+CATEGORY=Imperial uo
+SUBSECTION=Chaos Items
+DESCRIPTION=Chaos Pack Horse (Deed)
+
+ON=@CREATE
+COLOR=0770
+
+ON=@DCLICK
+IF ( (<SRC.TARG.ATTR> & attr_move_never)
+SRC.SYSMESSAGE You can't unshrink that.
+RETURN 1
+
+ENDIF 
+IF <SRC.RESTEST i_chaos_pack_horse_deed>
+SERV.NEWNPC c_pack_horse_chaos
+LOCAL.NPC=<NEW.UID>
+SERV.NEWITEM i_memory
+NEW.COLOR=042
+NEW.LINK=<SRC.UID>
+NEW.CONT=<LOCAL.NPC>
+TRY UID.<LOCAL.NPC>.update
+SRC.CONSUME i_chaos_pack_horse_deed 1
+ENDIF
+RETURN 1
+
+[CHARDEF c_pack_horse_chaos]
+DEFNAME=c_pack_horse_chaos
+ID=c_horse_pack
+NAME=Chaos Pack Horse
+SOUND=snd_ANIMALS_HORSE1
+ICON=i_pet_horse_pack
+CAN=MT_WALK|MT_RUN
+RESOURCES=15 i_ribs_raw, 8 i_hide
+FOODTYPE=55 t_crops,55 t_fruit,55 t_grain, 64 t_grass
+DAM=10,20
+ARMOR=20
+
+ON=@Create
+COLOR=009b8
+NPC=BRAIN_ANIMAL
+FAME=0
+STR={400 500}
+DEX={100 120}
+INT={10 50}
+
+PARRYING={40.0 55.0}
+MAGICRESISTANCE={80.0 90.0}
+TACTICS={70.0 80.0}
+WRESTLING={70.0 80.0}
+
+CATEGORY=Imperial uo
+SUBSECTION=Chaos NPCs
+DESCRIPTION=Chaos Pack Horse
+
+//Robe of Protection//
+
+[ITEMDEF i_chaos_robe_protection]
+NAME=Chaos Robe of Protection
+ID=i_robe
+WEIGHT=3
+VALUE=5000
+TYPE=T_ARMOR
+DYE=0
+ARMOR=6
+DUPELIST=01f04
+
+CATEGORY=Imperial uo
+SUBSECTION=Chaos Items
+DESCRIPTION=Chaos Robe of Protection
+
+ON=@CREATE
+QUALITY=200
+ATTR=05
+HITPOINTS={1000 1300}
+COLOR=009b8
+
+ON=@DCLICK
+TYPE=T_ARMOR
+
+ON=@EQUIP 
+IF (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 6999) && (<SRC.ISCHAOS>)
+CHAOSSAY As you wear the robe, you feel more protected.
+RETURN 0
+ELSE
+CHAOSSAY You can't equip this robe.
+UNEQUIP
+ENDIF
+RETURN 1
+
+///Travel Stone ///
+
+[ITEMDEF i_chaos_travel]
+DEFNAME=i_chaos_travel
+ID=0ed6
+NAME=The Chaos Travel Stone
+TYPE=T_NORMAL
+
+ON=@CREATE
+COLOR=0770
+
+ON=@DCLICK
+
+IF (<SRC.FINDID.i_delivery_memory.UID>)
+SRC.SYSMESSAGE You can't travel by magic, it ruins deliveries!
+RETURN 1
+ELSEIF (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 5999) && (<SRC.ISCHAOS>)
+DIALOG d_playertravel
+ELSE
+CHAOSSAY You can not use this stone.
+ENDIF
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Chaos Items
+DESCRIPTION=Chaos Travel Stone
+
+///Bindback Personal///
+
+[ITEMDEF i_chaos_bindstone_deed]
+DEFNAME= i_chaos_bindstone_deed
+NAME=Personal Chaos Bind Stone Deed
+ID=i_deed
+RESOURCES=i_deed,i_chaos_bindstone
+
+CATEGORY=Imperial uo
+SUBSECTION=Chaos Items
+DESCRIPTION=Chaos Personal Bind Stone (Deed)
+
+ON=@Create
+COLOR=0770
+MORE=i_chaos_bindstone
+ATTR=attr_newbie
+
+[ITEMDEF i_chaos_bindstone]
+DEFNAME= i_chaos_bindstone
+ID=0ed6
+NAME=Personal Chaos Bind Stone
+TYPE=t_normal
+
+ON=@CREATE
+COLOR=0770
+
+ON=@CLICK
+CHAOSSAY To bind your spirit to the stone double click it.
+
+ON=@DCLICK 
+IF (<MORE>!=1)
+NAME=<SRC.NAME>'s Bind Stone
+MORE=1 
+MORE2=<SRC.UID>
+CHAOSSAY This stone has been linked to you. 
+CHAOSSAY No-one but you can use it. 
+ELSEIF ((<MORE>==1) && (<MORE2>==<SRC.UID>) && (<SRC.ISCHAOS>) && (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 7999))
+SRC.TAG.MERCHOME=<SRC.P>
+CHAOSSAY Your spirit is now bound to this stone. To recall your spirit back use .bindback
+ELSE 
+CHAOSSAY You can not use the stone.
+ENDIF 
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Chaos Items
+DESCRIPTION=Chaos Personal Bind Stone
+
+[ITEMDEF i_chaos_bindstone_public]
+DEFNAME=i_chaos_bindstone_public
+ID=0ed6
+NAME=Chaos Public Bind Stone
+TYPE=t_normal
+
+ON=@CREATE
+COLOR=0770
+
+on=@CLICK
+MESSAGE @0770 To bind your spirit to the stone double click it.
+
+on=@DCLICK
+IF (<SRC.ISCHAOS>
+IF (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 3000)
+SRC.TAG.MERCHOME=<SRC.P>
+MESSAGE @0770 Your spirit is now bound to this stone. To recall your spirit back use .bindback.
+ELSE
+SRC.MESSAGE @0770 You need at least 3000 Chaos Points to use this stone.
+ENDIF
+else
+SRC.MESSAGE @0770 You dont belong to this faction.
+endif
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Chaos Items
+DESCRIPTION=Chaos Public Bind Stone
+
+
+///Resurrection Personal///
+
+[ITEMDEF i_chaos_ress_deed]
+DEFNAME=i_chaos_ress_deed
+NAME=Personal Resurrection Deed
+ID=i_deed
+RESOURCES=i_deed,i_chaos_ress_stone
+
+CATEGORY=Imperial uo
+SUBSECTION=Chaos Items
+DESCRIPTION=Chaos Resurrection Deed
+
+ON=@CREATE
+MORE=i_chaos_ress_stone
+ATTR=attr_newbie
+
+[ITEMDEF i_chaos_ress_stone]
+DEFNAME=i_chaos_ress_stone
+ID=0ed6
+NAME=Personal Chaos Resurrection Stone
+TYPE=t_normal
+
+ON=@CREATE
+COLOR=0770
+NAME=<SRC.NAME>'s Resurrection Stone
+MORE=1
+MORE2=<SRC.UID>
+CHAOSSAY This stone has been linked to you. 
+CHAOSSAY No-one but you can use it.
+
+ON=@CLICK
+MESSAGE @015d The stone seems to glow.
+
+IF ((<MORE>==1) && (<MORE2>==<SRC.UID>) && (<SRC.ISCHAOS>) && (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 8999)) 
+SRC.RESURRECT
+CHAOSSAY Your spirit has now re-joined your body.
+ELSE 
+CHAOSSAY You can not use the stone.
+ENDIF
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Chaos Items
+DESCRIPTION=Chaos Resurrection Stone
+
+///Elite Horse///
+
+[EVENTS e_mount_chaos]
+
+ON=@DISMOUNT
+if <argo.tag0.mount_chaos>
+serv.newitem <argo.tag0.mount_chaos>
+new.bounce
+new.color=<argo.tag0.mount_chaos_color>
+new.tag.uid=<argo.tag0.mount_chaos_owner>
+src.tag.lastdonarshrink = <new.uid>
+src.tag.ondonarmount
+argo.remove
+src.findlayer.25.remove
+SERV.LOG <SRC.NAME> dismounted their Chaos Steed <new.uid>
+SRC.EVENTS -e_mount_chaos
+RETURN 1
+ENDIF
+
+[ITEMDEF i_chaos_elite_steed]
+NAME=Chaos Elite Steed
+ID=i_pet_horse
+TYPE=t_chaos_statuette
+TDATA1=c_horse_tan
+WEIGHT=1
+
+ON=@CREATE
+ATTR=04
+COLOR=009b8
+
+CATEGORY=Imperial uo
+SUBSECTION=Chaos Items
+DESCRIPTION=Chaos Elite Steed
+
+[TYPEDEF t_chaos_statuette]
+
+ON=@CLICK
+IF !(STRCMP(0<TAG.UID>,0) == 0)
+SRC.SYSMESSAGE @25 This steed is linked to an account already.
+ELSE
+SRC.SYSMESSAGE @25 This steed is not owned by anyone.
+ENDIF
+
+ON=@DCLICK
+IF (STRCMP(0<TAG.UID>,0) == 0)
+TAG.UID = <SRC.NAME>
+SRC.SYSMESSAGE @25 Owner Set
+ENDIF
+IF <cant_mount_chaos>
+RETURN 1
+ELSE
+mount_chaos <TDATA1>
+SRC.EVENTS +e_mount_chaos
+RETURN 1
+ENDIF
+
+[FUNCTION mount_chaos]
+if <cant_mount_chaos>
+return 1
+else
+src.tag.ondonarmount = 1
+serv.newnpc <args>
+ref1=<new.uid>
+serv.newitem i_memory
+new.color=memory_ipet
+new.link=<src.uid>
+new.cont=<ref1.uid>
+src.events -e_mount_chaos
+ref1.food=999
+ref1.color=<color>
+ref1.tag0.mount_chaos=<baseid>
+ref1.tag0.mount_chaos_color=<color>
+ref1.tag0.mount_chaos_owner=<tag.uid>
+ref1.mount <src>
+consume
+endif
+
+[function cant_mount_chaos]
+if (<topobj.isplayer>)
+if (<topobj.uid>!=<src.uid>)
+src.sysmessage This is not yours to use.
+RETURN 1
+elseif !(STRCMP(<tag.uid>,<src.name>) == 0)
+src.sysmessage This is not yours to use.
+RETURN 1
+elseif (<src.flags>&statf_dead)
+src.sysmessage You can't use that right now.
+RETURN 1
+elseif (<src.flags>&statf_polymorph)
+src.sysmessage You can't use that while polymorphed.
+RETURN 1
+elseif ((<SRC.BODY> != C_MAN) && (<SRC.BODY> != C_WOMAN))
+src.sysmessage You can't use that while polymorphed.
+RETURN 1
+elseif (<src.findlayer.25.uid>)
+src.sysmessage You are already on a mount.
+RETURN 1
+ELSEIF (<SRC.TAG0.OCCLAIMED> < 10) && (<SRC.ISCHAOS>)
+CHAOSSAY You are not worthy enough to ride the <NAME>.
+RETURN 1
+ELSE
+RETURN 0
+ENDIF
+ELSE
+SRC.SYSMESSAGE You cannot use this where it is.
+RETURN 1
+ENDIF
+
+
+
+
+//----------------------CHAOS---------------------//
+
+// -- NPC
+
+[CHARDEF c_faction_vendor_chaos]
+NAME=Rei, The Chaos Trader
+ID=C_MAN
+DESIRES=i_gold,e_notoriety
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_trainer
+TSPEECH=spk_needs
+TSPEECH=spk_rehello
+TSPEECH=spk_human_default
+TSPEECH=spk_chaos_vendor
+
+
+TEVENTS=e_Human_HearUnk
+TEVENTS=e_Human_Needs
+TEVENTS=e_Human_ConvInit
+TEVENTS=e_Human_Greet
+TEVENTS=e_Human_Space
+TEVENTS=e_Human_Refuse
+TEVENTS=e_Human_Environ
+
+ON=@Create
+NPC=brain_vendor
+COLOR=colors_skin
+STR={16 30}
+DEX={26 40}
+INT={31 45}
+
+EVALUATINGINTEL={45.0 68.0}
+WRESTLING={15.0 38.0}
+MAGICRESISTANCE={15.0 38.0}
+TACTICS={15.0 38.0}
+INSCRIPTION={50.0 70.0}
+
+ITEMNEWBIE=random_female_hair
+COLOR=colors_hair
+
+ON=@NPCRestock
+ITEM=RANDOM_LIGHT
+ITEMNEWBIE=i_robe_alignment_chaos
+ITEM=random_shoes
+COLOR=colors_neutral
+
+SELL=FACTION_VENDOR_CHAOS_SELL
+BUY=FACTION_VENDOR_CHAOS_BUY
+
+CATEGORY=Imperial uo
+SUBSECTION=Chaos
+DESCRIPTION=Chaos Vendor
+
+[TEMPLATE FACTION_VENDOR_CHAOS_SELL]
+DEFNAME=FACTION_VENDOR_CHAOS_SELL
+CATEGORY=Imperial uo
+SUBSECTION=Templates
+DESCRIPTION=Chaos Vendor
+SELL=i_robe_chaos,{3 5}
+SELL=i_dress_chaos,{3 5}
+SELL=i_cape_chaos,{3 5}
+SELL=i_mount_tub_chaos,{2 4}
+SELL=i_potion_refresh,{51 100}
+SELL=i_potion_nightsight,{51 100}
+SELL=i_potion_heal,{51 100}
+SELL=i_potion_cure,{51 100}
+SELL=i_reag_black_pearl,{500 500}
+SELL=i_reag_blood_moss,{500 500}
+SELL=i_reag_garlic,{500 500}
+SELL=i_reag_ginseng,{500 500}
+SELL=i_reag_mandrake_root,{500 500}
+SELL=i_reag_nightshade,{500 500}
+SELL=i_reag_sulfur_ash,{500 500}
+SELL=i_reag_spider_silk,{500 500}
+SELL=i_xbolt,{250 500}
+SELL=i_arrow,{250 500}
+SELL=i_bandage,{100 150}
+
+[TEMPLATE FACTION_VENDOR_CHAOS_BUY]
+DEFNAME=FACTION_VENDOR_CHAOS_BUY
+CATEGORY=Imperial uo
+SUBSECTION=Templates
+DESCRIPTION=Chaos Vendor Buy
+BUY=i_bandage,{100 150}
+
+[SPEECH spk_chaos_vendor]
+ON=*buy*
+IF (<SRC.TAG.ALIGNMENT>=alignment_chaos)
+SAY It is a pleasure to serve thee...
+BUY
+ELSE
+SAY I only serve members of chaos!
+return 1
+ENDIF
+
+
+// -- CHAOS MOUNT DYE TUB
+
+[ITEMDEF i_mount_tub_chaos]
+ID = 0fab
+NAME = Mount Dying Pigment
+VALUE = 75000
+ON=@Create
+COLOR = 0770
+
+ON=@DClick
+if ( !<SRC.findlayer(layer_horse).uid> )
+src.sysmessage You are not mounted.
+return 1
+endif
+if !( 0<SRC.TAG.ALIGNMENT>=alignment_chaos)
+src.message Only members of chaos may use this!
+return 1
+endif
+SRC.ACT = <SRC.findlayer(layer_horse).uid>
+SRC.ACT.COLOR = <COLOR>
+SRC.ACT = <SRC.ACT.MORE2>
+SRC.ACT.COLOR = <COLOR>
+SRC.ACT.TAG.COLOR = <COLOR>
+src.act.events +e_dyed
+src.sysmessage You spread the pigment over the <SRC.ACT.NAME>.
+if ( !<SRC.ISGM> )
+REMOVE
+endif
+return 1
+
+// -- CHAOS ROBE
+
+[ITEMDEF i_robe_chaos]
+ID=i_robe
+NAME=Chaos Robe
+TYPE=T_CLOTHING
+VALUE=5000
+DYE=0
+
+ON=@CREATE
+HITPOINTS=100
+COLOR=0770
+
+ON=@EQUIP
+IF ( <SRC.ISCHAOS>)
+SRC.SYSMESSAGE You equip the Chaos Robe.
+ELSE
+SRC.SYSMESSAGE You can not wear the Chaos Robe. You are not a member of Chaos.
+UNEQUIP
+ENDIF
+RETURN 1
+
+// -- CHAOS DRESS
+
+[ITEMDEF i_dress_chaos]
+ID=i_dress_full
+NAME=Chaos Dress
+TYPE=T_CLOTHING
+VALUE=5000
+DYE=0
+
+ON=@CREATE
+HITPOINTS=100
+COLOR=0770
+
+ON=@EQUIP
+IF ( <SRC.ISCHAOS>)
+SRC.SYSMESSAGE You equip the Chaos Dress.
+ELSE
+SRC.SYSMESSAGE You can not wear the Chaos Dress. You are not a member of Chaos.
+UNEQUIP
+ENDIF
+RETURN 1
+
+// -- CHAOS CLOAK
+
+[ITEMDEF i_cape_chaos]
+ID=i_cape
+NAME=Chaos Cloak
+TYPE=T_CLOTHING
+VALUE=5000
+DYE=0
+
+ON=@CREATE
+HITPOINTS=100
+COLOR=0770
+
+ON=@EQUIP
+IF ( <SRC.ISCHAOS>)
+SRC.SYSMESSAGE You equip the Chaos Cloak.
+ELSE
+SRC.SYSMESSAGE You can not wear the Chaos Dress. You are not a member of Chaos.
+UNEQUIP
+ENDIF
+RETURN 1
+
+
+[EOF]
+
+OF]
+

@@ -1,0 +1,36 @@
+  
+[ITEMDEF i_chest_metal_spawn]
+ID = i_chest_metal
+TYPE = t_container
+NAME = metal chest
+
+ON=@Create
+   ATTR		= attr_move_never
+   TIMER	= -1
+
+ON=@DClick // open
+  if ( <TIMER> != -1 )	// not ready yet
+     return 0
+  endif
+
+  if ( <MORE> == 0 )	// nothing to spwan
+     return 0
+  endif
+
+  if ( <LINK> != 04fffffff )
+  if ( <LINK.CONT.UID> == <UID> ) // still inside
+     LINK.REMOVE
+  endif
+  endif
+
+  SRC.NEWITEM	<MORE>	// create
+  SRC.ACT.CONT	= <UID>	// place inside the container
+  LINK		= <SRC.ACT.UID> // link it
+
+  TIMER	= { <MOREX> <MOREY> }	// set our timer
+  if ( <TIMER> < 1 )
+    TIMER	= 3600
+  endif
+
+
+[EOF]

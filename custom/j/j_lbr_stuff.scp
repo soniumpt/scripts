@@ -1,0 +1,2088 @@
+[EOF]
+
+//--------------------------------------------------
+//- THIS SCRIPT IS DISABLED BECAUSE IT IS OUTDATED -
+//-   PLEASE REFER TO THE NEW SPHERE LBR SCRIPTS   -
+//--------------------------------------------------
+
+// Initial Setup
+
+[function EnableUpdate]
+account.resdisp=4
+update
+
+[PLEVEL 1]
+EnableUpdate
+
+[ITEMDEF 026c1]		// crescent blade // AoS Test
+defname=i_blade_crescent
+NAME=Crescent Blade
+TYPE=T_WEAPON_SWORD
+DAM=11,14
+SPEED=47
+SKILL=Swordsmanship
+REQSTR=55
+TWOHANDS=Y
+WEIGHT=1
+SKILLMAKE=BLACKSMITHING 45.0
+RESOURCES=14 i_ingot_iron
+dupelist=026cb
+
+CATEGORY= Disabled	//weapons
+SUBSECTION=swords - AoS
+DESCRIPTION=Cresent Blade
+
+ON=@Create
+HITPOINTS={82 87}
+
+
+[ITEMDEF 026cb]		// crescent blade // AoS Test
+dupeitem=026c1
+
+//-------------------------------------------------------
+//----------------------Characters-----------------------
+//-------------------------------------------------------
+
+[CHARDEF 092]
+DEFNAME		= c_shadowlord
+NAME		= Shadowlord
+SOUND		= snd_MONSTER_SHADOWLORD
+ICON		= i_pet_nameless_one_lbr
+CAN		= MT_WALK
+DAM		= 14,30
+ARMOR		= 75
+RESOURCES	= 10 t_eerie_stuff, 1 i_reag_heart_zombie
+FOODTYPE	= 20 t_meat_raw
+DESIRES		= i_gold,t_meat_raw, t_corpse
+AVERSIONS	= t_TRAP
+BLOODCOLOR	= colors_green
+TEVENTS		= e_undead
+CATEGORY	= Disabled //Monsters
+SUBSECTION	= LBR
+DESCRIPTION	= Shadowlord
+RESLEVEL	= 2
+
+ON=@Create
+  NPC		= brain_undead
+  FAME		= 300
+  KARMA		= {-2000 -3999}
+  STR		= {596 670}
+  DEX		= {90 99}
+  INT		= {90 99}
+  PARRYING	= {100.0 150.0}
+  MAGICRESISTANCE = 95.0
+  TACTICS	= {100.0 150.0}
+  WRESTLING	= {100.0 150.0}
+  MAGERY	= {100.0 150.0}
+  EVALUATINGINTEL = {100.0 150.0}
+  MAXMANA	= {500 550}
+  
+ON=@NPCRESTOCK
+  ITEM=i_gold {250 350}
+  ITEM=i_bag
+  ITEM=i_reag_black_pearl,{2 5}
+  ITEM=i_reag_blood_moss,{2 5}
+  ITEM=i_reag_garlic,{2 5}
+  ITEM=i_reag_ginseng,{2 5}
+  ITEM=i_reag_mandrake_root,{2 5}
+  ITEM=i_reag_nightshade,{2 5}
+  ITEM=i_reag_sulfur_ash,{2 5}
+  ITEM=i_reag_spider_silk,{2 5}
+
+[chardef 099]
+defname=c_m_shade
+name=Shade
+sound=snd_monster_zombie1
+icon=i_pet_ghoul_lbr
+can=mt_walk
+dam=2,8
+armor=28
+anim=078c7f
+RESLEVEL=2
+tevents=e_undead
+tevents=e_all_npc
+
+category=Disabled //Monsters
+subsection=undead
+description=ghoul - lbr
+
+on=@create
+     npc=brain_undead
+
+     str={78 98}
+     dex={80 94}
+     int={38 60}
+     maxhits={78 98}
+     maxstam={80 94}
+     maxmana=0
+
+     magicresistance={46.6 58.7}
+     parrying={40.0 70.0}
+     tactics={45.4 59.7}
+     wrestling={49.4 58.1}
+     karma={-5000 -2500}
+     fame={600 900}
+
+ON=@NPCRESTOCK
+ITEM=i_gold {40 69}
+
+[chardef 07a]
+ID=c_unicorn_lbr
+name=Unicorn
+SOUND=snd_ANIMALS_HORSE1
+ICON=i_pet_unicorn_lbr
+can=mt_walk|mt_run
+dam=5,15
+armor=60
+RESLEVEL=2
+resources=3 i_ribs_raw,10 i_hide
+foodtype=5 t_crops, 5 t_fruit, 5 t_grain, 5 i_hay, 64 t_grass
+desires=spk_human_prime
+aversions=e_carnivores3
+anim=03fffff
+tevents=e_all_npc
+
+category=Disabled //Monsters
+subsection=animals
+description=unicorn - lbr
+
+on=@create
+     npc=brain_animal
+
+     str={296 325}
+     dex={86 115}
+     int={187 225}
+     maxhits={296 325}
+     maxstam={86 115}
+     maxmana={187 225}
+
+     parrying={65.0 75.0}
+     magicresistance={73.3 95.0}
+     tactics={18.8 22.5}
+     wrestling={79.3 91.0}
+     EvaluatingIntel={79.2 89.6}
+     magery={65.6 89.5}
+     meditation={49.1 60.0}
+     taming={95.1}
+
+     peacemaking=59.1
+
+     fame={1000 3000}
+     karma={1000 3000}
+
+     itemnewbie=i_spellbook
+     addspell=s_clumsy
+     addspell=s_feeblemind
+     addspell=s_magic_arrow
+     addspell=s_weaken
+     addspell=s_harm
+     addspell=s_fireball
+     addspell=s_poison
+     addspell=s_curse
+     addspell=s_fire_field
+     addspell=s_lightning
+     addspell=s_mana_drain
+     addspell=s_blade_spirits
+     addspell=s_mind_blast
+     addspell=s_paralyze
+     addspell=s_poison_field
+     addspell=s_cure
+     addspell=s_heal
+     addspell=s_dispel_field
+     addspell=s_dispel
+     addspell=s_greater_heal
+     addspell=s_energy_bolt
+
+[chardef 03e]
+defname=c_m_wyvern_lbr
+name=wyvern
+dam=2,12
+armor=40
+RESLEVEL=2
+resources=50 i_ribs_raw, 20 i_hide
+foodtype=25 t_meat_raw
+desires=i_gold
+aversions=r_civilization,r_water
+tevents=e_all_npc
+
+category=Disabled //Monsters
+subsection=dragons and drakes
+description=wyvern
+
+on=@create
+     npc=brain_dragon
+
+     str={206 236}
+     dex={153 170}
+     int={53 90}
+     maxhits={206 236}
+     maxstam={153 170}
+     maxmana={53 90}
+
+     parrying={65.0 80.0}
+     magicresistance={68.3 77.7}
+     tactics={66.1 88.4}
+     wrestling={71.0 79.6}
+
+     peacemaking=50.6
+
+     fame={3000 9000}
+     karma={-5000 -5999}
+
+[chardef 031e]
+defname=c_m_ancient_wyrm
+name="Ancient Wyrm"
+sound=snd_monster_dragon1
+icon=i_pet_dragon
+dam=6,27
+armor=70
+RESLEVEL=2
+resources=99 i_ribs_raw,20 i_hide,8 i_reag_dragon_blood
+can=mt_walk|mt_fly
+foodtype=80 t_meat_raw
+desires=i_gold
+aversions=r_civilization,r_water
+tevents=e_all_npc
+
+category=Disabled //Monsters
+subsection=dragons and drakes
+description=ancient wyrm
+
+on=@create
+     npc=brain_dragon
+     str={1103 1131}
+     dex={99 120}
+     int={734 752}
+
+     meditation={61.7 64.4}
+     EvaluatingIntel={72.8 78.2}
+     parrying={55.0 95.0}
+     magery={85.8 99.3}
+     magicresistance={120.1 133.0}
+     tactics={99.6 100.0}
+     wrestling={98.6 99.0}
+     peacemaking=99.0
+
+     fame={3000 9000}
+     karma={-6000 -6999}
+
+     itemnewbie=i_spellbook
+     addspell=s_fireball
+     addspell=s_polymorph
+     addspell=s_cure
+     addspell=s_heal
+     addspell=s_dispel_field
+     addspell=s_dispel
+     addspell=s_greater_heal
+
+ON=@NPCRESTOCK
+ITEM=i_gold {4300 5800}
+
+[chardef 0305]
+defname=c_m_meer_captain
+name=Meer Captain
+icon=i_pet_meer_warrior_lbr
+can=mt_walk
+dam=1,9
+armor=50
+RESLEVEL=2
+resdisphue=
+foodtype=15 i_ribs_raw
+desires=c_m_meer_captain
+foodtype=15 t_food, t_fruit
+aversions=t_trap
+anim=0ffc78c7f
+tevents=e_all_npc
+
+category=Disabled //Monsters
+subsection=meers
+description=meer captain - lbr
+
+on=@create
+     npc=brain_monster
+
+     str={96 109}
+     dex={191 200}
+     int={96 110}
+     maxhits={96 109}
+     maxstam={191 200}
+     maxmana={96 110}
+
+     magery={14.4 15.0}
+     magicresistance={95.2 98.6}
+     tactics={87.2 96.2}
+     wrestling={85.1 88.0}
+     archery={90.0 100.0}
+     swordsmanship={70.0 90.0}
+     
+     peacemaking=46.8
+
+     fame={100 300}
+     karma={-2000 -2999}
+
+     itemnewbie=i_spellbook
+     addspell=s_clumsy
+     addspell=s_feeblemind
+     addspell=s_magic_arrow
+     addspell=s_weaken
+     addspell=s_harm
+     addspell=s_fireball
+     addspell=s_poison
+     addspell=s_cure
+     addspell=s_heal
+     addspell=s_greater_heal
+
+[chardef 0304]
+defname=c_m_meer_eternal
+name=Meer Eternal
+icon=i_pet_meer_warrior_lbr
+can=mt_walk
+dam=1,9
+armor=25
+RESLEVEL=2
+resdisphue=
+foodtype=15 t_food, t_fruit
+desires=c_m_meer_eternal
+aversions=t_trap
+anim=0ffc78c7f
+tevents=e_all_npc
+
+category=Disabled //Monsters
+subsection=meers
+description=meer eternal - lbr
+
+on=@create
+     npc=brain_monster
+
+     str={440 492}
+     dex={148 453}
+     int={580 613}
+     maxhits={440 492}
+     maxstam={148 453}
+     maxmana={580 613}
+
+     parrying={55.0 65.0}
+     magicresistance={166.1 173.6}
+     tactics={52.7 64.4}
+     wrestling={64.1 78.9}
+     EvaluatingIntel={39.4 51.2}
+     magery={96.5 99.3}
+
+     peacemaking=74.7
+
+     fame={3000 3999}
+     karma={-4999 -5999}
+
+     itemnewbie=i_spellbook
+     addspell=s_clumsy
+     addspell=s_feeblemind
+     addspell=s_magic_arrow
+     addspell=s_weaken
+     addspell=s_harm
+     addspell=s_fireball
+     addspell=s_poison
+     addspell=s_curse
+     addspell=s_fire_field
+     addspell=s_lightning
+     addspell=s_mana_drain
+     addspell=s_cure
+     addspell=s_heal
+     addspell=s_dispel
+     addspell=s_greater_heal
+
+[chardef 0302]
+defname=c_m_meer_mage
+name=Meer Mage
+icon=i_pet_meer_mage_lbr
+can=mt_walk
+dam=9,15
+armor=50
+RESLEVEL=2
+resdisphue=
+foodtype=15 t_food, t_fruit
+desires=c_m_meer_mage
+aversions=r_civilization
+anim=0ffc78c7f
+tevents=e_all_npc
+
+category=Disabled //Monsters
+subsection=meers
+description=meer mage - lbr
+
+on=@create
+     npc=brain_monster
+
+     str={177 200}
+     dex={127 145}
+     int={276 304}
+     maxhits={177 200}
+     maxstam={127 145}
+     maxmana={276 304}
+
+     magicresistance={80.7 99.5}
+     tactics={72.1 87.7}
+     wrestling={65.1 81.7}
+     EvaluatingIntel=100.0
+     magery={75.0 80.9}
+     meditation=0
+
+     peacemaking=55.2
+
+     fame={3000 3999}
+     karma={-4999 -5999}
+
+     itemnewbie=i_spellbook
+     addspell=s_clumsy
+     addspell=s_feeblemind
+     addspell=s_magic_arrow
+     addspell=s_weaken
+     addspell=s_harm
+     addspell=s_fireball
+     addspell=s_poison
+     addspell=s_curse
+     addspell=s_fire_field
+     addspell=s_lightning
+     addspell=s_mana_drain
+     addspell=s_blade_spirits
+     addspell=s_mind_blast
+     addspell=s_paralyze
+     addspell=s_poison_field
+     addspell=s_cure
+     addspell=s_heal
+     addspell=s_dispel_field
+     addspell=s_dispel
+     addspell=s_greater_heal
+     addspell=s_energy_bolt
+     addspell=s_explosion
+
+
+[chardef 0303]
+defname=c_m_meer_warrior
+name=Meer Warrior
+icon=i_pet_meer_warrior_lbr
+can=mt_walk
+dam=4,12
+armor=40
+RESLEVEL=2
+resdisphue=
+foodtype=15 t_food, t_fruit
+desires=c_m_meer_warrior
+aversions=r_civilization
+anim=0ffc78c7f
+tevents=e_all_npc
+
+category=Disabled //Monsters
+subsection=meers
+description=meer warrior - lbr
+
+on=@create
+     npc=brain_monster
+
+     str={88 100}
+     dex={186 200}
+     int={88 100}
+     maxhits={88 100}
+     maxstam={186 200}
+     maxmana={88 100}
+
+     peacemaking=39.5
+
+     magicresistance={94.0 97.1}
+     tactics={94.0 96.3}
+     wrestling={94.2 97.5}
+
+fame={2000 2999}
+karma={-2999 -3999}
+
+[chardef 0300]
+defname=c_m_juggernaut
+name=Blackthornes Juggernaut
+sound=snd_elementl_erthel1
+icon=i_pet_juggernaut_lbr
+can=mt_walk|mt_fly
+dam=8,23
+armor={62 80}
+RESLEVEL=2
+resdisphue=
+foodtype=40 t_ore, t_ingot,
+desires=c_m_juggernaut
+aversions=t_trap
+anim=0ffc78c7f
+tevents=e_all_npc
+
+category=Disabled //Monsters
+subsection=npcs
+description=blackthorn juggernaut - lbr
+
+on=@create
+     npc=brain_monster
+
+     str={312 400}
+     dex={51 70}
+     int={56 97}
+     maxhits={312 400}
+     maxstam={51 70}
+     maxmana={56 97}
+
+     parrying={90.0 100.0}
+     anatomy={91.2 99.4}
+     magicresistance={140.9 148.5}
+     tactics={91.0 99.8}
+     wrestling={92.8 98.8}
+
+     peacemaking=48.7
+
+     fame={3000 4999}
+     karma={-3000 3900}
+
+     itemnewbie=i_spellbook
+     addspell=s_clumsy
+     addspell=s_feeblemind
+     addspell=s_magic_arrow
+     addspell=s_weaken
+     addspell=s_harm
+     addspell=s_fireball
+     addspell=s_poison
+     addspell=s_curse
+     addspell=s_fire_field
+     addspell=s_lightning
+     addspell=s_mana_drain
+     addspell=s_blade_spirits
+     addspell=s_mind_blast
+     addspell=s_paralyze
+     addspell=s_poison_field
+     addspell=s_cure
+     addspell=s_heal
+     addspell=s_dispel_field
+     addspell=s_dispel
+     addspell=s_greater_heal
+     addspell=s_energy_bolt
+     addspell=s_explosion
+     addspell=s_paralyzation_field
+     addspell=s_energy_field
+     addspell=s_flamestrike
+     addspell=s_mana_vampire
+
+[chardef 02ff]
+defname=c_m_betrayer
+name=Blackthorne Betrayer
+sound=snd_monster_liche1
+icon=i_pet_betrayer_lbr
+can=mt_equip|mt_walk|mt_run|mt_usehands
+dam=5,15
+armor={62 68}
+RESLEVEL=2
+resdisphue=
+foodtype=15 t_food, t_fruit
+desires=i_gold,e_notoriety
+aversions=t_trap,t_eerie_stuff
+bloodcolor=0
+anim=0ffc78c7f
+tevents=e_all_npc
+
+category=Disabled //Monsters
+subsection=daemons
+description=betrayer - lbr
+
+on=@create
+     npc=brain_monster
+
+     str={411 493}
+     dex={83 100}
+     int={163 191}
+     maxhits={411 493}
+     maxstam={83 100}
+     maxmana={163 191}
+
+     parrying={90.0 100.0}
+     magicresistance={120.1 129.2}
+     tactics={90.9 98.5}
+     wrestling={91.3 99.3}
+     anatomy={91.0 99.6}
+     EvaluatingIntel={94.3 99.6}
+     magery={63.0 91.6}
+     poisoning={50.0 100.0}
+
+     fame={1000 2000}
+     karma={-6000 -6999}
+
+     peacemaking=61.6
+
+     itemnewbie=i_spellbook
+     addspell=s_clumsy
+     addspell=s_feeblemind
+     addspell=s_magic_arrow
+     addspell=s_weaken
+     addspell=s_harm
+     addspell=s_fireball
+     addspell=s_poison
+     addspell=s_curse
+     addspell=s_fire_field
+     addspell=s_lightning
+     addspell=s_mana_drain
+     addspell=s_blade_spirits
+     addspell=s_mind_blast
+     addspell=s_paralyze
+     addspell=s_poison_field
+     addspell=s_cure
+     addspell=s_heal
+     addspell=s_dispel_field
+     addspell=s_dispel
+     addspell=s_greater_heal
+     addspell=s_energy_bolt
+     addspell=s_explosion
+     addspell=s_paralyzation_field
+     addspell=s_energy_field
+     addspell=s_flamestrike
+     addspell=s_mana_vampire
+
+[chardef 02f5]
+defname=c_m_exodus_minion
+name=Exodus Minion
+sound=snd_monster_exodus
+icon=i_pet_exodus_minion_lbr
+can=mt_fly
+dam=7,23
+armor=60
+RESLEVEL=2
+resdisphue=
+resources=8 i_ingot_iron,1 i_clock_parts
+foodtype=15 i_ingot_iron
+desires=c_m_exodus
+aversions=r_water
+anim=0ffc78c7f
+
+category=Disabled //Monsters
+subsection=misc
+description=exodus minion - lbr
+
+on=@create
+     npc=brain_monster
+
+     str={854 935}
+     dex={72 78}
+     int={73 85}
+     maxhits={854 935}
+     maxstam={72 78}
+     maxmana={73 85}
+
+     parrying={90.0 100.0}
+     magicresistance={90.3 97.6}
+     tactics={91.0 98.7}
+     wrestling={92.9 98.3}
+
+     peacemaking=63.4
+
+     fame={1000 1999}
+     karma={-3000 -3999}
+
+[chardef 02f4]
+defname=c_m_exodus_overseer
+name=Exodus Overseer
+sound=snd_monster_exodus
+icon=i_pet_exodus_overseer_lbr
+can=mt_fly
+dam=6,10
+armor=50
+RESLEVEL=2
+resources=8 i_ingot_iron,2 i_clock_parts
+foodtype=15 i_ingot_iron
+desires=c_m_exodus
+aversions=r_water
+anim=0ffc78c7f
+tevents=e_all_npc
+
+category=Disabled //Monsters
+subsection=misc
+description=exodus overseer - lbr
+
+on=@create
+     npc=brain_monster
+
+     str={551 649}
+     dex={78 95}
+     int={68 86}
+     maxhits={551 649}
+     maxstam={78 95}
+     maxmana={68 86}
+
+     parrying={80.0 98.0}
+     magicresistance={84.8 98.2}
+     tactics={83.6 96.1}
+     wrestling={84.4 95.4}
+
+     peacemaking=54.6
+
+     fame={2000 2999}
+     karma={-3000 -3999}
+
+[chardef 02fb]
+defname=c_m_exodus_minion_lord
+name=Exodus Minion Lord
+sound=snd_monster_exodus
+icon=i_pet_exodus_minion_lbr
+can=mt_fly
+dam=7,15
+armor=35
+RESLEVEL=2
+resources=8 i_ingot_iron,2 i_clock_parts
+foodtype=15 i_ingot_iron
+desires=c_m_exodus
+aversions=r_water
+anim=0ffc78c7f
+tevents=e_all_npc
+
+category=Disabled //Monsters
+subsection=extinct creatures
+description=exodus minion lord
+
+on=@create
+     npc=brain_monster
+
+     str={1500 1600}
+     dex={71 80}
+     int={61 90}
+     maxhits={1500 1600}
+     maxstam={71 80}
+     maxmana={61 90}
+
+     parrying={99.0 100.0}
+     magicresistance={99.0 100.0}
+     tactics={99.0 100.0}
+     wrestling={99.0 100.0}
+
+     fame={2000 2999}
+     karma={-3000 -3999}
+
+
+[chardef 066]
+defname=c_m_exodus
+name=Exodus
+sound=snd_monster_exodus
+icon=i_pet_daemon
+can=mt_walk|mt_fly
+dam=28,51
+armor=34
+moverate=3
+resdispdn=c_daemon
+RESLEVEL=2
+resdisphue=
+resources=9 i_ribs_raw, 8 i_reag_daemon_bone, 7 i_ingot_iron
+foodtype=
+desires=c_daemon,i_gold,t_wand,c_m_exodus,c_m_exodus_minion
+aversions=r_civilization, r_water
+anim=03fbc7f
+tevents=e_all_npc
+
+category=Disabled //Monsters
+subsection=daemons
+description=exodus - lbr
+
+on=@create
+     npc=brain_monster
+
+     str={851 950}
+     dex={71 80}
+     int={61 90}
+     maxhits={851 950}
+     maxstam={71 80}
+     maxmana={61 90}
+
+     parrying={90.0 100.0}
+     magicresistance={90.0 100.0}
+     tactics={90.0 100.0}
+     wrestling={90.0 100.0}
+
+     peacemaking=
+
+     fame={7000 9000}
+     karma={-7000 -9999}
+
+
+//-------------------------------------------------------
+//-------------------------Icons-------------------------
+//-------------------------------------------------------
+
+
+[itemdef 02580]
+defname=i_pet_billygoat_lbr
+name="billy goat"
+type=t_figurine
+tdata3=c_a_mountain_goat
+
+category=Disabled //miscellaneous
+subsection=character icons
+description=billy goat
+
+[itemdef 02581]
+defname=i_pet_centaur_lbr
+name="centaur"
+type=t_figurine
+tdata3=c_m_centaur
+
+category=Disabled //miscellaneous
+subsection=character icons
+description=centaur
+
+[itemdef 02582]
+defname=i_pet_corpser_lbr
+name="corpser"
+type=t_figurine
+tdata3=c_corpser
+
+category=Disabled //miscellaneous
+subsection=character icons
+description=corpser
+
+[itemdef 02583]
+defname=i_pet_cougar_lbr
+name="cougar"
+type=t_figurine
+tdata3=c_a_cougar
+
+category=Disabled //miscellaneous
+subsection=character icons
+description=cougar
+
+[itemdef 02584]
+defname=i_pet_daemon_lbr
+name="daemon"
+type=t_figurine
+tdata3=c_daemon
+
+category=Disabled //miscellaneous
+subsection=character icons
+description=daemon
+
+[itemdef 02585]
+defname=i_pet_daemon_gate_lbr
+name="black gate daemon"
+type=t_figurine
+tdata3=c_m_black_gate_daemon
+
+category=Disabled //miscellaneous
+subsection=character icons
+description=black gate daemon
+
+[itemdef 02586] 
+defname=i_pet_daemon_elder_lbr
+name="elder daemon"
+type=t_figurine
+tdata3=c_m_balron_lbr
+
+category=Disabled //miscellaneous
+subsection=character icons
+description=elder daemon
+
+[itemdef 02587]
+defname=i_pet_daemon_ice_lbr
+name="ice fiend daemon"
+type=t_figurine
+tdata3=c_m_icefiend_lbr
+
+category=Disabled //miscellaneous
+subsection=character icons
+description=ice fiend daemon
+
+[itemdef 02588]
+defname=i_pet_dog_hound_lbr
+name="hound dog"
+type=t_figurine
+tdata3=c_dog
+
+category=Disabled //miscellaneous
+subsection=character icons
+description=hound dog
+
+[itemdef 02589]
+defname=i_pet_warrior_ethereal_lbr
+name="ethereal warrior"
+type=t_figurine
+tdata3=c_m_ethereal_warrior
+
+category=Disabled //miscellaneous
+subsection=character icons
+description=ethereal warrior
+
+[itemdef 0258a]
+defname=i_pet_mage_evil_lbr
+name="evil mage"
+type=t_figurine
+tdata3=c_m_evil_mage
+
+category=Disabled //miscellaneous
+subsection=character icons
+description=evil mage
+
+[itemdef 0258b]
+defname=i_pet_mage_evil_boss_lbr
+name="evil mage boss"
+type=t_figurine
+tdata3=c_m_evil_mage_lord
+
+category=Disabled //miscellaneous
+subsection=character icons
+description=evil mage boss
+
+[itemdef 0258c]
+defname=i_pet_frog_lbr
+name="giant frog"
+type=t_figurine
+tdata3=c_bullfrog
+
+category=Disabled //miscellaneous
+subsection=character icons
+description=giant frog
+
+[itemdef 0258d]
+defname=i_pet_gargoyle_lbr
+name="gargoyle"
+type=t_figurine
+tdata3=c_m_gargoyle_destroyer
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=gargoyle
+
+[itemdef 0258e]
+defname=i_pet_gargoyle_stone_lbr
+name="stone gargoyle"
+type=t_figurine
+tdata3=c_m_gargoyle_stone
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=stone gargoyle
+
+[itemdef 0258f]
+defname=i_pet_gazer_lbr
+name="swarm"
+type=t_figurine
+tdata3=c_gazer
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=gazer
+
+[itemdef 02590]
+defname=i_pet_efreet_lbr
+name="efreet"
+type=t_figurine
+tdata3=c_m_efreet_lbr
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=efreet
+
+[itemdef 02591]
+defname=i_pet_ghoul_lbr
+name="ghoul"
+type=t_figurine
+tdata3=c_m_ghoul_new
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=ghoul
+
+[itemdef 02592]
+defname=i_pet_gorilla_lbr
+name="silverback gorilla"
+type=t_figurine
+tdata3=c_gorilla
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=silverback gorilla
+
+[itemdef 02593]
+defname=i_pet_worm_lbr
+name="great worm"
+type=t_figurine
+tdata3=c_sea_serpent_new
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=great worm
+
+[itemdef 02594]
+defname=i_pet_harpy_stone_lbr
+name="stone harpy"
+type=t_figurine
+tdata3=c_m_stoneharpy_new
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=stone harpy
+
+[itemdef 02595]
+defname=i_pet_headless_lbr
+name="headless"
+type=t_figurine
+tdata3=c_headless
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=headless
+
+[itemdef 02596]
+defname=i_pet_hellhound_lbr
+name="hell hound"
+type=t_figurine
+tdata3=c_m_hellhound_lbr
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=hell hound
+
+[itemdef 02597]
+defname=i_pet_hellcat_lbr
+name="hellcat"
+type=t_figurine
+tdata3=c_m_hellcat
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=hellcat
+
+[itemdef 02598]
+defname=i_pet_horse_brown_dappled_lbr
+name="dappled brown horse"
+type=t_figurine
+tdata3=c_horse_brown_lt
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=dappled brown horse
+
+[itemdef 02599]
+defname=i_pet_horse_gray_dappled_lbr
+name="dappled gray horse"
+type=t_figurine
+tdata3=c_horse_gray
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=dappled gray horse
+
+[itemdef 0259a]
+defname=i_pet_horse_darkbrown_lbr
+name="dark brown horse"
+type=t_figurine
+tdata3=c_horse_brown_dk
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=dark brown horse
+
+[itemdef 0259b]
+defname=i_pet_steed_dark_lbr
+name="dark steed"
+type=t_figurine
+tdata3=c_m_steed_dark
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=dark steed
+
+[itemdef 0259c]
+defname=i_pet_nightmare_lbr
+name="nightmare"
+type=t_figurine
+tdata3=c_m_nightmare_new
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=nightmare
+
+[itemdef 0259d]
+defname=i_pet_steed_silver_lbr
+name="silver steed"
+type=t_figurine
+tdata3=c_m_steed_silver
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=silver steed
+
+[itemdef 0259e]
+defname=i_pet_horse_tan_lbr
+name="tan horse"
+type=t_figurine
+tdata3=c_horse_tan
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=tan horse
+
+[itemdef 0259f]
+defname=i_pet_imp_lbr
+name="imp"
+type=t_figurine
+tdata3=c_m_imp_new
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=imp
+
+[itemdef 025a0]
+defname=i_pet_kirin_lbr
+name="kirin"
+type=t_figurine
+tdata3=c_m_kirin
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=kirin
+
+[itemdef 025a1]
+defname=i_pet_dragon_komodo_lbr
+name="komodo dragon"
+type=t_figurine
+tdata3=c_m_komodo_dragon
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=komodo dragon
+
+[itemdef 025a2]
+defname=i_pet_kraken_lbr
+name="kraken"
+type=t_figurine
+tdata3=c_m_kraken
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=kraken
+
+[itemdef 025a3]
+defname=i_pet_leopard_snow_lbr
+name="snow leopard"
+type=t_figurine
+tdata3=c_a_snow_leopard
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=snow leopard
+
+[itemdef 025a4]
+defname=i_pet_liche_lbr
+name="liche"
+type=t_figurine
+tdata3=c_liche
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=liche
+
+[itemdef 025a5]
+defname=i_pet_liche_lord_lbr
+name="liche lord"
+type=t_figurine
+tdata3=c_m_liche_lord
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=liche lord
+
+[itemdef 025a6]
+defname=i_pet_mongbat_lbr
+name="mongbat"
+type=t_figurine
+tdata3=c_mongbat
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=mongbat
+
+[itemdef 025a7]
+defname=i_pet_mummy_lbr
+name="mummy"
+type=t_figurine
+tdata3=c_m_mummy_lbr
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=mummy
+
+[itemdef 025a8]
+defname=i_pet_ogrelord_lbr
+name="ogre lord"
+type=t_figurine
+tdata3=c_m_artic_ogre_lord
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=ogre lord
+
+[itemdef 025a9]
+defname=i_pet_ophidian_archmage_lbr
+name="ophidian archmage"
+type=t_figurine
+tdata3=c_m_ophidian_archmage_new
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=ophidian archmage
+
+[itemdef 025aa]
+defname=i_pet_ophidian_knight_lbr
+name="ophidian knight"
+type=t_figurine
+tdata3=c_m_ophidian_knight_new
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=ophidian knight
+
+[itemdef 025ab]
+defname=i_pet_ophidian_mage_lbr
+name="ophidian mage"
+type=t_figurine
+tdata3=c_ophidian_mage
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=ophidian mage
+
+[itemdef 025ac]
+defname=i_pet_ophidian_queen_lbr
+name="ophidian queen"
+type=t_figurine
+tdata3=c_ophidian_queen
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=ophidian queen
+
+[itemdef 025ad]
+defname=i_pet_ophidian_warrior
+name="ophidian warrior"
+type=t_figurine
+tdata3=c_ophidian_warrior
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=ophidian warrior
+
+[itemdef 025ae]
+defname=i_pet_orc_lbr
+name="orc"
+type=t_figurine
+tdata3=c_m_orc_bomber
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=orc
+
+[itemdef 025af]
+defname=i_pet_orc_captain_lbr
+name="orc captain"
+type=t_figurine
+tdata3=c_m_orc_brute
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=orc captain
+
+[itemdef 025b0]
+defname=i_pet_orc_lord_lbr
+name="orc lord"
+type=t_figurine
+tdata3=c_orc_lord_1
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=orc lord
+
+[itemdef 025b1]
+defname=i_pet_orc_mage_lbr
+name="orc mage"
+type=t_figurine
+tdata3=c_orcish_mage
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=orc mage
+
+[itemdef 025b2]
+defname=i_pet_ostard_desert_lbr
+name="desert ostard"
+type=t_figurine
+tdata3=c_ostard_desert
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=desert ostard
+
+[itemdef 025b3]
+defname=i_pet_ostard_forest_lbr
+name="forest ostard"
+type=t_figurine
+tdata3=c_ostard_forest
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=forest ostard
+
+[itemdef 025b4]
+defname=i_pet_ostard_frenzied_lbr
+name="frenzied ostard"
+type=t_figurine
+tdata3=c_ostard_zostrich
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=frenzied ostard
+
+[itemdef 025b5]
+defname=i_pet_panther_lbr
+name="panther"
+type=t_figurine
+tdata3=c_a_cougar_new
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=panther
+
+[itemdef 025b6]
+defname=i_pet_pixie_lbr
+name="pixie"
+type=t_figurine
+tdata3=c_m_pixie
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=pixie
+
+[itemdef 025b7]
+defname=i_pet_ratman_lbr
+name="rat man shaman"
+type=t_figurine
+tdata3=c_m_ratman_shaman_new
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=rat man shaman
+
+[itemdef 025b8]
+defname=i_pet_rotting_corpse_lbr
+name="rotting corpse"
+type=t_figurine
+tdata3=c_m_rotting_corpse
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=rotting corpse
+
+[itemdef 025b9]
+defname=i_pet_scorpion_lbr
+name="giant scorpion"
+type=t_figurine
+tdata3=c_scorpion_giant
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=giant scorpion
+
+[itemdef 025ba]
+defname=i_pet_horse_sea_lbr
+name="sea horse"
+type=t_figurine
+tdata3=c_m_sea_horse
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=sea horse
+
+[itemdef 9659]
+defname=i_pet_nameless_one_lbr
+name=Shadowlord
+type=t_figurine
+tdata3=c_shadowlord
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=nameless one
+
+[itemdef 025bc]
+defname=i_pet_skeleton_lbr
+name="skeleton"
+type=t_figurine
+tdata3=c_skeleton
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=skeleton
+
+[itemdef 025bd]
+defname=i_pet_skeleton_knight_lbr
+name="skeleton knight"
+type=t_figurine
+tdata3=c_m_skeleton_knight_new
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=skeleton knight
+
+[itemdef 025be]
+defname=i_pet_skeleton_mage_lbr
+name="skeleton mage"
+type=t_figurine
+tdata3=c_m_skeleton_mage_new
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=skeleton mage
+
+[itemdef 025bf]
+defname=i_pet_snake_giant_lbr
+name="giant snake"
+type=t_figurine
+tdata3=c_snake_giant
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=giant snakes
+
+[itemdef 025c0]
+defname=i_pet_snake_giant_ice_lbr
+name="giant ice snake"
+type=t_figurine
+tdata3=c_m_ice_serpent
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=giant ice snake
+
+[itemdef 025c1]
+defname=i_pet_snake_giant_lava_lbr
+name="giant lava snake"
+type=t_figurine
+tdata3=c_m_lava_serpent
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=giant lava snake
+
+[itemdef 025c2]
+defname=i_pet_snake_giant_silver_lbr
+name="silver serpent"
+type=t_figurine
+tdata3=c_m_silver_serpent_new
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=silver serpent
+
+[itemdef 025c3]
+defname=i_pet_spider_blackwidow_lbr
+name="black widow spider"
+type=t_figurine
+tdata3=c_m_black_widow
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=black widow spider
+
+[itemdef 025c4]
+defname=i_pet_spider_dread_lbr
+name="dread spider"
+type=t_figurine
+tdata3=c_m_dread_spider
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=dread spider
+
+[itemdef 025c5]
+defname=i_pet_spider_frost_lbr
+name="frost spider"
+type=t_figurine
+tdata3=c_m_frostspider_lbr
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=frost spider
+
+[itemdef 025c6]
+defname=i_pet_spider_giant_lbr
+name="giant spider"
+type=t_figurine
+tdata3=c_spider_giant
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=giant spider
+
+[itemdef 025c7]
+defname=i_pet_ghost_lbr
+name="ghost"
+type=t_figurine
+tdata3=c_ghost_man
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=ghost
+
+[itemdef 025c8] 
+defname=i_pet_tentacles_lbr
+name="swamp tentacles"
+type=t_figurine
+tdata3=c_m_swamp_tentacles_2
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=swamp tentacles
+
+[itemdef 025c9]
+defname=i_pet_terathan_drone_lbr
+name="terathan drone"
+type=t_figurine
+tdata3=c_terathan_drone
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=terathan drone
+
+[itemdef 025ca]
+defname=i_pet_terethan_avenger_lbr
+name="terethan avenger"
+type=t_figurine
+tdata3=c_m_terathan_avenger_lbr
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=terethan avenger
+
+[itemdef 025cb]
+defname=i_pet_terethan_queen_lbr
+name="terethan queen"
+type=t_figurine
+tdata3=c_terathan_matriarch
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=terethan queen
+
+[itemdef 025cc]
+defname=i_pet_terethan_warrior_lbr
+name="terethan warrior"
+type=t_figurine
+tdata3=c_terathan_warrior
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=terethan warrior
+
+[itemdef 025cd]
+defname=i_pet_titan_lbr
+name="titan"
+type=t_figurine
+tdata3=c_m_titan_lbr
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=titan
+
+[itemdef 025ce]
+defname=i_pet_unicorn_lbr
+name="unicorn"
+type=t_figurine
+tdata3=c_m_unicorn_lbr
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=unicorn
+
+[itemdef 025cf]
+defname=i_pet_wolf_lbr
+name="wolf"
+type=t_figurine
+tdata3=c_a_wolf_white
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=wolf
+
+[itemdef 025d0]
+defname=i_pet_wolf_dire_lbr
+name="dire wolf"
+type=t_figurine
+tdata3=c_m_evil_wolf
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=dire wolf
+
+[itemdef 025d1]
+defname=i_pet_wolf_gray_lbr
+name="gray wolf"
+type=t_figurine
+tdata3=c_a_wolf_white_new
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=gray wolf
+
+[itemdef 025d2]
+defname=i_pet_wolf_silver_lbr
+name="silver wolf"
+type=t_figurine
+tdata3=c_m_silver_wolf
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=silver wolf
+
+[itemdef 025d3]
+defname=i_pet_wolf_timber_lbr
+name="timber wolf"
+type=t_figurine
+tdata3=c_wolf
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=timber wolf
+
+[itemdef 025d4]
+defname=i_pet_wyvern_lbr
+name="wyvern"
+type=t_figurine
+tdata3=c_m_wyvern_lbr
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=wyvern
+
+[itemdef 025d5]
+defname=i_pet_zombie_lbr
+name="zombie"
+type=t_figurine
+tdata3=c_zombie
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=zombie
+
+[itemdef 025d6]
+defname=i_pet_elem_acid_lbr
+name="acid elemental"
+type=t_figurine
+tdata3=c_m_acid_elemental
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=acid elemental
+
+[itemdef 025d7]
+defname=i_pet_elem_air_lbr
+name="air elemental"
+type=t_figurine
+tdata3=c_elem_air
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=air elemental
+
+[itemdef 025d8]
+defname=i_pet_elem_blood_lbr
+name="blood elemental"
+type=t_figurine
+tdata3=c_m_elem_blood_new
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=blood elemental
+
+[itemdef 025d9]
+defname=i_pet_elem_fire_lbr
+name="fire elemental"
+type=t_figurine
+tdata3=c_elem_fire
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=fire elemental
+
+[itemdef 025da]
+defname=i_pet_elem_ice_lbr
+name="ice elemental"
+type=t_figurine
+tdata3=c_m_elem_ice_new
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=ice elemental
+
+[itemdef 025db]
+defname=i_pet_elem_poison_lbr
+name="poison elemental"
+type=t_figurine
+tdata3=c_m_elem_poison
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=poison elemental
+
+[itemdef 025dc]
+defname=i_pet_elem_snow_lbr
+name="snow elemental"
+type=t_figurine
+tdata3=c_m_elem_snow_new
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=snow elemental
+
+[itemdef 025dd]
+defname=i_pet_elem_water_lbr
+name="water elemental"
+type=t_figurine
+tdata3=c_elem_water
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=water elemental
+
+[itemdef 025f8]
+defname=i_pet_adranath_lbr
+name="adranath"
+type=t_figurine
+tdata3=c_m_adranath
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=adranath
+
+[itemdef 025f9]
+defname=i_pet_blackthorn_lbr
+name="lord blackthorn"
+type=t_figurine
+tdata3=c_m_blackthorn
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=lord blackthorn
+
+[itemdef 025fa]
+defname=i_pet_dasha_lbr
+name="captain dasha"
+type=t_figurine
+tdata3=c_m_dasha
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=captain dasha
+
+[itemdef 025fb]
+defname=i_pet_dawn_lbr
+name="dawn"
+type=t_figurine
+tdata3=c_m_dawn_girl
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=dawn
+
+[itemdef 025fc]
+defname=i_pet_kabur_lbr
+name="warlord kabur"
+type=t_figurine
+tdata3=c_m_kabur
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=warlord kabur
+
+[itemdef 02602]
+defname=i_pet_solen_queen_lbr
+name="solen queen"
+type=t_figurine
+tdata3=c_m_fire_ant_queen
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=solen queen
+
+[itemdef 02603]
+defname=i_pet_solen_warrior_lbr
+name="solen warrior"
+type=t_figurine
+tdata3=c_m_fire_ant_warrior
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=solen warrior
+
+[itemdef 02604]
+defname=i_pet_solen_warrior2_lbr
+name="solen worker"
+type=t_figurine
+tdata3=c_m_fire_ant_worker
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=solen worker
+
+[itemdef 02605]
+defname=i_pet_demon_arcane_lbr
+name="arcane demon"
+type=t_figurine
+tdata3=c_m_daemon_arcane
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=arcane demon
+
+[itemdef 02606]
+defname=i_pet_betrayer_lbr
+name="betrayer"
+type=t_figurine
+tdata3=c_m_betrayer
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=betrayer
+
+[itemdef 02607] //dec 9735
+defname=i_pet_bogling_lbr
+name="bogling"
+type=t_figurine
+tdata3=c_m_bogling
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=bogling
+
+[itemdef 02608] //dec 9736
+defname=i_pet_bog_thing_lbr
+name="bog thing"
+type=t_figurine
+tdata3=c_m_bog_thing
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=bog thing
+
+[itemdef 02609] //dec 9739
+defname=i_pet_demon_chaos_lbr
+name="chaos demon"
+type=t_figurine
+tdata3=c_m_chaos_daemon
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=chaos demon
+
+[itemdef 0260b] //dec 9739
+defname=i_pet_exodus_minion_lbr
+name="exodus minion"
+type=t_figurine
+tdata3=c_m_exodus_minion
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=exodus minion
+
+[itemdef 0260c] //dec 9740
+defname=i_pet_exodus_overseer_lbr
+name="exodus overseer"
+type=t_figurine
+tdata3=c_m_exodus_overseer
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=exodus overseer
+
+[itemdef 0260d] //dec 9741
+defname=i_pet_doppleganger_lbr
+name="doppleganger"
+type=t_figurine
+tdata3=c_m_doppleganger
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=doppleganger
+
+[itemdef 0260e] //dec 9742
+defname=i_pet_demon_moloch_lbr
+name="moloch demon"
+type=t_figurine
+tdata3=c_m_four_armed_demon
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=moloch demon
+
+[itemdef 0260f] //dec 9743
+defname=i_pet_beetle_giant_lbr
+name="giant beetle"
+type=t_figurine
+tdata3=c_m_giant_beetle
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=giant beetle
+
+[itemdef 02610] //dec 9744
+defname=i_pet_golem_lbr
+name="golem"
+type=t_figurine
+tdata3=c_m_golem
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=golem
+
+[itemdef 02611] //dec 
+defname=i_pet_demon_horde_lbr
+name="horde demon"
+type=t_figurine
+tdata3=c_m_daemon_horde_lrg
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=horde demon
+
+[itemdef 02612] //dec 9746
+defname=i_pet_juggernaut_lbr
+name="juggernaut"
+type=t_figurine
+tdata3=c_m_juggernaut
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=juggernaut
+
+[itemdef 02613]
+defname=i_pet_plague_beast_lbr
+name="plague beast"
+type=t_figurine
+tdata3=c_m_plague_beast
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=plague beast
+
+[itemdef 02614]
+defname=i_pet_quagmire_lbr
+name="quagmire"
+type=t_figurine
+tdata3=c_m_quagmire
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=quagmire
+
+[itemdef 02615]
+defname=i_pet_ridgeback_lbr
+name="ridgeback"
+type=t_figurine
+tdata3=c_m_ridgeback
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=ridgeback
+
+[itemdef 02616]
+defname=i_pet_sand_vortex_lbr
+name="sand vortex"
+type=t_figurine
+tdata3=c_m_sand_vortex
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=sand vortex
+
+[itemdef 02617] //dec 9751
+defname=i_pet_mount_skeletal_lbr
+name="skeletal mount"
+type=t_figurine
+tdata3=c_m_skeletal_mount
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=skeletal mount
+
+[itemdef 02618] //dec 9752
+defname=i_pet_sphinx_lbr
+name="sphinx"
+type=t_figurine
+tdata3=c_m_sphinx
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=sphinx
+
+[itemdef 02619] //dec 9753
+defname=i_pet_dragon_swamp_lbr
+name="swamp dragon"
+type=t_figurine
+tdata3=c_m_swamp_dragon
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=swamp dragon
+
+[itemdef 0261a] //dec 9754
+defname=i_pet_swarm_lbr
+name="swarm"
+type=t_figurine
+tdata3=c_m_swarm
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=swarm
+
+[itemdef 0261b] //dec 9755
+defname=i_pet_plague_beast_lord_lbr
+name="plague beast lord"
+type=t_figurine
+tdata3=c_m_plague_beast_lord
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=plague beast lord
+
+[itemdef 0261c] //dec 9756
+defname=i_pet_meer_mage_lbr
+name="meer mage"
+type=t_figurine
+tdata3=c_m_meer_mage
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=meer mage
+
+[itemdef 0261d] //dec 9757
+defname=i_pet_meer_warrior_lbr
+name="meer warrior"
+type=t_figurine
+tdata3=c_m_meer_warrior
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=meer warrior
+
+[itemdef 0261e] //dec 9758
+defname=i_pet_juka_mage_lbr
+name="juka mage"
+type=t_figurine
+tdata3=c_m_juka_mage
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=juka mage
+
+[itemdef 0261f] //dec 9759
+defname=i_pet_juka_warrior_lbr
+name="juka warrior"
+type=t_figurine
+tdata3=c_m_juka_warrior
+
+category=Disabled //miscellaneous
+subsection=lbr character icons
+description=juka warrior  
+
+     
+[EOF]

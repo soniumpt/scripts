@@ -1,0 +1,242 @@
+//Chicken Script
+[CHARDEF c_chicken_super]
+DEFNAME=c_chicken_super
+ID=c_chicken
+NAME=Uber Chicken
+SOUND=snd_ANIMALS_CHICKEN1
+ICON=i_pet_dragon
+DAM=40,55
+ARMOR=100
+RESOURCES=9 i_ribs_raw, 1 i_Balron_Bones
+CAN=MT_WALK|MT_FLY
+TEVENTS=e_npc_daemon
+
+
+DESIRES=c_DAEMON,i_gold,t_wand
+AVERSIONS=r_water,r_mountains
+
+CATEGORY=Imperial uo
+SUBSECTION=Monsters
+DESCRIPTION=Super Chicken
+
+ON=@Create
+   STR={1985 2185}
+   DEX={175 255}
+   INT={300 325}
+
+   PARRYING={90.0 100.0}
+   MAGERY={90.0 100.0}
+   MAGICRESISTANCE={150.0 200.0}
+   TACTICS={190.0 200.0}
+   WRESTLING={90.0 100.0}
+   TAMING={298.0 299.0}
+   DETECTION=200.0
+   NPC=brain_monster
+  
+   FAME={4000 8000}
+   KARMA={-6000 -6999}
+ON = @Hit
+   IF !(<SRC.ACT.BASEID>=m_kell_control)
+      IF ( <SRC.ACT.ICON> == 020D6 )
+         
+            VAR.FORGIVER = <UID>
+            SRC.FOR_MEMORY f_peace
+            VAR.FORGIVER = <SRC.UID>
+            FOR_MEMORY f_peace
+            RETURN 1
+         
+      ENDIF   
+   ENDIF
+   
+
+
+ON=@GetHit
+   IF ( <SRC.ICON> == 020D6 )
+         VAR.FORGIVER = <SRC.UID>
+         FOR_MEMORY f_peace
+   ENDIF
+   if (<src.findlayer(layer_hand1).type>==t_weapon_bow )
+      IF ( RAND(2) == 1)
+         EMOTE roar as the arrow shatters against it's hardened feathers...
+         return 1
+         findlayer(layer_k_control).TRIGGER @SkillFail
+      ENDIF
+   endif
+   if (<src.findlayer(layer_hand1).type>==t_weapon_xbow )
+      IF ( RAND(2) == 1)
+         EMOTE roar as the bolt shatters against it's hardened feathers...
+         return 1
+         findlayer(layer_k_control).TRIGGER @SkillFail
+         ENDIF
+   endif
+   if (<src.findlayer(layer_hand2).type>==t_weapon_bow )
+      IF ( RAND(2) == 1 )
+         EMOTE roar as the arrow shatters against it's hardened feathers...
+         return 1
+         findlayer(layer_k_control).TRIGGER @SkillFail
+      ENDIF
+   endif
+   if (<src.findlayer(layer_hand2).type>==t_weapon_xbow )
+      IF ( RAND(2) == 1 )
+         EMOTE roar as the bolt shatters against it's hardened feathers...
+         return 1
+         findlayer(layer_k_control).TRIGGER @SkillFail
+      ENDIF
+   endif
+
+ON=@SPELLEFFECT
+   IF (<ARGN> == 28)
+   ELSEIF ((<argn> == 20) || (<argn> == 39))
+      SAY The poison is absorbed into the Chickens blood...
+      RETURN 1
+   ENDIF
+ 
+
+
+
+[CHARDEF 0D0]
+DEFNAME=c_chicken
+id=c_chicken
+NAME=Chicken
+SOUND=snd_ANIMALS_CHICKEN1
+ICON=i_pet_CHICKEN
+ANIM=01fff
+DAM=1
+ARMOR=1
+RESOURCES=25 i_feather,I_BIRD_RAW
+CAN=MT_WALK|MT_RUN
+FOODTYPE=5 t_grain
+DESIRES=c_chicken
+AVERSIONS=e_carnivores2
+DESCRIPTION=Chicken
+SUBSECTION=Air (Domestic)
+CATEGORY=Animals
+
+ON=@Create
+NPC=brain_animal
+
+STR=5
+DEX=15
+INT=5
+
+PARRYING=2.0
+MAGICRESISTANCE=4.0
+TACTICS=5.0
+WRESTLING=5.0
+TAMING=20.0
+
+FAME=10
+KARMA={-1 -99}
+//ALIGNMENT=NEUTRAL
+
+on=@dclick
+If !<findid.i_rune_summon_creature.uid>
+//Added by Jimmie (with lots of wren and wig and boo help) 28/1/04 - Make chickens eggable.. :P
+  IF <FINDID(M_Egg_Timer)>
+    SRC.SYSMESSAGE This chicken has already laid an egg, you must wait a while.
+  ELSE
+    IF (0<TAG.TIMESLAID> >= 20 )
+       SRC.SYSMESSAGE This chicken is too old to lay any more eggs.
+    ELSE
+      IF (<SRC.ANIMALLORE> >= 40.0)
+         NEWITEM m_egg_timer
+         ACT.CONT = <UID>
+         TAG.TIMESLAID = (0<SRC.TARG.TAG.TIMESMILKED>+1)
+         SRC.SYSMESSAGE You put the eggs in your backpack
+         emote lay an egg
+         src.NEWITEM i_eggs_fresh
+         src.act.bounce
+      ELSE
+         SRC.SYSMESSAGE The chicken seems uncomfortable with your presence.
+   ENDIF
+     ENDIF
+endif
+ELSE 
+src.sysmessage You feel the summoned egg slip between your fingers
+ENDIF
+
+
+[ItemDef M_Egg_Timer]
+//Added by Jimmie - 28/1/04 - Puts delay into time chicken can lay eggs
+id=i_memory
+Name=Egg Timer
+Type=t_eq_script
+
+ON=@Create
+     TIMER=30
+
+ON=@timer
+  REMOVE
+  RETURN 1
+
+
+[CHARDEF C_H_pvp_Mage]
+DEFNAME=c_h_pvp_mage
+NAME=#NAMES_HUMANMALE The Evil Alchemist
+ID=C_MAN
+DAM=5,13
+ARMOR=15
+
+//ALIGNMENT=EVIL
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_MALE
+
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_human_default
+
+ON=@Create
+COLOR=00415
+STR={90,95}
+DEX={60,65}
+INT={100,105}
+
+MAGICRESISTANCE={80.0,85.0}
+TACTICS={50.0,68.0}
+WRESTLING={70.0,80.0}
+MAGERY={80.0,90.0}
+
+FAME={500 1500}
+KARMA={-3500 -4999}
+
+NPC=brain_monster
+
+ITEMNEWBIE=i_hair_long
+COLOR=00475
+
+ITEMNEWBIE=i_spellbook
+ADDSPELL=s_lightning
+ADDSPELL=s_paralyze
+ADDSPELL=s_magic_arrow
+ADDSPELL=s_harm
+ADDSPELL=s_energy_bolt
+ADDSPELL=s_poison
+
+ON=@NPCRestock
+ITEMNEWBIE=i_robe
+COLOR=01
+ITEMNEWBIE=i_hat_wizards
+COLOR=01
+ITEMNEWBIE=i_cape
+COLOR=01
+ITEMNEWBIE=i_boots_calf
+COLOR=1
+
+ITEM=i_reag_black_pearl,{ 20 30 }
+ITEM=i_reag_blood_moss,{ 20 30 }
+ITEM=i_reag_garlic,{ 20 30 }
+ITEM=i_reag_ginseng,{ 20 30 }
+ITEM=i_reag_mandrake_root,{ 20 30 }
+ITEM=i_reag_nightshade,{ 20 30 }
+ITEM=i_reag_sulfur_ash,{ 20 30 }
+ITEM=i_reag_spider_silk,{ 20 30 }
+ITEM=i_reag_obsidian, { 20 30 }
+ITEM=i_reag_worm_heart, { 20 30 }
+ITEM=i_reag_pumice, { 20 30 }
+ITEM=i_reag_pig_iron, { 20 30 }
+ITEM=i_reag_executioners_cap, { 20 30 }
+ITEM=i_reag_blackmoor, { 20 30 }
+
+CATEGORY=Imperial uo
+SUBSECTION=PvP NPC'S
+DESCRIPTION=Evil Alchemist
+[EOF]

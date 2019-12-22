@@ -1,0 +1,770 @@
+//
+// NPC Quest 	:	Hades Adventure	
+//
+// by Vidar 	: 	April 2002
+//
+// Characters	:	Hades, Gate Keeper, Doom Knight (Sword), Doom Knight (Axe), Doom Mage, Doom Archer
+//			Howard The Priest (NPC quest)
+//
+// Items	:	Book of Pain, Book of Panic, Key to Halls of Hades (Scroll), Bracelet of Doom, Maps, Moongate, Iron Gate
+//
+// Types	:	t_map_hades, t_telepad_hades, t_gate_hades
+//
+// Functions	:	MAP_DESTROY, MAP_WHISPER, MAP_HADES (v_functions.scp)
+//
+// Locations	:	The Dungeon is the location of Hades. The others are locations of moongates that will be created when
+//			the map for that location is opened. 
+//			Dungeon (5354,1307), Orc Valley(1054,1465),east of Brit(1966,1411), Northern territory(1515,636,16)
+//			Northern Territory(1563,993)
+
+// ------- Characters -------
+
+// --- Hades ---
+[CHARDEF c_m_hades_god]
+ID		= c_man
+NAME		= Hades
+SOUND		= snd_MONSTER_LICHE1
+ICON		= i_pet_man
+DAM		= 15,25
+ARMOR		= 70
+CAN		= MT_WALK|MT_USEHANDS
+DESIRES		= i_gold
+
+
+
+CATEGORY=Imperial uo
+SUBSECTION	= Hades Adventure
+DESCRIPTION	= Hades
+
+ON=@Create
+  NPC		= brain_human
+  TITLE		= God of the Underworld
+  FAME		= {7000 8000}
+  KARMA		= {-5000 -7000}
+  //ALIGNMENT	= EVIL
+  STR		= {3000 4000}
+  DEX		= {90 100}
+  INT		= {500 600}
+
+  ANATOMY	= {70.0 80.0}
+  PARRYING	= {75.0 85.0}
+  MACEFIGHTING	= {90.0 95.0}
+  MAGERY	= {80.0 90.0}
+  MAGICRESISTANCE={300.0 400.0}
+  NECROMANCY	= {90.0 100.0}
+  TACTICS	= {70.0 90.0}
+  POISONING	= {60.0 75.0}
+
+ON=@NPCRestock
+  ITEMNEWBIE	= i_robe
+  COLOR		= 01
+  ITEMNEWBIE	= i_hat_wizards
+  COLOR		= 01
+  ITEMNEWBIE	= i_hair_long
+  COLOR		= 900   	//grey hair
+  ITEMNEWBIE	= i_beard_long
+  COLOR		= match_hair     
+  ITEMNEWBIE	= i_spellbook
+  ADDSPELL	= s_poison
+  ADDSPELL	= s_summon_undead
+  ADDSPELL	= s_Hallucination
+  ITEMNEWBIE	= i_staff_gnarled_cherry
+
+// --- Gate Keeper  ---
+[CHARDEF c_m_hades_keeper]
+ID		= c_man
+NAME		= Gate Keeper
+SOUND		= snd_MONSTER_LICHE1
+ICON		= i_pet_man
+DAM		= 15,25
+ARMOR		= 50
+CAN		= MT_WALK|MT_USEHANDS
+DESIRES		= i_gold
+
+TEVENTS		= e_undead
+
+CATEGORY=Imperial uo
+SUBSECTION	= Hades Adventure
+DESCRIPTION	= Gate Keeper
+
+ON=@Create
+  COLOR		= 01
+  NPC		= brain_undead
+  TITLE		= Servant of Hades
+  FAME		= {1000 3000}
+  KARMA		= {-6000 -8999}
+  //ALIGNMENT	= EVIL
+  
+  STR		= {800 900}
+  DEX		= {90 100}
+  INT		= {250 300}
+
+  ANATOMY	= {70.0 80.0}
+  MACEFIGHTING	= {90.0 95.0}
+  MAGERY	= {80.0 90.0}
+  MAGICRESISTANCE={90.0 100.0}
+  NECROMANCY	= {90.0 100.0}
+  PARRYING	= {75.0 85.0}
+  POISONING	= {60.0 75.0}
+  TACTICS	= {70.0 90.0}
+
+ON=@NPCRestock
+  ITEMNEWBIE	= i_deathshroud
+  COLOR		= 0845     
+  ITEMNEWBIE	= i_spellbook
+  ADDSPELL	= s_poison
+  ADDSPELL	= s_summon_undead
+  ADDSPELL	= s_Hallucination
+  ITEMNEWBIE	= i_staff_gnarled_mahogany
+  ITEM		= i_bracelet_hades
+  
+ON=@DEATH
+  NEWNPC = c_m_hades_knight_s 
+  NEWNPC = c_m_hades_knight_a
+  NEWNPC = c_m_hades_knight_s
+
+// --- Doom knigth Sword ---
+[CHARDEF c_m_hades_knight_s]
+ID		= c_man
+NAME		= Doom Knight
+SOUND		= snd_MONSTER_LICHE1
+ICON		= i_pet_man
+DAM		= 15,20
+ARMOR		= 50
+DESIRES		= i_gold
+CAN		= MT_USEHANDS|MT_WALK|MT_FIRE_IMMUNE
+
+TEVENTS 	= e_undead
+
+CATEGORY=Imperial uo
+SUBSECTION	= Hades Adventure
+DESCRIPTION	= Doom Knight (sword)
+
+ON=@Create
+  COLOR		= 01
+  NPC		= brain_monster
+  TITLE		= Servant of Hades
+  FAME		= {500 800}
+  KARMA		= {-6000 -8000}
+  //ALIGNMENT	= EVIL
+  
+  STR		= {500 800}
+  DEX		= {120 140}
+  INT		= {50 60}
+
+  MAGICRESISTANCE={75.0 85.0}
+  PARRYING	= {75.0 85.0}
+  SWORDSMANSHIP	= {80.0 90.0}
+  TACTICS	= {80.0 90.0}
+  WRESTLING	= {60.0 80.0}
+
+ON=@NPCRestock
+  ITEMNEWBIE	= i_shield_round_steel
+  COLOR		= 0845
+  ITEMNEWBIE	= i_bone_helmet
+  COLOR		= 0845         
+  ITEMNEWBIE	= i_bone_arms
+  COLOR		= 0845         
+  ITEMNEWBIE	= i_bone_leggings
+  COLOR		= 0845           
+  ITEMNEWBIE	= i_ringmail_tunic_steel
+  COLOR		= 01
+  ITEMNEWBIE	= i_kilt
+  COLOR		= 01            
+  ITEMNEWBIE	= i_scimitar_steel
+  COLOR		= 0845
+  ITEM		= i_gold,{300 500}
+
+// --- Doom knight Axe ---
+[CHARDEF c_m_hades_knight_a]
+ID		= c_man
+NAME		= Doom Knight
+SOUND		= snd_MONSTER_LICHE1
+ICON		= i_pet_man
+CAN		= MT_USEHANDS|MT_WALK|MT_FIRE_IMMUNE
+DAM		= 15,25
+ARMOR		= 70
+DESIRES		= i_gold
+
+TEVENTS 	= e_undead
+
+CATEGORY=Imperial uo
+SUBSECTION	= Hades Adventure
+DESCRIPTION	= Doom Knight (Axe)
+
+ON=@Create
+  COLOR		= 01
+  NPC		= brain_monster
+  TITLE		= Servant of Hades
+  FAME		= {500 800}
+  KARMA		= {-4000 -6000}
+  //ALIGNMENT	= EVIL
+  
+  STR		= {700 800}
+  DEX		= {120 140}
+  INT		= {50 60}
+
+  MAGICRESISTANCE={75.0 85.0}
+  PARRYING	= {75.0 85.0}
+  SWORDSMANSHIP	= {80.0 90.0}
+  TACTICS	= {80.0 90.0}
+  WRESTLING	= {60.0 80.0}
+
+ON=@NPCRestock
+  ITEMNEWBIE	= i_bone_helmet
+  COLOR		= 0845         
+  ITEMNEWBIE	= i_bone_arms
+  COLOR		= 0845         
+  ITEMNEWBIE	= i_bone_leggings
+  COLOR		= 0845           
+  ITEMNEWBIE	= i_ringmail_tunic_steel
+  COLOR		= 01
+  ITEMNEWBIE	= i_kilt
+  COLOR		= 01            
+  ITEMNEWBIE	= i_axe_exec_steel
+  COLOR		= 0845
+  ITEM		= i_gold,{300 500}
+    
+// --- Doom Mage ---
+[CHARDEF c_m_hades_mage]
+ID		= c_spectre
+NAME		= Doom Mage
+SOUND		= snd_MONSTER_GHOST1
+ICON		= i_pet_ghoul
+DAM		= 15,20
+ARMOR		= 50
+CAN		= MT_USEHANDS|MT_WALK|MT_FIRE_IMMUNE
+
+TEVENTS		= e_undead
+
+CATEGORY=Imperial uo
+SUBSECTION	= Hades Adventure
+DESCRIPTION	= Doom Mage
+
+ON=@Create
+  COLOR		= 01
+  NPC		= brain_undead
+  TITLE		= Servant of Hades
+  FAME		= {900 1000}
+  KARMA		= {-3000 -5999}
+  //ALIGNMENT	= EVIL
+
+  STR		= {1000 1100}
+  DEX		= {80 80}
+  INT		= {150 160}
+
+  MAGERY	= {80.0 90.0}
+  MAGICRESISTANCE={75.0 90.0}
+  PARRYING	= {45.0 55.0}
+  TACTICS	= {75.0 80.0}
+  WRESTLING	= {75.0 95.0}
+
+ON=@NPCRestock
+  COLOR		= 01
+  ITEMNEWBIE	= i_spellbook
+  ADDSPELL	= s_poison
+  ADDSPELL	= s_mana_vampire
+  ADDSPELL	= s_flamestrike  
+  ADDSPELL	= s_summon_undead
+  ADDSPELL	= s_Hallucination
+
+ON=@DEATH
+  NEWNPC = c_m_hades_knight_s
+  NEWNPC = c_m_hades_knight_a
+
+// --- Doom Archer ---
+[CHARDEF c_m_hades_archer]
+ID		= c_man
+NAME		= Doom Archer
+SOUND		= snd_MONSTER_LICHE1
+ICON		= i_pet_man
+CAN		= MT_USEHANDS|MT_WALK|MT_FIRE_IMMUNE
+DAM		= 15,20
+ARMOR		= 70
+//ALIGNMENT	= EVIL
+
+
+
+CATEGORY=Imperial uo
+SUBSECTION	= Hades Adventure
+DESCRIPTION	= Doom Archer
+
+ON=@Create
+  COLOR		= 01
+  NPC		= brain_undead
+  TITLE		= Servant of Hades
+  FAME		= {700 800}
+  KARMA		= {-3000 -5999}
+  //ALIGNMENT	= EVIL
+  
+  STR		= {500 800}
+  DEX		= {100 110}
+  INT		= {30 55}
+  
+  ANATOMY	= {90.0 100.0}
+  ARCHERY	= {90.0 100.0}
+  PARRYING	= {60.0 70.0}
+  MAGICRESISTANCE={80.0 90.0}
+  TACTICS	= {90.0 100.0}
+  WRESTLING	= {50.0 70.0}
+  ITEM		= i_mt_horse
+  COLOR		= 01
+  
+ON=@NPCRestock
+  ITEMNEWBIE	= i_bone_helmet
+  COLOR		= 0845         
+  ITEMNEWBIE	= i_bone_arms
+  COLOR		= 0845         
+  ITEMNEWBIE	= i_bone_leggings
+  COLOR		= 0845           
+  ITEMNEWBIE	= i_bow_mahogany
+  NAME		= Bow
+  COLOR		= 0845
+  ITEMNEWBIE	= i_pants_short
+  Name		= Doom Armour
+  COLOR		= 01
+  ITEMNEWBIE	= i_sash
+  COLOR		= 0845
+  ITEM		= i_arrow,{10 15}
+  ITEM		= i_gold,{300 500}
+
+ON=@DEATH
+  FINDLAYER(layer_horse).REMOVE
+
+// --- Howard the Priest ---
+[CHARDEF c_h_howard]
+ID		= c_man
+NAME		= Howard
+ICON		= i_pet_man
+TSPEECH		= spk_human_default
+TSPEECH		= spk_quest_hades
+
+CATEGORY=Imperial uo
+SUBSECTION	= Hades Adventure
+DESCRIPTION	= Howard the Priest
+
+ON=@CREATE
+  COLOR		= colors_skin
+  NPC		= brain_human
+  TITLE		= Priest  
+  FLAGS		= 010000005
+
+  STR		= 80
+  DEX		= 90
+  INT		= 80
+  MAGERY	= 100
+
+  ITEMNEWBIE	= i_hair_short
+  COLOR		= 900 //grey hair
+  ITEMNEWBIE	= i_robe
+  COLOR		= 0845
+  ITEMNEWBIE	= i_boots_thigh
+  COLOR		= 0845
+  
+//---------- 
+[SPEECH spk_quest_hades]
+ON=*help*
+ON=*quest*
+  IF ( <SRC.TAG.NPC_QUEST_START> & NPCQ_Hades )
+    SAY You allready agreed to help me
+  ELSE	// Can take the quest.
+    SAY I have bad news friend Hades the god of the underworld has been sending his men to these lands.
+    SAY I need your help to stop his army Say "agree" to accept
+  ENDIF
+  RETURN 1
+
+ON=*agree*              
+  IF ( <SRC.TAG.NPC_QUEST_START> & NPCQ_Hades )
+     SAY You allready agreed to do help me      
+     RETURN 1                                                   	
+  ELSE	
+     SRC.TAG.NPC_QUEST_START = <eval ( <SRC.TAG.NPC_QUEST_START> | NPCQ_Hades )>
+     SAY The Gatekeeper is carrying the Bracelet of Doom you must bring it to me.
+     SAY Say "location" to get information and "reward" to collect your price.
+     RETURN 0
+  ENDIF	
+  		
+ON=*location*
+ON=*place*
+  IF ( ( <SRC.TAG.NPC_QUEST_START> & NPCQ_Hades ) && !strmatch(Map to Halls of Hades,<SRC.FINDTYPE.T_MAP.NAME>) )	// Get the information.
+    SAY You find the entrance to the Halls of Hades on this map
+    DORAND 4
+      SRC.NEWITEM i_map_hades1	// Chooses 1 of the 4 maps			
+      SRC.NEWITEM i_map_hades2
+      SRC.NEWITEM i_map_hades3
+      SRC.NEWITEM i_map_hades4   
+    ENDDO   
+    SRC.ACT.BOUNCE
+    RETURN 0
+  ELSEIF ( ( <SRC.TAG.NPC_QUEST_START> & NPCQ_Hades ) && strmatch(Map to Halls of Hades,<SRC.FINDTYPE.T_MAP.NAME>) ) // Have the map
+    SAY You allready have the map                 
+  ELSE	
+    SAY You must agree to help me to get information my friend
+  ENDIF
+  RETURN 1
+  
+ON=*reward*
+   IF !( <SRC.TAG.NPC_QUEST_START> & NPCQ_Hades )
+      SAY You must agree to help me to get the information my friend.
+   ELSEIF ( ( <SRC.TAG.NPC_QUEST_START> & NPCQ_Hades ) && !<SRC.RESTEST 1 i_bracelet_hades> )
+     SAY Bring me the Bracelet of Doom, and i shall reward you.                  
+   ELSEIF <SRC.RESTEST 1 i_bracelet_hades>
+     SRC.SYSMESSAGE <NAME> hands you a big pile of coins and walks away with a content look in his face.
+     SRC.CONSUME 1 i_bracelet_hades
+     SRC.NEWITEM tp_reward_hades
+     SRC.ACT.BOUNCE
+     SRC.TAG.NPC_QUEST_START = <eval ( <SRC.TAG.NPC_QUEST_START> &~ NPCQ_Hades )>
+     SRC.TAG.NPC_QUEST_DONE = <eval ( <SRC.TAG.NPC_QUEST_DONE> | NPCQ_Hades )>
+     REMOVE
+     ANNOUNCE <SRC.NAME> has brought hope to the people of Britannia
+     RETURN 0
+   ENDIF
+   RETURN 1
+// ------- Items: Books, Scroll, Iron Gate, Bracelet, Maps, Moongate -------
+
+// --- Book of Pain ---
+[ITEMDEF i_book_pain]
+ID		= i_book_lg
+NAME		= Book of Pain
+
+CATEGORY=Imperial uo
+SUBSECTION	= Hades Adventure
+DESCRIPTION	= Book of Pain
+
+ON=@CREATE
+MORE		= b_book_pain
+COLOR		= 0845
+
+// --- Book of Panic ---
+[ITEMDEF i_book_panic]
+ID		= i_book_lg
+NAME		= Book of Panic
+
+CATEGORY=Imperial uo
+SUBSECTION	= Hades Adventure
+DESCRIPTION	= Book of Panic
+
+ON=@CREATE
+MORE		= b_book_panic
+COLOR		= 0845
+
+// --- Key to Gate ----
+[ITEMDEF i_key_hades]
+NAME		= Key to the Caves of Hades
+ID		= i_scroll_blank
+TYPE		= t_sign_gump
+VALUE		= 0
+WEIGHT		= 10
+CATEGORY=Imperial uo
+SUBSECTION	= Hades Adventure
+DESCRIPTION	= Key 
+
+ON=@DCLICK
+  DIALOG d_hades_key
+
+// --- Gate to Halls of Hades ---
+[ITEMDEF i_gate_hades]
+ID		= 0825
+NAME		= Gate to the Halls of Hades
+
+CATEGORY=Imperial uo
+SUBSECTION	= Hades Adventure
+DESCRIPTION	= Gate 
+
+ON=@CREATE
+  COLOR		= 0845
+  TYPE		= t_gate_hades
+  
+// ------- Bracelet of Doom -------
+[ITEMDEF i_bracelet_hades]
+ID		= i_bracelet_gold
+NAME		= Bracelet of Doom
+                          
+CATEGORY=Imperial uo
+SUBSECTION	= Hades Adventure
+DESCRIPTION	= Bracelet of Doom
+
+ON=@CREATE
+  COLOR		= 0845
+  TYPE		= t_normal
+  
+// --- Maps to the Gate ---
+[ITEMDEF i_map_hades1]
+ID		= i_map
+NAME		= Map to Halls of Hades
+
+CATEGORY=Imperial uo
+SUBSECTION	= Hades Adventure
+DESCRIPTION	= Map 1 to Gate
+
+ON=@CREATE
+  TYPE		= t_map_hades
+  PIN		= 106,100
+  MOREP		= 1054,1465,0
+  MORE1		= 035604f1
+  MORE2		= 04e60681
+  
+ON=@DCLICK
+  MAP_HADES
+
+[ITEMDEF i_map_hades2]
+ID		= i_map
+NAME		= Map to Halls of Hades
+
+CATEGORY=Imperial uo
+SUBSECTION	= Hades Adventure
+DESCRIPTION	= Map 2 to Gate
+
+ON=@CREATE
+  TYPE		= t_map_hades
+  PIN		= 160,140
+  MOREP		= 1966,1411,0
+  MORE1		= 066f0475
+  MORE2		= 07ff0605
+  
+ON=@DCLICK
+  MAP_HADES
+
+[ITEMDEF i_map_hades3]
+ID		= i_map
+NAME		= Map to Halls of Hades
+
+CATEGORY=Imperial uo
+SUBSECTION	= Hades Adventure
+DESCRIPTION	= Map 3 to Gate
+
+ON=@CREATE
+  TYPE		= t_map_hades
+  PIN		= 107,105  
+  MOREP 	= 1515,636,16
+  MORE1		= 052301b4
+  MORE2		= 06b30344
+  
+ON=@DCLICK
+  MAP_HADES 
+  
+[ITEMDEF i_map_hades4]
+ID		= i_map
+NAME		= Map to Halls of Hades
+
+CATEGORY=Imperial uo
+SUBSECTION	= Hades Adventure
+DESCRIPTION	= Map 4 to Gate
+
+ON=@CREATE
+  TYPE		= t_map_hades
+  PIN		= 70,60
+  MOREP 	= 1563,993,0
+  MORE1	 	= 05970375
+  MORE2		= 07270505
+
+ON=@DCLICK
+  MAP_HADES 
+    
+// ------- Moongate to Halls of Hades -------
+[ITEMDEF i_moongate_hades]
+ID		= i_moongate_blue
+NAME		= Halls of Hades
+
+CATEGORY=Imperial uo
+SUBSECTION	= Hades Adventure
+DESCRIPTION	= Moongate
+
+ON=@CREATE
+  TYPE		= t_telepad_hades
+  COLOR		= 0845
+
+ON=@TIMER
+  LINK.REMOVE	// Remove the map
+    
+// ------- Books and Dialog --------
+
+[BOOK b_book_pain]
+  PAGES		= 10
+  TITLE		= Book of Pain
+  AUTHOR	= Hades
+
+[BOOK b_book_pain 1]
+Orders from Hades:
+Go to the city Britain
+and make all living
+feel pain. I want to
+hear them scream
+from pain!! I expect
+you to meet with
+the other group
+
+[BOOK b_book_pain 2]
+when you have taken
+Britain.
+You will meet the 
+Mages and archers
+at this point:
+
+Vesper Graveyard
+
+[BOOK b_book_pain 3]
+The Gatekeeper will
+give further orders
+there...
+
+
+Do NOT Fail me!!!
+
+
+[BOOK b_book_panic]
+  PAGES		= 10
+  TITLE		= Book of Panic
+  AUTHOR	= Hades
+
+[BOOK b_book_panic 1]
+Orders from Hades:
+Go to the city Minoc
+and spread panic.
+You must kill all
+who can fight. I 
+expect you to meet
+with the other 
+group when you
+
+[BOOK b_book_panic 2]
+have taken Minoc.
+You will meet the 
+Knights at this point:
+
+Vesper Graveyard
+
+[BOOK b_book_panic 3]
+The Gatekeeper will
+give further orders
+there...
+
+
+Do NOT Fail me!!!
+
+
+[DIALOG d_hades_key]
+0,0
+gumppic 120 120 8000
+gumppic 140 155 8001
+gumppic 140 220 8002
+gumppic 140 290 8002
+gumppic 140 360 8002
+gumppic 141 430 8003
+text 230 150 1643 0 // line 1
+text 165 170 1643 1 // line 2
+text 165 190 1643 2 // line 3
+text 165 210 1643 3 // line 4
+text 165 230 1643 4 // line 5
+text 165 250 1643 5 // line 6
+text 165 270 1643 6 // line 7
+text 165 290 1643 7 // line 8
+text 165 310 1643 8 // line 9
+text 165 330 1643 9 // line 10
+text 165 350 1643 10 // line 11
+text 165 370 1643 11 // line 12
+text 230 400 900  12 // line 13
+
+[DIALOG d_hades_key text]
+Orders from Hades
+Collect the Books of Pain and Panic
+from the 2 groups. Destroy Vesper
+and return to my halls and report
+to me. go to this location:
+Vesper Society of thieves
+There will be a magic tunnel that
+leads to the gate of my halls.
+Make sure you have the 3 items on
+you when you open the gate or you
+will be punished as i see it as
+failure.
+Do NOT Fail me!!!  
+
+[DIALOG d_hades_key button]
+
+// ------- Types -------
+[TYPEDEF t_map_hades]
+ON=@DCLICK
+  IF ( <SRC.TAG.NPC_QUEST_START> & NPCQ_Hades )
+    TYPE		= t_map
+    SRC.HOME		= <SRC.P>
+    SRC.P		= <MOREP>
+    SRC.NEWITEM		= i_moongate_hades	// Place Moongate to Dungeon
+    SRC.ACT.TIMER	= 259200  	// the player has 3 days to find the moongate before it vanish
+    SRC.ACT.ATTR	= attr_decay
+    SRC.ACT.LINK	= <UID>          // The moongate and map are linked both ways
+    LINK		= <SRC.ACT.UID>  // to ensure that they can remove each other
+    SRC.ACT.P		= <SRC.P>
+    SRC.P		= <SRC.HOME>	 // Return to the point where the map where dclicked
+     RETURN 0 
+  ELSE  
+    MAP_HADES  // function (v_functions.scp)
+    RETURN 1
+ ENDIF  
+  
+[TYPEDEF t_telepad_hades]
+ON=@STEP
+  IF (( <SRC.TAG.NPC_QUEST_START> & NPCQ_Hades ) && (<SRC.FINDTYPE.T_MAP.UID> == <LINK>))
+    SRC.SYSMESSAGE      = You enter the Halls of Hades
+    LINK.REMOVE		// Remove Map
+    SRC.GO		= 5364,1297  // Halls of Hades location
+    REMOVE		//Remove Moongate             
+    RETURN 0
+  ENDIF
+  RETURN 1
+  
+[TYPEDEF t_gate_hades]
+ON=@DCLICK
+  IF !(<SRC.RESTEST 1 i_key_hades> && <SRC.RESTEST 1 i_book_pain> && <SRC.RESTEST 1 i_book_panic>)
+    SRC.NEWNPC	= c_m_hades_knight_s
+    SRC.NEWNPC	= c_m_hades_knight_s
+    SRC.NEWNPC	= c_m_hades_knight_s
+    RETURN 0
+  ELSE
+    TYPE	= t_door_open
+    SRC.CONSUME 1 i_key_hades
+    SRC.CONSUME 1 i_book_pain
+    SRC.CONSUME 1 i_book_panic
+    RETURN 0
+  ENDIF    
+
+[TEMPLATE tp_reward_hades]
+  ITEM		= i_gold
+  AMOUNT	= 3000
+  
+  
+
+//
+// Functions	:	Div. functions for npc quests.	
+//
+// by Vidar 	: 	April 2002
+//           
+
+[FUNCTION MAP_WHISPER]	// for general use
+ SRC.SYSMESSAGE You hear whisper as you roll out the map
+ SRC.SOUND 		= 413   // Sound of Liche whispering
+ RETURN 1
+
+[FUNCTION MAP_DESTROY] // for general use. (maybe make random effects)
+ SRC.SYSMESSAGE The map bursts into flames
+ SRC.SPELLEFFECT= 5 100         // Firebolt
+ SRC.SOUND= 351                 
+ SRC.DAMAGE= {10,15} 
+ REMOVE
+ RETURN 1
+ 
+[FUNCTION MAP_HADES]	// NPC quest. (Hades)
+IF !( <SRC.TAG.NPC_QUEST_START> & NPCQ_Hades ) 	// the player is not allowed to pen the map
+  MAP_DESTROY			// The map bursts into flames and do damage	
+  RETURN 1
+ELSE                      	// the player opens the map
+  MAP_WHISPER         	// The player hears whisper 
+  RETURN 1
+ENDIF  
+
+[FUNCTION F_PVP_TUB125a]
+SRC.DIALOG D_PVP_TUB
+
+  
+  
+[EOF]  

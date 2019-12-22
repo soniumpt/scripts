@@ -1,0 +1,428 @@
+[ITEMDEF i_town_gate]
+id=i_moongate_blue
+name=Guild Town Entrance
+
+
+ON=@DClick
+	IF (<LINK> == 04fffffff)
+	SRC.NEWITEM	i_pouch
+     SRC.ACT.ATTR	= attr_invis | attr_move_never
+     SRC.ACT.P		= <P>
+     SRC.ACT.Z		= <eval (<Z> + 22)>
+     SRC.ACT.COLOR	= 039b
+     SRC.ACT.TIMER	= -1
+     SRC.ACT.NAME	= group of friends
+     SRC.ACT.LINK	= <LINK.UID>
+     LINK = <SRC.ACT.UID>
+	 ENDIF
+	IF (<SRC.ISGM>)
+		SRC.SYSMESSAGE @07a3 Choose who you wish to make Town Mayor
+		TARGETF f_set_mayor <UID>
+		return 1
+	ELSEIF (STRCMP(<SRC.ACCOUNT>,<UID.<TAG.MAYOR>.ACCOUNT>) == 0)
+		FOR 0 80
+			town_init_friend <EVAL <LOCAL._FOR>>
+		ENDFOR
+		  HTMLDIALOG d_town_gates
+		return 1
+	ENDIF
+	
+ON=@Step
+	IF (STRCMP(<SRC.ACCOUNT>,<UID.<TAG.MAYOR>.ACCOUNT>) == 0)
+		RETURN 0
+	ENDIF
+	FOR 0 80
+		IF (<SRC.UID> == <UID.<LINK>.findcont(<LOCAL._FOR>).more2>)
+			RETURN 0
+		ENDIF
+	ENDFOR
+	RETURN 1
+	
+[ITEMDEF i_town_trust]
+ID	= i_scroll_blank
+NAME	= town trust
+TYPE	= t_script
+LAYER	= 0
+
+ON = @Click
+   MESSAGE <NAME>
+   return 1
+
+[FUNCTION f_set_mayor]
+	UID.<ARGS>.TAG.MAYOR = <ARGO.UID>
+	SRC.NEWITEM	i_town_trust
+    SRC.ACT.NAME	= <ARGO.NAME>
+    SRC.ACT.MORE2	= <ARGO.UID>
+    SRC.ACT.CONT	= <UID.<ARGS>.LINK>
+	SRC.SYSMESSAGE @07a3 <ARGO.NAME> set as Town Mayor
+	ARGO.SYSMESSAGE @07a3 You are now this towns Mayor
+	
+[FUNCTION f_set_member]
+	IF (<ARGO.ISPLAYER>)
+		SRC.NEWITEM	i_town_trust
+		SRC.ACT.NAME	= <ARGO.NAME>
+		SRC.ACT.MORE2	= <ARGO.UID>
+		SRC.ACT.CONT	= <UID.<ARGS>.LINK>
+		SRC.SYSMESSAGE @07a3 <ARGO.NAME> added as member
+		ARGO.SYSMESSAGE @07a3 You have been added to the town gate
+	ELSE
+		SRC.SYSMESSAGE @07a3 <ARGO.NAME> does not look very much like it wants to use the gate..	
+	ENDIF
+	
+
+[DIALOG d_town_gates]
+100,60
+gumppic    0    0 <eval   0ce>		// left
+gumppic    0   44 <eval   0ca>
+gumppic    0  360 <eval   0cc>
+
+gumppic  471    0 <eval   0cf>		// right
+gumppic  471   44 <eval   0cb>
+gumppic  471  360 <eval   0cd>
+
+gumppic   44    0 <eval   0c9>		// middle
+gumppic   44   44 <eval  0a2c>
+gumppic   44  360 <eval   0e9>
+
+gumppic  350    0 <eval   0cf>		// left 2
+gumppic  350   44 <eval   0cb>
+gumppic  350  360 <eval   0cd>
+
+resizepic 48 25 5100 299 25		// title background
+
+button   415   50 <eval 015a9> <eval 015aa> 0 1		// status
+button   415   130 <eval 015a9> <eval 015aa> 0 2		// status
+button   415   210 <eval 015a9> <eval 015aa> 0 3		// status
+button   415   290 <eval 015a9> <eval 015aa> 0 4		// status
+  
+PAGE 1  
+   gumppic    0  360 <eval   0cc>
+   gumppic  471  360 <eval   0cd>
+   gumppic   44  360 <eval   0e9>
+   gumppic  350  360 <eval   0cd>
+
+   dtext 160 27 0 MEMBERS
+   
+	text <VAR.FRIENDS.0.TEXT>
+    button <VAR.FRIENDS.0.BT1>
+	text <VAR.FRIENDS.1.TEXT>
+    button <VAR.FRIENDS.1.BT1>
+	text <VAR.FRIENDS.2.TEXT>
+    button <VAR.FRIENDS.2.BT1>
+	text <VAR.FRIENDS.3.TEXT>
+    button <VAR.FRIENDS.3.BT1>
+	text <VAR.FRIENDS.4.TEXT>
+    button <VAR.FRIENDS.4.BT1>
+	text <VAR.FRIENDS.5.TEXT>
+    button <VAR.FRIENDS.5.BT1>
+	text <VAR.FRIENDS.6.TEXT>
+    button <VAR.FRIENDS.6.BT1>
+	text <VAR.FRIENDS.7.TEXT>
+    button <VAR.FRIENDS.7.BT1>
+	text <VAR.FRIENDS.8.TEXT>
+    button <VAR.FRIENDS.8.BT1>
+	text <VAR.FRIENDS.9.TEXT>
+    button <VAR.FRIENDS.9.BT1>
+	text <VAR.FRIENDS.10.TEXT>
+    button <VAR.FRIENDS.10.BT1>
+	text <VAR.FRIENDS.11.TEXT>
+    button <VAR.FRIENDS.11.BT1>
+	text <VAR.FRIENDS.12.TEXT>
+    button <VAR.FRIENDS.12.BT1>
+	text <VAR.FRIENDS.13.TEXT>
+    button <VAR.FRIENDS.13.BT1>
+	text <VAR.FRIENDS.14.TEXT>
+    button <VAR.FRIENDS.14.BT1>
+	text <VAR.FRIENDS.15.TEXT>
+    button <VAR.FRIENDS.15.BT1>
+	text <VAR.FRIENDS.16.TEXT>
+    button <VAR.FRIENDS.16.BT1>
+	text <VAR.FRIENDS.17.TEXT>
+    button <VAR.FRIENDS.17.BT1>
+	text <VAR.FRIENDS.18.TEXT>
+    button <VAR.FRIENDS.18.BT1>
+	text <VAR.FRIENDS.19.TEXT>
+    button <VAR.FRIENDS.19.BT1>
+	
+	button 290 60 <eval 015bd> <eval 015be> 1 0 999		
+   dtext  260 120 0 Add trusted person
+   dtext  270 135 0 to the town.
+   
+   
+PAGE 2
+   gumppic    0  360 <eval   0cc>
+   gumppic  471  360 <eval   0cd>
+   gumppic   44  360 <eval   0e9>
+   gumppic  350  360 <eval   0cd>
+
+   dtext 160 27 0 MEMBERS
+   
+	text <VAR.FRIENDS.20.TEXT>
+    button <VAR.FRIENDS.20.BT1>
+	text <VAR.FRIENDS.21.TEXT>
+    button <VAR.FRIENDS.21.BT1>
+	text <VAR.FRIENDS.22.TEXT>
+    button <VAR.FRIENDS.22.BT1>
+	text <VAR.FRIENDS.23.TEXT>
+    button <VAR.FRIENDS.23.BT1>
+	text <VAR.FRIENDS.24.TEXT>
+    button <VAR.FRIENDS.24.BT1>
+	text <VAR.FRIENDS.25.TEXT>
+    button <VAR.FRIENDS.25.BT1>
+	text <VAR.FRIENDS.26.TEXT>
+    button <VAR.FRIENDS.26.BT1>
+	text <VAR.FRIENDS.27.TEXT>
+    button <VAR.FRIENDS.27.BT1>
+	text <VAR.FRIENDS.28.TEXT>
+    button <VAR.FRIENDS.28.BT1>
+	text <VAR.FRIENDS.29.TEXT>
+    button <VAR.FRIENDS.29.BT1>
+	text <VAR.FRIENDS.30.TEXT>
+    button <VAR.FRIENDS.30.BT1>
+	text <VAR.FRIENDS.31.TEXT>
+    button <VAR.FRIENDS.31.BT1>
+	text <VAR.FRIENDS.32.TEXT>
+    button <VAR.FRIENDS.32.BT1>
+	text <VAR.FRIENDS.33.TEXT>
+    button <VAR.FRIENDS.33.BT1>
+	text <VAR.FRIENDS.34.TEXT>
+    button <VAR.FRIENDS.34.BT1>
+	text <VAR.FRIENDS.35.TEXT>
+    button <VAR.FRIENDS.35.BT1>
+	text <VAR.FRIENDS.36.TEXT>
+    button <VAR.FRIENDS.36.BT1>
+	text <VAR.FRIENDS.37.TEXT>
+    button <VAR.FRIENDS.37.BT1>
+	text <VAR.FRIENDS.38.TEXT>
+    button <VAR.FRIENDS.38.BT1>
+	text <VAR.FRIENDS.39.TEXT>
+    button <VAR.FRIENDS.39.BT1>
+	
+	button 290 60 <eval 015bd> <eval 015be> 1 0 999		
+   dtext  260 120 0 Add trusted person
+   dtext  270 135 0 to the town.
+   
+   
+PAGE 3
+   gumppic    0  360 <eval   0cc>
+   gumppic  471  360 <eval   0cd>
+   gumppic   44  360 <eval   0e9>
+   gumppic  350  360 <eval   0cd>
+
+   dtext 160 27 0 MEMBERS
+   
+	text <VAR.FRIENDS.40.TEXT>
+    button <VAR.FRIENDS.40.BT1>
+	text <VAR.FRIENDS.41.TEXT>
+    button <VAR.FRIENDS.41.BT1>
+	text <VAR.FRIENDS.42.TEXT>
+    button <VAR.FRIENDS.42.BT1>
+	text <VAR.FRIENDS.43.TEXT>
+    button <VAR.FRIENDS.43.BT1>
+	text <VAR.FRIENDS.44.TEXT>
+    button <VAR.FRIENDS.44.BT1>
+	text <VAR.FRIENDS.45.TEXT>
+    button <VAR.FRIENDS.45.BT1>
+	text <VAR.FRIENDS.46.TEXT>
+    button <VAR.FRIENDS.46.BT1>
+	text <VAR.FRIENDS.47.TEXT>
+    button <VAR.FRIENDS.47.BT1>
+	text <VAR.FRIENDS.48.TEXT>
+    button <VAR.FRIENDS.48.BT1>
+	text <VAR.FRIENDS.49.TEXT>
+    button <VAR.FRIENDS.49.BT1>
+	text <VAR.FRIENDS.50.TEXT>
+    button <VAR.FRIENDS.50.BT1>
+	text <VAR.FRIENDS.51.TEXT>
+    button <VAR.FRIENDS.51.BT1>
+	text <VAR.FRIENDS.52.TEXT>
+    button <VAR.FRIENDS.52.BT1>
+	text <VAR.FRIENDS.53.TEXT>
+    button <VAR.FRIENDS.53.BT1>
+	text <VAR.FRIENDS.54.TEXT>
+    button <VAR.FRIENDS.54.BT1>
+	text <VAR.FRIENDS.55.TEXT>
+    button <VAR.FRIENDS.55.BT1>
+	text <VAR.FRIENDS.56.TEXT>
+    button <VAR.FRIENDS.56.BT1>
+	text <VAR.FRIENDS.57.TEXT>
+    button <VAR.FRIENDS.57.BT1>
+	text <VAR.FRIENDS.58.TEXT>
+    button <VAR.FRIENDS.58.BT1>
+	text <VAR.FRIENDS.59.TEXT>
+    button <VAR.FRIENDS.59.BT1>
+	
+	button 290 60 <eval 015bd> <eval 015be> 1 0 999		
+   dtext  260 120 0 Add trusted person
+   dtext  270 135 0 to the town.
+   
+PAGE 4
+   gumppic    0  360 <eval   0cc>
+   gumppic  471  360 <eval   0cd>
+   gumppic   44  360 <eval   0e9>
+   gumppic  350  360 <eval   0cd>
+
+   dtext 160 27 0 MEMBERS
+   
+	text <VAR.FRIENDS.60.TEXT>
+    button <VAR.FRIENDS.60.BT1>
+	text <VAR.FRIENDS.61.TEXT>
+    button <VAR.FRIENDS.61.BT1>
+	text <VAR.FRIENDS.62.TEXT>
+    button <VAR.FRIENDS.62.BT1>
+	text <VAR.FRIENDS.63.TEXT>
+    button <VAR.FRIENDS.63.BT1>
+	text <VAR.FRIENDS.64.TEXT>
+    button <VAR.FRIENDS.64.BT1>
+	text <VAR.FRIENDS.65.TEXT>
+    button <VAR.FRIENDS.65.BT1>
+	text <VAR.FRIENDS.66.TEXT>
+    button <VAR.FRIENDS.66.BT1>
+	text <VAR.FRIENDS.67.TEXT>
+    button <VAR.FRIENDS.67.BT1>
+	text <VAR.FRIENDS.68.TEXT>
+    button <VAR.FRIENDS.68.BT1>
+	text <VAR.FRIENDS.69.TEXT>
+    button <VAR.FRIENDS.69.BT1>
+	text <VAR.FRIENDS.70.TEXT>
+    button <VAR.FRIENDS.70.BT1>
+	text <VAR.FRIENDS.71.TEXT>
+    button <VAR.FRIENDS.71.BT1>
+	text <VAR.FRIENDS.72.TEXT>
+    button <VAR.FRIENDS.72.BT1>
+	text <VAR.FRIENDS.73.TEXT>
+    button <VAR.FRIENDS.73.BT1>
+	text <VAR.FRIENDS.74.TEXT>
+    button <VAR.FRIENDS.74.BT1>
+	text <VAR.FRIENDS.75.TEXT>
+    button <VAR.FRIENDS.75.BT1>
+	text <VAR.FRIENDS.76.TEXT>
+    button <VAR.FRIENDS.76.BT1>
+	text <VAR.FRIENDS.77.TEXT>
+    button <VAR.FRIENDS.77.BT1>
+	text <VAR.FRIENDS.78.TEXT>
+    button <VAR.FRIENDS.78.BT1>
+	text <VAR.FRIENDS.79.TEXT>
+    button <VAR.FRIENDS.79.BT1>
+	text <VAR.FRIENDS.80.TEXT>
+    button <VAR.FRIENDS.80.BT1>
+	
+	button 290 60 <eval 015bd> <eval 015be> 1 0 999		
+   dtext  260 120 0 Add trusted person
+   dtext  270 135 0 to the town.
+  
+
+[DIALOG d_town_gates TEXT]
+<UID.<LINK>.findcont(0).NAME>
+<UID.<LINK>.findcont(1).NAME>
+<UID.<LINK>.findcont(2).NAME>
+<UID.<LINK>.findcont(3).NAME>
+<UID.<LINK>.findcont(4).NAME>
+<UID.<LINK>.findcont(6).NAME>
+<UID.<LINK>.findcont(7).NAME>
+<UID.<LINK>.findcont(8).NAME>
+<UID.<LINK>.findcont(9).NAME>
+<UID.<LINK>.findcont(10).NAME>
+<UID.<LINK>.findcont(11).NAME>
+<UID.<LINK>.findcont(12).NAME>
+<UID.<LINK>.findcont(13).NAME>
+<UID.<LINK>.findcont(14).NAME>
+<UID.<LINK>.findcont(15).NAME>
+<UID.<LINK>.findcont(16).NAME>
+<UID.<LINK>.findcont(17).NAME>
+<UID.<LINK>.findcont(18).NAME>
+<UID.<LINK>.findcont(19).NAME>
+<UID.<LINK>.findcont(20).NAME>
+<UID.<LINK>.findcont(21).NAME>
+<UID.<LINK>.findcont(22).NAME>
+<UID.<LINK>.findcont(23).NAME>
+<UID.<LINK>.findcont(24).NAME>
+<UID.<LINK>.findcont(25).NAME>
+<UID.<LINK>.findcont(26).NAME>
+<UID.<LINK>.findcont(27).NAME>
+<UID.<LINK>.findcont(28).NAME>
+<UID.<LINK>.findcont(29).NAME>
+<UID.<LINK>.findcont(30).NAME>
+<UID.<LINK>.findcont(31).NAME>
+<UID.<LINK>.findcont(32).NAME>
+<UID.<LINK>.findcont(33).NAME>
+<UID.<LINK>.findcont(34).NAME>
+<UID.<LINK>.findcont(35).NAME>
+<UID.<LINK>.findcont(36).NAME>
+<UID.<LINK>.findcont(37).NAME>
+<UID.<LINK>.findcont(38).NAME>
+<UID.<LINK>.findcont(39).NAME>
+<UID.<LINK>.findcont(40).NAME>
+<UID.<LINK>.findcont(41).NAME>
+<UID.<LINK>.findcont(42).NAME>
+<UID.<LINK>.findcont(43).NAME>
+<UID.<LINK>.findcont(44).NAME>
+<UID.<LINK>.findcont(45).NAME>
+<UID.<LINK>.findcont(46).NAME>
+<UID.<LINK>.findcont(47).NAME>
+<UID.<LINK>.findcont(48).NAME>
+<UID.<LINK>.findcont(49).NAME>
+<UID.<LINK>.findcont(50).NAME>
+<UID.<LINK>.findcont(51).NAME>
+<UID.<LINK>.findcont(52).NAME>
+<UID.<LINK>.findcont(53).NAME>
+<UID.<LINK>.findcont(54).NAME>
+<UID.<LINK>.findcont(55).NAME>
+<UID.<LINK>.findcont(56).NAME>
+<UID.<LINK>.findcont(57).NAME>
+<UID.<LINK>.findcont(58).NAME>
+<UID.<LINK>.findcont(59).NAME>
+<UID.<LINK>.findcont(60).NAME>
+<UID.<LINK>.findcont(61).NAME>
+<UID.<LINK>.findcont(62).NAME>
+<UID.<LINK>.findcont(63).NAME>
+<UID.<LINK>.findcont(64).NAME>
+<UID.<LINK>.findcont(65).NAME>
+<UID.<LINK>.findcont(66).NAME>
+<UID.<LINK>.findcont(67).NAME>
+<UID.<LINK>.findcont(68).NAME>
+<UID.<LINK>.findcont(69).NAME>
+<UID.<LINK>.findcont(70).NAME>
+<UID.<LINK>.findcont(71).NAME>
+<UID.<LINK>.findcont(72).NAME>
+<UID.<LINK>.findcont(73).NAME>
+<UID.<LINK>.findcont(74).NAME>
+<UID.<LINK>.findcont(75).NAME>
+<UID.<LINK>.findcont(76).NAME>
+<UID.<LINK>.findcont(77).NAME>
+<UID.<LINK>.findcont(78).NAME>
+<UID.<LINK>.findcont(79).NAME>
+<UID.<LINK>.findcont(80).NAME>
+
+
+   
+[DIALOG d_town_gates BUTTON]
+
+ONBUTTON = 999
+	SRC.SYSMESSAGE @07a3 Choose who you wish to add to the town
+	TARGETF f_set_member <UID>
+	return 1
+  
+ONBUTTON = 10 110
+	SRC.ACT	= <UID.<LINK>.findcont(<args>)>
+	SRC.SYSMESSAGE @07a3 <SRC.ACT.NAME> has been removed.
+	SRC.ACT.REMOVE
+	return 1
+
+
+[FUNCTION town_init_friend]
+   if ( <UID.<LINK>.findcont(<args>).uid> == 0 )
+      TRY VAR.FRIENDS.<args>.TEXT		= 300 80 0 59		// out of screen
+      TRY VAR.FRIENDS.<args>.BT1		= 300 80 <eval 0d8> <eval 0d8> 0 3 0
+      return 0
+   endif
+   
+ if (<argn>>=20)
+      TRY VAR.FRIENDS.<args>.BT1		= 40 <eval (53+((<args>+-20)*16))> <eval 0146f> <eval 0d7> 1 3 <eval (60+<args>)>
+      TRY VAR.FRIENDS.<args>.TEXT		= 95 <eval (50+((<args>+-20)*16))> 0 <eval <args>>
+else
+    TRY VAR.FRIENDS.<args>.BT1		= 40 <eval (53+(<args>*16))> <eval 0146f> <eval 0d7> 1 3 <eval (60+<args>)>
+    TRY VAR.FRIENDS.<args>.TEXT		= 95 <eval (50+(<args>*16))> 0 <eval <args>>
+endif
+
+[EOF]

@@ -1,0 +1,689 @@
+// WARNING
+//   These functions should NEVER be called explicitly. To make a specific skill check on call,
+//   use SKILLCHECK_START Skill_Name, and get Skill_Name from spheretables.scp
+//
+// WARNING: The order of the statements IS important, and MUST be as follows:
+//   SKILLCHECK_INIT	<skill key name>
+//   SKILLCHECK_STATS	<str>, <int>, <dex>
+//   SKILLCHECK_ADV	<chance at 0% skill>, <chance at 30% skill>, <chance at 70% skill>, <chance at 100% skill>
+//   SKILLCHECK_REFRESH	<refresh time>
+//   SKILLCHECK_ROLL
+//      SKILLCHEC_OPPOSITE	<maximum of current skill+other skill value>, <other skill value>
+//   SKILLCHECK_FINISH
+//
+// The values in SKILLCHECK_ADV are the chance per thousand attempts. The last 2 values MUST be smaller
+// than 255 (because of function argument parsing limitations).
+// Refrain from using SKILLCHECK_ADV, and use one of the 5 predefined skill progression
+// classes (EASY, NORMAL, HARD, HARDER, HARDEST).
+
+
+//
+//  PROTOTYPES FOR SKILL ADVANCEMENT
+//
+[FUNCTION SKILLCHECK_ADV_HARDEST]
+  SKILLCHECK_ADV	100,  55,  35, 10
+  
+[FUNCTION SKILLCHECK_ADV_HARDER]
+  SKILLCHECK_ADV	120,  70,  40, 18
+
+[FUNCTION SKILLCHECK_ADV_HARD]
+  SKILLCHECK_ADV	130,  70,  45, 22
+  
+[FUNCTION SKILLCHECK_ADV_NORMAL]
+  SKILLCHECK_ADV	140,  75,  50, 25
+
+[FUNCTION SKILLCHECK_ADV_EASY]
+  SKILLCHECK_ADV	150,  80,  60, 30
+
+[FUNCTION SKILLCHECK_ADV_COMBAT]
+  SKILLCHECK_ADV	 90,  45,   20,  7
+
+
+[FUNCTION SKILLCHECK_ADV_MAGERY]
+  SKILLCHECK_ADV	140,  75,  45, 20
+
+[FUNCTION SKILLCHECK_ADV_RESOURCE]
+  SKILLCHECK_ADV	150,  95,  70, 45
+
+// blacksmithing
+[FUNCTION SKILLCHECK_ADV_CRAFTING]
+  SKILLCHECK_ADV	150,  80,  65, 45
+
+[FUNCTION SKILLCHECK_ADV_CRAFTING2]
+  SKILLCHECK_ADV	150,  70,  50, 35
+
+[FUNCTION SKILLCHECK_ADV_CRAFTING3]
+  SKILLCHECK_ADV	130,  60,  45, 30
+
+[FUNCTION SKILLCHECK_ADV_CRAFTINGe]
+  SKILLCHECK_ADV	150,  80,  70, 50
+
+
+[FUNCTION check_combat]
+  if ( 0<ACT.uid> == 0 )
+     return 1
+  endif
+  if ( <ACT.ISITEM> )
+     if ( <ACT.TYPE> == t_train_dummy )
+     elseif ( <ACT.BASEID> == i_archery_butte )
+     else
+       return 1
+     endif
+  elseif !( <ACT.ISCHAR> )
+     return 1
+  else
+     if ( !(<act.flags> & statf_war) ) 
+        // DEBUGSAY target not in warmode.
+        return 1
+     endif
+  endif
+  if ( (<REGION.FLAGS>|<ACT.REGION.FLAGS>) & (region_flag_safe|region_flag_no_pvp) )
+     return 1
+  endif
+  return 0
+
+
+
+//
+//  Improvement FUNCTIONs
+//
+[FUNCTION SKILLCHECK_0]
+  SKILLCHECK_INIT		Alchemy
+  SKILLCHECK_MAKEITEM
+  SKILLCHECK_STATS		5, 75, 30
+  SKILLCHECK_ADV_CRAFTING3
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+
+
+[FUNCTION SKILLCHECK_1]
+  SKILLCHECK_INIT		Anatomy
+  if ( <FLAGS> & statf_war )
+     SKILLCHECK_ADJUST_COMBAT
+  endif
+  SKILLCHECK_STATS		0, 75, 0
+  SKILLCHECK_ADV_EASY
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+
+
+[FUNCTION SKILLCHECK_2]
+  SKILLCHECK_INIT		AnimalLore
+  SKILLCHECK_STATS		0, 50, 0
+  SKILLCHECK_ADV_EASY		
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+
+
+[FUNCTION SKILLCHECK_3]
+  SKILLCHECK_INIT		ItemID
+  SKILLCHECK_STATS		0, 140, 0
+  SKILLCHECK_ADV_EASY		
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+
+
+[FUNCTION SKILLCHECK_4]
+  SKILLCHECK_INIT		ArmsLore
+  SKILLCHECK_STATS		0, 140, 0
+  SKILLCHECK_ADV_EASY		
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+
+
+[FUNCTION SKILLCHECK_5]
+  //if ( !<act> || !<ACT.ISCHAR> )
+     //return 1
+  //endif
+  //if ( (<act.distance> > 1) || !(<act.flags> & statf_war) ) 
+     //return 1
+  //endif
+if ( rand(1000) < ((<Parrying>/3) + 500) )
+  SKILLCHECK_INIT		Parrying
+  SKILLCHECK_ADJUST_COMBAT
+  SKILLCHECK_STATS		70, 0, 50
+  SKILLCHECK_ADV_COMBAT	
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+endif
+
+
+[FUNCTION SKILLCHECK_6]
+  SKILLCHECK_INIT		Begging
+  SKILLCHECK_STATS		0, 50, 0
+  SKILLCHECK_ADV_EASY		
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+
+
+[FUNCTION SKILLCHECK_7]
+  SKILLCHECK_INIT		Blacksmithing
+  SKILLCHECK_MAKEITEM
+  SKILLCHECK_STATS		50, 80, 70
+  SKILLCHECK_ADV_CRAFTINGe
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+  if ( (rand(100) < 30) && (<ArmsLore> < ((<BlackSmithing>*3)/4)) )
+    SKILLCHECK_START		Skill_ArmsLore
+  endif
+
+
+[FUNCTION SKILLCHECK_8]
+  SKILLCHECK_INIT		Bowcraft
+  SKILLCHECK_MAKEITEM
+  SKILLCHECK_STATS		20, 80, 70
+  SKILLCHECK_ADV_NORMAL		
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+  if ( (rand(100) < 30) && (<ArmsLore> < ((<Bowcraft>*3)/4)) )
+    SKILLCHECK_START		Skill_ArmsLore
+  endif
+
+
+[FUNCTION SKILLCHECK_9]
+  SKILLCHECK_INIT		Peacemaking
+  SKILLCHECK_STATS		0, 70, 30
+  SKILLCHECK_ADV_EASY		
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+  if ( (rand(100) < 70) )
+    TAG.MAKEITEM.LEVEL		= <MUSICIANSHIP>
+    SKILLCHECK_START		Skill_Musicianship
+  endif
+
+
+[FUNCTION SKILLCHECK_10]
+  SKILLCHECK_INIT		Camping
+  SKILLCHECK_STATS		10, 60, 20
+  SKILLCHECK_ADV_EASY		
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+
+
+[FUNCTION SKILLCHECK_11]
+  SKILLCHECK_INIT		Carpentry
+  // SKILLCHECK_MAKEITEM
+  SKILLCHECK_STATS		30, 40, 20
+  SKILLCHECK_ADV_EASY		
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+
+
+[FUNCTION SKILLCHECK_12]
+  SKILLCHECK_INIT		Cartography
+  SKILLCHECK_STATS		0, 60, 10
+  SKILLCHECK_ADV_EASY		
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+
+
+[FUNCTION SKILLCHECK_13]
+  SKILLCHECK_INIT		Cooking
+  SKILLCHECK_STATS		0, 40, 0
+  SKILLCHECK_ADV_EASY		
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+
+
+[FUNCTION SKILLCHECK_14]
+  SKILLCHECK_INIT		Detection
+  SKILLCHECK_STATS		0, 0, 0
+  SKILLCHECK_ADV_EASY		
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+
+
+[FUNCTION SKILLCHECK_15]
+  SKILLCHECK_INIT		Enticement
+  SKILLCHECK_STATS		0, 70, 30
+  SKILLCHECK_ADV_EASY		
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+  
+
+[FUNCTION SKILLCHECK_16]
+  SKILLCHECK_INIT		EvaluatingIntel
+  SKILLCHECK_STATS		0, 100, 0
+  SKILLCHECK_ADV_EASY		
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+
+
+[FUNCTION SKILLCHECK_17]
+  SKILLCHECK_INIT		Healing
+  SKILLCHECK_STATS		0, 80, 20
+  SKILLCHECK_ADV_EASY		
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+  if ( (rand(100) < 30) && (<Anatomy> < ((<Healing>*3)/4)) )
+    SKILLCHECK_START		Skill_Anatomy
+  endif
+
+
+[FUNCTION SKILLCHECK_18]
+  SKILLCHECK_INIT		Fishing
+  SKILLCHECK_STATS		20, 50, 50
+  SKILLCHECK_ADV_EASY		
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+
+
+[FUNCTION SKILLCHECK_19]
+  SKILLCHECK_INIT		Netherlore
+  SKILLCHECK_STATS		0, 100, 0
+  SKILLCHECK_ADV_EASY		
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+
+
+[FUNCTION SKILLCHECK_20]
+  SKILLCHECK_INIT		Herding
+  SKILLCHECK_STATS		30, 50, 30
+  SKILLCHECK_ADV_EASY		
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+
+
+[FUNCTION SKILLCHECK_21]
+  SKILLCHECK_INIT		Hiding
+  SKILLCHECK_STATS		0, 120, 140
+  SKILLCHECK_ADV_NORMAL		
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+
+
+[FUNCTION SKILLCHECK_22]
+  SKILLCHECK_INIT		Provocation
+  SKILLCHECK_STATS		0, 60, 20
+  SKILLCHECK_ADV_EASY		
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+  if ( (rand(100) < 70) )
+    TAG.MAKEITEM.LEVEL		= <MUSICIANSHIP>
+    SKILLCHECK_START		Skill_Musicianship
+  endif
+
+
+[FUNCTION SKILLCHECK_23]
+  SKILLCHECK_INIT		Inscription
+  SKILLCHECK_MAKEITEM
+  SKILLCHECK_STATS		0, 90, 20
+  SKILLCHECK_ADV_CRAFTING2	
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+
+
+[FUNCTION SKILLCHECK_24]
+  SKILLCHECK_INIT		LockPicking
+  SKILLCHECK_STATS		0, 90, 50
+  SKILLCHECK_ADV_EASY		
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+
+
+[FUNCTION SKILLCHECK_25]
+  if ( 0<TAG.LASTSPELL> == 0 )
+     return 1
+  endif
+
+  SKILLCHECK_INIT		Magery
+  if ( 0 )
+  elseif ( <TAG.LASTSPELL> <  9 )		// 1
+     TAG.MAKEITEM.LEVEL		=  350
+  elseif ( <TAG.LASTSPELL> < 17 )		// 2
+     TAG.MAKEITEM.LEVEL		=  400
+  elseif ( <TAG.LASTSPELL> < 25 )		// 3
+     TAG.MAKEITEM.LEVEL		=  550
+  elseif ( <TAG.LASTSPELL> < 33 )		// 4
+     TAG.MAKEITEM.LEVEL		=  600
+  elseif ( <TAG.LASTSPELL> < 41 )		// 5
+     TAG.MAKEITEM.LEVEL		=  700
+  elseif ( <TAG.LASTSPELL> < 49 )		// 6
+     TAG.MAKEITEM.LEVEL		=  800
+  elseif ( <TAG.LASTSPELL> < 57 )		// 7
+     TAG.MAKEITEM.LEVEL		=  900
+  elseif ( <TAG.LASTSPELL> < 65 )		// 8
+     TAG.MAKEITEM.LEVEL		= 1000
+  else
+     TAG.MAKEITEM.LEVEL		= 500
+  endif
+  SKILLCHECK_MAKEITEM
+  
+  SKILLCHECK_STATS		0, 140, 20
+  SKILLCHECK_ADV_MAGERY
+  SKILLCHECK_ROLL
+
+
+  // if sk_opposite is 0, this bears no effect
+  //SKILLCHECK_OPPOSITE		1500, <tactics>
+  //SKILLCHECK_OPP_GROUP		1500
+    //SKILLCHECK_OPP_ADD		<swordsmanship>, 75
+    //SKILLCHECK_OPP_ADD		<fencing>, 75
+    //SKILLCHECK_OPP_ADD		<macefighting>, 75
+  //SKILLCHECK_OPP_END
+
+  SKILLCHECK_FINISH
+  if ( (rand(100) < 30) && (<EvaluatingIntel> < ((<Magery>*3)/4)) )
+    SKILLCHECK_START		Skill_EvalInt
+  endif
+  
+
+[FUNCTION SKILLCHECK_26]
+  SKILLCHECK_INIT		MagicResistance
+  SKILLCHECK_STATS		0,  70, 10
+  SKILLCHECK_ADV_NORMAL		
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+
+
+[FUNCTION SKILLCHECK_27]
+if ( rand(1000) < ((<Tactics>/3) + 500) )
+  SKILLCHECK_INIT		Tactics
+  SKILLCHECK_ADJUST_COMBAT
+  SKILLCHECK_STATS		30, 10, 30
+  SKILLCHECK_ADV_COMBAT	
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+endif
+
+
+[FUNCTION SKILLCHECK_28]
+  SKILLCHECK_INIT		Snooping
+  SKILLCHECK_STATS		0, 80, 50
+  SKILLCHECK_ADV_EASY		
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+
+
+[FUNCTION SKILLCHECK_29]
+  SKILLCHECK_INIT		Musicianship
+  SKILLCHECK_MAKEITEM
+  SKILLCHECK_STATS		0, 70, 125
+  SKILLCHECK_ADV_EASY		
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+
+
+[FUNCTION SKILLCHECK_30]
+  SKILLCHECK_INIT		Poisoning
+  SKILLCHECK_STATS		0, 60, 30
+  SKILLCHECK_ADV_EASY		
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+
+
+[FUNCTION SKILLCHECK_31]
+  if ( <check_combat> )
+     return 1
+  endif
+  
+if ( rand(1000) < ((<Archery>/3) + 500) )
+  SKILLCHECK_INIT		Archery
+  SKILLCHECK_STATS		50, 30, 140
+  SKILLCHECK_ADV_HARDEST	
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+  SKILLCHECK_START		Skill_Tactics
+endif
+  if ( (rand(100) < 30) && (<Anatomy> < ((<Archery>*3)/4)) )
+    SKILLCHECK_START		Skill_Anatomy
+  endif
+
+
+[FUNCTION SKILLCHECK_32]
+  SKILLCHECK_INIT		Necromancy
+  SKILLCHECK_MAKEITEM
+  SKILLCHECK_STATS		0, 50, 0
+  SKILLCHECK_ADV_MAGERY		
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+
+
+[FUNCTION SKILLCHECK_33]
+  SKILLCHECK_INIT		Stealing
+  SKILLCHECK_STATS		0, 80, 125
+  SKILLCHECK_ADV_NORMAL		
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+
+
+[FUNCTION SKILLCHECK_34]
+  SKILLCHECK_INIT		Tailoring
+  SKILLCHECK_MAKEITEM
+  SKILLCHECK_STATS		0, 50, 50
+  SKILLCHECK_ADV_CRAFTING
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+
+
+[FUNCTION SKILLCHECK_35]
+  SKILLCHECK_INIT		Taming
+  SKILLCHECK_STATS		2, 100, 40
+  SKILLCHECK_ADV_EASY		
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+  if ( (rand(100) < 30) && (<AnimalLore> < ((<Taming>*3)/4)) )
+    SKILLCHECK_START		Skill_ANIMALLORE
+  endif
+
+
+[FUNCTION SKILLCHECK_36]
+  SKILLCHECK_INIT		HerbLore
+  SKILLCHECK_STATS		0, 70, 0
+  SKILLCHECK_ADV_EASY		
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+
+
+[FUNCTION SKILLCHECK_37]
+  SKILLCHECK_INIT		Tinkering
+  SKILLCHECK_MAKEITEM
+  SKILLCHECK_STATS		30, 80, 70
+  SKILLCHECK_ADV_CRAFTINGe
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+
+
+[FUNCTION SKILLCHECK_38]
+  SKILLCHECK_INIT		Tracking
+  SKILLCHECK_STATS		0, 50, 0
+  SKILLCHECK_ADV_EASY		
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+
+
+[FUNCTION SKILLCHECK_39]
+  SKILLCHECK_INIT		Masonry
+  SKILLCHECK_STATS		0, 90, 20
+  SKILLCHECK_ADV_EASY		
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+
+
+[FUNCTION SKILLCHECK_40]
+  if ( <check_combat> )
+     return 1
+  endif
+if ( rand(1000) < ((<Swordsmanship>/3) + 500) )
+  SKILLCHECK_INIT		Swordsmanship
+  SKILLCHECK_ADJUST_COMBAT
+  SKILLCHECK_STATS		140, 10, 100
+  SKILLCHECK_ADV_COMBAT	
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+  SKILLCHECK_START		Skill_Tactics
+endif
+  if ( (rand(100) < 30) && (<Anatomy> < ((<Swordsmanship>*3)/4)) )
+    SKILLCHECK_START		Skill_Anatomy
+  endif
+
+
+[FUNCTION SKILLCHECK_41]
+  if ( <check_combat> )
+     return 1
+  endif
+if ( (<REGION.FLAGS>|<ACT.REGION.FLAGS>) & (region_flag_safe|region_flag_no_pvp) )
+   return 1
+endif
+
+if ( rand(1000) < ((<Macefighting>/3) + 500) )
+  SKILLCHECK_INIT		Macefighting
+  SKILLCHECK_ADJUST_COMBAT
+  SKILLCHECK_STATS		140, 10, 100
+  SKILLCHECK_ADV_COMBAT	
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+  SKILLCHECK_START		Skill_Tactics
+endif
+  if ( (rand(100) < 30) && (<Anatomy> < ((<Macefighting>*3)/4)) )
+    SKILLCHECK_START		Skill_Anatomy
+  endif
+
+
+[FUNCTION SKILLCHECK_42]
+  if ( <check_combat> )
+     return 1
+  endif
+if ( (<REGION.FLAGS>|<ACT.REGION.FLAGS>) & (region_flag_safe|region_flag_no_pvp) )
+   return 1
+endif
+if ( rand(1000) < ((<Fencing>/3) + 500) )
+  SKILLCHECK_INIT		Fencing
+  SKILLCHECK_ADJUST_COMBAT
+  SKILLCHECK_STATS		140, 10, 100
+  SKILLCHECK_ADV_COMBAT	
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+  SKILLCHECK_START		Skill_Tactics
+endif
+  if ( (rand(100) < 30) && (<Anatomy> < ((<Fencing>*3)/4)) )
+    SKILLCHECK_START		Skill_Anatomy
+  endif
+
+
+[FUNCTION SKILLCHECK_43]
+  if ( <check_combat> )
+     return 1
+  endif
+if ( (<REGION.FLAGS>|<ACT.REGION.FLAGS>) & (region_flag_safe|region_flag_no_pvp) )
+   return 1
+endif
+if ( rand(1000) < ((<Wrestling>/3) + 500) )
+  SKILLCHECK_INIT		Wrestling
+  SKILLCHECK_ADJUST_COMBAT
+  SKILLCHECK_STATS		130, 10, 110
+  SKILLCHECK_ADV_COMBAT	
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+  SKILLCHECK_START		Skill_Tactics
+endif
+  if ( (rand(100) < 30) && (<Anatomy> < ((<Wrestling>*3)/4)) )
+    SKILLCHECK_START		Skill_Anatomy
+  endif
+
+
+[FUNCTION SKILLCHECK_44]
+  SKILLCHECK_INIT		Lumberjacking
+  SKILLCHECK_STATS		140, 10, 60
+  SKILLCHECK_ADV_RESOURCE		
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+
+
+[FUNCTION SKILLCHECK_45]
+  SKILLCHECK_INIT		Mining
+  SKILLCHECK_STATS		140, 10, 50
+  SKILLCHECK_ADV_RESOURCE		
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+
+
+[FUNCTION SKILLCHECK_46]
+  SKILLCHECK_INIT		Meditation
+  SKILLCHECK_STATS		0, 140, 40
+  SKILLCHECK_ADV_EASY		
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+
+
+[FUNCTION SKILLCHECK_47]
+  if ( <HIDING> < 80.0 ) 
+     return 1
+  endif
+
+  SKILLCHECK_INIT		Stealth
+  SKILLCHECK_STATS		0, 50, 125
+  SKILLCHECK_ADV_NORMAL		
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+
+
+[FUNCTION SKILLCHECK_48]
+  SKILLCHECK_INIT		unused1
+  SKILLCHECK_STATS		0, 70, 70
+  SKILLCHECK_ADV_EASY		
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+
+
+[FUNCTION SKILLCHECK_49]
+  SKILLCHECK_INIT		unused2
+  SKILLCHECK_STATS		0, 100, 0
+  SKILLCHECK_ADV_EASY		
+  SKILLCHECK_ROLL
+  SKILLCHECK_FINISH
+
+
+[DEFNAME def_refresh]
+  sk_refresh_0		10	// Alchemy
+  sk_refresh_1		10	// Anatomy
+  sk_refresh_2		10	// Creature lore
+  sk_refresh_3		 5	// Item lore
+  sk_refresh_4		 5	// Arms lore
+  sk_refresh_5		 6	// Shieldfighting
+  sk_refresh_6		10	// Begging
+  sk_refresh_7		10	// Blacksmithing
+  sk_refresh_8		 6	// Bowcraft
+  sk_refresh_9		10	// Peacemaking
+  sk_refresh_10		10	// Camping
+  sk_refresh_11		 6	// Carpentry
+  sk_refresh_12		 8	// Cartography
+  sk_refresh_13		10	// Cooking
+  sk_refresh_14		10	// Detection
+  sk_refresh_15		10	// Enticement
+  sk_refresh_16		10	// EvaluatingIntel
+  sk_refresh_17		15	// Healing
+  sk_refresh_18		13	// Fishing
+  sk_refresh_19		10	// Netherlore
+  sk_refresh_20		10	// Herding
+  sk_refresh_21		22	// Hiding
+  sk_refresh_22		12	// Provocation
+  sk_refresh_23		10	// Inscription
+  sk_refresh_24		10	// LockPicking
+  sk_refresh_25		16	// Magery
+  sk_refresh_26		10	// MagicResistence
+  sk_refresh_27		 6	// Tactics
+  sk_refresh_28		15	// Snooping
+  sk_refresh_29		12	// Musicianship
+  sk_refresh_30		10	// Poisoning
+  sk_refresh_31		 5	// Archery
+  sk_refresh_32		20	// Necromancy
+  sk_refresh_33		20	// Stealing
+  sk_refresh_34		 6	// Tailoring
+  sk_refresh_35		20	// Taming
+  sk_refresh_36		10	// TasteID
+  sk_refresh_37		 6	// Tinkering
+  sk_refresh_38		 7	// Tracking
+  sk_refresh_39		 6	// Masonry
+  sk_refresh_40		 5	// Swordsmanship
+  sk_refresh_41		 5	// Macefighting
+  sk_refresh_42		 5	// Fencing
+  sk_refresh_43		 5	// Wrestling
+  sk_refresh_44		12	// Lumberjacking
+  sk_refresh_45		14	// Mining
+  sk_refresh_46		20	// Meditation
+  sk_refresh_47		20	// Stealth
+  sk_refresh_48		12	// unused1
+  sk_refresh_49		20	// unused2
+  
+[EOF]

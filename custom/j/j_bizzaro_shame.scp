@@ -1,0 +1,2227 @@
+// CHANGELOG
+// =========
+//
+// 18/08/18 - Wigifer - Removed references to e_all_npc 
+//
+
+// *****************************************************************
+//                       Bizzaro Shame Entry Items
+// *****************************************************************
+
+
+//[ITEMDEF i_steedunequipper]
+//ID=i_gravestone
+//NAME=Steed Unequipper (Wig Test)
+
+//ON=@DCLICK
+//   SRC.UNEQUIPSTEED
+//   RETURN 1
+   
+[ITEMDEF i_bizzaro_shame_entrance]
+ID=0edc
+NAME=Bizzaro Shame Entrance Stone
+
+ON=@CREATE
+   COLOR=0aea
+   
+ON=@DCLICK
+   DIALOG d_bizzaro_shame_entry
+   RETURN 1
+
+
+[ITEMDEF i_bizzaro_shame_exit]
+ID=0edc
+NAME=Bizzaro Shame Exit
+
+ON=@CREATE
+   COLOR=0aea
+
+ON=@DCLICK
+   IF !(<SRC.EVENTS>==e_bizzaro_shame)
+      SRC.SYSMESSAGE You are broken. Please page.
+      SERV.LOG ERROR: <SRC.NAME>:<SRC.ACCOUNT>:<SRC.UID> has no BIZZARO SHAME EVENT!
+      RETURN 1
+   ENDIF
+   SRC.MENU M_BIZSHAMEEXIT
+   RETURN 1
+ 
+[MENU M_BIZSHAMEEXIT]
+Are you sure you would like to quit?
+ON=0 Yes
+f_exitbizshamewin
+ON=0 No
+SRC.SYSMESSAGE Good luck then! Exits can be found at the entrance to every floor!
+
+[FUNCTION f_exitbizshamewin]
+   SRC.SAY All Stop
+   VAR.BIZZAROGOLD
+   SRC.GENERATEBIZZAROGOLD 1
+   SRC.UNEQUIPALL
+   SRC.UNEQUIPSTEED
+   SRC.REVERTBACKPACK
+   SRC.BIZZARORESTORESKILLS
+   SRC.SAY All Stay
+//   IF (<SRC.ACCOUNT.NAME>=="wigstaff")
+      // SRC.GO Help Desk of Hell
+//      SRC.GO <SRC.TAG.BIZZARO.ORIGIN>
+//   ELSE
+      SRC.GO <SRC.TAG.BIZZARO.ORIGIN>
+//   ENDIF
+   SRC.EVENTS -e_bizzaro_shame
+   SERV.LOG :: BIZZARO LOG :: <SRC.NAME>:<SRC.ACCOUNT>:<SRC.UID> has left BIZZARO SHAME! They now have <EVAL <SRC.ACCOUNT.TAG0.BIZZARO.SHAME.POINTS>> Bizzaro Shame Points.
+   SRC.SYSMESSAGE @51 Well done <SRC.NAME>! You now have <EVAL <SRC.ACCOUNT.TAG0.BIZZARO.SHAME.POINTS>> Bizzaro Shame Points
+   RETURN 1
+ 
+// *****************************************************************
+//                       Bizzaro Shame Event
+// *****************************************************************
+
+[EVENTS e_bizzaro_shame]
+
+ON=@DEATH
+   IF !(<NPC>) && ( strmatch("Bizzaro Shame*", "<SRC.REGION.NAME>"))
+      SRC.SAY All Stop
+      SRC.UNEQUIPALL
+      SRC.UNEQUIPSTEED
+      SRC.REVERTBACKPACK
+      SRC.BIZZARORESTORESKILLS
+      SRC.SAY All Stay
+      SRC.GO <SRC.TAG.BIZZARO.ORIGIN>
+      SRC.EVENTS -e_bizzaro_shame
+      SRC.RESURRECT
+      SRC.HITS=<SRC.STR>
+      SERV.LOG :: BIZZARO LOG :: <SRC.NAME>:<SRC.ACCOUNT>:<SRC.UID> died in BIZZARO SHAME and was warped out! They now have <EVAL <SRC.ACCOUNT.TAG0.BIZZARO.SHAME.POINTS>> Bizzaro Shame Points.
+      SRC.SYSMESSAGE @51 Unlucky <SRC.NAME>! You now have <EVAL <SRC.ACCOUNT.TAG0.BIZZARO.SHAME.POINTS>> Bizzaro Shame Points
+   ENDIF
+   RETURN 1
+   
+// *****************************************************************
+//                       Bizzaro Shame Gump
+// *****************************************************************
+
+[DIALOG d_bizzaro_shame_entry]
+50,50
+page 0
+resizepic 0 0 9250 500 450 // -Main Background-
+dtext 165 10 65 Welcome to Bizzaro Shame!
+button 500 20 9741 9741 0 1 0 //------------ 
+button 508 20 9741 9741 0 1 0 //Go to Page 1
+button 516 20 9741 9741 0 1 0 //------------
+resizepic 500 20 9200 24 100  //Fake Button 1
+
+button 500 120 9741 9741 0 2 0 //------------ 
+button 508 120 9741 9741 0 2 0 //Go to Page 2
+button 516 120 9741 9741 0 2 0 //------------
+resizepic 500 120 9200 24 100   //Fake Button 2
+
+button 500 220 9741 9741 0 3 0 //------------ 
+button 508 220 9741 9741 0 3 0 //Go to Page 3
+button 516 220 9741 9741 0 3 0 //------------
+resizepic 500 220 9200 24 100   //Fake Button 3
+
+button 500 320 9741 9741 0 4 0 //------------ 
+button 508 320 9741 9741 0 4 0 //Go to Page 4
+button 516 320 9741 9741 0 4 0 //------------
+resizepic 500 320 9200 24 100   //Fake Button 4
+
+page 1
+
+dtext 510 30 025 I
+dtext 508 45 025 N
+dtext 508 60 025 F
+dtext 508 75 025 O
+
+dtext 508 130 05 E
+dtext 508 145 05 Q
+dtext 508 160 05 U
+dtext 510 175 05 I
+dtext 508 190 05 P
+
+dtext 508 230 05 S
+dtext 508 245 05 P
+dtext 508 260 05 E
+dtext 508 275 05 L
+dtext 508 290 05 L
+
+dtext 508 330 05 S
+dtext 508 345 05 T
+dtext 508 360 05 A
+dtext 508 375 05 R
+dtext 508 390 05 T
+
+dtext 150 40 025 Information about Bizzaro World
+
+dtext 30 70 07a0 Bizzaro World is a series of dungeons and areas where your character
+dtext 30 90 07a0 build is unimportant. Suitable for both casual and hardcore gamers,
+dtext 30 110 07a0 Bizzaro World sends you into a dungeon especially created for a certain
+dtext 30 130 07a0 difficulty level. All stats, skills and equipment are set prior to entry.
+dtext 30 150 07a0 All equipment and any steeds you have are transferred to your bank.
+dtext 30 170 07a0 All skills and stats you have are restored upon exit.
+
+dtext 150 220 025 Information about Bizzaro Shame
+
+dtext 30 250 07a3 Difficulty: 3/5  ---  Reccomended Party: 1-4  ---  Prizes: Moderate
+
+dtext 30 290 07a0 Bizzaro Shame is a low-moderate difficulty dungeon. Whilst your player
+dtext 30 310 07a0 will not have the HEALING skill, it does have a magery book with
+dtext 30 330 07a0 appropriate healing skills and an over-the-cap level of ALCHEMY.
+dtext 30 350 07a0 Reagents & Bow\Arrows will have to be PoS (Procured on Site).
+dtext 30 370 07a0 Take care to note your spells and equipment prior to entry.
+dtext 30 410 07a4 TIP: Cultists with unique names carry VERY helpful items!
+
+
+page 2
+
+dtext 510 30 05 I
+dtext 508 45 05 N
+dtext 508 60 05 F
+dtext 508 75 05 O
+
+dtext 508 130 025 E
+dtext 508 145 025 Q
+dtext 508 160 025 U
+dtext 510 175 025 I
+dtext 508 190 025 P
+
+dtext 508 230 05 S
+dtext 508 245 05 P
+dtext 508 260 05 E
+dtext 508 275 05 L
+dtext 508 290 05 L
+
+dtext 508 330 05 S
+dtext 508 345 05 T
+dtext 508 360 05 A
+dtext 508 375 05 R
+dtext 508 390 05 T
+
+dtext 70 50 07a1 Skill Setup
+
+dtext 20 80 07a0 Archery // Skill 1
+dtext 170 80 07a3 95.0%
+dtext 20 100 07a0 Fencing // Skill 2
+dtext 170 100 07a3 95.0%
+dtext 20 120 07a0 Parrying // Skill 3
+dtext 170 120 07a3 95.0%
+dtext 20 140 07a0 Anatomy // Skill 4
+dtext 170 140 07a3 95.0%
+dtext 20 160 07a0 Magery // Skill 5
+dtext 170 160 07a3 95.0%
+dtext 20 180 07a0 Magic Resistance // Skill 6
+dtext 170 180 07a3 125.0%
+dtext 20 200 07a0 Alchemy // Skill 7
+dtext 170 200 07a3 125.0%
+dtext 20 220 07a0 Evaluating Intelligence // Skill 8
+dtext 170 220 07a3 95.0%
+
+
+dtext 70 280 07a1 Stats Setup
+
+dtext 20 310 07a0 Strength // OSTR
+dtext 170 310 07a3 120
+dtext 20 330 07a0 Intelligence // OINT
+dtext 170 330 07a3 80
+dtext 20 350 07a0 Dexterity // ODEX
+dtext 170 350 07a3 100
+dtext 20 370 07a0 Hit Points // MAXHITS
+dtext 170 370 07a3 175
+dtext 20 390 07a0 Mana // MAXMANA
+dtext 170 390 07a3 100
+dtext 20 410 07a0 Stamina // MAXSTAM
+dtext 170 410 07a3 100
+
+
+dtext 300 50 07a1 Equip Setup
+
+dtext 250 80 07a0 Adamantine Platemail Breastplate
+dtext 250 100 07a0 Valorite Platemail Leggings
+dtext 250 120 07a0 Verite Platemail Armplates
+dtext 250 140 07a0 Adamantine Platemail Gloves
+dtext 250 160 07a0 Adamantine Platemail Gorget
+dtext 250 180 07a0 Adamantine Platemail Nose Helm
+dtext 250 200 07a0 Bloodrock Kite Shield
+dtext 250 220 07a0 Stronghold War Fork
+
+
+dtext 300 280 07a1 Items Setup
+
+dtext 250 310 07a0 Spellbook
+dtext 250 330 07a0 Mortar and Pestle
+dtext 250 350 07a0 Bizzaro Orn
+dtext 250 370 07a0 (Bag) 10 of each Magery Reagent
+
+page 3
+
+dtext 510 30 05 I
+dtext 508 45 05 N
+dtext 508 60 05 F
+dtext 508 75 05 O
+
+dtext 508 130 05 E
+dtext 508 145 05 Q
+dtext 508 160 05 U
+dtext 510 175 05 I
+dtext 508 190 05 P
+
+dtext 508 230 025 S
+dtext 508 245 025 P
+dtext 508 260 025 E
+dtext 508 275 025 L
+dtext 508 290 025 L
+
+dtext 508 330 05 S
+dtext 508 345 05 T
+dtext 508 360 05 A
+dtext 508 375 05 R
+dtext 508 390 05 T
+
+dtext 20 50 07a1 First Circle
+
+dtext 20 80 07a0 Heal 
+dtext 20 100 07a0 Magic Arrow
+dtext 20 120 07a0 Night Sight
+dtext 20 140 07a0 Reactive Armor
+
+dtext 140 50 07a1 Second Circle
+
+dtext 140 80 07a0 Agility
+dtext 140 100 07a0 Cunning
+dtext 140 120 07a0 Cure
+dtext 140 140 07a0 Harm
+dtext 140 160 07a0 Protection
+dtext 140 180 07a0 Strength
+
+dtext 260 50 07a1 Third Circle
+
+dtext 260 80 07a0 Wall of Stone
+
+dtext 380 50 07a1 Fourth Circle
+
+dtext 380 80 07a0 Fire Field
+dtext 380 100 07a0 Greater Heal
+
+dtext 20 250 07a1 Fifth Circle
+
+dtext 20 280 07a0 Blade Spirits
+dtext 20 300 07a0 Dispel Field
+dtext 20 320 07a0 Summon Creature
+
+dtext 140 250 07a1 Sixth Circle
+
+dtext 140 280 07a0 Invisibility
+
+dtext 260 250 07a1 Seventh Circle
+
+dtext 260 280 07a0 Meteor Swarm
+dtext 260 300 07a0 Polymorph
+
+dtext 380 250 07a1 Eighth Circle
+
+dtext 380 280 07a0 Earthquake
+dtext 380 300 07a0 Air Elem.
+dtext 380 320 07a0 Fire Elem.
+dtext 380 340 07a0 Water Elem.
+dtext 380 360 07a0 Earth Elem.
+
+page 4
+
+dtext 510 30 05 I
+dtext 508 45 05 N
+dtext 508 60 05 F
+dtext 508 75 05 O
+
+dtext 508 130 05 E
+dtext 508 145 05 Q
+dtext 508 160 05 U
+dtext 510 175 05 I
+dtext 508 190 05 P
+
+dtext 508 230 05 S
+dtext 508 245 05 P
+dtext 508 260 05 E
+dtext 508 275 05 L
+dtext 508 290 05 L
+
+dtext 508 330 025 S
+dtext 508 345 025 T
+dtext 508 360 025 A
+dtext 508 375 025 R
+dtext 508 390 025 T
+
+dtext 185 60 085 **WARNING**
+dtext 30 80 0125 You will only exit this instance by doing one of the following:
+dtext 30 100 0125 # Dying.
+dtext 30 120 0125 # Exit through the exit stone on each floor.
+dtext 130 180 035 **You can be PK'd in this instance**
+dtext 185 220 085 **REWARDS**
+dtext 30 240 0125 Bizzaro Shame Points - Earned when leaving the dungeon ALIVE OR DEAD
+dtext 30 260 0125 Gold - Earned only when leaving the dungeon ALIVE - Transferred to bank
+dtext 30 330 035 Click ENTER and you will be taken to Bizzaro Shame immediately.
+
+button 235 370 248 247 1 0 100 // ENTER BUTTON
+
+[DIALOG d_bizzaro_shame_entry TEXT]
+
+[DIALOG d_bizzaro_shame_entry BUTTON]
+ONBUTTON=100
+   IF (<SRC.HITS> < <SRC.STR>)
+      SRC.SYSMESSAGE You must be at full health to enter Bizzaro Shame
+      RETURN 1
+   ENDIF
+   IF (<DISTANCE> > 4)
+      SRC.SYSMESSAGE Please stand closer to the entry stone.
+      RETURN 1
+   ENDIF
+   SERV.LOG :: BIZZARO LOG :: <SRC.NAME>:<SRC.ACCOUNT>:<SRC.UID> has entered BIZZARO SHAME!
+   SRC.SAY All Stop
+   SRC.UNEQUIPALL
+   SRC.UNEQUIPSTEED
+   SRC.BACKPACKTOBANK
+   SRC.BIZZAROSTORESKILLS
+   SRC.BIZZAROSHAMESETUP
+   SRC.EVENTS +e_bizzaro_shame
+   SRC.SYSMESSAGE @42 Welcome to Bizzaro Shame! Be warned, empty bottles, bows and crossbows, arrows, bolts and reags are PROCURED ON SITE.
+   SRC.SAY All Stay
+   SRC.TAG.BIZZARO.ORIGIN=<SRC.P>
+   SRC.GO "BIZZARO SHAME LEVEL 1"
+   IF (<SRC.FINDID.m_recall_delay.UID>)
+      SERV.LOG ::CHEATER:: <SRC.NAME>:<SRC.ACCOUNT.NAME>:<SRC.UID> is attempting to recall cheat into Bizzaro Shame!
+      SERV.Y ::CHEATER:: <SRC.NAME>:<SRC.ACCOUNT.NAME>:<SRC.UID> is attempting to recall cheat into Bizzaro Shame!
+      SRC.FINDID.m_recall_delay.REMOVE
+   ENDIF
+   
+
+
+
+
+// *****************************************************************
+//                        Bizzaro Equip Layout
+// *****************************************************************
+
+[FUNCTION BIZZAROSHAMESETUP]
+ALLSKILLS=0
+ARCHERY=95.0
+FENCING=95.0
+PARRYING=95.0
+ANATOMY=95.0
+MAGERY=95.0
+MAGICRESISTANCE=125.0
+ALCHEMY=125.0
+EVALUATINGINTEL=95.0
+OSTR=120
+OINT=80
+ODEX=100
+MAXHITS=175
+HITS=175
+MAXMANA=100
+MANA=100
+MAXSTAM=100
+STAM=100
+SERV.NEWITEM i_platemail_gorget_adamantine
+NEW.EQUIP <UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+NEW.COLOR=0aea
+SERV.NEWITEM i_helm_nose_adamantine
+NEW.EQUIP <UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+NEW.COLOR=0aea
+SERV.NEWITEM i_platemail_gloves_adamantine
+NEW.EQUIP <UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+NEW.COLOR=0aea
+SERV.NEWITEM i_platemail_arms_verite
+NEW.EQUIP <UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+NEW.COLOR=0aea
+SERV.NEWITEM i_platemail_leggings_valorite
+NEW.EQUIP <UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+NEW.COLOR=0aea
+SERV.NEWITEM i_platemail_chest_adamantine
+NEW.EQUIP <UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+NEW.COLOR=0aea
+SERV.NEWITEM i_shield_kite_bloodrock
+NEW.EQUIP <UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+NEW.COLOR=0aea
+SERV.NEWITEM i_war_fork_stronghold
+NEW.EQUIP <UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+NEW.COLOR=0aea
+SERV.NEWITEM i_mortar_pestle
+NEW.BOUNCE <UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+NEW.COLOR=0aea
+SERV.NEWITEM i_spellbook
+NEW.TAG.ILLEGALBIZZAROITEM=1
+NEW.COLOR=0aea
+NEW.MORE1=01880cf78
+NEW.MORE2=0e9c00883
+NEW.BOUNCE <UID>
+SERV.NEWITEM i_pet_OSTARD_Forest
+NEW.TAG.ILLEGALBIZZAROITEM=1
+NEW.MORE1 c_orn_bizzaro
+NEW.COLOR 0aea
+NEW.NAME Bizzaro Orn
+NEW.BOUNCE <UID>
+SERV.NEWITEM i_bag
+NEW.BOUNCE <UID>
+OBJ=<NEW.UID>
+SERV.NEWITEM i_reag_black_pearl
+NEW.CONT <OBJ.UID>
+NEW.AMOUNT=10
+SERV.NEWITEM i_reag_blood_moss
+NEW.CONT <OBJ.UID>
+NEW.AMOUNT=10
+SERV.NEWITEM i_reag_garlic
+NEW.CONT <OBJ.UID>
+NEW.AMOUNT=10
+SERV.NEWITEM i_reag_ginseng
+NEW.CONT <OBJ.UID>
+NEW.AMOUNT=10
+SERV.NEWITEM i_reag_mandrake_root
+NEW.CONT <OBJ.UID>
+NEW.AMOUNT=10
+SERV.NEWITEM i_reag_nightshade
+NEW.CONT <OBJ.UID>
+NEW.AMOUNT=10
+SERV.NEWITEM i_reag_spider_silk
+NEW.CONT <OBJ.UID>
+NEW.AMOUNT=10
+SERV.NEWITEM i_reag_sulfur_ash
+NEW.CONT <OBJ.UID>
+NEW.AMOUNT=10
+
+[CHARDEF c_orn_bizzaro]
+ID=c_ostard_forest
+NAME=Bizzaro Orn
+SOUND=snd_ANIMAL_OSTARD_DESERT1
+ICON=i_pet_OSTARD_Forest
+CAN=MT_WALK
+DAM=4,12
+ARMOR=9
+RESOURCES=15 i_ribs_raw
+FOODTYPE=55 t_crops, 55 t_fruit, 64 t_grass
+DESIRES=e_OSTARDS,c_man,c_woman
+AVERSIONS=e_carnivores3
+ANIM=01fff
+
+
+CATEGORY=Bizzaro World
+SUBSECTION=Bizzaro Steeds
+DESCRIPTION=Bizzaro Orn
+
+ON=@Create
+NPC=brain_animal
+COLOR=0aea
+STR={54 70}
+DEX={36 55}
+INT={6 10}
+
+PARRYING={35.0 45.0}
+MAGICRESISTANCE={25.0 30.0}
+TACTICS={29.0 44.0}
+WRESTLING={29.0 44.0}
+TAMING=55.0
+ARMSLORE=50.0
+FAME=0
+KARMA={-400 -599}
+//ALIGNMENT=NEUTRAL
+
+ON=@REGIONENTER
+   IF !( strmatch("Bizzaro*", "<ARGO.NAME>"))
+      SERV.LOG :: BIZZARO LOG :: <UID.<MEMORYFINDTYPE.MEMORY_IPET.LINK>.ACCOUNT.NAME>:<UID.<MEMORYFINDTYPE.MEMORY_IPET.LINK>.NAME>'s Bizzaro Orn has entered a non-Bizzaro Region - <ARGO.NAME>
+      REMOVE
+      RETURN 1
+   ENDIF
+   
+ON
+
+
+// *****************************************************************
+//                           Bizzaro Spells
+// *****************************************************************
+
+
+[FUNCTION f_bizzaro_aura]
+   SAY Biz Il Aura Fira Aro
+   MANA=(<MANA> +- 10)
+   SOUND 0227
+   SERV.NEWITEM=i_biz_aura 
+   NEW.P=<P> 
+   NEW.MORE1=<ARGS>
+   RETURN 1  
+
+[ITEMDEF i_biz_aura] 
+ID=0351d
+TYPE=t_spell
+
+ON=@Create 
+TIMERD=2 
+ATTR=12
+COLOR=0aea
+
+ON=@Timer 
+SERV.NEWITEM i_biz_aura_2
+NEW.P=<EVAL <P.X>+1>,<EVAL <P.Y>+1>,<P.Z>,<P.M>
+NEW.MORE1=<MORE1>
+SERV.NEWITEM i_biz_aura_2
+NEW.P=<EVAL <P.X>+1>,<EVAL <P.Y>>,<P.Z>,<P.M>
+NEW.MORE1=<MORE1>
+SERV.NEWITEM i_biz_aura_2
+NEW.P=<EVAL <P.X>+1>,<EVAL <P.Y>-1>,<P.Z>,<P.M>
+NEW.MORE1=<MORE1>
+SERV.NEWITEM i_biz_aura_2
+NEW.P=<EVAL <P.X>-1>,<EVAL <P.Y>+1>,<P.Z>,<P.M>
+NEW.MORE1=<MORE1>
+SERV.NEWITEM i_biz_aura_2
+NEW.P=<EVAL <P.X>-1>,<EVAL <P.Y>>,<P.Z>,<P.M>
+NEW.MORE1=<MORE1>
+SERV.NEWITEM i_biz_aura_2
+NEW.P=<EVAL <P.X>-1>,<EVAL <P.Y>-1>,<P.Z>,<P.M>
+NEW.MORE1=<MORE1>
+SERV.NEWITEM i_biz_aura_2
+NEW.P=<EVAL <P.X>>,<EVAL <P.Y>+1>,<P.Z>,<P.M>
+NEW.MORE1=<MORE1>
+SERV.NEWITEM i_biz_aura_2
+NEW.P=<EVAL <P.X>>,<EVAL <P.Y>-1>,<P.Z>,<P.M>
+NEW.MORE1=<MORE1>
+REMOVE
+RETURN 1 
+
+ON=@Step
+LOCAL.DAMAGEAURA=<EVAL RAND(<MORE1>)+5>
+SRC.SYSMESSAGE @40 The Bizzaro Aura hurts you for <EVAL <LOCAL.DAMAGEAURA>> damage!
+TRY SRC.HITS=<SRC.HITS> - <EVAL <LOCAL.DAMAGEAURA>>
+RETURN 0 
+
+
+[ITEMDEF i_biz_aura_2] 
+ID=0351d
+TYPE=t_spell
+
+ON=@Create 
+TIMERD=4 
+ATTR=12
+COLOR=0aea
+
+ON=@Timer
+REMOVE
+RETURN 1
+
+ON=@Step
+LOCAL.DAMAGEAURA=<EVAL RAND(<MORE1>)+5>
+SRC.SYSMESSAGE @40 The Bizzaro Aura hurts you for <EVAL <LOCAL.DAMAGEAURA>> damage!
+TRY SRC.HITS=<SRC.HITS> - <EVAL <LOCAL.DAMAGEAURA>>
+RETURN 0
+
+[TEMPLATE tm_bizzaro_alchregs]
+  CONTAINER=i_bag
+  ITEM = i_reag_worm_heart,{1 5}
+  ITEM = i_reag_pig_iron,{1 5}
+  ITEM = i_reag_obsidian,{1 5}
+  ITEM = i_reag_executioners_cap,{1 5}
+
+      
+// *****************************************************************
+//                        Bizzaro Characters
+// *****************************************************************
+
+//********************************************************************//
+//                              FLOOR 1                               //
+//********************************************************************//
+
+[CHARDEF c_h_bizzaro_gonads]
+ID=C_MAN
+NAME=Gonads An Strife
+SOUND=snd_HUMAN_M_DIE_01
+AVERSIONS=t_TRAP,t_eerie_stuff
+ARMOR=15
+
+CATEGORY=Bizzaro World
+SUBSECTION=Bizzaro Shame
+DESCRIPTION=Gonads An Strife
+
+ON=@DEATH
+  FINDLAYER(layer_horse).remove
+  
+ON=@CREATE
+  TAG.BIZZAROMONSTER=1
+  TAG.BIZZARODUNGEON=SHAME
+  TAG.BIZZAROPOINTS=1
+  COLOR=00655
+  STR	= 120
+  DEX	= 95
+  INT	= 60
+  NPC= brain_monster
+  MAXHITS = 65
+  HITS=65
+  FAME=300
+  KARMA	= -6000
+  PARRYING	= 100.0
+  SWORDSMANSHIP	= 100.0
+  MAGICRESISTANCE=75.0
+  EVALUATINGINTEL= 85.0
+  TACTICS	= 100.0
+  ANATOMY       = 100.0
+  MAGERY        = 75.0
+  ITEMNEWBIE=i_hair_long
+  COLOR=07a1
+  ITEMNEWBIE=i_platemail_gloves_titanium
+  ITEMNEWBIE=i_platemail_helm_titanium
+  ITEMNEWBIE=i_platemail_arms_titanium
+  ITEMNEWBIE=i_platemail_gorget_titanium
+  ITEMNEWBIE=i_platemail_chest_titanium
+  ITEMNEWBIE=i_platemail_leggings_titanium
+  ITEMNEWBIE=i_halberd_adamantine
+  ITEMNEWBIE=i_CAPE
+  COLOR=07a1
+  ITEMNEWBIE=i_robe
+  COLOR=01
+  ITEM= i_gold,{150 300}
+  ITEM=tm_loot_reagents_easy
+  
+
+ON=@NPCRESTOCK
+  ITEMNEWBIE=i_mt_ostard_zostrich
+  COLOR=07fff
+
+
+[CHARDEF c_h_bizzaro_snake]
+ID=C_MAN
+NAME=Snake
+SOUND=snd_HUMAN_M_DIE_01
+AVERSIONS=t_TRAP,t_eerie_stuff
+ARMOR=15
+
+CATEGORY=Bizzaro World
+SUBSECTION=Bizzaro Shame
+DESCRIPTION=Snake
+
+ON=@DEATH
+  FINDLAYER(layer_horse).remove
+  
+ON=@CREATE
+  TAG.BIZZAROMONSTER=1
+  TAG.BIZZARODUNGEON=SHAME
+  TAG.BIZZAROPOINTS=1
+  COLOR=00655
+  STR	= 122
+  DEX	= 95
+  INT	= 60
+  NPC= brain_monster
+  MAXHITS = 65
+  HITS=65
+  FAME=300
+  KARMA	= -6000
+  PARRYING	= 100.0
+  SWORDSMANSHIP	= 100.0
+  MAGICRESISTANCE=50.0
+  EVALUATINGINTEL= 60.0
+  TACTICS	= 100.0
+  ANATOMY       = 100.0
+  MAGERY        = 55.0
+
+  ITEMNEWBIE=i_platemail_gloves_titanium
+  ITEMNEWBIE=i_platemail_helm_titanium
+  ITEMNEWBIE=i_platemail_arms_titanium
+  ITEMNEWBIE=i_platemail_gorget_titanium
+  ITEMNEWBIE=i_platemail_chest_titanium
+  ITEMNEWBIE=i_platemail_leggings_titanium
+  ITEMNEWBIE=i_sword_great_adamantine
+  ITEMNEWBIE=i_shield_heater_adamantine
+  ITEMNEWBIE=i_robe
+  COLOR=0005d
+  ITEM= i_gold,{150 300}
+  ITEM=tm_loot_reagents_easy
+  
+ON=@NPCRESTOCK
+  ITEMNEWBIE=i_mt_horse_tan
+  COLOR=00061
+
+ 
+[CHARDEF c_h_bizzaro_maugrim]
+ID=C_MAN
+NAME=Maugrim
+SOUND=snd_HUMAN_M_DIE_01
+AVERSIONS=t_TRAP,t_eerie_stuff
+ARMOR=15
+
+CATEGORY=Bizzaro World
+SUBSECTION=Bizzaro Shame
+DESCRIPTION=Maugrim
+
+ON=@DEATH
+  FINDLAYER(layer_horse).remove
+  
+ON=@CREATE
+  TAG.BIZZAROMONSTER=1
+  TAG.BIZZARODUNGEON=SHAME
+  TAG.BIZZAROPOINTS=1
+  COLOR=00655
+  STR	= 118
+  DEX	= 100
+  INT	= 75
+  NPC= brain_monster
+  MAXHITS = 65
+  HITS=65
+  FAME=300
+  KARMA	= -6000
+  PARRYING	= 100.0
+  MACEFIGHTING	= 100.0
+  MAGICRESISTANCE=75.0
+  EVALUATINGINTEL= 100.0
+  TACTICS	= 100.0
+  ANATOMY       = 100.0
+
+  ITEMNEWBIE=i_platemail_gloves_titanium
+  ITEMNEWBIE=i_platemail_helm_verite
+  ITEMNEWBIE=i_platemail_arms_titanium
+  ITEMNEWBIE=i_platemail_gorget_titanium
+  ITEMNEWBIE=i_tunic_tera_scale
+  ITEMNEWBIE=i_platemail_leggings_verite
+  ITEMNEWBIE=i_staff_quarter_cherry
+  ITEMNEWBIE=i_apron_half
+  COLOR=01
+  ITEMNEWBIE=i_dress_plain
+  COLOR=00486
+  ITEM= i_gold,{150 300}
+  ITEM=tm_loot_reagents_easy
+  
+ON=@NPCRESTOCK
+  ITEMNEWBIE=i_mt_ostard_zostrich
+  COLOR=0005d
+
+
+[CHARDEF c_h_bizzaro_sephiroth]
+ID=C_MAN
+NAME=Sephiroth
+SOUND=snd_HUMAN_M_DIE_01
+AVERSIONS=t_TRAP,t_eerie_stuff
+ARMOR=15
+
+CATEGORY=Bizzaro World
+SUBSECTION=Bizzaro Shame
+DESCRIPTION=Sephiroth
+
+ON=@DEATH
+  FINDLAYER(layer_horse).remove
+  
+ON=@CREATE
+  TAG.BIZZAROMONSTER=1
+  TAG.BIZZARODUNGEON=SHAME
+  TAG.BIZZAROPOINTS=1
+  COLOR=00655
+  STR	= 120
+  DEX	= 100
+  INT	= 55
+  NPC= brain_monster
+  MAXHITS = 65
+  HITS=65
+  FAME=300
+  KARMA	= -6000
+  SWORDSMANSHIP	= 100.0
+  MAGICRESISTANCE=75.0
+  EVALUATINGINTEL= 85.0
+  TACTICS	= 100.0
+  ANATOMY       = 100.0
+  MAGERY        = 75.0
+  ITEMNEWBIE=i_hair_long
+  COLOR=07a1
+
+
+  ITEMNEWBIE=i_platemail_gloves_melancholy
+  ITEMNEWBIE=i_platemail_helm_melancholy
+  ITEMNEWBIE=i_platemail_arms_melancholy
+  ITEMNEWBIE=i_platemail_gorget_melancholy
+  ITEMNEWBIE=i_platemail_chest_melancholy
+  ITEMNEWBIE=i_platemail_leggings_melancholy
+  ITEMNEWBIE=i_sword_broad_adamantine
+  NAME=Masamune
+  COLOR=00481
+  ITEMNEWBIE=i_CAPE
+  COLOR=01
+  ITEMNEWBIE=01ffe
+  COLOR=01
+  ITEM= i_gold,{150 300}
+  ITEM=tm_loot_reagents_easy
+  
+ON=@NPCRESTOCK
+  ITEMNEWBIE=i_mt_horse_tan
+
+
+[CHARDEF c_h_bizzaro_slash]
+ID=C_MAN
+NAME=Slash
+SOUND=snd_HUMAN_M_DIE_01
+AVERSIONS=t_TRAP,t_eerie_stuff
+ARMOR=15
+
+CATEGORY=Bizzaro World
+SUBSECTION=Bizzaro Shame
+DESCRIPTION=Slash
+
+ON=@DEATH
+  FINDLAYER(layer_horse).remove
+  
+ON=@CREATE
+  TAG.BIZZAROMONSTER=1
+  TAG.BIZZARODUNGEON=SHAME
+  TAG.BIZZAROPOINTS=1
+  COLOR=00655
+  STR	= 135
+  DEX	= 107
+  INT	= 75
+  NPC= brain_monster
+  MAXHITS = 65
+  HITS=65
+  FAME=300
+  KARMA	= -6000
+  PARRYING      = 100.0
+  MACEFIGHTING	= 100.0
+  MAGICRESISTANCE=60.0
+  EVALUATINGINTEL= 85.0
+  TACTICS	= 100.0
+  ANATOMY       = 100.0
+  MAGERY        = 100.0
+
+
+  ITEMNEWBIE=i_platemail_gloves_titanium
+  ITEMNEWBIE=i_platemail_arms_titanium
+  ITEMNEWBIE=i_platemail_gorget_titanium
+  ITEMNEWBIE=i_platemail_chest_titanium
+  ITEMNEWBIE=i_platemail_leggings_titanium
+  ITEMNEWBIE=i_maul_adamantine
+  ITEMNEWBIE=i_shield_chaos
+  ITEMNEWBIE=i_CAPE
+  COLOR=01
+  ITEMNEWBIE=01ffe
+  COLOR=01
+  ITEM= i_gold,{150 300}
+  ITEM=tm_loot_reagents_easy
+  
+ON=@NPCRESTOCK
+  ITEMNEWBIE=i_mt_horse_tan
+
+[CHARDEF c_h_bizzaro_nim]
+ID=C_MAN
+NAME=NIM
+SOUND=snd_HUMAN_M_DIE_01
+AVERSIONS=t_TRAP,t_eerie_stuff
+ARMOR=15
+
+CATEGORY=Bizzaro World
+SUBSECTION=Bizzaro Shame
+DESCRIPTION=NIM
+
+ON=@DEATH
+  FINDLAYER(layer_horse).remove
+  
+ON=@CREATE
+  TAG.BIZZAROMONSTER=1
+  TAG.BIZZARODUNGEON=SHAME
+  TAG.BIZZAROPOINTS=1
+  COLOR=00655
+  STR	= 110
+  DEX	= 100
+  INT	= 65
+  NPC= brain_monster
+  MAXHITS = 65
+  HITS=65
+  FAME=300
+  KARMA	= -6000
+  PARRYING      = 95.0
+  SWORDSMANSHIP	= 100.0
+  MAGICRESISTANCE=35.0
+  EVALUATINGINTEL= 50.0
+  TACTICS	= 97.0
+  ANATOMY       = 90.0
+  MAGERY        = 85.0
+  HIDING        = 40.0
+  ITEMNEWBIE=i_hair_long
+  COLOR=07a1
+  ITEMNEWBIE=i_bone_helmet
+  COLOR=01
+  ITEMNEWBIE=i_platemail_gloves_titanium
+  ITEMNEWBIE=i_platemail_arms_titanium
+  ITEMNEWBIE=i_platemail_gorget_titanium
+  ITEMNEWBIE=i_platemail_chest_titanium
+  ITEMNEWBIE=i_platemail_leggings_titanium
+  ITEMNEWBIE=i_sword_broad_adamantine
+  ITEMNEWBIE=i_shield_chaos
+  ITEMNEWBIE=i_robe
+  COLOR=01
+  ITEM= i_gold,{150 300}
+  ITEM=tm_loot_reagents_easy
+  
+ON=@NPCRESTOCK
+  ITEMNEWBIE=i_mt_horse_tan
+  COLOR=0263
+
+
+[CHARDEF c_h_bizzaro_magar]
+ID=C_MAN
+NAME=Magar
+SOUND=snd_HUMAN_M_DIE_01
+AVERSIONS=t_TRAP,t_eerie_stuff
+ARMOR=15
+
+CATEGORY=Bizzaro World
+SUBSECTION=Bizzaro Shame
+DESCRIPTION=Magar
+
+ON=@DEATH
+  FINDLAYER(layer_horse).remove
+  
+ON=@CREATE
+  TAG.BIZZAROMONSTER=1
+  TAG.BIZZARODUNGEON=SHAME
+  TAG.BIZZAROPOINTS=1
+  COLOR=00655
+  STR	= 101
+  DEX	= 100
+  INT	= 75
+  NPC= brain_monster
+  MAXHITS = 65
+  HITS=65
+  FAME=300
+  KARMA	= -6000
+  PARRYING      = 100.0
+  SWORDSMANSHIP	= 100.0
+  MAGICRESISTANCE=100.0
+  EVALUATINGINTEL= 100.0
+  TACTICS	= 100.0
+  ANATOMY       = 100.0
+  MAGERY        = 100.0
+  HIDING        = 100.0
+  ITEMNEWBIE=i_hair_long
+  COLOR=07a1
+  ITEMNEWBIE=i_platemail_gloves_titanium
+  ITEMNEWBIE=i_platemail_arms_titanium
+  ITEMNEWBIE=i_platemail_gorget_titanium
+  ITEMNEWBIE=i_ranger_leather_tunic
+  ITEMNEWBIE=i_platemail_leggings_titanium
+  ITEMNEWBIE=i_sword_broad_adamantine
+  ITEMNEWBIE=i_shield_heater_adamantine
+  ITEM= i_gold,{150 300}
+  ITEM=tm_loot_reagents_easy
+  
+ON=@NPCRESTOCK
+  ITEMNEWBIE=i_mt_horse_tan
+
+
+[CHARDEF c_h_bizzaro_wren]
+ID=C_WOMAN
+NAME=Wren
+SOUND=snd_HUMAN_M_DIE_01
+AVERSIONS=t_TRAP,t_eerie_stuff
+ARMOR=15
+
+CATEGORY=Bizzaro World
+SUBSECTION=Bizzaro Shame
+DESCRIPTION=Wren
+
+ON=@DEATH
+  FINDLAYER(layer_horse).remove
+  
+ON=@CREATE
+  TAG.BIZZAROMONSTER=1
+  TAG.BIZZARODUNGEON=SHAME
+  TAG.BIZZAROPOINTS=1
+  COLOR=00655
+  STR	= 120
+  DEX	= 95
+  INT	= 60
+  NPC= brain_monster
+  MAXHITS = 65
+  HITS=65
+  FAME=300
+  KARMA	= -6000
+  PARRYING	= 100.0
+  SWORDSMANSHIP	= 100.0
+  MAGICRESISTANCE=75.0
+  EVALUATINGINTEL= 85.0
+  TACTICS	= 100.0
+  ANATOMY       = 100.0
+  MAGERY        = 75.0
+  ITEMNEWBIE=i_hair_long
+  COLOR=07a1
+  ITEMNEWBIE=i_dragon_chest
+  ITEMNEWBIE=i_dragon_gloves
+  ITEMNEWBIE=i_hat_floppy
+  COLOR=07a0
+  ITEMNEWBIE=i_dragon_leggings
+  ITEMNEWBIE=i_dragon_sleeves
+  ITEMNEWBIE=i_halberd_adamantine
+  ITEMNEWBIE=i_boots_thigh
+  ITEM= i_gold,{150 300}
+  ITEM=tm_loot_reagents_easy
+  
+  
+
+ON=@NPCRESTOCK
+  ITEMNEWBIE=i_mt_ostard_zostrich
+  COLOR=07fff
+
+
+[CHARDEF c_h_bizzaro_tiffany]
+ID=C_WOMAN
+NAME=Tiffany
+SOUND=snd_HUMAN_M_DIE_01
+AVERSIONS=t_TRAP,t_eerie_stuff
+ARMOR=15
+
+CATEGORY=Bizzaro World
+SUBSECTION=Bizzaro Shame
+DESCRIPTION=Tiffany
+
+ON=@DEATH
+  FINDLAYER(layer_horse).remove
+
+ON=@CREATE
+  TAG.BIZZAROMONSTER=1
+  TAG.BIZZARODUNGEON=SHAME
+  TAG.BIZZAROPOINTS=1
+  COLOR=00655
+  STR	= 100
+  DEX	= 100
+  INT	= 75
+  ARMOR=75
+  NPC= brain_monster
+  MAXHITS = 65
+  HITS=65
+  FAME=300
+  KARMA	= -6000
+  MAGERY	= 100.0
+  EVALUATINGINTEL       = 100.0
+  ITEMNEWBIE=i_spellbook
+  MORE1=0fffffffd
+  MORE1=0ffffffff
+  COLOR=0782
+  ITEMNEWBIE=i_surcoat_army
+  COLOR=0486
+  ITEMNEWBIE=i_hat_wizards
+  COLOR=0486
+  ITEMNEWBIE=i_boots_calf
+  COLOR=0486
+  ITEM= i_gold,{150 300}
+  ITEM=tm_loot_reagents_easy
+  
+ON=@NPCRESTOCK
+  ITEMNEWBIE=i_mt_ostard_zostrich
+  COLOR=07fff
+  
+  
+[CHARDEF c_h_bizzaro_deon]
+ID=C_MAN
+NAME=Deon
+SOUND=snd_HUMAN_M_DIE_01
+AVERSIONS=t_TRAP,t_eerie_stuff
+ARMOR=15
+
+CATEGORY=Bizzaro World
+SUBSECTION=Bizzaro Shame
+DESCRIPTION=Deon
+
+ON=@DEATH
+  FINDLAYER(layer_horse).remove
+  
+ON=@CREATE
+  TAG.BIZZAROMONSTER=1
+  TAG.BIZZARODUNGEON=SHAME
+  TAG.BIZZAROPOINTS=1
+  COLOR=00655
+  STR	= 118
+  DEX	= 100
+  INT	= 75
+  NPC= brain_monster
+  MAXHITS = 65
+  HITS=65
+  FAME=300
+  KARMA	= -6000
+  PARRYING	= 100.0
+  MACEFIGHTING	= 100.0
+  MAGICRESISTANCE=75.0
+  EVALUATINGINTEL= 100.0
+  TACTICS	= 100.0
+  ANATOMY       = 100.0
+
+  ITEMNEWBIE=i_platemail_gloves_valorite
+  ITEMNEWBIE=i_platemail_helm_verite
+  ITEMNEWBIE=i_platemail_arms_bloodrock
+  ITEMNEWBIE=i_platemail_gorget_bloodrock
+  ITEMNEWBIE=i_platemail_chest_phoenix
+  ITEMNEWBIE=i_platemail_leggings_verite
+  ITEMNEWBIE=i_staff_quarter_cherry
+  ITEMNEWBIE=i_deathshroud
+  COLOR=0adf
+  ITEM= i_gold,{150 300}
+  ITEM=tm_loot_reagents_easy
+  
+ON=@NPCRESTOCK
+  ITEMNEWBIE=i_mt_ostard_zostrich
+  COLOR=07a1
+  
+  
+[CHARDEF c_h_bizzaro_kundo]
+ID=C_MAN
+NAME=Kundo
+SOUND=snd_HUMAN_M_DIE_01
+AVERSIONS=t_TRAP,t_eerie_stuff
+ARMOR=15
+
+CATEGORY=Bizzaro World
+SUBSECTION=Bizzaro Shame
+DESCRIPTION=Kundo
+
+ON=@DEATH
+  FINDLAYER(layer_horse).remove
+  
+ON=@CREATE
+  TAG.BIZZAROMONSTER=1
+  TAG.BIZZARODUNGEON=SHAME
+  TAG.BIZZAROPOINTS=1
+  COLOR=00655
+  STR	= 118
+  DEX	= 100
+  INT	= 75
+  NPC= brain_monster
+  MAXHITS = 65
+  HITS=65
+  FAME=300
+  KARMA	= -6000
+  PARRYING	= 80.0
+  MACEFIGHTING	= 80.0
+  MAGICRESISTANCE=50.0
+  EVALUATINGINTEL= 800.0
+  TACTICS	= 100.0
+  ANATOMY       = 100.0
+  MAGERY        = 100.0
+
+  ITEMNEWBIE=i_platemail_gloves_phoenix
+  ITEMNEWBIE=i_platemail_helm_phoenix
+  ITEMNEWBIE=i_platemail_arms_phoenix
+  ITEMNEWBIE=i_platemail_gorget_phoenix
+  ITEMNEWBIE=i_platemail_chest_phoenix
+  ITEMNEWBIE=i_platemail_leggings_phoenix
+  ITEMNEWBIE=i_staff_quarter_cherry
+  ITEM= i_gold,{150 300}
+  ITEM=tm_loot_reagents_easy
+  
+ON=@NPCRESTOCK
+  ITEMNEWBIE=i_mt_ostard_zostrich
+  COLOR=0aea
+  
+  
+[CHARDEF c_h_bizzaro_renegade]
+ID=C_MAN
+NAME=Renegade
+SOUND=snd_HUMAN_M_DIE_01
+AVERSIONS=t_TRAP,t_eerie_stuff
+ARMOR=15
+
+CATEGORY=Bizzaro World
+SUBSECTION=Bizzaro Shame
+DESCRIPTION=Renegade
+
+ON=@DEATH
+  FINDLAYER(layer_horse).remove
+  
+ON=@CREATE
+  TAG.BIZZAROMONSTER=1
+  TAG.BIZZARODUNGEON=SHAME
+  TAG.BIZZAROPOINTS=1
+  COLOR=00655
+  STR	= 118
+  DEX	= 100
+  INT	= 75
+  NPC= brain_monster
+  MAXHITS = 65
+  HITS=65
+  FAME=300
+  KARMA	= -6000
+  PARRYING	= 100.0
+  MACEFIGHTING	= 100.0
+  MAGICRESISTANCE=75.0
+  EVALUATINGINTEL= 100.0
+  TACTICS	= 100.0
+  ANATOMY       = 100.0
+  MAGERY        = 25.0
+
+  ITEMNEWBIE=i_platemail_gloves_titanium
+  ITEMNEWBIE=i_platemail_arms_titanium
+  ITEMNEWBIE=i_platemail_gorget_titanium
+  ITEMNEWBIE=i_platemail_chest_titanium
+  ITEMNEWBIE=i_platemail_leggings_titanium
+  ITEMNEWBIE=i_maul_titanium
+  ITEMNEWBIE=i_shield_kite_titanium
+  COLOR=0132
+  ITEMNEWBIE=i_hat_tricorne
+  COLOR=0132
+  ITEMNEWBIE=i_robe
+  COLOR=0132
+  ITEM= i_gold,{150 300}
+  ITEM=tm_loot_reagents_easy
+  
+ON=@NPCRESTOCK
+  ITEMNEWBIE=i_mt_ostard_zostrich
+  COLOR=0005d
+
+[CHARDEF c_h_bizzaro_panleus]
+ID=C_MAN
+NAME=Panleus
+SOUND=snd_HUMAN_M_DIE_01
+AVERSIONS=t_TRAP,t_eerie_stuff
+ARMOR=15
+
+CATEGORY=Bizzaro World
+SUBSECTION=Bizzaro Shame
+DESCRIPTION=Panleus
+
+ON=@DEATH
+  FINDLAYER(layer_horse).remove
+  
+ON=@CREATE
+  TAG.BIZZAROMONSTER=1
+  TAG.BIZZARODUNGEON=SHAME
+  TAG.BIZZAROPOINTS=1
+  COLOR=00655
+  STR	= 118
+  DEX	= 100
+  INT	= 75
+  NPC= brain_monster
+  MAXHITS = 65
+  HITS=65
+  FAME=300
+  KARMA	= -6000
+  PARRYING	= 100.0
+  MACEFIGHTING	= 100.0
+  MAGICRESISTANCE=75.0
+  EVALUATINGINTEL= 100.0
+  TACTICS	= 100.0
+  ANATOMY       = 100.0
+  MAGERY        = 25.0
+
+  ITEMNEWBIE=i_platemail_gloves_titanium
+  ITEMNEWBIE=i_platemail_arms_titanium
+  ITEMNEWBIE=i_platemail_gorget_titanium
+  ITEMNEWBIE=i_platemail_chest_titanium
+  ITEMNEWBIE=i_platemail_leggings_titanium
+  ITEMNEWBIE=i_maul_titanium
+  ITEMNEWBIE=i_shield_kite_titanium
+  COLOR=0135
+  ITEMNEWBIE=i_hat_floppy
+  COLOR=0135
+  ITEMNEWBIE=i_robe
+  COLOR=0135
+  ITEM= i_gold,{150 300}
+  ITEM=tm_loot_reagents_easy
+    
+
+ON=@NPCRESTOCK
+  ITEMNEWBIE=i_mt_ostard_zostrich
+  COLOR=0005d
+  
+  
+  
+[CHARDEF c_bizzaro_harpy]
+ID		= c_harpy
+NAME		= Bizzaro Harpy
+SOUND		= snd_MONSTER_HARPY1
+ICON		= i_pet_HARPY
+ANIM		= 03f8c7f
+DAM		= 4, 10
+ARMOR		= 18
+CAN		= MT_WALK|MT_FLY|MT_FEMALE|MT_USEHANDS
+RESOURCES	= 9 i_ribs_raw,50 i_feather
+FOODTYPE	= 5 t_meat_raw
+DESIRES		= i_gold, c_harpy
+AVERSIONS	= r_civilization
+TEVENTS		= e_npc_harpy
+
+CATEGORY=Bizzaro World
+SUBSECTION=Bizzaro Shame
+DESCRIPTION=Harpy
+
+ON=@Create
+  COLOR         = 0aea
+  NPC		= brain_monster
+  FAME		= {300 1000}
+  KARMA		= {-2000 -2999}
+  MAXHITS	= {100 120}
+  HITS          = <MAXHITS>
+  STR		= {120 150}
+  DEX		= {86 110}
+  INT		= {51 77}
+  PARRYING	= {75.0 90.0}
+  MAGICRESISTANCE={50.0 65.0}
+  TACTICS	= {80.0 100.0}
+  WRESTLING	= {75.0 90.0}
+  ITEM= i_gold,{50 200}
+  ITEM=tm_loot_reagents_easy
+
+ON=@GETITEMVARS
+   TAG.BIZZAROMONSTER=1
+   TAG.BIZZARODUNGEON=SHAME
+   TAG.BIZZAROPOINTS=1  
+  
+[CHARDEF c_bizzaro_troll]
+ID=c_troll
+NAME=Troll
+SOUND=snd_MONSTER_TROLL1
+ICON=i_pet_TROLL
+ANIM=078c7f
+DAM=10,23
+ARMOR=20
+RESOURCES=10 i_ribs_raw
+CAN=MT_WALK|MT_USEHANDS
+FOODTYPE=15 t_meat_raw
+DESIRES=i_gold
+AVERSIONS=r_civilization
+
+CATEGORY=Bizzaro World
+SUBSECTION=Bizzaro Shame
+DESCRIPTION=Troll
+
+ON=@Create
+NPC=brain_monster
+COLOR=0aea
+
+STR={175 205}
+MAXHITS={120 140}
+HITS=<MAXHITS>
+DEX={46 65}
+INT={69 83}
+
+SWORDSMANSHIP={50.0 70.0}
+PARRYING={45.0 60.0}
+MAGICRESISTANCE={45.0 60.0}
+TACTICS={50.0 70.0}
+WRESTLING={50.0 70.0}
+
+FAME={100 5000}
+KARMA={-3000 -3999}  
+  ITEM= i_gold,{50 100}
+  ITEM=tm_loot_reagents_easy  
+
+ON=@GETITEMVARS
+   TAG.BIZZAROMONSTER=1
+   TAG.BIZZARODUNGEON=SHAME
+   TAG.BIZZAROPOINTS=1
+
+[CHARDEF c_h_bizzaro_cult_initiate]
+ID=C_MAN
+NAME=Bizzaro Cultist Initiate
+SOUND=snd_HUMAN_M_DIE_01
+AVERSIONS=t_TRAP,t_eerie_stuff
+ARMOR=15
+
+CATEGORY=Bizzaro World
+SUBSECTION=Bizzaro Shame
+DESCRIPTION=Cultist Initiate
+  
+ON=@CREATE
+  COLOR=0aea
+  STR	= 100
+  DEX	= 100
+  INT	= 75
+  NPC= brain_monster
+  MAXHITS = 100
+  HITS=100
+  FAME=300
+  KARMA	= -6000
+  PARRYING	= 100.0
+  MACEFIGHTING	= 100.0
+  MAGICRESISTANCE=75.0
+  EVALUATINGINTEL= 100.0
+  TACTICS	= 100.0
+  ANATOMY       = 100.0
+  MAGERY        = 25.0
+
+  ITEMNEWBIE=i_platemail_gloves_titanium
+  ITEMNEWBIE=i_maul_phoenix
+  ITEMNEWBIE=i_robe
+  COLOR=0a1f
+  ITEM= i_gold,{50 200}
+  ITEM=tm_loot_reagents_easy
+
+ON=@GETHIT
+   DORAND 5
+      SAY Ow!
+      SAY Argh!
+      SAY Ergh!
+      SAY Ack!
+      f_bizzaro_aura 2
+   ENDDO
+
+ON=@GETITEMVARS
+   TAG.BIZZAROMONSTER=1
+   TAG.BIZZARODUNGEON=SHAME
+   TAG.BIZZAROPOINTS=1
+
+[CHARDEF c_h_bizzaro_cult_cultist]
+ID=C_MAN
+NAME=Bizzaro Cultist
+SOUND=snd_HUMAN_M_DIE_01
+AVERSIONS=t_TRAP,t_eerie_stuff
+ARMOR=25
+
+CATEGORY=Bizzaro World
+SUBSECTION=Bizzaro Shame
+DESCRIPTION=Cultist
+  
+ON=@CREATE
+  COLOR=0aea
+  STR	= 125
+  DEX	= 100
+  INT	= 75
+  NPC= brain_monster
+  MAXHITS = 175
+  HITS=175
+  FAME=300
+  KARMA	= -6000
+  PARRYING	= 100.0
+  MACEFIGHTING	= 100.0
+  MAGICRESISTANCE=75.0
+  EVALUATINGINTEL= 100.0
+  TACTICS	= 100.0
+  ANATOMY       = 100.0
+  MAGERY        = 25.0
+
+  ITEMNEWBIE=i_platemail_gloves_titanium
+  ITEMNEWBIE=i_maul_phoenix
+  ITEMNEWBIE=i_robe
+  COLOR=09be
+  ITEM= i_gold,{50 200}
+  ITEM=tm_loot_reagents_easy
+    
+ON=@GETHIT
+   DORAND 5
+      SAY Ow!
+      SAY Argh!
+      SAY Ergh!
+      SAY Ack!
+      f_bizzaro_aura 5
+   ENDDO
+
+ON=@GETITEMVARS
+   TAG.BIZZAROMONSTER=1
+   TAG.BIZZARODUNGEON=SHAME
+   TAG.BIZZAROPOINTS=4
+
+//********************************************************************//
+//                              FLOOR 2                               //
+//********************************************************************//
+[CHARDEF c_h_bizzaro_air_elemental]
+ID=0d
+NAME=Air Elemental
+SOUND=snd_ELEMENTL_AIRELEM1
+ICON=i_pet_elem_air
+ANIM=079dff
+DAM=5,13
+ARMOR=30
+CAN=MT_WALK|MT_FLY
+FOODTYPE=
+DESIRES=r_mountains
+BLOODCOLOR=colors_white
+
+CATEGORY=Bizzaro World
+SUBSECTION=Bizzaro Shame
+DESCRIPTION=Air Elemental
+
+ON=@Create
+   MAXHITS=220
+   HITS=220
+   COLOR=0aea
+   NPC=brain_monster
+   STR={125 155}
+   DEX={165 185}
+   INT={71 93}
+   FAME={1000 6000}
+   KARMA={-4000 -4999}
+   PARRYING={65.0 75.0}
+   MAGERY={60.0 75.0}
+   MAGICRESISTANCE={60.0 75.0}
+   TACTICS={60.0 80.0}
+   WRESTLING={60.0 80.0}
+   ITEM= i_gold,{100 250}
+   ITEM=tm_loot_reagents_easy
+
+ON = @Hittry
+   IF ( (<FLAGS> & statf_conjured) && <REGION.GUARDED> )
+      REMOVE
+   ENDIF
+
+ON = @EnvironChange
+   IF ( (<FLAGS> & statf_conjured) && <REGION.GUARDED> )
+      REMOVE
+   ENDIF
+
+ON=@GETITEMVARS
+   IF (<EVAL RAND(10)> = 1)
+      SERV.NEWITEM=i_potion_HealGreat
+      NEW.AMOUNT=<EVAL RAND(3)+1>
+      NEW.BOUNCE
+   ENDIF
+   TAG.BIZZAROMONSTER=1
+   TAG.BIZZARODUNGEON=SHAME
+   TAG.BIZZAROPOINTS=3
+
+
+//********************************************************************//
+[CHARDEF c_h_bizzaro_earth_elemental]
+// Should eat metals and ores.
+ID=c_elem_earth
+NAME=Earth Elemental
+SOUND=snd_ELEMENTL_ERTHEL1
+ICON=i_pet_elem_earth
+ANIM=079c7f
+DAM=5,20
+ARMOR=17
+RESOURCES=8 tm_rocks
+CAN=MT_WALK|MT_GHOST
+FOODTYPE=15 t_arock,t_coin,t_ore,t_ingot
+DESIRES=r_caves
+BLOODCOLOR=colors_brown
+
+CATEGORY=Bizzaro World
+SUBSECTION=Bizzaro Shame
+DESCRIPTION=Earth Elemental
+
+ON=@Create
+   COLOR=0aea
+   NPC=brain_monster
+   MAXHITS=220
+   HITS=220
+   STR={125 155}
+   DEX={66 85}
+   INT={71 92}
+   FAME={1000 6000}
+   KARMA={-3000 -3999}
+
+   PARRYING={40.0 65.0}
+   MAGICRESISTANCE={50.0 95.0}
+   TACTICS={60.0 100.0}
+   WRESTLING={60.0 100.0}
+   MINING=80.0
+
+   ITEM= i_gold,{100 200}
+   ITEM=tm_loot_reagents_easy
+ 
+ON=@GETITEMVARS
+   IF (<EVAL RAND(10)> = 1)
+      SERV.NEWITEM=i_potion_HealGreat
+      NEW.AMOUNT=<EVAL RAND(3)+1>
+      NEW.BOUNCE
+   ENDIF
+   TAG.BIZZAROMONSTER=1
+   TAG.BIZZARODUNGEON=SHAME
+   TAG.BIZZAROPOINTS=3
+
+//********************************************************************//
+[CHARDEF c_h_bizzaro_fire_elemental]
+ID=c_elem_fire
+NAME=Fire Elemental
+SOUND=snd_ELEMENTL_FIRELEM1
+ICON=i_pet_elem_fire
+ANIM=079dff
+DAM=4,12
+ARMOR=20
+RESOURCES=8 t_MAGIC
+CAN=MT_WALK|MT_FIRE_IMMUNE|MT_RUN|MT_USEHANDS
+FOODTYPE=t_fire
+DESIRES=t_LAVA
+BLOODCOLOR=colors_red
+
+CATEGORY=Bizzaro World
+SUBSECTION=Bizzaro Shame
+DESCRIPTION=Fire Elemental
+
+ON=@Create
+   COLOR=0aea
+   NPC=brain_monster
+   MAXHITS=220
+   HITS=220
+   STR={125 155}
+   DEX={165 185}
+   INT={71 95}
+   FAME={1000 6000}
+   KARMA={-4000 -4999}
+
+   PARRYING={55.0 65.0}
+   MAGERY={60.0 75.0}
+   MAGICRESISTANCE={60.0 75.0}
+   TACTICS={80.0 100.0}
+   WRESTLING={70.0 100.0}
+
+   ITEMNEWBIE=i_light_source
+   ITEMNEWBIE=i_spellbook	// knows fire type spells.
+   ADDSPELL=s_fire_field
+   ADDSPELL=s_explosion
+   ADDSPELL=s_flamestrike
+   ADDSPELL=s_meteor_swarm
+   ADDSPELL=s_summon_elem_fire
+   ITEM= i_gold,{100 250}
+   ITEM=tm_loot_reagents_easy
+      
+ON=@Death
+   // Create death explosion to damage those nearby.
+   NEWITEM=i_fx_explode
+   act.color=0aea
+   act.TYPE=T_EXPLOSION
+   act.ATTR=ATTR_MOVE_NEVER | ATTR_CAN_DECAY
+   act.LINK=<uid>
+   act.morex=10 // damage
+   act.morey=090 // wFlags DAMAGE_GENERAL
+   act.morez=2 // iDist
+   act.p=<p>
+   act.TIMERD=1 // immediate decay
+
+ON=@GETITEMVARS
+   IF (<EVAL RAND(10)> = 1)
+      SERV.NEWITEM=i_potion_HealGreat
+      NEW.AMOUNT=<EVAL RAND(3)+1>
+      NEW.BOUNCE
+   ENDIF
+   TAG.BIZZAROMONSTER=1
+   TAG.BIZZARODUNGEON=SHAME
+   TAG.BIZZAROPOINTS=3
+
+//********************************************************************//
+[CHARDEF c_h_bizzaro_water_elemental]
+ID=c_elem_water
+NAME=Water Elemental
+SOUND=snd_ELEMENTL_WATREL1
+ICON=i_pet_elem_water
+ANIM=079dff
+DAM=4,12
+ARMOR=20
+RESOURCES=8 t_MAGIC
+CAN=MT_WALK|MT_SWIM|MT_USEHANDS
+FOODTYPE=t_water_wash
+DESIRES=r_WATER
+BLOODCOLOR=colors_blue
+
+CATEGORY=Bizzaro World
+SUBSECTION=Bizzaro Shame
+DESCRIPTION=Water Elemental
+
+ON=@Create
+   COLOR=0aea
+   NPC=brain_monster
+   MAXHITS=220
+   HITS=220
+   STR={125 155}
+   DEX={66 85}
+   INT={71 95}
+   FAME={1000 6000}
+   KARMA={-3000 -3999}
+
+   PARRYING={55.0 65.0}
+   MAGERY={60.0 75.0}
+   MAGICRESISTANCE={60.0 75.0}
+   TACTICS={55.0 65.0}
+   WRESTLING={70.0 90.0}
+   ITEM= i_gold,{100 250}
+   ITEM=tm_loot_reagents_easy
+
+
+ON=@GETITEMVARS
+   IF (<EVAL RAND(10)> = 1)
+      SERV.NEWITEM=i_potion_HealGreat
+      NEW.AMOUNT=<EVAL RAND(3)+1>
+      NEW.BOUNCE
+   ENDIF
+   TAG.BIZZAROMONSTER=1
+   TAG.BIZZARODUNGEON=SHAME
+   TAG.BIZZAROPOINTS=3
+  
+[CHARDEF c_h_bizzaro_cult_aria]
+ID=C_WOMAN
+NAME=Aria The Cultist Elementalist
+SOUND=snd_HUMAN_M_DIE_01
+AVERSIONS=t_TRAP,t_eerie_stuff
+ARMOR=45
+MOVERATE=100
+
+CATEGORY=Bizzaro World
+SUBSECTION=Bizzaro Shame
+DESCRIPTION=Aria The Cultist Elementalist
+  
+ON=@CREATE
+  COLOR=0aea
+  STR	= 150
+  DEX	= 200
+  INT	= 500
+  NPC= brain_monster
+  MAXHITS = 400
+  HITS=400
+  FAME=300
+  KARMA	= -6000
+  PARRYING	= 100.0
+  ARCHERY	= 145.0
+  MAGICRESISTANCE=75.0
+  EVALUATINGINTEL= 100.0
+  TACTICS	= 100.0
+  ANATOMY       = 100.0
+  MAGERY        = 105.0
+
+  ITEM=i_bow_ironwood
+  NAME=Cultist Beginners Bow
+  ATTR=01
+  COLOR=0aea
+  ITEM=i_arrow,{25 100}
+  ATTR=01
+  NAME=Cultist Elite Arrows
+  COLOR=0aea
+  ITEMNEWBIE=i_dress_full
+  COLOR=09be
+  ITEM=i_gold,{500 700}
+  ITEM=tm_loot_reagents_easy 
+  ITEM=i_bottle_empty,{1 5}
+
+  
+ON=@GETHIT
+   DORAND 5
+      SAY Ow!
+      SAY Argh!
+      SAY Ergh!
+      SAY Ack!
+      f_bizzaro_aura 10
+   ENDDO
+
+ON=@GETITEMVARS
+   IF (<EVAL RAND(10)> = 1)
+      SERV.NEWITEM=i_potion_HealGreat
+      NEW.AMOUNT=1
+      NEW.BOUNCE
+   ENDIF
+   SERV.NEWITEM tm_bizzaro_alchregs
+   NEW.BOUNCE
+   TAG.BIZZAROMONSTER=1
+   TAG.BIZZARODUNGEON=SHAME
+   TAG.BIZZAROPOINTS=9
+
+//********************************************************************//
+//                              FLOOR 3                               //
+//********************************************************************//   
+
+[CHARDEF c_h_bizzaro_cult_shaman]
+ID=C_MAN
+NAME=Bizzaro Shaman
+SOUND=snd_HUMAN_M_DIE_01
+AVERSIONS=t_TRAP,t_eerie_stuff
+ARMOR=25
+
+CATEGORY=Bizzaro World
+SUBSECTION=Bizzaro Shame
+DESCRIPTION=Shaman
+  
+ON=@CREATE
+  COLOR=0aea
+  STR	= 125
+  DEX	= 200
+  INT	= 75
+  NPC= brain_monster
+  MAXHITS = 500
+  HITS=500
+  FAME=300
+  KARMA	= -6000
+  PARRYING	= 100.0
+  SWORDSMANSHIP	= 100.0
+  MAGICRESISTANCE=75.0
+  EVALUATINGINTEL= 100.0
+  TACTICS	= 100.0
+  ANATOMY       = 100.0
+  MAGERY        = 25.0
+
+  ITEMNEWBIE=i_halberd_phoenix
+  ITEMNEWBIE=i_elven_male_robe1
+  COLOR=09be
+  ITEMNEWBIE=i_mask_orc
+  COLOR=09be
+  ITEM=i_gold,{250 600}
+  ITEM=tm_loot_reagents_easy
+  ITEM=i_bottle_empty
+  ITEM=i_potion_HealGreat,{1 3}
+  
+ON=@GETHIT
+   DORAND 5
+      SAY Ow!
+      SAY Argh!
+      SAY Ergh!
+      SAY Ack!
+      f_bizzaro_aura 10
+   ENDDO    
+
+ON=@GETITEMVARS
+   SERV.NEWITEM tm_bizzaro_alchregs
+   NEW.BOUNCE
+   TAG.BIZZAROMONSTER=1
+   TAG.BIZZARODUNGEON=SHAME
+   TAG.BIZZAROPOINTS=6    
+    
+[CHARDEF c_h_bizzaro_cult_priest]
+ID=C_MAN
+NAME=Bizzaro Priest
+SOUND=snd_HUMAN_M_DIE_01
+AVERSIONS=t_TRAP,t_eerie_stuff
+ARMOR=25
+MOVERATE=50
+
+CATEGORY=Bizzaro World
+SUBSECTION=Bizzaro Shame
+DESCRIPTION=Priest
+  
+ON=@CREATE
+  COLOR=0aea
+  STR	= 125
+  DEX	= 200
+  INT	= 500
+  NPC= brain_monster
+  MAXHITS = 500
+  HITS=500
+  FAME=300
+  KARMA	= -6000
+  PARRYING	= 100.0
+  MACEFIGHTING	= 100.0
+  MAGICRESISTANCE=75.0
+  EVALUATINGINTEL= 100.0
+  TACTICS	= 100.0
+  ANATOMY       = 100.0
+  MAGERY        = 105.0
+
+  ITEMNEWBIE=i_staff_quarter_myst
+  ITEMNEWBIE=i_elven_male_robe1
+  COLOR=09be
+  ITEMNEWBIE=i_mask_orc
+  COLOR=09be
+  ITEM=i_gold,{750 1000}
+  ITEM=tm_loot_reagents_easy 
+  ITEM=i_bottle_empty
+  ITEM=i_xbolt,{1 4}
+  ITEM=i_arrow,{1 10}
+  ITEM=i_potion_HealGreat,{1 3}
+  
+ON=@GETHIT
+   DORAND 5
+      SAY Ow!
+      SAY Argh!
+      SAY Ergh!
+      SAY Ack!
+      f_bizzaro_aura 15
+   ENDDO
+
+ON=@GETITEMVARS
+   SERV.NEWITEM tm_bizzaro_alchregs
+   NEW.BOUNCE
+   TAG.BIZZAROMONSTER=1
+   TAG.BIZZARODUNGEON=SHAME
+   TAG.BIZZAROPOINTS=9
+
+[CHARDEF c_h_bizzaro_cult_tom]
+ID=C_MAN
+NAME=Tom The Cultist
+SOUND=snd_HUMAN_M_DIE_01
+AVERSIONS=t_TRAP,t_eerie_stuff
+ARMOR=45
+MOVERATE=100
+
+CATEGORY=Bizzaro World
+SUBSECTION=Bizzaro Shame
+DESCRIPTION=Tom The Cultist
+  
+ON=@CREATE
+  COLOR=0aea
+  STR	= 150
+  DEX	= 200
+  INT	= 500
+  NPC= brain_monster
+  MAXHITS = 900
+  HITS=900
+  FAME=300
+  KARMA	= -6000
+  PARRYING	= 100.0
+  MACEFIGHTING	= 115.0
+  MAGICRESISTANCE=75.0
+  EVALUATINGINTEL= 100.0
+  TACTICS	= 100.0
+  ANATOMY       = 100.0
+  MAGERY        = 105.0
+
+  ITEM=i_crossbow_heavy_composite
+  NAME=Cultist Elite Heavy Crossbow
+  ATTR=01
+  COLOR=0aea
+  ITEM=i_xbolt,{25 100}
+  ATTR=01
+  NAME=Cultist Elite Bolts
+  COLOR=0aea
+  ITEMNEWBIE=i_staff_quarter_myst
+  ITEMNEWBIE=i_elven_male_robe2
+  COLOR=09be
+  ITEMNEWBIE=i_mask_orc
+  COLOR=09be
+  ITEM=i_gold,{2000 3000}
+  ITEM=tm_loot_reagents_easy 
+  ITEM=i_bottle_empty,{1 5}
+  ITEM=i_potion_HealGreat,{1 3}
+
+  
+ON=@GETHIT
+   DORAND 5
+      SAY Ow!
+      SAY Argh!
+      SAY Ergh!
+      SAY Ack!
+      f_bizzaro_aura 20
+   ENDDO
+
+ON=@NPCRESTOCK
+   IF (<HITS> + 100) < <STR>)
+      IF !(<MEMORYFINDTYPE.memory_fight>)
+         EMOTE bandages up 100 Hitpoints
+      ENDIF
+   ENDIF
+
+ON=@GETITEMVARS
+   SERV.NEWITEM tm_bizzaro_alchregs
+   NEW.BOUNCE
+   SERV.NEWITEM tm_bizzaro_alchregs
+   NEW.BOUNCE   
+   TAG.BIZZAROMONSTER=1
+   TAG.BIZZARODUNGEON=SHAME
+   TAG.BIZZAROPOINTS=25
+
+[CHARDEF c_h_bizzaro_cult_undertaker]
+ID=C_MAN
+NAME=Sam The Cultist Undertaker
+SOUND=snd_HUMAN_M_DIE_01
+AVERSIONS=t_TRAP,t_eerie_stuff
+ARMOR=45
+MOVERATE=100
+
+CATEGORY=Bizzaro World
+SUBSECTION=Bizzaro Shame
+DESCRIPTION=Sam the Undertaker
+  
+ON=@CREATE
+  COLOR=0aea
+  STR	= 150
+  DEX	= 200
+  INT	= 500
+  NPC= brain_monster
+  MAXHITS = 900
+  HITS=900
+  FAME=300
+  KARMA	= -6000
+  PARRYING	= 100.0
+  FENCING	= 115.0
+  MAGICRESISTANCE=75.0
+  EVALUATINGINTEL= 100.0
+  TACTICS	= 100.0
+  ANATOMY       = 100.0
+  MAGERY        = 105.0
+
+  ITEM=i_spear_blackrock
+  NAME=Cultist Spear of Destiny
+  ATTR=01
+  COLOR=0aea
+  ITEMNEWBIE=i_elven_male_robe1
+  COLOR=01
+  ITEM=i_gold,{2000 3000}
+  ITEM=tm_loot_reagents_easy 
+  ITEM=i_bottle_empty,{1 5}
+  ITEM=i_potion_HealGreat,{1 3}
+  
+ON=@GETHIT
+   DORAND 5
+      SAY Ow!
+      SAY Argh!
+      SAY Ergh!
+      SAY Ack!
+      f_bizzaro_aura 20
+   ENDDO
+
+ON=@NPCRESTOCK
+   IF (<HITS> + 100) < <STR>)
+      IF !(<MEMORYFINDTYPE.memory_fight>)
+         EMOTE bandages up 100 Hitpoints
+      ENDIF
+   ENDIF
+
+ON=@GETITEMVARS
+  SERV.NEWITEM tm_bizzaro_alchregs
+  NEW.BOUNCE
+  SERV.NEWITEM tm_bizzaro_alchregs
+  NEW.BOUNCE
+  SERV.NEWITEM tm_bizzaro_alchregs
+  NEW.BOUNCE
+  TAG.BIZZAROMONSTER=1
+  TAG.BIZZARODUNGEON=SHAME
+  TAG.BIZZAROPOINTS=25
+
+//********************************************************************//
+//                              FLOOR 4                               //
+//********************************************************************//   
+
+
+[CHARDEF c_h_bizzaro_cult_maiden]
+ID=C_WOMAN
+NAME=Cultist Sword Maiden
+SOUND=snd_HUMAN_M_DIE_01
+AVERSIONS=t_TRAP,t_eerie_stuff
+ARMOR=45
+MOVERATE=100
+
+CATEGORY=Bizzaro World
+SUBSECTION=Bizzaro Shame
+DESCRIPTION=Sword Maiden
+  
+ON=@CREATE
+  COLOR=0aea
+  STR	= 150
+  DEX	= 200
+  INT	= 500
+  NPC= brain_monster
+  MAXHITS=750
+  HITS=750
+  FAME=300
+  KARMA	= -6000
+  PARRYING	= 100.0
+  SWORDSMANSHIP	= 125.0
+  MAGICRESISTANCE=75.0
+  EVALUATINGINTEL= 100.0
+  TACTICS	= 100.0
+  ANATOMY       = 100.0
+
+  ITEMNEWBIE=i_katana_bloodrock
+  NAME=Sword Maiden Katana
+  ATTR=05
+  COLOR=0aea
+  ITEMNEWBIE=i_elven_female_shirt1
+  COLOR=09be
+  ITEMNEWBIE=i_elven_pants1
+  COLOR=09be
+  ITEMNEWBIE=i_boots_thigh
+  COLOR=01
+  ITEMNEWBIE=i_hair_elven_flower
+  COLOR=07a0
+  ITEM=i_gold,{1000 1500}
+  ITEM=tm_loot_reagents_easy 
+  ITEM=i_bottle_empty,{1 5}
+  ITEM=i_xbolt,{1 4}
+  ITEM=i_arrow,{1 10}
+  ITEM=i_potion_HealGreat,{1 3}
+  
+ON=@GETHIT
+   DORAND 5
+      SAY Ow!
+      SAY Argh!
+      SAY Ergh!
+      SAY Ack!
+      f_bizzaro_aura 30
+   ENDDO
+
+ON=@NPCRESTOCK
+   IF (<HITS> + 100) < <STR>)
+      IF !(<MEMORYFINDTYPE.memory_fight>)
+         EMOTE bandages up 100 Hitpoints
+      ENDIF
+   ENDIF
+
+ON=@GETITEMVARS
+  SERV.NEWITEM tm_bizzaro_alchregs
+  NEW.BOUNCE
+  TAG.BIZZAROMONSTER=1
+  TAG.BIZZARODUNGEON=SHAME
+  TAG.BIZZAROPOINTS=17
+
+
+[CHARDEF c_h_bizzaro_cult_leader]
+ID=C_MAN
+NAME=Bizzaro Cult Leader
+SOUND=snd_HUMAN_M_DIE_01
+AVERSIONS=t_TRAP,t_eerie_stuff
+ARMOR=25
+MOVERATE=130
+
+CATEGORY=Bizzaro World
+SUBSECTION=Bizzaro Shame
+DESCRIPTION=Cult Leader
+  
+ON=@CREATE
+  COLOR=0aea
+  STR	= 150
+  DEX	= 200
+  INT	= 500
+  NPC= brain_monster
+  MAXHITS = 1750
+  HITS=1750
+  FAME=300
+  KARMA	= -6000
+  PARRYING	= 100.0
+  MACEFIGHTING	= 100.0
+  MAGICRESISTANCE=75.0
+  EVALUATINGINTEL= 100.0
+  TACTICS	= 100.0
+  ANATOMY       = 100.0
+  MAGERY        = 105.0
+
+  ITEMNEWBIE=i_staff_quarter_myst
+  ITEMNEWBIE=i_elven_male_robe2
+  COLOR=09be
+  ITEMNEWBIE=i_mask_orc
+  COLOR=09be
+  ITEM=i_gold,{2500 4000}
+  ITEM=tm_loot_reagents_easy 
+  ITEM=i_bottle_empty,{1 5}
+  ITEM=i_xbolt,{1 4}
+  ITEM=i_arrow,{1 10}
+  ITEM=i_potion_HealGreat,{5 20}
+  
+  
+ON=@GETHIT
+   DORAND 5
+      SAY Ow!
+      SAY Argh!
+      SAY Ergh!
+      SAY Ack!
+      f_bizzaro_aura 45
+   ENDDO
+
+ON=@SPELLCAST
+   IF (<HITS> < 1000)
+      IF (<MANA> < 20)
+         IF (<MANA> < 10)
+            RETURN 1
+         ELSE
+            SAY Biz Mani
+            HITS=<HITS> + 50         
+         ENDIF
+      ELSE
+         SAY Biz Vas Mani
+         HITS=<HITS> + 100
+      ENDIF
+   ELSE
+      SAY Biz Vas An Flam
+      f_bizzaro_aura 40
+   ENDIF
+   RETURN 1
+
+ON=@NPCRESTOCK
+   IF (<HITS> + 100) < <STR>)
+      IF !(<MEMORYFINDTYPE.memory_fight>)
+         EMOTE bandages up 100 Hitpoints
+      ENDIF
+   ENDIF        
+
+ON=@GETITEMVARS
+  SERV.NEWITEM tm_bizzaro_alchregs
+  NEW.BOUNCE
+  TAG.BIZZAROMONSTER=1
+  TAG.BIZZARODUNGEON=SHAME
+  TAG.BIZZAROPOINTS=100
+  
+[EOF]

@@ -1,0 +1,432 @@
+//-------------------------------------------------------------------------------------------------
+//-                                                                                               -
+//------------------------------------Burstfire Master v1.00---------------------------------------
+//-                                                                                               -
+//----------------------------------System Script with Regions-------------------------------------
+//-                                                                                               -
+//-----------------------------------Written By James Timbrell-------------------------------------
+//-                                                                                               -
+//---------------------------------For use on Burstfire UO alone-----------------------------------
+
+//---------------------------------------------UIDS------------------------------------------------
+
+[DEFNAME bfmaster_uid_trackers]
+
+bfmaster_control_skara_uid 045f24b3d
+bfmaster_box_undrawn_red_skara_uid 045f21480
+bfmaster_box_drawn_red_skara_uid 045f21450
+bfmaster_box_undrawn_blue_skara_uid 045f21470
+bfmaster_box_drawn_blue_skara_uid 045f21459
+
+//-----------------------------------------Card Regions--------------------------------------------
+
+//[AREA Skara Brae BF Master Arena - Red Card Section]
+//GROUP=BFMaster
+//P=688,2257
+//RECT=685,2255,687,2260
+//FLAGS=region_antimagic_all|region_flag_nobuilding|region_flag_underground|region_flag_announce|region_flag_nodecay
+
+//[AREA Skara Brae BF Master Arena - Blue Card Section]
+//GROUP=BFMaster
+//P=688,2257
+//RECT=698,2255,700,2260
+//FLAGS=region_antimagic_all|region_flag_nobuilding|region_flag_underground|region_flag_announce|region_flag_nodecay
+
+//[AREA Skara Brae BF Master Arena - Red Card Summons]
+//GROUP=BFMaster
+//P=688,2257
+//RECT=690,2255,693,2259
+//FLAGS=region_antimagic_all|region_flag_nobuilding|region_flag_underground|region_flag_announce|region_flag_nodecay
+
+//[AREA Skara Brae BF Master Arena - Blue Card Summons]
+//GROUP=BFMaster
+//P=688,2257
+//RECT=694,2255,697,2259
+//FLAGS=region_antimagic_all|region_flag_nobuilding|region_flag_underground|region_flag_announce|region_flag_nodecay
+
+
+//----------------------------------------Control Stones-------------------------------------------
+
+[ITEMDEF i_bfmaster_control_skara]
+ID=0ed6
+NAME=Burstfire Master Control Stone - Skara Brae
+TYPE=t_script
+
+ON=@CREATE
+   COLOR=07a1
+   ATTR=010
+
+ON=@DCLICK
+   DIALOG d_bfmaster_control_skara
+   RETURN 1
+
+//-----------------------------------------Card Holders--------------------------------------------
+
+
+[ITEMDEF i_bfmaster_box_undrawn_red]
+ID=i_pouch
+TYPE=t_container
+NAME=Burstfire Master Undrawn Card Box
+FLIP=1
+DYE=1
+WEIGHT=1
+DUPELIST=0e79
+
+ON=@CREATE
+   COLOR=025
+   ATTR=010
+
+ON=@DROPON_SELF
+   SRC.SYSMESSAGE @85 You cannot manually place anything in this!
+   RETURN 1
+   
+ON=@TARGON_ITEM
+   IF (<SRC.TARG.BASEID> == i_bfmaster_pouch)
+      IF !(<SRC.TARG.FINDCONT(39).UID>)
+         SRC.SYSMESSAGE @46 You need at least 40 cards in your pouch!
+         RETURN 1
+      ENDIF
+      IF (<AREA.NAME> = Skara Brae BF Master Arena - Red Card Section)
+         f_bfmaster_box_red_skara
+         IF !(<UID.bfmaster_box_undrawn_blue_skara_uid.TAG.READY> = 1)
+            SRC.SYSMESSAGE Please wait for the other combatant to begin.
+         ELSE
+            f_bfmaster_game_start_skara
+         ENDIF
+      ENDIF
+   ENDIF
+   RETURN 1
+   
+ON=@DCLICK
+   TYPE=t_script
+   IF (<AREA.NAME> = Skara Brae BF Master Arena - Red Card Section)
+      DIALOG d_bfmaster_box_red_skara
+      RETURN 1
+   ENDIF
+   
+
+[FUNCTION f_bfmaster_box_red_skara]
+SRC.TARG.FINDCONT(0).CONT = bfmaster_box_undrawn_red_skara_uid
+IF (<SRC.TARG.FINDCONT(0).UID> == 0)
+   TAG.READY = 1
+   TAG.REDPLAYERUID=<SRC.UID>
+   RETURN 1
+ELSE
+   f_bfmaster_box_red_skara
+ENDIF
+
+
+[ITEMDEF i_bfmaster_box_drawn_red]
+ID=i_pouch
+TYPE=t_container
+NAME=Burstfire Master Drawn Card Box
+FLIP=1
+DYE=1
+WEIGHT=1
+DUPELIST=0e79
+
+ON=@CREATE
+   COLOR=025
+   ATTR=010
+
+ON=@DROPON_SELF
+   SRC.SYSMESSAGE @85 You cannot manually place anything in this!
+   RETURN 1
+
+ON=@DCLICK
+   TYPE=t_script
+   RETURN 1
+
+
+[ITEMDEF i_bfmaster_box_undrawn_blue]
+ID=i_pouch
+TYPE=t_container
+NAME=Burstfire Master Undrawn Card Box
+FLIP=1
+DYE=1
+WEIGHT=1
+DUPELIST=0e79
+
+ON=@CREATE
+   COLOR=05
+   ATTR=010
+
+ON=@DROPON_SELF
+   SRC.SYSMESSAGE @85 You cannot manually place anything in this!
+   RETURN 1
+
+ON=@TARGON_ITEM
+   IF (<SRC.TARG.BASEID> == i_bfmaster_pouch)
+      IF !(<SRC.TARG.FINDCONT(39).UID>)
+         SRC.SYSMESSAGE @46 You need at least 40 cards in your pouch!
+         RETURN 1
+      ENDIF
+      IF (<AREA.NAME> = Skara Brae BF Master Arena - Blue Card Section)
+         f_bfmaster_box_blue_skara
+         IF !(<UID.bfmaster_box_undrawn_red_skara_uid.TAG.READY> = 1)
+            SRC.SYSMESSAGE Please wait for the other combatant to begin.
+         ELSE
+            f_bfmaster_game_start_skara
+         ENDIF
+      ENDIF
+   ENDIF
+   RETURN 1
+   
+ON=@DCLICK
+   TYPE=t_script
+   IF (<AREA.NAME> = Skara Brae BF Master Arena - Red Card Section)
+      DIALOG d_bfmaster_box_red_skara
+      RETURN 1
+   ENDIF
+   
+
+[FUNCTION f_bfmaster_box_blue_skara]
+SRC.TARG.FINDCONT(0).CONT = bfmaster_box_undrawn_blue_skara_uid
+IF (<SRC.TARG.FINDCONT(0).UID> == 0)
+   TAG.READY = 1
+   TAG.BLUEPLAYERUID=<SRC.UID>
+   RETURN 1
+ELSE
+   f_bfmaster_box_blue_skara
+ENDIF
+
+
+[ITEMDEF i_bfmaster_box_drawn_blue]
+ID=i_pouch
+TYPE=t_container
+NAME=Burstfire Master Drawn Card Box
+FLIP=1
+DYE=1
+WEIGHT=1
+DUPELIST=0e79
+
+ON=@CREATE
+   COLOR=05
+   ATTR=010
+
+ON=@DROPON_SELF
+   SRC.SYSMESSAGE @85 You cannot manually place anything in this!
+   RETURN 1
+
+ON=@DCLICK
+   TYPE=t_script
+   RETURN 1
+
+
+
+//-------------------------------------------Emergency---------------------------------------------
+
+
+[ITEMDEF i_bfmaster_box_emergency]
+ID=i_pouch
+TYPE=t_container
+NAME=Burstfire Master Emergency Retrieval
+FLIP=1
+DYE=1
+WEIGHT=1
+DUPELIST=0e79
+
+ON=@CREATE
+   COLOR=025
+   ATTR=010
+
+ON=@DROPON_SELF
+   SRC.SYSMESSAGE @85 You cannot manually place anything in this!
+   RETURN 1
+   
+ON=@TARGON_ITEM
+   IF (<SRC.TARG.BASEID> == i_bfmaster_box_undrawn_red)
+      f_bfmaster_box_emergency
+   ENDIF
+   IF (<SRC.TARG.BASEID> == i_bfmaster_box_drawn_red)
+      f_bfmaster_box_emergency
+   ENDIF
+   IF (<SRC.TARG.BASEID> == i_bfmaster_box_undrawn_blue)
+      f_bfmaster_box_emergency
+   ENDIF
+   IF (<SRC.TARG.BASEID> == i_bfmaster_box_drawn_blue)
+      f_bfmaster_box_emergency
+   ENDIF
+   IF (<SRC.TARG.BASEID> == i_bfmaster_pouch)
+      f_bfmaster_pouch_emergency
+   ENDIF
+   
+ON=@DCLICK
+   TARGET Target the box to pull cards from
+   RETURN 1
+
+[FUNCTION f_bfmaster_box_emergency]
+SRC.TARG.FINDCONT(0).CONT = <UID>
+IF (<SRC.TARG.FINDCONT(0).UID> == 0)
+   SRC.TARG.TAG.READY = 0
+   RETURN 1
+ELSE
+   f_bfmaster_box_emergency
+ENDIF
+
+[FUNCTION f_bfmaster_pouch_emergency]
+FINDCONT(0).CONT = <SRC.TARG.UID>
+IF (<FINDCONT(0).UID> == 0)
+   RETURN 1
+ELSE
+   f_bfmaster_pouch_emergency
+ENDIF
+
+
+
+//-------------------------------------------Summoning---------------------------------------------
+
+
+[FUNCTION f_bfmaster_character_call]
+TRIGGER @GETITEMVARS
+SRC.NEWNPC=<VAR.SUMMONID>
+SRC.ACT.NAME=<VAR.CARDNAME>
+SRC.ACT.STR=<VAR.HITS>
+SRC.ACT.HITS=<VAR.HITS>
+SRC.ACT.INT=<VAR.MANA>
+SRC.ACT.MANA=<VAR.MANA>
+SRC.ACT.DEX=<VAR.DEX>
+SRC.ACT.STAM=<VAR.DEX>
+SRC.ACT.P=647,2243,-5
+SRC.ACT.STONE
+SRC.ACT.STONE
+SRC.ACT.f_bfmaster_clothing
+SRC.ACT.f_bfmaster_skill_assign
+
+[FUNCTION f_bfmaster_clothing]
+IF (<VAR.SUMMONID>==c_man)
+   SRC.ACT.NEWITEM i_pants_long
+   SRC.ACT.ACT.ATTR=05
+   SRC.ACT.EQUIP <SRC.ACT.ACT.UID>
+ENDIF
+IF (<VAR.SUMMONID>==c_woman)
+   SRC.ACT.NEWITEM i_dress_full
+   SRC.ACT.ACT.ATTR=05
+   SRC.ACT.EQUIP <SRC.ACT.ACT.UID>
+ENDIF
+
+
+
+//------------------------------------------Game Start---------------------------------------------
+
+[FUNCTION f_bfmaster_game_start_skara]
+IF (RAND(1))
+   SRC=<UID.bfmaster_box_undrawn_blue_skara_uid.<TAG.BLUEPLAYERUID>>
+ELSE
+   SRC=<UID.bfmaster_box_undrawn_red_skara_uid.<TAG.REDPLAYERUID>>
+ENDIF
+
+
+
+//--------------------------------------------Combat-----------------------------------------------
+// Damage calculator for the cards.
+// Works out attack power by working out the min and max damage.
+// The actual damage is then worked out by picking a random
+// number between those two integers, then adding 10% more damage
+// if the enemy is weak to that attack type (If there is one)
+// and that damage not being penalised by armour, then working
+// out the base damage minus the victims armour rating.
+// At the end, the final damage is the final base attack,
+// plus unaffected damage if weak to the attack.
+// The victim then says it's health.
+
+[FUNCTION f_bfmaster_attack_damage_calc]
+
+TAG.MINDMG=(<STR> / 10)
+TAG.MAXDMG=(<STR> / 7)
+IF (0<TAG.MINDMG> > 250)
+   TAG.MINDMG=250
+ENDIF
+IF (0<TAG.MAXDMG> > 400)
+   TAG.MAXDMG=400
+ENDIF
+TAG.DAMAGE1=<rand <TAG.MINDMG> <TAG.MAXDMG>>
+IF (0<TAG.ADDEDSTRENGTH> == 0<LINK.TAG.WEAKNESS>)
+   TAG.DAMAGE2=(0<TAG.DAMAGE1> / 10)
+ENDIF
+IF (0<TAG.ADDEDSTRENGTH> == 0<LINK.TAG.ADDEDWEAKNESS>)
+   TAG.DAMAGE2=(0<TAG.DAMAGE1> / 10)
+ENDIF
+IF (0<TAG.STRENGTH> == 0<LINK.TAG.WEAKNESS>)
+   TAG.DAMAGE2=(0<TAG.DAMAGE1> / 10)
+ENDIF
+IF (0<TAG.STRENGTH> == 0<LINK.TAG.ADDEDWEAKNESS>)
+   TAG.DAMAGE2=(0<TAG.DAMAGE1> / 10)
+ENDIF
+TAG.DAMAGE3=(0<TAG.DAMAGE1> - <LINK.TAG.ARMOUR>)
+TAG.FINALDAMAGE=(0<TAG.DAMAGE2> + <TAG.DAMAGE3>)
+LINK.HITS=(<LINK.HITS> - <TAG.FINALDAMAGE>)
+LINK.SAY Health
+LINK.SAY <LINK.HITS> / <LINK.STR>
+
+
+
+[FUNCTION f_bfmaster_potion]
+
+LINK.HITS=(<LINK.HITS> + <VAR.HITPLUS>)
+IF (<LINK.HITS> > <LINK.STR>)
+   LINK.HITS=<LINK.STR>
+ENDIF
+LINK.MANA=(<LINK.MANA> + <VAR.MANAPLUS>)
+IF (<LINK.MANA> > <LINK.INT>)
+   LINK.MANA=<LINK.INT>
+ENDIF
+LINK.STAM=(<LINK.STAM> + <VAR.HITPLUS>)
+IF (<LINK.STAM> > <LINK.DEX>)
+   LINK.STAM=<LINK.DEX>
+ENDIF
+SAY Health: <LINK.HITS> / <LINK.STR>
+SAY Mana: <LINK.MANA> / <LINK.INT>
+SAY Health: <LINK.STAM> / <LINK.DEX>
+
+
+// TAG.DAMAGE1 is the base spell power
+// TAG.DAMAGE2 is the tag where the damage is calculated
+// TAG.DAMAGE3 is where the resist damage is worked out
+
+[FUNCTION f_bfmaster_spell_damage_calc]
+
+// Base damage is Spell power + a random number from 0 to 9
+TAG.DAMAGE1=(0<TAG.SPELLPOWER> + <rand(10)>)
+// Moves the base damage to the calculated damage tag
+TAG.DAMAGE2=<TAG.DAMAGE1>
+// Modifys the calculated damage to add 10% if weak to type
+IF (0<TAG.TYPE> == 0<LINK.TAG.WEAKNESS>)
+   TAG.DAMAGE2=(<0<TAG.DAMAGE1> / 10)
+ENDIF
+// Modifys the calculated damage to add 10% if weak to type
+IF (0<TAG.TYPE> == 0<LINK.TAG.ADDEDWEAKNESS>)
+   TAG.DAMAGE2=(<0<TAG.DAMAGE1> / 10)
+ENDIF
+// If strong against the type, reduces damage by 50%
+IF (0<TAG.TYPE> == 0<LINK.TAG.STRENGTH>)
+   TAG.DAMAGE2=(0<TAG.DAMAGE1> / 5)
+ENDIF
+// If damage nullified, causes 0 damage
+IF (0<TAG.TYPE> == 0<TAG.NULL>)
+   TAG.DAMAGE2=0
+ENDIF
+// If there is already an absorbtion, adds to the absorbtion
+// If there is no absorbtion but damage is 0, adds to the damage
+// If there is no absorbtion, and some damage can be taken, removes 20% more damage
+IF (0<TAG.TYPE> == 0<LINK.TAG.ADDEDSTRENGTH>)
+   IF (0<TAG.DAMAGE2> == 0)
+      IF !(0<TAG.ABSORBED> > 0)
+         TAG.ABSORBED=(0<TAG.ABSORBED> + (0<TAG.SPELLPOWER> / 10))
+      ELSE
+         TAG.DAMAGE2=(0<TAG.DAMAGE2> / 8)
+      ENDIF
+   ELSE
+      TAG.DAMAGE2=(0<TAG.DAMAGE2> - (<TAG.DAMAGE1> / 8) )
+   ENDIF
+ENDIF
+// FINALDAMAGE is the damage currently done minus the resist skill remaining
+TAG.FINALDAMAGE=(0<TAG.DAMAGE2> - <TAG.MAGICRESIST>)
+// Damage is dealt by removing the damage from the hit points
+LINK.HITS=(<LINK.HITS> - <TAG.FINALDAMAGE>)
+// Victim says how much health it has remaining from total
+LINK.SAY Health
+LINK.SAY <LINK.HITS> / <LINK.STR>
+// Caster says how much mana is left
+SAY Mana
+SAY <MANA> / <INT>

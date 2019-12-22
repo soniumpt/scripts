@@ -1,0 +1,152 @@
+[itemdef i_swim_tile]
+Name = water
+ID = i_moongate_blue
+TYPE=T_TELEPAD
+
+ON@Create
+   ATTR = 08090
+   
+ON=@STEP
+   SRC.MESSAGE *swims under the bridge*
+   SRC.FIX
+
+[itemdef i_drydock_stone]
+Name= Dry Dock Stone
+ID=i_guildstone
+TYPE=T_SCRIPT
+
+
+On=@Create
+   //If the tag hasn't been set, set it
+   IF (0<TAG.P>=0)
+      TAG.P=2087,2856,-2
+      TAG.TOGGLE=0
+   ENDIF
+   
+   //Set to make it give out the ship
+   Type=T_DEED
+   MORE=i_multi_ship_small_N
+
+on=@dclick
+   IF <SRC.ISGM>
+
+      //Setup Options
+      IF (0<TAG.TOGGLE>=00)
+         TAG.TOGGLE=1
+         TRYP 3 INPDLG=TAG.P 30
+      ELSE
+         TAG.TOGGLE=0
+         TRYP 3 INPDLG=TAG.UID 30
+      ENDIF
+   
+   ELSEIF <SRC.FINDID.m_DryDock.UID>
+      SRC.SYSMESSAGE Your last action is still being processed, please try again in a few seconds.
+  
+   ELSEIF (<DISPID>=i_gold)
+      SRC.SYSMESSAGE You can't do anything with this.
+   
+   ELSEIF !(0<TAG.UID>=0)
+
+      //If They have a ship stored retrieve it
+      IF (0<UID.<TAG.UID>.TAG.<SRC.ACCOUNT>>=01)
+
+         //EQUIP the stone to get around problem with target
+         SRC.ACT=<UID>
+         SRC.ACT.DISPID=i_gold
+         SRC.ACT.BOUNCE
+
+         //Add new stone
+         SERV.NEWITEM i_drydock_stone
+         NEW.P=<TAG.P>
+         NEW.TAG.P=<TAG.P>
+         NEW.TAG.UID=<NEW.UID>
+
+         //Add Memory Item to check for failed placement
+         SERV.NEWITEM M_DryDock
+         NEW.CONT=<SRC.UID>
+
+         //Place Ship
+         
+         SERV.LOG :SHIP RETRIEVAL: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> is getting a ship from <UID>. New stone is <NEW.UID>
+         RETURN 0
+
+      ELSE
+
+         //If they get to this point let them dock the ship
+         TARGET Docking fee is 100gps.  Target the mast of your ship to dry dock it.  Please make sure you empty it first or your items will be lost.
+      ENDIF
+   ELSE
+      SRC.SYSMESSAGE This Docking Stone is not configured properly.  Please contact a gm.  Thank you.
+   ENDIF
+   RETURN 1
+
+on=@targon_item
+   //Check to see if it is a small ship, if so dock it and save info.
+   IF ((<SRC.TARG.BASEID>=i_multi_ship_small_n) || (<SRC.TARG.BASEID>=i_multi_ship_small_s) || (<SRC.TARG.BASEID>=i_multi_ship_small_w) || (<SRC.TARG.BASEID>=i_multi_ship_small_e))
+
+      IF strmatch("<UID.<SRC.TARG.MORE1>.ACCOUNT>","<SRC.ACCOUNT>")
+         //Consume Gold if they have enough
+         var.gold=100
+         SRC.consumegold_everywhere <eval (<var.gold>)>
+         if ( <VAR.consumegold> > 0 )
+            SRC.SYSMESSAGE You are <eval <VAR.consumegold>>gp short.
+            VAR.RETURN	= 1
+            return 1
+         endif
+      
+         //Dock Ship
+         TRY UID.<TAG.UID>.TAG.<SRC.ACCOUNT>=1
+         SRC.TARG.REMOVE
+         SERV.LOG :SHIP STORE: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> is storing a ship to <UID>. 
+      ELSE
+         SRC.SYSMESSAGE That is not your ship.
+      ENDIF
+   ENDIF
+   RETURN 1
+
+on=@targon_char
+   SRC.SYSMESSAGE They might find it rude that you think they resemble a ship.
+   RETURN 1
+
+on=@targon_ground
+   //If Determine if they are retrieving or storing and work accordingly.
+   IF !(0<UID.<TAG.UID>.TAG.<SRC.ACCOUNT>>=0)
+      IF (<SRC.TARGP.ISNEARTYPE t_water> = 1)
+         TRY UID.<TAG.UID>.TAG.<SRC.ACCOUNT>=
+         RETURN 0
+      ELSE
+         SRC.SYSMESSAGE Place ships in water.
+         REMOVE
+      ENDIF
+   ELSE
+      SRC.SYSMESSAGE That does not look like a ship.
+   ENDIF
+   RETURN 1
+
+on=@targon_cancel
+   IF !(0<UID.<TAG.UID>.TAG.<SRC.ACCOUNT>>=0)
+      REMOVE
+   ENDIF
+   RETURN 1
+ 
+
+[ItemDef M_DryDock]
+id=i_memory
+Name=DryDock Placement Checker
+type=t_eq_script
+
+ON=@Create
+   TIMER=10
+
+ON=@Unequip
+   IF <SRC.FINDID.i_drydock_stone.UID>
+      TRY UID.<SRC.FINDID.i_drydock_stone.TAG.UID>.TAG.<SRC.ACCOUNT>=1 
+      SRC.FINDID.i_drydock_stone.REMOVE
+   ENDIF
+   RETURN 1
+
+ON=@Timer
+   REMOVE
+   RETURN 1
+
+[EOF]

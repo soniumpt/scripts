@@ -1,0 +1,81 @@
+[CHARDEF c_llama_master]
+ID = c_man
+NAME = Llama Race Master
+TSPEECH = spk_llama_master
+
+ON = @Create
+STR= 10000
+DEX= 10000
+INT= 10000
+ITEMNEWBIE= random_male_hair
+COLOR= colors_hair
+ITEMNEWBIE= random_facial_hair
+COLOR= match_hair
+ITEMNEWBIE= i_CAPE
+COLOR= 00490
+ITEMNEWBIE= i_robe
+COLOR= 00490
+
+[SPEECH spk_llama_master]
+
+on = start the race
+on = *start*
+IF !(<SRC.ACCOUNT.PLEVEL> >= 2)
+SAY You cant do that
+return 1
+endif
+
+if (<tag.gatesclosed>==01)
+
+SAY START THE RACE!
+
+ACT = <UID.0437986e8> 
+act.nudgedown 20
+ACT = <UID.0437986e7> 
+act.nudgedown 20
+ACT = <UID.0437986e6> 
+act.nudgedown 20
+ACT = <UID.0437987a6> 
+act.nudgedown 20
+
+tag.gatesopen = 1
+tag.gatesclosed =
+return 1
+
+else
+
+SAY Gates are already open
+return 1
+endif
+
+on = close the gates
+on = *close*
+IF !(<SRC.ACCOUNT.PLEVEL> >= 2)
+SAY You cant do that
+return 1
+endif
+
+if (<tag.gatesopen>==01)
+
+Say Gates closed.
+
+ACT = <UID.0437986e8> 
+act.nudgeup 20
+ACT = <UID.0437986e7> 
+act.nudgeup 20
+ACT = <UID.0437986e6> 
+act.nudgeup 20
+ACT = <UID.0437987a6> 
+act.nudgeup 20
+
+tag.gatesopen =
+tag.gatesclosed = 1
+return 1
+
+else
+
+SAY Gates are already closed
+return 1
+endif
+
+[EOF]

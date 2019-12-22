@@ -1,0 +1,74 @@
+[ITEMDEF i_moongate_goat_1]
+ID=i_moongate_blue
+NAME=Snuggle Entrance Gate
+TYPE=T_telepad
+
+on=@create
+Color=077f
+ATTR=010
+
+on=@step
+  if (<src.obody>=c_man)
+  src.tag.oldbody=c_man
+  else
+    if (<src.obody>=c_woman)
+    src.tag.oldbody=c_woman
+    endif
+  endif
+src.obody=c_goat
+src.body=c_goat
+src.update
+Return 0
+
+[ITEMDEF i_moongate_goat_2]
+ID=i_moongate_blue
+NAME=Snuggle Exit Gate
+
+on=@create
+Color=0778
+ATTR=010
+
+on=@step
+  if !strmatch("<src.tag.oldbody>", "c_man")
+     if !strmatch("<src.tag.oldbody>", "c_woman")
+        Return 0
+     Endif
+  Endif
+src.body=<src.tag.oldbody>
+src.obody=<src.tag.oldbody>
+src.update
+src.tag.oldbody=
+Return 0
+
+
+//Big thanks to Wren for helping me get
+//this working right and snuggle for
+//helping me test it
+//-Jimmie
+
+
+
+[ITEMDEF i_moongate_cow]
+ID=i_moongate_blue
+NAME=Snuggle Entrance Gate
+TYPE=T_telepad
+
+on=@create
+Color=077f
+ATTR=010
+
+on=@step
+  if (<src.obody>=c_man)
+  src.tag.oldbody=c_man
+  else
+    if (<src.obody>=c_woman)
+    src.tag.oldbody=c_woman
+    endif
+  endif
+src.obody=c_cow_bw
+src.body=c_cow_bw
+src.update
+Return 0
+
+
+[EOF]

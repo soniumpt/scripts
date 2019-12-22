@@ -1,0 +1,310 @@
+//----------------------
+//
+//
+//CTF SCRIPT v1.7
+//By Raistilin Majere (RaistilinPK@hotmail.com)
+//
+//----------------------
+//How to use:Link the floor and the entry stone of each team before the event starts, also set the morep of the red floor
+//to the position of the blue floor (and the other way round) as well as setting the morep of the entry stones to where
+//you want the players to start, don't forget to use the exstones when done to remove tags\events
+
+//RED ITEMS
+
+[ITEMDEF I_ctf1_flag]//The Flag
+CATEGORY=Imperial uo
+SUBSECTION=CTF EVENT
+DESCRIPTION=RED TEAM
+ID=i_banner_post_11_nw
+WEIGHT=20
+
+ON=@CREATE
+   COLOR=079c
+   ATTR=08010
+   NAME=RED FLAG
+
+ON=@STEP
+   IF    ((0<SRC.HITPOINTS> >0) && 0<SRC.TAG.CTF2>=1 )
+         SRC.NEWITEM i_ctf1_club
+         SRC.ACT.BOUNCE
+         SRC.ACT.EQUIP
+         REMOVE
+
+   EndIf
+
+[ITEMDEF I_ctf1_club]
+CATEGORY=Imperial uo
+SUBSECTION=CTF EVENT
+DESCRIPTION=RED TEAM
+ID=I_club
+WEIGHT=20
+NAME=RED TEAM
+
+ON=@Create
+   COLOR=079c
+   ATTR=010
+   HITPOINTS={50 50}
+
+[ITEMDEF i_ctf1_estone]//Entry stone that sets tags\events
+CATEGORY=Imperial uo
+SUBSECTION=CTF EVENT
+DESCRIPTION=RED TEAM
+ID=I_guildstone
+NAME= Red Team click here!
+TYPE=T_normal
+
+ON=@CREATE
+   COLOR=079c
+
+ON=@DCLICK
+   SRC.TAG.CTF1=1
+   SRC.TAG.CTFX1=<I.LINK>
+   SRC.EVENTS +e_CTF1
+   SRC.EVENTS +e_CTF11
+   SRC.EVENTS +e_CTFX11
+   SRC.EVENTS +e_CTF1S
+   SRC.EVENTS +e_CTFXX1
+   SRC.GO=<I.MOREP>
+   RETURN 1
+
+[ITEMDEF i_ctf1_exstone]//The exit stone, make sure players use it to remove events\tags
+CATEGORY=Imperial uo
+SUBSECTION=CTF EVENT
+DESCRIPTION=RED TEAM
+ID=I_guildstone
+NAME=RED TEAM CLICK HERE TO EXIT!
+TYPE=T_normal
+
+ON=@CREATE
+   COLOR=079c
+
+ON=@DCLICK
+
+    IF ( <SRC.TAG.CTF1>=1 )
+         SRC.TAG.CTF1=
+         SRC.TAG.CTFX1=
+         SRC.EVENTS -e_CTF1
+         SRC.EVENTS -e_CTF11
+         SRC.EVENTS -e_CTFX11
+         SRC.EVENTS -e_CTF1S
+         SRC.EVENTS -e_CTFXX1
+         SRC.GO=6038,406
+         RETURN 1
+
+    EndIf
+
+[ITEMDEF I_CTF1_FLOOR]//The floor square make sure that this item is linked to the entry stone and its morep is set to the .P of the oposite stone
+CATEGORY=Imperial uo
+SUBSECTION=CTF EVENT
+DESCRIPTION=RED TEAM
+ID=I_floor_marble
+NAME=Red Team
+
+ON=@CREATE
+   COLOR=079c
+
+[ITEMDEF i_ctfs1]
+ID=i_memory
+TYPE=t_eq_script
+
+ON=@TIMER
+   REMOVE
+   RETURN 1
+
+//BLUE ITEMS
+
+[ITEMDEF I_ctf2_flag]//The flag
+CATEGORY=Imperial uo
+SUBSECTION=CTF EVENT
+DESCRIPTION=BLUE TEAM
+ID=i_banner_post_11_nw
+WEIGHT=20
+
+ON=@CREATE
+   COLOR=07a0
+   ATTR=08010
+   NAME=BLUE FLAG
+
+ON=@STEP
+   IF ((0<SRC.HITPOINTS> >0 )&& <SRC.TAG0.CTF1>=1)
+         SRC.NEWITEM i_ctf2_club
+         SRC.ACT.BOUNCE
+         SRC.ACT.EQUIP
+         REMOVE
+
+   EndIf
+
+[ITEMDEF I_ctf2_club]
+CATEGORY=Imperial uo
+SUBSECTION=CTF EVENT
+DESCRIPTION=BLUE TEAM
+ID=I_club
+WEIGHT=20
+NAME=BLUE TEAM
+
+ON=@Create
+   COLOR=07a0
+   ATTR=010
+   HITPOINTS={50 50}
+
+[ITEMDEF i_ctf2_estone]//Entry stone that sets tags\events
+CATEGORY=Imperial uo
+SUBSECTION=CTF EVENT
+DESCRIPTION=BLUE TEAM
+ID=I_guildstone
+NAME= Blue Team click here!
+TYPE=T_normal
+
+ON=@CREATE
+   COLOR=07a0
+
+ON=@DCLICK
+   SRC.TAG.CTF2=1
+   SRC.TAG.CTFX2=<I.LINK>
+   SRC.EVENTS +e_CTF1
+   SRC.EVENTS +e_CTF11
+   SRC.EVENTS +e_CTFX11
+   SRC.EVENTS +e_CTFXX1
+   SRC.EVENTS +e_CTF1S
+   SRC.GO=<I.MOREP>
+   RETURN 1
+
+[ITEMDEF i_ctf2_exstone]//The exit stone to remove tags\events
+CATEGORY=Imperial uo
+SUBSECTION=CTF EVENT
+DESCRIPTION=BLUE TEAM
+ID=I_guildstone
+NAME=BLUE TEAM CLICK HERE TO EXIT!
+TYPE=T_normal
+
+ON=@CREATE
+   COLOR=07a0
+
+ON=@DCLICK
+
+    IF ( <SRC.TAG.CTF2>=1 )
+        SRC.TAG.CTF2=
+        SRC.TAG.CTFX2=
+        SRC.EVENTS -e_CTF1
+        SRC.EVENTS -e_CTF11
+        SRC.EVENTS -e_CTFX11
+        SRC.EVENTS -e_CTFXX1
+        SRC.EVENTS -e_CTF1S
+        SRC.GO=6038,406
+        RETURN 1
+
+    END IF
+
+[ITEMDEF I_CTF2_FLOOR]]//The floor square make sure that this item is linked to the entry stone and its morep is set to the .P of the oposite stone
+CATEGORY=Imperial uo
+SUBSECTION=CTF EVENT
+DESCRIPTION=BLUE TEAM
+ID=I_floor_marble
+NAME=BLUE TEAM
+
+ON=@CREATE
+   COLOR=07a0
+
+[ITEMDEF i_ctfs2]
+ID=i_memory
+TYPE=t_eq_script
+
+ON=@TIMER
+   REMOVE
+   RETURN 1
+
+//EVENTS!!
+
+[EVENTS e_CTF1]
+
+ON=@DEATH
+   If (<SRC.RESTEST 1 i_ctf2_club> )
+           NEWITEM i_ctf2_flag
+           ACT.p=<src.p>
+           SRC.CONSUME=i_ctf2_club
+
+   Elseif (<SRC.RESTEST 1 i_ctf1_club> )
+           NEWITEM i_ctf1_flag
+           ACT.p=<src.p>
+           SRC.CONSUME=i_ctf1_club
+           
+   EndIf
+
+[EVENTS e_CTF11]
+
+ON=@LOGOUT
+   If (<SRC.RESTEST 1 i_ctf2_club> )
+          NEWITEM i_ctf2_flag
+          ACT.p=<src.p>
+          SRC.CONSUME=i_ctf2_club
+
+   ElseIf (<SRC.RESTEST 1 i_ctf1_club> )
+          NEWITEM i_ctf1_flag
+          ACT.p=<src.p>
+          SRC.CONSUME=i_ctf1_club
+
+   EndIf
+
+[EVENTS e_CTFX11]
+
+ON=@ItemStep
+      IF ((0<SRC.TAG.CTF1>=1) && <ACT.BASEID>=I_ctf1_flag )
+          ACT.P=<UID.<SRC.TAG.CTFX1>.P>
+
+      ElseIf ((0<SRC.TAG.CTF2>=1) && <ACT.BASEID>=i_ctf2_flag )
+            ACT.P=<UID.<SRC.TAG.CTFX2>.P>
+
+     Endif
+
+[EVENTS e_CTFXX1]
+
+ON=@ItemStep
+
+      IF ((<ACT.BASEID>=i_ctf1_Flag) && <SRC.RESTEST 1 i_ctf2_club> )
+          NEWITEM i_ctfs1
+          SRC.NEW.EQUIP
+          NEW.TIMER=2
+
+      ElseIf ((<ACT.BASEID>=i_ctf2_Flag) && <SRC.RESTEST 1 i_ctf1_club> )
+          NEWITEM i_ctfs2
+          SRC.NEW.EQUIP
+          NEW.TIMER=2
+
+      EndIf
+
+[EVENTS e_CTF1S]
+
+ON=@ItemStep
+
+      IF ((<ACT.BASEID>=i_ctf1_floor) && <SRC.RESTEST 1 i_ctfs1>  && <SRC.RESTEST 1 i_ctf2_club> )
+          SRC.CONSUME=i_ctf2_club
+          SRC.NEWITEM i_ctf2_flag
+          NEW.P=<UID.<TAG.CTFX1>.MOREP>
+                        
+            IF  (<UID.<TAG.CTFX1>.MORE><4 )
+                 TRY UID.0<TAG.CTFX1>.MORE = <UID.0<TAG.CTFX1>.MORE> + 1
+                 SERV.ALLCLIENTS SYSMESSAGE Red Team SCORES! They now have <UID.<TAG.CTFX1>.MORE> points!
+          
+               ELSE
+                     TRY UID.0<TAG.CTFX1>.REMOVE
+                     SERV.ALLCLIENTS SYSMESSAGE Red Team WINS!!
+          
+            EndIf
+
+      ElseIf ((<ACT.BASEID>=i_ctf2_floor) && <SRC.RESTEST 1 i_ctfs2>  && <SRC.RESTEST 1 i_ctf1_club> )
+          SRC.CONSUME=i_ctf1_club
+          SRC.NEWITEM i_ctf1_flag
+          NEW.P=<UID.<TAG.CTFX2>.MOREP>
+                        
+            IF  (<UID.<TAG.CTFX2>.MORE><4 )
+                 TRY UID.0<TAG.CTFX2>.MORE = <UID.0<TAG.CTFX2>.MORE> + 1
+                 SERV.ALLCLIENTS SYSMESSAGE Blue Team SCORES! They now have <UID.<TAG.CTFX2>.MORE> points!
+          
+               ELSE
+                     TRY UID.0<TAG.CTFX2>.REMOVE
+                     SERV.ALLCLIENTS SYSMESSAGE BLUE Team WINS!!
+
+            Endif
+
+      EndIf
+[EOF]

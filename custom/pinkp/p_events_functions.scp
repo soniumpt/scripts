@@ -1,0 +1,256 @@
+//******************************************************************************************************************************//
+//                        Function to resurrect dead players in events Created by Pink Panther                                  //
+//*****************************************************************************************************************************//
+
+[FUNCTION pvpresurrect]
+
+FORPLAYERS 500
+	IF (<EVAL <TAG0.INEVENT>>==1)
+		IF (<ISDEAD>)
+			IF (strmatch("<TAG0.ISONLINE>","YES"))
+				GO <SRC.P>
+				RESURRECT
+				HITS=<STR>
+				VAR0.PVPRESURRECT += 1
+			ELSE
+				VAR0.PVPRESURRECT2 += 1
+			ENDIF
+		ENDIF
+	ENDIF
+ENDFOR
+
+IF !(<VAR0.PVPRESURRECT>)
+	SRC.SYSMESSAGE No logged in dead players participating in the event were found within a 500 tiles radius.
+ELSE
+	SRC.SYSMESSAGE <EVAL <VAR.PVPRESURRECT>> players have been successfully teleported to you and resurrected.
+ENDIF
+
+IF !(<VAR0.PVPRESURRECT2>)
+	SRC.SYSMESSAGE No logged out dead players participating in the event were found within a 500 tiles radius.
+ELSE
+	SRC.SYSMESSAGE There are <EVAL <VAR.PVPRESURRECT2>> players logged out and dead participating in the event.
+ENDIF
+
+VAR.PVPRESURRECT=
+VAR.PVPRESURRECT2=
+
+RETURN 1
+
+[PLEVEL 2]
+pvpresurrect
+
+//*********************************************************************************************************//
+//    Function to drop player corpses from backpack, usefull in events, Created by Pink Panther            //
+//*********************************************************************************************************//
+
+[FUNCTION dropcorpse]
+IF (<SRC.FINDID.I_CORPSE>) 
+  WHILE (<SRC.FINDID.I_CORPSE>) 
+    SRC.FINDID.I_CORPSE.DROP
+    VAR0.CORPSEDROPED +=1
+   ENDWHILE
+ELSE
+	SRC.SYSMESSAGE You are not carrying any corpse with you.
+ENDIF
+
+SRC.SYSMESSAGE You have dropped <eval <var.corpsedroped>> corpses.
+VAR.CORPSEDROPED=
+
+[PLEVEL 2]
+dropcorpse
+
+//*********************************************************************************************************//
+//    Function to pick up player corpses from nearby area, usefull in events, Created by Pink Panther      //
+//*********************************************************************************************************//
+
+[FUNCTION pickcorpse]
+FORITEMS 250
+  IF (<BASEID>=i_corpse) && !(<LINK>==04fffffff)
+    BOUNCE
+    VAR0.CORPSEPICKED +=1
+	ENDIF
+ENDFOR
+
+SRC.SYSMESSAGE You have picked up <eval <var.corpsepicked>> corpses.
+VAR.CORPSEPICKED=
+
+[PLEVEL 2]
+pickcorpse
+
+//*********************************************************************************************************//
+//    Event Ban account based and Event Kick function adapted by .punish by Pink Panther                   //
+//*********************************************************************************************************//
+
+[FUNCTION eventban]
+IF (<ISEMPTY <ARGS>>)
+	SRC.SYSMESSAGE Please enter the time (in hours) you wish to ban the player for.
+	RETURN 1
+ENDIF
+
+  if ( <ARGS> < 0 )
+     SRC.SYSMESSAGE You can't ban someone for negative time!
+     return 1
+  endif
+
+  SRC.NEWITEM i_eventban
+  SRC.ACT.MORE1 = <args>
+  SRC.ACT.TARGET Who do you wish to ban from events for <eval <SRC.ACT.MORE1>> hours?
+  RETURN 1
+  
+[ITEMDEF i_eventban]
+NAME=Event Ban Targetter
+ID=i_memory
+TYPE=T_EQ_SCRIPT
+LAYER=30
+
+ON=@CREATE
+   ATTR=attr_decay
+
+ON=@TARGON_CHAR
+   if (<src.targ.findid(i_eventban_timer).uid>)
+      src.message They have already been banned from events!
+      Return 1
+   endif
+	  SRC.TARG.ACCOUNT.TAG.EVENTBAN=1
+      SERV.NEWITEM= i_eventban_timer
+	  NEW.TIMER= <more1> * 60 * 60
+	  SRC.TARG.EQUIP <NEW.UID>
+	  src.targ.sysmessage  @55 You have been banned from events for <eval <more1>> hours.
+	  src.targ.sysmessage @55 Type .eventbantime to see how many time is left until the ban is removed.
+	  src.sysmessage @55 You have banned <src.targ.name> from events for <eval <more1>> hours.
+	  SERV.LOG :EVENT BAN: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> banned <SRC.TARG.UID> <SRC.TARG.ACCOUNT> <SRC.TARG.NAME> from events for <eval <more1>> hours.
+	  return 1
+
+
+ON=@TARGON_ITEM
+  SRC.SYSMESSAGE You can't ban an item!
+  TIMER=1
+  REMOVE
+  RETURN 1
+
+ON=@TARGON_GROUND
+  SRC.SYSMESSAGE You can't ban the ground!
+  TIMER=1
+  REMOVE
+  RETURN 1
+
+[Itemdef i_eventban_timer]
+Name=Event Ban Timer
+id=i_memory
+layer= 30
+TYPE=t_eq_script
+
+ON=@TIMER
+   cont.account.tag.eventban=
+   cont.sysmessage @55 You have been un-banned from events.
+   remove
+   return 1
+ 
+ 
+[Function eventbantime]
+   if (<src.findid(i_eventban_timer).uid>)
+      LOCAL.HOURS = <eval (<src.findid(i_eventban_timer).timer> / 3600)>
+      LOCAL.HOURS = <LOCAL.HOURS> * 60 * 60
+      SRC.SYSMESSAGE @55 There are <eval (<src.findid(i_eventban_timer).timer> / 3600)> hours and <eval ((<src.findid(i_eventban_timer).timer> - <LOCAL.HOURS>) / 60)> minutes left until the event ban is over.
+	ELSE
+		SRC.SYSMESSAGE You don't appear to be banned from events.
+		RETURN 1
+	endif
+   
+[FUNCTION eventkick]
+  SRC.NEWITEM i_eventkick
+  SRC.ACT.TARGET Who do you wish to kick from the event?
+  RETURN 1
+
+[ITEMDEF i_eventkick]
+NAME=Event Kick Targetter
+ID=i_memory
+TYPE=T_EQ_SCRIPT
+LAYER=30
+
+ON=@CREATE
+   ATTR=attr_decay
+
+ON=@TARGON_CHAR
+   
+	 src.targ.kills=<src.targ.tag.killsbackup>
+	 src.targ.karma=<src.targ.tag.karmabackup>
+	 src.targ.fame=<src.targ.tag.famebackup>
+	 src.targ.tag.rep.alignment=<src.targ.tag.repbackup>
+	 SRC.targ.FLAGS = <SRC.TARG.FLAGS> & ~statf_criminal
+	 SRC.targ.FINDID.b_kill_decayer.timer = <src.targ.tag.killtimerbackup>
+
+	 src.targ.tag.karmabackup = 
+	 src.targ.tag.famebackup = 
+     src.targ.tag.killsbackup = 
+	 src.targ.tag.repbackup=
+	 src.targ.tag.statsstored =
+	 src.targ.tag.inevent=
+	 src.targ.tag.killtimerbackup =
+	
+	 src.targ.for_memory f_fkk_peace
+	 
+	 src.targ.go 4308,954,10
+	 
+	 src.targ.sysmessage @55 You have been kicked out of the event.
+	 src.sysmessage @55 You have kicked <SRC.TARG.NAME> out of the event.
+	
+	  SERV.LOG :EVENT KICK: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> kicked <SRC.TARG.UID> <SRC.TARG.ACCOUNT> <SRC.TARG.NAME> from the event.
+	  return 1
+
+
+ON=@TARGON_ITEM
+  SRC.SYSMESSAGE You can't kick an item!
+  TIMER=1
+  REMOVE
+  RETURN 1
+
+ON=@TARGON_GROUND
+  SRC.SYSMESSAGE You can't kick the ground!
+  TIMER=1
+  REMOVE
+  RETURN 1
+  
+[PLEVEL 1]
+eventbantime
+
+//*********************************************************************************************************//
+//        Prevent players from throwing X-pots in events created by Pink Panther                          //
+//*********************************************************************************************************//
+
+[FUNCTION throwxpot]
+
+IF (<EVAL <VAR0.XPOT>> == 1)
+REGION.ALLCLIENTS TAG.XPOTPVP=
+VAR.XPOT=
+SYSMESSAGE Throwing X-Pots ENABLED!
+ELSE
+REGION.ALLCLIENTS TAG.XPOTPVP=1
+VAR.XPOT=1
+SYSMESSAGE Throwing X-Pots DISABLED!
+ENDIF
+
+//*********************************************************************************************************//
+//                              Event Chat Function Created by Pink Panther                                //
+//*********************************************************************************************************//
+
+[PLEVEL 1]
+e
+
+[FUNCTION e]
+IF (<SRC.ACCOUNT.PLEVEL> > 2)
+serv.allclients f_to_eventss <args>
+ELSEIF (<EVAL <SRC.TAG0.inevent>>==1)
+serv.allclients f_to_eventsp <args>
+endif
+
+
+[FUNCTION f_to_eventss]
+   if ((<ACCOUNT.PLEVEL> > 2) || (<eval <tag0.inevent>> == 1))
+   SYSMESSAGE @07a1 [Staff: Event Chat] <SRC.name>: <args>
+   endif
+   
+[FUNCTION f_to_eventsp]
+   if ( (<ACCOUNT.PLEVEL> > 2) || (<EVAL <tag0.inevent>> == 1))
+   SYSMESSAGE @07ac [Player: Event Chat] <SRC.name>: <args>
+   endif

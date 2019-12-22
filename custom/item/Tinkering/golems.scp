@@ -1,0 +1,1891 @@
+//27-11-03 Lowered tink skill needed to control golems + fixed typos - Reaps
+//08-09-05 - Raist - Added silver and gold golems
+//11-09-05 - Raist - Moved tongs over here, with the repair function
+//11-09-05 - Raist - Renamed the file to golems.scp for easier readability
+//11-09-05 - Raist - Moved i_pet_ele_earth out of sphereitemb7 to over here as well as removed the thing
+//that made them unshrinkable O_O
+//14-09-05 - Raist - Changed tera requirements to control as it was much higher than tit even though it's
+//slightly worse
+//15-09-05 - Raist - Sorted G shrinks so they affect golems and they auto enter pack
+
+[ITEMDEF 020d7]
+DEFNAME=i_pet_elem_earth
+NAME=Earth Elemental
+TYPE=T_FIGURINE
+VALUE=500
+TDATA3=c_elem_earth
+
+CATEGORY=Miscellaneous
+SUBSECTION=Character Icons
+DESCRIPTION=Earth Elemental
+
+
+[DEFNAME def_golem_stats]
+golem_arm_oldcopper     18
+golem_arm_copper	20
+golem_arm_purecopper    20
+golem_arm_iron		22
+golem_arm_ferrum        22
+golem_arm_bronze	28
+golem_arm_brass		30
+golem_arm_silver	32
+golem_arm_gold		32
+golem_arm_steel		34
+golem_arm_chrome	36
+golem_arm_terathane	35
+golem_arm_titanium	38
+golem_arm_verite        38
+golem_arm_valorite      38
+golem_arm_verminard     38
+golem_arm_stronghold    38
+golem_arm_blackrock     40
+golem_arm_adamantine	40
+golem_arm_bloodrock     42
+
+golem_dam_oldcopper      5, 13
+golem_dam_copper	 7, 15
+golem_dam_purecopper     7, 15
+golem_dam_iron		 9, 17
+golem_dam_ferrum         9, 17
+golem_dam_bronze	10, 18
+golem_dam_brass		12, 20
+golem_dam_silver	13, 23
+golem_dam_gold		13, 23
+golem_dam_steel		13, 25
+golem_dam_chrome	14, 27
+golem_dam_terathane	16, 25
+golem_dam_titanium	17, 26
+golem_dam_verite        17, 26
+golem_dam_valorite      17, 26
+golem_dam_verminard     18, 27
+golem_dam_stronghold    18, 27
+golem_dam_blackrock     19, 28
+golem_dam_adamantine	19, 28
+golem_dam_bloodrock     20, 30
+
+golem_str_oldcopper     180
+golem_str_copper	200
+golem_str_purecopper    200
+golem_str_iron		250
+golem_str_ferrum        250
+golem_str_bronze	300
+golem_str_brass		350
+golem_str_silver	375
+golem_str_gold		375
+golem_str_steel		400
+golem_str_chrome	450
+golem_str_terathane	450
+golem_str_titanium	500
+golem_str_verite        500
+golem_str_valorite      500
+golem_str_verminard     575
+golem_str_stronghold    575
+golem_str_blackrock     680
+golem_str_adamantine	700
+golem_str_bloodrock     720
+
+golem_dex_oldcopper      91
+golem_dex_copper	 91
+golem_dex_purecopper     91
+golem_dex_iron		 81
+golem_dex_ferrum         81
+golem_dex_bronze	 81
+golem_dex_brass		 81
+golem_dex_silver	 81
+golem_dex_gold		 81
+golem_dex_steel		 81
+golem_dex_chrome	 81
+golem_dex_terathane	 91
+golem_dex_titanium	 91
+golem_dex_verite         91
+golem_dex_valorite       91
+golem_dex_verminard      91
+golem_dex_stronghold     91
+golem_dex_blackrock      81
+golem_dex_adamantine	 81
+golem_dex_bloodrock      81
+
+//min skill needed to use golems
+golem_oldcopper_tinkreq		200
+golem_copper_tinkreq		250
+golem_purecopper_tinkreq	250
+golem_iron_tinkreq		300
+golem_ferrum_tinkreq		300
+golem_bronze_tinkreq		350
+golem_brass_tinkreq		350
+golem_silver_tinkreq		400
+golem_gold_tinkreq		400
+golem_steel_tinkreq		450
+golem_chrome_tinkreq		450
+golem_terathane_tinkreq		500
+golem_titanium_tinkreq		550
+golem_verite_tinkreq		600
+golem_valorite_tinkreq		600
+golem_verminard_tinkreq		650
+golem_stronghold_tinkreq	650
+golem_blackrock_tinkreq		700
+golem_adamantine_tinkreq	750
+golem_bloodrock_tinkreq		800
+
+[FUNCTION fix_golem]
+   if ( (!strcmp("<NAME>", "golem")) && (<TYPE> == t_figurine) )
+      TYPE	= t_golem
+      TRIGGER	= @Create
+      return 1
+   endif
+   RETURN <SRC.RESTRICT_UNSHRINK>
+
+[TYPEDEF t_golem]
+ON = @DClick
+  if ( <CONT.TOPOBJ.UID> != <SRC.UID> )
+     SRC.SYSMESSAGE You must hold it to do that.
+     return 1
+  endif
+
+  if ( !<ISIDENTIFIED> )
+     src.sysmessage It has to be properly identified in order to be used.
+     return 1
+  endif
+
+  if ( <SRC.TINKERING> < <STRSUB 2 STRLEN(<BASEID>) <BASEID>>_tinkreq )
+     src.sysmessage You have no idea on how to set it in motion.
+     return 1
+  endif
+  TYPE	= t_figurine
+  return 0
+
+ON = @IdentifyMsg
+   VAR.ITEM.IDENTIFY.MSG	= <eval (<STRSUB 2 STRLEN(<BASEID>) <BASEID>>_tinkreq/10)>% Tinkering to control
+
+ON = @MessageEffect
+   if ( <SRC.ITEMID> < 30.0 )
+      MSG_EFFECT_ADD Tinkering required to control
+   else
+      MSG_EFFECT_ADD <eval (<STRSUB 2 STRLEN(<BASEID>) <BASEID>>_tinkreq/10)>% Tinkering to control
+   endif
+
+ON = @UnIdentify
+  NAME	=
+  ATTR_MAGIC 1
+
+ON = @Identify
+  TRIGGER @Create
+  ATTR_MAGIC 0
+
+
+[EVENTS e_golem]
+ON = @SpellEffect
+  if ( (<argn> == 4) || (<argn> == 29) || (<argn> == 20) || (<argn> == 39) || (<argn> == 72) )
+     SRC.SYSMESSAGE The spell doesn't seem to havy any effect upon them.
+     return 1
+  endif
+
+ON = @Click
+   if ( !strcmp( "<TAG.LOW_HITS>", ""  ) )
+      return 0
+   endif
+   HITS		= <TAG.LOW_HITS>
+   UPDATE
+
+ON = @GetHit
+   TAG.LOW_HITS	= <HITS>
+   return 0
+
+ON = @HITTRY
+   IF <UID.<REGION.UID>.TYPE> = T_MULTI
+      ARGN1 = <EVAL ( <ARGN1> + 15 )>
+   ENDIF
+
+//
+// COPPER
+//
+[CHARDEF c_golem_copper]
+ID		= c_elem_earth
+NAME		= Copper Golem
+SOUND		= snd_ELEMENTL_ERTHEL1
+ICON		= i_pet_elem_earth
+ANIM		= 079c7f
+//RESOURCES	= 5 i_ingot_copper
+CAN		= MT_WALK | MT_RUN
+TEVENTS		= e_golem
+
+FOODTYPE	= 15 t_arock, t_coin, t_ore, t_ingot
+DESIRES		= r_caves
+BLOODCOLOR	= color_o_copper
+DAM		= golem_dam_copper
+ARMOR		= golem_arm_copper
+
+ON=@Create
+  TAG.GOLEM	= mat_copper
+  COLOR		= color_o_copper
+  NPC		= brain_monster
+  FAME		= 0
+  KARMA		= -100
+
+  STR		= golem_str_copper
+  DEX		= golem_dex_copper
+  INT		= 10
+
+  TACTICS	= 90.0
+  WRESTLING	= 90.0
+  MAGICRESISTANCE=0.0
+
+
+
+[ITEMDEF i_golem_copper]
+ID		= i_pet_elem_earth
+TYPE		= t_golem
+NAME		= golem
+RESOURCES	= 8 i_gears_copper, 12 i_hinge_copper, 30 i_ingot_copper, 3 i_scroll_cunning, 3 i_scroll_strength, 3 i_scroll_agility
+SKILLMAKE	= Tinkering 75.0, t_tinker_tools
+
+ON = @Create
+  COLOR	= color_o_copper
+  MORE1	= c_golem_copper
+  ATTR	= attr_identified
+  NAME	= copper golem
+ON = @Click
+  MORE1	= c_golem_copper
+  return <fix_golem>
+ON = @DClick
+  MORE1	= c_golem_copper
+  return <fix_golem>
+
+// [CHARDEF c_golem_oldcopper]
+// ID		= c_elem_earth
+// NAME		= Old Copper Golem
+// SOUND		= snd_ELEMENTL_ERTHEL1
+// ICON		= i_pet_elem_earth
+// ANIM		= 079c7f
+// RESOURCES	= 5 i_ingot_old_copper
+// CAN		= MT_WALK | MT_RUN
+// TEVENTS		= e_golem
+
+// FOODTYPE	= 15 t_arock, t_coin, t_ore, t_ingot
+// DESIRES		= r_caves
+// BLOODCOLOR	= color_o_copper
+// DAM		= golem_dam_oldcopper
+// ARMOR		= golem_arm_oldcopper
+
+// ON=@Create
+// TAG.GOLEM	= mat_oldcopper
+//  COLOR		= color_o_copper
+//  NPC		= brain_monster
+//  FAME		= 0
+//  KARMA		= -100
+
+//  STR		= golem_str_oldcopper
+//  DEX		= golem_dex_oldcopper
+//  INT		= 10
+
+//  TACTICS	= 90.0
+//  WRESTLING	= 90.0
+//  MAGICRESISTANCE=0.0
+
+
+
+// [ITEMDEF i_golem_oldcopper]
+// ID		= i_pet_elem_earth
+// TYPE		= t_golem
+// NAME		= golem
+// RESOURCES	= 8 i_gears_old_copper, 12 i_hinge_old_copper, 30 i_ingot_old_copper, 3 i_scroll_cunning, 3 i_scroll_strength, 3 i_scroll_agility
+// SKILLMAKE	= Tinkering 75.0, t_tinker_tools
+
+// ON = @Create
+// COLOR	= color_o_oldcopper
+//  MORE1	= c_golem_copper
+//  ATTR	= attr_identified
+//  NAME	= old copper golem
+// ON = @Click
+// MORE1	= c_golem_oldcopper
+//  return <fix_golem>
+// ON = @DClick
+//  MORE1	= c_golem_oldcopper
+//  return <fix_golem>
+
+[CHARDEF c_golem_purecopper]
+ID		= c_elem_earth
+NAME		= Pure Copper Golem
+SOUND		= snd_ELEMENTL_ERTHEL1
+ICON		= i_pet_elem_earth
+ANIM		= 079c7f
+//RESOURCES	= 5 i_ingot_pure_copper
+CAN		= MT_WALK | MT_RUN
+TEVENTS		= e_golem
+
+FOODTYPE	= 15 t_arock, t_coin, t_ore, t_ingot
+DESIRES		= r_caves
+BLOODCOLOR	= color_o_pure_copper
+DAM		= golem_dam_purecopper
+ARMOR		= golem_arm_purecopper
+
+ON=@Create
+  TAG.GOLEM	= mat_pure_copper
+  COLOR		= color_o_pure_copper
+  NPC		= brain_monster
+  FAME		= 0
+  KARMA		= -100
+
+  STR		= golem_str_purecopper
+  DEX		= golem_dex_purecopper
+  INT		= 10
+
+  TACTICS	= 90.0
+  WRESTLING	= 90.0
+  MAGICRESISTANCE=0.0
+
+
+
+[ITEMDEF i_golem_purecopper]
+ID		= i_pet_elem_earth
+TYPE		= t_golem
+NAME		= golem
+RESOURCES	= 8 i_gears_pure_copper, 12 i_hinge_pure_copper, 30 i_ingot_pure_copper, 3 i_scroll_cunning, 3 i_scroll_strength, 3 i_scroll_agility
+SKILLMAKE	= Tinkering 75.0, t_tinker_tools
+
+ON = @Create
+  COLOR	= color_o_pure_copper
+  MORE1	= c_golem_copper
+  ATTR	= attr_identified
+  NAME	= pure copper golem
+ON = @Click
+  MORE1	= c_golem_copper
+  return <fix_golem>
+ON = @DClick
+  MORE1	= c_golem_copper
+  return <fix_golem>
+
+
+//
+// IRON
+//
+[CHARDEF c_golem_iron]
+ID		= c_elem_earth
+NAME		= Iron Golem
+SOUND		= snd_ELEMENTL_ERTHEL1
+ICON		= i_pet_elem_earth
+ANIM		= 079c7f
+//RESOURCES	= 5 i_ingot_iron
+CAN		= MT_WALK | MT_RUN
+TEVENTS		= e_golem
+
+FOODTYPE	= 15 t_arock, t_coin, t_ore, t_ingot
+DESIRES		= r_caves
+BLOODCOLOR	= color_o_iron
+DAM		= golem_dam_iron
+ARMOR		= golem_arm_iron
+
+ON=@Create
+  TAG.GOLEM	= mat_iron
+  COLOR		= color_o_iron
+  NPC		= brain_monster
+  FAME		= 0
+  KARMA		= -100
+
+  STR		= golem_str_iron
+  DEX		= golem_dex_iron
+  INT		= 10
+
+  TACTICS	= 90.0
+  WRESTLING	= 90.0
+  MAGICRESISTANCE=0.0
+
+
+[ITEMDEF i_golem_iron]
+ID	= i_pet_elem_earth
+TYPE	= t_golem
+NAME	= golem
+RESOURCES	= 8 i_gears, 12 i_hinge, 30 i_ingot_iron, 3 i_scroll_cunning, 3 i_scroll_strength, 3 i_scroll_agility
+SKILLMAKE	= Tinkering 80.0, t_tinker_tools
+
+ON = @Create
+  COLOR	= color_o_iron
+  MORE1	= c_golem_iron
+  ATTR	= attr_identified
+  NAME	= iron golem
+ON = @Click
+  MORE1	= c_golem_iron
+  return <fix_golem>
+ON = @DClick
+  MORE1	= c_golem_iron
+  return <fix_golem>
+
+[CHARDEF c_golem_ferum]
+ID		= c_elem_earth
+NAME		= Ferrum Golem
+SOUND		= snd_ELEMENTL_ERTHEL1
+ICON		= i_pet_elem_earth
+ANIM		= 079c7f
+//RESOURCES	= 5 i_ferum_iron
+CAN		= MT_WALK | MT_RUN
+TEVENTS		= e_golem
+
+FOODTYPE	= 15 t_arock, t_coin, t_ore, t_ingot
+DESIRES		= r_caves
+BLOODCOLOR	= color_o_ferrum
+DAM		= golem_dam_ferrum
+ARMOR		= golem_arm_ferrum
+
+ON=@Create
+  TAG.GOLEM	= mat_ferrum
+  COLOR		= color_o_ferrum
+  NPC		= brain_monster
+  FAME		= 0
+  KARMA		= -100
+
+  STR		= golem_str_ferrum
+  DEX		= golem_dex_ferrum
+  INT		= 10
+
+  TACTICS	= 90.0
+  WRESTLING	= 90.0
+  MAGICRESISTANCE=0.0
+
+
+[ITEMDEF i_golem_ferum]
+ID	= i_pet_elem_earth
+TYPE	= t_golem
+NAME	= golem
+RESOURCES	= 8 i_gears_ferrum, 12 i_hinge_ferrum, 30 i_ingot_ferrum, 3 i_scroll_cunning, 3 i_scroll_strength, 3 i_scroll_agility
+SKILLMAKE	= Tinkering 80.0, t_tinker_tools
+
+ON = @Create
+  COLOR	= color_o_ferrum
+  MORE1	= c_golem_ferum
+  ATTR	= attr_identified
+  NAME	= ferum golem
+ON = @Click
+  MORE1	= c_golem_ferum
+  return <fix_golem>
+ON = @DClick
+  MORE1	= c_golem_ferum
+  return <fix_golem>
+
+
+//
+// BRONZE
+//
+[CHARDEF c_golem_bronze]
+ID		= c_elem_earth
+NAME		= Bronze Golem
+SOUND		= snd_ELEMENTL_ERTHEL1
+ICON		= i_pet_elem_earth
+ANIM		= 079c7f
+//RESOURCES	= 5 i_ingot_bronze
+CAN		= MT_WALK | MT_RUN
+TEVENTS		= e_golem
+
+FOODTYPE	= 15 t_arock, t_coin, t_ore, t_ingot
+DESIRES		= r_caves
+BLOODCOLOR	= color_o_bronze
+DAM		= golem_dam_bronze
+ARMOR		= golem_arm_bronze
+
+ON=@Create
+  TAG.GOLEM	= mat_bronze
+  COLOR		= color_o_bronze
+  NPC		= brain_monster
+  FAME		= 0
+  KARMA		= -100
+
+  STR		= golem_str_bronze
+  DEX		= golem_dex_bronze
+  INT		= 10
+
+  TACTICS	= 90.0
+  WRESTLING	= 90.0
+  MAGICRESISTANCE=0.0
+
+
+[ITEMDEF i_golem_bronze]
+ID	= i_pet_elem_earth
+TYPE	= t_golem
+NAME	= golem
+RESOURCES	= 8 i_gears_bronze, 12 i_hinge_bronze, 30 i_ingot_bronze, 3 i_scroll_cunning, 3 i_scroll_strength, 3 i_scroll_agility
+SKILLMAKE	= Tinkering 83.0, t_tinker_tools
+
+ON = @Create
+  COLOR	= color_o_bronze
+  MORE1	= c_golem_bronze
+  ATTR	= attr_identified
+  NAME	= bronze golem
+ON = @Click
+  MORE1	= c_golem_bronze
+  return <fix_golem>
+ON = @DClick
+  MORE1	= c_golem_bronze
+  return <fix_golem>
+
+
+
+//
+// BRASS
+//
+[CHARDEF c_golem_brass]
+ID		= c_elem_earth
+NAME		= Brass Golem
+SOUND		= snd_ELEMENTL_ERTHEL1
+ICON		= i_pet_elem_earth
+ANIM		= 079c7f
+//RESOURCES	= 5 i_ingot_brass
+CAN		= MT_WALK | MT_RUN
+TEVENTS		= e_golem
+
+FOODTYPE	= 15 t_arock, t_coin, t_ore, t_ingot
+DESIRES		= r_caves
+BLOODCOLOR	= color_o_brass
+DAM		= golem_dam_brass
+ARMOR		= golem_arm_brass
+
+ON=@Create
+  TAG.GOLEM	= mat_brass
+  COLOR		= color_o_brass
+  NPC		= brain_monster
+  FAME		= 0
+  KARMA		= -100
+
+  STR		= golem_str_brass
+  DEX		= golem_dex_brass
+  INT		= 10
+
+  TACTICS	= 90.0
+  WRESTLING	= 90.0
+  MAGICRESISTANCE=0.0
+
+
+[ITEMDEF i_golem_brass]
+ID	= i_pet_elem_earth
+TYPE	= t_golem
+NAME	= golem
+RESOURCES	= 8 i_gears_brass, 12 i_hinge_brass, 30 i_ingot_brass, 3 i_scroll_cunning, 3 i_scroll_strength, 3 i_scroll_agility
+SKILLMAKE	= Tinkering 85.0, t_tinker_tools
+
+ON = @Create
+  COLOR	= color_o_brass
+  MORE1	= c_golem_brass
+  ATTR	= attr_identified
+  NAME	= brass golem
+ON = @Click
+  MORE1	= c_golem_brass
+  return <fix_golem>
+ON = @DClick
+  MORE1	= c_golem_brass
+  return <fix_golem>
+
+
+
+//
+// STEEL
+//
+[CHARDEF c_golem_silver]
+ID		= c_elem_earth
+NAME		= Silver Golem
+SOUND		= snd_ELEMENTL_ERTHEL1
+ICON		= i_pet_elem_earth
+ANIM		= 079c7f
+//RESOURCES	= 5 i_ingot_silver
+CAN		= MT_WALK | MT_RUN
+TEVENTS		= e_golem
+
+FOODTYPE	= 15 t_arock, t_coin, t_ore, t_ingot
+DESIRES		= r_caves
+BLOODCOLOR	= color_o_silver
+DAM		= golem_dam_silver
+ARMOR		= golem_arm_silver
+
+ON=@Create
+  TAG.GOLEM	= mat_silver
+  COLOR		= color_o_silver
+  NPC		= brain_monster
+  FAME		= 0
+  KARMA		= -100
+
+  STR		= golem_str_silver
+  DEX		= golem_dex_silver
+  INT		= 10
+
+  TACTICS	= 90.0
+  WRESTLING	= 90.0
+  MAGICRESISTANCE=0.0
+
+
+[ITEMDEF i_golem_silver]
+ID	= i_pet_elem_earth
+TYPE	= t_golem
+NAME	= golem
+RESOURCES	= 8 i_gears_silver, 12 i_hinge_silver, 30 i_ingot_silver, 3 i_scroll_cunning, 3 i_scroll_strength, 3 i_scroll_agility
+SKILLMAKE	= Tinkering 86.0, t_tinker_tools
+
+ON = @Create
+  COLOR	= color_o_silver
+  MORE1	= c_golem_silver
+  ATTR	= attr_identified
+  NAME	= silver golem
+ON = @Click
+  MORE1	= c_golem_silver
+  return <fix_golem>
+ON = @DClick
+  MORE1	= c_golem_silver
+  return <fix_golem>
+
+//
+// gold
+//
+[CHARDEF c_golem_gold]
+ID		= c_elem_earth
+NAME		= gold Golem
+SOUND		= snd_ELEMENTL_ERTHEL1
+ICON		= i_pet_elem_earth
+ANIM		= 079c7f
+//RESOURCES	= 5 i_ingot_gold
+CAN		= MT_WALK | MT_RUN
+TEVENTS		= e_golem
+
+FOODTYPE	= 15 t_arock, t_coin, t_ore, t_ingot
+DESIRES		= r_caves
+BLOODCOLOR	= color_o_gold
+DAM		= golem_dam_gold
+ARMOR		= golem_arm_gold
+
+ON=@Create
+  TAG.GOLEM	= mat_gold
+  COLOR		= color_o_gold
+  NPC		= brain_monster
+  FAME		= 0
+  KARMA		= -100
+
+  STR		= golem_str_gold
+  DEX		= golem_dex_gold
+  INT		= 10
+
+  TACTICS	= 90.0
+  WRESTLING	= 90.0
+  MAGICRESISTANCE=0.0
+
+
+[ITEMDEF i_golem_gold]
+ID	= i_pet_elem_earth
+TYPE	= t_golem
+NAME	= golem
+RESOURCES	= 8 i_gears_gold, 12 i_hinge_gold, 30 i_ingot_gold, 3 i_scroll_cunning, 3 i_scroll_strength, 3 i_scroll_agility
+SKILLMAKE	= Tinkering 86.0, t_tinker_tools
+
+ON = @Create
+  COLOR	= color_o_gold
+  MORE1	= c_golem_gold
+  ATTR	= attr_identified
+  NAME	= gold golem
+ON = @Click
+  MORE1	= c_golem_gold
+  return <fix_golem>
+ON = @DClick
+  MORE1	= c_golem_gold
+  return <fix_golem>
+
+
+
+//
+// STEEL
+//
+[CHARDEF c_golem_steel]
+ID		= c_elem_earth
+NAME		= Steel Golem
+SOUND		= snd_ELEMENTL_ERTHEL1
+ICON		= i_pet_elem_earth
+ANIM		= 079c7f
+//RESOURCES	= 5 i_ingot_steel
+CAN		= MT_WALK | MT_RUN
+TEVENTS		= e_golem
+
+FOODTYPE	= 15 t_arock, t_coin, t_ore, t_ingot
+DESIRES		= r_caves
+BLOODCOLOR	= color_o_steel
+DAM		= golem_dam_steel
+ARMOR		= golem_arm_steel
+
+ON=@Create
+  TAG.GOLEM	= mat_steel
+  COLOR		= color_o_steel
+  NPC		= brain_monster
+  FAME		= 0
+  KARMA		= -100
+
+  STR		= golem_str_steel
+  DEX		= golem_dex_steel
+  INT		= 10
+
+  TACTICS	= 90.0
+  WRESTLING	= 90.0
+  MAGICRESISTANCE=0.0
+
+
+[ITEMDEF i_golem_steel]
+ID	= i_pet_elem_earth
+TYPE	= t_golem
+NAME	= golem
+RESOURCES	= 8 i_gears_steel, 12 i_hinge_steel, 30 i_ingot_steel, 3 i_scroll_cunning, 3 i_scroll_strength, 3 i_scroll_agility
+SKILLMAKE	= Tinkering 87.0, t_tinker_tools
+
+ON = @Create
+  COLOR	= color_o_steel
+  MORE1	= c_golem_steel
+  ATTR	= attr_identified
+  NAME	= steel golem
+ON = @Click
+  MORE1	= c_golem_steel
+  return <fix_golem>
+ON = @DClick
+  MORE1	= c_golem_steel
+  return <fix_golem>
+
+
+
+
+//
+// CHROME
+//
+[CHARDEF c_golem_chrome]
+ID		= c_elem_earth
+NAME		= Chrome Golem
+SOUND		= snd_ELEMENTL_ERTHEL1
+ICON		= i_pet_elem_earth
+ANIM		= 079c7f
+//RESOURCES	= 5 i_ingot_chrome
+CAN		= MT_WALK | MT_RUN
+TEVENTS		= e_golem
+
+FOODTYPE	= 15 t_arock, t_coin, t_ore, t_ingot
+DESIRES		= r_caves
+BLOODCOLOR	= color_o_chrome
+DAM		= golem_dam_chrome
+ARMOR		= golem_arm_chrome
+
+ON=@Create
+  TAG.GOLEM	= mat_chrome
+  COLOR		= color_o_chrome
+  NPC		= brain_monster
+  FAME		= 0
+  KARMA		= -100
+
+  STR		= golem_str_chrome
+  DEX		= golem_dex_chrome
+  INT		= 10
+
+  TACTICS	= 90.0
+  WRESTLING	= 90.0
+  MAGICRESISTANCE=0.0
+
+
+[ITEMDEF i_golem_chrome]
+ID	= i_pet_elem_earth
+TYPE	= t_golem
+NAME	= golem
+RESOURCES	= 8 i_gears_chrome, 12 i_hinge_chrome, 30 i_ingot_chrome, 3 i_scroll_cunning, 3 i_scroll_strength, 3 i_scroll_agility
+SKILLMAKE	= Tinkering 90.0, t_tinker_tools
+
+ON = @Create
+  COLOR	= color_o_chrome
+  MORE1	= c_golem_chrome
+  ATTR	= attr_identified
+  NAME	= chrome golem
+ON = @Click
+  MORE1	= c_golem_chrome
+  return <fix_golem>
+ON = @DClick
+  MORE1	= c_golem_chrome
+  return <fix_golem>
+
+
+
+
+//
+// TITANIUM
+//
+[CHARDEF c_golem_titanium]
+ID		= c_elem_earth
+NAME		= Titanium Golem
+SOUND		= snd_ELEMENTL_ERTHEL1
+ICON		= i_pet_elem_earth
+ANIM		= 079c7f
+//RESOURCES	= 5 i_ingot_steel
+CAN		= MT_WALK | MT_RUN
+TEVENTS		= e_golem
+
+FOODTYPE	= 15 t_arock, t_coin, t_ore, t_ingot
+DESIRES		= r_caves
+BLOODCOLOR	= color_o_titanium
+DAM		= golem_dam_titanium
+ARMOR		= golem_arm_titanium
+
+ON=@Create
+  TAG.GOLEM	= mat_titanium
+  COLOR		= color_o_titanium
+  NPC		= brain_monster
+  FAME		= 0
+  KARMA		= -100
+
+  STR		= golem_str_titanium
+  DEX		= golem_dex_titanium
+  INT		= 10
+
+  TACTICS	= 90.0
+  WRESTLING	= 90.0
+  MAGICRESISTANCE=0.0
+
+
+[ITEMDEF i_golem_titanium]
+ID	= i_pet_elem_earth
+TYPE	= t_golem
+NAME	= golem
+RESOURCES	= 8 i_gears_titanium, 12 i_hinge_titanium, 30 i_ingot_titanium, 3 i_scroll_cunning, 3 i_scroll_strength, 3 i_scroll_agility
+SKILLMAKE	= Tinkering 91.0, t_tinker_tools
+
+ON = @Create
+  COLOR	= color_o_titanium
+  MORE1	= c_golem_titanium
+  ATTR	= attr_identified
+  NAME	= titanium golem
+ON = @Click
+  MORE1	= c_golem_titanium
+  return <fix_golem>
+ON = @DClick
+  MORE1	= c_golem_titanium
+  return <fix_golem>
+
+[CHARDEF c_golem_verite]
+ID		= c_elem_earth
+NAME		= Verite Golem
+SOUND		= snd_ELEMENTL_ERTHEL1
+ICON		= i_pet_elem_earth
+ANIM		= 079c7f
+//RESOURCES	= 5 i_ingot_steel
+CAN		= MT_WALK | MT_RUN
+TEVENTS		= e_golem
+
+FOODTYPE	= 15 t_arock, t_coin, t_ore, t_ingot
+DESIRES		= r_caves
+BLOODCOLOR	= color_o_verite
+DAM		= golem_dam_verite
+ARMOR		= golem_arm_verite
+
+ON=@Create
+  TAG.GOLEM	= mat_verite
+  COLOR		= color_o_verite
+  NPC		= brain_monster
+  FAME		= 0
+  KARMA		= -100
+
+  STR		= golem_str_verite
+  DEX		= golem_dex_verite
+  INT		= 10
+
+  TACTICS	= 90.0
+  WRESTLING	= 90.0
+  MAGICRESISTANCE=0.0
+
+
+[ITEMDEF i_golem_verite]
+ID	= i_pet_elem_earth
+TYPE	= t_golem
+NAME	= golem
+RESOURCES	= 8 i_gears_verite, 12 i_hinge_verite, 30 i_ingot_verite, 3 i_scroll_cunning, 3 i_scroll_strength, 3 i_scroll_agility
+SKILLMAKE	= Tinkering 91.0, t_tinker_tools
+
+ON = @Create
+  COLOR	= color_o_verite
+  MORE1	= c_golem_verite
+  ATTR	= attr_identified
+  NAME	= verite golem
+ON = @Click
+  MORE1	= c_golem_verite
+  return <fix_golem>
+ON = @DClick
+  MORE1	= c_golem_verite
+  return <fix_golem>
+
+[CHARDEF c_golem_valorite]
+ID		= c_elem_earth
+NAME		= Valorite Golem
+SOUND		= snd_ELEMENTL_ERTHEL1
+ICON		= i_pet_elem_earth
+ANIM		= 079c7f
+//RESOURCES	= 5 i_ingot_steel
+CAN		= MT_WALK | MT_RUN
+TEVENTS		= e_golem
+
+FOODTYPE	= 15 t_arock, t_coin, t_ore, t_ingot
+DESIRES		= r_caves
+BLOODCOLOR	= color_o_valorite
+DAM		= golem_dam_valorite
+ARMOR		= golem_arm_valorite
+
+ON=@Create
+  TAG.GOLEM	= mat_valorite
+  COLOR		= color_o_valorite
+  NPC		= brain_monster
+  FAME		= 0
+  KARMA		= -100
+
+  STR		= golem_str_valorite
+  DEX		= golem_dex_valorite
+  INT		= 10
+
+  TACTICS	= 90.0
+  WRESTLING	= 90.0
+  MAGICRESISTANCE=0.0
+
+
+[ITEMDEF i_golem_valorite]
+ID	= i_pet_elem_earth
+TYPE	= t_golem
+NAME	= golem
+RESOURCES	= 8 i_gears_valorite, 12 i_hinge_valorite, 30 i_ingot_valorite, 3 i_scroll_cunning, 3 i_scroll_strength, 3 i_scroll_agility
+SKILLMAKE	= Tinkering 91.0, t_tinker_tools
+
+ON = @Create
+  COLOR	= color_o_valorite
+  MORE1	= c_golem_valorite
+  ATTR	= attr_identified
+  NAME	= valorite golem
+ON = @Click
+  MORE1	= c_golem_valorite
+  return <fix_golem>
+ON = @DClick
+  MORE1	= c_golem_valorite
+  return <fix_golem>
+
+
+
+//
+// TERATHANE
+//
+[CHARDEF c_golem_terathane]
+ID		= c_elem_earth
+NAME		= Terathane Golem
+SOUND		= snd_ELEMENTL_ERTHEL1
+ICON		= i_pet_elem_earth
+ANIM		= 079c7f
+//RESOURCES	= 5 i_ingot_steel
+CAN		= MT_WALK | MT_RUN
+TEVENTS		= e_golem
+
+FOODTYPE	= 15 t_arock, t_coin, t_ore, t_ingot
+DESIRES		= r_caves
+BLOODCOLOR	= color_o_terathane
+DAM		= golem_dam_terathane
+ARMOR		= golem_arm_terathane
+
+ON=@Create
+  TAG.GOLEM	= mat_terathane
+  COLOR		= color_o_terathane
+  NPC		= brain_monster
+  FAME		= 0
+  KARMA		= -100
+
+  STR		= golem_str_terathane
+  DEX		= golem_dex_terathane
+  INT		= 10
+
+  TACTICS	= 90.0
+  WRESTLING	= 90.0
+  MAGICRESISTANCE=0.0
+
+
+[ITEMDEF i_golem_terathane]
+ID	= i_pet_elem_earth
+TYPE	= t_golem
+NAME	= golem
+RESOURCES	= 8 i_gears_terathane, 12 i_hinge_terathane, 30 i_ingot_terathane, 3 i_scroll_cunning, 3 i_scroll_strength, 3 i_scroll_agility
+SKILLMAKE	= Tinkering 93.0, t_tinker_tools
+
+ON = @Create
+  COLOR	= color_o_terathane
+  MORE1	= c_golem_terathane
+  ATTR	= attr_identified
+  NAME	= terathane golem
+ON = @Click
+  MORE1	= c_golem_terathane
+  return <fix_golem>
+ON = @DClick
+  MORE1	= c_golem_terathane
+  return <fix_golem>
+
+[CHARDEF c_golem_verminard]
+ID		= c_elem_earth
+NAME		= Verminard Golem
+SOUND		= snd_ELEMENTL_ERTHEL1
+ICON		= i_pet_elem_earth
+ANIM		= 079c7f
+//RESOURCES	= 5 i_ingot_steel
+CAN		= MT_WALK | MT_RUN
+TEVENTS		= e_golem
+
+FOODTYPE	= 15 t_arock, t_coin, t_ore, t_ingot
+DESIRES		= r_caves
+BLOODCOLOR	= color_o_verminard
+DAM		= golem_dam_verminard
+ARMOR		= golem_arm_verminard
+
+ON=@Create
+  TAG.GOLEM	= mat_verminard
+  COLOR		= color_o_verminard
+  NPC		= brain_monster
+  FAME		= 0
+  KARMA		= -100
+
+  STR		= golem_str_verminard
+  DEX		= golem_dex_verminard
+  INT		= 10
+
+  TACTICS	= 90.0
+  WRESTLING	= 90.0
+  MAGICRESISTANCE=0.0
+
+
+[ITEMDEF i_golem_verminard]
+ID	= i_pet_elem_earth
+TYPE	= t_golem
+NAME	= golem
+RESOURCES	= 8 i_gears_verminard, 12 i_hinge_verminard, 30 i_ingot_verminard, 3 i_scroll_cunning, 3 i_scroll_strength, 3 i_scroll_agility
+SKILLMAKE	= Tinkering 93.0, t_tinker_tools
+
+ON = @Create
+  COLOR	= color_o_verminard
+  MORE1	= c_golem_verminard
+  ATTR	= attr_identified
+  NAME	= verminard golem
+ON = @Click
+  MORE1	= c_golem_verminard
+  return <fix_golem>
+ON = @DClick
+  MORE1	= c_golem_verminard
+  return <fix_golem>
+
+[CHARDEF c_golem_stronghold]
+ID		= c_elem_earth
+NAME		= Stronghold Golem
+SOUND		= snd_ELEMENTL_ERTHEL1
+ICON		= i_pet_elem_earth
+ANIM		= 079c7f
+//RESOURCES	= 5 i_ingot_steel
+CAN		= MT_WALK | MT_RUN
+TEVENTS		= e_golem
+
+FOODTYPE	= 15 t_arock, t_coin, t_ore, t_ingot
+DESIRES		= r_caves
+BLOODCOLOR	= color_o_stronghold
+DAM		= golem_dam_stronghold
+ARMOR		= golem_arm_stronghold
+
+ON=@Create
+  TAG.GOLEM	= mat_stronghold
+  COLOR		= color_o_stronghold
+  NPC		= brain_monster
+  FAME		= 0
+  KARMA		= -100
+
+  STR		= golem_str_stronghold
+  DEX		= golem_dex_stronghold
+  INT		= 10
+
+  TACTICS	= 90.0
+  WRESTLING	= 90.0
+  MAGICRESISTANCE=0.0
+
+
+[ITEMDEF i_golem_stronghold]
+ID	= i_pet_elem_earth
+TYPE	= t_golem
+NAME	= golem
+RESOURCES	= 8 i_gears_stronghold, 12 i_hinge_stronghold, 30 i_ingot_stronghold, 3 i_scroll_cunning, 3 i_scroll_strength, 3 i_scroll_agility
+SKILLMAKE	= Tinkering 93.0, t_tinker_tools
+
+ON = @Create
+  COLOR	= color_o_stronghold
+  MORE1	= c_golem_stronghold
+  ATTR	= attr_identified
+  NAME	= stronghold golem
+ON = @Click
+  MORE1	= c_golem_stronghold
+  return <fix_golem>
+ON = @DClick
+  MORE1	= c_golem_stronghold
+  return <fix_golem>
+
+//
+// ADAMANTINE
+//
+[CHARDEF c_golem_adamantine]
+ID		= c_elem_earth
+NAME		= Adamantine Golem
+SOUND		= snd_ELEMENTL_ERTHEL1
+ICON		= i_pet_elem_earth
+ANIM		= 079c7f
+//RESOURCES	= 5 i_ingot_steel
+CAN		= MT_WALK | MT_RUN
+TEVENTS		= e_golem
+
+FOODTYPE	= 15 t_arock, t_coin, t_ore, t_ingot
+DESIRES		= r_caves
+BLOODCOLOR	= color_o_adamantine
+DAM		= golem_dam_adamantine
+ARMOR		= golem_arm_adamantine
+
+ON=@Create
+  TAG.GOLEM	= mat_adamantine
+  COLOR		= color_o_adamantine
+  NPC		= brain_monster
+  FAME		= 0
+  KARMA		= -100
+
+  STR		= golem_str_adamantine
+  DEX		= golem_dex_adamantine
+  INT		= 10
+
+  TACTICS	= 90.0
+  WRESTLING	= 90.0
+  MAGICRESISTANCE=0.0
+
+
+[ITEMDEF i_golem_adamantine]
+ID	= i_pet_elem_earth
+TYPE	= t_golem
+NAME	= golem
+RESOURCES	= 8 i_gears_adamantine, 12 i_hinge_adamantine, 40 i_ingot_adamantine, 3 i_scroll_cunning, 3 i_scroll_strength, 3 i_scroll_agility
+SKILLMAKE	= Tinkering 99.0, t_tinker_tools
+
+ON = @Create
+  COLOR	= color_o_adamantine
+  MORE1	= c_golem_adamantine
+  ATTR	= attr_identified
+  NAME	= adamantine golem
+ON = @Click
+  MORE1	= c_golem_adamantine
+  return <fix_golem>
+ON = @DClick
+  MORE1	= c_golem_adamantine
+  return <fix_golem>
+
+[CHARDEF c_golem_blackrock]
+ID		= c_elem_earth
+NAME		= Blackrock Golem
+SOUND		= snd_ELEMENTL_ERTHEL1
+ICON		= i_pet_elem_earth
+ANIM		= 079c7f
+//RESOURCES	= 5 i_ingot_steel
+CAN		= MT_WALK | MT_RUN
+TEVENTS		= e_golem
+
+FOODTYPE	= 15 t_arock, t_coin, t_ore, t_ingot
+DESIRES		= r_caves
+BLOODCOLOR	= color_o_blackrock
+DAM		= golem_dam_blackrock
+ARMOR		= golem_arm_blackrock
+
+ON=@Create
+  TAG.GOLEM	= mat_blackrock
+  COLOR		= color_o_blackrock
+  NPC		= brain_monster
+  FAME		= 0
+  KARMA		= -100
+
+  STR		= golem_str_blackrock
+  DEX		= golem_dex_blackrock
+  INT		= 10
+
+  TACTICS	= 90.0
+  WRESTLING	= 90.0
+  MAGICRESISTANCE=0.0
+
+
+[ITEMDEF i_golem_blackrock]
+ID	= i_pet_elem_earth
+TYPE	= t_golem
+NAME	= golem
+RESOURCES	= 8 i_gears_blackrock, 12 i_hinge_blackrock, 40 i_ingot_blackrock, 3 i_scroll_cunning, 3 i_scroll_strength, 3 i_scroll_agility
+SKILLMAKE	= Tinkering 99.0, t_tinker_tools
+
+ON = @Create
+  COLOR	= color_o_blackrock
+  MORE1	= c_golem_blackrock
+  ATTR	= attr_identified
+  NAME	= blackrock golem
+ON = @Click
+  MORE1	= c_golem_blackrock
+  return <fix_golem>
+ON = @DClick
+  MORE1	= c_golem_blackrock
+  return <fix_golem>
+
+[CHARDEF c_golem_bloodrock]
+ID		= c_elem_earth
+NAME		= Bloodrock Golem
+SOUND		= snd_ELEMENTL_ERTHEL1
+ICON		= i_pet_elem_earth
+ANIM		= 079c7f
+//RESOURCES	= 5 i_ingot_steel
+CAN		= MT_WALK | MT_RUN
+TEVENTS		= e_golem
+
+FOODTYPE	= 15 t_arock, t_coin, t_ore, t_ingot
+DESIRES		= r_caves
+BLOODCOLOR	= color_o_bloodrock
+DAM		= golem_dam_bloodrock
+ARMOR		= golem_arm_bloodrock
+
+ON=@Create
+  TAG.GOLEM	= mat_bloodrock
+  COLOR		= color_o_bloodrock
+  NPC		= brain_monster
+  FAME		= 0
+  KARMA		= -100
+
+  STR		= golem_str_bloodrock
+  DEX		= golem_dex_bloodrock
+  INT		= 10
+
+  TACTICS	= 90.0
+  WRESTLING	= 90.0
+  MAGICRESISTANCE=0.0
+
+
+[ITEMDEF i_golem_bloodrock]
+ID	= i_pet_elem_earth
+TYPE	= t_golem
+NAME	= golem
+RESOURCES	= 8 i_gears_bloodrock, 12 i_hinge_bloodrock, 40 i_ingot_bloodrock, 3 i_scroll_cunning, 3 i_scroll_strength, 3 i_scroll_agility
+SKILLMAKE	= Tinkering 99.0, t_tinker_tools
+
+ON = @Create
+  COLOR	= color_o_bloodrock
+  MORE1	= c_golem_bloodrock
+  ATTR	= attr_identified
+  NAME	= bloodrock golem
+ON = @Click
+  MORE1	= c_golem_bloodrock
+  return <fix_golem>
+ON = @DClick
+  MORE1	= c_golem_bloodrock
+  return <fix_golem>
+
+[ITEMDEF 0fbb]
+//Tongs
+DEFNAME=i_tongs
+RESOURCES=2 i_ingot_iron
+TYPE=T_WEAPON_MACE_SMITH
+FLIP=1
+WEIGHT=2
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Tongs
+DUPELIST=0fbc
+//ON = @DClick
+//return = <wpn_dclick_blunt>
+ON = @Targon_ground
+return = <wpn_targon_ground_blunt>
+ON = @Targon_char
+return = <wpn_targon_char_blunt>
+ON = @Targon_item
+
+If ( STRMATCH("c_golem*","<src.targ.more1>") )
+      Src.Targ.f_repair_golem
+      return 1
+EndIf
+IF (<SRC.TARG.TDATA1> = mat_copper)
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_copper> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_copper 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 copper ingots and 6 tin ingots to repair this...
+      RETURN 1
+   ENDIF
+ELSEIF (<SRC.TARG.TDATA1> = mat_iron)
+   IF (<SRC.BLACKSMITHING> < 20.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_iron> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_iron 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 iron ingots and 6 tin ingots to repair this...
+      RETURN 1
+   ENDIF	
+ELSEIF (<SRC.TARG.TDATA1> = mat_steel)
+   IF (<SRC.BLACKSMITHING> < 40.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_steel> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_steel 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 steel ingots and 6 tin ingots to repair this...
+      RETURN 1
+   ENDIF	
+ELSEIF (<SRC.TARG.TDATA1> = mat_titanium)
+   IF (<SRC.BLACKSMITHING> < 60.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+      SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+      RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_titanium> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_titanium 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 titanium ingots and 6 tin ingots to repair this...
+      RETURN 1
+   ENDIF	
+ELSEIF (<SRC.TARG.TDATA1> = mat_adamantine)
+   IF (<SRC.BLACKSMITHING> < 80.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+      SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+      RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_adamantine> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_adamantine 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 adamantine ingots and 6 tin ingots to repair this...
+      RETURN 1
+   ENDIF	
+ELSEIF (<SRC.TARG.TDATA1> = mat_silver)
+   IF (<SRC.BLACKSMITHING> < 50.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_silver> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_silver 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 silver ingots and 6 tin ingots to repair this...
+      RETURN 1
+   ENDIF	
+ELSEIF (<SRC.TARG.TDATA1> = mat_gold)
+      IF (<SRC.BLACKSMITHING> < 50.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_gold> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_gold 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 gold ingots and 6 tin ingots to repair this...
+      RETURN 1
+   ENDIF		
+ELSEIF (<SRC.TARG.TDATA1> = mat_phoenix)
+   IF (<SRC.BLACKSMITHING> < 100.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_phoenix> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_phoenix 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 phoenix ingots and 6 tin ingots to repair this...
+      RETURN 1
+   ENDIF	
+ELSEIF (<SRC.TARG.TDATA1> = mat_celestium)
+   IF (<SRC.BLACKSMITHING> < 95.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_celestium> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_celestium 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 celestium ingots and 6 tin ingots to repair this...
+      RETURN 1
+   ENDIF	
+ELSEIF (<SRC.TARG.TDATA1> = mat_terathane)
+   IF (<SRC.BLACKSMITHING> < 60.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_terathane> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_terathane 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 terathane ingots and 6 tin ingots to repair this...
+      RETURN 1
+   ENDIF	
+ELSEIF (<SRC.TARG.TDATA1> = mat_skargard)
+   IF (<SRC.BLACKSMITHING> < 90.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_skargard> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_skargard 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 skargard ingots and 6 tin ingots to repair this...
+      RETURN 1
+   ENDIF	
+ELSEIF (<SRC.TARG.TDATA1> = mat_bloodrock)
+   IF (<SRC.BLACKSMITHING> < 95.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_bloodrock> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_bloodrock 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 bloodrock ingots and 6 tin ingots to repair this...
+      RETURN 1
+   ENDIF	
+ELSEIF (<SRC.TARG.TDATA1> = mat_blackrock)
+   IF (<SRC.BLACKSMITHING> < 80.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_blackrock> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_blackrock 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 blackrock ingots and 6 tin ingots to repair this...
+      RETURN 1
+   ENDIF	
+ELSEIF (<SRC.TARG.TDATA1> = mat_verminard)
+   IF (<SRC.BLACKSMITHING> < 75.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_verminard> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_verminard 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 verminard ingots and 6 tin ingots to repair this...
+      RETURN 1
+   ENDIF	
+ELSEIF (<SRC.TARG.TDATA1> = mat_stronghold)
+   IF (<SRC.BLACKSMITHING> < 75.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_stronghold> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_stronghold 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 stronghold ingots and 6 tin ingots to repair this...
+      RETURN 1
+   ENDIF	
+ELSEIF (<SRC.TARG.TDATA1> = mat_pure_copper)
+   IF (<SRC.BLACKSMITHING> < 30.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_pure_copper> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_pure copper 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 pure copper ingots and 6 tin ingots to repair this...
+      RETURN 1
+   ENDIF	
+ELSEIF (<SRC.TARG.TDATA1> = mat_ferrum)
+   IF (<SRC.BLACKSMITHING> < 45.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_ferrum> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_ferrum 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 ferrum ingots and 6 tin ingots to repair this...
+      RETURN 1
+   ENDIF	
+ELSEIF (<SRC.TARG.TDATA1> = mat_brass)
+   IF (<SRC.BLACKSMITHING> < 40.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_brass> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_brass 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 brass ingots and 6 tin ingots to repair this...
+      RETURN 1
+   ENDIF	
+ELSEIF (<SRC.TARG.TDATA1> = mat_chrome)
+   IF (<SRC.BLACKSMITHING> < 50.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_chrome> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_chrome 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 chrome ingots and 6 tin ingots to repair this...
+      RETURN 1      
+   ENDIF	
+ELSEIF (<SRC.TARG.TDATA1> = mat_agapite)
+   IF (<SRC.BLACKSMITHING> < 85.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_agapite> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_agapite 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 agapite ingots and 6 tin ingots to repair this...
+      RETURN 1
+   ENDIF	
+ELSEIF (<SRC.TARG.TDATA1> = mat_bloodrk)
+   IF (<SRC.BLACKSMITHING> < 95.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_bloodrk> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_bloodrock 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 bloodrock ingots and 6 tin ingots to repair this...
+      RETURN 1
+   ENDIF	
+ELSEIF (<SRC.TARG.TDATA1> = mat_shadow)
+   IF (<SRC.BLACKSMITHING> < 85.0)
+         SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+         RETURN 1
+      ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_shadow> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_shadow 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 shadow ingots and 6 tin ingots to repair this...
+      RETURN 1
+   ENDIF	
+ELSEIF (<SRC.TARG.TDATA1> = mat_verite)
+   IF (<SRC.BLACKSMITHING> < 90.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_verite> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_verite 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 verite ingots and 6 tin ingots to repair this...
+      RETURN 1
+   ENDIF	 
+ELSEIF (<SRC.TARG.TDATA1> = mat_valorite)
+   IF (<SRC.BLACKSMITHING> < 90.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_valorite> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_valorite 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 valorite ingots and 6 tin ingots to repair this...
+      RETURN 1
+   ENDIF	
+ELSEIF (<SRC.TARG.TDATA1> = mat_entit)
+   IF (<SRC.BLACKSMITHING> < 85.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_entit> && <SRC.RESTEST 6 i_ingot_tin>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_entit 3
+      SRC.CONSUME i_ingot_tin 6
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 enriched titanium ingots and 6 tin ingots to repair this...
+      RETURN 1
+   ENDIF
+ELSEIF (<SRC.TARG.BASEID> = i_gauntlets_might)
+   IF (<SRC.BLACKSMITHING> < 100.0)
+      SRC.SYSMESSAGE You are not skilled enough to repair this yet...
+      RETURN 1
+   ENDIF
+   IF (<SRC.TARG.MORE1L> = <SRC.TARG.MORE1H>)
+         SRC.SYSMESSAGE The item is at 100% condition and does not need repairing.
+         RETURN 1
+   ENDIF
+   IF (<SRC.RESTEST 3 i_ingot_adamantine> && <SRC.RESTEST 1 i_ingot_blackrock>)
+      SRC.TARG.MORE1L=<SRC.TARG.MORE1H>
+      SRC.CONSUME i_ingot_adamantine 3
+      SRC.CONSUME i_ingot_blackrock 1
+      SRC.EMOTE repair the <SRC.TARG.NAME>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE You need 3 adamantine ingots and 1 blackrock ingot to repair this...
+      RETURN 1
+   ENDIF
+ELSEIF (<SRC.TARG.TYPE> = t_ingot )
+   RETURN 0
+ELSE
+   SRC.SYSMESSAGE You cannot craft or repair this
+   RETURN 1
+ENDIF
+
+[FUNCTION f_repair_golem]
+local.rgolem=<eval (<eval <uid.<more2>.hits>*100>)/<uid.<more2>.str>>
+local.gresourceg=i_ingot_<STRSUB 8 16 <more1>>
+
+IF (<local.rgolem> >= 100)
+      Src.Sysmessage The Golem is already fully operational
+ELSEIF ( (<local.rgolem> < 100) && (<local.rgolem> >= 90) )
+      If ( (<Src.Restest 1 <local.gresourceg>>) && (<src.tinkering> >= 100) )
+           Src.Consume=1 <local.gresourceg>
+           try uid.<more2>.hits=<uid.<more2>.str>
+           try uid.<more2>.tag.low_hits=<uid.<more2>.str>
+           Src.Sysmessage Your golem has been repaired.
+      Else
+           Src.Sysmessage You lack the resources or the skill to repair the golem.
+      EndIf
+ELSEIF ( (<local.rgolem> < 90) && (<local.rgolem> >= 80) )
+      If ((<Src.Restest 2 <local.gresourceg>>) && (<src.tinkering> >= 200))
+           Src.Consume=2 <local.gresourceg>
+           try uid.<more2>.hits=<uid.<more2>.str>
+           try uid.<more2>.tag.low_hits=<uid.<more2>.str>
+           Src.Sysmessage Your golem has been repaired.           
+      Else
+           Src.Sysmessage You lack the resources or the skill to repair the golem.
+      EndIf
+ELSEIF ( (<local.rgolem> < 80) && (<local.rgolem> >= 70) )
+      If ( (<Src.Restest 3 <local.gresourceg>>) && (<src.tinkering> >= 300) )
+           Src.Consume=3 <local.gresourceg>
+           try uid.<more2>.hits=<uid.<more2>.str>
+           try uid.<more2>.tag.low_hits=<uid.<more2>.str>
+           Src.Sysmessage Your golem has been repaired.
+      Else
+           Src.Sysmessage You lack the resources or the skill to repair the golem.
+      EndIf
+ELSEIF ( (<local.rgolem> < 70) && (<local.rgolem> >= 60) )
+      If ( (<Src.Restest 4 <local.gresourceg>>) && (<src.tinkering> >= 400) )
+           Src.Consume=4 <local.gresourceg>
+           try uid.<more2>.hits=<uid.<more2>.str>
+           try uid.<more2>.tag.low_hits=<uid.<more2>.str>
+           Src.Sysmessage Your golem has been repaired.
+      Else
+           Src.Sysmessage You lack the resources or the skill to repair the golem.
+      EndIf
+ELSEIF ( (<local.rgolem> < 60) && (<local.rgolem> >= 50) )
+      If ( (<Src.Restest 5 <local.gresourceg>>) && (<src.tinkering> >= 500) )
+           Src.Consume=5 <local.gresourceg>
+           try uid.<more2>.hits=<uid.<more2>.str>
+           try uid.<more2>.tag.low_hits=<uid.<more2>.str>
+           Src.Sysmessage Your golem has been repaired.
+      Else
+           Src.Sysmessage You lack the resources or the skill to repair the golem.
+      EndIf
+ELSEIF ( (<local.rgolem> < 50) && (<local.rgolem> >= 40) )
+      If ( (<Src.Restest 6 <local.gresourceg>>) && (<src.tinkering> >= 600) )
+           Src.Consume=6 <local.gresourceg>
+           try uid.<more2>.hits=<uid.<more2>.str>
+           try uid.<more2>.tag.low_hits=<uid.<more2>.str>
+           Src.Sysmessage Your golem has been repaired.
+      Else
+           Src.Sysmessage You lack the resources or the skill to repair the golem.
+      EndIf
+ELSEIF ( (<local.rgolem> < 40) && (<local.rgolem> >= 30) )
+      If ((<Src.Restest 7 <local.gresourceg>) && (<src.tinkering> >= 700))
+           Src.Consume=7 <local.gresourceg>
+           try uid.<more2>.hits=<uid.<more2>.str>
+           try uid.<more2>.tag.low_hits=<uid.<more2>.str>
+           Src.Sysmessage Your golem has been repaired.
+      Else
+           Src.Sysmessage You lack the resources or the skill to repair the golem.
+      EndIf
+ELSEIF ( (<local.rgolem> < 30) && (<local.rgolem> >= 20) )
+      If ( (<Src.Restest 8 <local.gresourceg>>) && (<src.tinkering> >= 800) )
+           Src.Consume=8 <local.gresourceg>
+           try uid.<more2>.hits=<uid.<more2>.str>
+           try uid.<more2>.tag.low_hits=<uid.<more2>.str>
+           Src.Sysmessage Your golem has been repaired.
+      Else
+           Src.Sysmessage You lack the resources or the skill to repair the golem.
+      EndIf
+ELSEIF ( (<local.rgolem> < 20) && (<local.rgolem> >= 10) )
+      If ( (<Src.Restest 9 <local.gresourceg>>) && (<src.tinkering> >= 900) )
+           Src.Consume=9 <local.gresourceg>
+           try uid.<more2>.hits=<uid.<more2>.str>
+           try uid.<more2>.tag.low_hits=<uid.<more2>.str>
+           Src.Sysmessage Your golem has been repaired.
+      Else
+           Src.Sysmessage You lack the resources or the skill to repair the golem.
+      EndIf
+ELSEIF ((<local.rgolem> < 10) && (<local.rgolem> >= 0))
+      If ( (<Src.Restest 10 <local.gresourceg>>) && (<src.tinkering> >= 1000) )
+           Src.Consume=10 <local.gresourceg>
+           try uid.<more2>.hits=<uid.<more2>.str>
+           try uid.<more2>.tag.low_hits=<uid.<more2>.str>
+           Src.Sysmessage Your golem has been repaired.
+      Else
+           Src.Sysmessage You lack the resources or the skill to repair the golem.
+      EndIf
+EndIf
+
+RETURN 1
+
+[EOF]

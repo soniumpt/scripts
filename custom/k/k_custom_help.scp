@@ -1,0 +1,1013 @@
+// By Kell
+// Webboard content by Kira
+//
+// Changelog
+//
+// Name		Version		Date		Change
+// Vidar        1.0             6. May 2003	Help menu changed to fit BFUO
+// Wren				7  August 2003  Help menu updated to fix webpage listed and staff updates
+// Wren				10 October 2003 Help menu updated to fix current staff listing
+// Wren				20 December 03	Updated staff list and added commands list
+// Wren                         15 January 04 - Added rp command to list
+// Wren				18 January 04 - Added Jimmy and Raistlin to the staff list
+// Raist                        3  April   05 - Redid staff list, changed a link, switched most of the stuff to dtext instead of text, added new commands to command list, and a gump before you page.
+// Wogofer                      2  May   2018 - Updated the help menu to reflect Memory Shard.
+
+
+//
+// Gump Memory Shard Help Menu
+//
+
+[DIALOG d_help]
+150, 50
+NODISPOSE
+PAGE 1
+  gumppic  0  0 1140
+  gumppic 63 15 1142
+
+  button 80  45 2510 2511 1 0 1
+  button 80  82 2510 2511 1 0 2
+  button 80 119 2510 2511 1 0 4
+
+
+  dtext 110  17	 4  Memory Shard Help menu
+  dtext 100  38  50 Help & problem solving
+  dtext 100  52   5 Request help or GM intervention
+  dtext 100  74  50 Useful Links
+  dtext 100  88   5 Memory Shard Links
+  dtext 100  110 50 Player Commands
+  dtext 100  124  5 Lists commands & their functions
+  dtext  75  191 50 Make sure you read the rules page
+  dtext  75  205 50 If you believe you have found a bug,
+  dtext  75  219 50 report to a GM as soon as possible
+
+[DIALOG d_help BUTTON]
+ON = 1
+SRC.DIALOG d_pages
+//SYSMESSAGE @90 Questions regarding issues that can be found on the webpage (www.Imperialuo.com), specially the ones in the "FAQ" section might be overlooked, and so will be irrelevant requests and/or comments. Remember that paging for GM assistance is a support feature and NOT a chat system. With that in mind, please describe your problem the best you can, so that the right level of attention can be put into your situation:> 
+//GMPAGE
+RETURN 1
+
+ON = 2
+SRC.DIALOG d_bfLinks
+RETURN 1
+
+ON = 3
+SRC.DIALOG d_bfuo_staff
+RETURN 1
+
+ON = 4
+SRC.DIALOG d_papers_game
+//SRC.DIALOG d_uCommands 
+RETURN 1
+
+//
+// GUMP Memory Shard Links
+//
+[DIALOG d_bfLinks]
+150, 50
+NODISPOSE
+PAGE 1
+  gumppic  0  0 1140
+  gumppic 63 15 1142
+
+  button 80  36 2510 2511 1 0 1
+  button 80  61 2510 2511 1 0 2
+  //button 80  86 2510 2511 1 0 3
+  button 80 111 2510 2511 1 0 4
+
+  button  80  200 <eval  0fab> <eval  0fad> 1 0 7
+
+  dtext 120  17	  4 Memory Shard Links
+  dtext 100  36  50 Memory Shard WebPage
+  dtext 100  61  50 Memory Shard Shard Rules
+  //dtext 100  86  50 Memory Shard Forums
+  dtext 100  111 50 Memory Shard Skill Guides
+
+  //dtext 100  161 50 Memory Shard Shard Status
+  dtext 120  200 50 Return to help menu
+
+
+[DIALOG d_bfLinks BUTTON]
+ON = 1
+   SRC.WEBLINK www.memoryshard.com
+   RETURN 1
+ON = 2
+   SRC.WEBLINK www.memoryshard.com/rules
+   RETURN 1
+ON = 3
+   SRC.WEBLINK www.Imperialuo.com/forums/
+   RETURN 1
+ON = 4
+   SRC.WEBLINK www.memoryshard.com/wiki
+   RETURN 1
+ON = 5
+   //SRC.WEBLINK www.Imperialuo.com/vote.php
+   //RETURN 1
+ON = 6
+   //SRC.WEBLINK www.Imperialuo.com/status.php
+   //RETURN 1
+ON = 7
+   SRC.DIALOG d_help
+
+//
+// GUMP Memory Shard Commands
+//
+
+
+[DIALOG d_uCommands]
+0,0
+page 0
+gumppic 11 18 9354
+gumppic 11 258 9354
+gumppic 7 16 9353
+gumppic 8 258 9353
+gumppic 389 264 9355
+gumppic 389 17 9355
+gumppic 11 498 9357
+gumppic 11 14 9351
+button 16 178 213 248 1 0 0
+gumppic 149 19 9354
+gumppic 149 15 9351
+gumppic 149 259 9354
+gumppic 151 498 9357
+gumppic 11 18 9354
+gumppic 11 258 9354
+gumppic 7 16 9353
+gumppic 8 258 9353
+gumppic 389 264 9355
+gumppic 389 17 9355
+gumppic 11 498 9357
+gumppic 11 14 9351
+gumppic 149 19 9354
+gumppic 149 15 9351
+gumppic 149 259 9354
+gumppic 151 498 9357
+gumppic 150 9 5536
+gumppic 405 18 9354
+gumppic 405 258 9354
+gumppic 401 16 9353
+gumppic 402 258 9353
+gumppic 783 264 9355
+gumppic 783 17 9355
+gumppic 405 498 9357
+gumppic 405 14 9351
+gumppic 543 19 9354
+gumppic 543 15 9351
+gumppic 543 259 9354
+gumppic 545 498 9357
+gumppic 405 18 9354
+gumppic 405 258 9354
+gumppic 401 16 9353
+gumppic 402 258 9353
+gumppic 783 264 9355
+gumppic 783 17 9355
+gumppic 405 498 9357
+gumppic 405 14 9351
+gumppic 543 19 9354
+gumppic 543 15 9351
+gumppic 543 259 9354
+gumppic 545 498 9357
+
+dtext 127 151 30 Memory Shard Commands
+dtext 17 178 50 !
+dtext 117 178 5 "! messagehere" for World Chat.
+dtext 17 195 50 accountinfo
+dtext 117 195 5 Lists start date & hours online.
+dtext 17 212 50 afk
+dtext 117 212 5 Puts "z" above you until you become active.
+dtext 17 229 50 bindback
+dtext 117 229 5 Teleports you to your Faction Bind Stone.
+dtext 17 246 50 commands
+dtext 117 246 5 Brings up this dialog.
+dtext 17 263 50 craftmark
+dtext 117 263 5 Removes your craftmark from an item.
+dtext 17 280 50 damrolls
+dtext 117 280 5 Toggles damage rolls on/off.
+dtext 17 297 50 eq
+dtext 117 297 5 Shows info about what you have equipped.
+dtext 17 314 50 bounty
+dtext 117 314 5 Places a bounty in the desired target.
+dtext 17 331 50 housecount
+dtext 117 331 5 Number of house & boats owned by account.
+dtext 17 348 50 ore
+dtext 117 348 5 List of ores currently in your backpack.
+dtext 17 365 50 papers
+dtext 117 365 5 Opens your characters papers menu.
+dtext 17 382 50 password
+dtext 117 382 5 Changes your password ".password newpass".
+dtext 17 399 50 regs
+dtext 117 399 5 List of regs currently in your backpack.
+dtext 17 416 50 rename
+dtext 117 416 5 Rename bags using ".rename newnamehere".
+dtext 17 433 50 rp
+dtext 117 433 5 Adds a tag of roleplaying above your head.
+dtext 17 450 50 skillrolls
+dtext 117 450 5 Toggles the display of skillrolls on/off.
+dtext 17 467 50 sparring
+dtext 117 467 5 Toggles sparring mode.
+
+dtext 410 26 50 stats
+dtext 510 26 5 Information about STR/DEX/INT.
+dtext 410 43 50 status
+dtext 510 43 5 Basic character information.
+dtext 410 60 50 stuck
+dtext 510 60 5 Teleport to Britain or Bucc's, dead or alive.
+dtext 410 77 50 loyalty
+dtext 510 77 5 Opens the Loyalty/Voting Dialog.
+dtext 410 94 50 where
+dtext 510 94 5 Gives info about your current location.
+
+dtext 550 111 30 Guild Commands
+dtext 410 128 50 acceptinvite
+dtext 510 128 5 Accept a guild invite.
+//dtext 410 145 50 cape
+//dtext 510 145 5 Receive a cape from Guild Ambassador.
+dtext 410 162 50 declineinvite
+dtext 510 162 5 Decline a guild invite.
+dtext 410 179 50 g
+dtext 510 179 5 Guild chat using ".g messagehere".
+dtext 410 196 50 guildinvite
+dtext 510 196 5 Invite someone to your guild.
+dtext 410 213 50 listguild
+dtext 510 213 5 Lists online guildmates and their locations.
+
+dtext 550 230 30 Messaging Commands
+dtext 410 247 50 friend
+dtext 510 247 5 Used to add someone to your friend list.
+dtext 410 264 50 friends
+dtext 510 264 5 Shows your added friends.
+dtext 410 281 50 inbox
+dtext 510 281 5 Shows the messages in your inbox.
+dtext 410 298 50 online
+dtext 510 298 5 Shows players online available to chat.
+dtext 410 315 50 private
+dtext 510 315 5 Turns off the message chat.
+
+dtext 550 332 30 Factions
+
+dtext 410 349 50 f
+dtext 510 349 5 Faction Chat ".f message"
+dtext 410 366 50 factionhome
+dtext 510 366 5 Sends faction members to their faction town.
+//dtext 410 383 50 factionhome
+//dtext 510 383 5 Sends faction members to their faction town.
+
+dtext 550 400 30 Events
+
+dtext 410 417 50 enter
+dtext 510 417 5 Enter automatic events.
+dtext 410 434 50 levent
+dtext 510 434 5 Shows info about last automatic event.
+dtext 410 451 50 pvp2
+dtext 510 451 5 Enter PvP and events ".pvp2 password".
+
+
+
+[DIALOG d_bfCommands]
+150, 50
+NODISPOSE
+PAGE 1
+
+    //Border
+    gumppic     1    2 83
+    gumppic    16    0 84
+    gumppic    32    0 84
+    gumppic    48    0 84
+    gumppic    64    0 84
+    gumppic    80    0 84
+    gumppic    96    0 84
+    gumppic   112    0 84
+    gumppic   128    0 84
+    gumppic   144    0 84
+    gumppic   160    0 84
+    gumppic   176    0 84
+    gumppic   192    0 84
+    gumppic   208    0 84
+    gumppic   224    0 84
+    gumppic   240    0 84
+    gumppic   256    0 84
+    gumppic   272    0 84
+    gumppic   288    0 84
+    gumppic   304    0 84
+    gumppic   320    0 84
+    gumppic   336    0 84
+    gumppic   352    0 84
+    gumppic   368    0 84
+    gumppic   384    0 84
+    gumppic   390    0 84
+    gumppic   407    0 85
+   
+    //Bottom Border
+    gumppic     0    620 89
+    gumppic    16    620 90
+    gumppic    32    620 90
+    gumppic    48    620 90
+    gumppic    64    620 90
+    gumppic    80    620 90
+    gumppic    96    620 90
+    gumppic   112    620 90
+    gumppic   128    620 90
+    gumppic   144    620 90
+    gumppic   160    620 90
+    gumppic   176    620 90
+    gumppic   192    620 90
+    gumppic   208    620 90
+    gumppic   224    620 90
+    gumppic   240    620 90
+    gumppic   256    620 90
+    gumppic   272    620 90
+    gumppic   288    620 90
+    gumppic   304    620 90
+    gumppic   320    620 90
+    gumppic   336    620 90
+    gumppic   352    620 90
+    gumppic   368    620 90
+    gumppic   384    620 90
+    gumppic   390    620 90
+    gumppic   407    620 91
+
+    //Background gray
+    gumppic     7   10 5124
+    gumppic     7  120 5124
+    gumppic     7  230 5124
+    gumppic     7  340 5124
+    gumppic     7  453 5124
+    gumppic   147   10 5124
+    gumppic   259   10 5124
+    gumppic   147  120 5124
+    gumppic   259  120 5124
+    gumppic   147  230 5124
+    gumppic   259  230 5124
+    gumppic   147  340 5124
+    gumppic   259  340 5124
+    gumppic   147  453 5124
+    gumppic   259  453 5124
+    gumppic     7  513 5124
+    gumppic   147  513 5124
+    gumppic   259  513 5124
+    
+
+    //Box
+    gumppic 73 15 1142
+
+  button  120  605 <eval  0fab> <eval  0fad> 1 0 1
+
+  dtext 120   17  4  Memory Shard Commands
+
+  dtext  15   40 50  accountinfo
+  dtext 115   40  5  Lists start date & hours online.
+  dtext  15   56 50  afk
+  dtext 115   56  5  Puts "z" above you until you become active.
+  dtext  15   72 50  craftmark
+  dtext 115   72  5  Removes your craftmark from an item.
+  dtext  15   88 50  damrolls
+  dtext 115   88  5  Toggles damage rolls on/off.
+  dtext  15  104 50  eq
+  dtext 115  104  5  Shows info about what you have equipped.
+  dtext  15  120 50  helppage
+  dtext 115  120  5  Brings up help dialog.
+  dtext  15  136 50  housecount
+  dtext 115  136  5  Returns number of house and boats owned by your account.
+  dtext  15  152 50  locateship
+  dtext 115  152  5  Target key, returns number of houses and boats.
+  dtext  15  168 50  online
+  dtext 115  168  5  Lists the current online player count.
+  dtext  15  184 50  ochome
+  dtext 115  184  5  Transports faction members to their faction town.
+  dtext  15  200 50  papers
+  dtext 115  200  5  Opens your characters papers menu.
+  dtext  15  216 50  pass
+  dtext 115  216  5  Changes your password ".pass newpassword".
+  dtext  15  232 50  pvp2
+  dtext 115  232  5  Enter PvP and events ".pvp2 passhere".
+  dtext  15  248 50  regs
+  dtext 115  248  5  List of regs currently in your backpack
+//  dtext  15  264 50  lastvictim
+//  dtext 115  264  5  Indicates the last person you killed.
+  dtext  15  280 50  rename
+  dtext 115  280  5  Rename bags using ".rename newnamehere".
+  dtext  15  296 50  rp
+  dtext 115  296  5  Adds a tag of roleplaying above your head.
+  dtext  15  312 50  skillrolls
+  dtext 115  312  5  Toggles the display of skillrolls on/off.
+  dtext  15  328 50  sparring
+  dtext 115  328  5  Toggles sparring mode.
+  dtext  15  344 50  status
+  dtext 115  344  5  Basic character info.
+  dtext  15  360 50  where
+  dtext 115  360  5  Gives info about your current location.
+  dtext  15  376 50  bindback
+  dtext 115  376  5  When dead, teleports you to your Mecenary bindstone.
+  dtext  15  392 50  home home home
+  dtext 115  392  5  When dead, teleports you to your home stone.
+  dtext  15  408 50  trinsic
+  dtext 115  408  5  Opens Trinsic Travelling Guide.
+  //dtext  15  424 50  q
+  //dtext 115  424  5  Query Companion format: ".q message"
+  dtext  15  440 50  stoparrow
+  dtext 115  440  5  Stops the arrow from Trinsic Travelling Guide.
+  dtext  15  456 50  listguild
+  dtext 115  456  5  Lists online guildmates and their locations.
+  dtext  15  472 50  g
+  dtext 115  472  5  Guildchat using ".g messagehere"
+  dtext  15  488 50  guildinvite
+  dtext 115  488  5  Invite someone to your guild.
+  dtext  15  504 50  acceptinvite
+  dtext 115  504  5  Accept a guild invite.
+  dtext  15  520 50  declineinvite
+  dtext 115  520  5  Decline a guild invite.
+  dtext  15  536 50  cape
+  dtext 115  536  5  Used to get a cape from the Guild Ambassador.
+  dtext  15  552 50  vote
+  dtext 115  552  5  Opens up your browser and shows our voting page.
+  dtext  15  568 50  enter
+  dtext 115  568  5  Enter automatic events.
+  dtext  15  584 50  !
+  dtext 115  584  5  Allows you to comunicate through worldchat "! messagehere"
+  
+  dtext 160  605 50  Return to help menu
+
+
+[DIALOG d_bfCommands BUTTON]
+ON = 1
+   SRC.DIALOG d_help
+
+//
+// GUMP Memory Shard Staffteam
+//
+
+[DIALOG d_bfuo_staff]
+150, 50
+NODISPOSE
+PAGE 1
+  gumppic  0    0 1140
+  gumppic  63  15 1142
+
+  button  60  52  2510 2511 1 0 1
+  button  60  84  2510 2511 1 0 2
+  button  60  115 2510 2511 1 0 3   
+  button  60  147 2510 2511 1 0 4
+  button  80  200 <eval  0fab> <eval  0fad> 1 0 5
+
+  dtext 120   17   4  Memory Shard Staff
+  dtext  80   43  50  Administrators
+  dtext  80   57   5  Accounts, Complaints, Scripting
+  dtext  80   77  50  Game Masters
+  dtext  80   91   5  Player Support, Quests, Events
+  dtext  80  110  50  Counselors
+  dtext  80  123   5  Light Player Support, Quest, Events
+  dtext  80  142  50  Consultants
+  dtext  80  155   5  Feedback, Development, Coding
+  dtext 120  200  50  Return to help menu
+
+[DIALOG d_bfuo_staff BUTTON]
+ON = 1
+SRC.DIALOG d_bfuo_admin
+RETURN 1
+
+ON = 2
+SRC.DIALOG d_bfuo_dev
+RETURN 1
+
+ON = 3
+SRC.DIALOG d_bfuo_GM_plsup
+RETURN 1
+
+ON = 4
+SRC.DIALOG d_bfuo_plsup
+RETURN 1
+
+ON = 5
+SRC.DIALOG d_help
+
+//
+// GUMP Memory Shard Staff -- Administration
+//
+
+[DIALOG d_bfuo_admin]
+150, 50
+NODISPOSE
+PAGE 1
+  gumppic  0    0 1140
+  gumppic  63  15 1142
+
+//  button 80  190 <eval  0fab> <eval  0fad> 0 2 // next page
+  button 80  210 <eval  0fab> <eval  0fad> 1 0 2 // To staff menu
+
+  dtext 100   17   4  Memory Shard Administators
+  dtext  60   40  50  
+  dtext  60   54  50  Wigifer
+  //dtext  60   68   5  
+  //dtext  60   88  50  
+  //dtext  60  102  50  
+  //dtext  60  116   5  
+  dtext 120  200  50  Return to staff menu
+
+[DIALOG d_bfuo_admin BUTTON]
+ON = 2
+SRC.DIALOG d_bfuo_staff
+RETURN 1
+
+ON = 4
+SRC.DIALOG d_bfuo_staff
+RETURN 1
+
+//
+// GUMP Memory Shard Staff -- Game Masters
+//
+
+[DIALOG d_bfuo_dev]
+150, 50
+NODISPOSE
+PAGE 1
+  gumppic  0    0 1140
+  gumppic  63  15 1142
+
+  button 80  200 <eval  0fab> <eval  0fad> 1 0 1
+
+  dtext 100   17   4  Memory Shard Game Masters
+  dtext  60   40  50  
+  dtext  60   54  50  
+  dtext  60   68  50  
+  dtext  60   82  50  
+  //dtext  60  102  50  
+  //dtext  60  116   5  
+  dtext 120  200  50  Return to staff menu
+
+[DIALOG d_bfuo_dev BUTTON]
+ON = 1
+SRC.DIALOG d_bfuo_staff
+RETURN 1
+
+//
+// GUMP Memory Shard Staff -- Counselors
+//
+
+[DIALOG d_bfuo_GM_plsup]
+150, 50
+NODISPOSE
+PAGE 1
+  gumppic  0    0 1140
+  gumppic  63  15 1142
+
+  button 80  190 <eval  0fab> <eval  0fad> 0 2 // next page
+  button 80  210 <eval  0fab> <eval  0fad> 1 0 2 // To staff menu
+
+  dtext  80   17   4   Memory Shard Counselors
+  //dtext  60   43  50   
+  //dtext  60   77  50   
+ // dtext  60  110  50  
+ // dtext  60  143  50   
+ // dtext 120  190  50   More GM's
+  dtext 120  210  50   Return to staff menu
+
+PAGE 2
+  gumppic  0    0 1140
+  gumppic  63  15 1142
+
+  button 80  190 <eval  0fab> <eval  0fad> 0 1 // Preveous page
+  button 80  210 <eval  0fab> <eval  0fad> 1 0 4 // to staff menu
+
+  dtext  80   17   4   Memory Shard Counselors
+  //dtext  60   43  50   
+  //dtext  60   77  50   
+  //dtext  60  110  50   
+  //dtext 120  190  50   Return to first GM list
+  dtext 120  210  50   Return to staff menu
+
+[DIALOG d_bfuo_GM_plsup BUTTON]
+ON = 2
+SRC.DIALOG d_bfuo_staff
+RETURN 1
+
+ON = 4
+SRC.DIALOG d_bfuo_staff
+RETURN 1
+
+[DIALOG d_bfuo_plsup]
+150, 50
+NODISPOSE
+PAGE 1
+  gumppic  0    0 1140
+  gumppic  63  15 1142
+
+  button 80  200 <eval  0fab> <eval  0fad> 1 0 2 // To staff menu
+
+  dtext  95   17   4   Memory Shard Consultants
+ dtext  60   43  50   
+ dtext  60   57   50   
+ // dtext  60   77  50   
+ // dtext  60   91   5   
+ // dtext  60  110  50   
+ // dtext  60  123   5   
+//  dtext  60  143  50   
+//  dtext  60  157   5   
+  dtext 120  200  50   Return to staff menu
+
+[DIALOG d_bfuo_plsup BUTTON]
+ON = 2
+SRC.DIALOG d_bfuo_staff
+RETURN 1
+
+//
+// GUMP: NEWS
+//
+
+[DIALOG d_news_show]
+150, 50
+NOMOVE
+NODISPOSE
+  gumppic  0    0 1140
+  gumppic  63  15 1142
+
+  text    110  16 4 0
+
+  button    220  180  <eval 01196> <eval 01197> 1 0 1
+  button    125  180  <eval 0119a> <eval 01199> 1 0 2
+  button    310  200  <eval  0fab> <eval  0fad> 1 0 3
+
+  text  45 195  0 1
+  text  45 212  0 2
+  text 178 195  0 3
+  text 190 195  0 4
+  text 202 195  0 5
+
+  text 60  43 50 10
+  text 60  60 50 11
+  text 60  77 50 12
+  text 60  94 50 13
+  text 60 111 50 14
+  text 60 128 50 15
+  text 60 145 50 16
+
+
+[DIALOG d_news_show BUTTON]
+ON = 0
+ON = 1
+  VAR.NEWS.MUTE	= 1
+  news_action next
+  news_action current
+  VAR.NEWS.MUTE	=
+ON = 2
+  VAR.NEWS.MUTE	= 1
+  news_action back
+  news_action current
+  VAR.NEWS.MUTE	=
+ON = 3
+  HelpPage
+
+[DIALOG d_news_show TEXT]
+NEWS: <ACT.TITLE>
+posted by
+<ACT.AUTHOR>
+<eval (<TAG.NEWS.READ>+1)>
+<ACT.CONT.RESCOUNT>
+6
+7
+8
+9
+<ACT.BODY.0>
+<ACT.BODY.1>
+<ACT.BODY.2>
+<ACT.BODY.3>
+<ACT.BODY.4>
+<ACT.BODY.5>
+<ACT.BODY.6>
+<ACT.BODY.7>
+<ACT.BODY.8>
+<ACT.BODY.9>
+<ACT.BODY.10>
+
+
+//
+// NEW SYSTEM BELOW
+//
+
+[PLEVEL 0]
+news
+n
+
+[PLEVEL 5]
+nu
+NEWS_init
+NEWS_summary
+NEWS_update
+NEWS_next
+NEWS_init
+NEWS_term
+NEWS_uid
+
+[FUNCTION news]
+   if ( !<SRC.ISGM> )
+      SRC.WEBLINK = www.Imperialuo.com
+      RETURN 1
+   ENDIF
+   NEWS_action <ARGS>
+
+[FUNCTION n]
+   NEWS_action <args>
+
+[FUNCTION news_action]
+   NEWS_init
+   IF ( 0 )
+   elseif ( !strcmpi( "<args>", "summary" ) )
+      NEWS_summary
+   elseif ( !strcmpi( "<args>", "current" ) )
+      NEWS_current
+   elseif ( !strcmpi( "<args>", "next" ) )
+      NEWS_next
+   elseif ( !strcmpi( "<args>", "reset" ) )
+      NEWS_reset
+   elseif ( !strcmpi( "<args>", "" ) && (<TAG.NEWS.READ> < <ACT.RESCOUNT>) )
+      NEWS_current
+   elseif ( !strcmpi( "<args>", "back" ) )
+      NEWS_back 1
+   elseif ( !strcmpi( "<args>", "back5" ) )
+      NEWS_back 5
+   else
+      sysmessage Use:
+      sysmessage .NEWS summary   - count new messages
+      sysmessage .NEWS reset      - go back all messages
+      sysmessage .NEWS back       - back one message
+      sysmessage .NEWS back5      - back five messages
+   endif
+   NEWS_term
+
+
+[FUNCTION NEWS_summary]
+   if ( <TAG.NEWS.READ> >= <ACT.RESCOUNT> )
+      if ( 0<var.news.updating> == 0 )
+         sysmessage There are no unread news (total of <eval <ACT.RESCOUNT>>).
+      endif
+      RETURN 1
+   endif
+   LOCAL.AMOUNT	= <eval (<ACT.RESCOUNT>-<TAG.NEWS.READ>)>
+   if ( <LOCAL.AMOUNT> == 1 )
+     SYSMESSAGE NEWS: There is one unread news.
+   else
+     SYSMESSAGE NEWS: There are <eval <LOCAL.amount>> unread news.
+   endif
+
+
+[FUNCTION NEWS_back]
+   if ( <TAG.NEWS.READ> == 0 )
+      if !( 0<VAR.NEWS.MUTE> )
+        SYSMESSAGE No previous message.
+      endif
+      return 1
+   endif
+   VAR.BACK	= <args>
+   if ( 0<VAR.BACK> == 0 )
+      VAR.BACK	= 1
+   endif
+   if ( <VAR.BACK> > <TAG.NEWS.READ> )
+      VAR.BACK 	= <TAG.NEWS.READ>
+   endif
+
+   TAG.NEWS.READ	= <eval (<TAG.NEWS.READ> - <VAR.BACK>)>
+   if !( 0<VAR.NEWS.MUTE> )
+     SYSMESSAGE Rolled back <eval <VAR.BACK>> news message (<eval (<TAG.NEWS.READ>+1)>/<act.rescount>).
+   endif
+
+
+[FUNCTION NEWS_next]
+   if ( <TAG.NEWS.READ> >= (<ACT.RESCOUNT>-1) )
+      if !( 0<VAR.NEWS.MUTE> )
+         SYSMESSAGE No more news messages.
+      endif
+      RETURN 0
+   endif
+   TAG.NEWS.READ	= <eval (<TAG.NEWS.READ> + 1 )>
+
+
+[FUNCTION NEWS_current]
+   VAR.NEWS.NUM	= <eval ((<ACT.RESCOUNT> - <TAG.NEWS.READ>)-1)>
+   if ( <VAR.NEWS.NUM> < 0 )
+      TAG.NEWS.READ	= <ACT.RESCOUNT>
+      SYSMESSAGE No more news messages.
+      RETURN 0
+   endif
+   if !( 0<VAR.NEWS.MUTE> )
+      //SYSMESSAGE Reading news message <eval (<TAG.NEWS.READ>+1)> / <eval (<ACT.RESCOUNT>)>.
+   endif
+   ACT	= <ACT.findcont(<eval <var.news.num>>).uid>
+      DIALOG d_news_show
+   ACT	= <ACT.CONT.UID>
+
+[FUNCTION NEWS_reset]
+   TAG.NEWS.READ	= 0
+   SYSMESSAGE NEWS resetted.
+   NEWS_summary
+
+
+//
+// AUXILIARY
+//
+
+[FUNCTION nu]
+   NEWS_update
+
+[FUNCTION NEWS_update]
+   var.news.updating	= 1
+   serv.allclients NEWS_update_
+   var.news.updating	= 
+   SYSMESSAGE News updated to all clients.
+
+[FUNCTION NEWS_UPDATE_]
+   NEWS_init
+   if ( <TAG.NEWS.READ> < <ACT.RESCOUNT> )
+     SYSMESSAGE NEWS: There are <eval (<ACT.RESCOUNT>-<TAG.NEWS.READ>)> unread news.
+   endif
+   NEWS_term
+
+[FUNCTION NEWS_init]
+  VAR.NEWS.ACT	= <ACT>
+  if ( 0<VAR.GLOBAL.NEWS.UID> == 0 )
+     VAR.GLOBAL.NEWS.UID	= 040000318
+  endif
+  ACT	= <VAR.GLOBAL.NEWS.UID>
+
+  if ( 0<TAG.NEWS.READ> == 0 )
+     TAG.NEWS.READ	= 0
+  elseif ( <TAG.NEWS.READ> > <ACT.RESCOUNT> )
+     TAG.NEWS.READ	= <ACT.RESCOUNT>
+  endif
+
+[FUNCTION NEWS_term]
+  ACT	= <VAR.NEWS.ACT>
+
+[FUNCTION NEWS_uid]		// use .xNEWS_uid and target a bulletin board
+  if ( <SRC.UID> == <UID> )
+     src.sysmessage Use .xNEWS_uid and target a bulletin board.
+     RETURN 1
+  endif
+  VAR.GLOBAL.NEWS.UID	= <UID>
+  SRC.SYSMESSAGE News board set to <NAME> (<UID>).
+
+//
+//
+////////////////
+//Note used the same dialog as the command list for visual reasons
+//
+
+[DIALOG d_pages]
+150, 50
+NODISPOSE
+PAGE 0
+
+    //Border
+    gumppic     1    2 83
+    gumppic    16    0 84
+    gumppic    32    0 84
+    gumppic    48    0 84
+    gumppic    64    0 84
+    gumppic    80    0 84
+    gumppic    96    0 84
+    gumppic   112    0 84
+    gumppic   128    0 84
+    gumppic   144    0 84
+    gumppic   160    0 84
+    gumppic   176    0 84
+    gumppic   192    0 84
+    gumppic   208    0 84
+    gumppic   224    0 84
+    gumppic   240    0 84
+    gumppic   256    0 84
+    gumppic   272    0 84
+    gumppic   288    0 84
+    gumppic   304    0 84
+    gumppic   320    0 84
+    gumppic   336    0 84
+    gumppic   352    0 84
+    gumppic   368    0 84
+    gumppic   384    0 84
+    gumppic   390    0 84
+    gumppic   407    0 85
+   
+    //Bottom Border
+    gumppic     0    600 89
+    gumppic    16    600 90
+    gumppic    32    600 90
+    gumppic    48    600 90
+    gumppic    64    600 90
+    gumppic    80    600 90
+    gumppic    96    600 90
+    gumppic   112    600 90
+    gumppic   128    600 90
+    gumppic   144    600 90
+    gumppic   160    600 90
+    gumppic   176    600 90
+    gumppic   192    600 90
+    gumppic   208    600 90
+    gumppic   224    600 90
+    gumppic   240    600 90
+    gumppic   256    600 90
+    gumppic   272    600 90
+    gumppic   288    600 90
+    gumppic   304    600 90
+    gumppic   320    600 90
+    gumppic   336    600 90
+    gumppic   352    600 90
+    gumppic   368    600 90
+    gumppic   384    600 90
+    gumppic   390    600 90
+    gumppic   407    600 91
+
+    //Background gray
+    gumppic     7   10 5124
+    gumppic     7  120 5124
+    gumppic     7  230 5124
+    gumppic     7  340 5124
+    gumppic     7  453 5124
+    gumppic   147   10 5124
+    gumppic   259   10 5124
+    gumppic   147  120 5124
+    gumppic   259  120 5124
+    gumppic   147  230 5124
+    gumppic   259  230 5124
+    gumppic   147  340 5124
+    gumppic   259  340 5124
+    gumppic   147  453 5124
+    gumppic   259  453 5124
+    gumppic     7  493 5124
+    gumppic   147  493 5124
+    gumppic   259  493 5124
+    
+
+    //Box
+    gumppic 73 15 1142
+
+  button 65   552 <eval  0fab> <eval  0fad> 1 0 1
+  button 160  552 <eval  0fab> <eval  0fad> 1 0 2
+  button 275  552 <eval  0fab> <eval  0fad> 0 2 3
+  button 362  552 <eval  0fab> <eval  0fad> 0 1 4
+
+  dtext  10  552 50  Proceed:
+  dtext  110 552 50  Cancel:
+  dtext  200 552 50  Portugues:
+  dtext  320 552 50  English:
+
+PAGE 1
+
+  dtext   84   18 137 READ THIS BEFORE PAGING!
+
+  dtext  15   40 50  When you page keep in mind that the page tool:
+  dtext  20   60 137 IS FOR IMPORTANT ISSUES ONLY!
+  dtext  15   76 50  When you have a game play question such as how to
+  dtext  15   92 50  craft an item or how to raise such and such skill
+  dtext  20  114 137  1. You ask another player
+  dtext  20  140 137  2. Check the webpage and or ask on the forums
+
+  dtext  15  218 50  Futhermore you MUST clearly state your problem:
+  dtext  15  238 50  Paging and only saying "I need help" will only get
+  dtext  15  258 50  your page deleted.
+  dtext  15  318 50  As the page tool is strictly for emergencies or issues
+  dtext  15  338 50  that can't be solved without direct staff assistance.
+  dtext  15  358 50  Other situations should be dealt with through the options
+  dtext  15  378 50  above or by emailing a staff member in charge of player
+  dtext  15  398 50  support (e-mails can be found in the staff list section).
+  dtext  15  458  5  Note: If after paging your page no longer needs solving
+  dtext  15  478  5  or if you wish to cancel a previous page, simply repage
+  dtext  15  498  5  with the message "discard".
+
+PAGE 2
+
+  dtext   82   18 137 LE ANTES DE MANDAR PAGE!
+
+  dtext  15   40 50  Quando quiseres fazer page lembra-te sempre que:
+  dtext  18   60 137 SO O DEVES FAZER SE FOR IMPORTANTE!
+  dtext  15   76 50  Quando tiveres umas questão sobre o jogo como por exemplo
+  dtext  15   92 50  o que é preciso para criar um certo item ou subir skills
+  dtext  10  114 137 1.Perguntas a um outro player
+  dtext   8  140 137 2.Vais ao site ou perguntas nos forums:
+  dtext  15  218 50  Ao fazer page tens que expor o problema claramente:
+  dtext  15  238 50  Fazer page dizendo apenas "preciso de ajuda", "vem gm"
+  dtext  15  258 50  apenas tem como resultado o page ser apagado e no caso da
+  dtext  15  278 50  repetição constante com falta de informação, o jogador:
+  dtext  10  298 137 PODE SER PRESO por abuso do sistema de pages
+  dtext  15  318 50  O sistema de pages e apenas para emergencias ou assuntos
+  dtext  15  338 50  que nao podem ser resolvidos sem a intervencao directa do
+  dtext  15  358 50  staff. Outras situacoes devem ser tratadas atraves das
+  dtext  15  378 50  opccoes em cima ou mandan-do um mail ao staff (os mails
+  dtext  15  398 50  encontram-se na lista dos membros do staff).
+  dtext  15  418 50  Em caso de duvida sobre alguma palavra o site:
+  dtext  15  438 50  www.babelfish.org dispoe de sites tradutores. 
+  dtext  15  458  5  Nota: Se depois de mandares um page ja nao for preciso
+  dtext  15  478  5  resolve-lo ou o quiseres cancelar manda outro a dizer
+  dtext  15  498  5  "discard".
+
+[DIALOG d_pages BUTTON]
+ON = 1
+IF (<SRC.ACCOUNT.TAG0.PAGEBAN>==1)
+SRC.SYSMESSAGE You are banned from paging. Please type .pagebantime to see how many time is left until the ban runs out.
+RETURN 1
+ENDIF
+
+SYSMESSAGE @90 Questions regarding issues that can be found on the webpage (www.Imperialuo.com), specially the ones in the "FAQ" section might be overlooked, and so will be irrelevant requests and/or comments. Remember that paging for GM assistance is a support feature and NOT a chat system. With that in mind, please describe your problem the best you can, so that the right level of attention can be put into your situation:> 
+GMPAGE
+RETURN 1
+
+[EOF]
+
+

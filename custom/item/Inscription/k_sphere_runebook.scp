@@ -1,0 +1,625 @@
+//Wren - Apr 17 2004 - Added RuneBook Charger ItemDef
+
+VERSION=0.55
+
+[TYPEDEF t_spellbook]
+ON = @Click
+  IF ( <ATTR> & attr_newbie )
+    MESSAGE @07A1 [Newbied]
+   ENDIF
+
+[TYPEDEF t_runebook]
+
+ON = @SpellEffect
+   if !( <argn> == 45 )
+      return 1
+   endif
+
+   VAR.LOSE	= <eval rand(100)>
+   if ( <VAR.LOSE> < 10 )
+      VAR.LOSE	= <eval rand(150-<MOREy>)>
+      if ( <MOREx> < 1 )
+         VAR.LOSE	= 0
+      endif
+      if ( 0 )
+      elseif ( <VAR.LOSE> > 10 )
+         SRC.SYSMESSAGE The runebook loses one charge.
+         MOREx	= (<MOREx> - 1)
+         return 1
+      elseif ( (<VAR.LOSE> > 5) || (<MOREy> < 6) )
+         SRC.SYSMESSAGE The runebook loses half its charges.
+         MOREx	= (<MOREx> /2)
+         return 1
+      endif
+
+      SRC.SYSMESSAGE The runebook loses one maximum charge.
+      MOREy	= (<MOREy> - 1)
+      if ( <MOREx> > <MOREy> )
+         MOREx	= <MOREy>
+      endif
+      return 1
+   elseif ( (<VAR.LOSE> < 20) || !(<MOREx> < <MOREy>) )
+      SRC.SYSMESSAGE Nothing happens.
+      return 1
+   endif
+   if ( ((<MOREx> + 10) < <MOREy>) && ( rand(100) < 20 ) )
+      SRC.SYSMESSAGE The runebook gains ten charges.
+      MOREx	= (<MOREx> + 10)
+   elseif ( ((<MOREx> + 5) < <MOREy>) && ( rand(100) < 20 ) )
+      SRC.SYSMESSAGE The runebook gains five charges.
+      MOREx	= (<MOREx> + 5)
+   else
+      SRC.SYSMESSAGE The runebook gains one charge.
+      MOREx	= (<MOREx> + 1)
+   endif
+   return 1
+
+ON = @Click
+  IF ( <ATTR> & attr_newbie )
+    MESSAGE @07A1 [Newbied]
+   ENDIF
+  if ( <TAG.SLOT<eval <TAG.SLOT>>_x> == 0 )
+     MESSAGE <NAME> (<eval <MOREx>>/<eval <MOREy>> charges)
+  else
+     MESSAGE <NAME> - <TAG.LOCAL<eval <TAG.SLOT>>> - (<eval <MOREx>>/<eval <MOREy>> charges)
+  endif
+  return 1
+
+ON=@DCLICK
+  if ( <MOREx> > 100 )
+     MOREx	= 100
+  endif
+  if ( <MOREy> > 100 )
+     MOREy	= 100
+  endif
+  SRC.SOUND	= 85
+  SRC.TAG.RUNEBOOKOPENEDAT=
+  SRC.TAG.RUNEBOOKX=
+  SRC.TAG.RUNEBOOKY=
+  runebook_dialog
+  RETURN 1
+
+ON=@TARGON_CHAR
+  SRC.SYSMESSAGE That is obviously not a rune.
+  RETURN 1
+
+ON=@TARGON_ITEM
+  IF ( <SRC.TARG.TYPE> != t_rune )
+     src.sysmessage You must chose a rune to mark into the book.
+     return 1
+  endif
+
+  IF ( <SRC.TARG.MOREX> <= 0 )
+     SRC.SYSMESSAGE That is a blank rune!
+     RETURN 1
+  ENDIF
+  IF (<SRC.TARG.MOREM>=4)
+     SRC.TARG.REMOVE
+     SRC.MESSAGE You shouldn't be recalling there! Your rune fades away...
+  ENDIF
+  if ( <SRC.TARG.TOPOBJ.UID> != <SRC.UID> )
+     SRC.SYSMESSAGE That has to be in your backpack.
+     return 1
+  endif
+
+  if ( (<SRC.MAGERY> > 60.0) && <SRC.RESTEST 1 i_reag_black_pearl, 1 i_reag_blood_moss, 1 i_reag_mandrake_root> )
+     SRC.CONSUME 1 i_reag_black_pearl, 1 i_reag_blood_moss, 1 i_reag_mandrake_root
+  elseif !( <SRC.RESTEST 1 i_scroll_mark> )
+     SRC.SYSMESSAGE You can't cast the spell and lack a mark scroll to mark the rune into the book.
+     return 1
+  endif
+
+  SRC.CONSUME 1 i_scroll_mark
+  TAG.HOLD_LOCAL	= <SRC.TARG.NAME>
+  TAG.HOLD_X		= <SRC.TARG.MOREX>
+  TAG.HOLD_Y		= <SRC.TARG.MOREY>
+  TAG.HOLD_Z		= <SRC.TARG.MOREZ>
+  TAG.HOLD_M		= <SRC.TARG.MOREM>
+
+  runebook_scribe <eval <TAG.DEST_SLOT>>
+  runebook_dialog
+  RETURN 1
+
+
+
+[ITEMDEF i_RUNEBOOK_small]
+  ID		= i_spellbook
+  RESOURCES	= 10 i_scroll_blank, 10 i_scroll_gate_travel, 10 i_scroll_recall, 1 i_hide, 1 i_thread
+  SKILLMAKE	= INSCRIPTION 98.0
+  TYPE		= t_script
+  WEIGHT	= 1
+  LAYER		= 1
+  NAME		= small book of runes
+
+ON = @CREATE
+  COLOR		= 0488
+  ATTR		= attr_magic|attr_newbie
+  TAG.SLOT	= 1
+  TAG.SLOT1_X	= 0
+  TAG.SLOT2_X	= 0
+  TAG.SLOT3_X	= 0
+  TAG.SLOT4_X	= 0
+  TAG.SLOT5_X	= 0
+  TAG.SLOT6_X	= 0
+  TAG.SLOT7_X	= 0
+  TAG.SLOT8_X	= 0
+  TAG.SLOT9_X	= 0
+  MOREx		= 30
+  MOREy		= 30
+  TYPE		= t_runebook
+  
+
+
+
+
+[ITEMDEF i_RUNEBOOK]
+  ID		= i_spellbook
+  RESOURCES	= 30 i_scroll_blank, 30 i_scroll_gate_travel, 30 i_scroll_recall, 1 i_hide, 1 i_thread
+  SKILLMAKE	= INSCRIPTION 100.0
+  TYPE		= t_script
+  WEIGHT	= 1
+  LAYER		= 1
+  NAME		= book of runes
+
+ON = @CREATE
+  COLOR		= 0488
+  ATTR		= attr_magic|attr_newbie
+  TAG.SLOT	= 1
+  TAG.SLOT1_X	= 0
+  TAG.SLOT2_X	= 0
+  TAG.SLOT3_X	= 0
+  TAG.SLOT4_X	= 0
+  TAG.SLOT5_X	= 0
+  TAG.SLOT6_X	= 0
+  TAG.SLOT7_X	= 0
+  TAG.SLOT8_X	= 0
+  TAG.SLOT9_X	= 0
+  MOREx		= 100
+  MOREy		= 100
+  TYPE		= t_runebook
+
+
+
+
+[FUNCTION slot_text]
+  if ( 0<TAG.SLOT<eval <TAG.SLOT>>_X> == 00 )
+     VAR.SLOT_TEXT	= 1
+  else
+     VAR.SLOT_TEXT	= 0
+  endif
+  return <var.slot_text>
+  
+[DIALOG d_runebook]
+0, 0
+gumppic 100 10 2202
+
+gumppic 125 40 57
+gumppic 145 40 58
+gumppic 160 40 58
+gumppic 175 40 58
+gumppic 190 40 58
+gumppic 205 40 58
+gumppic 220 40 58
+gumppic 230 40 59
+
+gumppic 290 40 57
+gumppic 310 40 58
+gumppic 325 40 58
+gumppic 340 40 58
+gumppic 355 40 58
+gumppic 370 40 58
+gumppic 385 40 58
+gumppic 395 40 59
+
+PAGE 1
+  dcroppedtext 146  60 100 17 0 <TAG.local1>
+  dcroppedtext 146  75 100 17 0 <TAG.local2>
+  dcroppedtext 146  90 100 17 0 <TAG.local3>
+  dcroppedtext 146 105 100 17 0 <TAG.local4>
+  dcroppedtext 146 120 100 17 0 <TAG.local5>
+  dcroppedtext 146 135 100 17 0 <TAG.local6>
+  dcroppedtext 146 150 100 17 0 <TAG.local7>
+  dcroppedtext 146 165 100 17 0 <TAG.local8>
+  dcroppedtext 146 180 100 17 0 <TAG.local9>
+
+  dtext 145 20   4  Book of runes
+  dtext 305 20   4  Book of runes
+
+  dtext 310 165   0 current
+  dtext 380 165  53 <eval <MOREx>>
+
+  dtext 310 180   0 maximum
+  dtext 380 180  51 <eval <MOREy>>
+
+  button 300  93  5037 5038 1 0 10
+  button 300 120  5037 5038 1 0 11
+  button 300 137  5037 5038 1 0 12
+
+  dcroppedtext 300 60 100 17 0 <TAG.LOCAL<eval <tag.slot>>>
+  
+  text 310  90   0 <eval <slot_text>>
+  dtext 305 117   0 recall
+  dtext 382 117  51 1
+  dtext 305 134   0 gate
+  dtext 380 134  51 2
+
+  button 133 65  <VAR.BT1_set> 1 0 1
+  button 133 80  <VAR.BT2_set> 1 0 2
+  button 133 95  <VAR.BT3_set> 1 0 3
+  button 133 110 <VAR.BT4_set> 1 0 4
+  button 133 125 <VAR.BT5_set> 1 0 5
+  button 133 140 <VAR.BT6_set> 1 0 6
+  button 133 155 <VAR.BT7_set> 1 0 7
+  button 133 170 <VAR.BT8_set> 1 0 8
+  button 133 185 <VAR.BT9_set> 1 0 9
+
+
+[DIALOG d_runebook TEXT]
+remove rune
+mark rune
+
+
+[DIALOG d_runebook BUTTON]
+ON=0
+   SRC.SOUND	= 85
+   RETURN 1
+
+ONBUTTON=1 9
+  LOCAL.SELECT=<ARGN1>
+  TAG.SLOT=<EVAL <ARGN1>>
+  runebook_dialog
+  RETURN 1
+
+ON=10
+  runebook_button_reset <eval <TAG.SLOT>>
+  RETURN 1
+   
+ON=11
+ IF !(<CONT>==<SRC.findlayer.21.uid>)
+    SRC.SYSMESSAGE You must target the runebook with the spell if you are not holding it.
+    RETURN 1
+ ENDIF
+ IF (<SRC.FINDID.i_delivery_memory.UID>)
+    SRC.SYSMESSAGE You can't cast recall! You'll spoil the delivery!
+    RETURN 1
+ ENDIF
+ runebook_button_recall <eval <TAG.SLOT>>
+ RETURN 1
+   
+ON=12
+ IF !(<CONT>==<SRC.findlayer.21.uid>)
+    SRC.SYSMESSAGE You must target the runebook with the spell if you are not holding it.
+    RETURN 1
+ ENDIF
+ IF (<SRC.FINDID.i_delivery_memory.UID>)
+    SRC.SYSMESSAGE You can't cast a gate! You'll spoil the delivery!
+    RETURN 1
+ ENDIF
+ runebook_button_gate  <eval <TAG.SLOT>>
+ RETURN 1
+
+
+[FUNCTION runebook_button_color]
+  if ( <TAG.SLOT> == <args> )
+     try VAR.BT<args>_set = 2361 2362
+  elseif ( <TAG.SLOT<args>_X> == 0 )
+     try VAR.BT<args>_set = 2360 2361
+  else
+     try VAR.BT<args>_set = 2362 2361
+  endif
+
+  if ( <TAG.SLOT<args>_X> == 0 )
+     TRY TAG.LOCAL<args> = "- empty -"
+  endif
+
+[FUNCTION runebook_dialog]
+  runebook_button_color 1
+  runebook_button_color 2
+  runebook_button_color 3
+  runebook_button_color 4
+  runebook_button_color 5
+  runebook_button_color 6
+  runebook_button_color 7
+  runebook_button_color 8
+  runebook_button_color 9
+  DIALOG d_runebook
+
+
+[FUNCTION runebook_button_reset]
+  if ( 0<TAG.SLOT<args>_X> == 00 )
+     TAG.DEST_SLOT = <args>
+     TARGET What rune would you like to mark in that slot?
+     return 1
+  endif
+  SRC.SOUND=43
+  tryp 0 TAG.SLOT<args>_X=00
+  tryp 0 TAG.LOCAL<args> =
+  runebook_dialog
+
+
+
+[FUNCTION runebook_scribe]
+  SRC.SOUND=79
+  try TAG.LOCAL<args>=<TAG.HOLD_LOCAL>
+  try TAG.SLOT<args>_X=<TAG.HOLD_X>
+  try TAG.SLOT<args>_Y=<TAG.HOLD_Y>
+  try TAG.SLOT<args>_Z=<TAG.HOLD_Z>
+  try TAG.SLOT<args>_M=<TAG.HOLD_M>
+  return 1
+
+
+
+[FUNCTION runebook_button_recall]
+   VAR.POS_X = <TAG.SLOT<ARGS>_X>
+   VAR.POS_y = <TAG.SLOT<ARGS>_Y>
+   VAR.POS_Z = <TAG.SLOT<ARGS>_Z>
+   VAR.POS_M = <TAG.SLOT<ARGS>_M>
+
+   SRC.CONSUME m_gate_delay
+   SRC.CONSUME m_recall_delay
+
+   IF <VAR.POS_X>=00
+     SRC.SYSMESSAGE This slot does not have a rune wrote to it!
+     runebook_dialog
+     return 1
+   ENDIF
+
+   if ( <MOREx> < 1 )
+      src.sysmessage There's not enough power in the book to gate.
+      return 1
+   endif
+
+   if !( <f_recall_start> )
+      MOREx	= (<MOREx> - 1)
+   endif
+
+
+
+[FUNCTION runebook_button_gate]
+   VAR.POS_X = <TAG.SLOT<ARGS>_X>
+   VAR.POS_y = <TAG.SLOT<ARGS>_Y>
+   VAR.POS_Z = <TAG.SLOT<ARGS>_Z>
+   VAR.POS_M = <TAG.SLOT<ARGS>_M>
+
+   SRC.CONSUME m_gate_delay
+   SRC.CONSUME m_recall_delay
+
+   IF <VAR.POS_X>=00
+     SRC.SYSMESSAGE This slot does not have a rune wrote to it!
+     runebook_dialog
+     return 1
+   ENDIF
+
+   if ( <MOREx> < 2 )
+      src.sysmessage There's not enough power in the book to gate.
+      return 1
+   endif
+
+   if !( <f_gate_travel_start> )
+      MOREx	= (<MOREx> - 2)
+   endif
+
+
+
+[ITEMDEF i_RuneBook_Charger]
+//Added by Wren - Apr 17 2004
+NAME=Runebook Charger
+ID=012ab
+TYPE=T_SCRIPT
+WEIGHT=1
+VALUE=1000
+RESOURCES=10 i_scroll_blank, 5 i_scroll_mark
+SKILLMAKE=INSCRIPTION 95.0, t_scribe_tools
+CATEGORY=Items by Professions
+SUBSECTION=Scribe
+DESCRIPTION=Runebook Charger
+
+ON=@CREATE
+COLOR=05dd
+
+ON=@DCLICK
+TARGET Target the runebook to which you would like to add up to 20 charges. (Charges will not exceed the maximum amount of charges that the book can hold.)
+RETURN 1
+
+ON=@TARGON_ITEM
+IF ((<SRC.TARG.BASEID>=i_runebook) || (<SRC.TARG.BASEID>=i_runebook_small))
+   IF <SRC.TARG.MOREX>=<SRC.TARG.MOREY>
+      SRC.SYSMESSAGE This runebook is already fully charged.
+   ELSEIF ((<SRC.TARG.MOREX>+20) >= <SRC.TARG.MOREY>)
+      SRC.TARG.MOREX=<SRC.TARG.MOREY>
+      SRC.SYSMESSAGE You see the runebook glow as you insert the Charger.
+      REMOVE
+   ELSE
+      SRC.TARG.MOREX=(<SRC.TARG.MOREX>+20)
+      SRC.SYSMESSAGE You see the runebook glow as you insert the Charger.
+      REMOVE
+   ENDIF
+ELSE
+   SRC.SYSMESSAGE You can only use this to fill a runebook.
+ENDIF
+RETURN 1
+
+
+// This can be used, but will need editing in an emergency...
+[FUNCTION BANKLOCATIONCHECK]
+VAR.BANKLOCATIONX=<SRC.findlayer.29.morex>
+VAR.BANKLOCATIONY=<SRC.findlayer.29.morey>
+IF (<VAR.BANKLOCATIONX>==<SRC.P.X>)
+   IF (<VAR.BANKLOCATIONY>==<SRC.P.Y>)
+      RETURN 1
+   ENDIF
+ENDIF
+RETURN 0
+
+[FUNCTION BOOKLOCATIONCHECK]
+IF ( (<P.X> - <SRC.P.X>) <= 5 ) || ( (<SRC.P.X> - <P.X>) <= 5 ) ) )
+   IF ( ( (<P.Y> - <SRC.P.Y>) <= 5 ) || ( (<SRC.P.Y> - <P.Y>) <= 5 ) ) )
+      RETURN 1
+   ENDIF
+ENDIF
+RETURN 0
+
+
+
+
+
+/////////////////////////////////////
+//////////Ancient Runebook//////////
+///////////////////////////////////
+
+
+[TYPEDEF t_runebook_ancient]
+
+ON = @Click
+IF ( <TAG.SLOT<eval <TAG.SLOT>>_x> == 0 )
+MESSAGE <NAME> (<eval <MOREx>>/<eval <MOREy>> charges)
+ELSE
+MESSAGE <NAME> - <TAG.LOCAL<eval <TAG.SLOT>>> - (<eval <MOREx>>/<eval <MOREy>> charges)
+ENDIF
+RETURN 1
+
+ON=@DCLICK
+if ( <MOREx> > 100 )
+MOREx	= 100
+endif
+if ( <MOREy> > 100 )
+MOREy	= 100
+endif
+SRC.SOUND= 85
+SRC.TAG.RUNEBOOKOPENEDAT=
+SRC.TAG.RUNEBOOKX=
+SRC.TAG.RUNEBOOKY=
+runebook_dialog
+RETURN 1
+
+ON=@TARGON_CHAR
+SRC.SYSMESSAGE That is obviously not a rune.
+RETURN 1
+
+ON=@TARGON_ITEM
+IF ( <SRC.TARG.TYPE> != t_rune )
+SRC.SYSMESSAGE You must choose a rune to mark into the book.
+return 1
+endif
+
+  IF ( <SRC.TARG.MOREX> <= 0 )
+SRC.SYSMESSAGE That is a blank rune!
+RETURN 1
+ENDIF
+IF (<SRC.TARG.MOREM>=4)
+SRC.TARG.REMOVE
+SRC.MESSAGE You shouldn't be recalling there! Your rune fades away...
+ENDIF
+if ( <SRC.TARG.TOPOBJ.UID> != <SRC.UID> )
+SRC.SYSMESSAGE That has to be in your backpack.
+return 1
+endif
+
+  if ( (<SRC.MAGERY> > 60.0) && <SRC.RESTEST 1 i_reag_black_pearl, 1 i_reag_blood_moss, 1 i_reag_mandrake_root> )
+     SRC.CONSUME 1 i_reag_black_pearl, 1 i_reag_blood_moss, 1 i_reag_mandrake_root
+  elseif !( <SRC.RESTEST 1 i_scroll_mark> )
+     SRC.SYSMESSAGE You can't cast the spell and lack a mark scroll to mark the rune into the book.
+     return 1
+  endif
+
+  SRC.CONSUME 1 i_scroll_mark
+  TAG.HOLD_LOCAL	= <SRC.TARG.NAME>
+  TAG.HOLD_X		= <SRC.TARG.MOREX>
+  TAG.HOLD_Y		= <SRC.TARG.MOREY>
+  TAG.HOLD_Z		= <SRC.TARG.MOREZ>
+  TAG.HOLD_M		= <SRC.TARG.MOREM>
+
+  runebook_scribe <eval <TAG.DEST_SLOT>>
+  runebook_dialog
+  RETURN 1
+
+
+
+[ITEMDEF i_runebook_ancient]
+  ID		= i_spellbook
+  RESOURCES	= 30 i_scroll_blank, 30 i_scroll_gate_travel, 30 i_scroll_recall, 1 i_hide, 1 i_thread
+  SKILLMAKE	= INSCRIPTION 100.0
+  TYPE		= t_script
+  WEIGHT	= 1
+  LAYER		= 1
+  NAME		= ancient book of runes
+
+ON = @CREATE
+  COLOR		= 079e
+  ATTR		= attr_magic|attr_newbie
+  TAG.SLOT	= 1
+  TAG.SLOT1_X	= 0
+  TAG.SLOT2_X	= 0
+  TAG.SLOT3_X	= 0
+  TAG.SLOT4_X	= 0
+  TAG.SLOT5_X	= 0
+  TAG.SLOT6_X	= 0
+  TAG.SLOT7_X	= 0
+  TAG.SLOT8_X	= 0
+  TAG.SLOT9_X	= 0
+  MOREx		= 100
+  MOREy		= 100
+  TYPE		= t_runebook_ancient
+  
+
+
+[ITEMDEF i_RuneBook_Charger_ancient]
+NAME=Ancient Runebook Charger
+ID=012ab
+TYPE=T_SCRIPT
+WEIGHT=1
+VALUE=1000
+RESOURCES=10 i_scroll_blank, 5 i_scroll_mark
+SKILLMAKE=INSCRIPTION 95.0, t_scribe_tools
+CATEGORY=Items by Professions
+SUBSECTION=Scribe
+DESCRIPTION=Runebook Charger
+
+ON=@CREATE
+COLOR=079e
+
+ON=@DCLICK
+TARGET Target the Ancient Runebook to which you would like to re-charge…
+RETURN 1
+
+ON=@TARGON_ITEM
+IF (<SRC.TARG.BASEID>=i_runebook_ancient)
+
+IF <SRC.TARG.MOREX> = <SRC.TARG.MOREY>
+SRC.SYSMESSAGE This Ancient Runebook is already fully charged.
+
+ELSE (<SRC.TARG.BASEID=i_runebook_ancient) && !(<SRC.TARG.MOREX> = <SRC.TARG.MOREY>)
+SRC.TARG.MOREX=<SRC.TARG.MOREY>
+SRC.SYSMESSAGE You see the Ancient Runebook glow as you insert the Charger.
+REMOVE
+ENDIF
+
+ELSE
+SRC.SYSMESSAGE You can only use this to fill an Ancient Runebook.
+ENDIF
+RETURN 1
+
+
+
+
+
+
+
+[EOF]
+
+// Old runebook button stuff
+
+//  IF (<CONT>==<SRC.findlayer.29.uid>)
+//    VAR.PLAYERPOS=<SRC.P>
+//    VAR.RUNEBOOKPOS=<SRC.findlayer.29.morep>
+//    IF ( !strcmp("<VAR.PLAYERPOS>","<SRC.findlayer.29.morep>"))
+//        IF (0<SRC.TAG.DEBUG.RUNEBOOK>=1)
+//           SRC.SAY <VAR.RUNEBOOKPOS> = <VAR.PLAYERPOS> Test
+//        ENDIF
+//        SRC.SYSMESSAGE You can only use this at the location you opened your bank at...
+//        RETURN 1
+//     ENDIF
+//  ENDIF
+//  IF (0<SRC.TAG.DEBUG.RUNEBOOK>=1)
+//     SRC.SAY <VAR.RUNEBOOKPOS> = <VAR.PLAYERPOS> Test
+//  ENDIF

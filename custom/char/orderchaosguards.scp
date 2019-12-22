@@ -1,0 +1,1096 @@
+// #-----------#
+// # CHANGELOG #
+// #-----------#
+//
+// 18/08/18 - Wigifer - File marked for review, but no update for central loot required.
+
+// Order Town Guards
+// Updated by Anya on 06th July 2006
+// TO DO: female titles
+
+// Cast: In order of appearance
+
+// c_order_infantry_mounted
+// c_order_knight_mounted
+// c_order_disciple_mounted
+
+// c_chaos_infantry_mounted
+// c_chaos_knight_mounted
+// c_chaos_disciple_mounted
+
+// c_order_infantry
+// c_order_knight
+// c_order_disciple
+
+// c_chaos_infantry
+// c_chaos_knight
+// c_chaos_disciple
+
+// c_femorder_maiden_mounted
+// c_femorder_maiden
+// c_femchaos_banshee_mounted
+// c_femchaos_banshee
+
+
+//********************************************************************//
+//                       ORDER-CHAOS SPEECHES                         //
+//********************************************************************// 
+[SPEECH spk_order_greeting]
+ON=*hello*
+ON=*hi*
+ON=*lo*
+ON=*sup*
+ON=*yo*
+   IF ( <SRC.TAG.ALIGNMENT> = alignment_chaos )
+      DORAND 3
+         SAY Dost thou wish to die by my hands?!
+         SAY Get thee out! Thou art not welcome here, infidel!
+         SAY I cannot bear to look at thee! Change thy ways!
+      ENDDO
+         RETURN 1
+   ELSE
+      DORAND 3
+         SAY Greetings, <SRC.NAME>
+         SAY How art thou, <SRC.NAME>?
+         SAY Can I be of service to thee?
+      ENDDO
+         RETURN 1
+   ENDIF
+
+[SPEECH spk_chaos_greeting]
+ON=*hello*
+ON=*hi*
+ON=*lo*
+ON=*sup*
+ON=*yo*
+   IF ( <SRC.TAG.ALIGNMENT> = alignment_order )
+      DORAND 3
+         SAY I'll do away with ye if ye should step closer!
+         SAY Out with ye! I care not for those who follow false paths!
+         SAY Ye make me sick!
+      ENDDO
+         RETURN 1
+   ELSE
+      DORAND 3
+         SAY Hello, <SRC.NAME>
+         SAY How goes it, <SRC.NAME>?
+         SAY Anything I can do to help ye?
+      ENDDO
+         RETURN 1
+   ENDIF
+
+//********************************************************************//
+//                         ORDER-CHAOS EVENTS                         //
+//********************************************************************// 
+[EVENTS e_order_newplayer]
+ON=@Click
+     alignment_click
+
+ON=@NPCSeeNewPlayer
+   IF (<SRC.TAG.ALIGNMENT>==alignment_chaos)
+      ATTACK
+   ENDIF
+   RETURN 1
+
+[EVENTS e_chaos_newplayer]
+ON=@Click
+     alignment_click
+
+ON=@NPCSeeNewPlayer
+   IF (<SRC.TAG.ALIGNMENT>==alignment_order)
+      ATTACK
+   ENDIF
+   RETURN 1
+
+//********************************************************************//
+//                         MOUNTED ORDER NPCS                         //
+//********************************************************************// 
+[CHARDEF c_order_infantry_mounted]
+DEFNAME=c_order_infantry_mounted
+ID=C_MAN
+NAME=#NAMES_HUMANMALE
+
+CAN=MT_EQUIP|MT_RUN|MT_USEHANDS|MT_WALK
+
+DAM=30,70
+ARMOR=80
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_order_greeting
+
+
+
+ON=@Create
+   TITLE=A Town Guard of Order
+   COLOR=colors_skin
+   EVENTS +e_order_newplayer
+
+   STR= {350 400}
+   DEX= {80 110}
+   INT= {70 100}
+
+   FAME={3000 4000}
+   KARMA=0
+
+   DETECTION={90.0 100.0}
+   SWORDSMANSHIP={90.0 100.0}
+   MAGICRESISTANCE={90.0 100.0}
+   TACTICS={90.0 100.0}
+
+   FLAGS=<FLAGS>|statf_ridden
+
+   TAG.ALIGNMENT=alignment_order
+   TAG.ORDER.RANK=2
+   TAG.ALIGNMENT.SHOWTITLE=1
+
+   NPC=brain_human
+ 
+   ITEMNEWBIE=i_hair_long
+   COLOR=colors_hair
+   ITEMNEWBIE=random_facial_hair
+   COLOR=match_hair
+
+   ITEMNEWBIE=i_chainmail_tunic_agapite
+   ITEMNEWBIE=i_platemail_leggings_agapite
+   ITEMNEWBIE=i_platemail_gloves_agapite
+   ITEMNEWBIE=i_platemail_gorget_agapite
+   ITEMNEWBIE=i_platemail_arms_agapite
+   ITEMNEWBIE=i_halberd_blackrock
+   ITEMNEWBIE=i_CAPE
+   COLOR=0400
+
+   ITEMNEWBIE=i_mt_ostard_zostrich
+   COLOR=0400
+
+CATEGORY=Memory UO
+SUBSECTION=Order 
+DESCRIPTION=Mounted Infantry Guard
+
+//********************************************************************// 
+
+[CHARDEF c_order_knight_mounted]
+DEFNAME=c_order_knight_mounted
+ID=C_MAN
+NAME=#NAMES_HUMANMALE
+
+CAN=MT_EQUIP|MT_RUN|MT_USEHANDS|MT_WALK
+
+DAM=30,70
+ARMOR=80
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_order_greeting
+
+
+
+ON=@Create
+   TITLE=A Town Guard of Order
+   COLOR=colors_skin
+   EVENTS +e_order_newplayer
+      
+   STR= {350 400}
+   DEX= {80 110}
+   INT= {70 100}
+ 
+   FAME={3000 5000}
+   KARMA=0
+
+   DETECTION={90.0 100.0}
+   PARRYING={90.0 100.0}
+   SWORDSMANSHIP={90.0 100.0}
+   MAGICRESISTANCE={90.0 100.0}
+   TACTICS={90.0 100.0}
+
+   FLAGS=<FLAGS>|statf_ridden
+  
+   TAG.ALIGNMENT=alignment_order
+   TAG.ORDER.RANK=5
+   TAG.ALIGNMENT.SHOWTITLE=1
+
+   NPC=brain_human
+
+   ITEMNEWBIE=i_hair_long
+   COLOR=colors_hair
+   ITEMNEWBIE=random_facial_hair
+   COLOR=match_hair
+  
+   ITEMNEWBIE=i_chainmail_tunic_agapite
+   ITEMNEWBIE=i_platemail_leggings_agapite
+   ITEMNEWBIE=i_platemail_gloves_agapite
+   ITEMNEWBIE=i_platemail_gorget_agapite
+   ITEMNEWBIE=i_platemail_arms_agapite
+   ITEMNEWBIE=i_platemail_helm_agapite
+   ITEMNEWBIE=i_SHIELD_ORDER_2
+   ITEMNEWBIE=i_sword_great_blackrock
+   ITEMNEWBIE=i_robe
+   COLOR=0400
+
+   ITEMNEWBIE=i_mt_ostard_zostrich
+   COLOR=0400
+
+CATEGORY=Memory UO
+SUBSECTION=Order 
+DESCRIPTION=Mounted Knight Guard
+
+//********************************************************************// 
+
+[CHARDEF c_order_disciple_mounted]
+DEFNAME=c_order_disciple_mounted
+ID=C_MAN
+NAME=#NAMES_HUMANMALE
+
+CAN=MT_EQUIP|MT_RUN|MT_USEHANDS|MT_WALK
+
+DAM=30,70
+ARMOR=80
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_order_greeting
+
+
+
+ON=@Create
+   TITLE=A Town Guard of Order
+   COLOR=colors_skin
+   EVENTS +e_order_newplayer
+   
+   STR= {350 400}
+   DEX= {80 110}
+   INT= {70 100}
+
+   FAME={3000 5000}
+   KARMA=0
+
+   DETECTION={90.0 100.0}
+   PARRYING={90.0 100.0}
+   FENCING={90.0 100.0}
+   MAGICRESISTANCE={90.0 100.0}
+   TACTICS={90.0 100.0}
+   
+   FLAGS=<FLAGS>|statf_ridden
+ 
+   TAG.ALIGNMENT=alignment_order
+   TAG.ORDER.RANK=11
+   TAG.ALIGNMENT.SHOWTITLE=1
+ 
+   NPC=brain_human
+ 
+   ITEMNEWBIE=i_hair_long
+   COLOR=colors_hair
+   ITEMNEWBIE=random_facial_hair
+   COLOR=match_hair
+ 
+   ITEMNEWBIE=i_chainmail_tunic_agapite
+   ITEMNEWBIE=i_platemail_leggings_agapite
+   ITEMNEWBIE=i_platemail_gloves_agapite
+   ITEMNEWBIE=i_platemail_gorget_agapite
+   ITEMNEWBIE=i_platemail_arms_agapite
+   ITEMNEWBIE=i_SHIELD_ORDER_2
+   ITEMNEWBIE=i_kryss_blackrock
+   ITEMNEWBIE=i_robe_alignment_order
+ 
+   ITEMNEWBIE=i_mt_ostard_zostrich
+   COLOR=0400
+ 
+CATEGORY=Memory UO
+SUBSECTION=Order 
+DESCRIPTION=Mounted Disciple Guard
+
+//********************************************************************// 
+
+[CHARDEF c_femorder_maiden_mounted]
+DEFNAME=c_femorder_maiden_mounted
+ID=C_WOMAN
+NAME=#NAMES_HUMANFEMALE
+
+CAN=MT_EQUIP|MT_RUN|MT_USEHANDS|MT_WALK
+
+DAM=30,70
+ARMOR=80
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_order_greeting
+
+
+
+ON=@Create
+   TITLE=A Town Guard of Order
+   COLOR=colors_skin
+   EVENTS +e_order_newplayer
+   
+   STR= {350 400}
+   DEX= {80 110}
+   INT= {70 100}
+
+   FAME={3000 4000}
+   KARMA=0
+
+   DETECTION={90.0 100.0}
+   FENCING={90.0 100.0}
+   MAGICRESISTANCE={90.0 100.0}
+   TACTICS={90.0 100.0}
+
+   FLAGS=<FLAGS>|statf_ridden
+  
+   TAG.ALIGNMENT=alignment_order
+   TAG.ORDER.RANK=7
+   TAG.ALIGNMENT.SHOWTITLE=1
+
+   NPC=brain_human
+ 
+   ITEMNEWBIE=i_hair_long
+   COLOR=colors_hair
+
+   ITEMNEWBIE=i_armor_female_plate_agapite
+   ITEMNEWBIE=i_platemail_leggings_agapite
+   ITEMNEWBIE=i_platemail_gloves_agapite
+   ITEMNEWBIE=i_platemail_gorget_agapite
+   ITEMNEWBIE=i_platemail_arms_agapite
+   ITEMNEWBIE=i_spear_blackrock
+   ITEMNEWBIE=i_cape
+   COLOR=0400
+
+   ITEMNEWBIE=i_mt_ostard_zostrich
+   COLOR=0400
+
+CATEGORY=Memory UO
+SUBSECTION=Order 
+DESCRIPTION=Mounted Maiden Guard
+
+//********************************************************************//
+//                         MOUNTED CHAOS NPCS                         //
+//********************************************************************// 
+
+[CHARDEF c_chaos_infantry_mounted]
+DEFNAME=c_chaos_infantry_mounted
+ID=C_MAN
+NAME=#NAMES_HUMANMALE
+CAN=MT_EQUIP|MT_RUN|MT_USEHANDS|MT_WALK
+
+DAM=30,70
+ARMOR=80
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_chaos_greeting
+
+
+ON=@Create
+   TITLE=A Town Guard of Chaos
+   COLOR=colors_skin
+   EVENTS +e_chaos_newplayer
+   
+   NPC=brain_human
+
+   STR= {350 400}
+   DEX= {80 110}
+   INT= {70 100}
+
+   FAME={3000 4000}
+   KARMA=0
+   KILLS=11
+
+   DETECTION={90.0 100.0}
+   SWORDSMANSHIP={90.0 100.0}
+   MAGICRESISTANCE={90.0 100.0}
+   TACTICS={90.0 100.0}
+ 
+   FLAGS=<FLAGS>|statf_ridden  
+
+   TAG.ALIGNMENT=alignment_chaos
+   TAG.CHAOS.RANK=2
+   TAG.ALIGNMENT.SHOWTITLE=1
+
+   ITEMNEWBIE=i_hair_long
+   COLOR=colors_hair
+   ITEMNEWBIE=random_facial_hair
+   COLOR=match_hair
+
+   ITEMNEWBIE=i_chainmail_tunic_shadow
+   ITEMNEWBIE=i_platemail_leggings_shadow
+   ITEMNEWBIE=i_platemail_gloves_shadow
+   ITEMNEWBIE=i_platemail_gorget_shadow
+   ITEMNEWBIE=i_platemail_arms_shadow
+   ITEMNEWBIE=i_halberd_blackrock
+   ITEMNEWBIE=i_CAPE
+   COLOR=0770
+ 
+   ITEMNEWBIE=i_mt_ostard_zostrich
+   COLOR=0770
+
+CATEGORY=Memory UO
+SUBSECTION=Chaos
+DESCRIPTION=Mounted Infantry Guard
+
+//********************************************************************// 
+
+[CHARDEF c_chaos_knight_mounted]
+DEFNAME=c_chaos_knight_mounted
+ID=C_MAN
+NAME=#NAMES_HUMANMALE
+
+CAN=MT_EQUIP|MT_RUN|MT_USEHANDS|MT_WALK
+
+DAM=30,70
+ARMOR=80
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_chaos_greeting
+
+
+
+
+ON=@Create
+   TITLE=A Town Guard of Chaos
+   COLOR=colors_skin
+   EVENTS +e_chaos_newplayer
+    
+   STR= {350 400}
+   DEX= {80 110}
+   INT= {70 100}
+
+   FAME={3000 5000}
+   KARMA=0
+   KILLS=11
+
+   DETECTION={90.0 100.0}
+   PARRYING={90.0 100.0}
+   SWORDSMANSHIP={90.0 100.0}
+   MAGICRESISTANCE={90.0 100.0}
+   TACTICS={90.0 100.0}
+
+   FLAGS=<FLAGS>|statf_ridden
+
+   TAG.ALIGNMENT=alignment_chaos
+   TAG.CHAOS.RANK=5
+   TAG.ALIGNMENT.SHOWTITLE=1
+
+   NPC=brain_human
+ 
+   ITEMNEWBIE=i_hair_long
+   COLOR=colors_hair
+   ITEMNEWBIE=random_facial_hair
+   COLOR=match_hair
+
+   ITEMNEWBIE=i_chainmail_tunic_shadow
+   ITEMNEWBIE=i_platemail_leggings_shadow
+   ITEMNEWBIE=i_platemail_gloves_shadow
+   ITEMNEWBIE=i_platemail_gorget_shadow
+   ITEMNEWBIE=i_platemail_arms_shadow
+   ITEMNEWBIE=i_platemail_helm_shadow
+   ITEMNEWBIE=i_shield_chaos_2
+   ITEMNEWBIE=i_sword_great_blackrock
+   ITEMNEWBIE=i_robe
+   COLOR=0770
+
+   ITEMNEWBIE=i_mt_ostard_zostrich
+   COLOR=0770
+
+CATEGORY=Memory UO
+SUBSECTION=Chaos
+DESCRIPTION=Mounted Knight Guard
+
+//********************************************************************// 
+
+[CHARDEF c_chaos_disciple_mounted]
+DEFNAME=c_chaos_disciple_mounted
+ID=C_MAN
+NAME=#NAMES_HUMANMALE
+
+CAN=MT_EQUIP|MT_RUN|MT_USEHANDS|MT_WALK
+
+DAM=30,70
+ARMOR=80
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_chaos_greeting
+
+
+
+ON=@Create
+   TITLE=A Town Guard of Chaos
+   COLOR=colors_skin
+   EVENTS +e_chaos_newplayer
+   
+   STR= {350 400}
+   DEX= {80 110}
+   INT= {70 100}
+
+   FAME={3000 5000}
+   KARMA=0
+   KILLS=11
+
+   DETECTION={90.0 100.0}
+   PARRYING={90.0 100.0}
+   FENCING={90.0 100.0}
+   MAGICRESISTANCE={90.0 100.0}
+   TACTICS={90.0 100.0}
+
+   FLAGS=<FLAGS>|statf_ridden
+  
+   TAG.ALIGNMENT=alignment_chaos
+   TAG.CHAOS.RANK=11
+   TAG.ALIGNMENT.SHOWTITLE=1
+
+   NPC=brain_human
+
+   ITEMNEWBIE=i_hair_long
+   COLOR=colors_hair
+   ITEMNEWBIE=random_facial_hair
+   COLOR=match_hair
+
+   ITEMNEWBIE=i_chainmail_tunic_shadow
+   ITEMNEWBIE=i_platemail_leggings_shadow
+   ITEMNEWBIE=i_platemail_gloves_shadow
+   ITEMNEWBIE=i_platemail_gorget_shadow
+   ITEMNEWBIE=i_platemail_arms_shadow
+   ITEMNEWBIE=i_shield_chaos_2
+   ITEMNEWBIE=i_kryss_blackrock
+   ITEMNEWBIE=i_robe_alignment_chaos
+   COLOR=0770
+
+   ITEMNEWBIE=i_mt_ostard_zostrich
+   COLOR=0770
+
+CATEGORY=Memory UO
+SUBSECTION=Chaos 
+DESCRIPTION=Mounted Disciple Guard
+
+//********************************************************************//
+
+[CHARDEF c_femchaos_banshee_mounted]
+DEFNAME=c_femchaos_banshee_mounted
+ID=C_WOMAN
+NAME=#NAMES_HUMANFEMALE
+
+CAN=MT_EQUIP|MT_RUN|MT_USEHANDS|MT_WALK
+
+DAM=30,70
+ARMOR=80
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_chaos_greeting
+
+
+
+ON=@Create
+   TITLE=A Town Guard of Chaos
+   COLOR=colors_skin
+   EVENTS +e_chaos_newplayer
+   
+   STR= {350 400}
+   DEX= {80 110}
+   INT= {70 100}
+
+   FAME={3000 4000}
+   KARMA=0
+   KILLS=11
+
+   DETECTION={90.0 100.0}
+   FENCING={90.0 100.0}
+   MAGICRESISTANCE={90.0 100.0}
+   TACTICS={90.0 100.0}
+
+   FLAGS=<FLAGS>|statf_ridden
+ 
+   TAG.ALIGNMENT=alignment_chaos
+   TAG.CHAOS.RANK=7
+   TAG.ALIGNMENT.SHOWTITLE=1
+ 
+   NPC=brain_human
+ 
+   ITEMNEWBIE=i_hair_long
+   COLOR=colors_hair
+
+   ITEMNEWBIE=i_armor_female_plate_shadow
+   ITEMNEWBIE=i_platemail_leggings_shadow
+   ITEMNEWBIE=i_platemail_gloves_shadow
+   ITEMNEWBIE=i_platemail_gorget_shadow
+   ITEMNEWBIE=i_platemail_arms_shadow
+   ITEMNEWBIE=i_spear_blackrock
+   ITEMNEWBIE=i_cape
+   COLOR=0770
+
+   ITEMNEWBIE=i_mt_ostard_zostrich
+   COLOR=0770
+
+CATEGORY=Memory UO
+SUBSECTION=Chaos
+DESCRIPTION=Mounted Banshee Guard
+
+//********************************************************************//
+//                       UNMOUNTED ORDER NPCS                         //
+//********************************************************************// 
+
+[CHARDEF c_order_infantry]
+DEFNAME=c_order_infantry
+ID=C_MAN
+NAME=#NAMES_HUMANMALE
+
+CAN=MT_EQUIP|MT_RUN|MT_USEHANDS|MT_WALK
+
+DAM=30,70
+ARMOR=80
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_order_greeting
+
+
+
+ON=@Create
+   TITLE=A Town Guard of Order
+   COLOR=colors_skin
+   EVENTS +e_order_newplayer
+   
+   STR= {350 400}
+   DEX= {80 110}
+   INT= {70 100}
+
+   FAME={3000 4000}
+   KARMA=0
+
+   DETECTION={90.0 100.0}
+   SWORDSMANSHIP={90.0 100.0}
+   MAGICRESISTANCE={90.0 100.0}
+   TACTICS={90.0 100.0}
+
+   TAG.ALIGNMENT=alignment_order
+   TAG.ORDER.RANK=2
+   TAG.ALIGNMENT.SHOWTITLE=1
+
+   NPC=brain_human
+
+   ITEMNEWBIE=i_hair_long
+   COLOR=colors_hair
+   ITEMNEWBIE=random_facial_hair
+   COLOR=match_hair
+
+   ITEMNEWBIE=i_chainmail_tunic_agapite
+   ITEMNEWBIE=i_platemail_leggings_agapite
+   ITEMNEWBIE=i_platemail_gloves_agapite
+   ITEMNEWBIE=i_platemail_gorget_agapite
+   ITEMNEWBIE=i_platemail_arms_agapite
+   ITEMNEWBIE=i_halberd_blackrock
+   ITEMNEWBIE=i_CAPE
+   COLOR=0400
+
+CATEGORY=Memory UO
+SUBSECTION=Order 
+DESCRIPTION=Infantry Guard
+
+//********************************************************************// 
+
+[CHARDEF c_order_knight]
+DEFNAME=c_order_knight
+ID=C_MAN
+NAME=#NAMES_HUMANMALE
+
+CAN=MT_EQUIP|MT_RUN|MT_USEHANDS|MT_WALK
+
+DAM=30,70
+ARMOR=80
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_order_greeting
+
+
+
+ON=@Create
+   TITLE=A Town Guard of Order
+   COLOR=colors_skin
+   EVENTS +e_order_newplayer
+   
+   STR= {350 400}
+   DEX= {80 110}
+   INT= {70 100}
+
+   FAME={3000 5000}
+   KARMA=0
+
+   DETECTION={90.0 100.0}
+   PARRYING={90.0 100.0}
+   SWORDSMANSHIP={90.0 100.0}
+   MAGICRESISTANCE={90.0 100.0}
+   TACTICS={90.0 100.0}
+
+   TAG.ALIGNMENT=alignment_order
+   TAG.ORDER.RANK=5
+   TAG.ALIGNMENT.SHOWTITLE=1
+
+   NPC=brain_human
+
+   ITEMNEWBIE=i_hair_long
+   COLOR=colors_hair
+   ITEMNEWBIE=random_facial_hair
+   COLOR=match_hair
+
+   ITEMNEWBIE=i_chainmail_tunic_agapite
+   ITEMNEWBIE=i_platemail_leggings_agapite
+   ITEMNEWBIE=i_platemail_gloves_agapite
+   ITEMNEWBIE=i_platemail_gorget_agapite
+   ITEMNEWBIE=i_platemail_arms_agapite
+   ITEMNEWBIE=i_platemail_helm_agapite
+   ITEMNEWBIE=i_SHIELD_ORDER_2
+   ITEMNEWBIE=i_sword_great_blackrock
+   ITEMNEWBIE=i_robe
+   COLOR=0400
+
+CATEGORY=Memory UO
+SUBSECTION=Order 
+DESCRIPTION=Knight Guard
+
+//********************************************************************// 
+[CHARDEF c_order_disciple]
+DEFNAME=c_order_disciple
+ID=C_MAN
+NAME=#NAMES_HUMANMALE
+
+CAN=MT_EQUIP|MT_RUN|MT_USEHANDS|MT_WALK
+
+DAM=30,70
+ARMOR=80
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_order_greeting
+
+
+
+ON=@Create
+   TITLE=A Town Guard of Order
+   COLOR=colors_skin
+   EVENTS +e_order_newplayer
+   
+   STR= {350 400}
+   DEX= {80 110}
+   INT= {70 100}
+
+   FAME={3000 5000}
+   KARMA=0
+
+   DETECTION={90.0 100.0}
+   PARRYING={90.0 100.0}
+   FENCING={90.0 100.0}
+   MAGICRESISTANCE={90.0 100.0}
+   TACTICS={90.0 100.0}
+
+   TAG.ALIGNMENT=alignment_order
+   TAG.ORDER.RANK=11
+   TAG.ALIGNMENT.SHOWTITLE=1
+
+   NPC=brain_human
+ 
+   ITEMNEWBIE=i_hair_long
+   COLOR=colors_hair
+   ITEMNEWBIE=random_facial_hair
+   COLOR=match_hair
+
+   ITEMNEWBIE=i_chainmail_tunic_agapite
+   ITEMNEWBIE=i_platemail_leggings_agapite
+   ITEMNEWBIE=i_platemail_gloves_agapite
+   ITEMNEWBIE=i_platemail_gorget_agapite
+   ITEMNEWBIE=i_platemail_arms_agapite
+   ITEMNEWBIE=i_SHIELD_ORDER_2
+   ITEMNEWBIE=i_kryss_blackrock
+   ITEMNEWBIE=i_robe_alignment_order
+   COLOR=0400
+
+CATEGORY=Memory UO
+SUBSECTION=Order 
+DESCRIPTION=Disciple Guard
+
+//********************************************************************//
+
+[CHARDEF c_femorder_maiden]
+DEFNAME=c_femorder_maiden
+ID=C_WOMAN
+NAME=#NAMES_HUMANFEMALE
+
+CAN=MT_EQUIP|MT_RUN|MT_USEHANDS|MT_WALK
+
+DAM=30,70
+ARMOR=80
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_order_greeting
+
+
+
+ON=@Create
+   TITLE=A Town Guard of Order
+   COLOR=colors_skin
+   EVENTS +e_order_newplayer
+   
+   STR= {350 400}
+   DEX= {80 110}
+   INT= {70 100}
+
+   FAME={3000 4000}
+   KARMA=0
+
+   DETECTION={90.0 100.0}
+   FENCING={90.0 100.0}
+   MAGICRESISTANCE={90.0 100.0}
+   TACTICS={90.0 100.0}
+
+   TAG.ALIGNMENT=alignment_order
+   TAG.ORDER.RANK=7
+   TAG.ALIGNMENT.SHOWTITLE=1
+
+   NPC=brain_human
+
+   ITEMNEWBIE=i_hair_long
+   COLOR=colors_hair
+
+   ITEMNEWBIE=i_armor_female_plate_agapite
+   ITEMNEWBIE=i_platemail_leggings_agapite
+   ITEMNEWBIE=i_platemail_gloves_agapite
+   ITEMNEWBIE=i_platemail_gorget_agapite
+   ITEMNEWBIE=i_platemail_arms_agapite
+   ITEMNEWBIE=i_spear_blackrock
+   ITEMNEWBIE=i_cape
+   COLOR=0400
+
+CATEGORY=Memory UO
+SUBSECTION=Order 
+DESCRIPTION=Maiden Guard
+
+//********************************************************************//
+//                       UNMOUNTED CHAOS NPCS                         //
+//********************************************************************// 
+
+[CHARDEF c_chaos_infantry]
+DEFNAME=c_chaos_infantry
+ID=C_MAN
+NAME=#NAMES_HUMANMALE
+
+CAN=MT_EQUIP|MT_RUN|MT_USEHANDS|MT_WALK
+
+DAM=30,70
+ARMOR=80
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_chaos_greeting
+
+
+
+ON=@Create
+   TITLE=A Town Guard of Chaos
+   COLOR=colors_skin
+   EVENTS +e_chaos_newplayer
+   
+   STR= {350 400}
+   DEX= {80 110}
+   INT= {70 100}
+
+   FAME={3000 4000}
+   KARMA=0
+   KILLS=11
+
+   DETECTION={90.0 100.0}
+   SWORDSMANSHIP={90.0 100.0}
+   MAGICRESISTANCE={90.0 100.0}
+   TACTICS={90.0 100.0}
+
+   TAG.ALIGNMENT=alignment_chaos
+   TAG.CHAOS.RANK=2
+   TAG.ALIGNMENT.SHOWTITLE=1
+
+   NPC=brain_human
+
+   ITEMNEWBIE=i_hair_long
+   COLOR=colors_hair
+   ITEMNEWBIE=random_facial_hair
+   COLOR=match_hair
+
+   ITEMNEWBIE=i_chainmail_tunic_shadow
+   ITEMNEWBIE=i_platemail_leggings_shadow
+   ITEMNEWBIE=i_platemail_gloves_shadow
+   ITEMNEWBIE=i_platemail_gorget_shadow
+   ITEMNEWBIE=i_platemail_arms_shadow
+   ITEMNEWBIE=i_halberd_blackrock
+   ITEMNEWBIE=i_CAPE
+   COLOR=0770
+   
+CATEGORY=Memory UO
+SUBSECTION=Chaos
+DESCRIPTION=Infantry Guard
+
+//********************************************************************// 
+
+[CHARDEF c_chaos_knight]
+DEFNAME=c_chaos_knight
+ID=C_MAN
+NAME=#NAMES_HUMANMALE
+
+CAN=MT_EQUIP|MT_RUN|MT_USEHANDS|MT_WALK
+
+DAM=30,70
+ARMOR=80
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_chaos_greeting
+
+
+
+ON=@Create
+   TITLE=A Town Guard of Chaos
+   COLOR=colors_skin
+   EVENTS +e_chaos_newplayer
+   
+   STR= {350 400}
+   DEX= {80 110}
+   INT= {70 100}
+
+   FAME={3000 5000}
+   KARMA=0
+   KILLS=11
+
+   DETECTION={90.0 100.0}
+   PARRYING={90.0 100.0}
+   SWORDSMANSHIP={90.0 100.0}
+   MAGICRESISTANCE={90.0 100.0}
+   TACTICS={90.0 100.0}
+
+   TAG.ALIGNMENT=alignment_chaos
+   TAG.CHAOS.RANK=5
+   TAG.ALIGNMENT.SHOWTITLE=1
+  
+   NPC=brain_human
+
+   ITEMNEWBIE=i_hair_long
+   COLOR=colors_hair
+   ITEMNEWBIE=random_facial_hair
+   COLOR=match_hair
+
+   ITEMNEWBIE=i_chainmail_tunic_shadow
+   ITEMNEWBIE=i_platemail_leggings_shadow
+   ITEMNEWBIE=i_platemail_gloves_shadow
+   ITEMNEWBIE=i_platemail_gorget_shadow
+   ITEMNEWBIE=i_platemail_arms_shadow
+   ITEMNEWBIE=i_platemail_helm_shadow
+   ITEMNEWBIE=i_shield_chaos_2
+   ITEMNEWBIE=i_sword_great_blackrock
+   ITEMNEWBIE=i_robe
+   COLOR=0770
+
+CATEGORY=Memory UO
+SUBSECTION=Chaos
+DESCRIPTION=Knight Guard
+
+//********************************************************************// 
+
+[CHARDEF c_chaos_disciple]
+DEFNAME=c_chaos_disciple
+ID=C_MAN
+NAME=#NAMES_HUMANMALE
+
+CAN=MT_EQUIP|MT_RUN|MT_USEHANDS|MT_WALK
+
+DAM=30,70
+ARMOR=80
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_chaos_greeting
+
+
+
+ON=@Create
+   TITLE=A Town Guard of Chaos
+   COLOR=colors_skin
+   EVENTS +e_chaos_newplayer
+   
+   STR= {350 400}
+   DEX= {80 110}
+   INT= {70 100}
+
+   FAME={3000 5000}
+   KARMA=0
+   KILLS=11
+
+   DETECTION={90.0 100.0}
+   PARRYING={90.0 100.0}
+   FENCING={90.0 100.0}
+   MAGICRESISTANCE={90.0 100.0}
+   TACTICS={90.0 100.0}
+
+   TAG.ALIGNMENT=alignment_chaos
+   TAG.CHAOS.RANK=11
+   TAG.ALIGNMENT.SHOWTITLE=1
+
+   NPC=brain_human
+  
+   ITEMNEWBIE=i_hair_long
+   COLOR=colors_hair
+   ITEMNEWBIE=random_facial_hair
+   COLOR=match_hair
+
+   ITEMNEWBIE=i_chainmail_tunic_shadow
+   ITEMNEWBIE=i_platemail_leggings_shadow
+   ITEMNEWBIE=i_platemail_gloves_shadow
+   ITEMNEWBIE=i_platemail_gorget_shadow
+   ITEMNEWBIE=i_platemail_arms_shadow
+   ITEMNEWBIE=i_shield_chaos_2
+   ITEMNEWBIE=i_kryss_blackrock
+   ITEMNEWBIE=i_robe_alignment_chaos
+   COLOR=0770
+
+CATEGORY=Memory UO
+SUBSECTION=Chaos 
+DESCRIPTION=Chaos Disciple Guard
+
+//********************************************************************//
+[CHARDEF c_femchaos_banshee]
+DEFNAME=c_femchaos_banshee
+ID=C_WOMAN
+NAME=#NAMES_HUMANFEMALE
+
+CAN=MT_EQUIP|MT_RUN|MT_USEHANDS|MT_WALK
+
+DAM=30,70
+ARMOR=80
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_chaos_greeting
+
+
+
+ON=@Create
+   TITLE=A Town Guard of Chaos
+   COLOR=colors_skin
+   EVENTS +e_chaos_newplayer
+   
+   STR= {350 400}
+   DEX= {80 110}
+   INT= {70 100}
+
+   FAME={3000 4000}
+   KARMA=0
+   KILLS=11
+
+   DETECTION={90.0 100.0}
+   FENCING={90.0 100.0}
+   MAGICRESISTANCE={90.0 100.0}
+   TACTICS={90.0 100.0}
+
+   TAG.ALIGNMENT=alignment_chaos
+   TAG.CHAOS.RANK=7
+   TAG.ALIGNMENT.SHOWTITLE=1
+
+   NPC=brain_human
+ 
+   ITEMNEWBIE=i_hair_long
+   COLOR=colors_hair
+ 
+   ITEMNEWBIE=i_armor_female_plate_shadow
+   ITEMNEWBIE=i_platemail_leggings_shadow
+   ITEMNEWBIE=i_platemail_gloves_shadow
+   ITEMNEWBIE=i_platemail_gorget_shadow
+   ITEMNEWBIE=i_platemail_arms_shadow
+   ITEMNEWBIE=i_spear_blackrock
+   ITEMNEWBIE=i_cape
+   COLOR=0770
+
+CATEGORY=Memory UO
+SUBSECTION=Chaos
+DESCRIPTION=Banshee Guard
+
+[EOF]

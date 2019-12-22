@@ -1,0 +1,463 @@
+[SPEECH spk_trainer]
+ON=lesson *
+	if ( <NPC> >= brain_human && <NPC> <= brain_thief )
+	   f_train_lesson <args>
+	   return 1	// process no more.
+	endif
+	return 0	// process more.
+
+ON=lesson*
+	if ( <NPC> >= brain_human && <NPC> <= brain_thief )
+	   SAY A lesson? About which skill?
+	   return 1	// process no more.
+	endif
+	return 0	// process more.
+	      
+ON=cost *
+	// Can they teach skills ?
+	if ( <NPC> >= brain_human && <NPC> <= brain_thief )
+	   f_train_cost <args>
+	   return 1	// process no more.
+	endif
+	return 0	// process more.
+
+ON=cost*
+	if ( <NPC> >= brain_human && <NPC> <= brain_thief )
+	   SAY Cost? For what?
+	   return 1	// process no more.
+	endif
+	return 0	// process more.
+
+ON=*train*
+ON=*teach*
+	// Can they teach skills ?
+	if ( <NPC> >= brain_human && <NPC> <= brain_thief )
+	   f_train <args>
+	   return 1	// process no more.
+	endif
+	return 0	// process more.
+
+
+[FUNCTION f_TRAIN]
+  if ( !strcmpi( "<args>", "TRAIN" ) || !strcmpi( "<args>", "TEACH" ) )
+     f_train_show
+     return 0
+  endif  
+  SAY For the cost of a lesson on a given skill, say 'cost (skill)'. To receive a lesson, say 'lesson (skill)', and I'll charge you accordingly.
+
+
+
+   
+[FUNCTION f_train_common]
+  VAR.LEARN	= 0
+  if ( 0<SRC.TAG.SKILL.LASTTRAIN> == 0 )
+     SRC.TAG.SKILL.LASTTRAIN	= 0
+  endif
+
+  if ( !strcmp( "<args>", "skill" ) )
+     SAY You must ask me about a specific skill!
+     return 0
+  endif
+  
+  SKILL_NUM <args>
+
+  // unknown skill
+  if ( <var.skill_num> == -1 )
+     SAY That's not any skill that I've heard of.
+     return 1
+  endif
+  
+  
+//  if ( <var.skill_num> == 30)
+//    SAY I cannot teach you that skill! It is illegal!
+//    SERV.LOG <SRC.NAME> : <SRC.ACCOUNT> : <SRC.UID> is trying to learn Poisoning from NPC <UID>
+//   RETURN 1
+//  ENDIF
+  
+//  if ( <var.skill_num> == 01E)
+//    SAY I cannot teach you that skill! It is illegal!
+//    SERV.LOG <SRC.NAME> : <SRC.ACCOUNT> : <SRC.UID> is trying to learn Poisoning from NPC <UID>
+//    RETURN 1
+//  ENDIF
+  
+  VAR.SKILL	= <eval <var.skill_num>>
+
+  VAR.MAX		= <eval ((<<VAR.SKILL>> * 150)/100)> //<eval ((<<VAR.SKILL>> * <serv.NPCTRAINPERCENT>)/100)>
+  if ( <VAR.MAX> > <VAR.train_percent> )
+     VAR.MAX	= <VAR.train_percent>
+  endif
+
+  if ( <SRC.<var.skill>> >= <VAR.MAX> )
+     SAY There's nothing you can learn from me about that.
+     return 1
+  endif
+  
+  VAR.LEARN	= <eval (<VAR.MAX> - <SRC.<VAR.SKILL>>)>
+  if ( <VAR.LEARN> > 60 )
+     VAR.LEARN	= 60
+  endif
+  VAR.COST	= <eval ( 100 + ((<src.<var.skill>>/45) * (<src.<var.skill>>/45) * <var.learn> * <VAR.skill_cost_mult> )/110) )>
+
+
+[FUNCTION f_train_cost]
+  if ( <SRC.SKILLTOTAL> >= 1000.0 )
+     SAY There is nothing I could teach you.
+     return 1
+  endif
+
+  VAR.SKILL_NUM_PREFIX	= cost
+  f_train_common <args>
+  if ( <VAR.LEARN> == 0 )
+     return 1
+  endif
+  SAY The cost for such a lesson would be <eval <var.cost>>gp.
+
+
+[FUNCTION f_train_lesson]
+  
+  VAR.SKILL_NUM_PREFIX	= lesson
+  f_train_common <args>
+  if ( <VAR.LEARN> == 0 )
+     return 1
+  endif
+
+  if ( <SRC.SKILLTOTAL> >= 1000.0 )
+     SAY There is nothing I could teach you.
+     return 1
+  endif
+
+  if ( <eval ( <SERV.TIME> - <SRC.TAG.SKILL.LASTTRAIN> )> < time_k_lesson )
+     SAY You seem tired. Take some time to reflect on what you've learned so far and then come back.
+     return 1
+  endif
+
+  if ( <VAR.LEARN> > 40 )
+    VAR.LEARN	= <eval ( <var.learn> - rand(20) )>
+  endif
+
+  if ( !<src.restest <var.cost> i_gold> )
+     SAY You don't seem to have that sort of money...
+     return 1
+  endif
+
+  VAR.PREV_SKILL	= <<VAR.SKILL>>
+  SRC.TRY SRC.<VAR.SKILL>	= <eval (<SRC.<VAR.SKILL>> + <VAR.LEARN>)>
+  if ( <VAR.PREV_SKILL> == <SRC.<VAR.SKILL>> )
+     src.message *you learn nothing*
+     return 1
+  endif
+
+  src.CONSUME <var.cost> i_gold
+  SRC.UPDATE
+
+  SRC.TAG.SKILL.LASTTRAIN	= <SERV.TIME>
+
+  SRC.MESSAGE *you listen carefully*
+  DORAND 2
+     SAY Let me show you something more about it...
+     SAY I hope you managed to learn something...
+  ENDDO
+
+  
+
+// well, might as well take the chance to place the max to learn here
+[FUNCTION SKILL_NUM]
+VAR.skill_num	= -1
+if ( 0 )
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> Alchemy" ) )
+   VAR.skill_num	= 0
+   VAR.train_percent	= 500
+   VAR.skill_cost_mult	= 150
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> Assessment" ) )
+   VAR.skill_num	= 1
+   VAR.train_percent	= 650
+   VAR.skill_cost_mult	=  90
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> Creature lore" ) )
+   VAR.skill_num	= 2
+   VAR.train_percent	= 650
+   VAR.skill_cost_mult	=  90
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> Item lore" ) )
+   VAR.skill_num	= 3
+   VAR.train_percent	= 650
+   VAR.skill_cost_mult	=  90
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> Arms lore" ) )
+   VAR.skill_num	= 4
+   VAR.train_percent	= 650
+   VAR.skill_cost_mult	=  90
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> Shieldfighting" ) )
+   VAR.skill_num	= 5
+   VAR.train_percent	= 500
+   VAR.skill_cost_mult	= 120
+//elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> Begging" ) )
+   //VAR.skill_num	= 6
+   //VAR.train_percent	= 500
+   //VAR.skill_cost_mult	= 100
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> Blacksmithing" ) )
+   VAR.skill_num	= 7
+   VAR.train_percent	= 500
+   VAR.skill_cost_mult	= 120
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> Bowery" ) )
+   VAR.skill_num	= 8
+   VAR.train_percent	= 500
+   VAR.skill_cost_mult	= 120
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> Peacemaking" ) )
+   VAR.skill_num	= 9
+   VAR.train_percent	= 500
+   VAR.skill_cost_mult	= 120
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> Camping" ) )
+   VAR.skill_num	= 10
+   VAR.train_percent	= 500
+   VAR.skill_cost_mult	=  80
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> Carpentry" ) )
+   VAR.skill_num	= 11
+   VAR.train_percent	= 500
+   VAR.skill_cost_mult	= 120
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> Cartography" ) )
+   VAR.skill_num	= 12
+   VAR.train_percent	= 500
+   VAR.skill_cost_mult	= 100
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> Cooking" ) )
+   VAR.skill_num	= 13
+   VAR.train_percent	= 500
+   VAR.skill_cost_mult	=  80
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> Detection" ) )
+   VAR.skill_num	= 14
+   VAR.train_percent	= 500
+   VAR.skill_cost_mult	= 100
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> Enticement" ) )
+   VAR.skill_num	= 15
+   VAR.train_percent	= 500
+   VAR.skill_cost_mult	= 100
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> Mystic lore" ) )
+   VAR.skill_num	= 16
+   VAR.train_percent	= 650
+   VAR.skill_cost_mult	= 120
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> Healing" ) )
+   VAR.skill_num	= 17
+   VAR.train_percent	= 500
+   VAR.skill_cost_mult	= 100
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> Fishing" ) )
+   VAR.skill_num	= 18
+   VAR.train_percent	= 500
+   VAR.skill_cost_mult	=  80
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> Netherlore" ) )
+   VAR.skill_num	= 19
+   VAR.train_percent	= 500
+   VAR.skill_cost_mult	= 100
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> Farming" ) )
+   VAR.skill_num	= 20
+   VAR.train_percent	= 500
+   VAR.skill_cost_mult	= 100
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> Hiding" ) )
+   VAR.skill_num	= 21
+   VAR.train_percent	= 500
+   VAR.skill_cost_mult	= 100
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> Songs of War" ) )
+   VAR.skill_num	= 22
+   VAR.train_percent	= 500
+   VAR.skill_cost_mult	= 100
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> Inscription" ) )
+   VAR.skill_num	= 23
+   VAR.train_percent	= 500
+   VAR.skill_cost_mult	= 100
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> Lock Picking" ) )
+   VAR.skill_num	= 24
+   VAR.train_percent	= 500
+   VAR.skill_cost_mult	= 100
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> Magery" ) )
+   VAR.skill_num	= 25
+   VAR.train_percent	= 500
+   VAR.skill_cost_mult	= 200
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> Resist Magic" ) )
+   VAR.skill_num	= 26
+   VAR.train_percent	= 500
+   VAR.skill_cost_mult	= 200
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> Tactics" ) )
+   VAR.skill_num	= 27
+   VAR.train_percent	= 500
+   VAR.skill_cost_mult	= 200
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> Snooping" ) )
+   VAR.skill_num	= 28
+   VAR.train_percent	= 500
+   VAR.skill_cost_mult	= 100
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> Musicianship" ) )
+   VAR.skill_num	= 29
+   VAR.train_percent	= 500
+   VAR.skill_cost_mult	= 100
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> Poisoning" ) )
+   VAR.skill_num	= 30
+   VAR.train_percent	= 500
+   VAR.skill_cost_mult	= 100
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> Archery" ) )
+   VAR.skill_num	= 31
+   VAR.train_percent	= 500
+   VAR.skill_cost_mult	= 200
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> Necromancy" ) )
+   VAR.skill_num	= 32
+   VAR.train_percent	= 500
+   VAR.skill_cost_mult	= 200
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> Stealing" ) )
+   VAR.skill_num	= 33
+   VAR.train_percent	= 500
+   VAR.skill_cost_mult	= 100
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> Tailoring" ) )
+   VAR.skill_num	= 34
+   VAR.train_percent	= 500
+   VAR.skill_cost_mult	= 100
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> Taming" ) )
+   VAR.skill_num	= 35
+   VAR.train_percent	= 500
+   VAR.skill_cost_mult	= 130
+//elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> TasteId" ) )
+   //VAR.skill_num	= 36
+   //VAR.train_percent	= 650
+   //VAR.skill_cost_mult	= 100
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> Tinkering" ) )
+   VAR.skill_num	= 37
+   VAR.train_percent	= 500
+   VAR.skill_cost_mult	= 100
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> Tracking" ) )
+   VAR.skill_num	= 38
+   VAR.train_percent	= 500
+   VAR.skill_cost_mult	= 100
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> Masonry" ) )
+   VAR.skill_num	= 39
+   VAR.train_percent	= 500
+   VAR.skill_cost_mult	= 150
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> Swordsmanship" ) )
+   VAR.skill_num	= 40
+   VAR.train_percent	= 500
+   VAR.skill_cost_mult	= 150
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> MaceFighting" ) )
+   VAR.skill_num	= 41
+   VAR.train_percent	= 500
+   VAR.skill_cost_mult	= 150
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> Fencing" ) )
+   VAR.skill_num	= 42
+   VAR.train_percent	= 500
+   VAR.skill_cost_mult	= 150
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> Wrestling" ) )
+   VAR.skill_num	= 43
+   VAR.train_percent	= 500
+   VAR.skill_cost_mult	= 150
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> Lumberjacking" ) )
+   VAR.skill_num	= 44
+   VAR.train_percent	= 500
+   VAR.skill_cost_mult	=  80
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> Mining" ) )
+   VAR.skill_num	= 45
+   VAR.train_percent	= 500
+   VAR.skill_cost_mult	= 100
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> Meditation" ) )
+   VAR.skill_num	= 46
+   VAR.train_percent	= 500
+   VAR.skill_cost_mult	= 100
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> Stealth" ) )
+   VAR.skill_num	= 47
+   VAR.train_percent	= 500
+   VAR.skill_cost_mult	= 100
+//elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> RemoveTrap" ) )
+   //VAR.skill_num	= 48
+   //VAR.train_percent	= 500
+   //VAR.skill_cost_mult	= 130
+//elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX> Unused" ) )
+//   VAR.skill_num	= 49
+//   VAR.train_percent	= 500
+//   VAR.skill_cost_mult	= 100
+else
+   VAR.skill_num	= -1
+   VAR.train_percent	= 0
+   VAR.skill_cost_mult	= 100
+endif
+VAR.skill_num_prefix	=
+
+
+[FUNCTION f_train_add]
+  VAR.skill_cur	= <eval (<VAR.skill_cur>+1)>
+  if ( !strcmp( "<args>", "" ) )
+     return 0
+  endif
+  if ( <<var.skill_cur>> < 35.0 )
+     return 0
+  endif
+
+  VAR.SKILL_NUM_PREFIX = "train"
+  SKILL_NUM "train <args>"
+
+  VAR.MAX		= <eval ((<<VAR.SKILL_cur>> * 150)/100)>
+  if ( <VAR.MAX> > <VAR.train_percent> )
+     VAR.MAX	= <VAR.train_percent>
+  endif
+
+  if ( <SRC.<var.skill_cur>> >= <var.max> )
+     return 0
+  endif
+
+  if ( !strcmp( "<var.train_msg>", "" ) )
+     VAR.train_msg	= <args>
+  else
+     VAR.train_msg	= "<VAR.train_msg>, <args>"
+  endif
+
+
+[FUNCTION f_train_show]
+  VAR.skill_cur	= -1
+  VAR.train_msg = ""
+  f_train_add Alchemy
+  f_train_add Assessment
+  f_train_add Creature lore
+  f_train_add Item lore
+  f_train_add Arms lore
+  f_train_add Shieldfighting
+  f_train_add // Begging
+  f_train_add Blacksmithing
+  f_train_add Bowery
+  f_train_add // Peacemaking
+  f_train_add Survival
+  f_train_add Carpentry
+  f_train_add // Cartography
+  f_train_add Cooking
+  f_train_add Detection
+  f_train_add // Enticement
+  f_train_add Mystic lore
+  f_train_add Healing
+  f_train_add Fishing
+  f_train_add Netherlore
+  f_train_add Farming
+  f_train_add Hiding
+  f_train_add Songs of War
+  f_train_add Inscription
+  f_train_add // LockPicking
+  f_train_add Magery
+  f_train_add Resist magic
+  f_train_add Tactics
+  f_train_add Snooping
+  f_train_add Musicianship
+  f_train_add Poisoning
+  f_train_add Archery
+  f_train_add Necromancy
+  f_train_add // Stealing
+  f_train_add Tailoring
+  f_train_add Taming
+  f_train_add // TasteId
+  f_train_add Tinkering
+  f_train_add Tracking
+  f_train_add // Masonry
+  f_train_add Swordsmanship
+  f_train_add Macefighting
+  f_train_add Fencing
+  f_train_add Wrestling
+  f_train_add Lumberjacking
+  f_train_add Mining
+  f_train_add Meditation
+  f_train_add Stealth
+  f_train_add // RemoveTrap
+  f_train_add //Unused
+
+  if ( !strcmp( "<var.train_msg>", "" ) )
+     SAY There is nothing I can teach you.
+  else
+     SAY I can tell you about <var.train_msg>.
+  endif
+
+[EOF]

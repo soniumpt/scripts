@@ -1,0 +1,1270 @@
+// PvP Gate system by Boo
+//modified by Wren to make it more generic for setup
+
+[Events e_pvp_fighting]
+ON=@LOGIN
+   IF !STRMATCH( "Britain Cowpen", "<SRC.REGION.NAME>" )
+      SRC.TAG.PVPSTONE=
+      src.tag.statsstored = 
+      src.tag.boopvper=
+      SRC.EVENTS -e_pvp_fighting
+   ENDIF
+   
+On=@Spellcast
+if ( <argn> == 24 )	// Wall of Stone
+src.message You are not allowed to cast field spells!
+         return 1
+
+elseif ( <argn> == 28 ) // Fire Field
+src.message You are not allowed to cast field spells!
+         return 1
+
+elseif ( <argn> == 32 ) // recall
+src.message You are not allowed to recall
+         return 1
+
+elseif ( <argn> == 39 ) // Posion Field
+src.message You are not allowed to cast field spells!
+         return 1
+
+elseif ( <argn> == 40 ) // Summon
+src.message You are not allowed to cast summons!
+return 1
+
+elseif ( <argn> == 47 ) // Para Field
+src.message You are not allowed to cast field spells!
+return 1
+
+elseif ( <argn> == 50 ) // Energy Field
+src.message You are not allowed to cast field spells!
+return 1
+
+elseif ( <argn> == 52 ) // gate travel
+src.message You are not allowed to recall
+         return 1
+
+elseif ( <argn> == 58 ) // Vortex
+src.message You are not allowed to cast summons!
+return 1
+
+elseif ( <argn> == 60 ) // Air Ele
+src.message You are not allowed to cast summons!
+return 1
+
+elseif ( <argn> == 61 ) // Daemon
+src.message You are not allowed to cast summons!
+return 1
+
+elseif ( <argn> == 62 ) // Earth Ele
+src.message You are not allowed to cast summons!
+return 1
+
+elseif ( <argn> == 63 ) // Fire Ele
+src.message You are not allowed to cast summons!
+return 1
+
+elseif ( <argn> == 64 ) // Water Ele
+src.message You are not allowed to cast summons!
+return 1
+endif
+
+On=@Death
+   IF (<SRC.TAG0.PVPKITCOWPEN>==1)
+   SRC.DIALOGCLOSE d_kit_setup
+   SRC.NEWITEM i_pvpkitcowpen_delay
+   SRC.EQUIP <NEW.UID>
+   SRC.SYSMESSAGE @07a1 You will be teleported out in 3 seconds, please wait...
+   RETURN 0
+   ELSE
+   SRC.CowpenLoser
+   return 1
+   ENDIF
+   
+On=@DEATHCORPSE
+   Obj=<Argo.uid>
+   Obj.f_vendorhack_detecter_body <argo.uid>
+   
+   IF (<SRC.TAG0.PVPKITCOWPEN>==1)
+   OBJ.REMOVE
+   SRC.TAG.PVPKITCOWPEN=
+   ENDIF
+
+[ItemDef i_pvpkitcowpen_delay]
+id=i_memory
+Name=PvP Kit Cowpen Delay
+type=t_eq_script
+
+ON=@Create
+TIMER = 3
+
+
+ON=@Timer
+CONT.RESURRECT
+CONT.cowpenloser
+remove
+
+   
+
+[FUNCTION CowpenLoser]
+IF ( <TAG0.BOOPVPER> = 0 )
+   RETURN 1
+ENDIF
+
+TRYP 0 UID.<tag.pvpstone>.MESSAGE <name> Loses
+SERV.LOG CHALLENGE: <name> Loses at the cowpen
+hits = <str>
+mana = <int>
+kills=<tag.killsbackup>
+karma=<tag.karmabackup>
+fame=<tag.famebackup>
+tag.rep.alignment=<tag.repbackup>
+	  SRC.FLAGS = <SRC.FLAGS> & ~statf_criminal
+src.for_memory f_fkk_peace
+IF <FINDID.b_kill_decayer.UID>
+   FINDID.b_kill_decayer.timer = <tag.killtimerbackup>
+ENDIF
+tag.karmabackup = 
+tag.famebackup = 
+tag.killsbackup = 
+tag.repbackup =
+tag.statsstored = 
+tag.killtimerbackup =
+tag.boopvper = 
+SYSMESSAGE Karma & Kills Restored
+
+//Cure Poison
+   IF  ((<RESTEST i_poisoning1>) || (<RESTEST i_poisoning2>) || (<RESTEST i_poisoning3>) || (<RESTEST i_poisoning4>) || (<RESTEST i_poison_food>))
+      IF !(<RESTEST 1 i_handr_1> && (<FINDLAYER(50).NAME>=<NAME>))
+         CONSUME=i_poisoning1, i_poisoning2, i_poisoning3, i_poisoning4, i_poison_food
+         SYSMESSAGE You drink the potion and feel it's curing properties take effect.
+         IF <FINDID.i_poisoning4.UID>
+            FINDID.i_poisoning4.REMOVE
+         ENDIF
+      ENDIF
+   EndIf
+   IF (<RESTEST i_rune_poison>)
+      CONSUME i_rune_poison
+   ENDIF
+
+update
+DIALOGCLOSE d_kit_setup
+go <UID.<tag.pvpstone>.LINK.MOREP>
+
+IF strmatch("<UID.<TAG.PVPSTONE>.TAG.PLAYER1>","<NAME>")
+   TRYP 0 UID.<tag.pvpstone>.TAG.PLAYER1 = 
+   TRYP 0 UID.<tag.pvpstone>.TAG.PLAYER1.UID = 
+   TRYP 0 UID.<tag.pvpstone>.TAG.PLAYER1.WAIT = 
+ELSE
+   TRYP 0 UID.<tag.pvpstone>.TAG.PLAYER2 = 
+   TRYP 0 UID.<tag.pvpstone>.TAG.PLAYER2.UID = 
+   TRYP 0 UID.<tag.pvpstone>.TAG.PLAYER2.WAIT = 
+ENDIF
+
+IF <UID.<tag.pvpstone>.MORE1> = 2 then
+   TRYP 0 UID.<tag.pvpstone>.MORE1 = 1
+ELSE
+   TRYP 0 UID.<tag.pvpstone>.MORE1 = 0
+ENDIF
+tag.pvpstone =
+events = -e_pvp_fighting
+return 1
+
+[TYPEDEF t_bankstone]
+ON = @DCLICK
+   if ( <SRC.ISDEAD> )
+      SRC.SYSMESSAGE Get a life...
+      return 1
+   endif
+    src.bank
+    return 1
+
+
+[itemdef b_pvp_stone]
+Name= PvP Entry Stone
+ID=i_guildstone
+Type=t_script
+
+On=@Create
+color=00799
+timer=100
+
+On=@timer
+//Check that both players are still active.
+IF ( <MORE1> > 0 )
+   LOCAL.PLAYERS = 0
+   //See if Player 1 is online
+   IF <TAG0.PLAYER1.UID> > 0
+      IF strmatch("<UID.<TAG.PLAYER1.UID>.REGION.NAME>", "Britain Cowpen")
+         IF (<UID.<TAG.PLAYER1.UID>.ISONLINE>=0)
+            IF <TAG0.PLAYER1.WAIT> = 0
+               TAG.PLAYER1.WAIT = 1
+               MESSAGE @085 Waiting 30 seconds for <TAG.PLAYER1.NAME> to return to battle.
+               TIMER = 30
+               RETURN 1
+            ELSE
+               TAG.PLAYER1.WAIT = 
+               MESSAGE @085 <TAG.PLAYER1> has forfeited the match.
+               TRY UID.<TAG.PLAYER1.UID>.CowpenLoser
+            ENDIF
+         ELSE
+            LOCAL.PLAYERS = 1
+         ENDIF
+      ELSE
+         IF <TAG0.PLAYER1.WAIT> = 0
+            TAG.PLAYER1.WAIT = 1
+            MESSAGE @085 Waiting 30 seconds for <TAG.PLAYER1.NAME> to return to battle.
+            TIMER = 30
+            RETURN 1
+         ELSE
+            TAG.PLAYER1.WAIT = 
+            MESSAGE @085 <TAG.PLAYER1> has forfeited the match.
+            TRY UID.<TAG.PLAYER1.UID>.CowpenLoser
+         ENDIF
+      ENDIF
+   ENDIF
+   
+   //See if Player 2 is online
+   IF <TAG0.PLAYER2.UID> > 0
+      IF strmatch("<UID.<TAG.PLAYER2.UID>.REGION.NAME>", "Britain Cowpen")
+         IF (<UID.<TAG.PLAYER2.UID>.ISONLINE>=0)
+            IF <TAG0.PLAYER2.WAIT> = 0
+               TAG.PLAYER2.WAIT = 1
+               MESSAGE @085 Waiting 30 seconds for <TAG.PLAYER2.NAME> to return.
+               TIMER = 30
+               RETURN 1
+            ELSE
+               TAG.PLAYER2.WAIT = 
+               MESSAGE @085 <TAG.PLAYER2> has forfeited the match.
+               TRY UID.<TAG.PLAYER2.UID>.CowpenLoser
+            ENDIF
+         ELSE
+            LOCAL.PLAYERS = <EVAL (<LOCAL.PLAYERS> + 1)>
+         ENDIF
+      ELSE
+         IF <TAG0.PLAYER2.WAIT> = 0
+            TAG.PLAYER2.WAIT = 1
+            MESSAGE @085 Waiting 30 seconds for <TAG.PLAYER2.NAME> to return.
+            TIMER = 30
+            RETURN 1
+         ELSE
+            TAG.PLAYER2.WAIT = 
+            MESSAGE @085 <TAG.PLAYER2> has forfeited the match.
+            TRY UID.<TAG.PLAYER2.UID>.CowpenLoser
+         ENDIF      
+      ENDIF
+   ENDIF
+   
+   MORE1=<LOCAL.PLAYERS>
+ENDIF
+
+If ( <MORE1> == 1 )
+   MESSAGE @085 Waiting for 1 player
+   timer = 120
+else
+   MESSAGE @085 Welcome to the automated PvP System, Entry cost is 500 Gold Pieces per player
+   timer = 120
+endif
+return 1
+
+on=@Dclick
+IF (0<SRC.TAG.BATTLEGROUNDS_QUE> = 01)
+	src.sysmessage You cannot use this while in the queue for battlegrounds
+	return 1
+endif
+IF !(<src.tag0.pvpstone>=0)
+   src.sysmessage You are already flagged as a pvp participant.
+ELSEIF (<LINK> = 04fffffff)
+   src.sysmessage Please notify staff that this pvp stone has not been linked to the exit stone.
+ELSEIF ( <MORE1> = 2 )
+   MESSAGE @085 There is currently a PvP In progress
+ELSEIF ( <SRC.FINDID.i_rune_incognito.uid> > 0 )
+   SRC.SYSMESSAGE Please wait for Incognito to wear off before using the stone.
+ELSE
+   VAR.GOLD=500
+   consumegold_everywhere <eval (<VAR.gold>)>
+   IF ( <VAR.consumegold> > 0 )
+      MESSAGE You are <eval <VAR.consumegold>>gp short.
+      VAR.RETURN = 1
+      return 1
+   ELSE
+      MORE1 = <eval (<MORE1>+1)>
+      
+      IF strmatch("0<TAG.PLAYER1>", "0")
+         TAG.PLAYER1 = <SRC.NAME> 
+         TAG.PLAYER1.UID = <SRC.UID>
+         TAG.PLAYER1.WAIT =
+      ELSE
+         TAG.PLAYER2 = <SRC.NAME>
+         TAG.PLAYER2.UID = <SRC.UID>
+         TAG.PLAYER2.WAIT =
+      ENDIF
+      
+      src.tag.boopvper = 1
+      src.tag.killsbackup=<src.kills>
+      src.tag.karmabackup=<src.karma>
+      src.tag.famebackup=<src.fame>
+      src.tag.repbackup=<SRC.TAG.REP.ALIGNMENT>
+      IF <SRC.FINDID.b_kill_decayer.UID>
+         src.tag.killtimerbackup=<SRC.FINDID.b_kill_decayer.timer>
+      ELSE
+         src.tag.killtimerbackup = 0
+      ENDIF
+      src.tag.statsstored = 1
+      src.tag.pvpstone=<UID>
+      src.events +e_pvp_fighting
+      src.sysmessage Fame, Karma & Kills Stored
+      src.go <UID.<src.tag.pvpstone>.MOREP>
+      MESSAGE @085 <src.name> Has Entered the Battle
+      
+      IF (<MORE1>=2)
+         ANNOUNCE <TAG.PLAYER1> is challenging <TAG.PLAYER2> at the Britain Cowpen.
+         SERV.LOG CHALLENGE: <TAG.PLAYER1> IS CHALLENGING <TAG.PLAYER2> AT THE BRITAIN COWPEN.
+      ENDIF
+   ENDIF
+ENDIF
+
+RETURN 1
+
+[itemdef b_autopvp_exitstone]
+Name= PvP Winner Exit Stone
+ID=i_guildstone
+Type=T_Normal
+
+On=@Create
+color=007a3
+
+On=@Dclick
+if (<src.tag0.boopvper> = 1) 
+   SRC.KILL
+else
+   src.sysmessage Your not in this pvp
+endif
+return 1
+
+[itemdef b_autopvp_timer]
+Name= Timer Stone
+ID=i_guildstone
+Type=T_Normal
+
+On=@Create
+color=007a3
+more1 = 5
+
+on=@dclick
+MESSAGEua 00085,0,0,eng, TIMER ACTIVATED
+timer = 1
+more1 = 10
+return 1
+
+on=@timer
+if (<more1> == 10)
+sayua 00085,0,0,eng, 9
+timer = 1
+more1 = 9
+elseif (<more1> == 9)
+sayua 00085,0,0,eng, 8
+timer = 1
+more1 = 8
+elseif (<more1> == 8)
+sayua 00085,0,0,eng, 7
+timer = 1
+more1 = 7
+elseif (<more1> == 7)
+sayua 00085,0,0,eng, 6
+timer = 1
+more1 = 6
+elseif (<more1> == 6)
+sayua 00085,0,0,eng, 5
+timer = 1
+more1 = 5
+elseif (<more1> == 5)
+sayua 00085,0,0,eng, 4
+timer = 1
+more1 = 4
+elseif (<more1> == 4)
+sayua 00085,0,0,eng, 3
+timer = 1
+more1 = 3
+elseif (<more1> == 3)
+sayua 00085,0,0,eng, 2
+timer = 1
+more1 = 2
+elseif (<more1> == 2)
+sayua 00085,0,0,eng, 1
+timer = 1
+more1 = 1
+elseif (<more1> == 1)
+sayua 00085,0,0,eng, GO!!!!!!!!
+timer = 1
+more1 = 11
+endif
+return 1
+
+
+[itemdef i_cannon_n_1] 
+
+ID=3723 
+
+Name=Cannon (North) 
+
+TYPE=t_script 
+
+
+
+On=@Create 
+
+ATTR=08010 
+
+
+
+On=@Dclick 
+
+IF (<SRC.RESTEST 1 i_cannon_ball> && <SRC.RESTEST 50 i_reag_sulfur_ash>) 
+
+SRC.MESSAGE Who would you like to shoot? 
+
+TARGET Who would you like to shoot? 
+
+ELSE 
+
+SRC.MESSAGE You do not have the supplies to load the cannon. 
+
+ENDIF 
+
+return 1
+
+On=@Targon_Char 
+
+IF (<TIMER>==-1) 
+
+SRC.CONSUME=1 i_cannon_ball 
+
+SRC.CONSUME=50 i_reag_sulfur_ash 
+
+SRC.TARG.EFFECT 0,0e73,15,0,0 //makes a canon ball fly to the target 
+
+SRC.TARG.DAMAGE={70 95} 
+
+SRC.SOUND=011e 
+
+TIMER=25 
+
+ELSE 
+
+SRC.MESSAGE You can not fire the cannon again yet. 
+
+ENDIF 
+return 1
+
+
+On=@Timer 
+
+TIMER=-1 
+
+
+
+[itemdef i_cannon_s_1] 
+
+ID=0e93 
+
+Name=Cannon (South) 
+
+TYPE=t_script 
+
+
+
+On=@Create 
+
+ATTR=08010 
+
+
+
+On=@Dclick 
+
+IF (<SRC.RESTEST 1 i_cannon_ball> && <SRC.RESTEST 50 i_reag_sulfur_ash>) 
+
+SRC.MESSAGE Who would you like to shoot? 
+
+TARGET Who would you like to shoot? 
+
+ELSE 
+
+SRC.MESSAGE You do not have the supplies to load the cannon. 
+
+ENDIF 
+
+return 1
+
+On=@Targon_Char 
+
+IF (<TIMER>==-1) 
+
+SRC.CONSUME=1 i_cannon_ball 
+
+SRC.CONSUME=50 i_reag_sulfur_ash 
+
+SRC.TARG.EFFECT 0,0e73,15,0,0 //makes a canon ball fly to the target 
+
+SRC.TARG.DAMAGE={70 95} 
+
+SRC.SOUND=011e 
+
+TIMER=25 
+
+ELSE 
+
+SRC.MESSAGE You can not fire the cannon again yet. 
+
+ENDIF 
+
+return 1
+
+On=@Timer 
+
+TIMER=-1 
+
+
+
+[itemdef i_cannon_w_1] 
+
+ID=0e90 
+
+Name=Cannon (West) 
+
+TYPE=t_script 
+
+
+
+On=@Create 
+
+ATTR=08010 
+
+
+
+On=@Dclick 
+
+IF (<SRC.RESTEST 1 i_cannon_ball> && <SRC.RESTEST 50 i_reag_sulfur_ash>) 
+
+SRC.MESSAGE Who would you like to shoot? 
+
+TARGET Who would you like to shoot? 
+
+ELSE 
+
+SRC.MESSAGE You do not have the supplies to load the cannon. 
+
+ENDIF 
+return 1
+
+
+On=@Targon_Char 
+
+IF (<TIMER>==-1) 
+
+SRC.CONSUME=1 i_cannon_ball 
+
+SRC.CONSUME=50 i_reag_sulfur_ash 
+
+SRC.TARG.EFFECT 0,0e73,15,0,0 //makes a canon ball fly to the target 
+
+SRC.TARG.DAMAGE={70 95} 
+
+SRC.SOUND=011e 
+
+TIMER=25 
+
+ELSE 
+
+SRC.MESSAGE You can not fire the cannon again yet. 
+
+ENDIF 
+
+return 1
+
+On=@Timer 
+
+TIMER=-1 
+
+
+
+[itemdef i_cannon_e_1] 
+
+ID=0e94 
+
+Name=Cannon (East) 
+
+TYPE=t_script 
+
+
+
+On=@Create 
+
+ATTR=08010 
+
+
+
+On=@Dclick 
+
+IF (<SRC.RESTEST 1 i_cannon_ball> && <SRC.RESTEST 50 i_reag_sulfur_ash>) 
+
+SRC.MESSAGE Who would you like to shoot? 
+
+TARGET Who would you like to shoot? 
+
+ELSE 
+
+SRC.MESSAGE You do not have the supplies to load the cannon. 
+
+ENDIF 
+return 1
+
+
+On=@Targon_Char 
+
+IF (<TIMER>==-1) 
+
+SRC.CONSUME=1 i_cannon_ball 
+
+SRC.CONSUME=50 i_reag_sulfur_ash 
+
+SRC.TARG.EFFECT 0,0e73,15,0,0 //makes a canon ball fly to the target 
+
+SRC.TARG.DAMAGE={70 95} 
+
+SRC.SOUND=011e 
+
+TIMER=25 
+
+ELSE 
+
+SRC.MESSAGE You can not fire the cannon again yet. 
+
+ENDIF 
+
+return 1
+
+On=@Timer 
+
+TIMER=-1 
+
+
+
+[itemdef i_deed_cannon_north] 
+
+NAME=Cannon Deed (North) 
+
+ID=014ef 
+
+TYPE=t_cannon_n 
+
+
+
+CATEGORY=Imperial uo
+
+SUBSECTION=Cannon Deeds 
+
+DESCRIPTION=Cannon Deed (North) 
+
+
+
+[itemdef i_deed_cannon_south] 
+
+NAME=Cannon Deed (South) 
+
+ID=014ef 
+
+TYPE=t_cannon_s 
+
+
+
+CATEGORY=Imperial uo
+
+SUBSECTION=Cannon Deeds 
+
+DESCRIPTION=Cannon Deed (South) 
+
+
+
+[itemdef i_deed_cannon_west] 
+
+NAME=Cannon Deed (West) 
+
+ID=014ef 
+
+TYPE=t_cannon_w 
+
+
+
+CATEGORY=Imperial uo
+
+SUBSECTION=Cannon Deeds 
+
+DESCRIPTION=Cannon Deed (West) 
+
+
+
+[itemdef i_deed_cannon_east] 
+
+NAME=Cannon Deed (East) 
+
+ID=014ef 
+
+TYPE=t_cannon_e 
+
+
+
+CATEGORY=Imperial uo
+
+SUBSECTION=Cannon Deeds 
+
+DESCRIPTION=Cannon Deed (East) 
+
+
+
+[typedef t_cannon_s] 
+
+ON=@DCLICK 
+
+MOREP=<SRC.P> 
+
+SRC.HOME=<MOREP> 
+
+SRC.NEWITEM=i_cannon_s_1 
+
+SRC.ACT.ATTR=08010 
+
+SRC.ACT.P=<SRC.HOME> 
+
+SOUND f7 
+
+
+
+MOREP=<SRC.P> 
+
+MOREY=<MOREY> + 1 
+
+SRC.HOME=<MOREP> 
+
+SRC.NEWITEM=0e92 
+
+SRC.ACT.ATTR=08010 
+
+SRC.ACT.P=<SRC.HOME> 
+
+
+
+MOREP=<SRC.P> 
+
+MOREY=<MOREY> + 2 
+
+SRC.HOME=<MOREP> 
+
+SRC.NEWITEM=0e91 
+
+SRC.ACT.ATTR=08010 
+
+SRC.ACT.P=<SRC.HOME> 
+
+REMOVE 
+
+RETURN 1 
+
+
+
+[typedef t_cannon_n] 
+
+ON=@DCLICK 
+
+MOREP=<SRC.P> 
+
+SRC.HOME=<MOREP> 
+
+SRC.NEWITEM=i_cannon_n_1 
+
+SRC.ACT.ATTR=08010 
+
+SRC.ACT.P=<SRC.HOME> 
+
+SOUND f7 
+
+
+
+MOREP=<SRC.P> 
+
+MOREY=<MOREY> - 1 
+
+SRC.HOME=<MOREP> 
+
+SRC.NEWITEM=0e8c 
+
+SRC.ACT.ATTR=08010 
+
+SRC.ACT.P=<SRC.HOME> 
+
+
+
+MOREP=<SRC.P> 
+
+MOREY=<MOREY> - 2 
+
+SRC.HOME=<MOREP> 
+
+SRC.NEWITEM=0e8d 
+
+SRC.ACT.ATTR=08010 
+
+SRC.ACT.P=<SRC.HOME> 
+
+REMOVE 
+
+RETURN 1 
+
+
+
+[typedef t_cannon_w] 
+
+ON=@DCLICK 
+
+MOREP=<SRC.P> 
+
+SRC.HOME=<MOREP> 
+
+SRC.NEWITEM=i_cannon_w_1 
+
+SRC.ACT.ATTR=08010 
+
+SRC.ACT.P=<SRC.HOME> 
+
+SOUND f7 
+
+
+
+MOREP=<SRC.P> 
+
+MOREX=<MOREX> - 1 
+
+SRC.HOME=<MOREP> 
+
+SRC.NEWITEM=0e8f 
+
+SRC.ACT.ATTR=08010 
+
+SRC.ACT.P=<SRC.HOME> 
+
+
+
+MOREP=<SRC.P> 
+
+MOREX=<MOREX> - 2 
+
+SRC.HOME=<MOREP> 
+
+SRC.NEWITEM=0e8e 
+
+SRC.ACT.ATTR=08010 
+
+SRC.ACT.P=<SRC.HOME> 
+
+REMOVE 
+
+RETURN 1 
+
+
+
+[typedef t_cannon_e] 
+
+ON=@DCLICK 
+
+MOREP=<SRC.P> 
+
+SRC.HOME=<MOREP> 
+
+SRC.NEWITEM=0e96 
+
+SRC.ACT.ATTR=08010 
+
+SRC.ACT.P=<SRC.HOME> 
+
+SOUND f7 
+
+
+
+MOREP=<SRC.P> 
+
+MOREX=<MOREX> - 1 
+
+SRC.HOME=<MOREP> 
+
+SRC.NEWITEM=0e95 
+
+SRC.ACT.ATTR=08010 
+
+SRC.ACT.P=<SRC.HOME> 
+
+
+
+MOREP=<SRC.P> 
+
+MOREX=<MOREX> - 2 
+
+SRC.HOME=<MOREP> 
+
+SRC.NEWITEM=i_cannon_e_1 
+
+SRC.ACT.ATTR=08010 
+
+SRC.ACT.P=<SRC.HOME> 
+
+REMOVE 
+
+RETURN 1
+
+[Events e_noob]
+on=@click
+if !(<src.ISGM>)
+emote is only 12
+ENDIF
+
+[Events e_boopvp]
+  
+On=@Spellcast
+if ( <argn> == 24 )	// Wall of Stone
+src.message You are not allowed to cast field spells!
+         return 1
+
+elseif ( <argn> == 28 ) // Fire Field
+src.message You are not allowed to cast field spells!
+         return 1
+
+elseif ( <argn> == 32 ) // recall
+src.message You are not allowed to recall
+         return 1
+
+elseif ( <argn> == 39 ) // Posion Field
+src.message You are not allowed to cast field spells!
+         return 1
+
+elseif ( <argn> == 40 ) // Summon
+src.message You are not allowed to cast summons!
+return 1
+
+elseif ( <argn> == 47 ) // Para Field
+src.message You are not allowed to cast field spells!
+return 1
+
+elseif ( <argn> == 50 ) // Energy Field
+src.message You are not allowed to cast field spells!
+return 1
+
+elseif ( <argn> == 52 ) // gate travel
+src.message You are not allowed to recall
+         return 1
+
+elseif ( <argn> == 58 ) // Vortex
+src.message You are not allowed to cast summons!
+return 1
+
+elseif ( <argn> == 60 ) // Air Ele
+src.message You are not allowed to cast summons!
+return 1
+
+elseif ( <argn> == 61 ) // Daemon
+src.message You are not allowed to cast summons!
+return 1
+
+elseif ( <argn> == 62 ) // Earth Ele
+src.message You are not allowed to cast summons!
+return 1
+
+elseif ( <argn> == 63 ) // Fire Ele
+src.message You are not allowed to cast summons!
+return 1
+
+elseif ( <argn> == 64 ) // Water Ele
+src.message You are not allowed to cast summons!
+return 1
+endif
+
+On=@Death
+   SRC.RESURRECT
+   SRC.HITS 40
+   SRC.GO 6042,403
+   return 1
+
+[TYPEDEF boo_pvptele]
+
+on=@step
+IF <SRC.ISPLAYER>
+IF (<SRC.TAG.TEMPBOOPVPTAG> == 1)
+    SAY restoring
+    SRC.BODY = <src.tag.oldbody>
+    SRC.OBODY = <src.tag.oldobody>
+    SRC.COLOR = <src.tag.oldcolour>
+    SRC.TAG.OLDBODY
+    SRC.TAG.OLDOBODY
+    SRC.TAG.TEMPBOOPVPTAG
+    SRC.GO <morep>
+    SRC.UPDATE
+    RETURN 1
+ELSE
+    SRC.TAG.TEMPBOOPVPTAG 1
+    SRC.TAG.OLDBODY = <src.body>
+    SRC.TAG.OLDOBODY = <src.obody>
+    SRC.TAG.OLDCOLOUR = <src.color>
+    SRC.BODY = C_chicken
+    SRC.OBODY = C_chicken
+    SRC.GO <morep>
+    SRC.UPDATE
+    RETURN 1
+ENDIF
+ENDIF
+
+
+
+////////////////////////////////////////////////////////////////////// Pink Panther modifications to match provided kits in cowpen system ///////////////////////////////////////
+
+[itemdef b_pvp_stone_kits]
+Name= PvP Entry Stone
+ID=i_guildstone
+Type=t_script
+
+On=@Create
+color=00799
+timer=100
+
+On=@timer
+//Check that both players are still active.
+IF ( <MORE1> > 0 )
+   LOCAL.PLAYERS = 0
+   //See if Player 1 is online
+   IF <TAG0.PLAYER1.UID> > 0
+      IF strmatch("<UID.<TAG.PLAYER1.UID>.REGION.NAME>", "Britain Cowpen")
+         IF (<UID.<TAG.PLAYER1.UID>.ISONLINE>=0)
+            IF <TAG0.PLAYER1.WAIT> = 0
+               TAG.PLAYER1.WAIT = 1
+               MESSAGE @085 Waiting 30 seconds for <TAG.PLAYER1.NAME> to return to battle.
+               TIMER = 30
+               RETURN 1
+            ELSE
+               TAG.PLAYER1.WAIT = 
+               MESSAGE @085 <TAG.PLAYER1> has forfeited the match.
+               TRY UID.<TAG.PLAYER1.UID>.CowpenLoser
+            ENDIF
+         ELSE
+            LOCAL.PLAYERS = 1
+         ENDIF
+      ELSE
+         IF <TAG0.PLAYER1.WAIT> = 0
+            TAG.PLAYER1.WAIT = 1
+            MESSAGE @085 Waiting 30 seconds for <TAG.PLAYER1.NAME> to return to battle.
+            TIMER = 30
+            RETURN 1
+         ELSE
+            TAG.PLAYER1.WAIT = 
+            MESSAGE @085 <TAG.PLAYER1> has forfeited the match.
+            TRY UID.<TAG.PLAYER1.UID>.CowpenLoser
+         ENDIF
+      ENDIF
+   ENDIF
+   
+   //See if Player 2 is online
+   IF <TAG0.PLAYER2.UID> > 0
+      IF strmatch("<UID.<TAG.PLAYER2.UID>.REGION.NAME>", "Britain Cowpen")
+         IF (<UID.<TAG.PLAYER2.UID>.ISONLINE>=0)
+            IF <TAG0.PLAYER2.WAIT> = 0
+               TAG.PLAYER2.WAIT = 1
+               MESSAGE @085 Waiting 30 seconds for <TAG.PLAYER2.NAME> to return.
+               TIMER = 30
+               RETURN 1
+            ELSE
+               TAG.PLAYER2.WAIT = 
+               MESSAGE @085 <TAG.PLAYER2> has forfeited the match.
+               TRY UID.<TAG.PLAYER2.UID>.CowpenLoser
+            ENDIF
+         ELSE
+            LOCAL.PLAYERS = <EVAL (<LOCAL.PLAYERS> + 1)>
+         ENDIF
+      ELSE
+         IF <TAG0.PLAYER2.WAIT> = 0
+            TAG.PLAYER2.WAIT = 1
+            MESSAGE @085 Waiting 30 seconds for <TAG.PLAYER2.NAME> to return.
+            TIMER = 30
+            RETURN 1
+         ELSE
+            TAG.PLAYER2.WAIT = 
+            MESSAGE @085 <TAG.PLAYER2> has forfeited the match.
+            TRY UID.<TAG.PLAYER2.UID>.CowpenLoser
+         ENDIF      
+      ENDIF
+   ENDIF
+   
+   MORE1=<LOCAL.PLAYERS>
+ENDIF
+
+If ( <MORE1> == 1 )
+   MESSAGE @085 Waiting for 1 player
+   timer = 120
+else
+   MESSAGE @07a1 Entry cost is 2.500 gps per player! PvP Gear will be provided in this arena!
+   timer = 120
+endif
+return 1
+
+on=@Dclick
+IF (0<SRC.TAG.BATTLEGROUNDS_QUE> = 01)
+	src.sysmessage You cannot use this while in the queue for battlegrounds
+	return 1
+endif
+IF !(<src.tag0.pvpstone>=0)
+   src.sysmessage You are already flagged as a pvp participant.
+ELSEIF (<LINK> = 04fffffff)
+   src.sysmessage Please notify staff that this pvp stone has not been linked to the exit stone.
+ELSEIF ( <MORE1> = 2 )
+   MESSAGE @085 There is currently a PvP In progress
+ELSEIF ( <SRC.FINDID.i_rune_incognito.uid> > 0 )
+   SRC.SYSMESSAGE Please wait for Incognito to wear off before using the stone.
+ELSE
+   VAR.GOLD=2500
+   consumegold_everywhere <eval (<VAR.gold>)>
+   IF ( <VAR.consumegold> > 0 )
+      MESSAGE You are <eval <VAR.consumegold>>gp short.
+      VAR.RETURN = 1
+      return 1
+   ELSE
+      MORE1 = <eval (<MORE1>+1)>
+      
+      IF strmatch("0<TAG.PLAYER1>", "0")
+         TAG.PLAYER1 = <SRC.NAME> 
+         TAG.PLAYER1.UID = <SRC.UID>
+         TAG.PLAYER1.WAIT =
+      ELSE
+         TAG.PLAYER2 = <SRC.NAME>
+         TAG.PLAYER2.UID = <SRC.UID>
+         TAG.PLAYER2.WAIT =
+      ENDIF
+      
+      src.tag.boopvper = 1
+      src.tag.killsbackup=<src.kills>
+      src.tag.karmabackup=<src.karma>
+      src.tag.famebackup=<src.fame>
+      src.tag.repbackup=<SRC.TAG.REP.ALIGNMENT>
+      IF <SRC.FINDID.b_kill_decayer.UID>
+         src.tag.killtimerbackup=<SRC.FINDID.b_kill_decayer.timer>
+      ELSE
+         src.tag.killtimerbackup = 0
+      ENDIF
+      src.tag.statsstored = 1
+      src.tag.pvpstone=<UID>
+	  src.tag.pvpkitcowpen=1
+      src.events +e_pvp_fighting
+      src.sysmessage Fame, Karma & Kills Stored
+      src.go <UID.<src.tag.pvpstone>.MOREP>
+      MESSAGE @085 <src.name> Has Entered the Battle
+	  SRC.SYSMESSAGE @079C WARNING: 
+	  SRC.SYSMESSAGE @07a1 YOU WILL LOSE ANY ITEM THAT IS NOT NEWBIED IN THIS ARENA.
+	  SRC.SYSMESSAGE @079C WARNING: 
+	  SRC.SYSMESSAGE @07a1 PLEASE BANK NON-NEWBIED ITEMS!!
+	  SRC.SYSMESSAGE @079C WARNING: 
+	  SRC.SYSMESSAGE @07a1 PVP KIT CAN BE OBTAINED THROUGH THE RED BUSH!
+      
+      IF (<MORE1>=2)
+         ANNOUNCE <TAG.PLAYER1> is challenging <TAG.PLAYER2> at the Britain Cowpen.
+         SERV.LOG CHALLENGE: <TAG.PLAYER1> IS CHALLENGING <TAG.PLAYER2> AT THE BRITAIN COWPEN.
+      ENDIF
+   ENDIF
+
+RETURN 1
+
+[DIALOG d_pad_confirmation_cowpen]
+150,150
+NOCLOSE
+NOMOVE
+page 0
+resizepic 92 56 3600 350 290
+
+dtext 130 80 137 Britain Cowpen PvP System With Provided Kits
+
+dtext 120 110 2300 Are you sure you want to enter the arena?
+
+dtext 120 140 2300 When doing so you will lose ALL NON NEWBIED
+
+dtext 120 170 2300 items and your STEED!
+
+dtext 120 200 2300 SHRINK your steed with the stone and BANK ALL  
+
+dtext 120 230 2300 your NON NEWBIED items before continuing.
+
+
+dtext 240 260 137 CONTINUE?
+
+button 190 300 247 248 1 0 1
+
+button 290 300 241 242 1 0 2
+
+
+[DIALOG d_pad_confirmation_cowpen button]
+ON=1
+SRC.GO <morep> 
+SRC.SYSMESSAGE @07A1 Please pick your PvP gear and supplys by double clicking the yellow bush!
+SRC.DIALOGCLOSE d_house_sign
+SRC.TAG.PVPKITCOWPENMENU=
+ON=0
+SRC.DIALOGCLOSE d_house_sign
+SRC.TAG.PVPKITCOWPENMENU=
+SRC.GO 1325,1816
+ON=2
+SRC.DIALOGCLOSE d_house_sign
+SRC.TAG.PVPKITCOWPENMENU=
+SRC.GO 1325,1816
+
+
+[ITEMDEF i_pad_confirmation]
+id=i_platform
+Name=platform
+
+on=@create
+color=0799
+
+on=@step
+IF (<SRC.ISDEAD>)
+RETURN 1
+ENDIF
+
+IF !(<SRC.TAG0.PVPKITCOWPENMENU>==1)
+SRC.TAG.PVPKITCOWPENMENU=1
+dialog d_pad_confirmation_cowpen
+ENDIF
+
+
+[ITEMDEF i_pad_infos]
+id=i_platform
+Name=platform
+
+on=@create
+color=0799
+
+on=@step
+dialog d_pad_confirmation_cowpena
+
+[DIALOG d_pad_confirmation_cowpena]
+150,150
+page 0
+resizepic 92 56 3600 350 290
+
+dtext 130 80 137 Britain Cowpen PvP System With Provided Kits
+
+dtext 120 110 2300 Are you sure you want to enter the arena?
+
+dtext 120 140 2300 When doing so you will lose ALL NON NEWBIED
+
+dtext 120 170 2300 items and your STEED!
+
+dtext 120 200 2300 SHRINK your steed with the stone and BANK ALL  
+
+dtext 120 230 2300 your NON NEWBIED items before continuing.
+
+
+
+button 230 300 247 248 1 0 1
+
+[EOF]

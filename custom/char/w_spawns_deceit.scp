@@ -1,0 +1,999 @@
+// #-----------#
+// # CHANGELOG #
+// #-----------#
+//
+// 19/08/18 - Wigifer - Not updated for f_central_loot table but NEEDS URGENT REVIEW.
+
+    //////////////////////////////////////////////////////////////////////
+   //MPZ UO Shard                                                      //
+  //Spawns for deceit and ice island                                  //
+ //Design by Warman (warman@mail.pt) and Kell (evren@portugalmail.pt)//
+//////////////////////////////////////////////////////////////////////
+
+//V1.0 - 7 FEV 2002
+
+    //////////
+   //Deceit//
+  /////////////////
+ //North Spirits//
+/////////////////
+
+
+[EVENTS e_deceit_ghost]
+ON=@ENVIRONCHANGE
+    KARMA = -9999
+    ACTION = 067
+
+[CHARDEF c_m_deceit_minor_ghost]
+  ID=c_Grim_Reaper
+  NAME=Ghost
+  SOUND=snd_MONSTER_GHOST1
+
+  DAM=10,40
+  ARMOR=0
+  BLOODCOLOR=0
+
+  CAN=MT_GHOST|MT_WALK|MT_RUN|MT_FLY
+  TEVENTS=e_deceit_ghost
+  TEVENTS=e_Undead
+  
+
+ON=@Create
+    NPC=BRAIN_UNDEAD
+    COLOR=color_o_skargard
+
+    STR={10 20}
+    DEX={100 200}
+    INT={60 90}
+
+    TACTICS={100.0 200.0}
+    FENCING={100.0 200.0}
+    ITEMID=60.0
+
+    KARMA={-3000 -4000}
+    FAME={1500 3000}
+
+
+ON=@SONG
+    f_song_north_spirits125a
+
+ON = @GetItemVars
+      VAR.ITEM.DESC These are the lesser version of the dangerous north spirits. Very rare undead of the frozen lands, they die as quickly as they bite. Usually invisible unless struck by a weapon, they attack without warning and can kill with a single touch.
+
+ON=@IDENTIFY
+    NAME = lesser north spirit
+
+ON=@NPCRESTOCK
+    ITEM=i_ghostrecon
+
+ON=@GETHIT
+    FLAGS = (<FLAGS> & ~statf_insubstantial)
+  if ( rand(100) < 10 )
+     ACT.SOUND snd_SPELL_MANA_DRAIN
+     //	                   stats   RArmour   NSight   Prot    Incog    MReflect
+     VAR.LAYER = <eval ({  32 25   33 15     34 20    35 25   36  5    37 30     })>
+     VAR.DISPELL_ACT = <ACT>
+     ACT = <SRC.FINDLAYER.<var.layer>.uid>
+     if ( 0<ACT.UID> )
+        ACT.REMOVE
+     endif
+     ACT = <VAR.DISPELL_ACT>
+  endif
+
+ON=@DEATH
+    f_death_spirits125a 5
+    f_skargard_spirits125a 10
+    REMOVE
+    RETURN 1
+
+ON = @SpellEffect
+    if ( 0<args> == 48 )
+        FLAGS = (<FLAGS> & ~statf_insubstantial)
+    endif
+
+
+CATEGORY=Monsters
+SUBSECTION=deceit bogs
+DESCRIPTION=lesser north spirit
+
+
+[CHARDEF c_m_deceit_ghost]
+  ID=c_Grim_Reaper
+  NAME=Ghost
+  SOUND=snd_MONSTER_GHOST1
+
+  DAM=20,40
+  ARMOR=0
+  BLOODCOLOR=0
+
+  CAN=MT_GHOST|MT_WALK|MT_RUN|MT_FLY
+  TEVENTS=e_deceit_ghost
+  TEVENTS=e_Undead
+  
+
+ON=@Create
+    NPC=BRAIN_UNDEAD
+    COLOR=color_o_skargard
+
+    STR={20 30}
+    DEX={100 200}
+    INT={60 90}
+
+    TACTICS={200.0 300.0}
+    FENCING={200.0 300.0}
+    ITEMID=62.0
+
+    KARMA={-3000 -4000}
+    FAME={2000 3000}
+
+
+ON=@SONG
+    f_song_north_spirits125a
+
+ON = @GetItemVars
+      VAR.ITEM.DESC North Spirit: Very rare undead of the frozen lands, they die as quickly as they bite. Usually invisible unless struck by a weapon, they attack without warning and can kill with a single touch.
+
+ON=@IDENTIFY
+    NAME = north spirit
+
+ON=@NPCRESTOCK
+    ITEM=i_ghostrecon
+
+ON=@GETHIT
+    FLAGS = (<FLAGS> & ~statf_insubstantial)
+  if ( rand(100) < 30 )
+     ACT.SOUND snd_SPELL_MANA_DRAIN
+     //	                   stats   RArmour   NSight   Prot    Incog    MReflect
+     VAR.LAYER = <eval ({  32 25   33 15     34 20    35 25   36  5    37 30     })>
+     VAR.DISPELL_ACT = <ACT>
+     ACT = <SRC.FINDLAYER.<var.layer>.uid>
+     if ( 0<ACT.UID> )
+        ACT.REMOVE
+     endif
+     ACT = <VAR.DISPELL_ACT>
+  endif
+
+ON=@DEATH
+    f_death_spirits125a 7
+    f_skargard_spirits125a 14
+    IF (rand(100) > 10)
+      REMOVE
+      RETURN 1
+    ENDIF
+    NEWITEM i_deceit_key
+    ACT.P = <P>
+    ACT.MOREZ = 1
+    ACT.COLOR = 0480
+    REMOVE
+    RETURN 1
+
+ON = @SpellEffect
+    if ( <EVAL <args>> == 48 )
+        FLAGS = (<FLAGS> & ~statf_insubstantial)
+    endif
+
+
+CATEGORY=Monsters
+SUBSECTION=deceit bogs
+DESCRIPTION=north spirit
+
+
+[CHARDEF c_m_deceit_greater_ghost]
+  ID=c_Grim_Reaper
+  NAME=Ghost
+  SOUND=snd_MONSTER_GHOST1
+
+  DAM=30,50
+  ARMOR=0
+  BLOODCOLOR=0
+
+  CAN=MT_GHOST|MT_WALK|MT_RUN|MT_FLY
+  TEVENTS=e_deceit_ghost
+  TEVENTS=e_Undead
+  
+
+ON=@Create
+    NPC=BRAIN_UNDEAD
+    COLOR=color_o_skargard
+
+    STR={30 40}
+    DEX={100 200}
+    INT={60 90}
+
+    TACTICS={300.0 400.0}
+    FENCING={300.0 400.0}
+    ITEMID=64.0
+
+    KARMA={-3000 -4000}
+    FAME={2500 3000}
+
+
+ON=@SONG
+    f_song_north_spirits125a
+
+ON = @GetItemVars
+      VAR.ITEM.DESC These are the greater version of the dangerous north spirits. Very rare undead of the frozen lands, they die as quickly as they bite. Usually invisible unless struck by a weapon, they attack without warning and can kill with a single touch.
+
+ON=@IDENTIFY
+    NAME = greater north spirit
+
+ON=@NPCRESTOCK
+    ITEM=i_ghostrecon
+
+ON=@GETHIT
+    FLAGS = (<FLAGS> & ~statf_insubstantial)
+  if ( rand(100) < 50 )
+     ACT.SOUND snd_SPELL_MANA_DRAIN
+     //	                   stats   RArmour   NSight   Prot    Incog    MReflect
+     VAR.LAYER = <eval ({  32 25   33 15     34 20    35 25   36  5    37 30     })>
+     VAR.DISPELL_ACT = <ACT>
+     ACT = <SRC.FINDLAYER.<var.layer>.uid>
+     if ( 0<ACT.UID> )
+        ACT.REMOVE
+     endif
+     ACT = <VAR.DISPELL_ACT>
+  endif
+
+
+ON=@DEATH
+    f_death_spirits125a 10
+    f_skargard_spirits125a 20
+    REMOVE
+    RETURN 1
+
+ON = @SpellEffect
+    if ( <args> == 48 )
+        FLAGS = (<FLAGS> & ~statf_insubstantial)
+    endif
+
+
+  CATEGORY=Monsters
+  SUBSECTION=deceit bogs
+  DESCRIPTION=greater north spirit
+
+
+
+  ///////////
+ //Wraiths//
+///////////
+
+[CHARDEF c_deceit_minor_wraith]
+  NAME=Ghost
+  SOUND=snd_MONSTER_GHOST1
+  ICON=i_pet_GHOUL
+  ID=c_SPECTRE
+
+  DAM=1,30
+  ARMOR=40
+  BLOODCOLOR=0
+
+  CAN=MT_GHOST|MT_WALK|MT_RUN|MT_FLY
+  TEVENTS=e_deceit_ghost  
+  TEVENTS=e_Undead
+  
+
+ON=@Create
+    NPC=BRAIN_UNDEAD
+    COLOR=color_o_skargard
+
+    STR={1000 2000}
+    DEX={30 60}
+    INT={60 90}
+
+    MAGICRESISTANCE={60.0 85.0}
+    PARRYING={60.0 85.0}
+    TACTICS={60.0 85.0}
+    WRESTLING={60.0 85.0}
+    ITEMID=60.0
+
+    KARMA={-4000 -3000}
+    FAME={1500 3000}
+
+
+ON=@SONG
+    f_song_icelings125a
+
+ON = @GetItemVars
+      VAR.ITEM.DESC These are the lesser version of the icelings. Very rare undead of the frozen lands. Known for being slow but very dangerous. Usually invisible unless struck by a weapon, they attack without warning. these beings are nearly immortal and mostly agressive.
+
+ON=@IDENTIFY
+    NAME = lesser iceling
+
+ON=@NPCRESTOCK
+    ITEM=i_ghostrecon
+
+ON=@GETHIT
+    FLAGS = (<FLAGS> & ~statf_insubstantial)
+  if ( rand(100) < 10 )
+     ACT.SOUND snd_SPELL_MANA_DRAIN
+     //	                   stats   RArmour   NSight   Prot    Incog    MReflect
+     VAR.LAYER = <eval ({  32 25   33 15     34 20    35 25   36  5    37 30     })>
+     VAR.DISPELL_ACT = <ACT>
+     ACT = <SRC.FINDLAYER.<var.layer>.uid>
+     if ( 0<ACT.UID> )
+        ACT.REMOVE
+     endif
+     ACT = <VAR.DISPELL_ACT>
+  endif
+
+ON=@DEATH
+    f_death_spirits125a 5
+    f_skargard_spirits125a 15
+    IF (rand(100) > 25)
+      REMOVE
+      RETURN 1
+    ENDIF
+    NEWITEM i_deceit_key
+    ACT.P = <P>
+    ACT.MOREZ = 2
+    ACT.COLOR = color_o_skargard
+    REMOVE
+    RETURN 1
+
+ON = @SpellEffect
+    if ( <EVAL <args>> == 48 )
+        FLAGS = (<FLAGS> & ~statf_insubstantial)
+    endif
+
+
+CATEGORY=Monsters
+SUBSECTION=deceit bogs
+DESCRIPTION=lesser iceling
+
+
+[CHARDEF c_deceit_wraith]
+  NAME=Ghost 
+  SOUND=snd_MONSTER_GHOST1
+  ICON=i_pet_GHOUL
+  ID=c_SPECTRE
+
+  DAM=10,40
+  ARMOR=50
+
+  CAN=MT_GHOST|MT_WALK|MT_RUN|MT_FLY
+  TEVENTS=e_deceit_ghost
+  TEVENTS=e_Undead
+  
+
+ON=@Create
+    NPC=BRAIN_UNDEAD
+    COLOR=color_o_skargard
+
+    STR={2000 3000}
+    DEX={30 60}
+    INT={60 90}
+
+
+    PARRYING={50.0 75.0}
+    TACTICS={50.0 75.0}
+    FENCING={50.0 75.0}
+    ITEMID=62.0
+
+    KARMA={-4000 -3000}
+    FAME={2000 3000}
+
+
+ON=@SONG
+    f_song_icelings125a
+
+ON = @GetItemVars
+      VAR.ITEM.DESC Icelings: Very rare undead of the frozen lands. Known for being slow but very dangerous. Usually invisible unless struck by a weapon, they attack without warning. these beings are nearly immortal and mostly agressive
+
+ON=@IDENTIFY
+    NAME=iceling
+
+ON=@NPCRESTOCK
+    ITEM=i_ghostrecon
+
+ON=@GETHIT
+    FLAGS = (<FLAGS> & ~statf_insubstantial)
+  if ( rand(100) < 30 )
+     ACT.SOUND snd_SPELL_MANA_DRAIN
+     //	                   stats   RArmour   NSight   Prot    Incog    MReflect
+     VAR.LAYER = <eval ({  32 25   33 15     34 20    35 25   36  5    37 30     })>
+     VAR.DISPELL_ACT = <ACT>
+     ACT = <SRC.FINDLAYER.<var.layer>.uid>
+     if ( 0<ACT.UID> )
+        ACT.REMOVE
+     endif
+     ACT = <VAR.DISPELL_ACT>
+  endif
+
+ON=@DEATH
+    f_death_spirits125a 7
+    f_skargard_spirits125a 21
+    REMOVE
+    RETURN 1
+
+ON = @SpellEffect
+    if ( <EVAL <args>> == 48 )
+        FLAGS = (<FLAGS> & ~statf_insubstantial)
+    endif
+
+
+CATEGORY=Monsters
+SUBSECTION=deceit bogs
+DESCRIPTION=iceling
+
+[CHARDEF c_deceit_greater_iceling]
+  NAME=Ghost
+  SOUND=snd_MONSTER_GHOST1
+  ICON=i_pet_GHOUL
+  ID=c_SPECTRE
+
+  DAM=20,50
+  ARMOR=60
+  
+  CAN=MT_GHOST|MT_WALK|MT_RUN|MT_FLY
+  TEVENTS=e_deceit_ghost
+  TEVENTS=e_Undead
+  
+
+ON=@Create
+    NPC=BRAIN_UNDEAD
+    COLOR=color_o_skargard
+
+    STR={3000 5000}
+    DEX={30 60}
+    INT={60 90}
+
+    PARRYING={50.0 100.0}
+    TACTICS={50.0 100.0}
+    FENCING={50.0 100.0}
+    ITEMID=64.0
+
+    KARMA={-4000 -3500}
+    FAME={2500 3000}
+
+ON=@SONG
+    f_song_icelings125a
+
+ON = @GetItemVars
+      VAR.ITEM.DESC These are the greater version of the dangerous icelings. Very rare undead of the frozen lands. Known for being slow but very dangerous. Usually invisible unless struck by a weapon, they attack without warning. these beings are nearly immortal and mostly agressive
+
+ON=@IDENTIFY
+    NAME=greater iceling
+
+ON=@NPCRESTOCK
+    ITEM=i_ghostrecon
+
+ON=@GETHIT
+    FLAGS = (<FLAGS> & ~statf_insubstantial)
+  if ( rand(100) < 50 )
+     ACT.SOUND snd_SPELL_MANA_DRAIN
+     //	                   stats   RArmour   NSight   Prot    Incog    MReflect
+     VAR.LAYER = <eval ({  32 25   33 15     34 20    35 25   36  5    37 30     })>
+     VAR.DISPELL_ACT = <ACT>
+     ACT = <SRC.FINDLAYER.<var.layer>.uid>
+     if ( 0<ACT.UID> )
+        ACT.REMOVE
+     endif
+     ACT = <VAR.DISPELL_ACT>
+  endif
+
+ON=@DEATH
+    f_death_spirits125a 15
+    f_skargard_spirits125a 45
+    REMOVE
+    RETURN 1
+
+ON = @SpellEffect
+    if ( <args> == 48 )
+        FLAGS = (<FLAGS> & ~statf_insubstantial)
+    endif
+
+
+CATEGORY=Monsters
+SUBSECTION=deceit bogs
+DESCRIPTION=greater iceling
+
+
+
+  /////////////////
+ //Deceit Ghosts//
+/////////////////
+
+[CHARDEF c_deceit_ghost_archer]
+  NAME=Ghost
+  ID=C_MAN
+
+  DAM=15,25
+  ARMOR=15
+
+  CAN=MT_GHOST|MT_EQUIP|MT_USEHANDS|MT_WALK|MT_MALE|MT_RUN|MT_FLY
+  TEVENTS=e_deceit_ghost
+  TEVENTS=e_undead
+  
+
+  BLOODCOLOR=0
+
+ON=@Create
+  COLOR=07fff
+
+  STR={100 120}
+  DEX={150 200}
+  INT={50 60}
+
+  ARCHERY={100.0 120.0}
+  TACTICS={70.0 90.0}
+  WRESTLING={25.0 40.0}
+  ITEMID=66.0
+
+  NPC=BRAIN_UNDEAD
+
+  KARMA={-4000 -5000}
+  FAME={4000 5000}
+
+  ITEMNEWBIE=i_crossbow_heavy_ghost
+  ITEMNEWBIE=i_CHAINMAIL_TUNIC
+  COLOR=07fff
+  ITEMNEWBIE=i_RINGMAIL_GLOVES
+  COLOR=07fff
+  ITEMNEWBIE=i_RINGMAIL_SLEEVES
+  COLOR=07fff
+  ITEMNEWBIE=i_CHAINMAIL_leggings
+  COLOR=07fff
+  ITEMNEWBIE=i_chainmail_coif
+  COLOR=07fff
+  ITEMNEWBIE=i_boots_calf
+  COLOR=07fff
+
+ON=@SONG
+    f_song_deceit_ghosts125a
+
+ON = @GetItemVars
+      VAR.ITEM.DESC Deceit ghosts: Very rare undead of the frozen lands, found only in the deepest of deceit dungeon. Usually invisible unless struck by a weapon, they attack without warning. Archers are extremely dangerous.
+
+ON=@IDENTIFY
+    NAME=#NAMES_ELF_MALE the deceit ghost archer 
+
+ON=@NPCRESTOCK
+    ITEM=i_ghostrecon
+
+ON=@GETHIT
+    FLAGS = (<FLAGS> & ~statf_insubstantial)
+
+ON=@DEATH
+    f_death_spirits125a 14
+    f_skargard_spirits125a 50
+    REMOVE
+    RETURN 1
+
+ON = @SpellEffect
+    if ( <args> == 48 )
+        FLAGS = (<FLAGS> & ~statf_insubstantial)
+    endif
+
+
+CATEGORY=Monsters
+SUBSECTION=deceit bogs
+DESCRIPTION=ghost archer
+
+
+[CHARDEF c_deceit_ghost_warrior]
+  NAME=Ghost
+  ID=C_MAN
+
+  CAN=MT_GHOST|MT_EQUIP|MT_USEHANDS|MT_WALK|MT_MALE|MT_RUN|MT_FLY
+  TEVENTS=e_deceit_ghost
+  TEVENTS=e_undead
+  
+
+  DAM=20,30
+  ARMOR=15
+
+  BLOODCOLOR=0
+
+ON=@Create
+    COLOR=07fff
+
+    STR={250 500}
+    DEX={140 165}
+    INT={50 60}
+
+    MAGICRESISTANCE={35.0 45.0}
+    TACTICS={70.0 90.0}
+    SWORDSMANSHIP={100.0 120.0}
+
+    NPC=BRAIN_UNDEAD
+
+    KARMA={-5000 -4000}
+    FAME={2500 4000}
+
+    ITEMNEWBIE=i_sword_long_skargard
+    ITEMNEWBIE=i_CHAINMAIL_TUNIC
+    COLOR=07fff
+    ITEMNEWBIE=i_RINGMAIL_GLOVES
+    COLOR=07fff
+    ITEMNEWBIE=i_RINGMAIL_SLEEVES
+    COLOR=07fff
+    ITEMNEWBIE=i_CHAINMAIL_leggings
+    COLOR=07fff
+    ITEMNEWBIE=i_chainmail_coif
+    COLOR=07fff
+    ITEMNEWBIE=i_boots_calf
+    COLOR=07fff
+
+ON=@SONG
+    f_song_deceit_ghosts125a
+
+ON = @GetItemVars
+      VAR.ITEM.DESC Delucia ghosts: Very rare undead of the frozen lands, found only in the deepest of deceit dungeon. Usually invisible unless struck by a weapon, they attack without warning. They can be taken only by the strongest of warriors and mages.
+
+ON=@IDENTIFY
+    NAME=#NAMES_ELF_MALE the deceit ghost warrior
+
+ON=@NPCRESTOCK
+    ITEM=i_ghostrecon
+
+ON=@GETHIT
+    FLAGS = (<FLAGS> & ~statf_insubstantial)
+  if ( rand(100) < 40 )
+     ACT.SOUND snd_SPELL_MANA_DRAIN
+     //	                   stats   RArmour   NSight   Prot    Incog    MReflect
+     VAR.LAYER = <eval ({  32 25   33 15     34 20    35 25   36  5    37 30     })>
+     VAR.DISPELL_ACT = <ACT>
+     ACT = <SRC.FINDLAYER.<var.layer>.uid>
+     if ( 0<ACT.UID> )
+        ACT.REMOVE
+     endif
+     ACT = <VAR.DISPELL_ACT>
+  endif
+
+ON=@DEATH
+    f_death_spirits125a 12
+    f_skargard_spirits125a 25
+    REMOVE
+    RETURN 1
+
+ON = @SpellEffect
+    if ( <args> == 48 )
+        FLAGS = (<FLAGS> & ~statf_insubstantial)
+    endif
+
+
+CATEGORY=Monsters
+SUBSECTION=deceit bogs
+DESCRIPTION=ghost warrior
+
+
+[CHARDEF c_delucia_ghost_chief]//delucia? is this deliberate lol?
+  NAME=Ghost
+  ID=C_MAN
+
+  DAM=20,25
+  ARMOR=20
+
+  CAN=MT_GHOST|MT_EQUIP|MT_USEHANDS|MT_WALK|MT_MALE|MT_RUN|MT_FLY
+  TEVENTS=e_deceit_ghost
+  TEVENTS=e_undead
+  
+
+  BLOODCOLOR=0
+
+ON=@Create
+    COLOR=07ffff
+
+    STR={400 800}
+    DEX={81 95}
+    INT={50 60}
+
+    MAGICRESISTANCE={60.0 75.0}
+    TACTICS={70.0 90.0}
+    WRESTLING={40.0 55.0}
+    SWORDSMANSHIP=100.0
+    PARRYING={75.0 100.0}
+    ITEMID=66.0
+
+    NPC=BRAIN_UNDEAD
+
+    KARMA={-4000 -6000}
+    FAME={3500 5000}
+
+    ITEMNEWBIE=i_hair_krisna
+    COLOR=07fff
+    ITEMNEWBIE=i_sword_long_skargard
+    ITEMNEWBIE=i_platemail_gloves
+    COLOR=07fff
+    ITEMNEWBIE=i_platemail_arms
+    COLOR=07fff
+    ITEMNEWBIE=i_platemail_gorget
+    COLOR=07fff
+    ITEMNEWBIE=i_platemail_chest
+    COLOR=07fff
+    ITEMNEWBIE=i_platemail_leggings
+    COLOR=07fff
+
+ON=@SONG
+    f_song_deceit_ghosts125a
+    f_skargard_spirits125a 50
+
+ON = @GetItemVars
+      VAR.ITEM.DESC Delucia ghosts: Very rare undead of the frozen lands, found only in the deepest of deceit dungeon. Usually invisible unless struck by a weapon, they attack without warning. Only the very best survive and encounter with a Lord.
+
+ON=@IDENTIFY
+    NAME=#NAMES_ELF_MALE the deceit ghost lord
+
+ON=@NPCRESTOCK
+    ITEM=i_ghostrecon
+
+ON=@GETHIT
+    FLAGS = (<FLAGS> & ~statf_insubstantial)
+  if ( rand(100) < 60 )
+     ACT.SOUND snd_SPELL_MANA_DRAIN
+     //	                   stats   RArmour   NSight   Prot    Incog    MReflect
+     VAR.LAYER = <eval ({  32 25   33 15     34 20    35 25   36  5    37 30     })>
+     VAR.DISPELL_ACT = <ACT>
+     ACT = <SRC.FINDLAYER.<var.layer>.uid>
+     if ( 0<ACT.UID> )
+        ACT.REMOVE
+     endif
+     ACT = <VAR.DISPELL_ACT>
+  endif
+
+ON=@DEATH
+    f_death_spirits125a 16
+    IF (rand(100) > 10)
+      REMOVE
+      RETURN 1
+    ENDIF
+    NEWITEM i_deceit_key
+    ACT.P = <P>
+    ACT.MOREZ = 3
+    ACT.COLOR = 0486
+    REMOVE
+    RETURN 1
+
+ON = @SpellEffect
+    if ( <args> == 48 )
+        FLAGS = (<FLAGS> & ~statf_insubstantial)
+    endif
+
+
+CATEGORY=Monsters
+SUBSECTION=deceit bogs
+DESCRIPTION=ghost commander
+
+
+[CHARDEF c_deceit_ghost_warrioress]
+  ID=C_WOMAN
+  NAME=Ghost
+
+  DAM=10,20
+  ARMOR=15
+
+  CAN=MT_GHOST|MT_EQUIP|MT_USEHANDS|MT_WALK|MT_MALE|MT_RUN|MT_FLY
+  TEVENTS=e_deceit_ghost
+  TEVENTS=e_undead
+  
+
+  BLOODCOLOR=0
+
+ON=@Create
+    COLOR=07fff
+
+    STR={200 400}
+    DEX={150 300}
+    INT={50 60}
+
+    MAGICRESISTANCE={35.0 45.0}
+    TACTICS={70.0 90.0}
+    WRESTLING={40.0 55.0}
+    MACEFIGHTING={70.0 90.0}
+    ITEMID=64.0
+
+    NPC=BRAIN_UNDEAD
+
+    KARMA={-3000 -4000}
+    FAME={2500 4000}
+
+    ITEMNEWBIE=i_hair_long
+    COLOR=07fff
+    ITEMNEWBIE=i_axe_war_skargard
+    ITEMNEWBIE=i_armor_female_leather
+    COLOR=07fff
+    ITEMNEWBIE=random_shoes
+    COLOR=07fff
+
+ON=@SONG
+    f_song_deceit_ghosts125a
+
+ON = @GetItemVars
+      VAR.ITEM.DESC These are the lesser version of the dangerous north spirits. Very rare undead of the frozen lands, they die as quickly as they bite. Usually invisible unless struck by a weapon, they attack without warning and can kill with a single touch.
+
+ON=@IDENTIFY
+    NAME=#NAMES_ELF_FEMALE the deceit ghost warrioress
+
+ON=@NPCRESTOCK
+    ITEM=i_ghostrecon
+
+ON=@GETHIT
+    FLAGS = (<FLAGS> & ~statf_insubstantial)
+  if ( rand(100) < 50 )
+     ACT.SOUND snd_SPELL_MANA_DRAIN
+     //	                   stats   RArmour   NSight   Prot    Incog    MReflect
+     VAR.LAYER = <eval ({  32 25   33 15     34 20    35 25   36  5    37 30     })>
+     VAR.DISPELL_ACT = <ACT>
+     ACT = <SRC.FINDLAYER.<var.layer>.uid>
+     if ( 0<ACT.UID> )
+        ACT.REMOVE
+     endif
+     ACT = <VAR.DISPELL_ACT>
+  endif
+
+ON=@DEATH
+    f_death_spirits125a 12
+    f_skargard_spirits125a 25
+    REMOVE
+    RETURN 1
+
+ON = @SpellEffect
+    if ( <args> == 48 )
+        FLAGS = (<FLAGS> & ~statf_insubstantial)
+    endif
+
+
+CATEGORY=Monsters
+SUBSECTION=deceit bogs
+DESCRIPTION=ghost warrioress
+
+
+//Relevant items
+
+[ITEMDEF i_ghostrecon]
+  ID=i_memory
+  NAME=Ghost Recon
+  TYPE=t_eq_script
+
+ON=@CREATE
+    TIMER=3
+
+ON=@TIMER
+    TIMER={ 5 10 }
+    //IF !(<CONT.FLAGS>|statf_war)
+        CONT.FLAGS = (<CONT.FLAGS>|statf_insubstantial)
+    //ENDIF
+    RETURN 1
+
+[ITEMDEF i_door_displacer]
+  ID=i_memory
+  NAME=Door displacer
+  TYPE=t_eq_script
+
+ON=@TIMER
+    IF ( <MORE1> == 01 )
+       MORE1 = 00
+       TIMER = 30
+       try uid.<MORE2>.SOUND = 01ec
+       try uid.<MORE2>.MAPPLANE = 100
+       try uid.<MORE2>.REMOVEFROMVIEW
+       try uid.<MORE2>.UPDATE
+       UPDATE
+       RETURN 1
+    ENDIF
+    try uid.<MORE2>.MAPPLANE = 0
+    try uid.<MORE2>.COLOR = <COLOR>
+    try uid.<MORE2>.SOUND = 01f6
+    UPDATE
+    REMOVE
+    RETURN 1
+
+[FUNCTION f_death_spirits125a]
+   IF (rand(100) > <args>)
+      RETURN 0
+   ENDIF
+   NEWITEM i_ore_skargard
+   ACT.P = <P>
+   RETURN 0
+
+[FUNCTION f_skargard_spirits125a]
+   IF (rand(100) > (<args>*2) )
+      RETURN 0
+   ENDIF
+   NEWITEM i_skargard_spirits
+   IF (rand(100) > (<args>*2) )
+      ACT.AMOUNT = 2
+   endif
+   ACT.P = <P>
+   RETURN 0
+
+[FUNCTION f_song_north_spirits125a]
+    VAR.SONG.NAME = Song of the northern spirits.
+    VAR.SONG = 6
+    VAR.SONG.1 = Spirit, spirit, spirit of the north.
+    VAR.SONG.2 = the very smallest brother of the brood
+    VAR.SONG.3 = you won't see him coming, you won't hear a sound
+    VAR.SONG.4 = the cold of his touch is stronger than a hound
+    VAR.SONG.5 = you better find him first, you better take him down
+    VAR.SONG.6 = or ice you will be, to eternity!
+
+[FUNCTION f_song_icelings125a]
+    VAR.SONG.NAME = Song of the icelings.
+    VAR.SONG = 6
+    VAR.SONG.1 = they are like walls of ice.
+    VAR.SONG.2 = and slower than mice
+    VAR.SONG.3 = but try and hit one
+    VAR.SONG.4 = you'll see your steel twist
+    VAR.SONG.5 = and the shattering of your wrist
+    VAR.SONG.6 = beware, for they are stronger !
+
+[FUNCTION f_song_deceit_ghosts125a]
+    VAR.SONG.NAME = Song of the deceit ghosts.
+    VAR.SONG = 6
+    VAR.SONG.1 = souls of yesterday
+    VAR.SONG.2 = cursed and bound to fire and ice
+    VAR.SONG.3 = dont ever draw near
+    VAR.SONG.4 = dont even come close
+    VAR.SONG.5 = if test them you must
+    VAR.SONG.6 = their fate you will share
+
+[ITEMDEF i_crossbow_heavy_ghost]
+  ID = 013fc
+  TDATA1 = mat_composite
+  TYPE = T_WEAPON_XBOW
+  WEIGHT = 9
+  REQSTR = 10
+  DAM = 11, 43
+  SKILL = Archery
+  TWOHANDS = Y
+  DUPELIST = 013fd
+  TDATA3 = i_xbolt
+  TDATA4 = i_fx_glow_arrow
+  SKILLMAKE = BOWCRAFT 944, t_weapon_fence
+  RESOURCES = 12 i_log_composite, 1 i_hinge, 1 i_wire_steel
+
+ON = @Create
+        HITPOINTS = 1000
+        COLOR = 07fff
+        ATTR = 00021
+
+[TYPEDEF t_deceit_key]
+ON=@DCLICK
+    TARGET Where would you like to use this?
+    RETURN 1
+
+ON=@TARGON_ITEM
+    IF ( <MOREZ> == <SRC.TARG.MOREZ> )
+        SRC.SYSMESSAGE The key turns to dust and the door fades.
+        SRC.NEWITEM i_door_displacer
+        SRC.ACT.TIMER = 2
+        SRC.ACT.MORE1 = 01
+        SRC.ACT.MORE2 = <SRC.TARG.UID>
+        SRC.ACT.COLOR = <SRC.TARG.COLOR>
+        SRC.TARG.COLOR = 07a1
+        SRC.TARG.SOUND = 022c
+        SRC.ACT.EQUIP
+        REMOVE
+        RETURN 1
+    ENDIF
+    SRC.SYSMESSAGE You put the key in the lock but nothing happens.
+    RETURN 1
+
+[TYPEDEF t_deceit_door]
+ON=@DCLICK
+    SRC.SYSMESSAGE The door doesn't budge, it looks like it has a special lock!
+    RETURN 1
+
+ON=@TIMER
+    P = 5108,8,-5
+    RETURN 1
+
+[ITEMDEF i_deceit_key]
+  ID=01012
+  NAME=glowing key
+  WEIGHT=1
+
+ON=@CREATE
+    TYPE=t_deceit_key
+
+[TYPEDEF t_deceit_getaway]
+
+ON = @STEP
+     IF ( <SRC.ISDEAD> )
+        SRC.GO 1831,2417
+        SRC.SYSMESSAGEUA 90 0 0 0 You feel like you have entered a long forgotten passageway.
+        RETURN 1
+     ENDIF
+     RETURN 0
+
+[EOF]

@@ -1,0 +1,445 @@
+///////////////////////////////
+//Zaks Lenard NPC Quest, v1.0//
+///////////////////////////////
+
+/////////
+//NPC's//
+/////////
+
+[CHARDEF c_h_Lenard]
+   Name=Lenard
+   ID=c_man
+   
+   TSPEECH=spk_Quest_Lenard
+
+ON=@CLICK
+MESSAGE @0AFE [Quest NPC]
+
+ON=@NPCSeeNewPlayer
+   SAY Well hello there <SRC.SEX Sir/Madam>, please, come in and take a seat. 
+   SAY I think you could help me with a little problem Im having...
+
+TEVENTS=e_npc_quest
+ON=@Create
+   NPC=Brain_human
+   Color=Colors_skin
+
+   STR={80 90}
+   INT={50 60}
+   DEX={80 90}
+
+   Wrestling=80
+   Swordsmanship=80
+   Tactics=80
+   Parrying=50
+   Magery=50
+
+   ITEMNEWBIE=i_robe
+   Color=0048d
+   ITEMNEWBIE=i_bandana
+   Color=0048d
+
+ON=@NPCRestock
+   ITEM=i_candle
+   ITEM=random_shoes
+   color=Colors_neutral
+   ITEM=Random_coin_purse
+
+CATEGORY=Imperial uo
+SUBSECTION=Lenard Quest
+DESCRIPTION=Lenard
+
+[CHARDEF c_h_Oldman]
+   Name=Old Man Flynn
+   ID=c_man
+   
+   TSPEECH=spk_quest_old_man_flynn
+
+ON=@NPCSeeNewPlayer
+   SAY Ohh what do you want? If you are here on an errand, who sent you???
+
+TEVENTS=e_npc_quest
+ON=@Create
+   NPC=Brain_human
+   Color=Colors_skin
+  
+   STR={80 90}
+   INT={50 60}
+   DEX={80 90}
+
+   Wrestling=80
+   Swordsmanship=80
+   Tactics=80
+   Parrying=50
+   Magery=50
+
+   ITEMNEWBIE=i_robe
+   Color=0072a
+
+ON=@NPCRestock
+   ITEM=i_candle
+   ITEM=random_shoes
+   color=Colors_neutral
+   ITEM=Random_coin_purse
+
+CATEGORY=Imperial uo
+SUBSECTION=Lenard Quest
+DESCRIPTION=Old Man Flynn
+
+
+[CHARDEF c_m_evilalchemist]
+Name=Andromida, Evil Alchemist
+ID=c_man
+
+DAM={120 140}
+
+ON=@NPCSeeNewPlayer
+   Say How did you find me here? You shall not leave!!!
+
+ON=@Create
+   NPC=Brain_Monster
+   color=colors_skin
+
+   STR={200 250}
+   INT={100 120}
+   DEX={90 100}
+
+   KARMA={-3000 -4000}
+   FAME={2500 4000}
+	
+   Wrestling=75.0
+   Swordsmanship=75.0
+   Tactics=75.0
+   Parrying=45.0
+   Magery=50.0
+
+   ITEMNEWBIE=i_robe
+   color=0485
+
+   ITEMNEWBIE=i_chainmail_coif
+   ITEMNEWBIE=i_chainmail_leggings
+   ITEMNEWBIE=i_chainmail_tunic
+   ITEMNEWBIE=i_ringmail_gloves
+
+ON=@NPCRestock
+   ITEM={ random_gold_pile 1 0 2 }
+   ITEM=i_flask_emptyness
+
+CATEGORY=Imperial uo
+SUBSECTION=Lenard Quest
+DESCRIPTION=Andromida
+
+
+[CHARDEF c_m_wyrm_undead_lenard]
+   Name=Undead Wyrm
+   ID=c_dragon_green
+   
+   DAM={50,60}
+   ARMOR=50   
+   RESOURCES=99 i_ribs_raw,8 i_reag_dragon_blood,2 i_hide
+
+ON=@Create
+   NPC=brain_dragon
+   FAME={3000 9000}
+   KARMA={-5000 -5999}
+
+   COLOR=03c0
+   STR={795 825}
+   DEX={200 300}
+   INT=10000
+
+   PARRYING={90.0 100.0}
+   MAGICRESISTANCE={99.0 100.0}
+   TACTICS={98.0 100.0}
+   WRESTLING={90.0 93.0}
+   NECROMANCY={90.0 100.0}
+   MAGERY={90.0 100.0}
+
+   ITEMNEWBIE=i_spellbook
+   ADDSPELL=s_Hallucination
+   ADDSPELL=s_summon_undead
+
+ON=@NPCRestock
+   ITEM=i_stone_desire
+
+ON=@DEATH
+   loot_DRAGON
+   loot_dragonrares_Med
+
+CATEGORY=Imperial uo
+SUBSECTION=Lenard Quest
+DESCRIPTION=Undead Wyrm
+
+
+[CHARDEF c_m_meldorm]
+   Name=Meldorm, Priest
+   ID=c_man
+   
+   DAM={50 75}
+   ARMOR=50
+
+ON=@NPCSeeNewPlayer
+   Say Who dares to enter my sancturary?
+
+TEVENTS=e_npc_quest
+ON=@Create
+   NPC=Brain_monster
+   color=colors_skin
+
+   KARMA={-3000 -4000}
+   FAME={2500 4000}
+
+   STR={200 300}
+   INT={100 120}
+   DEX=100
+
+   Wrestling=80.0
+   Swordsmanship=80.0
+   Tactics=80.0
+   Parrying=50.0
+   Magery=50.0
+
+   ITEMNEWBIE=i_spellbook
+   ADDSPELL=s_harm
+   ADDSPELL=s_fireball
+   ADDSPELL=s_poisen
+   ITEMNEWBIE=i_robe
+   color=0485
+
+ON=@NPCRestock
+   ITEM=i_candle
+   ITEM=i_silver_pestle_mortar
+
+ON=@DEATH
+  y_region_loot_death
+  y_region_loot_calculator
+  loot_LIZARDMAN
+
+CATEGORY=Imperial uo
+SUBSECTION=Lenard Quest
+DESCRIPTION=Meldorm
+
+/////////
+//ITEMS//
+/////////
+
+[ITEMDEF i_flask_emptyness]
+   Name=Flask of Emptyness
+   ID=i_flask_long_empty
+   Type=t_normal
+   VALUE=300
+   Weight=1
+
+CATEGORY=Imperial uo
+SUBSECTION=Lenard Quest items
+DESCRIPTION=Flask of Emptyness
+
+[ITEMDEF i_silver_pestle_mortar]
+   Name=Silver Pestle & Mortar
+   ID=i_mortar_pestle
+   Type=t_normal
+   Weight=1
+
+ON=@Create
+   Color=07b5
+
+CATEGORY=Imperial uo
+SUBSECTION=Lenard Quest items
+DESCRIPTION=Silver Pestle & Mortar
+
+[ITEMDEF i_stone_desire]
+   Name=Stone of Desire
+   ID=i_rock_plain
+   Type=t_normal
+   Weight=5
+
+ON=@Create
+   Color=08ae
+
+CATEGORY=Imperial uo
+SUBSECTION=Lenard Quest items
+DESCRIPTION=Stone of Desire
+
+[ITEMDEF i_lenard_list]
+   Name=Lenard's Item List
+   ID=i_deed
+   Type=t_normal
+   Weight=1
+
+CATEGORY=Imperial uo
+SUBSECTION=Lenard Quest items
+DESCRIPTION=Item List
+
+[ITEMDEF i_powder_desire]
+   Name=Powder of Desire
+   ID=0eef
+   TYPE=t_normal
+
+ON=@Create
+   Color=08ae
+
+CATEGORY=Imperial uo
+SUBSECTION=Lenard Quest items
+DESCRIPTION=Powder of Desire
+
+[TEMPLATE tm_lenards_items]
+   Container=i_bag
+   ITEM=i_powder_desire
+   ITEM=i_flask_emptyness
+
+//////////
+//Speech//
+//////////
+
+[SPEECH spk_Quest_Lenard]
+ON=*help*
+ON=*quest*
+   IF (<SRC.STR> <= 75)
+      SAY I feel that you would need more strength before helping with any of my problems...
+   ELSEIF ( <SRC.TAG.NPC_QUEST_START> & NPCQ_Lenard )
+      SAY You are already helping me <SRC.SEX Sir/Lady>
+   ELSE
+      SAY I would like you to take a list for me to Old Man Flynn. 
+      SAY If you can help, and have time to return the goods afterwards, please say "agree".
+   ENDIF
+   RETURN 1
+   
+ON=*agree*
+   IF (<SRC.STR> <= 75)
+      SAY I feel that you would need more strength before helping with any of my problems...
+   ELSEIF ( <SRC.TAG.NPC_QUEST_START> & NPCQ_Lenard )
+      SAY You already agreed to do help me.
+   ELSE
+      SRC.TAG.NPC_QUEST_START = <eval ( <SRC.TAG.NPC_QUEST_START> | NPCQ_Lenard )>
+      SRC.NEWITEM=i_lenard_list
+      SRC.ACT.BOUNCE 
+      SOUND=01FC
+      SAY Take this list too my old friend Flynn and return with the items he will give you. To find where he is, please ask for his *Location*
+      RETURN 0
+   ENDIF
+   RETURN 1
+
+ON=*Location*
+ON=*Place*                           
+   IF ( <SRC.TAG.NPC_QUEST_START> & NPCQ_Lenard )
+      SAY Do you know of the Crossroads in Britains Northern Teritory? 
+      SAY Well, it is through the mountain pass. 
+      SAY When you are there, keep your eyes open for a Wooden hut. Flynn lives there.
+   ELSE
+      SAY You must agree to help me, to get the information young friend.
+   ENDIF
+   RETURN 1
+
+ON=*reward*
+   IF !( <SRC.TAG.NPC_QUEST_START> & NPCQ_Flynn )
+      SAY I will not tell you where my friend lives, agree to help me or leave!
+      RETURN 1
+   ELSEIF (( <SRC.TAG.NPC_QUEST_START> & NPCQ_Flynn ) && !<SRC.RESTEST 1 i_powder_desire 1 i_flask_emptyness>)
+      SAY Return with my items for a handsome reward <SRC.SEX Sir/Lady>
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE <NAME> hands you a handsome reward and then bids you fare-well.
+      SRC.CONSUME 1 i_powder_desire
+      SRC.CONSUME 1 i_flask_emptyness
+      SRC.NEWITEM tm_wrestling_outfit
+      SRC.ACT.BOUNCE
+      SRC.NEWITEM i_gold,1000
+      SRC.ACT.BOUNCE
+      SRC.TAG.NPC_QUEST_START = <eval ( <SRC.TAG.NPC_QUEST_START> &~ NPCQ_Flynn )>
+      SRC.TAG.NPC_QUEST_DONE = <eval ( <SRC.TAG.NPC_QUEST_DONE> | NPCQ_Flynn )>      
+      SRC.TAG.NPC_QUEST_START = <eval ( <SRC.TAG.NPC_QUEST_START> &~ NPCQ_Lenard )>
+      SRC.TAG.NPC_QUEST_DONE = <eval ( <SRC.TAG.NPC_QUEST_DONE> | NPCQ_Lenard )>      
+      REMOVE
+      ANNOUNCE <SRC.NAME> has sucesfully helped Lenard with his studies.
+      RETURN 0
+   ENDIF
+
+[SPEECH spk_quest_old_man_flynn]
+on=*deliver*
+on=*lenard*
+   IF !( <SRC.TAG.NPC_QUEST_START> & NPCQ_Lenard )
+      SAY Please leave my home! I did nothing wrong to you!
+   ELSEIF (( <SRC.TAG.NPC_QUEST_START> & NPCQ_Lenard ) && !<SRC.RESTEST 1 i_lenard_list>)
+      SAY I was told that someone by the name of <SRC.NAME> was going to bring me a list from my dear friend Lenard. 
+      SAY If you have this list in your possession, please bring it to me.
+   ELSE
+      SAY Now let me see... Ahh yes, <SRC.NAME> , to complete this quest you will have to get three things for me. 1) a Rock of Desire. 2) A silver Pestle and Mortar, 3) Flask of Emptyness. 
+      SAY Say a number or item to find out more. When you have all three, say "complete"
+      SRC.CONSUME 1 i_lenard_list
+      SRC.TAG.NPC_QUEST_START = <eval ( <SRC.TAG.NPC_QUEST_START> | NPCQ_Flynn )>
+   ENDIF
+   RETURN 1
+
+ON=*1*
+ON=*one*
+ON=*Desire*
+ON=*rock*
+   IF !( <SRC.TAG.NPC_QUEST_START> & NPCQ_Lenard )
+      SAY Stop harassing me, please leave me alone!
+   ELSEIF ( <SRC.TAG.NPC_QUEST_START> & NPCQ_Flynn )
+      SAY The Stone of Desire can be found on an Undead Wyrm at an anceint ruin somewhere between Vesper and Cove.
+   ELSE 
+      SAY Are you here to deliver a list from my daer friend, Lenard? 
+   ENDIF
+   RETURN 1
+   
+ON=*2*
+ON=*two*
+ON=*Silver*
+ON=*Pestle*
+ON=*Mortar*
+   IF !( <SRC.TAG.NPC_QUEST_START> & NPCQ_Lenard )
+      SAY Stop harassing me, please leave me alone!
+   ELSEIF ( <SRC.TAG.NPC_QUEST_START> & NPCQ_Flynn )
+      SAY A silver pestle and mortar is known to be in the possession of an evil priest who goes by the name of Meldorm. He is said to live in the mountains above Cavtous dungeon.
+   ELSE 
+      SAY Are you here to deliver a list from my daer friend, Lenard? 
+   ENDIF
+   RETURN 1
+   
+ON=*3*
+ON=*Three*
+ON=*Flask*
+ON=*Emptyness*
+   IF !( <SRC.TAG.NPC_QUEST_START> & NPCQ_Lenard )
+      SAY Stop harassing me, please leave me alone!
+   ELSEIF ( <SRC.TAG.NPC_QUEST_START> & NPCQ_Flynn )
+      SAY A flask of Emptyness can be found at the home of the Evil Alchemist "Andromida". He is said to have residence in a hut on the island known as Bucaneers Den.
+   ELSE
+      SAY Are you here to deliver a list from my dear friend, Lenard?
+   ENDIF
+   RETURN 1
+
+ON=*complete*
+ON=*reward*
+   IF !( <SRC.TAG.NPC_QUEST_START> & NPCQ_Lenard )
+      SAY Stop harassing me, please leave me alone!
+   ELSEIF (( <SRC.TAG.NPC_QUEST_START> & NPCQ_Lenard ) && !<SRC.RESTEST 1 i_stone_desire>)
+      SAY You need all three things before I can give you Lenards Items.
+   ELSEIF (( <SRC.TAG.NPC_QUEST_START> & NPCQ_Lenard ) && !<SRC.RESTEST 1 i_silver_pestle_mortar>)
+      SAY You need all three things before I can give you Lenards Items.
+   ELSEIF (( <SRC.TAG.NPC_QUEST_START> & NPCQ_Lenard ) && !<SRC.RESTEST 1 i_flask_emptyness>)
+      SAY You need all three things before I can give you Lenards Items.
+   ELSE
+      SRC.CONSUME 1 i_stone_desire,1 i_silver_pestle_mortar,1 i_flask_emptyness
+      SRC.NEWITEM tm_lenards_items
+      SRC.ACT.BOUNCE
+      EMOTE grind a Stone of desire to dust.
+      SAY Well done <src.name> , now take the powder and the flask too Lenard. Ohh how happy he shall be.
+   ENDIF
+   RETURN 1
+
+[TEMPLATE tm_wrestling_outfit]
+   Container=i_bag
+   Name=Wrestling Outfit
+
+   ITEM=i_wrestling_leggings
+      ATTR=023
+   ITEM=i_wrestling_shoes
+      ATTR=023
+   ITEM=i_wrestling_shirt
+      ATTR=023
+   ITEM=i_wrestling_bandana
+      ATTR=023
+		
+[EOF]

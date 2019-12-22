@@ -1,0 +1,163 @@
+//--------------------------------------------------------------------------------------
+//By:Raistilin Majere
+//RaistilinPk@hotmail.com
+//--------------------------------------------------------------------------------------
+//X-POISON POT
+   
+[ITEMDEF i_cloud_poison]
+ID=i_TRAP_GAS
+TYPE=T_normal
+NAME=Poisonous Gas Cloud
+
+ON=@CREATE
+    ATTR=08010,ATTR_DECAY
+    TIMER=5
+
+ON=@STEP
+
+If (( !<SRC.RESTEST 1 i_rune_poison> ) && ( !<SRC.ISDEAD> ))
+       SRC.POISON 1000
+       If ( <MORE1> != <SRC.UID> )
+             SRC.HITS = (<SRC.HITS> +1)
+             SRC.DAMAGE 1, 01, <MORE1>
+             SRC.SAY <LINK.DAMAGE>
+           
+       EndIf
+      
+
+EndIf
+
+ON=@TIMER
+    REMOVE
+    RETURN 1
+
+[ITEMDEF i_cloud_poison_core]
+ID=i_TRAP_GAS
+TYPE=T_normal
+NAME=Poisonous Gas Cloud
+
+ON=@CREATE
+    ATTR=08010,ATTR_DECAY
+    TIMERD=0.2
+    
+ON=@Timer
+ VAR.TEARGAS <P>
+ TEARGAS <MORE1>
+ REMOVE
+ RETURN 1
+ 
+[ITEMDEF i_potion_explosion_poison]
+NAME  =Poison Gas Potion
+ID    =i_bottle_empty
+TYPE  =T_NORMAL
+RESOURCES=i_reag_nightshade 15, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 102.0
+VALUE	 =90
+
+ON=@Create
+  COLOR=0795
+  
+ON=@DCLICK
+  SRC.SYSMESSAGE Where would you like to throw the potion?
+  TARGETG
+  RETURN 1
+
+ON=@Targon_ground
+
+SERV.NEWITEM i_cloud_poison_core
+NEW.P=<SRC.TARGP>
+ If (<SRC.NEW.CanSeeLos>=1)
+     SRC.EMOTE throw a gas potion
+     SRC.NEW.EFFECT 0, i_bottle_empty, 7, 16, 0
+     NEW.MORE1=<SRC.UID>
+         IF <AMOUNT>>1
+             AMOUNT=<EVAL(<AMOUNT>-1)>
+    
+            Else 
+                REMOVE
+         EndIf   
+
+ Else
+     SRC.SYSMESSAGE The target is not within your line of sight
+     SRC.NEW.REMOVE
+     RETURN 1
+ EndIf
+
+ON=@Targon_char
+
+SERV.NEWITEM i_cloud_poison_core
+NEW.P=<SRC.TARGP>
+ If (<SRC.NEW.CanSeeLos>=1)
+     SRC.EMOTE throw a gas potion
+     SRC.NEW.EFFECT 0, i_bottle_empty, 7, 16, 0
+     NEW.MORE1=<SRC.UID>
+     IF <AMOUNT>>1
+        AMOUNT=<EVAL(<AMOUNT>-1)>
+     Else 
+        REMOVE
+     EndIf   
+ Else
+     SRC.SYSMESSAGE The target is not within your line of sight
+     SRC.NEW.REMOVE
+     RETURN 1
+ EndIf
+
+ON=@Targon_item
+
+SERV.NEWITEM i_cloud_poison_core
+NEW.P=<SRC.TARGP>
+ If (<SRC.NEW.CanSeeLos>=1)
+     SRC.EMOTE throw a gas potion
+     SRC.NEW.EFFECT 0, i_bottle_empty, 7, 16, 0
+     NEW.MORE1=<SRC.UID>
+         IF <AMOUNT>>1
+             AMOUNT=<EVAL(<AMOUNT>-1)>
+    
+            Else 
+                REMOVE
+         EndIf   
+
+ Else
+     SRC.SYSMESSAGE The target is not within your line of sight
+     SRC.NEW.REMOVE
+     RETURN 1
+ EndIf
+
+[FUNCTION TEARGAS]
+SERV.NEWITEM i_cloud_poison
+   NEW.P=<VAR.TEARGAS>
+   NEW.MORE1=<ARGS>
+SERV.NEWITEM i_cloud_poison
+   NEW.P=<VAR.TEARGAS>
+   NEW.MOVE -1
+   NEW.MORE1=<ARGS>
+SERV.NEWITEM i_cloud_poison
+   NEW.P=<VAR.TEARGAS>
+   NEW.MOVE -1 -1
+   NEW.MORE1=<ARGS>
+SERV.NEWITEM i_cloud_poison
+   NEW.P=<VAR.TEARGAS>
+   NEW.MOVE -1 1
+   NEW.MORE1=<ARGS>
+SERV.NEWITEM i_cloud_poison
+   NEW.P=<VAR.TEARGAS>
+   NEW.MOVE 1 -1
+   NEW.MORE1=<ARGS>
+SERV.NEWITEM i_cloud_poison
+   NEW.P=<VAR.TEARGAS>
+   NEW.MOVE 1 1
+   NEW.MORE1=<ARGS>
+SERV.NEWITEM i_cloud_poison
+   NEW.P=<VAR.TEARGAS>
+   NEW.MOVE 1
+   NEW.MORE1=<ARGS>
+SERV.NEWITEM i_cloud_poison
+   NEW.P=<VAR.TEARGAS>
+   NEW.MOVE 0 -1
+   NEW.MORE1=<ARGS>
+SERV.NEWITEM i_cloud_poison
+   NEW.P=<VAR.TEARGAS>
+   NEW.MOVE 0 1
+   NEW.MORE1=<ARGS>
+
+[EOF]

@@ -1,0 +1,185 @@
+// NPC Quest for Newbies
+// Travis "the tailor"
+// by Vidar -- 15 March 2002
+//
+// Story line: 	Old man Travis has fled to Town, because 5 Goblins
+//		has taken over his little house in the country.
+//		He would like the player to go get him his sewing kit,
+//		which he forgot in the rush.
+//		
+// Reward:	500gp and a world message.
+//
+// Characters:	Travis, 4 normal goblins and 1 Goblin mage with the sewing kit in the loot.
+//
+// Items:	Travis's sewing kit, reward template.
+
+		
+//---------- Character and monster "Old man Travis" --------------
+
+[CHARDEF c_h_travis]
+ID		= C_MAN
+NAME		= Travis
+TSPEECH		= spk_human_default
+TSPEECH		= spk_quest_travis
+
+CATEGORY	= NPC Quests
+SUBSECTION	= Travis
+DESCRIPTION	= Travis
+
+TEVENTS=e_npc_quest
+ON=@Create
+  NPC		= brain_human
+  COLOR		= colors_skin
+  FLAGS		= 010000005
+
+  STR		= 80
+  DEX		= 90
+  INT		= 80
+  TAILORING	= 95
+
+  ITEMNEWBIE	= i_lantern
+  ITEMNEWBIE	= i_hair_receding
+  COLOR		= 900   			//grey hair
+  ITEMNEWBIE	= i_beard_long
+  COLOR		= match_hair
+  ITEMNEWBIE	= i_shirt_fancy
+  COLOR		= 02b9
+  ITEMNEWBIE	= i_pants_long
+  COLOR		= 02b9
+  ITEMNEWBIE	= i_boots_thigh
+  COLOR		= 02b9
+  ITEMNEWBIE	= i_hat_feather
+  COLOR		= 02b9                    
+  ITEMNEWBIE	= i_cape
+  COLOR		= 07d1
+  ITEMNEWBIE	= i_sash
+  COLOR		= 07d1              
+  
+//---------- 
+
+[SPEECH spk_quest_travis]
+ON=*help*
+ON=*quest*
+  IF (<SRC.SKILLTOTAL> >= 2000.0)				// Too high skills and is rejected.
+     SAY You are too highly skilled young friend
+     SAY I will not bother you with my small problem
+  ELSEIF ( <SRC.TAG.NPC_QUEST_START> & NPCQ_Travis )		// Has allready agreed to do the quest.
+     SAY You allready agreed to help me.
+  ELSE		       						// Can take the quest.
+     SAY I have been chased away from my house. I forgot my sewing kit in the rush would you go get it for me? Say "agree" to accept.
+  ENDIF
+  RETURN 1
+
+ON=*agree*              
+   IF (<SRC.SKILLTOTAL> >= 2000.0)				// Too high skills and is rejected.
+      SAY You are too highly skilled young friend, I will not bother you with my small problem.
+   ELSEIF ( <SRC.TAG.NPC_QUEST_START> & NPCQ_Travis )		// Allready agreed to do the quest.
+      SAY You allready agreed to do help me.
+   ELSE								// Takes the quest.
+      SRC.TAG.NPC_QUEST_START = <eval ( <SRC.TAG.NPC_QUEST_START> | NPCQ_Travis )>
+      SAY Bring me my sewing kit and i shall reward you. Say "location" to get information or "reward" to get your price.
+      RETURN 0
+   ENDIF	
+   RETURN 1
+			
+ON=*location*
+ON=*place*                              
+   IF ( <SRC.TAG.NPC_QUEST_START> & NPCQ_Travis )		// Get the information.
+      SAY You find my house to the south west of this town. Goblins have taken it over, so be carefull.                  
+   ELSE								// Must agree to get the location.
+      SAY You must agree to help me, to get the information young friend.
+   ENDIF
+   RETURN 1
+
+ON=*reward*
+   IF !( <SRC.TAG.NPC_QUEST_START> & NPCQ_Travis )		// Need to agree.
+      SAY You must agree to help me to get the information young friend.
+   ELSEIF (( <SRC.TAG.NPC_QUEST_START> & NPCQ_Travis ) && !<SRC.RESTEST 1 i_sewing_kit_travis>)  // Need the sewing kit.
+      SAY Get my sewing kit young friend, and i shall reward you.                      
+   ELSEIF <SRC.RESTEST 1 i_sewing_kit_travis>							// Success.
+     SRC.SYSMESSAGE <NAME> hands you a big pile of coins and walks away with a content look in its face.
+     SRC.CONSUME 1 i_sewing_kit_travis
+     SRC.NEWITEM tp_helptravis
+     SRC.ACT.BOUNCE
+     REMOVE
+     SRC.TAG.NPC_QUEST_START = <eval ( <SRC.TAG.NPC_QUEST_START> &~ NPCQ_Travis )>
+     SRC.TAG.NPC_QUEST_DONE = <eval ( <SRC.TAG.NPC_QUEST_DONE> | NPCQ_Travis )>
+     ANNOUNCE <SRC.NAME> has helped the tailor trade.
+     RETURN 0
+   ENDIF
+   RETURN 1
+
+
+
+// -------- Monster "Edited Goblin Mage" -------
+
+[CHARDEF c_m_goblin_travis]
+NAME		= Gracus the goblin mage
+ID		= c_ORC
+RESOURCES	= 6 i_ribs_raw, 1 i_sewing_kit_travis
+FOODTYPE	= 15 t_meat_raw
+DAM		= 3,9
+ARMOR		= 12
+
+DESIRES		= i_gold,spk_orc
+TSPEECH		= spk_orc
+ON=@Create
+  COLOR		= colors_green
+  STR		= 90
+  DEX		= 50
+  INT		= 30
+
+  MAGERY	= {35.0 60.0}
+  MAGICRESISTANCE={50.0 75.0}
+  PARRYING	= {35.0 55.0}
+  TACTICS	= {55.0 80.0}
+  WRESTLING	= {35.0 55.0}
+
+  NPC		= BRAIN_MONSTER
+  
+  KARMA		= {-3000 -1000}
+  FAME		= {100 500}
+
+  ITEMNEWBIE	= i_spellbook
+  MORE1		= 068020811
+  MORE2		= 00000000
+
+ON=@NPCRestock
+  CONTAINER	= i_backpack
+  ITEM		= { meager_gold_pile 3 average_gold_pile 1 }
+  ITEM		= { poor_gold_pile 1 meager_gold_pile 1 0 1 }
+  ITEM		= random_first_circle,R3
+  ITEM		= random_second_circle,R6
+  ITEM		= i_sewing_kit_travis
+
+  CATEGORY	= NPC Quests
+  SUBSECTION	= Travis
+  DESCRIPTION	= Goblin Mage
+
+
+                                                       
+//---------- Quest items and Templates "Old man Travis" --------------
+
+[ITEMDEF i_sewing_kit_travis]
+NAME		= Travis' Sewing kit
+ID		= i_sewing_kit
+TYPE		= T_normal
+VALUE		= 0
+WEIGHT		= 1
+CATEGORY	= NPC Quests
+SUBSECTION	= Travis
+DESCRIPTION	= Sewing kit
+ON = @Create
+  COLOR		= 07d1
+
+[TEMPLATE tp_helptravis]
+CATEGORY	= NPC Quests
+SUBSECTION	= Travis
+DESCRIPTION	= Reward
+
+ITEM		= i_gold
+AMOUNT		= 500
+
+
+
+[EOF]

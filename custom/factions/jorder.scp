@@ -1,0 +1,1397 @@
+//---------------------------Order Alignment Script--------------------------
+//-									    -
+//------------------------By James "Wigifer" Timbrell------------------------
+//-                                                                         -
+//---------------------------------------------------------------------------
+// 17/7/03 Tiff - Fixed the sys message for recruiting if you have below 75% tactics
+// 20/3/04 Wren - Changed so previous members cound rejoin and changed some DKSAY to ORDERSAY
+// 17/10/13 Ray - Added gumps and other stuff to fit Imperial UO.
+
+[FUNCTION ORDER_REGION ]
+   if ( 0 )
+   elseif ( !strcmpi( "<REGION.NAME>", "Skara Brae" ) )
+      return 1
+   else
+      return 0
+   endif
+
+
+[FUNCTION ORDERSAY]
+   SRC.SYSMESSAGE @005a "<args>"
+
+[EVENTS e_order_recruiter]
+ON=@GetHit
+   SAY By the powers of order I shall grant thee death!
+   SRC.KILL
+   return 1
+
+ON=@SpellEffect
+   SAY Your magic is not welcome.
+   SRC.SPELLEFFECT s_lightning 1000
+   return 1
+
+
+[DIALOG d_order_recruiter]
+100, 100
+
+PAGE 0
+  resizepic  0 0 5120 400 420
+  text 20 20 50 0
+  text 20 340 50 1
+
+  button 140 375 <eval bt_cancel_up> <eval bt_cancel_dn> 1 0 0
+  button 220 375 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+  htmlgump 20 60 360 260 2 1 1
+
+
+[DIALOG d_order_recruiter TEXT]
+Joining the Order Alignment
+Are you sure you want to walk the path of order?
+To learn more about <VAR.lt>B<var.gt>Order<var.lt>/B<var.gt>, visit their section on <var.lt>A href="Imperialuo.com"<var.gt>Imperial UO Site<var.lt>/A<var.gt>. <VAR.BREAK><VAR.BREAK>Be warned that once you join this faction you CAN be attacked by Chaos inside a guard town and be killed. Although looting the rival faction body still gets you Criminal. And calling Guards when being attacked by Chaos is ILLEGAL and can lead to Jail Sentences. Everything said above works for BOTH factions. <VAR.BREAK><VAR.BREAK>You should know that this is a choice for life - once you commit to the ways of Order you won't be able to join any other alignment in the game, and neither leave this one.
+
+[DIALOG d_order_recruiter BUTTON]
+ON = 0
+ON = 1
+   SRC.TAG.CHARISORDER = 1
+   SRC.ORDERSAY So be it! You now walk the path of Order!
+   SRC.TAG.ALIGNMENT=alignment_order
+   SRC.ORDERSAY You now have access to the Order Faction Chat by typing .f 
+   //IF !<SRC.FINDID.i_alignment_timer_check>
+     // SRC.NEWITEM i_alignment_timer_check
+      //SRC.ACT.CONT <SRC.UID> 
+   //ENDIF
+   return 1
+
+
+[SPEECH spk_order_recruiter]
+ON=hi
+ON=hello
+ON=hail
+ON=greeting
+ON=greetings
+   if ( <SRC.ISALIGNMENT_ORDER> )
+      dorand 2
+         ORDERSAY Greetings.
+         ORDERSAY Hail.
+      enddo
+   else
+      dorand 2
+         ORDERSAY Greetings. I take care of those who wish to JOIN our cause.
+         ORDERSAY Hail. I take care of those who wish to JOIN our cause.
+      enddo
+   endif
+
+//ON=*shield*
+  // IF (<SRC.ORDER_RANK>)
+	//	IF (!<SRC.FINDID.i_shield_order_2>)
+		//  ORDERSAY Wear your shield with pride.
+		 // SRC.NEWITEM i_shield_order_2
+		  //SRC.ACT.BOUNCE
+		//ELSE
+		 // ORDERSAY You already have a shield.
+		//ENDIF
+      //RETURN 1
+  // ELSE
+    //  ORDERSAY How dare thee request that which thou may not touch!
+      //RETURN 1
+   //ENDIF
+ 
+ON=*join*
+
+IF (<SRC.ISMILITANT>)
+ORDERSAY I can not help you while you are member of a Militia! I am sorry!
+RETURN 1
+ENDIF
+
+   if ( ( <SRC.TACTICS> < 75.0 ) && ( <SRC.MAGERY> < 75.0 ) )
+      ORDERSAY You do not have enough knowledge of Tactics or Magery to be of any use.
+      return 1
+
+   ELSEIF (<SRC.ISACADEMY>)
+	SAY You still belong to the Academy. Resign and try again later.
+	RETURN 1
+
+   ELSEIF (<SRC.TAG0.SYNDICATE> == 01)
+	SAY You belong to the Syndicate. There's no turning back.
+	RETURN 1
+
+   ELSEIF (<SRC.TAG0.BROTHERHOOD> == 01)
+	SAY You belong to the Brotherhood. There's no turning back.
+	RETURN 1
+
+   ELSEIF (<SRC.TAG0.MERCENARY> == 01)
+	SAY You belong to the Mercenaries. There's no turning back.
+	RETURN 1
+
+   elseif ((<SRC.TAG0.ALIGNMENT>==alignment_chaos) || (<EVAL <SRC.TAG0.CHARISCHAOS>> == 1))
+      ORDERSAY It is chaos you've chosen, there's no turning back!
+      RETURN 1
+   elseif (<SRC.TAG0.ALIGNMENT>==alignment_order)
+      ORDERSAY My brave warrior, have you bumped your head? You are already a member of our fine order!
+      RETURN 1
+   
+elseif (<EVAL <SRC.TAG.CHARISORDER>> == 1)
+      ORDERSAY Welcome to our cause my friend.
+      SRC.TAG.ALIGNMENT = alignment_order
+      SRC.TAG.RECRUITER = <UID>
+    // IF !<SRC.FINDID.i_alignment_timer_check>
+      //  SRC.NEWITEM i_alignment_timer_check
+        //SRC.ACT.CONT <SRC.UID> 
+      //ENDIF
+      return 1   
+   else
+      SRC.TAG.RECRUITER = <UID>
+      SRC.HTMLDIALOG d_order_recruiter
+      return 1
+   endif
+
+//ON=*resign*
+//   if ( !<SRC.TAG.ALIGNMENT> == alignment_order )
+//      ORDERSAY You have to be a member to resign.
+//      return 1
+//   elseif (<SRC.FINDID.i_alignment_timer_check.UID>)
+//      ORDERSAY You have not served us long enough to leave...
+//      return 1
+//   else
+//      SRC.TAG.ALIGNMENT = alignment_none
+//      SRC.TAG.RECRUITER
+//      SRC.TAG.WASORDER = 01
+//      ORDERSAY You are no longer a member of our fine society. Be on your way now.
+//      return 1
+//   endif
+
+ON=*rank*
+
+IF (<SRC.ISMILITANT>)
+ORDERSAY I can not help you while you are member of a Militia! I am sorry!
+RETURN 1
+ENDIF
+
+IF (<SRC.ISORDER>)
+DIALOG d_order_profile
+ELSE
+SAY You don't belong to Order Faction.
+ENDIF
+RETURN 1
+
+
+
+//   if ( <SRC.ISDEAD> )
+//      EMOTE I can help only the living.
+//      return 1
+//   endif
+
+//   if !( <SRC.ISALIGNMENT_ORDER> )
+//      SAY Stop wasting my time.
+//      return 1
+//   endif
+
+//   if ( 0<SRC.TAG.ORDER.GOT> == 0 )
+//      SRC.TAG.ORDER.GOT	= 0
+//   endif
+
+//   if ( <SRC.TAG.ORDER.GOT> >= <SRC.ORDER_RANK> )
+//      ORDERSAY You already received equipment for this rank.
+//      return 1
+//   endif
+
+//   if ( !(<SRC.ORDER_RANK> < 7)  && (<SRC.TAG.ORDER.GOT> < 7) )
+//      SRC.NEWITEM i_shield_order_3
+//      SRC.ACT.BOUNCE
+//      ORDERSAY There you go.
+//   ELSE
+//      ORDERSAY You're not worthy of a reward yet...
+//   ENDIF
+
+//   SRC.TAG.ORDER.GOT	= <SRC.ORDER_RANK>
+//   return 1
+
+[CHARDEF c_order_recruiter]
+ID=C_MAN
+NAME=Ryu
+SOUND=snd_HUMAN_M_DIE_01
+DAM=50,70
+ARMOR=90
+AVERSIONS=t_TRAP,t_eerie_stuff
+TSPEECH = spk_order_recruiter
+TEVENTS	= e_order_recruiter
+
+  
+CATEGORY	= Order and Order
+SUBSECTION	= Order
+DESCRIPTION	= Ryu the Recruiter
+
+
+ON=@Create
+  TAG.NAME.SUFFIX	= ", the Recruitment Officer"
+  TAG.ALIGNMENT.RANK	= 6
+  TAG.ALIGNMENT	= alignment_order
+  
+  INVUL 1
+  COLOR		= colors_skin
+  STR		= {100 150}
+  DEX		= {80 95}
+  INT		= {150 160}
+  NPC		= brain_monster
+  SWORDSMANSHIP	= {60.0 70.0}
+  WRESTLING	= {67.0 90.0}
+  MAGICRESISTANCE={65.0 88.0}
+  TACTICS	= {60.0 80.0}
+  POISONING	= {90.0 100.0}
+  ANATOMY       = {40.0 50.0}
+  FAME		= 3000
+     KARMA	= -100
+
+  ITEMNEWBIE=i_hair_short
+  COLOR=color_o_adamantine
+
+  ITEMNEWBIE=i_platemail_chest_agapite
+  ITEMNEWBIE=i_platemail_arms_agapite
+  ITEMNEWBIE=i_platemail_gloves_agapite
+  ITEMNEWBIE=i_platemail_leggings_agapite
+  ITEMNEWBIE=i_shield_order_2
+  ITEMNEWBIE=i_sword_long_stronghold
+  ITEMNEWBIE=i_CAPE
+  COLOR=color_o_agapite
+  ITEMNEWBIE=i_SASH
+  COLOR=color_o_agapite
+
+
+
+[ITEMDEF i_robe_alignment_order]
+ID	= i_hooded_shroud
+NAME	= Order Elite Robe
+TYPE	= T_CLOTHING
+ARMOR	= 30
+DYE	= 0
+VALUE	= 500000
+
+ON = @Create
+  HITPOINTS	= 150
+  COLOR		= 0400
+  ATTR          = 05
+
+
+ON = @Equip
+   IF (<COLOR>=0400)
+      COLOR = 0400
+   ELSEIF (<COLOR>=0400)
+      COLOR = 0400
+   ENDIF
+   if ( <CONT.findlayer.layer_hair.uid> )
+      CONT.findlayer.layer_hair.ATTR = (<CONT.findlayer.layer_hair.ATTR> | attr_invis)
+      CONT.findlayer.layer_hair.REMOVEFROMVIEW
+   endif
+   IF ( <SRC.TAG.ALIGNMENT>=alignment_order)
+      IF ( <EVAL <SRC.TAG0.REP.ALIGNMENT>> >= 5000)
+         ORDERSAY You pull on the robe and pull the hood over your head...
+      ELSE
+         UNEQUIP
+         ORDERSAY You need <eval 5000> order points to wear this!
+         RETURN 1
+      ENDIF
+   ELSE
+      UNEQUIP
+      SRC.SYSMESSAGE You are not a member of Order!
+      RETURN 1
+   ENDIF
+
+ON = @Unequip
+   if ( <CONT.findlayer.layer_hair.uid> )
+      CONT.findlayer.layer_hair.ATTR = (<CONT.findlayer.layer_hair.ATTR> & ~ attr_invis)
+      CONT.findlayer.layer_hair.UPDATE
+   endif
+
+[ITEMDEF i_resurrect_stone_order]
+ID=0ed6
+NAME=Order Resurrection Stone
+
+CATEGORY=Imperial uo
+SUBSECTION=Chaos
+DESCRIPTION=Resurrection Stone
+
+ON=@CREATE
+   ATTR=010
+   COLOR=0400
+
+ON=@DClick
+   IF (<SRC.ISORDER>)
+      IF (<SRC.ISDEAD>)
+          SRC.RESURRECT
+          ORDERSAY The ways of order flow through you once more...
+	  ELSE
+		  ORDERSAY Check again, you are not dead!
+      ENDIF
+   ELSE
+      ORDERSAY Only members of Order can use this stone.
+   ENDIF
+   RETURN 1
+
+[ITEMDEF i_shield_order_2]
+ID=i_shield_order
+TYPE=t_shield
+FLIP=1
+RESOURCES=4 i_ingot_silver, 8 i_ingot_agapite, 2 i_ingot_gold
+WEIGHT=1
+ARMOR=15
+REQSTR=0
+SKILLMAKE=BLACKSMITHING 1000, ARMSLORE 1000
+CATEGORY=Imperial uo
+SUBSECTION=Order
+DESCRIPTION=Order Shield
+
+ON=@Create
+	ATTR = 05
+	HITPOINTS={101 115}
+
+ON=@EQUIP
+   IF ( <SRC.TAG.ALIGNMENT>=alignment_order)
+      ORDERSAY You put on your shield and feel the way of Order flow through you...
+      RETURN 0
+   ELSE
+      UNEQUIP
+      SRC.SYSMESSAGE You are not a member of Order!
+      RETURN 1
+   ENDIF
+   
+
+[ITEMDEF i_shield_order_3]
+ID=i_shield_order
+TYPE=t_shield
+NAME=Elite Order Shield
+FLIP=1
+RESOURCES=4 i_ingot_silver, 8 i_ingot_shadow, 2 i_ingot_gold
+WEIGHT=1
+ARMOR=25
+REQSTR=50
+SKILLMAKE=BLACKSMITHING 1000, ARMSLORE 1000
+CATEGORY=Imperial uo
+SUBSECTION=order
+DESCRIPTION=order Shield
+
+ON=@Create
+   ATTR=05
+   COLOR = 00637
+   HITPOINTS={501 1015}
+
+ON=@EQUIP
+   IF <COLOR> = 0
+      COLOR = 0400
+   ENDIF
+   IF ( <SRC.TAG.ALIGNMENT>=alignment_order)
+      IF ( <EVAL <SRC.TAG0.REP.ALIGNMENT>> > 8000)
+         ORDERSAY You put on your shield and feel the way of order flow through you...
+         RETURN 0
+      ELSE
+         ORDERSAY Your rank is not high enough to be worthy to wear this shield!
+         UNEQUIP
+         RETURN 1
+      ENDIF
+   ELSE
+      UNEQUIP
+      SRC.SYSMESSAGE You are not a member of order!
+      RETURN 1
+   ENDIF
+   
+
+[ITEMDEF i_war_horse_order]
+Name=Order War Horse
+ID=02124
+TYPE=T_FIGURINE
+TDATA3=c_war_horse_order
+VALUE=1000000
+CATEGORY=Imperial uo
+SUBSECTION=Character Icons
+DESCRIPTION=Order War Horse (tan)
+
+ON=@CREATE
+COLOR=0400
+MORE1=c_war_horse_order
+
+ON=@DCLICK
+if ( (<SRC.TARG.ATTR> & attr_move_never)
+      src.sysmessage You Cant Unshrink that
+      return 1
+ENDIF 
+
+[CHARDEF c_war_Horse_order]
+DEFNAME=c_war_horse_order
+ID=c_horse_tan
+NAME=Order War Horse
+SOUND=snd_ANIMALS_HORSE1
+ICON=i_pet_horse_tan
+ANIM=01fff
+CAN=MT_WALK|MT_RUN
+RESOURCES=15 i_ribs_raw, 10 i_hide
+FOODTYPE=55 t_crops,55 t_fruit,55 t_grain, 64 t_grass
+DAM=10,20
+ARMOR=20
+DESIRES=e_horses,c_man,c_woman
+TEVENTS=e_horses
+AVERSIONS=e_carnivores3
+
+ON=@Create
+COLOR=0400
+NPC=brain_animal
+FAME=50
+KARMA=8000
+STR={650 750}
+DEX={125 125}
+INT={90 100}
+
+PARRYING={85.0 95.0}
+MAGICRESISTANCE={195.0 230.0}
+TACTICS={90.0 100.0}
+WRESTLING={70.0 90.0}
+TAMING=100.0
+ARMSLORE=100.0
+
+ON=@DCLICK
+COLOR=0400
+
+DESCRIPTION=Order War Horse
+SUBSECTION=New Steeds
+CATEGORY=Imperial uo
+
+
+[ITEMDEF i_mount_tub_order]
+ID	= 0fab
+NAME	= mount dying pigment
+VALUE	= 75000
+ON=@Create
+   COLOR	= 0400
+
+ON=@DClick
+   if ( !<SRC.findlayer(layer_horse).uid> )
+      src.sysmessage You are not mounted.
+      return 1
+   endif
+   if !( 0<SRC.TAG.ALIGNMENT>=alignment_order)
+      ORDERSAY Only members of order may use this!
+      return 1
+   endif
+   SRC.ACT	= <SRC.findlayer(layer_horse).uid>
+   SRC.ACT.COLOR	= <COLOR>
+   SRC.ACT	= <SRC.ACT.MORE2>
+   SRC.ACT.COLOR	= <COLOR>
+   SRC.ACT.TAG.COLOR	= <COLOR>
+   src.act.events +e_dyed
+   src.sysmessage You spread the pigment over the <SRC.ACT.NAME>.
+   if ( !<SRC.ISGM> )
+      REMOVE
+   endif
+   return 1
+
+[CHARDEF c_order_vendor]
+NAME=Rei
+ID=C_MAN
+DESIRES=i_gold,e_notoriety
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_trainer
+TSPEECH=spk_needs
+TSPEECH=spk_rehello
+TSPEECH=spk_human_default
+TSPEECH=spk_order_vendor
+
+
+TEVENTS=e_Human_HearUnk
+TEVENTS=e_Human_Needs
+TEVENTS=e_Human_ConvInit
+TEVENTS=e_Human_Greet
+TEVENTS=e_Human_Space
+TEVENTS=e_Human_Refuse
+TEVENTS=e_Human_Environ
+
+ON=@Create
+INVUL
+NPC=brain_vendor
+COLOR=colors_skin
+STR={16 30}
+DEX={26 40}
+INT={31 45}
+
+EVALUATINGINTEL={45.0 68.0}
+WRESTLING={15.0 38.0}
+MAGICRESISTANCE={15.0 38.0}
+TACTICS={15.0 38.0}
+INSCRIPTION={50.0 70.0}
+
+ITEMNEWBIE=random_female_hair
+COLOR=colors_hair
+
+ON=@NPCRestock
+ITEM=RANDOM_LIGHT
+ITEMNEWBIE=i_robe_alignment_order
+ITEM=random_shoes
+COLOR=colors_neutral
+
+SELL=VENDOR_ORDER_SELL
+BUY=VENDOR_ORDER_BUY
+
+CATEGORY=Imperial uo
+SUBSECTION=Order
+DESCRIPTION=Order Vendor
+
+[TEMPLATE VENDOR_ORDER_SELL]
+DEFNAME=VENDOR_ORDER_SELL
+CATEGORY=Imperial uo
+SUBSECTION=Templates
+DESCRIPTION=Order Vendor
+//SELL=i_robe_alignment_order,{1 3}
+SELL=i_war_horse_order,{1 3}
+SELL=i_mount_tub_order,{1 3}
+SELL=i_potion_refresh,{51 100}
+SELL=i_potion_nightsight,{51 100}
+SELL=i_potion_heal,{51 100}
+SELL=i_potion_cure,{51 100}	
+SELL=i_reag_black_pearl,{500 500}
+SELL=i_reag_blood_moss,{500 500}
+SELL=i_reag_garlic,{500 500}
+SELL=i_reag_ginseng,{500 500}
+SELL=i_reag_mandrake_root,{500 500}
+SELL=i_reag_nightshade,{500 500}
+SELL=i_reag_sulfur_ash,{500 500}
+SELL=i_reag_spider_silk,{500 500}
+SELL=i_xbolt,{250 500}
+SELL=i_arrow,{250 500}
+
+[TEMPLATE VENDOR_ORDER_BUY]
+DEFNAME=VENDOR_ORDER_BUY
+CATEGORY=Imperial uo
+SUBSECTION=Templates
+DESCRIPTION=Order Vendor Buy
+BUY=i_bandage,{100 150}
+
+[SPEECH spk_order_vendor] 
+ON=*buy*
+IF (<SRC.TAG.ALIGNMENT>=alignment_order)
+   SAY It is a pleasure to serve thee...
+   BUY
+ELSE
+   SAY I only serve members of order
+   return 1
+ENDIF
+
+
+///Gumps///
+
+[DIALOG d_order_profile]
+0,0
+page 0
+gumppic 128 112 9250
+gumppic 145 112 9251
+gumppic 572 112 9252
+gumppic 128 129 9253
+gumppic 572 129 9255
+gumppic 145 445 9257
+gumppic 572 445 9258
+gumppic 128 445 9256
+gumppic 145 129 9254
+gumppic 145 257 9254
+gumppic 273 129 9254
+gumppic 273 257 9254
+gumppic 446 129 9254
+gumppic 446 257 9254
+gumppic 446 129 9254
+gumppic 446 257 9254
+gumppic 401 129 9254
+gumppic 401 257 9254
+gumppic 145 320 9254
+gumppic 273 320 9254
+gumppic 446 320 9254
+gumppic 446 320 9254
+gumppic 401 320 9254
+gumppic 410 145 990
+gumppic 411 144 50992
+text 325 154 0 0
+text 187 378 0 1
+text 187 311 0 2
+text 187 346 0 3
+text 188 276 0 4
+text 217 192 0 5
+text 217 215 0 6
+text 217 239 0 7
+tilepic 274 146 7108
+button 169 279 1210 1209 1 0 1
+button 169 314 1210 1209 1 0 2
+button 169 349 1210 1209 1 0 3 // add/remove name title
+button 169 381 1210 1209 1 0 4
+
+[DIALOG d_order_profile text]
+The Order Faction
+Rank Prize
+Add Paperdoll Title
+Remove Paperdoll Title
+Add/Remove Name Title
+Order Points: <EVAL <SRC.TAG.REP.ALIGNMENT>> points
+Order Rank: <SRC.ORDER_TITLE>
+PvP Deaths: <EVAL <SRC.TAG0.RATINGPVPD>>
+
+[DIALOG d_order_profile button]
+
+ON=1
+IF (<SRC.TAG0.ALIGNMENT.SHOWTITLE> == 01)
+SRC.SYSMESSAGE @463 You turn off your full title.
+SRC.TAG.ALIGNMENT.SHOWTITLE=0
+ELSE
+SRC.SYSMESSAGE @463 You turn on your full title.
+SRC.TAG.ALIGNMENT.SHOWTITLE=1
+ENDIF
+ELSE
+ORDERSAY This command can only be used by faction members.
+ENDIF
+RETURN 1
+
+ON=2 //add
+IF ((<SRC.ISCHAOS>) || (<SRC.ISORDER>))
+SRC.TAG.NAME.SUFFIX=
+ORDERSAY Title added.
+ELSE
+ORDERSAY This command can only be used by faction members.
+ENDIF
+RETURN 1
+
+ON=3 //remove
+IF ((<SRC.ISCHAOS>) || (<SRC.ISORDER>))
+SRC.TAG.NAME.SUFFIX=
+ORDERSAY Title removed.
+ELSE
+ORDERSAY This command can only be used by faction members.
+ENDIF
+RETURN 1
+
+ON=4
+
+IF (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 999) && (<SRC.TAG0.OCCLAIMED> < 01)
+
+ORDERSAY Congratulations! You have advanced to the next rank.
+ORDERSAY You got a Order Shield as a prize!
+SRC.TAG.OCCLAIMED=1
+ORDERSAY Wear your shield with pride <SRC.SEX Brother\Sister>.
+SRC.NEWITEM i_shield_order_2
+SRC.ACT.BOUNCE
+
+
+ELSEIF (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 1999) && (<SRC.TAG0.OCCLAIMED> == 01)
+
+ORDERSAY Congratulations! You have advanced to the next rank.
+ORDERSAY You can now use The Order Recall Magic. Type .factionhome to use it.
+SRC.TAG.OCCLAIMED=2
+
+
+ELSEIF (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 2999) && (<SRC.TAG0.OCCLAIMED> == 02)
+
+ORDERSAY Congratulations! You have advanced to the next rank.
+ORDERSAY You can now use the Order Bindback Public Stone! Double click it and type .bindback upon death to be teleported back.
+SRC.TAG.OCCLAIMED=3
+
+ELSEIF (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 3999) && (<SRC.TAG0.OCCLAIMED> == 03)
+
+ORDERSAY Congratulations! You have advanced to the next rank.
+ORDERSAY You got a Order Backpack and Hair Dye Tub as a prize in your bank!
+SRC.TAG.OCCLAIMED=4
+SERV.NEWITEM=i_hair_tub
+NEW.NAME=Order Hair Dye Tub
+NEW.ATTR=ATTR_NEWBIE
+NEW.COLOR=00637
+NEW.MOREX=1
+NEW.BOUNCE
+SERV.NEWITEM=i_dye_tub_backpack
+NEW.NAME=Order Backpack Dye Tub
+NEW.ATTR=ATTR_NEWBIE
+NEW.COLOR=00637
+NEW.MOREX=1
+NEW.BOUNCE
+
+ELSEIF (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 4999) && (<SRC.TAG0.OCCLAIMED> == 04)
+
+ORDERSAY Congratulations! You have advanced to the next rank.
+ORDERSAY You got a Order Horse as a prize in your bank!
+SRC.TAG.OCCLAIMED=5
+SRC.NEWITEM=i_order_horse_deed
+SRC.ACT.CONT=<SRC.findlayer(layer_bankbox).uid>
+
+ELSEIF (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 5999) && (<SRC.TAG0.OCCLAIMED> == 05)
+
+ORDERSAY Congratulations! You have advanced to the next rank.
+ORDERSAY You can now use The Order Public Travel Stone!
+SRC.TAG.OCCLAIMED=6
+
+ELSEIF (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 6999) && (<SRC.TAG0.OCCLAIMED> == 06)
+
+ORDERSAY Congratulations! You have advanced to the next rank.
+ORDERSAY You got a Order Robe of Protection as a prize in your bank!
+SRC.TAG.OCCLAIMED=7
+SRC.NEWITEM=i_order_robe_protection
+SRC.ACT.CONT=<SRC.findlayer(layer_bankbox).uid>
+
+ELSEIF (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 7999) && (<SRC.TAG0.OCCLAIMED> == 07)
+
+ORDERSAY Congratulations! You have advanced to the next rank.
+ORDERSAY You got a Personal Order Bind Stone Deed as a prize in your bank!
+SRC.TAG.OCCLAIMED=8
+SRC.NEWITEM=i_order_bindstone_deed
+SRC.ACT.CONT=<SRC.findlayer(layer_bankbox).uid>
+
+
+ELSEIF (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 8999) && (<SRC.TAG0.OCCLAIMED> == 08)
+
+ORDERSAY Congratulations! You have advanced to the next rank.
+ORDERSAY You got a Personal Order Resurrection Deed as a prize in your bank!
+SRC.TAG.OCCLAIMED=9
+SRC.NEWITEM=i_order_ress_deed
+SRC.ACT.CONT=<SRC.findlayer(layer_bankbox).uid>
+
+ELSEIF (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 9999) && (<SRC.TAG0.OCCLAIMED> == 09)
+
+ORDERSAY Congratulations! You have advanced to the next rank.
+ORDERSAY You got an Elite Order Shield as a prize in your bank!
+SRC.TAG.OCCLAIMED=10
+SRC.NEWITEM=i_shield_order_3
+SRC.ACT.CONT=<SRC.findlayer(layer_bankbox).uid>
+
+ELSEIF (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 10999) && (<SRC.TAG0.OCCLAIMED> == 10)
+
+ORDERSAY Congratulations! You have advanced to the next rank.
+ORDERSAY You got 210k as a prize in your bank!
+SRC.TAG.OCCLAIMED=11
+SRC.NEWITEM=i_bag_Faction1100order
+SRC.ACT.CONT=<SRC.findlayer(layer_bankbox).uid>
+
+
+ELSEIF (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 11999) && (<SRC.TAG0.OCCLAIMED> == 11)
+
+ORDERSAY Congratulations! You have advanced to the next rank.
+ORDERSAY You got a Newbied Elite Order Steed as a prize in your bank!
+SRC.TAG.OCCLAIMED=12
+SRC.NEWITEM=i_order_elite_steed
+SRC.ACT.CONT=<SRC.findlayer(layer_bankbox).uid>
+SERV.B @0400 Congratulations <SRC.NAME> for reaching the last Order Rank. <SRC.NAME>'s the newest Order Field Marshal!
+
+ELSE
+
+ORDERSAY You don't have enough points to claim the next prize.
+
+ENDIF
+
+RETURN 1
+
+
+
+/// Prizes ///
+
+///Horse///
+
+[ITEMDEF i_order_horse_deed]
+DEFNAME= i_order_horse_deed
+ID=i_deed
+NAME=Order Horse Deed
+
+CATEGORY=Imperial uo
+SUBSECTION=Order Items
+DESCRIPTION=Order Horse (Deed)
+
+ON=@CREATE
+COLOR=0400
+
+ON=@DCLICK
+IF ( (<SRC.TARG.ATTR> & attr_move_never)
+SRC.SYSMESSAGE You can't unshrink that.
+RETURN 1
+
+ENDIF 
+IF <SRC.RESTEST i_order_horse_deed>
+SERV.NEWNPC c_order_horse
+LOCAL.NPC=<NEW.UID>
+SERV.NEWITEM i_memory
+NEW.COLOR=042
+NEW.LINK=<SRC.UID>
+NEW.CONT=<LOCAL.NPC>
+TRY UID.<LOCAL.NPC>.update
+SRC.CONSUME i_order_horse_deed 1
+ENDIF
+RETURN 1
+
+[CHARDEF c_order_horse]
+ID=c_horse_gray
+NAME=Order Horse
+SOUND=snd_ANIMALS_HORSE1
+ICON=i_pet_horse_gray
+CAN=MT_WALK|MT_RUN
+RESOURCES=15 i_ribs_raw, 8 i_hide
+FOODTYPE=55 t_crops,55 t_fruit,55 t_grain, 64 t_grass
+DAM=10,20
+ARMOR=20
+
+ON=@Create
+COLOR=0400
+NPC=BRAIN_ANIMAL
+FAME=0
+STR={150 200}
+DEX={100 120}
+INT={10 50}
+
+PARRYING={40.0 55.0}
+MAGICRESISTANCE={60.0 80.0}
+TACTICS={50.0 60.0}
+WRESTLING={40.0 60.0}
+ARMSLORE=70.0
+
+CATEGORY=Imperial uo
+SUBSECTION=Order NPCs
+DESCRIPTION=Order Horse
+
+///Pack Horse///
+
+[ITEMDEF i_order_pack_horse_deed]
+DEFNAME= i_order_pack_horse_deed
+ID=i_deed
+NAME=Order Pack Horse Deed
+
+CATEGORY=Imperial uo
+SUBSECTION=Order Items
+DESCRIPTION=Order Pack Horse (Deed)
+
+ON=@CREATE
+COLOR=0400
+
+ON=@DCLICK
+IF ( (<SRC.TARG.ATTR> & attr_move_never)
+SRC.SYSMESSAGE You can't unshrink that.
+RETURN 1
+
+ENDIF 
+IF <SRC.RESTEST i_order_pack_horse_deed>
+SERV.NEWNPC c_order_pack_horse
+LOCAL.NPC=<NEW.UID>
+SERV.NEWITEM i_memory
+NEW.COLOR=042
+NEW.LINK=<SRC.UID>
+NEW.CONT=<LOCAL.NPC>
+TRY UID.<LOCAL.NPC>.update
+SRC.CONSUME i_order_pack_horse_deed 1
+ENDIF
+RETURN 1
+
+[CHARDEF c_order_pack_horse]
+DEFNAME=c_order_pack_horse
+ID=c_horse_pack
+NAME=Order Pack Horse
+SOUND=snd_ANIMALS_HORSE1
+ICON=i_pet_horse_pack
+CAN=MT_WALK|MT_RUN
+RESOURCES=15 i_ribs_raw, 8 i_hide
+FOODTYPE=55 t_crops,55 t_fruit,55 t_grain, 64 t_grass
+DAM=10,20
+ARMOR=20
+
+ON=@Create
+COLOR=00637
+NPC=BRAIN_ANIMAL
+FAME=0
+STR={400 500}
+DEX={100 120}
+INT={10 50}
+
+PARRYING={40.0 55.0}
+MAGICRESISTANCE={80.0 90.0}
+TACTICS={70.0 80.0}
+WRESTLING={70.0 80.0}
+
+CATEGORY=Imperial uo
+SUBSECTION=Order NPCs
+DESCRIPTION=Order Pack Horse
+
+//Robe of Protection//
+
+[ITEMDEF i_order_robe_protection]
+NAME=Order Robe of Protection
+ID=i_robe
+WEIGHT=3
+VALUE=5000
+TYPE=T_ARMOR
+DYE=0
+ARMOR=6
+DUPELIST=01f04
+
+CATEGORY=Imperial uo
+SUBSECTION=Order Items
+DESCRIPTION=Order Robe of Protection
+
+ON=@CREATE
+QUALITY=200
+ATTR=05
+HITPOINTS={1000 1300}
+COLOR=00637
+
+ON=@DCLICK
+TYPE=T_ARMOR
+
+ON=@EQUIP 
+IF (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 6999) && (<SRC.ISORDER>)
+ORDERSAY As you wear the robe, you feel more protected.
+RETURN 0
+ELSE
+ORDERSAY You can't equip this robe.
+UNEQUIP
+ENDIF
+RETURN 1
+
+///Travel Stone ///
+
+[ITEMDEF i_order_travel]
+DEFNAME=i_order_travel
+ID=0ed6
+NAME=The Order Travel Stone
+TYPE=T_NORMAL
+
+ON=@CREATE
+COLOR=0400
+
+ON=@DCLICK
+
+IF (<SRC.FINDID.i_delivery_memory.UID>)
+SRC.SYSMESSAGE You can't travel by magic, it ruins deliveries!
+RETURN 1
+ELSEIF (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 5999) && (<SRC.ISORDER>)
+DIALOG d_playertravel
+ELSE
+ORDERSAY You can not use this stone.
+ENDIF
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Order Items
+DESCRIPTION=Order Travel Stone
+
+///Bindback Personal///
+
+[ITEMDEF i_order_bindstone_deed]
+DEFNAME= i_order_bindstone_deed
+NAME=Personal Order Bind Stone Deed
+ID=i_deed
+RESOURCES=i_deed,i_order_bindstone
+
+CATEGORY=Imperial uo
+SUBSECTION=Order Items
+DESCRIPTION=Order Personal Bind Stone (Deed)
+
+ON=@Create
+COLOR=0400
+MORE=i_order_bindstone
+ATTR=attr_newbie
+
+[ITEMDEF i_order_bindstone]
+DEFNAME= i_order_bindstone
+ID=0ed6
+NAME=Personal Order Bind Stone
+TYPE=t_normal
+
+ON=@CREATE
+COLOR=0400
+
+ON=@CLICK
+ORDERSAY To bind your spirit to the stone double click it.
+
+ON=@DCLICK 
+IF (<MORE>!=1)
+NAME=<SRC.NAME>'s Bind Stone
+MORE=1 
+MORE2=<SRC.UID>
+ORDERSAY This stone has been linked to you. 
+ORDERSAY No-one but you can use it. 
+ELSEIF ((<MORE>==1) && (<MORE2>==<SRC.UID>) && (<SRC.ISORDER>) && (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 7999) 
+SRC.TAG.MERCHOME=<SRC.P>
+ORDERSAY Your spirit is now bound to this stone. To recall your spirit back use .bindback
+ELSE 
+ORDERSAY You can not use the stone.
+ENDIF 
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Order Items
+DESCRIPTION=Order Personal Bind Stone
+
+[ITEMDEF i_order_bindstone_public]
+DEFNAME=i_order_bindstone_public
+ID=0ed6
+NAME=Order Public Bind Stone
+TYPE=t_normal
+
+ON=@CREATE
+COLOR=0400
+
+on=@CLICK
+MESSAGE @0400 To bind your spirit to the stone double click it.
+
+on=@DCLICK
+IF (<SRC.ISORDER>
+IF (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 3000)
+SRC.TAG.MERCHOME=<SRC.P>
+MESSAGE @0400 Your spirit is now bound to this stone. To recall your spirit back use .bindback.
+ELSE
+SRC.MESSAGE @0400 You need at least 3000 Order Points to use this stone.
+ENDIF
+else
+SRC.MESSAGE @0400 You dont belong to this faction.
+endif
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Order Items
+DESCRIPTION=Order Public Bind Stone
+
+///Resurrection Personal///
+
+[ITEMDEF i_order_ress_deed]
+DEFNAME=i_order_ress_deed
+NAME=Personal Resurrection Deed
+ID=i_deed
+RESOURCES=i_deed,i_order_ress_stone
+
+CATEGORY=Imperial uo
+SUBSECTION=Order Items
+DESCRIPTION=Order Resurrection Deed
+
+ON=@CREATE
+MORE=i_order_ress_stone
+ATTR=attr_newbie
+
+[ITEMDEF i_order_ress_stone]
+DEFNAME=i_order_ress_stone
+ID=0ed6
+NAME=Personal Order Resurrection Stone
+TYPE=t_normal
+
+ON=@CREATE
+COLOR=0400
+NAME=<SRC.NAME>'s Resurrection Stone
+MORE=1
+MORE2=<SRC.UID>
+ORDERSAY This stone has been linked to you. 
+ORDERSAY No-one but you can use it.
+
+ON=@CLICK
+MESSAGE @0400 The stone seems to glow.
+
+IF ((<MORE>==1) && (<MORE2>==<SRC.UID>) && (<SRC.ISORDER>) && (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 8999))
+SRC.RESURRECT
+ORDERSAY Your spirit has now re-joined your body.
+ELSE 
+ORDERSAY You can not use the stone.
+ENDIF
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Order Items
+DESCRIPTION=Order Resurrection Stone
+
+///Elite Horse///
+
+[EVENTS e_mount_order]
+
+ON=@DISMOUNT
+if <argo.tag0.mount_order>
+serv.newitem <argo.tag0.mount_order>
+new.bounce
+new.color=<argo.tag0.mount_order_color>
+new.tag.uid=<argo.tag0.mount_order_owner>
+src.tag.lastdonarshrink = <new.uid>
+src.tag.ondonarmount
+argo.remove
+src.findlayer.25.remove
+SERV.LOG <SRC.NAME> dismounted their Order Steed <new.uid>
+SRC.EVENTS -e_mount_order
+RETURN 1
+ENDIF
+
+[ITEMDEF i_order_elite_steed]
+NAME=Order Elite Steed
+ID=i_pet_horse
+TYPE=t_order_statuette
+TDATA1=c_horse_tan
+WEIGHT=1
+
+ON=@CREATE
+ATTR=04
+COLOR=00637
+
+CATEGORY=Imperial uo
+SUBSECTION=Order Items
+DESCRIPTION=Order Elite Steed
+
+[TYPEDEF t_order_statuette]
+
+ON=@CLICK
+IF !(STRCMP(0<TAG.UID>,0) == 0)
+SRC.SYSMESSAGE @25 This steed is linked to an account already.
+ELSE
+SRC.SYSMESSAGE @25 This steed is not owned by anyone.
+ENDIF
+
+ON=@DCLICK
+IF (STRCMP(0<TAG.UID>,0) == 0)
+TAG.UID = <SRC.NAME>
+SRC.SYSMESSAGE @25 Owner Set
+ENDIF
+IF <cant_mount_order>
+RETURN 1
+ELSE
+mount_order <TDATA1>
+SRC.EVENTS +e_mount_order
+RETURN 1
+ENDIF
+
+[FUNCTION mount_order]
+if <cant_mount_order>
+return 1
+else
+src.tag.ondonarmount = 1
+serv.newnpc <args>
+ref1=<new.uid>
+serv.newitem i_memory
+new.color=memory_ipet
+new.link=<src.uid>
+new.cont=<ref1.uid>
+src.events -e_mount_order
+ref1.food=999
+ref1.color=<color>
+ref1.tag0.mount_order=<baseid>
+ref1.tag0.mount_order_color=<color>
+ref1.tag0.mount_order_owner=<tag.uid>
+ref1.mount <src>
+consume
+endif
+
+[function cant_mount_order]
+if (<topobj.isplayer>)
+if (<topobj.uid>!=<src.uid>)
+src.sysmessage This is not yours to use.
+RETURN 1
+elseif !(STRCMP(<tag.uid>,<src.name>) == 0)
+src.sysmessage This is not yours to use.
+RETURN 1
+elseif (<src.flags>&statf_dead)
+src.sysmessage You can't use that right now.
+RETURN 1
+elseif (<src.flags>&statf_polymorph)
+src.sysmessage You can't use that while polymorphed.
+RETURN 1
+elseif ((<SRC.BODY> != C_MAN) && (<SRC.BODY> != C_WOMAN))
+src.sysmessage You can't use that while polymorphed.
+RETURN 1
+elseif (<src.findlayer.25.uid>)
+src.sysmessage You are already on a mount.
+RETURN 1
+ELSEIF (<SRC.TAG0.OCCLAIMED> < 10) && (<SRC.ISORDER>)
+ORDERSAY You are not worthy enough to ride the <NAME>.
+RETURN 1
+ELSE
+RETURN 0
+ENDIF
+ELSE
+SRC.SYSMESSAGE You cannot use this where it is.
+RETURN 1
+ENDIF
+
+
+//----------------------ORDER---------------------//
+
+// -- NPC
+
+[CHARDEF c_faction_vendor_order]
+NAME=Ryu, The Order Trader
+ID=C_MAN
+DESIRES=i_gold,e_notoriety
+A	S=t_TRAP,t_eerie_stuff
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_trainer
+TSPEECH=spk_needs
+TSPEECH=spk_rehello
+TSPEECH=spk_human_default
+TSPEECH=spk_order_vendor
+
+
+TEVENTS=e_Human_HearUnk
+TEVENTS=e_Human_Needs
+TEVENTS=e_Human_ConvInit
+TEVENTS=e_Human_Greet
+TEVENTS=e_Human_Space
+TEVENTS=e_Human_Refuse
+TEVENTS=e_Human_Environ
+
+ON=@Create
+NPC=brain_vendor
+COLOR=colors_skin
+STR={16 30}
+DEX={26 40}
+INT={31 45}
+
+EVALUATINGINTEL={45.0 68.0}
+WRESTLING={15.0 38.0}
+MAGICRESISTANCE={15.0 38.0}
+TACTICS={15.0 38.0}
+INSCRIPTION={50.0 70.0}
+
+ITEMNEWBIE=random_female_hair
+COLOR=colors_hair
+
+ON=@NPCRestock
+ITEM=RANDOM_LIGHT
+ITEMNEWBIE=i_robe_alignment_order
+ITEM=random_shoes
+COLOR=colors_neutral
+
+SELL=FACTION_VENDOR_ORDER_SELL
+BUY=FACTION_VENDOR_ORDER_BUY
+
+CATEGORY=Imperial uo
+SUBSECTION=Order
+DESCRIPTION=Order Vendor
+
+[TEMPLATE FACTION_VENDOR_ORDER_SELL]
+DEFNAME=FACTION_VENDOR_ORDER_SELL
+CATEGORY=Imperial uo
+SUBSECTION=Templates
+DESCRIPTION=Order Vendor
+SELL=i_robe_order,{3 5}
+SELL=i_dress_order,{3 5}
+SELL=i_cape_order,{3 5}
+SELL=i_mount_tub_order,{2 4}
+SELL=i_potion_refresh,{51 100}
+SELL=i_potion_nightsight,{51 100}
+SELL=i_potion_heal,{51 100}
+SELL=i_potion_cure,{51 100}
+SELL=i_reag_black_pearl,{500 500}
+SELL=i_reag_blood_moss,{500 500}
+SELL=i_reag_garlic,{500 500}
+SELL=i_reag_ginseng,{500 500}
+SELL=i_reag_mandrake_root,{500 500}
+SELL=i_reag_nightshade,{500 500}
+SELL=i_reag_sulfur_ash,{500 500}
+SELL=i_reag_spider_silk,{500 500}
+SELL=i_xbolt,{250 500}
+SELL=i_arrow,{250 500}
+SELL=i_bandage,{100 150}
+
+[TEMPLATE FACTION_VENDOR_ORDER_BUY]
+DEFNAME=FACTION_VENDOR_ORDER_BUY
+CATEGORY=Imperial uo
+SUBSECTION=Templates
+DESCRIPTION=Order Vendor Buy
+BUY=i_bandage,{100 150}
+
+[SPEECH spk_order_vendor]
+ON=*buy*
+IF (<SRC.TAG.ALIGNMENT>=alignment_order)
+SAY It is a pleasure to serve thee...
+BUY
+ELSE
+SAY I only serve members of Order!
+return 1
+ENDIF
+
+
+// -- ORDER MOUNT DYE TUB
+
+[ITEMDEF i_mount_tub_order]
+ID = 0fab
+NAME = Mount Dying Pigment
+VALUE = 75000
+ON=@Create
+COLOR = 0400
+
+ON=@DClick
+if ( !<SRC.findlayer(layer_horse).uid> )
+src.sysmessage You are not mounted.
+return 1
+endif
+if !( 0<SRC.TAG.ALIGNMENT>=alignment_order)
+src.message Only members of order may use this!
+return 1
+endif
+SRC.ACT = <SRC.findlayer(layer_horse).uid>
+SRC.ACT.COLOR = <COLOR>
+SRC.ACT = <SRC.ACT.MORE2>
+SRC.ACT.COLOR = <COLOR>
+SRC.ACT.TAG.COLOR = <COLOR>
+src.act.events +e_dyed
+src.sysmessage You spread the pigment over the <SRC.ACT.NAME>.
+if ( !<SRC.ISGM> )
+REMOVE
+endif
+return 1
+
+// -- ORDER ROBE
+
+[ITEMDEF i_robe_order]
+ID=i_robe
+NAME=Order Robe
+TYPE=T_CLOTHING
+VALUE=5000
+DYE=0
+
+ON=@CREATE
+HITPOINTS=100
+COLOR=0400
+
+ON=@EQUIP
+IF ( <SRC.ISORDER>)
+SRC.SYSMESSAGE You equip the Order Robe.
+ELSE
+SRC.SYSMESSAGE You can not wear the Order Robe. You are not a member of Order.
+UNEQUIP
+ENDIF
+RETURN 1
+
+// -- ORDER DRESS
+
+[ITEMDEF i_dress_order]
+ID=i_dress_full
+NAME=Order Dress
+TYPE=T_CLOTHING
+VALUE=5000
+DYE=0
+
+ON=@CREATE
+HITPOINTS=100
+COLOR=0400
+
+ON=@EQUIP
+IF ( <SRC.ISORDER>)
+SRC.SYSMESSAGE You equip the Order Dress.
+ELSE
+SRC.SYSMESSAGE You can not wear the Order Dress. You are not a member of Order.
+UNEQUIP
+ENDIF
+RETURN 1
+
+// -- ORDER CLOAK
+
+[ITEMDEF i_cape_order]
+ID=i_cape
+NAME=Order Cloak
+TYPE=T_CLOTHING
+VALUE=5000
+DYE=0
+
+ON=@CREATE
+HITPOINTS=100
+COLOR=0400
+
+ON=@EQUIP
+IF ( <SRC.ISORDER>)
+SRC.SYSMESSAGE You equip the Order Cloak.
+ELSE
+SRC.SYSMESSAGE You can not wear the Order Dress. You are not a member of Order.
+UNEQUIP
+ENDIF
+RETURN 1
+
+
+[EOF]
+

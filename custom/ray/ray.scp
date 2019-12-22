@@ -1,0 +1,4263 @@
+[function decorate_facet]
+local.n=<args>
+while !<isempty <def.worlddecorator_facet_<dlocal.n>_<dlocal.x>>>
+  args=<def0.worlddecorator_facet_<dlocal.n>_<dlocal.x>>
+  <argv[1]>
+  var0.<argv[1]> += 1
+  local.x += 1
+endwhile
+src.sysmessage @<eval 026+(<local.n>*20)> Decorating <def0.worlddecorator_facet_<dlocal.n>> complete.
+
+
+
+[function name_shop_signs]	//send an item to 1 1 1 <map_plane> and make it run this function, then remove the item
+local.p=<p>
+for 0 5
+  p=1,1,1,<local._for>
+  foritems 9999
+    if <type>==t_sign_gump
+      name=<name_new_sign>
+    endif
+  endfor
+endfor
+p=<local.p>
+update
+
+[function name_new_sign]
+serv.newitem i_memory
+new.p=<p>
+for N 0 7
+  if !<isempty <new.tag.name>>
+    new.remove
+    return <new.tag.name>
+  endif
+  new.p=<p>
+  doswitch <dlocal.n>
+    new.check_for_sign_name n
+    new.check_for_sign_name ne
+    new.check_for_sign_name e
+    new.check_for_sign_name se
+    new.check_for_sign_name s
+    new.check_for_sign_name sw
+    new.check_for_sign_name w
+    new.check_for_sign_name nw
+  enddo
+endfor
+
+[function check_for_sign_name]
+move <args> 2
+if <room>
+  tag.name=<room.name>
+  return 1
+endif
+
+[function link_double_doors]	//send an item to 1 1 1 <map_plane> and make it run this function, then remove the item
+local.p=<p>
+for 0 5
+  p=1,1,1,<local._for>
+  foritems 9999
+    if (<type>==t_door)
+      ref1=<uid>
+      foritems 1
+        if (<type>==t_door) && (<uid> != <ref1>)  && (<z>==<ref1.z>)
+          ref2=<uid>
+          ref1.link=<ref2>
+        endif
+      endfor
+    endif
+  endfor
+endfor
+p=<local.p>
+update
+
+
+[function remove_duplicate_doors]
+serv.account ray_scripts plevel 7
+foritems 9999
+if <type>==t_door
+  ref1=<uid>
+  foritems 0
+    if (<type>==t_door) && (<uid> != <ref1.uid>) && (<z>==<ref1.z>)
+      ref2=<uid>
+      if <ref2.uid> > <ref1.uid> //uid of the one placed latest will be a higher number
+        ref2.remove
+      endif
+    endif
+  endfor
+endif
+endfor
+
+[function reset_decoration_counters]
+while !<isempty <def.worlddecorator_facet_<dlocal.n>>>
+  while !<isempty <def.worlddecorator_facet_<dlocal.n>_<dlocal.x>>>
+    args=<def0.worlddecorator_facet_<dlocal.n>_<dlocal.x>>
+    var0.<argv[1]>=
+    local.x += 1
+  endwhile
+  local.n += 1
+  local.x=
+endwhile
+
+[function destroy_world]
+local.p=<P>
+p=1,1,1,0
+update
+for 0 5
+  p=1,1,1,<dlocal._for>
+  foritems 10000
+    remove
+  endfor
+  forchars 10000
+    if <brain>
+       remove
+    endif
+  endfor
+endfor
+p=<local.p>
+update
+reset_decoration_counters
+reset_spawn_counters
+sysmessage @026 World completely destroyed
+
+
+
+[defname world_decorator_settings]
+
+worlddecorator_facet_0		Felucca
+worlddecorator_facet_0_0	Britain,deco_britain_felucca
+worlddecorator_facet_0_1	Bucaneer's Den,deco_buccaneers_den_felucca
+worlddecorator_facet_0_2	Cove,deco_cove_felucca
+worlddecorator_facet_0_3	Delucia,deco_delucia_felucca
+worlddecorator_facet_0_4	Heartwood,deco_heartwood_felucca
+worlddecorator_facet_0_5	Jhelom,deco_jhelom_felucca
+worlddecorator_facet_0_6	Magincia,deco_magincia_felucca
+worlddecorator_facet_0_7	Minoc,deco_minoc_felucca
+worlddecorator_facet_0_8	Moonglow,deco_moonglow_felucca
+worlddecorator_facet_0_9	Nujel'm,deco_nujelm_felucca
+worlddecorator_facet_0_10	Ocllo,deco_ocllo_felucca
+worlddecorator_facet_0_11	Papua,deco_papua_felucca
+worlddecorator_facet_0_12	Sea Market,deco_sea_market_felucca
+worlddecorator_facet_0_13	Serpent's Hold,deco_serpents_hold_felucca
+worlddecorator_facet_0_14	Skara Brae,deco_skara_brae_felucca
+worlddecorator_facet_0_15	Trinsic,deco_trinsic_felucca
+worlddecorator_facet_0_16	Vesper,deco_vesper_felucca
+worlddecorator_facet_0_17	Wind,deco_wind_felucca
+worlddecorator_facet_0_18	Yew,deco_yew_felucca
+worlddecorator_facet_0_19	Blighted Cove,deco_blighted_cove_magincia
+worlddecorator_facet_0_20	Covetous,deco_covetous_felucca
+worlddecorator_facet_0_21	Deceit, deco_deceit_felucca
+worlddecorator_facet_0_22	Despise,deco_despise_felucca
+worlddecorator_facet_0_23	Destard,deco_destard_felucca
+worlddecorator_facet_0_24	Fire Dungeon,deco_fire_dungeon_felucca
+worlddecorator_facet_0_25	Hedge Maze,deco_hedge_maze_felucca
+worlddecorator_facet_0_26	Hythloth,deco_hythloth_felucca
+worlddecorator_facet_0_27	Ice Dungeon,deco_ice_dungeon_felucca
+worlddecorator_facet_0_28	Khaldun,deco_khaldun_felucca
+worlddecorator_facet_0_29	Orc Cave,deco_orc_cave_felucca
+worlddecorator_facet_0_30	Painted Cave,deco_painted_cave_felucca
+worlddecorator_facet_0_31	Palace of Paroxysmus,deco_palace_of_proxysmus_felucca
+worlddecorator_facet_0_32	Prism of Light,deco_prism_of_light_felucca
+worlddecorator_facet_0_33	Sanctuary,deco_sanctuary_felucca
+worlddecorator_facet_0_34	Shame,deco_shame_felucca
+worlddecorator_facet_0_35	Solen Hive,deco_solen_hive_felucca
+worlddecorator_facet_0_36	Terathan Keep,deco_terathan_keep_felucca
+worlddecorator_facet_0_37	Wrong,deco_wrong_felucca
+worlddecorator_facet_0_38	Ruined Magincia,deco_magincia_ruined_felucca
+worlddecorator_facet_0_39	Terrain Fixes & Misc,place_terrain_fixes_felucca
+
+worlddecorator_facet_1		Trammel
+worlddecorator_facet_1_0	Britain,deco_britain_trammel
+worlddecorator_facet_1_1	Buccaneer's Den,deco_buccaneers_den_trammel
+worlddecorator_facet_1_2	Cove,deco_cove_trammel
+worlddecorator_facet_1_3	Delucia,deco_delucia_trammel
+worlddecorator_facet_1_4	Heartwood,deco_heartwood_trammel
+worlddecorator_facet_1_5	Jhelom,deco_jhelom_trammel
+worlddecorator_facet_1_6	Magincia,deco_magincia_trammel
+worlddecorator_facet_1_7	Minoc,deco_minoc_trammel
+worlddecorator_facet_1_8	Magincia,deco_magincia_trammel
+worlddecorator_facet_1_9	Nujel'm,deco_nujelm_trammel
+worlddecorator_facet_1_10	Papua,deco_papua_trammel
+worlddecorator_facet_1_11	Sea Market,deco_sea_market_trammel
+worlddecorator_facet_1_12	Serpent's Hold,deco_serpents_hold_trammel
+worlddecorator_facet_1_13	Skara Brae,deco_skara_brae_trammel
+worlddecorator_facet_1_14	Trinsic,deco_trinsic_trammel
+worlddecorator_facet_1_15	Vesper,deco_vesper_trammel
+worlddecorator_facet_1_16	Wind,deco_wind_trammel
+worlddecorator_facet_1_17	Yew,deco_yew_trammel
+worlddecorator_facet_1_18	Blighted Grove,deco_blighted_grove_trammel
+worlddecorator_facet_1_19	Covetous,deco_covetous_trammel
+worlddecorator_facet_1_20	Deceit,deco_deceit_trammel
+worlddecorator_facet_1_21	Despise,deco_despise_trammel
+worlddecorator_facet_1_22	Destard,deco_destard_trammel
+worlddecorator_facet_1_23	Fire Dungeon,deco_fire_dungeon_trammel
+worlddecorator_facet_1_24	Hedge Maze,deco_hedge_maze_trammel
+worlddecorator_facet_1_25	Hythloth,deco_hythloth_trammel
+worlddecorator_facet_1_26	Ice Dungeon,deco_ice_dungeon_trammel
+worlddecorator_facet_1_27	Orc Cave,deco_orc_cave_trammel
+worlddecorator_facet_1_28	Painted Cave,deco_painted_cave_trammel
+worlddecorator_facet_1_29	Palace of Paroxysmus,deco_palace_of_paroxysmus_trammel
+worlddecorator_facet_1_30	Prism of Light,deco_prism_of_light_trammel
+worlddecorator_facet_1_31	Sanctuary,deco_sanctuary_trammel
+worlddecorator_facet_1_32	Shame,deco_shame_trammel
+worlddecorator_facet_1_33	Solen Hive,deco_solen_hive_trammel
+worlddecorator_facet_1_34	Terathan Keep,deco_terathan_keep_trammel
+worlddecorator_facet_1_35	Wrong,deco_wrong_trammel
+worlddecorator_facet_1_36	Additional Haven Deco,deco_haven_additional_trammel
+worlddecorator_facet_1_37	Runied Magincia,deco_magincia_ruined_trammel
+worlddecorator_facet_1_38	New Haven,deco_haven_new_trammel
+worlddecorator_facet_1_39	Old Haven,deco_haven_old_trammel
+worlddecorator_facet_1_40	Haven,deco_haven_trammel
+worlddecorator_facet_1_41	Uzeraan Turmoil,deco_uzeraan_turmoil_quest_trammel
+worlddecorator_facet_1_42	Terrain Fixes & Misc,place_terrain_fixes_trammel
+
+
+
+worlddecorator_facet_2		Ilshenar
+worlddecorator_facet_2_0	Ankh Dungeon,deco_ankh_dungeon_ilshenar
+worlddecorator_facet_2_1	Blood Dungeon,deco_blood_dungeon_ilshenar
+worlddecorator_facet_2_2	Castle Blackthorn,deco_castle_blackthorn_ilshenar
+worlddecorator_facet_2_3	Dueces Vinculum Inn,deco_dueces_vinculum_inn_ilshenar
+worlddecorator_facet_2_4	Exodus Dungeon,deco_exodus_dungeon_ilshenar
+worlddecorator_facet_2_5	Gargoyle Mining Camp,deco_gargoyle_mining_camp
+worlddecorator_facet_2_6	Memorial to Gweno,deco_gweno_memoral_ilshenar
+worlddecorator_facet_2_7	Small Gypsy Camp,deco_gypsy_camp_small_ilshenar
+worlddecorator_facet_2_8	Large Gypsy Camp,deco_gyspy_camp_large_ilshenar
+worlddecorator_facet_2_9	Lakeshire,deco_lakshire_ilshenar
+worlddecorator_facet_2_10	Meer Catacombs,deco_meer_catacombs_ilshenar
+worlddecorator_facet_2_11	Misc,deco_misc_ilshenar
+worlddecorator_facet_2_12	Mistas,deco_mista_ilshenar
+worlddecorator_facet_2_13	Rat Cave,deco_rat_cave_ilshenar
+worlddecorator_facet_2_14	Rat Fortress,deco_rat_fortress_ilshenar
+worlddecorator_facet_2_15	Reg Volom,deco_reg_volom_ilshenar
+worlddecorator_facet_2_16	Savage Village,deco_savage_village_ilshenar
+worlddecorator_facet_2_17	Serpentine Passage,deco_serpentine_passage_ilshenar
+worlddecorator_facet_2_18	Sheep Farm,deco_sheep_farm_ilshenar
+worlddecorator_facet_2_19	Shrines,deco_shrines_ilshenar
+worlddecorator_facet_2_20	Sorcerer's Dungeon,deco_sorcerers_dungeon_ilshenar
+worlddecorator_facet_2_21	Terrort Skitas,deco_terrot_skitas_ilshenar
+worlddecorator_facet_2_22	Twin Oaks Inn,deco_twinoaks_inn_ilshenar
+worlddecorator_facet_2_23	Twisted Weald,deco_twisted_weald_ilshenar
+worlddecorator_facet_2_24	Ver Lor Reg,deco_ver_lor_reg_ilshenar
+worlddecorator_facet_2_25	Wisp Dungeon,deco_wisp_dungeon_ilshenar
+
+
+
+worlddecorator_facet_3		Malas
+worlddecorator_facet_3_0	All Malas,deco_all_malas
+
+worlddecorator_facet_4		Tokuno
+worlddecorator_facet_4_0	All Tokuno,deco_all_tokuno
+
+
+worlddecorator_facet_5		Ter Mur
+worlddecorator_facet_5_0	Underworld,deco_underworld_ter_mur
+
+/////////////////////////////
+// World Decorator item
+
+[itemdef i_world_decorator]
+id=i_crystal_ball
+name=World Decorator
+type=t_script
+
+category=GM Items
+subsection=Worldgen
+description=World Decorator
+
+on=@create
+attr=010
+color=06
+
+on=@dclick
+sdialog d_world_decorator
+return 1
+
+////////////////////////////////////////////
+
+[DIALOG d_world_decorator]
+220,30
+
+page 0
+resizepic 10 10 0a28 360 490		
+
+page 1
+
+resizepic 40 20 9200 300 30
+dtext 140 25 100 World Decorator
+
+resizepic 140 55 9350 100 30
+dtext 150 60 1000 Version: 
+dtext 200 60 036 2.0.a
+
+resizepic 30 90 9350 320 50		
+dtext 95 95 1000 Special Thanks to:
+dtext 215 95 17 Nerun's Distro
+dtext 90 110 1000 and to            for inspiring
+dtext 135 110 17 AmongVangrell
+
+
+dtext 150 150 100 Basic Items
+resizepic 29 169 3000 320 75
+
+
+button 30 170 4006 4007 1 0 1		
+dtext 65 170 1000 Generate Doors
+button 30 195 4006 4007 1 0 2		
+dtext 65 195 1000 Generate Signs 
+button 30 220 4006 4007 1 0 3		
+dtext 65 220 1000 Generate Moongates
+
+	
+button 200 170 4006 4007 1 0 4		
+dtext 235 170 1000 Remove Doors 	
+button 200 195 4006 4007 1 0 5		
+dtext 235 195 1000 Remove Signs		
+button 200 220 4006 4007 1 0 6		
+dtext 235 220 1000 Remove Moongates 	
+
+
+dtext 155 245 100 Decoration	
+resizepic 30 265 3000 330 150	
+while !<isempty <def.worlddecorator_facet_<dlocal.n>>>
+  args=<def0.worlddecorator_facet_<dlocal.n>>
+  button 30 <eval 265+(<local.n>*25)> 4006 4007 1 0 <eval <local.n>+7>
+  dtext 65 <eval 265+(<local.n>*25)> <eval 026+(<local.n>*20)> <argv[0]>
+  button 200 <eval 265+(<local.n>*25)> 4012 4013 0 <eval <local.n>+2>
+  dtext 235 <eval 265+(<local.n>*25)> 1000 More [<argv[0]>]
+  local.n += 1
+endwhile
+
+//resizepic 30 440 3000 260 20
+//button 30 440 4006 4007 1 0 999999	
+//dtext 65 440 1000 Remove    items from the server
+//dtext 110 440 026 ALL
+
+tilepic 310 440 13945 1
+
+local.n=
+local.x=2
+while !<isempty <def.worlddecorator_facet_<dlocal.n>>>
+  page=<local.x>		
+  resizepic 85 20 9200 205 20	
+  args=<def0.worldspawner_facet_<dlocal.n>>		
+  dtext 140 20 <eval 026+(<local.n>*20)> <argv[0]> Decorator		
+  button 20 470 4015 4016 0 1
+  dtext 60 470 100 Go Back
+  while !<isempty <def.worlddecorator_facet_<dlocal.n>_<dlocal.y>>>
+    args=<def.worlddecorator_facet_<dlocal.n>_<dlocal.y>>
+    button <eval 35+(<local.z>*160)> <eval 45+(<local.q>*20)> 210 211 1 0 <eval ((<local.n>*100)+<local.y>)+100>
+    dtext <eval 65+(<local.z>*160)> <eval 45+(<local.q>*20)> 1000 <argv[0]>
+    dtext <eval 42+(<local.z>*160)> <eval 44+(<local.q>*20)> 1000 <qval <var0.<argv[1]>>?<dvar0.<argv[1]>>:>
+    if <local.y> == 20
+      local.z=1
+      local.q=-1
+    endif
+    local.q += 1
+    local.y += 1
+  endwhile
+  local.n += 1
+  local.x += 1
+  local.y=
+  local.z=
+  local.q=
+endwhile
+	
+
+[dialog d_world_decorator button]
+
+onbutton=1,99	
+doswitch <eval <argn>-1>
+  begin
+    src.place_doors_felucca
+    src.place_doors_trammel
+    src.link_double_doors
+  end
+  begin
+    src.place_signs_felucca
+    src.place_signs_trammel
+    src.name_shop_signs
+  end
+  begin
+    src.place_moongates
+  end
+  serv.b 4
+  serv.b 5
+  serv.b 6
+  src.decorate_facet 0
+  src.decorate_facet 1
+  src.decorate_facet 2
+  src.decorate_facet 3
+  src.decorate_facet 4
+  src.decorate_facet 5
+enddo
+sdialog d_world_decorator
+
+onbutton=100,1000
+argn -= 100
+
+local.n=<eval <argn>/100>
+local.x=<eval <argn>-(<local.n>*100)>
+
+args=<def0.worlddecorator_facet_<dlocal.n>_<dlocal.x>>
+
+var0.decorator_facet=<local.n>
+src.<argv[1]>
+var0.<argv[1]> += 1
+src.sysmessage @<eval 026+(<local.n>*20)> Decorating <argv[0]> in <def0.worldspawner_facet_<dlocal.n>> complete.
+var0.decorator_facet=
+sdialog d_world_decorator <eval <local.n>+2>
+
+onbutton=999999	
+sdialog d_destroy_world
+
+
+[DIALOG d_destroy_world]
+250,200
+
+resizepic 10 10 0a28 300 100
+
+dtext 110 20 100 ARE YOU SURE?
+dtext 25 45 026 [ATTENTION ALL ITEMS WILL BE DELETED!!]
+
+button 50 75 4015 4016 1 0 1
+dtext 90 75 1000 Go Back
+
+button 210 75 249 248 1 0 2
+
+[DIALOG d_destroy_world button]
+onbutton=1
+sdialog d_world_decorator
+
+onbutton=2
+src.destroy_world
+
+////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////
+/////////////BEGIN WORLD SPAWNING////////////////////////
+////////////////////////////////////////////////////////
+
+[defname world_spawner]
+
+abbein			{c_bird 1 c_bird_crow 1 C_BIRD_MAGPIE 1 C_BIRD_TROPICAL 1 C_BIRD_JUNGLE 1 c_bird_raven 1}
+abscess			{c_abscess}
+AcidElemental  		{c_elem_acid}		
+AcidElementalRenowned	{c_elem_acid}	
+AcidSlug		{c_acid_slug}
+actor			{c_h_actor 1 c_h_actor_f 1}
+Airelemental		{c_elem_air}
+alchemist		{c_h_alchemist 1 c_h_alchemist_f 1}
+alchemistgm		{c_h_alchem_gm 1 c_h_alchem_gm_f 1}
+alelle			{c_bird 1 c_bird_crow 1 C_BIRD_MAGPIE 1 C_BIRD_TROPICAL 1 C_BIRD_JUNGLE 1 c_bird_raven 1}
+alethanian		{c_bird 1 c_bird_crow 1 C_BIRD_MAGPIE 1 C_BIRD_TROPICAL 1 C_BIRD_JUNGLE 1 c_bird_raven 1}
+alligator		{c_alligator}
+aluniol			{c_bird 1 c_bird_crow 1 C_BIRD_MAGPIE 1 C_BIRD_TROPICAL 1 C_BIRD_JUNGLE 1 c_bird_raven 1}
+Ancientlich		{c_liche_ancient}	
+AncientLichRenowned	{c_liche_ancient}
+Ancientwyrm 		{c_wyrm_ancient}
+aneen			{c_bird 1 c_bird_crow 1 C_BIRD_MAGPIE 1 C_BIRD_TROPICAL 1 C_BIRD_JUNGLE 1 c_bird_raven 1}
+animaltrainer		{c_h_animaltrainer 1 c_h_animaltrainer_f 1}
+Antlion			{c_ant_lion}
+ArcaneDaemon		{c_arcane_daemon}
+architect 		{c_h_architect 1 c_h_architect_f 1}
+Arcticogrelord		{c_ogre_lord}	//no arctic ogrelord
+armorer			{c_h_armorer 1 c_h_armorer_f 1}
+artist			{c_h_ARTIST 1 c_h_ARTIST_F 1}
+athialon		{c_bird 1 c_bird_crow 1 C_BIRD_MAGPIE 1 C_BIRD_TROPICAL 1 C_BIRD_JUNGLE 1 c_bird_raven 1}
+bakekitsune		{c_bake_kitsune}
+baker			{c_h_baker 1 c_h_baker_f 1}
+Balron			{c_balron}
+banker			{c_h_banker 1 c_h_banker_f 1}
+Bankercamp		{c_h_banker 1 c_h_banker_f 1}
+bard			{c_h_BARD 1 c_h_BARD_F 1}
+bardguildmaster 	{c_h_BARD 1 c_h_BARD_F 1} 
+barkeeper		{c_h_tavernkeeper 1 c_h_tavernkeeper_f 1}
+Barreraak		{c_rat}
+baseescortable		{c_h_noble 1 c_h_noble_f 1}
+basket			{i_basket}
+beekeeper		{c_h_beekeeper 1 c_h_beekeeper_f 1}
+Beetle			{c_giant_beetle}
+beggar			{c_h_begger 1 c_h_begger_f 1}
+Betrayer		{c_Blackthorn_Juggernaught}	//no blackthorn betrayer
+bird			{c_bird 1 c_bird_crow 1 C_BIRD_MAGPIE 1 C_BIRD_TROPICAL 1 C_BIRD_JUNGLE 1 c_bird_raven 1}
+BlackBear		{c_bear_black}
+BlackPearl		{i_reag_black_pearl}
+blacksmith			{c_h_blacksmith 1 c_h_blacksmith_f 1}
+blacksmithguildmaster		{c_h_guild_blacksmith 1 c_h_guild_blacksmith_f 1}
+blacksoleninfiltratorqueen		{c_solen_queen_black}
+blacksoleninfiltratorwarrior		{c_solen_warrior_black}
+blacksoleninfiltratorworler		{c_solen_worker_black}
+Blacksolenqueen			{c_solen_queen_black}
+Blacksolenwarrior		{c_solen_warrior_black}
+Blacksolenworker		{c_solen_worker_black}
+Bloodelemental		{c_elem_blood}
+Bloodmoss		{i_reag_blood_moss}
+bloodworm		{c_rat}
+Boar			{c_pig_big}
+boatpainter		{c_h_SHIPWRIGHT 1 c_h_SHIPWRIGHT_F 1}	//no boat painter
+bodysculptor		{c_h_barber 1 c_h_barber_f 1}//no bodysculptor using barber
+bogling			{c_bogling}
+bogthing		{c_bog_thing}
+bolaevin		{c_bird 1 c_bird_crow 1 C_BIRD_MAGPIE 1 C_BIRD_TROPICAL 1 C_BIRD_JUNGLE 1 c_bird_raven 1} 
+bonedemon		{c_bone_daemon}
+Boneknight 		{c_skeleton_knight}
+Bonemagi 		{c_skeleton_mage}	//no bone magi
+bowyer			{c_h_bowyer 1 c_h_bowyer_f 1}
+bridegroom		{c_h_noble 1 c_h_noble_f 1}//no bridegroom using noble
+Brigand 		{c_h_brigand 1 c_h_brigand_f 1}
+brigandcamp		{c_h_brigand 1 c_h_brigand_f 1}
+BrownBear		{c_bear_brown}
+Bull			{c_bull_brown_lt 1 c_bull_brown_dk 1}
+Bullfrog		{c_bullfrog}
+butcher			{c_h_butcher 1 c_h_butcher_f 1}
+candlelarge		{i_candle_lg}
+candleskull		{i_skull_candle}
+carpenter		{c_h_carpenter 1 c_h_carpenter_f 1}
+Cat			{c_cat}
+changeling		{c_changeling}
+chaosdaemon		{c_daemon}	//no chaos daemon
+Chaosguard		{c_h_GUARD 1 c_h_GUARD_F 1}//No order / Chaos Guards Using normal Guards Instead.
+Chicken			{c_chicken}
+ChickenLizard		{c_rat}
+chiikkaha		{c_ratman}	//no chiikkaha
+ClanChitterAssistant		{c_rat}
+ClanChitterTinkerer		{c_rat}
+ClanRibbonCourtier		{c_rat}
+ClanRibbonPlagueRat		{c_rat}
+ClanRibbonSupplicant		{c_rat}
+ClanScratchHenchrat		{c_rat}
+ClanScratchSavageWolf		{c_rat}
+ClanScratchScrounger		{c_rat}
+ClockworkScorpion		{c_rat}
+closedbarrel		{i_barrel}
+cobbler			{c_h_cobbler 1 c_h_cobbler_f 1}
+coil			{c_snake_giant}
+cook			{c_h_cook 1 c_h_cook_f 1}
+CoralSnake		{c_rat}
+Corpser			{c_corpser}
+corrosiveslime		{c_slime}	//no corrosive slime
+Cougar			{c_cougar}
+Cow			{c_cow_bw}
+crane			{c_crane}
+crow			{c_bird_crow}
+CrystalDaemon		{c_daemon_crystal}
+Crystalelemental	{c_crystal_elemental}
+CrystalHydra		{c_hydra}	//no crystal hydra
+CrystalLatticeSeeker	{c_crystal_lattice_seeker}
+CrystalSeaSerpent	{c_sea_serpent} // no Crystal Sea Serpent, using Sea Serpent instead.
+Crystalvortex		{c_vortex}//no Crystal Vortex, using Vortex instead.
+CrystalWisp		{c_wisp}	//no crystal wisp
+Cursed			{c_spectre}	//no Cursed npc
+CuSidhe			{c_cu_sidhe}
+customhairstylist	{c_h_barber 1 c_h_barber_f 1}
+Cyclops			{c_cyclops}
+daelas			{c_bird 1 c_bird_crow 1 C_BIRD_MAGPIE 1 C_BIRD_TROPICAL 1 C_BIRD_JUNGLE 1 c_bird_raven 1}
+daemon			{c_daemon 1 c_balron 1 }	//no c_daemon_blackgate
+DarkWisp		{c_wisp}	//no dark wisp
+deathwatchbeetle		{c_deathwatch_beetle}
+deathwatchbeetlehatchling	{c_deathwatch_beetle}//no deathwatch beetle hatchling using deathwatch beetle
+DeepSeaSerpent  		{c_sea_serpent}//no deep see serpent using sea serpent
+Desertostard		{c_ostard_desert}
+devourer		{c_devourer_souls}
+DevourerRenowned	{c_rat}
+Direwolf		{c_direwolf}
+dockmaster		{c_h_shipwright 1 c_h_shipwright_f 1}
+Dog			{c_dog}
+Dolphin			{c_dolphin}
+doppleganger		{c_doppleganger}
+dragon			{c_dragon_red 1 c_dragon_green 1}
+dragonsflamemage	{c_h_brigand 1 c_h_brigand_f 1}
+drake			{c_dragon_small_red 1 c_dragon_small_black 1}
+Dreadspider		{c_dread_spider}
+Dryad			{c_dryad}
+DryadA			{c_dryad}
+Dullcopperelemental	{c_elem_earth}	//no dull copper elem
+Eagle			{c_eagle}
+Earthelemental		{c_elem_earth}
+Efreet			{c_efreet}
+ElderDugan		{c_rat}
+Eldergazer		{c_gazer_elder}
+eliteninja		{c_h_bandit_m 1 c_h_bandit_f 1}	//no elite ninja
+eliteninjawarrior		{c_h_bandit_m 1 c_h_bandit_f 1}	//no ninja
+EnslavedGargoyle		{c_gargoyle}	//no enslaved gargoyle
+EnslavedGoblinKeeper		{c_rat}
+EnslavedGoblinMage		{c_rat}
+EnslavedGoblinScout		{c_rat}
+EnslavedGrayGoblin		{c_rat}
+EnslavedGreenGoblin		{c_rat}
+EnslavedGreenGoblinAlchemist	{c_rat}
+Escortablemage			{c_h_mage 1 c_h_mage_f 1}// no hire npcs using base ones.
+escortablewanderinghealer	{c_h_healer 1 c_h_healer_f 1}
+EtherealWarrior		{c_ethereal_warrior}
+Ettin			{c_ettin 1 c_ettin_w_axe 1}
+evilhealer		{c_h_healer 1 c_h_healer_f 1}//no evil healer, using healer
+Evilmage		{c_h_evilmage}
+Evilmagelord		{c_h_evilmage}	//no evilmage lord
+evilwanderinghealer	{c_h_heal_wander 1 c_h_heal_wander_f 1}
+Executioner		{c_h_brigand 1 c_h_brigand_f 1} //no executioner charder using brigand
+ExodusMinion		{c_exodus_minion}
+ExodusOverseer		{c_exodus_overseer}
+FairyDragon		{c_rat}
+fandancer		{c_fan_dancer}
+farmer			{c_h_farmer 1 c_h_farmer_f 1}
+FeralTreefellow		{c_rat}
+Ferret			{c_ferret}
+FiddlingTobin		{c_rat}
+FireAnt			{c_rat}
+FireBeetle		{c_giant_beetle}	//no fire beetle
+FireDaemon		{c_rat}
+FireDaemonRenowned	{c_rat}
+Fireelemental 		{c_elem_fire}
+FireElementalRenowned	{c_rat}
+Firegargoyle		{c_fire_gargoyle}
+fisherguildmaster	{c_h_guild_maritime 1 c_h_guild_maritime_f 1}
+fisherman		{c_h_fisher 1 c_h_fisher_f 1}
+fleshgolem		{c_flesh_golem}
+flurry			{c_elem_air}	//no flurry using air elemental
+Forestostard		{c_ostard_forest}
+ForgottenServant	{c_rat}
+fortuneteller		{c_h_gypsy 1 c_h_gypsy_f 1}//no fortune teller using gypsy
+Frenziedostard  	{c_ostard_forest}//no frenzied ostard using forest ostard
+Frostooze		{c_frostooze}
+Frostspider		{c_frostspider}
+Frosttroll		{c_frost_troll}
+fruitbasket		{i_basket_fruit}
+fulljars		{i_jar_full}
+furtrader		{c_h_furtrader 1 c_h_furtrader_f 1}
+gaman			{c_gaman}
+Garamon			{c_rat}
+Gargoyle		{c_gargoyle}
+gargoyledestroyer	{c_gargoyle}	//no gargoyle destroyer
+gargoyleenforcer	{c_gargoyle}	//no gargoyle enforcer
+gargoyleshade		{c_rat}
+Garlic			{i_reag_garlic}
+Gazer 			{c_gazer}
+Gazerlarva		{c_swarm}
+genericguard		{c_rat}
+Ghost			{c_ghost}
+Ghoul 			{C_ghoul}
+giantblackwidow		{c_dread_spider}//no black widow using dread spider
+Giantrat		{c_rat_giant}
+Giantserpent		{c_snake_giant}
+Giantspider		{c_spider_giant}
+gianttoad		{c_toad_giant}
+gibberling		{c_gibberling}
+Ginseng			{i_reag_ginseng}
+glassblower		{c_h_tinker 1 c_h_tinker_f 1}//no glassblower using tinker
+Gnaw			{c_direwolf}	//no gnaw
+Goat			{c_goat}
+Golem			{c_iron_golem}
+Golemcontroller 	{c_h_evilmage}	//no golem controller
+gorefiend		{c_gore_fiend}
+Gorilla			{c_gorilla}
+GrayGoblin		{c_rat}
+GrayGoblinKeeper	{c_rat}
+GrayGoblinMage		{c_rat}
+GrayGoblinMageRenowned	{c_rat}
+GreaterMongbat		{c_rat}
+GreaterPoisonElemental	{c_rat}
+GreatHart		{c_stag}
+GreenGoblin		{c_rat}
+GreenGoblinAlchemist		{c_rat}
+GreenGoblinAlchemistRenowned	{c_rat}
+GreenGoblinScout		{c_rat}
+gremlin			{c_rat}
+Gretchen		{c_rat}
+GreyWolf		{c_wolf_gray}
+grim			{c_dragon_small_red}	//no grim using red drake
+GrimmochDrummel		{c_spectre}	//no Grimmoch Drummel npc using shadow fiend instead.
+GrizzlyBear		{c_bear_grizzly}
+grobu 			{c_bear_black}	//no grobu
+guile			{c_changeling}	//no guile
+gypsy			{c_h_gypsy 1 c_h_gypsy_f 1}
+gypsyanimaltrainer	{c_h_animaltrainer 1 c_h_animaltrainer_f 1}	//no gypsy animal trainer using regular animal trainer
+gypsybanker		{c_h_banker 1 c_h_banker_f 1}//no gypsy banker, using regular banker
+gypsymaiden		{c_h_gypsy_f}	//no gypsy maiden using gypsy
+hairstylist		{c_h_barber 1 c_h_barber_f 1}
+ham			{i_ham}
+harbormaster		{c_h_sailor 1 c_h_sailor_f 1}//no harbormaster using sailor
+Harpy 			{c_harpy}
+HarrowerTentacles	{c_corpser}	//no harrower tentacles
+Headlessone		{c_headless}
+healer			{c_h_healer 1 c_h_healer_f 1}
+Healercamp		{c_h_healer 1 c_h_healer_f 1}	//no healer camp
+healerguildmaster	{c_h_GUILD_HEALER 1 c_h_GUILD_HEALER_F 1}
+Hellcat 		{c_hellcat}
+Hellhound		{c_hellhound}
+Herbalist		{c_h_herbalist 1 c_h_herbalist_f 1}
+HighPlainsBoura		{c_rat}
+Hind			{c_doe}
+hirebard		{c_h_peasant 1 c_h_peasant_f 1}
+HireBardArcher  	{c_h_bard 1 c_h_bard_f 1}// no hire npcs using base ones.
+HireBeggar		{c_h_begger 1 c_h_begger_f 1}// no hire npcs using base ones.
+hirefighter		{c_h_peasant 1 c_h_peasant_f 1}
+HireMage		{c_h_mage 1 c_h_mage_f 1}// no hire npcs using base ones.
+HirePaladin		{c_h_paladin 1 c_h_paladin_f 1}// no hire npcs using base ones.
+hirepeasant		{c_h_peasant 1 c_h_peasant_f 1}
+HireRanger		{c_h_ranger 1 c_h_ranger_f 1}// no hire npcs using base ones.
+HireRangerArcher	{c_h_ranger 1 c_h_ranger_f 1}// no hire npcs using base ones.
+hiresailor		{c_h_peasant 1 c_h_peasant_f 1}
+HireThief		{c_h_thief 1 c_h_thief_f 1}// no hire npcs using base ones.
+hiryu			{c_hiryu}
+holymage		{c_h_mage 1 c_h_mage_f 1}//no holy mage using mage
+hordeminion		{c_horde_daemon_medium}//is this right?
+Horse			{c_horse_tan 1 c_horse_gray 1 c_horse_brown_dk 1}
+hydra			{c_hydra}
+Iceelemental 		{c_elem_ice}
+Icefiend 		{c_icefiend}
+Iceserpent		{c_ice_serpent}
+Icesnake		{c_ice_snake}
+Imp			{c_imp}
+innkeeper		{c_h_innkeeper 1 c_h_innkeeper_f 1}
+insanedryad		{c_dryad_insane}//CHECK
+InterredGrizzle		{c_monstrous_interred_grizzle}
+Irk			{c_changeling}	//no irk
+IronBeetle		{c_rat}
+ironworker		{c_h_miner 1 c_h_miner_f 1}
+Jaacar			{c_rat}
+JackRabbit		{c_jackrabbit}
+jeweler			{c_h_jeweler 1 c_h_jeweler_f 1}
+jothan			{c_bird 1 c_bird_crow 1 C_BIRD_MAGPIE 1 C_BIRD_TROPICAL 1 C_BIRD_JUNGLE 1 c_bird_raven 1}
+Juggernaut		{c_Blackthorn_Juggernaught}	//no juggernaut
+Jukalord		{c_juka_lord}
+Jukamage		{c_juka_mage}
+Jukawarrior		{c_juka_warrior}
+Jwilson			{c_slime} //no Jwilson using slime
+kappa			{c_kappa}
+kazekemono		{c_kaze_kemono}
+keeperofchivalry		{c_h_paladin 1 c_h_paladin_f 1}//no keeper of chivalry using paladin
+Kepetch			{c_rat}
+KepetchAmbusher		{c_rat}
+Khaldunsummoner		{c_spectre}	//no Khaldun summoner npc using shadow fiend instead.
+Khaldunzealot		{c_spectre}//no Cursed npc using shadow fiend instead.
+Kirin			{c_kirin}
+Kraken			{c_kraken}
+LadyLissith		{c_spider_giant}	//no lady lissith
+ladyofthesnow		{C_lady_of_snow}
+LadySabrix		{c_spider_giant}	//no lady sabrix
+LavaElemental		{c_rat}
+Lavalizard 		{c_lava_lizard}
+Lavaserpent		{c_lava_serpent}
+Lavasnake 		{c_lava_snake}
+leatherworker		{c_h_tanner 1 c_h_tanner_f}
+lesserhiryu		{c_hiryu}//no lesser hiryu using hyru
+Lich			{c_liche}
+lichlord 		{c_liche_lord}
+Lizardman		{c_lizardman 1 c_lizardman_spear 1 c_lizardman_mace 1}
+Llama			{c_llama}
+LowlandBoura		{c_rat}
+lurg 			{c_troglodyte}	//no lurg
+LysanderGathenwale	{c_spectre}//no Lysander Gathenwale npc using shadow fiend instead.
+MaddeningHorror		{c_rat}
+Mage			{c_h_mageshop 1 c_h_mageshop_f 1}
+magecamp		{c_h_mage 1 c_h_mage_f 1}
+magedragonsflamemage		{c_h_brigand 1 c_h_brigand_f 1}
+mageguildmaster		{c_h_GUILD_ARCANE 1 c_h_GUILD_ARCANE_F 1}
+Magpie			{c_bird_magpie}
+Malefic			{c_spider_giant} 	//no malefic
+mallew			{c_bird 1 c_bird_crow 1 C_BIRD_MAGPIE 1 C_BIRD_TROPICAL 1 C_BIRD_JUNGLE 1 c_bird_raven 1}
+MandrakeRoot		{i_reag_mandrake_root}
+mapmaker		{c_h_mapmaker 1 c_h_mapmaker_f 1}
+Medusa			{c_rat}
+MeerCaptain		{c_meer_captain}
+MeerEternal		{c_meer_eternal}
+MeerMage		{c_meer_mage}
+MeerWarrior		{c_meer_warrior}
+meraktus		{c_tormented_minotaur}//no meraktus using tormented minortaur
+merchant		{c_h_provis 1 c_h_provis_f 1}
+merchantguildmaster	{c_h_GUILD_MERCHANT 1 c_h_GUILD_MERCHANT_F 1}
+messenger		{c_h_towncrier 1 c_h_towncrier_f 1}//no messenger using towncrier
+miasma			{c_scorpion_giant}//no miasma using giant scorpion
+miner			{c_h_miner 1 c_h_miner_f 1}
+minerguildmaster	{c_h_GUILD_MINER 1 c_h_GUILD_MINER_F 1}
+MiniatureMushroom	{i_mushroom}
+minotaur		{c_minotaur}
+minotaurcaptain		{c_minotaur_captain}
+minotaurscout		{c_minotaur_scout}
+minter			{c_h_minter 1 c_h_minter_f 1}
+mistral			{c_elem_air}	//no mistral using air elemental
+moloch			{c_moloch}
+Mongbat			{c_mongbat}
+monk			{c_h_priest 1}//no monk using priest
+MorgBergen		{c_spectre}//no Morg Bergen npc using shadow fiend instead.
+mougguur 		{c_ettin} //no mougguur
+mountaingoat		{c_mountain_goat}
+Mummy			{c_mummy}
+mushroomtrap		{i_mushroom}//no mushroom trap
+NavreyNightEyes		{c_rat}
+NevilleBrightwhistle	{c_rat}
+Nightmare		{c_nightmare}
+Nightshade		{i_reag_nightshade}
+ninja			{c_h_bandit_m 1 c_h_bandit_f 1}	//no ninja
+Niporailem		{c_rat}
+Noble			{c_h_noble 1 c_h_noble_f 1}
+Ogre 			{c_ogre}
+ogrelord		{c_ogre_lord}
+olaeni			{c_bird 1 c_bird_crow 1 C_BIRD_MAGPIE 1 C_BIRD_TROPICAL 1 C_BIRD_JUNGLE 1 c_bird_raven 1}
+oni			{c_oni}
+Ophidianarchmage	{c_ophidian_archmage}
+Ophidianknight		{c_ophidian_knight}
+Ophidianmage		{c_ophidian_mage}
+Ophidianmatriarch 	{c_ophidian_queen}
+Ophidianwarrior		{c_ophidian_warrior}
+orc			{c_orc}
+orcbomber		{c_orc_lord}	//no orc bomber
+orcbrute 		{c_orc_brute}
+Orccamp			{c_orc}
+orccaptain		{c_orc_captain}
+orcishlord		{c_orc_lord}
+orcishmage		{c_orc_mage}
+orcishspirit		{c_orc 1}//no orcish spirit using orc
+orcscout		{c_orc}	//no orc scout
+orderguard		{c_h_GUARD_order 1 c_h_GUARD_order_F 1}
+Panther			{c_panther}
+patchworkskeleton	{c_patchwork_skeleton}
+peasant			{c_h_peasant 1 c_h_peasant_f 1}
+Phoenix			{c_phoenix}
+Pig			{c_pig}
+pirate			{c_h_sailor 1 c_h_sailor_f 1}//no pirate using sailor
+PitFiend		{c_rat}
+Pixie			{c_pixie}
+PixieRenowned		{c_rat}
+plaguebeast		{c_plague_beast}
+plaguebeastlord		{c_plague_beast}	//no plague beast lord
+plaguespawn		{c_plague_beast}	//no plague spawn
+Poisonelemental		{c_elem_poison}
+Polarbear		{c_bear_polar}
+protector		{c_wisp}	//no Protector using wisp instead.
+provisioner		{c_h_provis 1 c_h_provis_f 1}
+pumpkin			{i_fruit_pumpkin}
+putrefier		{c_balron} //no putrefier
+putridundeadguardian	{c_rat}
+pyre			{c_phoenix}//no pyre using phoenix
+quagmire		{c_quagmire}
+QuartermasterFlint	{c_rat}
+Rabbit			{c_rabbit}
+raiju			{c_rai_ju}
+RakktaviRenowned	{c_rat}
+rancher			{c_h_rancher 1 c_h_rancher_f 1}
+ranger			{c_h_ranger 1 c_h_ranger_f 1}
+rangerguildmaster	{c_h_GUILD_RANGER 1 c_h_GUILD_RANGER_F 1}
+Raptor			{c_rat}
+rarerocks		{i_rock}
+rat			{c_rat}
+Ratcamp			{c_ratman}
+ratman			{c_ratman}
+ratmanarcher 		{c_ratman}
+ratmanmage		{c_ratman}
+Raven			{c_bird_raven}
+REAGENTS		{BlackPearl 1 Bloodmoss 1 SpidersSilk 1 SulfurousAsh 1 Garlic 1 Ginseng 1 Nightshade 1 MandrakeRoot 1}
+realestatebroker	{c_h_architect 1 c_h_architect_f 1}
+reaper			{c_reaper}
+rebinil			{c_bird 1 c_bird_crow 1 C_BIRD_MAGPIE 1 C_BIRD_TROPICAL 1 C_BIRD_JUNGLE 1 c_bird_raven 1}
+reddeath			{c_skeletal_mount}	//no reddeath using skeletal horse
+redsoleninfiltratorqueen	{c_solen_queen}
+redsoleninfiltratorwarrior	{c_solen_warrior}
+Redsolenqueen			{c_solen_queen}
+Redsolenwarrior		{c_solen_warrior}
+Redsolenworker		{c_solen_worker}
+rend			{c_reptalon}//no rend using reptalon
+reptalon		{c_reptalon}
+restlesssoul		{c_ghoul} //no restless soul using shade
+revenantlion		{c_revenant_lion}
+Ridablellama		{c_llama} //All llamas in sphere are ridable, using normal llama
+ridgeback		{c_ridgeback}
+robe			{i_robe}
+ronin			{c_h_bandit_m}
+Rottingcorpse		{c_mummy}	//no rotting corpse
+rotworm			{c_rat}
+RuddyBoura		{c_rat}
+runebeetle		{c_rune_beetle}
+sailor			{c_h_sailor 1 c_h_sailor_f 1}
+saliva			{c_slime}	//no saliva
+samurai			{c_h_bandit_m}	//no samurai
+Sandvortex		{c_elem_air}	//no sand vortex
+Satyr			{c_satyr}
+Savage			{c_h_barbarian_warrior 1 c_h_barbarian_warrioress 1}
+Savagerider		{c_h_barbarian_chieftan}
+savageridgeback		{c_savage_ridgeback}
+Savageshaman		{c_h_barbarian_shaman}
+Scorpion		{c_scorpion_giant}
+scribe			{c_h_scribe 1 c_h_scribe_f 1}
+SeaHorse		{c_sea_serpent}//no sea horse using sea serpent
+SEAMISC			{DeepSeaSerpent 1 SeaSerpent 1 WaterElemental 1 Kraken 1}
+Seaserpent		{c_sea_serpent}
+Seekerofadventure	{c_h_noble 1 c_h_noble_f 1}// no hire npcs using base ones. 
+SentinelSpider		{c_rat}
+Serpentinedragon		{c_serpentine_dragon}
+serpentsfangassassin		{c_h_brigand 1 c_h_brigand_f 1}//no serpents fang assassin using brigand
+serpentsfanghighexecutioner	{c_h_brigand 1 c_h_brigand_f 1}
+sewerrat			{c_rat_sewer}
+Shade 			{c_wraith}	//no shade
+Shadowfiend		{c_spectre}
+ShadowWisp		{c_wisp}	//no shadow wisp
+Shadowwyrm		{c_dragon_wyrm}	//no shadow wyrm
+Sheep			{c_sheep_woolly}
+shipwright		{c_h_shipwright 1 c_h_shipwright_f 1}
+silk			{i_reag_spider_silk} 
+Silverserpent		{c_silver_serpent}
+Skeletaldragon		{c_skeletal_dragon}
+SkeletalDragonRenowned	{c_rat}
+Skeletalknight		{c_skeleton_knight}
+SkeletalLich		{c_rat}
+Skeletalmage 		{c_skeleton_mage}
+Skeleton		{c_skeleton 1 c_skeleton_w_axe 1 c_skeleton_w_sword 1 c_skeleton_mage 1 c_skeletonarcher 1}
+skitteringhopper	{c_skittering_hopper}
+Skree			{c_rat}
+SlasherOfVeils		{c_rat}
+Slime			{c_slime}
+Slith			{c_rat}
+snake			{c_snake}
+Snowelemental		{c_elem_snow}
+Snowleopard		{c_snow_leopard}
+Spectralarmour		{c_skeleton}	//npc seens not complete scripted
+Spectre			{c_spectre}
+spellbinder		{c_h_mage 1 c_h_mage_f 1}
+sphynx			{c_sphynx}
+SpidersSilk		{i_reag_spider_silk}
+spite			{c_changeling}	//no spite
+squirrel		{c_squirrel}
+stonecrafter		{c_h_jeweler 1 c_h_jeweler_f 1}	//no stonecrafter using jeweler
+Stonegargoyle		{c_gargoyle_stone}
+Stoneharpy 		{c_stoneharpy}
+StoneSlith		{c_rat}
+Strongmongbat		{c_mongbat}	//no present in sphere using mongbat
+StygianDragon		{c_rat}
+succubus		{c_succubus}
+SulfurousAsh		{i_reag_sulfur_ash}
+Swampdragon		{c_swamp_dragon}
+swamptentacle		{c_corpser}	//no swamp tentacle
+Swoop			{c_phoenix}	//no swoop
+szavetra 		{c_doppelganger}	//no doppelganger
+taellia			{c_bird 1 c_bird_crow 1 C_BIRD_MAGPIE 1 C_BIRD_TROPICAL 1 C_BIRD_JUNGLE 1 c_bird_raven 1}
+tailor			{c_h_tailor 1 c_h_tailor_f 1}
+tailorguildmaster	{c_h_GUILD_CLOTHIER 1 c_h_GUILD_CLOTHIER_F 1}
+tangle			{c_bog_thing}	//CHECK
+tanglingroots		{c_rat}
+tanner			{c_h_tanner 1 c_h_tanner_f 1}
+TavaraSewel		{c_spectre}	//no Tavara Sewel npc using shadow fiend instead.
+tavernkeeper		{c_h_tavernkeeper 1 c_h_tavernkeeper_f 1}
+tempest			{c_elem_air}	//no tempest using air elemental
+Terathanavenger		{c_terathan_avenger}
+Terathandrone		{c_terathan_drone}
+Terathanmatriarch	{c_terathan_matriarch}
+Terathanwarrior		{c_terathan_warrior}
+thief			{c_h_thief 1 c_h_thief_f 1}
+thiefguildmaster	{c_h_GUILD_THIEF 1 c_h_GUILD_THIEF_F 1}
+thrasher		{c_corpser}	//no thrasher
+tigersclawthief		{c_h_brigand 1 c_h_brigand_f 1}
+TikitaviRenowned	{c_rat}
+TimberWolf		{c_wolf}
+tinker			{c_h_tinker 1 c_h_tinker_f 1}
+tinkerguildmaster	{c_h_GUILD_ENGINEER 1 c_h_GUILD_ENGINEER_F 1}
+titan			{c_titan}
+towncrier		{c_h_towncrier 1 c_h_towncrier_f 1}
+Toxicelemental  	{c_elem_poison}
+ToxicSlith		{c_rat}
+TrapdoorSpider		{c_rat}
+TreasureChestLevel1 	{i_dungeon_chest1}
+TreasureChestLevel2  	{i_dungeon_chest2}
+TreasureChestLevel3  	{i_dungeon_chest3}
+TreasureChestLevel4  	{i_dungeon_chest4}
+TreasureChestLevel5  	{i_dungeon_chest5}
+TreasureLevel1 		{i_dungeon_chest1}
+treasurelevel1h 	{i_dungeon_chest1}
+TreasureLevel2  	{i_dungeon_chest2}
+TreasureLevel3  	{i_dungeon_chest3}
+TreasureLevel4  	{i_dungeon_chest4}
+TreasureLevel5  	{i_dungeon_chest5}
+treefellow		{c_treefellow}
+troglodyte 		{c_troglodyte}
+Troll 			{c_troll_w_axe 1 c_troll 1 c_troll_w_mace 1}
+tropicalbird		{c_bird_tropical}
+tsukiwolf		{c_tsuki_wolf}
+tyeelor			{c_bird 1 c_bird_crow 1 C_BIRD_MAGPIE 1 C_BIRD_TROPICAL 1 C_BIRD_JUNGLE 1 c_bird_raven 1}
+undeadguardian		{c_rat}
+UnfrozenMummy		{c_mummy}//no Unfrozen Mummy Using mummy instead.
+Unicorn			{c_unicorn}
+vagabond		{c_h_brigand 1 c_h_brigand_f 1}//no vagabond
+vampirebat		{c_vampire_bat}
+Vernix			{c_rat}
+veterinarian		{c_h_vet 1 c_h_vet_f}
+vicaie			{c_bird 1 c_bird_crow 1 C_BIRD_MAGPIE 1 C_BIRD_TROPICAL 1 C_BIRD_JUNGLE 1 c_bird_raven 1}
+Virulent		{c_spider_giant}	//no virulent
+VitaviRenowned		{c_rat}
+WailingBanshee		{c_rat}
+waiter			{c_h_waiter 1 c_h_waitress 1}
+waitress		{c_h_waitress 1}
+Walrus			{c_walrus}
+wanderinghealer		{c_h_HEAL_WANDER 1 c_h_HEAL_WANDER_F 1}
+warrior			{c_h_fighter 1 c_h_fighter_f 1}//no warrior using fighter
+warriorguard		{c_h_fighter 1 c_h_fighter_f 1}//no warrior guard using fighter
+warriorguildmaster	{c_h_GUILD_WARRIOR 1 c_h_GUILD_WARRIOR_F 1}
+Waterelemental  	{c_elem_water}
+weaponsmith		{c_h_WEAPONSMITH_BLADE 1 c_h_WEAPONSMITH_BLADE_F 1 c_h_WEAPONSMITH_BLUNT 1 c_h_WEAPONSMITH_BLUNT_F 1}
+weaver			{c_h_weaver 1 c_h_weaver_f 1}
+weaverguildmaster	{c_h_weaver_guildmaster 1 c_h_weaver_guildmaster_f 1}
+whippingvine		{c_toad_giant}//CHECK
+Whitewolf		{c_wolf_white}
+Whitewyrm		{c_dragon_wyrm}	//no white wyrm
+wisp			{c_wisp}
+WolfSpider		{c_rat}
+Wraith			{c_wraith}
+Wyvern			{c_wyvern}
+WyvernRenowned		{c_rat}
+Xenrr			{c_rat}
+yamandon		{c_yamandon}
+yomotsupriest		{c_yomotsu_priest}
+yomotsuwarrior		{c_yomotsu_warrior}
+Zombie			{c_zombie}
+
+//////////////////////////////////////////////////////////
+//    0     1     2     3     4     5   6 7 8   9     10      11         12         13        14     15    16     17     18     19     20
+//*|List1|List2|List3|List4|List5|List6|X|Y|Z|facet|MinTime|MaxTime|WalkingRange|HomeRange|SpawnID|Count1|Count2|Count3|Count4|Count5|Count6
+
+
+[function create_spawner]
+for 0 5
+  if !<isempty <argv<dlocal._for>>> 
+    if (strmatch(*:*,<argv<dlocal._for>>)	//check to see if more than one npc on the spawner
+      local.spawn_array=<explode :,<argv<dlocal._for>>>
+    endif
+
+//////for validation purposes
+    if <var0.validate_spawns>
+      if <local.spawn_array>
+        validate_spawn <explode , <local.spawn_array>>
+        else
+        validate_spawn <argv<dlocal._for>>
+      endif
+      reset_spawn_counters
+      return 1
+    endif
+/////end of validation
+
+    if <serv.chardef.<argv<dlocal._for>>>	//check for if it's an npc or an item
+      local.type=t_spawn_char
+      elseif <serv.itemdef.<argv<dlocal._for>>>
+      local.type=t_spawn_item
+    endif
+
+    serv.newitem i_worldgem_bit
+    new.type=<local.type>					//<qval <serv.chardef.<argv<dlocal._for>>>?t_spawn_char:t_spawn_item>
+    if <new.type>==t_spawn_char
+      new.events=+t_custom_spawner_char
+      else
+      new.events=+t_custom_spawner_item
+      new.attr=090    
+    endif
+    if <local.spawn_array>
+      new.tag.spawn_array=<local.spawn_array>
+      new.more1=<strarg <local.spawn_array>>
+      else
+      new.more1=<argv<dlocal._for>> 					//more1
+    endif
+    new.p=<argv[6]>,<argv[7]>,<argv[8]>,<dvar0.spawner_facet>	//<argv[9]>	//p
+    new.morep=<argv[10]>,<argv[11]>,<argv[12]>				//morep
+    new.amount=<argv[<eval 15 + <local._for>>]>				//amount
+    new.update	
+    new.timer=<R15,30>
+  endif
+  local.spawn_array=
+endfor
+
+
+////VALIDATION
+[function validate_spawn]
+for n 0 <eval <argv> -1>
+  local.spawn=<def0.<argv[<dlocal.n>]>>
+  if (<serv.chardef.<local.spawn>> != 1) && (<serv.itemdef.<local.spawn>> != 1)
+    serv.log <local.spawn> is not a valid chardef or itemdef
+  endif
+endfor
+////VALIDATION
+
+
+[typedef t_custom_spawner_char]
+
+on=@timer
+if <tag0.spawn_array>
+  args=<tag0.spawn_array>
+  more1=<def0.<argv[<R0,<eval <argv>-1>>]>>	//pick one of the random spawns assigned
+  for n 0 <eval <argv>-1>
+    if !(<serv.chardef.<argv[<dlocal.n>]>>) && !(<serv.itemdef.<argv[<dlocal.n>]>>)
+      serv.log ERROR: <def0.<argv[<dlocal.n>]>> DOES NOT EXIST, MUST CREATE!
+    endif
+  endfor
+endif
+
+//if <count> < <amount>
+  //ref1=<at.<eval <count>-1>.uid>
+ // ref1.movenear <uid> <morez>
+//endif
+
+return 0
+
+[typedef t_custom_spawner_item]
+
+//nothing scripted
+
+
+[function remove_all_spawns]
+local.p=<P>
+p=1,1,1,0
+update
+for 0 5
+p=1,1,1,<dlocal._for>
+  foritems 10000
+    if (<type>==t_spawn_char) || (<type>==t_spawn_item)
+      remove
+    endif
+  endfor
+endfor
+p=<local.p>
+update
+reset_spawn_counters
+sysmessage @026 All spawns removed
+
+
+[function reset_spawn_counters]
+while !<isempty <def.worldspawner_facet_<dlocal.n>>>
+  while !<isempty <def.worldspawner_facet_<dlocal.n>_<dlocal.x>>>
+    args=<def0.worldspawner_facet_<dlocal.n>_<dlocal.x>>
+    var0.<argv[1]>=
+    local.x += 1
+  endwhile
+  local.n += 1
+  local.x=
+endwhile
+
+//////////////////////////////////////////////////////////
+
+[defname world_spawner_settings]
+
+worldspawner_facet_0		Felucca
+worldspawner_facet_0_0		Vendors,spawn_vendors_felucca
+worldspawner_facet_0_1		Graveyards,spawn_graveyards_felucca
+worldspawner_facet_0_2		Towns,spawn_towns_life_felucca
+worldspawner_facet_0_3		Wild Life,spawn_wild_life_felucca
+worldspawner_facet_0_4		Dungeons,spawn_dungeons_felucca
+worldspawner_facet_0_5		Sea Life,spawn_sea_life_felucca
+worldspawner_facet_0_6		Reagents,spawn_reagents_felucca
+worldspawner_facet_0_7		Lost Lands,spawn_lost_lands_felucca
+worldspawner_facet_0_8		Outdoors,spawn_outdoors_felucca
+
+worldspawner_facet_1		Trammel
+worldspawner_facet_1_0		Vendors,spawn_vendors_trammel
+worldspawner_facet_1_1		Graveyards,spawn_graveyards_trammel
+worldspawner_facet_1_2		Towns,spawn_towns_life_trammel
+worldspawner_facet_1_3		Wild Life,spawn_wild_life_trammel
+worldspawner_facet_1_4		Dungeons,spawn_dungeons_trammel
+worldspawner_facet_1_5		Sea Life,spawn_sea_life_trammel
+worldspawner_facet_1_6		Reagents,spawn_reagents_trammel
+worldspawner_facet_1_7		Lost Lands,spawn_lost_lands_trammel
+worldspawner_facet_1_8		Outdoors,spawn_outdoors_trammel
+
+worldspawner_facet_2		Ilshenar
+worldspawner_facet_2_0		Vendors,spawn_vendors_ilshenar
+worldspawner_facet_2_1		Caves,spawn_caves_ilshenar
+worldspawner_facet_2_2		Towns,spawn_towns_ilshenar
+worldspawner_facet_2_3	 	Dungeons,spawn_dungeons_ilshenar
+worldspawner_facet_2_4		Outdoors,spawn_outdoors_ilshenar
+
+worldspawner_facet_3		Malas
+worldspawner_facet_3_0		Vendors,spawn_vendors_malas	
+worldspawner_facet_3_1		Dungeons,spawn_dungeons_malas
+worldspawner_facet_3_2		Orc Forts,spawn_orc_forts_malas
+worldspawner_facet_3_3		Outdoors,spawn_outdoors_malas
+
+worldspawner_facet_4		Tokuno
+worldspawner_facet_4_0		Vendors,spawn_vendors_tokuno
+worldspawner_facet_4_1		Towns,spawn_towns_life_tokuno
+worldspawner_facet_4_2		Dungeons,spawn_dungeons_tokuno
+worldspawner_facet_4_3		Outdoors,spawn_outdoors_tokuno
+
+worldspawner_facet_5		Ter Mur
+worldspawner_facet_5_0		Vendors,spawn_vendors_ter_mur	
+Worldspawner_facet_5_1		Ter Mur,spawn_outdoors_ter_mur
+Worldspawner_facet_5_2		Underworld,spawn_underworld_ter_mur
+Worldspawner_facet_5_3		Abyss,spawn_abyss_ter_mur
+
+
+[ITEMDEF i_world_spawner]
+id=i_deed
+name=World Spawner
+type=t_script
+
+CATEGORY=GM Items
+SUBSECTION=Worldgen
+DESCRIPTION=World Spawner
+
+on=@create
+ATTR=010
+color=053
+
+on=@dclick
+if (<src.account.plevel> < 7)
+  src.sysmessage You can not use this.
+  return 1
+endif
+sdialog d_world_spawner
+return 1
+
+[dialog d_world_spawner]
+200,100
+
+page 0
+
+resizepic 10 10 0a28 260 290
+
+page 1
+resizepic 35 20 9200 205 20
+dtext 100 20 100 World Spawner
+
+resizepic 90 40 9350 90 20
+dtext 95 40 1000 Version:
+dtext 145 40 036 2.0.a
+
+resizepic 25 60 9350 230 35
+dtext 30 60 1000 Special thanks to :
+dtext 150 60 17 Nerun's Distro
+dtext 30 75 1000 and to           for inspiring
+dtext 75 75 17 AmonVangrall
+
+resizepic 50 95 9350 200 120//white facet selection 
+while !<isempty <def.worldspawner_facet_<dlocal.n>>>
+  args=<def0.worldspawner_facet_<dlocal.n>>
+  button 25 <eval 95+(<local.n>*20)> 4006 4007 0 <eval <local.n>+2>
+  dtext 60 <eval 95+(<local.n>*20)> <eval 026+(<local.n>*20)> <argv[0]>
+  local.n += 1
+endwhile
+
+checkbox 65 260 210 211 <qval <var0.validate_spawns>?1:0> 1
+dtext 90 260 1000 Validate Spawndefs
+
+resizepic 40 230 9350 150 22
+button 25 230 4006 4007 1 0 999999 
+dtext 60 230 1000 Remove    spawns
+dtext 105 230 026 ALL
+
+tilepic 210 230 13945 1 
+
+local.n=
+local.x=2
+while !<isempty <def.worldspawner_facet_<dlocal.n>>>
+  page=<local.x>
+  resizepic 35 80 9350 210 180			
+  resizepic 35 20 9200 205 20			
+  dtext 100 20 100 World Spawner
+  resizepic 35 40 9200 120 20			
+  args=<def0.worldspawner_facet_<dlocal.n>>
+  dtext 50 40 <eval 026+(<local.n>*20)> <argv[0]> Spawns
+  button 20 263 4015 4016 0 1
+  dtext 55 264 100 Go Back
+  while !<isempty <def.worldspawner_facet_<dlocal.n>_<dlocal.y>>>
+    args=<def.worldspawner_facet_<dlocal.n>_<dlocal.y>>
+    button 35 <eval 80+(<local.y>*20)> 210 211 1 0 <eval ((<local.n>*100)+<local.y>)+1>
+    dtext 70 <eval 80+(<local.y>*20)> 1000 Spawn <argv[0]>
+    dtext 42 <eval 80+(<local.y>*20)> 1000 <qval <var0.<argv[1]>>?<dvar0.<argv[1]>>:>
+    local.y += 1
+  endwhile
+  local.n += 1
+  local.x += 1
+  local.y=
+endwhile
+
+[dialog d_world_spawner button]
+
+onbutton=1,100000
+argn -= 1
+
+if (<argchk[1]> == 1)
+  var.validate_spawns=1
+  else
+  var.validate_spawns=
+endif
+
+local.n=<eval <argn>/100>
+local.x=<eval <argn>-(<local.n>*100)>
+
+args=<def0.worldspawner_facet_<dlocal.n>_<dlocal.x>>
+var0.spawner_facet=<local.n>
+src.<argv[1]>
+var0.<argv[1]> += <qval <var0.validate_spawns>?0:1>
+src.sysmessage @<eval 026+(<local.n>*20)> Spawning <argv[0]> in <def0.worldspawner_facet_<dlocal.n>> complete.
+var0.spawner_facet=
+sdialog d_world_spawner <eval <local.n>+2>
+
+onbutton=999999	//remove all spawns
+dialog d_remove_spawns
+
+
+[DIALOG d_remove_spawns]
+250,200
+
+resizepic 10 10 0a28 315 100
+
+dtext 110 20 100 ARE YOU SURE?
+dtext 25 45 026 [ATTENTION ALL SPAWNS WILL BE DELETED!!]
+
+button 50 75 4015 4016 1 0 1
+dtext 90 75 1000 Go Back
+
+//button 210 75 249 248 1 0 2
+
+[DIALOG d_remove_spawns button]
+onbutton=1
+sdialog d_world_spawner
+
+//onbutton=2
+//src.remove_all_spawns
+
+//////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
+
+[function spawn_vendors_felucca]
+
+create_spawner,fisherman,,,,,,1512,3989,-3,1,5,10,5,0,1,1,0,0,0,0,0
+create_spawner,fisherman,,,,,,1504,3693,-3,1,5,10,5,0,1,1,0,0,0,0,0
+create_spawner,fisherman,,,,,,1125,3687,-2,1,5,10,5,0,1,1,0,0,0,0,0
+create_spawner,jeweler,,,,,,1447,3981,0,1,5,10,5,0,1,1,0,0,0,0,0
+create_spawner,shipwright,mapmaker,,,,,1452,3747,0,1,5,10,5,0,1,1,1,0,0,0,0
+create_spawner,armorer,weaponsmith,,,,,1441,3719,0,1,5,10,5,0,1,1,1,0,0,0,0
+create_spawner,blacksmith,blacksmithguildmaster,,,,,1419,3859,0,1,5,10,5,0,1,1,1,0,0,0,0
+create_spawner,tailor,weaver,tailorguildmaster,,,,1356,3780,0,1,5,10,5,0,1,1,1,1,0,0,0
+create_spawner,baker,,,,,,1364,3732,0,1,5,10,5,0,1,1,0,0,0,0,0
+create_spawner,armorer,weaponsmith,,,,,1475,3865,0,1,5,10,5,0,1,1,1,0,0,0,0
+create_spawner,armorer,weaponsmith,,,,,1354,3754,0,1,5,10,5,0,1,1,1,0,0,0,0
+create_spawner,butcher,farmer,,,,,1386,3825,0,1,5,10,5,0,1,1,1,0,0,0,0
+create_spawner,butcher,,,,,,1450,4026,0,1,5,10,5,0,1,1,0,0,0,0,0
+create_spawner,blacksmith,blacksmithguildmaster,,,,,1395,3705,0,1,5,10,5,0,1,1,1,0,0,0,0
+create_spawner,carpenter,architect,realestatebroker,,,,1435,3820,0,1,5,10,5,0,1,1,1,1,0,0,0
+create_spawner,tinker,tinkerguildmaster,,,,,1404,3802,0,1,5,10,5,0,1,1,1,0,0,0,0
+create_spawner,tavernkeeper,waiter,cook,barkeeper,,,1452,3770,0,1,5,10,5,0,1,1,1,1,1,0,0
+create_spawner,armorer,weaponsmith,,,,,1456,3850,0,1,5,10,5,0,1,1,1,0,0,0,0
+create_spawner,banker,minter,,,,,1317,3773,0,1,5,10,5,0,1,1,1,0,0,0,0
+create_spawner,fisherman,,,,,,1372,3908,-2,1,5,10,5,0,1,1,0,0,0,0,0
+create_spawner,healer,healerguildmaster,,,,,1416,3779,0,1,5,10,5,0,1,1,1,0,0,0,0
+create_spawner,scribe,,,,,,1387,3771,0,1,5,10,5,0,1,1,0,0,0,0,0
+create_spawner,mage,alchemist,mageguildmaster,,,,1425,3981,0,1,5,10,5,0,1,1,1,1,0,0,0
+create_spawner,tailor,weaver,tailorguildmaster,,,,1454,4003,0,1,5,10,5,0,1,1,1,1,0,0,0
+create_spawner,innkeeper,,,,,,1360,3815,0,1,5,10,5,0,1,1,0,0,0,0,0
+create_spawner,provisioner,cobbler,,,,,1442,3802,0,1,5,10,5,0,1,1,1,0,0,0,0
+create_spawner,fisherguildmaster,,,,,,1437,3750,0,1,5,10,5,0,1,1,0,0,0,0,0
+
+//////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
+
+//Runebook
+
+[itemdef i_staff_runebook]
+DEFNAME=staffrunebook
+ID=i_spellbook
+name=Staff Runebook
+type=t_normal
+WEIGHT=1
+
+CATEGORY=Imperial uo
+SUBSECTION=Provisions Items - GM
+DESCRIPTION=Staff Runebook
+
+on=@create
+ATTR=attr_newbie|attr_move_never|attr_magic
+on=@dclick
+if (<SRC.ACCOUNT.plevel> < 2)
+src.sysmessage You are not a staff member!
+remove
+return 1
+else
+dialogclose d_console
+dialog d_console
+Sound 85
+return 1
+endif
+
+[DIALOG d_console]
+30,50
+page 0
+resizepic 5 5 9200 200 200 
+resizepic 50 7 9200 110 30 
+checkertrans 39 60 150 120
+dtext 60 10 1152 Staff Runebook
+dtext 20 40 1152 Choose a facet to teleport:
+dtext 40  60 026 Felluca
+button 10 60 4005 4007 1 0 1 //Felluca
+dtext 40  80 044 Tramel
+button 10 80 4005 4007 1 0 2 //Tramel
+dtext 40  100 035 Ilshenar
+button 10 100 4005 4007 1 0 3 //Ilshenar
+dtext 40  120 0122 Malas
+button 10 120 4005 4007 1 0 4 //Malas
+dtext 40  140 0d Tokuno
+button 10 140 4005 4007 1 0 5 //Tokuno
+//dtext 40  160 0158 Ter Mur
+//button 10 160 4005 4007 1 0 6 //Ter Mur
+button 170 15 4005 4007 1 0 7 //Forward
+//dtext 40 180 1152 Your location.
+//button 20 185 1209 1210 1 0 8 // location
+
+[DIALOG d_console BUTTON]
+
+OnButton=0
+src.sysmessage @1152 Runebook closed.
+Sound 85
+
+OnButton=1
+Sound 85
+dialog d_console_felluca
+
+onbutton=2
+sound 85
+dialog d_console_trammel
+
+onbutton=3
+sound 85
+dialog d_console_ilshenar
+
+onbutton=4
+sound 85
+dialog d_console_malas
+
+onbutton=5
+sound 85
+dialog d_console_tokuno
+
+onbutton=7
+sound 85
+dialog d_console_felluca
+
+onbutton=8
+sound 85
+dialog d_staff_travelmap
+
+[DIALOG d_console_felluca]
+30,50
+
+page 0
+resizepic 5 5 9200 520 430
+resizepic 180 10 9200 140 20//Felluca
+dtext 230  10 026 Felluca
+resizepic 30 40 9200 140 20//cities
+dtext 80  40 1152 Cities
+resizepic 180 40 9200 140 20//Dungeons
+dtext 225  40 1152 Dungeons
+resizepic 330 40 9200 170 20//Sites
+dtext 400  40 1152 Sites
+button 490 15 4005 4007 1 0 56 //Foward
+//cities
+checkertrans 30 60 140 360
+dtext 65  60 1152 Heartwood
+button 30 60 4005 4007 1 0 1 //Heartwood
+dtext 65  80 1152 Cove
+button 30 80 4005 4007 1 0 2 //Cove
+dtext 65  100 1152 Britain
+button 30 100 4005 4007 1 0 3 //Britain
+dtext 65  120 1152 Jhelom
+button 30 120 4005 4007 1 0 4 //Jhelom
+dtext 65  140 1152 Minoc
+button 30 140 4005 4007 1 0 5 //Minoc
+dtext 65  160 1152 Ocllo
+button 30 160 4005 4007 1 0 6 //Ocllo
+dtext 65  180 1152 Trinsic
+button 30 180 4005 4007 1 0 7 //Trinsic
+dtext 65  200 1152 Vesper
+button 30 200 4005 4007 1 0 8 //Vesper
+dtext 65  220 1152 Yew
+button 30 220 4005 4007 1 0 9 //Yew
+dtext 65  240 1152 Wind
+button 30 240 4005 4007 1 0 10 //Wind
+dtext 65  260 1152 Serpent's Hold
+button 30 260 4005 4007 1 0 11 //Serpent's Hold
+dtext 65  280 1152 Skara Brae
+button 30 280 4005 4007 1 0 12 //Skara Brae
+dtext 65  300 1152 Nujel'm
+button 30 300 4005 4007 1 0 13 //Nujel'm
+dtext 65  320 1152 Moonglow
+button 30 320 4005 4007 1 0 14 //Moonglow
+dtext 65  340 1152 Magincia
+button 30 340 4005 4007 1 0 15 //Magincia
+dtext 65  360 1152 Buccaneer's Den
+button 30 360 4005 4007 1 0 16 //Buccaneer's Den
+dtext 65  380 1152 Delucia
+button 30 380 4005 4007 1 0 17 //Delucia
+dtext 65  400 1152 Papua
+button 30 400 4005 4007 1 0 18 //Papua
+//Dungeons
+checkertrans 180 60 140 360
+dtext 215  60 1152 Painted Caves
+button 180 60 4005 4007 1 0 19 //Painted Caves
+dtext 215  80 1152 Prism of Light
+button 180 80 4005 4007 1 0 20 //Prism of Light
+dtext 215  100 1152 Blighted Grove
+button 180 100 4005 4007 1 0 21 //Blighted Grove
+dtext 215  120 1152 Paroxysmus
+button 180 120 4005 4007 1 0 22 //Palace of Paroxysmus
+dtext 215  140 1152 Sanctuary
+button 180 140 4005 4007 1 0 23 //Sanctuary
+dtext 215  160 1152 Covetous
+button 180 160 4005 4007 1 0 24 //Covetous
+dtext 215  180 1152 Deceit
+button 180 180 4005 4007 1 0 25 //Deceit
+dtext 215  200 1152 Despise
+button 180 200 4005 4007 1 0 26 //Despise
+dtext 215  220 1152 Destard
+button 180 220 4005 4007 1 0 27 //Destard
+dtext 215  240 1152 Hythloth
+button 180 240 4005 4007 1 0 28 //Hythloth
+dtext 215  260 1152 Khaldun
+button 180 260 4005 4007 1 0 29 //Khaldun
+dtext 215  280 1152 Shame
+button 180 280 4005 4007 1 0 30//Shame
+dtext 215  300 1152 Wrong
+button 180 300 4005 4007 1 0 31//Wrong
+dtext 215  320 1152 Terathan Keep
+button 180 320 4005 4007 1 0 32//Terathan Keep
+dtext 215  340 1152 Fire
+button 180 340 4005 4007 1 0 33//Fire
+dtext 215  360 1152 Ice
+button 180 360 4005 4007 1 0 34//Ice
+dtext 215  380 1152 Orc Cave
+button 180 380 4005 4007 1 0 35//Orc Cave
+dtext 215  400 1152 Britain Sewers
+button 180 400 4005 4007 1 0 36//Misc Dungeons
+
+//Dungeons
+checkertrans 330 60 170 360
+dtext 365  60 1152 Moongate Britain 
+button 330 60 4005 4007 1 0 37//Britain Moongate
+dtext 365  80 1152 Moongate Jhelom 
+button 330 80 4005 4007 1 0 38//Jhelom Moongate
+dtext 365  100 1152 Moongate Minoc 
+button 330 100 4005 4007 1 0 39 //Minoc Moongate
+dtext 365  120 1152 Moongate Trinsic 
+button 330 120 4005 4007 1 0 40//Trinsic Moongate
+dtext 365  140 1152 Moongate Yew 
+button 330 140 4005 4007 1 0 41//Yew Moongate
+dtext 365  160 1152 Moongate Skara Brae 
+button 330 160 4005 4007 1 0 42//Skara Brae Moongate
+dtext 365  180 1152 Moongate Moonglow 
+button 330 180 4005 4007 1 0 43//Moonglow Moongate
+dtext 365  200 1152 Moongate Magincia 
+button 330 200 4005 4007 1 0 44//Magincia Moongate
+dtext 365  220 1152 Cemetary Britain  
+button 330 220 4005 4007 1 0 45//Britain Cemetary 
+dtext 365  240 1152 Cemetary Vesper  
+button 330 240 4005 4007 1 0 46//Vesper Cemetary 
+dtext 365  260 1152 Cemetary Moonglow  
+button 330 260 4005 4007 1 0 47//Moonglow Cemetary
+dtext 365  280 1152 Cemetary Nujel'm 
+button 330 280 4005 4007 1 0 48//Nujel'm Cemetary
+dtext 365  300 1152 Cemetary Jhelom 
+button 330 300 4005 4007 1 0 49//Jhelom Cemetary
+dtext 365  320 1152 Green Acres
+button 330 320 4005 4007 1 0 50//Green Acres
+dtext 365  340 1152 Avatar Isle
+button 330 340 4005 4007 1 0 51//Avatar Isle
+dtext 365  360 1152 T2A Entrance
+button 330 360 4005 4007 1 0 52//T2A Entrance
+dtext 365  380 1152 Star Chamber
+button 330 380 4005 4007 1 0 53//Star Chamber
+dtext 365  400 1152 Sea Market
+button 330 400 4005 4007 1 0 54//Sea Market OnButton=54src.go=4544 2298 -1
+///////////////////////////////////////////////////////
+
+button 10 10 4014 4016 1 0 55 //back
+
+[DIALOG d_console_felluca BUTTON]
+OnButton=0
+src.sysmessage @1152 Runebook closed.
+sound 85
+OnButton=1
+src.go=6984,337
+OnButton=2
+src.go=cove
+OnButton=3
+src.go=britain
+OnButton=4
+src.go=jhelom
+OnButton=5
+src.go=minoc
+OnButton=6
+src.go=3650,2621,0
+OnButton=7
+src.go=trinsic
+OnButton=8
+src.go=vesper
+OnButton=9
+src.go=yew
+OnButton=10
+src.go=wind
+OnButton=11
+src.go=Serpent's Hold
+OnButton=12
+src.go=Skara Brae
+OnButton=13
+src.go=Nujel'm
+OnButton=14
+src.go=Moonglow
+OnButton=15
+src.go=Magincia
+OnButton=16
+src.go=2706,2163
+OnButton=17
+src.go=Delucia
+OnButton=18
+src.go=Papua
+OnButton=19
+src.go=6308,892,-1//painted caves
+OnButton=19
+src.go=6474,188//prism of light
+OnButton=20
+src.go=3784,1097,14//Blighted  Grove
+OnButton=21
+src.go=6478,863,11// Parox
+OnButton=22
+src.go=6222,335,60//
+OnButton=23
+src.go=6173,23//sanctuary
+OnButton=24
+src.go=covetous
+OnButton=25
+src.go=deceit
+OnButton=26
+src.go=despise
+OnButton=27
+src.go=destard
+OnButton=28
+src.go=hythloth
+OnButton=29
+src.go=5571,1302
+OnButton=30
+src.go=shame
+OnButton=31
+src.go=wrong
+OnButton=32
+src.go=Terathan keep
+OnButton=33
+src.go=fire dungeon
+OnButton=34
+src.go=ice dungeon
+OnButton=35
+src.go=5137,2015
+OnButton=36
+src.go=6032,1500,25
+OnButton=37
+src.go=1330,1991
+OnButton=38
+src.go=1494,3767
+OnButton=39
+src.go=2694,685
+OnButton=40
+src.go=1823,2943
+OnButton=41
+src.go=761,741
+OnButton=42
+src.go=638,2062
+OnButton=43
+src.go=4459,1276
+OnButton=44
+src.go=3554,2132,31
+OnButton=45
+src.go=1384,1492,10
+OnButton=46
+src.go=vesper cemetary
+OnButton=47
+src.go=4546,1334,8
+OnButton=48
+src.go=nujel'm cemetary
+OnButton=49
+src.go=jhelom cemetary
+OnButton=50
+src.go=green acres
+OnButton=51
+src.go=Fire Island
+OnButton=52
+src.go=ruins in the weeds
+OnButton=53
+src.go=star chamber
+OnButton=54
+src.go=4544,2298,-1
+OnButton=55
+dialog d_console
+sound 85
+OnButton=56
+dialog d_console_trammel
+sound 85
+
+[DIALOG d_console_trammel]
+30,50
+
+page 0
+resizepic 5 5 9200 520 430
+resizepic 180 10 9200 140 20//Trammel
+dtext 230  10 044 Trammel
+resizepic 30 40 9200 140 20//cities
+dtext 80  40 1152 Cities
+resizepic 180 40 9200 140 20//Dungeons
+dtext 225  40 1152 Dungeons
+resizepic 330 40 9200 170 20//Sites
+dtext 400  40 1152 Sites
+button 490 15 4005 4007 1 0 56 //Foward
+//cities
+checkertrans 30 60 140 360
+dtext 65  60 1152 Heartwood
+button 30 60 4005 4007 1 0 1 //Heartwood
+dtext 65  80 1152 Cove
+button 30 80 4005 4007 1 0 2 //Cove
+dtext 65  100 1152 Britain
+button 30 100 4005 4007 1 0 3 //Britain
+dtext 65  120 1152 Jhelom
+button 30 120 4005 4007 1 0 4 //Jhelom
+dtext 65  140 1152 Minoc
+button 30 140 4005 4007 1 0 5 //Minoc
+dtext 65  160 1152 Heaven
+button 30 160 4005 4007 1 0 6 //Heaven
+dtext 65  180 1152 Trinsic
+button 30 180 4005 4007 1 0 7 //Trinsic
+dtext 65  200 1152 Vesper
+button 30 200 4005 4007 1 0 8 //Vesper
+dtext 65  220 1152 Yew
+button 30 220 4005 4007 1 0 9 //Yew
+dtext 65  240 1152 Wind
+button 30 240 4005 4007 1 0 10 //Wind
+dtext 65  260 1152 Serpent's Hold
+button 30 260 4005 4007 1 0 11 //Serpent's Hold
+dtext 65  280 1152 Skara Brae
+button 30 280 4005 4007 1 0 12 //Skara Brae
+dtext 65  300 1152 Nujel'm
+button 30 300 4005 4007 1 0 13 //Nujel'm
+dtext 65  320 1152 Moonglow
+button 30 320 4005 4007 1 0 14 //Moonglow
+dtext 65  340 1152 Magincia
+button 30 340 4005 4007 1 0 15 //Magincia
+dtext 65  360 1152 Buccaneer's Den
+button 30 360 4005 4007 1 0 16 //Buccaneer's Den
+dtext 65  380 1152 Delucia
+button 30 380 4005 4007 1 0 17 //Delucia
+dtext 65  400 1152 Papua
+button 30 400 4005 4007 1 0 18 //Papua
+//Dungeons
+checkertrans 180 60 140 360
+dtext 215  60 1152 Painted Caves
+button 180 60 4005 4007 1 0 19 //Painted Caves
+dtext 215  80 1152 Prism of Light
+button 180 80 4005 4007 1 0 20 //Prism of Light
+dtext 215  100 1152 Blighted Grove
+button 180 100 4005 4007 1 0 21 //Blighted Grove
+dtext 215  120 1152 Paroxysmus
+button 180 120 4005 4007 1 0 22 //Palace of Paroxysmus
+dtext 215  140 1152 Sanctuary
+button 180 140 4005 4007 1 0 23 //Sanctuary
+dtext 215  160 1152 Covetous
+button 180 160 4005 4007 1 0 24 //Covetous
+dtext 215  180 1152 Deceit
+button 180 180 4005 4007 1 0 25 //Deceit
+dtext 215  200 1152 Despise
+button 180 200 4005 4007 1 0 26 //Despise
+dtext 215  220 1152 Destard
+button 180 220 4005 4007 1 0 27 //Destard
+dtext 215  240 1152 Hythloth
+button 180 240 4005 4007 1 0 28 //Hythloth
+dtext 215  260 1152 Khaldun
+button 180 260 4005 4007 1 0 29 //Khaldun
+dtext 215  280 1152 Shame
+button 180 280 4005 4007 1 0 30//Shame
+dtext 215  300 1152 Wrong
+button 180 300 4005 4007 1 0 31//Wrong
+dtext 215  320 1152 Terathan Keep
+button 180 320 4005 4007 1 0 32//Terathan Keep
+dtext 215  340 1152 Fire
+button 180 340 4005 4007 1 0 33//Fire
+dtext 215  360 1152 Ice
+button 180 360 4005 4007 1 0 34//Ice
+dtext 215  380 1152 Orc Cave
+button 180 380 4005 4007 1 0 35//Orc Cave
+dtext 215  400 1152 Britain Sewers
+button 180 400 4005 4007 1 0 36//Misc Dungeons
+
+//Dungeons
+checkertrans 330 60 170 360
+dtext 365  60 1152 Moongate Britain 
+button 330 60 4005 4007 1 0 37//Britain Moongate
+dtext 365  80 1152 Moongate Jhelom 
+button 330 80 4005 4007 1 0 38//Jhelom Moongate
+dtext 365  100 1152 Moongate Minoc 
+button 330 100 4005 4007 1 0 39 //Minoc Moongate
+dtext 365  120 1152 Moongate Trinsic 
+button 330 120 4005 4007 1 0 40//Trinsic Moongate
+dtext 365  140 1152 Moongate Yew 
+button 330 140 4005 4007 1 0 41//Yew Moongate
+dtext 365  160 1152 Moongate Skara Brae 
+button 330 160 4005 4007 1 0 42//Skara Brae Moongate
+dtext 365  180 1152 Moongate Moonglow 
+button 330 180 4005 4007 1 0 43//Moonglow Moongate
+dtext 365  200 1152 Moongate Magincia 
+button 330 200 4005 4007 1 0 44//Magincia Moongate
+dtext 365  220 1152 Cemetary Britain  
+button 330 220 4005 4007 1 0 45//Britain Cemetary 
+dtext 365  240 1152 Cemetary Vesper  
+button 330 240 4005 4007 1 0 46//Vesper Cemetary 
+dtext 365  260 1152 Cemetary Moonglow  
+button 330 260 4005 4007 1 0 47//Moonglow Cemetary
+dtext 365  280 1152 Cemetary Nujel'm 
+button 330 280 4005 4007 1 0 48//Nujel'm Cemetary
+dtext 365  300 1152 Cemetary Jhelom 
+button 330 300 4005 4007 1 0 49//Jhelom Cemetary
+dtext 365  320 1152 Green Acres
+button 330 320 4005 4007 1 0 50//Green Acres
+dtext 365  340 1152 Avatar Isle
+button 330 340 4005 4007 1 0 51//Avatar Isle
+dtext 365  360 1152 T2A Entrance
+button 330 360 4005 4007 1 0 52//T2A Entrance
+dtext 365  380 1152 Star chamber
+button 330 380 4005 4007 1 0 53//Unused
+dtext 365  400 1152 Sea Market
+button 330 400 4005 4007 1 0 54//Sea Market 
+///////////////////////////////////////////////////////
+
+button 10 10 4014 4016 1 0 55 //back
+
+[DIALOG d_console_trammel BUTTON]
+OnButton=0
+src.sysmessage @1152 Runebook closed.
+sound 85
+OnButton=1
+src.go=6984,337,0,1
+OnButton=2
+src.go=2275,1210,0,1
+OnButton=3
+src.go=1495,1629,10,1
+OnButton=4
+src.go=1383,3815,0,1
+OnButton=5
+src.go=2466,544,0,1
+OnButton=6
+src.go=3504,2577,18,1
+OnButton=7
+src.go=1867,2780,0,1
+OnButton=8
+src.go=2899,676,0,1
+OnButton=9
+src.go=546,992,0,1
+OnButton=10
+src.go=5223,501,5,1
+OnButton=11
+src.go=3010,3371,15,1
+OnButton=12
+src.go=632,2233,0,1
+OnButton=13
+src.go=3732,1279,0,1
+OnButton=14
+src.go=4442,1172,0,1
+OnButton=15
+src.go=3714,2220,20,1
+OnButton=16
+src.go=2706,2163,0,1
+OnButton=17
+src.go=5272,3995,37,1
+OnButton=18
+src.go=5729,3209,-1,1
+OnButton=19
+src.go=6308,892,-1,1//painted caves
+OnButton=19
+src.go=6474,188,0,1//prism of light
+OnButton=20
+src.go=3784,1097,14,1//Blighted  Grove
+OnButton=21
+src.go=6478,863,11,1// Parox
+OnButton=22
+src.go=6222,335,60,1//
+OnButton=23
+src.go=6173,23,0,1//sanctuary
+OnButton=24
+src.go=5456,1862,0,1
+OnButton=25
+src.go=5187,635,0,1
+OnButton=26
+src.go=5501,570,59,1
+OnButton=27
+src.go=5243,1004,0,1
+OnButton=28
+src.go=5905,22,44,1
+OnButton=29
+src.go=5571,1302,0,1
+OnButton=30
+src.go=5395,126,0,1
+OnButton=31
+src.go=5825,599,0,1
+OnButton=32
+src.go=5451,3140,-60,1
+OnButton=33
+src.go=5790,1416,40,1
+OnButton=34
+src.go=5876,148,25,1
+OnButton=35
+src.go=5137,2015,0,1
+OnButton=36
+src.go=6032,1500,25,1
+OnButton=37
+src.go=1330,1991,0,1
+OnButton=38
+src.go=1494,3767,0,1
+OnButton=39
+src.go=2694,685,0,1
+OnButton=40
+src.go=1823,2943,0,1
+OnButton=41
+src.go=761,741,0,1
+OnButton=42
+src.go=638,2062,0,1
+OnButton=43
+src.go=4459,1276,0,1
+OnButton=44
+src.go=3554,2132,31,1
+OnButton=45
+src.go=1384,1492,10,1
+OnButton=46
+src.go=2781,867,0,1
+OnButton=47
+src.go=4546,1334,8,1
+OnButton=48
+src.go=3536,1151,20,1
+OnButton=49
+src.go=1291,3719,0,1
+OnButton=50
+src.go=5454,1103,0,1
+OnButton=51
+src.go=4593,3507,20,1
+OnButton=52
+src.go=5388,3233,-5,1
+OnButton=53
+src.go=5147,1767,31,1
+OnButton=54
+src.go=4544,2298,-1,1
+OnButton=55
+dialog d_console
+sound 85
+OnButton=56
+dialog d_console_Ilshenar
+sound 85
+
+[DIALOG d_console_Ilshenar]
+30,50
+
+page 0
+resizepic 5 5 9200 570 430
+resizepic 190 10 9200 185 20//Ilshenar
+dtext 260  10 035 Ilshenar
+resizepic 30 40 9200 140 20//cities
+dtext 80  40 1152 Cities
+resizepic 190 40 9200 185 20//Dungeons
+dtext 255  40 1152 Dungeons
+resizepic 380 40 9200 170 20//Sites
+dtext 450  40 1152 Sites
+button 540 15 4005 4007 1 0 56 //Foward
+//cities
+checkertrans 30 60 155 360
+checkertrans 190 60 185 360
+checkertrans 400 60 150 360
+//cities
+dtext 65  60 1152 Gargoyle City
+button 30 60 4005 4007 1 0 1 //Gargoyle City
+dtext 65  80 1152 Montor
+button 30 80 4005 4007 1 0 2 //Montor
+dtext 65  100 1152 Ancient Citadel
+button 30 100 4005 4007 1 0 3 //Ancient Citadel
+dtext 65  120 1152 Alexandretta's Bowl
+button 30 120 4005 4007 1 0 4 //Alexandretta's Bowl
+dtext 65  140 1152 Lenmir Anfinmotas
+button 30 140 4005 4007 1 0 5 //Lenmir Anfinmotas
+dtext 65  160 1152 Reg Volon
+button 30 160 4005 4007 1 0 6 //Reg Volon
+dtext 65  180 1152 Lake Shire
+button 30 180 4005 4007 1 0 7 //Lake Shire
+dtext 65  200 1152 Bet-Lem Reg
+button 30 200 4005 4007 1 0 8 //Bet-Lem Reg
+dtext 65  220 1152 Mistas
+button 30 220 4005 4007 1 0 9 //Mistas
+dtext 65  240 1152 Terort Skitas 
+button 30 240 4005 4007 1 0 10 //Terort Skitas 
+dtext 65  260 1152 Pass of Karnaugh
+button 30 260 4005 4007 1 0 11 //Pass of Karnaugh
+dtext 65  280 1152 Vinculum Inn
+button 30 280 4005 4007 1 0 12 //Vinculum Inn
+// dungeons
+dtext 225  60 1152 Twisted Weald
+button 190 60 4005 4007 1 0 19 //Twisted Weald
+dtext 225  80 1152 Rock Dungeon
+button 190 80 4005 4007 1 0 20 //Rock Dungeon
+dtext 225  100 1152 Spider Cave
+button 190 100 4005 4007 1 0 21 //Spider Cave
+dtext 225  120 1152 Spectre Dungeon
+button 190 120 4005 4007 1 0 22 //Spectre Dungeon
+dtext 225  140 1152 Blood Dungeon
+button 190 140 4005 4007 1 0 23 //Blood Dungeon
+dtext 225  160 1152 Ankh Dungeon
+button 190 160 4005 4007 1 0 24 //Ankh Dungeon
+dtext 225  180 1152 Wisp Dungeon
+button 190 180 4005 4007 1 0 25 //Wisp Dungeon
+dtext 225  200 1152 Exodus Dungeon
+button 190 200 4005 4007 1 0 26 //Exodus Dungeon
+dtext 225  220 1152 Sorcerer's Dungeon
+button 190 220 4005 4007 1 0 27 //Sorcerer's Dungeon
+dtext 225  240 1152 Ancient Lair
+button 190 240 4005 4007 1 0 28 //Ancient Lair
+dtext 225  260 1152 Kirin passage
+button 190 260 4005 4007 1 0 29 //Kirin passage
+dtext 225  280 1152 Lizard Passage
+button 190 280 4005 4007 1 0 30//Lizard Passage
+dtext 225  300 1152 Lizard Man's Huts
+button 190 300 4005 4007 1 0 31//Lizard Man's Huts
+dtext 225  320 1152 Nox Tereg
+button 190 320 4005 4007 1 0 32//Nox Tereg
+dtext 225  340 1152 Gypsy Camp
+button 190 340 4005 4007 1 0 33//Gypsy Camp
+dtext 225  360 1152 Juka Camp
+button 190 360 4005 4007 1 0 34//Juka Camp
+dtext 225 380 1152 Lord Blackthorn's Castle
+button 190 380 4005 4007 1 0 35//Lord Blackthorn's Ilshenar Castle
+dtext 225  400 1152 Shrine of the Virtues
+button 190 400 4005 4007 1 0 36//Shrine of the Virtues
+//sites
+dtext 415  60 1152 Shrine of Valor
+button 380 60 4005 4007 1 0 37//Shrine of Valor
+dtext 415  80 1152 Chaos Shrine 
+button 380 80 4005 4007 1 0 38//Chaos Shrine 
+dtext 415  100 1152 Shrine of Sacrifice
+button 380 100 4005 4007 1 0 39 //Shrine of Sacrifice
+dtext 415  120 1152 Shrine of Honesty
+button 380 120 4005 4007 1 0 40//Shrine of Honesty
+dtext 415  140 1152 Shrine of Compassion
+button 380 140 4005 4007 1 0 41//Shrine of Compassion
+dtext 415  160 1152 Shrine of Spirituality
+button 380 160 4005 4007 1 0 42//Shrine of Spirituality
+dtext 415  180 1152 Shrine of Humility
+button 380 180 4005 4007 1 0 43//Shrine of Humility
+dtext 415  200 1152 Shrine of Honor
+button 380 200 4005 4007 1 0 44//Shrine of Honor
+dtext 415  220 1152 Shrine Justice
+button 380 220 4005 4007 1 0 45//Terort Skitas
+dtext 415  240 1152 Pormir Harm
+button 380 240 4005 4007 1 0 46//Pormir Harm
+dtext 415  260 1152 Pormir Felwis 
+button 380 260 4005 4007 1 0 47//Pormir Felwis
+dtext 415  280 1152 Cyclops Temple
+button 380 280 4005 4007 1 0 48//Cyclops Temple
+dtext 415  300 1152 Rat Fort
+button 380 300 4005 4007 1 0 49//Rat Fort
+dtext 415  320 1152 Termir Flam
+button 380 320 4005 4007 1 0 50//Termir Flam
+dtext 415  340 1152 Twin Oaks
+button 380 340 4005 4007 1 0 51//Twin Oaks
+dtext 415  360 1152 Mushroom Cave
+button 380 360 4005 4007 1 0 52//Mushroom Cave
+dtext 415  380 1152 Ratman Cave
+button 380 380 4005 4007 1 0 53//Ratman Cave
+dtext 415  400 1152 Serpentine Passage
+button 380 400 4005 4007 1 0 54//Serpentine Passage
+button 10 10 4014 4016 1 0 55 //back
+
+[DIALOG d_console_Ilshenar BUTTON]
+OnButton=0
+src.sysmessage @1152 Runebook closed.
+sound 85
+OnButton=1
+src.go=836,578,-40,2
+OnButton=2
+src.go=1729,173,103,2
+OnButton=3
+src.go=1518,568,-14,2
+OnButton=4
+src.go=1396,432,-17,2
+OnButton=5
+src.go=1673,876,-25,2
+OnButton=6
+src.go=1364,1056,0,2
+OnButton=7
+src.go=1212,1144,-25,2
+OnButton=8
+src.go=1238,974,-33,2
+OnButton=9
+src.go=818,1073,-30,2
+OnButton=10
+src.go=568,430,41,2
+OnButton=11
+src.go=911,302,28,2
+OnButton=12
+src.go=664,679,-35,2
+OnButton=19
+src.go=2211,1262,3,2
+OnButton=20
+src.go=1788,571,69,2
+OnButton=21
+src.go=1418,915,-19,2
+OnButton=22
+src.go=1363,1033,-8,2
+OnButton=23
+src.go=1747,1227,-1,2
+OnButton=24
+src.go=156,1484,-28,2
+OnButton=25
+src.go=651,1302,-58,2
+OnButton=26
+src.go=1960,113,-28,2
+OnButton=27
+src.go=542,461,-58,2
+OnButton=28
+src.go=940,503,-30,2
+OnButton=29
+src.go=11,881,-29,2
+OnButton=30
+src.go=314,1331,-37,2
+OnButton=31
+src.go=298,1336,-24,2
+OnButton=32
+src.go=416,1176,0,2
+OnButton=33
+src.go=948,428,0,2
+OnButton=34
+src.go=1248,724,0,2
+OnButton=35
+src.go=1084,652,0,2
+OnButton=36
+src.go=1104,404,0,2
+OnButton=37
+src.go=539,221,-36,2
+OnButton=38
+src.go=1749,236,58,2
+OnButton=39
+src.go=1196,1290,-25,2
+OnButton=40
+src.go=725,1355,-61,2
+OnButton=41
+src.go=1223,475,-16,2
+OnButton=42
+src.go=1528,1344,0,2
+OnButton=43
+src.go=284,1016,0,2
+OnButton=44
+src.go=748,728,0,2
+OnButton=45
+src.go=984,1008,-37,2
+OnButton=46
+src.go=745,492,-66,2
+OnButton=47
+src.go=472,352,-78,2
+OnButton=48
+src.go=901,1297,-71,2
+OnButton=49
+src.go=642,845,-58,2
+OnButton=50
+src.go=1636,432,0,2
+OnButton=51
+src.go=1560,1052,0,2
+OnButton=52
+src.go=1460,1329,-25,2
+OnButton=53
+src.go=1031,1154,-24,2
+OnButton=54
+src.go=811,875,-40,2
+OnButton=55
+sound 85
+dialog d_console
+OnButton=56
+sound 85
+dialog d_console_malas
+
+///////////////////////////////////////////////////////////////////
+
+[DIALOG d_console_Malas]
+30,50
+
+page 0
+resizepic 5 5 9200 540 300
+resizepic 180 10 9200 140 20//Felluca
+dtext 230  10 0122 Malas
+resizepic 30 40 9200 140 20//cities
+dtext 80  40 1152 Cities
+resizepic 180 40 9200 140 20//Dungeons
+dtext 225  40 1152 Dungeons
+resizepic 330 40 9200 185 20//Sites
+dtext 410 40 1152 Sites
+//cities
+checkertrans 30 60 140 220
+dtext 65  60 1152 Luna
+button 30 60 4005 4007 1 0 1 //Luna
+dtext 65  80 1152 Umbra
+button 30 80 4005 4007 1 0 2 //Umbra
+//Dungeons
+checkertrans 180 60 140 220
+dtext 215  60 1152 Bedlam
+button 180 60 4005 4007 1 0 19 //Bedlam
+dtext 215  80 1152 Citadel
+button 180 80 4005 4007 1 0 20 //Citadel
+dtext 215  100 1152 Labyrinth
+button 180 100 4005 4007 1 0 21 //Labyrinth
+dtext 215  120 1152 Doom
+button 180 120 4005 4007 1 0 22 //Doom
+dtext 215  140 1152 Doom Gauntlet
+button 180 140 4005 4007 1 0 23 //Doom Gauntlet
+//Sites
+checkertrans 330 60 185 220
+dtext 365  60 1152 Ilse of the Divide
+button 330 60 4005 4007 1 0 37//Ilse of the Divide
+dtext 365  80 1152 Crystal Cave Entrance
+button 330 80 4005 4007 1 0 38//Crystal Cave Entrance
+dtext 365  100 1152 Protected Island 
+button 330 100 4005 4007 1 0 39 //Protected Island
+dtext 365  120 1152 Grand Arena
+button 330 120 4005 4007 1 0 40//Grand Arena
+dtext 365  140 1152 Hanse's Hostel
+button 330 140 4005 4007 1 0 41//Hanse's Hostel
+dtext 365  160 1152 Yomotsu Mines
+button 330 160 4005 4007 1 0 42//Yomotsu Mines
+dtext 365  180 1152 Fan Dancer's Dojo
+button 330 180 4005 4007 1 0 43//Fan Dancer's Dojo
+dtext 365  200 1152 Samurai Start Location
+button 330 200 4005 4007 1 0 44//Samurai Start Location
+dtext 365  220 1152 Ninja Start Location  
+button 330 220 4005 4007 1 0 45//Ninja Start Location
+dtext 365  240 1152 Ninja Cave  
+button 330 240 4005 4007 1 0 46//Ninja Cave
+dtext 365  260 1152 Malas Gypsy Camp  
+button 330 260 4005 4007 1 0 47//Malas Gypsy Camp
+///////////////////////////////////////////////////////
+button 510 15 4005 4007 1 0 56 //Foward
+button 10 10 4014 4016 1 0 55 //back
+
+[DIALOG d_console_Malas BUTTON]
+OnButton=0
+src.sysmessage @1152 Runebook closed.
+sound 85
+OnButton=1
+src.go=989,520,-50,3
+OnButton=2
+src.go=2049,1344,-85,3
+OnButton=19
+src.go=121,1684,0,3
+OnButton=20
+src.go=98,1890,0,3
+OnButton=21
+src.go=329,1973,2,3
+OnButton=22
+src.go=2366,1268,-85,3
+OnButton=23
+src.go=428,341,-1,3
+OnButton=37
+src.go=1731,981,-79,3
+OnButton=38
+src.go=1195,515,-90,3
+OnButton=39
+src.go= 2104,380,-90,3
+OnButton=40
+src.go=961,637,-90,3
+OnButton=41
+src.go=1063,1435,-90,3
+OnButton=42
+src.go=Yomotsu Mines
+OnButton=43
+src.go=Fan Dancer's Dojo
+OnButton=44
+src.go=Samurai Start Location
+OnButton=45
+src.go=Ninja Start Location
+OnButton=46
+src.go=Ninja Cave
+OnButton=47
+src.go=Malas Gypsy Camp
+
+OnButton=55
+dialog d_console
+sound 85
+OnButton=56
+dialog d_console_tokuno
+sound 85
+//////////////////////////////////////////////////////////////////
+
+[DIALOG d_console_tokuno]
+30,50
+
+page 0
+resizepic 5 5 9200 575 400
+resizepic 200 10 9200 150 20//Tokuno
+dtext 255 10 0d Tokuno
+resizepic 30 40 9200 160 20//cities
+dtext 90 40 1152 Cities
+resizepic 200 40 9200 150 20//Dungeons
+dtext 250 40 1152 Dungeons
+resizepic 360 40 9200 195 20//Sites
+dtext 445 40 1152 Sites
+//cities
+checkertrans 30 60 160 320
+dtext 65  60 1152 Zento
+button 30 60 4005 4007 1 0 1 //Zento
+dtext 65  80 1152 Zento Inn
+button 30 80 4005 4007 1 0 2 //Zento Inn
+dtext 65  100 1152 Tokuno Castle
+button 30 100 4005 4007 1 0 3 //Tokuno Castle
+dtext 65  120 1152 Citadel Entrance
+button 30 120 4005 4007 1 0 4 //Citadel Entrance
+dtext 65  160 1152 Shrine Homare-Jima 
+button 30 160 4005 4007 1 0 5 //Homare-Jima Shrine 
+dtext 65  180 1152 Shrine Makoto-Jima 
+button 30 180 4005 4007 1 0 6//Makoto-Jima shrine 
+dtext 65  200 1152 Shrine Isamu-Jima 
+button 30 200 4005 4007 1 0 7//Isamu-Jima shrine 
+//Dungeons
+checkertrans 200 60 150 320
+dtext 235  60 1152 Yomotsu Mines
+button 200 60 4005 4007 1 0 8 //Yomotsu Mines
+dtext 235  80 1152 Fan Dancer's Dojo
+button 200 80 4005 4007 1 0 9 //Fan Dancer's Dojo
+//Sites
+checkertrans 360 60 195 320
+dtext 395  60 1152 Samurai start location
+button 360 60 4005 4007 1 0 10//Samurai start location
+dtext 395  80 1152 Ninja start location 
+button 360 80 4005 4007 1 0 11//Ninja start location
+dtext 395  100 1152 Ninja cave
+button 360 100 4005 4007 1 0 12 //Ninja cave
+dtext 395  120 1152 Moongate Isamu-Jima  
+button 360 120 4005 4007 1 0 13//Moongate Isamu-Jima
+dtext 395  140 1152 Moongate Makoto-Jima  
+button 360 140 4005 4007 1 0 14//Moongate Makoto-Jima
+dtext 395  160 1152 Moongate Homare-Jima 
+button 360 160 4005 4007 1 0 15//Moongate Homare-Jima
+dtext 395  180 1152 Beetlescape
+button 360 180 4005 4007 1 0 16//Beetlescape
+dtext 395  200 1152 Bushido Dojo
+button 360 200 4005 4007 1 0 17//Bushido Dojo
+dtext 395  220 1152 The Waste [Makoto-Jima]
+button 360 220 4005 4007 1 0 18//The Waste [Makoto-Jima]
+dtext 395  240 1152 Field Of Echoes 
+button 360 240 4005 4007 1 0 19//Field Of Echoes 
+dtext 395  260 1152 Crane Marsh 
+button 360 260 4005 4007 1 0 20 //Crane Marsh 
+dtext 395  280 1152 Lotus Lake
+button 360 280 4005 4007 1 0 21//lotus lake
+dtext 395  300 1152 Mount Sho
+button 360 300 4005 4007 1 0 22 //Mount Sho
+dtext 395  320 1152 Dragon Valley
+button 360 320 4005 4007 1 0 23//Dragon Valley
+dtext 395  340 1152 Winter Spur
+button 360 340 4005 4007 1 0 24//Winter Spur
+dtext 395  360 1152 Kitsune Woods
+button 360 360 4005 4007 1 0 25//Kitsune Woods
+///////////////////////////////////////////////////////
+button 10 10 4014 4016 1 0 26 //back
+button 545 15 4005 4007 1 0 27 //Foward
+
+[DIALOG d_console_tokuno BUTTON]
+OnButton=0
+src.sysmessage @1152 Runebook closed.
+sound 85
+OnButton=1
+src.go=736,1256,30,4//Zento
+OnButton=2
+src.go=686,1211,30,4//Zento Inn
+OnButton=3
+src.go=1235,771,3,4//Tokuno Castle
+OnButton=4
+src.go=1346,765,20,4//Citadel Entrance
+OnButton=5
+src.go=295,712,55,4//Homare-Jima Shrine
+OnButton=6
+src.go=718,1161,25,4//makoto shrine
+OnButton=7
+src.go=1047,512,15,4//isamu shrine
+OnButton=8
+src.go=259,783,70,4//Yomotsu Mines
+OnButton=9
+src.go=Fan Dancer's Dojo
+OnButton=10
+src.go=Samurai Start Location//samurai start point
+OnButton=11
+src.go=Ninja Start Location
+OnButton=12
+src.go=Ninja Cave
+OnButton=13
+src.go=1167,996,50,4//moongate isamo
+OnButton=14
+src.go=799,1201,25,4//moongate makoto
+OnButton=15
+src.go=267,625,15,4//moongate homare
+OnButton=16
+src.go=798,245,58,4//beetlescape
+OnButton=17
+src.go=320,408,32,4//bushido dojo
+OnButton=18
+src.go=724,943,42,4//the waste makoto-jima
+OnButton=19
+src.go=160,654,36,4//field of echoes
+OnButton=20
+src.go=232,1107,10,4//crane marsh
+OnButton=21
+src.go=1066,817,20,4//lotus lake
+OnButton=22
+src.go=1159,696,70,4//Mount Sho
+OnButton=23
+src.go=948,432,8,4//Dragon Valley
+OnButton=24
+src.go=926,162,34,4//Winter Spur
+OnButton=25
+src.go=532,520,32,4//kitsune woods
+OnButton=26
+dialog d_console
+sound 85
+////////////////////////////////////////////////////////////////////////
+
+[CHARDEF c_headless_horseman] 
+ID=c_man
+NAME=Headless Horseman
+SOUND=snd_HUMAN_M_DIE_01 
+DAM=10,20 
+ARMOR=30 
+CAN=MT_WALK|MT_RUN|MT_EQUIP 
+DESIRES=i_gold,e_notoriety 
+
+TSPEECH=spk_human_prime 
+TSPEECH=jobMageEvil 
+TSPEECH=spk_needs 
+TSPEECH=spk_rehello 
+TSPEECH=spk_human_default 
+
+ON=@Create 
+COLOR=07fff
+STR={450 500} 
+DEX={300 350} 
+INT={200 250} 
+
+PARRYING={85.0 98.0} 
+SWORDSMANSHIP={90.0 95.0} 
+ARCHERY={90.0 95.0}
+WRESTLING={67.0 90.0} 
+MAGICRESISTANCE={90.0 98.0} 
+TACTICS={90.0 98.0} 
+POISONING={90.0 100.0} 
+
+NPC=brain_monster 
+
+FAME=8000 
+KARMA=-9999 
+
+ON=@NPCRestock 
+ITEM=i_BLACKROCK_RINGMAIL_GLOVES
+ITEM=i_BLACKROCK_RINGMAIL_SLEEVES
+ITEM=i_BLACKROCK_RINGMAIL_TUNIC
+ITEM=i_BLACKROCK_RINGMAIL_LEGGINGS
+ITEM=i_CAPE 
+COLOR=0053f
+ITEM=i_SASH 
+COLOR=0053f
+ITEM=i_boots_calf
+COLOR=0053f
+ITEM=i_potion_healgreat 
+ITEM=i_potion_healgreat 
+ITEM=i_potion_healgreat
+ITEM=i_potion_healgreat
+ITEM=i_potion_healgreat
+ITEM=i_mt_nightmare
+ITEMNEWBIE=i_sword_long_blackrock 
+ITEMNEWBIE=i_pumpkin_launcher
+
+
+ITEM={ random_jewel 1 0 1 } 
+ITEM={ random_jewel 1 0 1 } 
+ITEM={ random_jewel 1 0 1 } 
+ITEM={ random_jewel 1 0 1 } 
+ITEM=i_gold,{400 1000} 
+
+
+on=@gethit // change weapon 
+if (<distance> < 2) 
+findid(i_sword_long_blackrock).cont=<uid> 
+endif 
+if (<distance> > 2) 
+findid(i_pumpkin_launcher).cont=<uid> 
+endif 
+return 0 
+endif 
+return 1 
+
+
+ON=@hit // heal
+IF (<hitpoints> < 100) 
+IF (<RESTEST 1 i_potion_healgreat>) 
+SPELLEFFECT s_greater_heal,100.0 
+CONSUME i_potion_healgreat 
+else 
+return 1 
+endif 
+
+ON=@SkillStart // recreate horse 
+if <SRC.RESTEST 1 i_mt_nightmare> 
+return 1 
+else 
+newitem=i_mt_nightmare 
+act.equip 
+return 0 
+endif 
+
+ON=@EnvironChange // recreate horse 
+if <SRC.RESTEST 1 i_mt_nightmare>
+return 1 
+else 
+newitem=i_mt_nightmare
+act.equip 
+return 1 
+endif 
+
+CATEGORY=Imperial uo 
+SUBSECTION=Headless Horseman
+DESCRIPTION=Headless Horseman
+
+//pumkin
+[ITEMDEF i_pumpkin_launcher]
+ID=i_crossbow_heavy
+NAME=Pumpkin Launcher
+WEIGHT=1
+DAM={15 30}
+REQSTR=30
+TDATA3=0
+TDATA4=i_fx_smoke
+TWOHANDS=Y
+
+ON=@Create
+MOREY=100.0
+ATTR=attr_magic
+HITPOINTS=300
+COLOR=color_o_blackrock
+
+ON=@EQUIP
+src.events +e_pumpkin
+
+ON=@UNEQUIP
+src.events -e_pumpkin
+
+ON=@DAMAGE
+SRC.DAMAGE={50 60} 0010 <CONT.UID>
+
+[EVENTS e_pumpkin]
+ON=@HIT
+dorand 3
+EFFECT=2,0c6b,1,16,1
+EFFECT=2,0c6b,3,16,1
+EFFECT=2,0c6b,3,16,0
+enddo
+
+[ITEMDEF i_mt_nightmare]
+Name=nightmare
+ID=i_mt_horse_brown_dk
+LAYER=layer_horse
+TDATA3=c_m_nightmare
+
+ON=@Create
+COLOR=colors_black
+MORE1=c_m_nightmare
+
+
+[function whereami]
+sdialog d_whereami
+return 1
+
+[dialog d_whereami]
+100,75
+PAGE 0
+resizepic 0 0 3600 392 425
+resizepic 5 6 3000 380 412
+gumppic 4 5 5528
+dtext 8 5 100 X: <src.p.x>
+dtext 8 20 100 Y: <src.p.y>
+dtext 8 35 100 Z: <src.p.z>
+
+page 1
+tilepichue 100 154 7959 92	//Britain	//Runes are Towns  //blue = safe //red = unguarded
+tilepichue 170 51 7959 92	//Minoc 
+tilepichue 200 82 7959 92	//Vesper
+tilepichue 20 92 7959 92	//Yew
+tilepichue 260 196 7959 92	//Magincia
+tilepichue 260 234 7959 37	//Ocllo 
+tilepichue 30 201 7959 92	//Skara brae
+tilepichue 90 350 7959 92	//Jhelom
+tilepichue 210 314 7959 37	//Serpent's hold
+tilepichue 130 258 7959 92	//Trinsic
+tilepichue 260 122 7959 92	//Nujel'm 
+tilepichue 320 112 7959 92	//Moonglow
+tilepichue 150 116 7959 92	//Cove
+tilepichue 190 203 7959 37	//Buccaneer's Den
+tilepichue 90 90 7959 92	//Wind
+
+tilepichue 90 105 6884 1907	//Despise	//Skulls are dungeons
+tilepichue 140 37 6884 1907	//Wrong
+tilepichue 30 152 6884 1907	//Shame
+tilepichue 340 353 6884 1907	//Hytloth
+tilepichue 70 246 6884 1907	//Destard
+tilepichue 210 325 6884 1907	//Fire dungeon
+tilepichue 170 92 6884 1907	//Covetous
+tilepichue 140 14 6884 1907	//Ice Dungeon
+tilepichue 290 50 6884 1907	//deceit
+
+dtext 20 390 100 You're in: <src.region.name>
+dtext  <eval ((<src.p.x>/13)-35)> <eval ((<src.p.y>/11)-13)> 026 You are Here!
+gumppic <eval ((<src.p.x>/13)-5)> <eval ((<src.p.y>/11)+5> 2360
+
+
+[FUNCTION logvarlist]
+SERV.LOG <SERV.VARLIST>
+RETURN 1
+
+[FUNCTION transfer]
+DIALOGCLOSE d_char_list
+DIALOG d_char_list
+
+[DIALOG d_char_list]
+230,130
+PAGE 0
+RESIZEPIC 0 0 5120 370 280
+RESIZEPIC 12 10 3000 350 260
+DTEXT 90 20 1153 <SERV.NAME> Item Transfer Menu:
+DTEXT 20 50 1153 Pick the character you want to transfer the item to:
+FOR 0 <eval <ACCOUNT.CHARS>-1>
+DTEXT 65 <eval (<dlocal._for>*30)+90> 025 <ACCOUNT.CHAR.<dlocal._for>.NAME>
+ENDFOR
+FOR 1 <ACCOUNT.CHARS>
+BUTTON 30 <EVAL (<dlocal._for>*30)+60> 4020 4022 1 0 <dlocal._for>
+ENDFOR
+
+[DIALOG d_char_list button]
+ON=0
+SYSMESSAGE @1153 You canceled the item transfer.
+
+ON=1 5
+IF (<SRC.ACCOUNT.CHAR.<EVAL <ARGN>-1>.UID> == <SRC.UID>)
+SRC.SYSMESSAGE @1153 You are on this character now...
+RETURN 1
+ENDIF
+TRY CTAG.<SRC.ACCOUNT.NAME><EVAL <ARGN>-1> <SRC.ACCOUNT.CHAR.<EVAL <ARGN>-1>.UID>
+TARGETF item_at <EVAL <ARGN>-1>
+SRC.SYSMESSAGE @1153 Target the item you wish to transfer...
+
+
+[FUNCTION item_at]
+OBJ=<ARGO>
+IF !(<OBJ.ISITEM>)
+SRC.SYSMESSAGE @1153 This is not an item.
+RETURN 1
+ENDIF
+
+IF (<SRC.FINDLAYER.29.UID> == <OBJ.CONT.UID>)
+OBJ.CONT <UID.<CTAG.<ACCOUNT.NAME><ARGN>>.FINDLAYER.29.UID>
+UPDATE
+SRC.SYSMESSAGE @1153 Done! <OBJ.AMOUNT> <OBJ.NAME> sent to <ACCOUNT.CHAR.<ARGN>.NAME>.
+SERV.LOG :ITEM TRANSFER: <NAME> - <OBJ.AMOUNT> <OBJ.NAME> sent to <ACCOUNT.CHAR.<ARGN>.NAME>.
+ELSE
+SRC.SYSMESSAGE @1153 Something went wrong...
+RETURN 1
+ENDIF
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[FUNCTION cfix]
+OSTR=10000
+ODEX=10000
+OINT=10000
+HITS=10000
+MANA=10000
+STAM=10000
+INVUL=1
+KARMA=0
+FAME=0
+KILLS=0
+TITLE=Imperial UO Staff Member
+
+[FUNCTION mremove]
+IF !<ARGS>
+TARGETF mremove 1
+ELSE
+IF (<UID.<ARGO.UID>.ISITEM>)
+TRY UID.<ARGO.UID>.REMOVE
+ENDIF
+TARGETF mremove 1
+ENDIF
+
+[PLEVEL 2]
+cunlock
+cstatfix
+
+[FUNCTION cunlock]
+TARGETF couns_lock
+SRC.SYSMESSAGE What would you like to lock/unlock?
+
+[FUNCTION couns_lock]
+IF (<ARGO.TYPE> == t_container_locked)
+ARGO.TYPE=t_container
+SRC.SYSMESSAGE Container unlocked.
+RETURN 1
+ENDIF
+
+IF (<ARGO.TYPE> == t_container)
+ARGO.TYPE=t_container_locked
+SRC.SYSMESSAGE Container locked.
+ELSE
+SRC.SYSMESSAGE This is not a container!
+ENDIF
+RETURN 1
+
+
+[FUNCTION mnightsight]
+FORCLIENTS 18
+IF !(<UID>==<SRC.UID>) && !(<ISGM>)
+SPELLEFFECT s_night_sight,1000,1,<UID>
+EFFECT 3, i_rune_night_sight, 1, 12, 0, 0
+ENDIF
+ENDFOR
+
+[FUNCTION mtele]
+IF !<ARGS>
+TARGETFG mtele 1
+ELSE
+GO <TARGP>
+TARGETFG mtele 1
+ENDIF
+
+[FUNCTION creaturelore]
+IF (<SRC.ANIMALLORE> > 980) || !(<SRC.OBODY>=c_man) && !(<SRC.OBODY>=c_woman)
+SRC.DIALOG d_cllore
+ENDIF
+
+[DIALOG d_cllore]
+10,10
+dialogclose d_cllore
+page 0
+gumppic 100 100 2080 0
+gumppic 118 137 2081 0
+gumppic 118 207 2081 0
+gumppic 118 277 2081 0
+gumppic 118 347 2083 0
+gumppic 140 138 2091 0
+gumppic 140 335 2091 0
+button 240 77 2093 2093 2 0 0
+dHTMLGUMP 147 108 210 18 0 0  <SRC.ACT.NAME>
+
+PAGE 1
+xmfhtmlgump 147 150 160 18 1049593 0 0
+xmfhtmlgump 153 168 160 18 1049578 0 0
+dhtmlgump 280 168 75 18 0 0 <SRC.ACT.HITS>/<SRC.ACT.MAXHITS>
+xmfhtmlgump 153 186 160 18 1049579 0 0
+dhtmlgump 280 186 75 18 0 0 <SRC.ACT.STAM>/<SRC.ACT.MAXSTAM>
+xmfhtmlgump 153 204 160 18 1049580 0 0
+dhtmlgump 280 204 75 18 0 0 <SRC.ACT.MANA>/<SRC.ACT.MAXMANA>
+xmfhtmlgump 153 222 160 18 1028335 0 0
+dhtmlgump 320 222 35 18 0 0 <SRC.ACT.STR>
+xmfhtmlgump 153 240 160 18 3000113 0 0
+dhtmlgump 320 240 35 18 0 0 <SRC.ACT.DEX>
+xmfhtmlgump 153 258 160 18 3000112 0 0
+dhtmlgump 320 258 35 18 0 0 <SRC.ACT.INT>
+gumppic 128 278 2086 
+xmfhtmlgump 147 276 160 18 3001016 0 0
+xmfhtmlgump 153 294 160 18 1049581 0 0
+dhtmlgump 320 294 35 18 0 0 <SRC.ACT.AR>
+gumppic 128 152 2086
+button 340 358 5601 5605 0 2 0
+button 317 358 5603 5607 0 1 0
+
+PAGE 2
+gumppic 128 152 2086
+xmfhtmlgump 147 150 160 18 3001030 0 0
+xmfhtmlgump 153 168 160 18 1044103 0 0
+dhtmlgump 320 168 35 18 0 0 <SRC.ACT.WRESTLING>
+xmfhtmlgump 153 186 160 18 1044087 0 0
+dhtmlgump 320 186 35 18 0 0 <SRC.ACT.TACTICS>
+xmfhtmlgump 153 204 160 18 1044086 0 0
+dhtmlgump 320 204 35 18 0 0 <SRC.ACT.MAGICRESISTANCE>
+xmfhtmlgump 153 222 160 18 1044061 0 0
+dhtmlgump 320 222 35 18 0 0 <SRC.ACT.ANATOMY>
+xmfhtmlgump 153 240 160 18 1044090 0 0
+dhtmlgump 320 240 35 18 0 0 <SRC.ACT.POISONING>
+gumppic 128 260 2086
+xmfhtmlgump 147 258 160 18 3001032 0 0
+xmfhtmlgump 153 276 160 18 1044085 0 0
+dhtmlgump 320 276 35 18 0 0 <SRC.ACT.MAGERY>
+xmfhtmlgump 153 294 160 18 1044076 0 0
+dhtmlgump 320 294 35 18 0 0 <SRC.ACT.EVALUATINGINTEL>
+xmfhtmlgump 153 312 160 18 1044106 0 0
+dhtmlgump 320 312 35 18 0 0 <SRC.ACT.MEDITATION> 
+button 340 358 5601 5605 0 3 0
+button 317 358 5603 5607 0 1 0
+PAGE 3
+gumppic 128 152 2086
+xmfhtmlgump 147 150 160 18 1049563 0 0
+CALL FOODCHECK <SRC.ACT.FOODTYPE>
+xmfhtmlgump 153 168 160 18 <dLOCAL.CLILOC> 0 0
+gumppic 128 188 2086
+xmfhtmlgump 147 186 160 18 1049569 0 0
+xmfhtmlgump 153 204 160 18 3000340 0 0
+button 340 358 5601 5605 0 1 0
+button 317 358 5603 5607 0 2 0
+
+[FUNCTION foodcheck]
+IF  (<STREAT <ARGV[0]>>== t_meat_raw)
+LOCAL.CLILOC 1049564
+ELIF ((<STREAT <ARGV[0]>>== t_fruit) || (<STREAT <ARGV[0]>>== t_crops))
+LOCAL.CLILOC 1049565
+ELIF ((<STREAT <ARGV[0]>>== t_grass) || (<STREAT <ARGV[0]>>== t_grain))
+LOCAL.CLILOC 1049566
+ELSE
+LOCAL.CLILOC 3000340
+ENDIF
+
+
+
+[DIALOG d_wrongclient]
+300,200
+NOCLOSE
+NOMOVE
+page 0
+resizepic 138 193 9200 485 152
+gumppic 147 237 5504
+dtext 308 204 990 Imperial UO - Client Error
+dtext 218 230 10 It seems like you are using the wrong client version to play here.
+dtext 218 250 10 Please, make sure you have our patch and client 5.0.9 by down -
+dtext 218 270 10 loading them from our website. You can visit our website through
+dtext 218 290 10 this menu, clicking the button below.
+dtext 330 320 990 Download Page
+button 308 324 1209 1210 1 0 1
+
+[DIALOG d_wrongclient button]
+ON=1
+SRC.WEBLINK www.imperialuo.com
+
+
+
+
+[DEFNAME def_msh]
+use_msh_debug	1	// turns debug serv logs on or off
+
+[FUNCTION msh_debug]
+IF <def.use_msh_debug>
+	SRC.SYSMESSAGE @550,3 <args>
+ENDIF
+
+[FUNCTION msh]
+IF <ISEMPTY <ARGS>>
+	SYSMESSAGE @38,3 You need to give a name for the property.
+	RETURN 1
+ENDIF
+CTAG.MSHNAME=<args>
+CTAG.MSHDOORS=0
+msh_debug House name: <CTAG0.MSHNAME>
+NEWITEM i_msh_target_sign
+NEW.EQUIP
+
+[ITEMDEF i_msh_target_sign]
+ID=i_target
+TYPE=t_eq_script
+LAYER=layer_special
+
+ON=@EQUIP
+	TARGETG Where would you like to place the sign?
+	RETURN 1
+
+ON=@TARGON_CHAR
+	SRC.CTAG.MSH_SIGN.X=<SRC.TARG.P.X>
+	SRC.CTAG.MSH_SIGN.Y=<SRC.TARG.P.Y>
+	SRC.CTAG.MSH_SIGN.Z=<SRC.TARG.P.Z>
+	msh_debug Sign P=<eval <SRC.CTAG0.MSH_SIGN.X>> <eval <SRC.CTAG0.MSH_SIGN.Y>> <eval <SRC.CTAG0.MSH_SIGN.Z>>
+	SRC.NEWITEM i_msh_target_door
+	NEW.EQUIP
+	REMOVE
+	RETURN 1
+
+ON=@TARGON_GROUND
+	SRC.CTAG.MSH_SIGN.X=<SRC.TARGP.X>
+	SRC.CTAG.MSH_SIGN.Y=<SRC.TARGP.Y>
+	SRC.CTAG.MSH_SIGN.Z=<SRC.TARGP.Z>
+	msh_debug Sign P=<eval <SRC.CTAG0.MSH_SIGN.X>> <eval <SRC.CTAG0.MSH_SIGN.Y>> <eval <SRC.CTAG0.MSH_SIGN.Z>>
+	SRC.NEWITEM i_msh_target_door
+	NEW.EQUIP
+	REMOVE
+	RETURN 1
+
+ON=@TARGON_ITEM
+	SRC.CTAG.MSH_SIGN.X=<SRC.TARG.P.X>
+	SRC.CTAG.MSH_SIGN.Y=<SRC.TARG.P.Y>
+	SRC.CTAG.MSH_SIGN.Z=<SRC.TARG.P.Z>
+	msh_debug Sign P=<eval <SRC.CTAG0.MSH_SIGN.X>> <eval <SRC.CTAG0.MSH_SIGN.Y>> <eval <SRC.CTAG0.MSH_SIGN.Z>>
+	SRC.NEWITEM i_msh_target_door
+	NEW.EQUIP
+	REMOVE
+	RETURN 1
+
+ON=@TARGON_CANCEL
+	SRC.SYSMESSAGE Canceled.
+	REMOVE
+	RETURN 1
+
+[ITEMDEF i_msh_target_door]
+ID=i_target
+TYPE=t_eq_script
+LAYER=layer_special
+
+ON=@EQUIP
+	TARGETG Where would you like to place a door? (Target door if there is one)
+	SRC.SYSMESSAGE @38 (Target yourself after placing all doors)
+	RETURN 1
+
+ON=@TARGON_CHAR
+	IF <SRC.UID>==<SRC.TARG.UID>
+		msh_debug Number of doors: <eval <SRC.CTAG.MSHDOORS>>
+		SRC.NEWITEM i_msh_target_1
+		NEW.EQUIP
+		REMOVE
+		RETURN 1
+	ENDIF
+	SRC.CTAG.MSHDOORS += 1
+	TRY SRC.CTAG.MSH_DOOR.<SRC.CTAG0.MSHDOORS>.X=<SRC.TARG.P.X>
+	TRY SRC.CTAG.MSH_DOOR.<SRC.CTAG0.MSHDOORS>.Y=<SRC.TARG.P.Y>
+	TRY SRC.CTAG.MSH_DOOR.<SRC.CTAG0.MSHDOORS>.Z=<SRC.TARG.P.Z>
+	msh_debug Door <eval <SRC.CTAG0.MSHDOORS>> P=<eval <SRC.CTAG0.MSH_DOOR.<SRC.CTAG0.MSHDOORS>.X>> <eval <SRC.CTAG0.MSH_DOOR.<SRC.CTAG0.MSHDOORS>.Y>> <eval <SRC.CTAG0.MSH_DOOR.<SRC.CTAG0.MSHDOORS>.Z>>
+	SRC.NEWITEM i_msh_target_door
+	NEW.EQUIP
+	REMOVE
+	RETURN 1
+
+ON=@TARGON_GROUND
+	SRC.CTAG.MSHDOORS += 1
+	TRY SRC.CTAG.MSH_DOOR.<SRC.CTAG0.MSHDOORS>.X=<SRC.TARGP.X>
+	TRY SRC.CTAG.MSH_DOOR.<SRC.CTAG0.MSHDOORS>.Y=<SRC.TARGP.Y>
+	TRY SRC.CTAG.MSH_DOOR.<SRC.CTAG0.MSHDOORS>.Z=<SRC.TARGP.Z>
+	msh_debug Door <eval <SRC.CTAG0.MSHDOORS>> P=<eval <SRC.CTAG0.MSH_DOOR.<SRC.CTAG0.MSHDOORS>.X>> <eval <SRC.CTAG0.MSH_DOOR.<SRC.CTAG0.MSHDOORS>.Y>> <eval <SRC.CTAG0.MSH_DOOR.<SRC.CTAG0.MSHDOORS>.Z>>
+	SRC.NEWITEM i_msh_target_door
+	NEW.EQUIP
+	REMOVE
+	RETURN 1
+
+ON=@TARGON_ITEM
+	SRC.CTAG.MSHDOORS += 1
+	TRY SRC.CTAG.MSH_DOOR.<SRC.CTAG0.MSHDOORS>.X=<SRC.TARG.P.X>
+	TRY SRC.CTAG.MSH_DOOR.<SRC.CTAG0.MSHDOORS>.Y=<SRC.TARG.P.Y>
+	TRY SRC.CTAG.MSH_DOOR.<SRC.CTAG0.MSHDOORS>.Z=<SRC.TARG.P.Z>
+	IF (<SRC.TARG.TYPE>==t_door) || (<SRC.TARG.TYPE>==t_door_open)
+		TRY SRC.CTAG.MSH_DOOR.<SRC.CTAG0.MSHDOORS>.ID=<SRC.TARG.ID>
+		SRC.TARG.REMOVE
+	ENDIF
+	msh_debug Door <eval <SRC.CTAG0.MSHDOORS>> P=<eval <SRC.CTAG0.MSH_DOOR.<SRC.CTAG0.MSHDOORS>.X>> <eval <SRC.CTAG0.MSH_DOOR.<SRC.CTAG0.MSHDOORS>.Y>> <eval <SRC.CTAG0.MSH_DOOR.<SRC.CTAG0.MSHDOORS>.Z>>
+	SRC.NEWITEM i_msh_target_door
+	NEW.EQUIP
+	REMOVE
+	RETURN 1
+
+ON=@TARGON_CANCEL
+	msh_debug Number of doors: <eval <SRC.CTAG0.MSHDOORS>>
+	REMOVE
+	RETURN 1
+
+[ITEMDEF i_msh_target_1]
+ID=i_target
+TYPE=t_eq_script
+LAYER=layer_special
+
+ON=@EQUIP
+	TARGETG Select the North-Western corner of the property.
+	RETURN 1
+
+ON=@TARGON_GROUND
+	SRC.CTAG.MSHNW.X=<SRC.TARGP.X>
+	SRC.CTAG.MSHNW.Y=<SRC.TARGP.Y>
+	NEWITEM i_msh_target_2
+	NEW.EQUIP
+	REMOVE
+	RETURN 1
+
+ON=@TARGON_CHAR
+	SRC.CTAG.MSHNW.X=<SRC.TARG.P.X>
+	SRC.CTAG.MSHNW.Y=<SRC.TARG.P.Y>
+	NEWITEM i_msh_target_2
+	NEW.EQUIP
+	REMOVE
+	RETURN 1
+
+ON=@TARGON_ITEM
+	SRC.CTAG.MSHNW.X=<SRC.TARG.P.X>
+	SRC.CTAG.MSHNW.Y=<SRC.TARG.P.Y>
+	NEWITEM i_msh_target_2
+	NEW.EQUIP
+	REMOVE
+	RETURN 1
+
+ON=@TARGON_CANCEL
+	SRC.SYSMESSAGE @100,3 Canceled
+	REMOVE
+	RETURN 1
+
+[ITEMDEF i_msh_target_2]
+ID=i_target
+TYPE=t_eq_script
+LAYER=layer_special
+
+ON=@EQUIP
+	TARGETG Select the South-Eastern corner of the property.
+	RETURN 1
+
+ON=@TARGON_GROUND
+	SRC.CTAG.MSHSE.X=<SRC.TARGP.X>
+	SRC.CTAG.MSHSE.Y=<SRC.TARGP.Y>
+	msh_debug NW Corner: (<eval <SRC.CTAG0.MSHNW.X>>,<eval <SRC.CTAG0.MSHNW.Y>>)
+	msh_debug SE Corner: (<eval <SRC.CTAG0.MSHSE.X>>,<eval <SRC.CTAG0.MSHSE.Y>>)
+	LOCAL.dX=<eval (<SRC.CTAG0.MSHSE.X> - <SRC.CTAG0.MSHNW.X>)/2>
+	LOCAL.dY=<eval (<SRC.CTAG0.MSHSE.Y> - <SRC.CTAG0.MSHNW.Y>)/2>
+	LOCAL.ODDX=<QVAL <eval <SRC.CTAG0.MSHSE.X> - <SRC.CTAG0.MSHNW.X>>%2 ? 1:0>
+	LOCAL.ODDY=<QVAL <eval <SRC.CTAG0.MSHSE.Y> - <SRC.CTAG0.MSHNW.Y>>%2 ? 1:0>
+	msh_debug Center P: <eval <SRC.CTAG0.MSHNW.X>+<LOCAL.dX>+<LOCAL.ODDX>> <eval <SRC.CTAG0.MSHNW.Y>+<LOCAL.dY>+<LOCAL.ODDY>>
+	msh_debug MULTIREGION=-<eval <LOCAL.dX>+<LOCAL.ODDX>>,-<eval <LOCAL.dY>+<LOCAL.ODDY>>,<eval <LOCAL.dX>>,<eval <LOCAL.dY>>
+	msh_debug dX=<eval <LOCAL.dx>> dY=<eval <LOCAL.dy>>
+	msh_debug Odd? X:<eval <LOCAL.ODDX>> Y:<eval <LOCAL.ODDY>>
+	msh_debug X2: <eval <SRC.CTAG0.MSHSE.X> - <SRC.CTAG0.MSHNW.X>> Y2: <eval <SRC.CTAG0.MSHSE.Y> - <SRC.CTAG0.MSHNW.Y>>
+	IF (<file.open scripts/static_multis.scp>)
+		FILE.WRITELINE [ITEMDEF i_custom_multi_<SRC.CTAG0.MSHNAME>]
+		FILE.WRITELINE ID=i_multi_treasure
+		FILE.WRITELINE NAME=<SRC.CTAG0.MSHNAME>
+		FILE.WRITELINE TYPE=t_multi
+		FILE.WRITELINE CATEGORY=Multis
+		FILE.WRITELINE SUBSECTION=Static
+		FILE.WRITELINE DESCRIPTION=<SRC.CTAG0.MSHNAME>
+		FILE.WRITELINE MULTIREGION=-<eval <LOCAL.dX>>,-<eval <LOCAL.dY>>,<eval <LOCAL.dX>>,<eval <LOCAL.dY>>
+		FILE.WRITELINE COMPONENT=0bd1,<eval <LOCAL.dX> - (<SRC.CTAG0.MSHSE.X> - <SRC.CTAG0.MSH_SIGN.X>)>,<eval <LOCAL.dY> - (<SRC.CTAG0.MSHSE.Y> - <SRC.CTAG0.MSH_SIGN.Y>)>,<eval <SRC.CTAG0.MSH_SIGN.Z>>
+	ENDIF
+	FILE.CLOSE
+	msh_debug Sign: <eval <LOCAL.dX> - (<SRC.CTAG0.MSHSE.X> - <SRC.CTAG0.MSH_SIGN.X>)>,<eval <LOCAL.dY> - (<SRC.CTAG0.MSHSE.Y> - <SRC.CTAG0.MSH_SIGN.Y>)>,<eval <SRC.CTAG0.MSH_SIGN.Z>>
+	IF <SRC.CTAG0.MSHDOORS>
+		FOR 1 <SRC.CTAG0.MSHDOORS>
+			IF !<SRC.CTAG0.MSH_DOOR.<LOCAL._for>.ID>
+				IF (<file.open scripts/static_multis.scp>)
+					FILE.WRITELINE COMPONENT=i_door_metal,<eval <LOCAL.dX> - (<SRC.CTAG0.MSHSE.X> - <SRC.CTAG0.MSH_DOOR.<LOCAL._for>.X>)>,<eval <LOCAL.dY> - (<SRC.CTAG0.MSHSE.Y> - <SRC.CTAG0.MSH_DOOR.<LOCAL._for>.Y>)>,<eval <SRC.CTAG0.MSH_DOOR.<LOCAL._for>.Z>>
+				ENDIF
+				FILE.CLOSE
+			ELSE
+				IF (<file.open scripts/static_multis.scp>)
+					FILE.WRITELINE COMPONENT=<SRC.CTAG0.MSH_DOOR.<LOCAL._for>.ID>,<eval <LOCAL.dX> - (<SRC.CTAG0.MSHSE.X> - <SRC.CTAG0.MSH_DOOR.<LOCAL._for>.X>)>,<eval <LOCAL.dY> - (<SRC.CTAG0.MSHSE.Y> - <SRC.CTAG0.MSH_DOOR.<LOCAL._for>.Y>)>,<eval <SRC.CTAG0.MSH_DOOR.<LOCAL._for>.Z>>
+				ENDIF
+				FILE.CLOSE
+			ENDIF
+			msh_debug Door <eval <LOCAL._for>>: <eval <LOCAL.dX> - (<SRC.CTAG0.MSHSE.X> - <SRC.CTAG0.MSH_DOOR.<LOCAL._for>.X>)>,<eval <LOCAL.dY> - (<SRC.CTAG0.MSHSE.Y> - <SRC.CTAG0.MSH_DOOR.<LOCAL._for>.Y>)>,<eval <SRC.CTAG0.MSH_DOOR.<LOCAL._for>.Z>>
+		ENDFOR
+	ENDIF
+	IF (<file.open scripts/static_multis.scp>)
+		FILE.WRITELINE [ITEMDEF i_deed_multi_<SRC.CTAG0.MSHNAME>]
+		FILE.WRITELINE ID=i_deed
+		FILE.WRITELINE NAME=deed to <SRC.CTAG0.MSHNAME>
+		FILE.WRITELINE TYPE=t_deed
+		FILE.WRITELINE ON=@CREATE
+		FILE.WRITELINE MORE=i_custom_multi_<SRC.CTAG0.MSHNAME>
+	ENDIF
+	FILE.CLOSE
+	SERV.LOAD static_multis.scp
+	msh_debug Reloading script
+	NEWITEM i_deed_multi_<SRC.CTAG0.MSHNAME>
+	NEW.P=<eval <SRC.CTAG0.MSHNW.X>+<LOCAL.dX>+<LOCAL.ODDX>> <eval <SRC.CTAG0.MSHNW.Y>+<LOCAL.dY>+<LOCAL.ODDY>> <SRC.Z>
+	SRC.UPDATE
+	msh_debug Deed: <eval <SRC.CTAG0.MSHNW.X>+<LOCAL.dX>+<LOCAL.ODDX>> <eval <SRC.CTAG0.MSHNW.Y>+<LOCAL.dY>+<LOCAL.ODDY>> <SRC.Z>
+	SRC.SYSMESSAGE @100,3 Double click on the deed and target the deed.
+	SRC.SYSMESSAGE @100,3 You can change the doors by changing their ID's or DISPID's.
+	REMOVE
+	RETURN 1
+
+ON=@TARGON_CHAR
+	SRC.SYSMESSAGE @100,3 Canceled.
+	REMOVE
+	RETURN 1
+
+ON=@TARGON_ITEM
+	SRC.SYSMESSAGE @100,3 Canceled.
+	REMOVE
+	RETURN 1
+
+ON=@TARGON_CANCEL
+	SRC.SYSMESSAGE @100,3 Canceled.
+	REMOVE
+	RETURN 1
+
+
+
+
+
+
+[PLEVEL 2]
+invis2
+
+[function gahas]
+	src.sendpacket 0c0 00 D0 D<src.uid> W036d4 W<p.x> W<p.y> B<eval(<p.z>+3)> W0 W0 B0 B2 B13 00 00 00 B1 D1152 D5 
+
+[function invis2]
+if (<flags>&statf_insubstantial)
+  fxt2 037cb,017,02
+else
+  fxt 037cb,017,02
+endif
+invis
+return 1
+
+[FUNCTION effecttest] 
+local.t_x=<argn1> 
+local.t_y=<argn2> 
+sector.allclients sendpacket 0c0 00 D<local.src> D<local.target> W<local.effect> W<p.x> W<eval <p.y>> B<qval <argn3>?<argn3>:<p.z>> W<local.t_x> W<local.t_y> B<qval <argn3>?<argn3>:<p.z>> B<local.speed> B<local.duration> 00 00 00 B<qval <local.explode>?<local.explode>:0> D<hval <local.hue> - 1> D<local.rendermode> 
+
+[FUNCTION fxt] 
+local.target=0 
+local.effect=<hval <argv[0]>> 
+local.speed=0 
+local.duration=016 
+local.hue=<hval <argv[1]>> 
+local.rendermode=<hval <argv[2]>> 
+local.src=0 
+local.explode=0 
+local.diff=4
+for x 0 4 
+  for y 0 4 
+    call effecttest <eval <p.x> + <local.x> +- <local.diff>> <eval <p.y> + <local.y> +- <local.diff>> <eval <p.z> + 2> 
+    call effecttest <eval <p.x> +- <local.x> + <local.diff>> <eval <p.y> + <local.y> +- <local.diff>> <eval <p.z> + 2> 
+    call effecttest <eval <p.x> + <local.x> +- <local.diff>> <eval <p.y> +- <local.y> + <local.diff>> <eval <p.z> + 2> 
+    call effecttest <eval <p.x> +- <local.x> + <local.diff>> <eval <p.y> +- <local.y> + <local.diff>> <eval <p.z> + 2> 
+  endfor 
+endfor 
+
+[FUNCTION effecttest2] 
+local.t_x=<argn1> 
+local.t_y=<argn2> 
+sector.allclients sendpacket 0c0 00 D<local.src> D<local.target> W<local.effect> W<local.t_x> W<eval <local.t_y>> B<qval <argn3>?<argn3>:<p.z>> W<p.x> W<p.y> B<qval <argn3>?<argn3>:<p.z>> B<local.speed> B<local.duration> 00 00 00 B<qval <local.explode>?<local.explode>:0> D<hval <local.hue> - 1> D<local.rendermode> 
+
+[FUNCTION fxt2]
+local.target=0 
+local.effect=<hval <argv[0]>> 
+local.speed=0 
+local.duration=016 
+local.hue=<hval <argv[1]>> 
+local.rendermode=<hval <argv[2]>> 
+local.src=0 
+local.explode=0 
+local.diff=4
+for x 0 4 
+  for y 0 4 
+    call effecttest2 <eval <p.x> + <local.x> +- <local.diff>> <eval <p.y> + <local.y> +- <local.diff>> <eval <p.z> + 2> 
+    call effecttest2 <eval <p.x> +- <local.x> + <local.diff>> <eval <p.y> + <local.y> +- <local.diff>> <eval <p.z> + 2> 
+    call effecttest2 <eval <p.x> + <local.x> +- <local.diff>> <eval <p.y> +- <local.y> + <local.diff>> <eval <p.z> + 2> 
+    call effecttest2 <eval <p.x> +- <local.x> + <local.diff>> <eval <p.y> +- <local.y> + <local.diff>> <eval <p.z> + 2> 
+  endfor 
+endfor
+
+[function ef_toxic_winds]
+	sector.allclients sendpacket 0c0 00 D0 D0 W036b0 W<src.p.x> W<src.p.y> B<eval(<src.p.z>+2)> W<eval(<src.p.x>+4)> W<eval(<src.p.y>)> B<eval(<src.p.z>+10+{1 15})> B0 B13 00 00 00 B0 D1158 D2 
+	sector.allclients sendpacket 0c0 00 D0 D0 W036b0 W<src.p.x> W<src.p.y> B<eval(<src.p.z>+2)> W<eval(<src.p.x>)> W<eval(<src.p.y>+4)> B<eval(<src.p.z>+10+{1 15})> B0 B13 00 00 00 B0 D1158 D2 
+	sector.allclients sendpacket 0c0 00 D0 D0 W036b0 W<src.p.x> W<src.p.y> B<eval(<src.p.z>+2)> W<eval(<src.p.x>-2)> W<eval(<src.p.y>)> B<eval(<src.p.z>+10+{1 15})> B0 B13 00 00 00 B0 D1158 D2 
+	sector.allclients sendpacket 0c0 00 D0 D0 W036b0 W<src.p.x> W<src.p.y> B<eval(<src.p.z>+2)> W<eval(<src.p.x>)> W<eval(<src.p.y>-2)> B<eval(<src.p.z>+10+{1 15})> B0 B13 00 00 00 B0 D1158 D2 
+
+[FUNCTION RED_SYSMSG]
+SRC.SYSMESSAGE @37 <ARGS>
+
+[FUNCTION GREEN_SYSMSG]
+SRC.SYSMESSAGE @62 <ARGS>
+
+[FUNCTION BLUE_SYSMSG]
+SRC.SYSMESSAGE @90 <ARGS>
+
+
+[EVENTS e_satan]
+ON=@SkillStart
+f_ai_test_correct_item i_hell_burn_npc
+
+ON=@EnvironChange
+f_ai_test_correct_item i_hell_burn_npc
+
+ON=@NPCRestock
+f_ai_test_correct_item i_hell_burn_npc
+
+[FUNCTION F_GET_RANDOM_EXPLOSION]
+RETURN <EVAL {i_fx_explode 1 i_fx_explosion_2 1 036cb 1}>
+
+[FUNCTION safe_send_packet]
+IF (<ISONLINE> && <ISPLAYER>)
+SENDPACKET <ARGS>
+ENDIF
+
+[FUNCTION F_COLORED_EFFECT_GROUND]
+
+///Usage: F_COLORED_EFFECT_GROUND p.x, p.y, p.z, fx_id, frames, color,  rendermode 
+//huedeffect source.uid, target.uid, type, itemid, speed, frames, explode, hue, rendermode
+
+LOCAL.TYPE=2				//0 flying, 1 ligthing, 2 ground based, 3 character based
+LOCAL.ID=<ARGV[3]>
+LOCAL.SPEED=0
+LOCAL.FRAMES=<ARGV[4]>		////max 255
+LOCAL.EXPLOSION=0
+LOCAL.COLOR=<HVAL <ARGV[5]>>
+LOCAL.RENDER.MODE=<ARGV[6]>		///0 standart, 1 invert, 2 transparent
+	
+LOCAL.UID.SRC=<UID>
+LOCAL.P.X.SRC=<ARGV[0]>
+LOCAL.P.Y.SRC=<ARGV[1]>
+LOCAL.P.Z.SRC=<ARGV[2]>
+	
+LOCAL.UID.TARG=<UID>
+LOCAL.P.X.TARG=<ARGV[0]>
+LOCAL.P.Y.TARG=<ARGV[1]>
+LOCAL.P.Z.TARG=<ARGV[2]>
+	
+FORCHARS 20
+SAFE_SEND_PACKET 0C0 <LOCAL.TYPE> D<LOCAL.UID.SRC> D<LOCAL.UID.TARG> W<LOCAL.ID> W<LOCAL.P.X.SRC> W<LOCAL.P.Y.SRC> <HVAL <LOCAL.P.Z.SRC>> W<LOCAL.P.X.TARG> W<LOCAL.P.Y.TARG> <HVAL <LOCAL.P.Z.TARG>> <LOCAL.SPEED> <LOCAL.FRAMES> 00 00 00 <LOCAL.EXPLOSION> D<LOCAL.COLOR> D<LOCAL.RENDER.MODE>
+ENDFOR
+OBJ=
+RETURN 1
+
+
+[FUNCTION f_ai_test_correct_item]
+IF <RESTEST 1 <ARGS>>
+RETURN 0
+ENDIF
+SERV.NEWITEM <ARGS>
+NEW.LINK <UID>
+NEW.CONT <UID>
+NEW.TIMER 1
+RETURN 1
+
+[ITEMDEF i_hell_burn_npc]
+ID=i_fire
+TYPE=t_eq_script
+NAME=Hell Burn
+WEIGHT=0
+
+ON=@Create
+ATTR=attr_invis|attr_decay
+
+ON=@TIMER
+IF <LINK> == 04fffff
+REMOVE
+RETURN 1
+ENDIF
+TIMER 1
+LINK.hell_burn
+RETURN 1
+
+
+[FUNCTION hell_burn]
+LOCAL.COLOR=079c
+LOCAL.RENDER.MODE=3
+SOUND={011f 1 0120 1}
+	
+EFFECT 3, <F_GET_RANDOM_EXPLOSION>, 1, 9, 0, <LOCAL.COLOR>, <LOCAL.RENDER.MODE>
+LOCAL.P.X=<P.X>
+LOCAL.P.Y=<P.Y>
+LOCAL.P.Z=<P.Z>
+F_COLORED_EFFECT_GROUND <EVAL <LOCAL.P.X> + 0>, <EVAL <LOCAL.P.Y> + 0>, <EVAL <LOCAL.P.Z> + 0>, <F_GET_RANDOM_EXPLOSION>, <EVAL RAND(10,30)>, <LOCAL.COLOR>, <LOCAL.RENDER.MODE>
+F_COLORED_EFFECT_GROUND <EVAL <LOCAL.P.X> + 0>, <EVAL <LOCAL.P.Y> + 0>, <EVAL <LOCAL.P.Z> + 5>, <F_GET_RANDOM_EXPLOSION>, <EVAL RAND(10,30)>, <LOCAL.COLOR>, <LOCAL.RENDER.MODE>
+F_COLORED_EFFECT_GROUND <EVAL <LOCAL.P.X> + 1>, <EVAL <LOCAL.P.Y> + 0>, <EVAL <LOCAL.P.Z> + 0>, <F_GET_RANDOM_EXPLOSION>, <EVAL RAND(10,30)>, <LOCAL.COLOR>, <LOCAL.RENDER.MODE>
+F_COLORED_EFFECT_GROUND <EVAL <LOCAL.P.X> + 0>, <EVAL <LOCAL.P.Y> + 1>, <EVAL <LOCAL.P.Z> + 0>, <F_GET_RANDOM_EXPLOSION>, <EVAL RAND(10,30)>, <LOCAL.COLOR>, <LOCAL.RENDER.MODE>
+F_COLORED_EFFECT_GROUND <EVAL <LOCAL.P.X> + 1>, <EVAL <LOCAL.P.Y> + 1>, <EVAL <LOCAL.P.Z> + 0>, <F_GET_RANDOM_EXPLOSION>, <EVAL RAND(10,30)>, <LOCAL.COLOR>, <LOCAL.RENDER.MODE>
+	
+F_COLORED_EFFECT_GROUND <EVAL <LOCAL.P.X> + 0>, <EVAL <LOCAL.P.Y> + 0>, <EVAL <LOCAL.P.Z> + 15>, <F_GET_RANDOM_EXPLOSION>, <EVAL RAND(10,30)>, <LOCAL.COLOR>, <LOCAL.RENDER.MODE>
+F_COLORED_EFFECT_GROUND <EVAL <LOCAL.P.X> + 1>, <EVAL <LOCAL.P.Y> + 0>, <EVAL <LOCAL.P.Z> + 15>, <F_GET_RANDOM_EXPLOSION>, <EVAL RAND(10,30)>, <LOCAL.COLOR>, <LOCAL.RENDER.MODE>
+F_COLORED_EFFECT_GROUND <EVAL <LOCAL.P.X> + 0>, <EVAL <LOCAL.P.Y> + 1>, <EVAL <LOCAL.P.Z> + 15>, <F_GET_RANDOM_EXPLOSION>, <EVAL RAND(10,30)>, <LOCAL.COLOR>, <LOCAL.RENDER.MODE>
+F_COLORED_EFFECT_GROUND <EVAL <LOCAL.P.X> + 1>, <EVAL <LOCAL.P.Y> + 1>, <EVAL <LOCAL.P.Z> + 15>, <F_GET_RANDOM_EXPLOSION>, <EVAL RAND(10,30)>, <LOCAL.COLOR>, <LOCAL.RENDER.MODE>
+EFFECT 2, i_fire, 4, 255, 6, <LOCAL.COLOR>, 2
+	
+LOCAL.COLOR=0839
+LOCAL.RENDER.MODE=5
+F_COLORED_EFFECT_GROUND <EVAL <LOCAL.P.X> + 1>, <EVAL <LOCAL.P.Y> + 1>, <EVAL <LOCAL.P.Z> + 5>, <F_GET_RANDOM_EXPLOSION>, <EVAL RAND(10,30)>, <LOCAL.COLOR>, <LOCAL.RENDER.MODE>
+F_COLORED_EFFECT_GROUND <EVAL <LOCAL.P.X> + 2>, <EVAL <LOCAL.P.Y> + 0>, <EVAL <LOCAL.P.Z> + 0>, <F_GET_RANDOM_EXPLOSION>, <EVAL RAND(10,30)>, <LOCAL.COLOR>, <LOCAL.RENDER.MODE>
+F_COLORED_EFFECT_GROUND <EVAL <LOCAL.P.X> + 2>, <EVAL <LOCAL.P.Y> + 1>, <EVAL <LOCAL.P.Z> + 0>, <F_GET_RANDOM_EXPLOSION>, <EVAL RAND(10,30)>, <LOCAL.COLOR>, <LOCAL.RENDER.MODE>
+F_COLORED_EFFECT_GROUND <EVAL <LOCAL.P.X> + 2>, <EVAL <LOCAL.P.Y> + 2>, <EVAL <LOCAL.P.Z> + 5>, <F_GET_RANDOM_EXPLOSION>, <EVAL RAND(10,30)>, <LOCAL.COLOR>, <LOCAL.RENDER.MODE>
+F_COLORED_EFFECT_GROUND <EVAL <LOCAL.P.X> + 1>, <EVAL <LOCAL.P.Y> + 2>, <EVAL <LOCAL.P.Z> + 0>, <F_GET_RANDOM_EXPLOSION>, <EVAL RAND(10,30)>, <LOCAL.COLOR>, <LOCAL.RENDER.MODE>
+F_COLORED_EFFECT_GROUND <EVAL <LOCAL.P.X> + 0>, <EVAL <LOCAL.P.Y> + 2>, <EVAL <LOCAL.P.Z> + 0>, <F_GET_RANDOM_EXPLOSION>, <EVAL RAND(10,30)>, <LOCAL.COLOR>, <LOCAL.RENDER.MODE>
+F_COLORED_EFFECT_GROUND <EVAL <LOCAL.P.X> - 1>, <EVAL <LOCAL.P.Y> + 2>, <EVAL <LOCAL.P.Z> + 0>, <F_GET_RANDOM_EXPLOSION>, <EVAL RAND(10,30)>, <LOCAL.COLOR>, <LOCAL.RENDER.MODE>
+	
+F_COLORED_EFFECT_GROUND <EVAL <LOCAL.P.X> + 2>, <EVAL <LOCAL.P.Y> - 1>, <EVAL <LOCAL.P.Z> + 0>, <F_GET_RANDOM_EXPLOSION>, <EVAL RAND(10,30)>, <LOCAL.COLOR>, <LOCAL.RENDER.MODE>
+//F_COLORED_EFFECT_GROUND <EVAL <LOCAL.P.X> + 2>, <EVAL <LOCAL.P.Y> - 2>, <EVAL <LOCAL.P.Z> + 0>, <F_GET_RANDOM_EXPLOSION>, <EVAL RAND(10,30)>, <LOCAL.COLOR>, <LOCAL.RENDER.MODE>
+//F_COLORED_EFFECT_GROUND <EVAL <LOCAL.P.X> + 1>, <EVAL <LOCAL.P.Y> - 2>, <EVAL <LOCAL.P.Z> + 0>, <F_GET_RANDOM_EXPLOSION>, <EVAL RAND(10,30)>, <LOCAL.COLOR>, <LOCAL.RENDER.MODE>
+//F_COLORED_EFFECT_GROUND <EVAL <LOCAL.P.X> + 0>, <EVAL <LOCAL.P.Y> - 2>, <EVAL <LOCAL.P.Z> + 0>, <F_GET_RANDOM_EXPLOSION>, <EVAL RAND(10,30)>, <LOCAL.COLOR>, <LOCAL.RENDER.MODE>
+	
+///F_COLORED_EFFECT_GROUND <EVAL <LOCAL.P.X>>, <EVAL <LOCAL.P.Y>>, <EVAL <LOCAL.P.Z>>, i_fire, <EVAL RAND(10,30)>, <LOCAL.COLOR>, <LOCAL.RENDER.MODE>
+RETURN 1
+
+[FUNCTION gmresync]
+SERV.RESYNC
+RETURN 1
+
+[FUNCTION resync]
+SERV.RESYNC
+RETURN 1
+
+[ITEMDEF i_target_tile]
+DEFNAME=i_target_tile
+RESOURCES=25 i_rock_plain
+CATEGORY=Buildings - Floors
+SUBSECTION=Blue Floor
+DESCRIPTION=@
+
+[DEFNAME meteor_swarm_settings]
+MeteorType0_Name=Rock
+MeteorType0_Radius=10
+MeteorType0_FallingID=01363//i_trap_boulder
+MeteorType0_FallingAmount=30
+MeteorType0_FallenID=random_rock
+MeteorType0_DamageType=dam_general|dam_magic
+MeteorType0_DamageAmount=6,25
+
+MeteorType1_Name=Fire
+MeteorType1_Radius=10
+MeteorType1_FallingID=i_fx_fireball
+MeteorType1_FallingAmount=30
+MeteorType1_FallenID={ 0398c 1 03996 1 }
+MeteorType1_DamageType=dam_fire|dam_magic
+MeteorType1_DamageAmount=6,25
+
+MeteorType2_Name=Poison
+MeteorType2_Radius=10
+MeteorType2_FallingID=fx_fireball_yellow
+MeteorType2_FallingAmount=30
+MeteorType2_FallenID={ 03915 1 03920 1 }
+MeteorType2_DamageType=dam_poison|dam_magic
+MeteorType2_DamageAmount=6,25
+
+MeteorType3_Name=Energy
+MeteorType3_Radius=10
+MeteorType3_FallingID=fx_fireball_blue
+MeteorType3_FallingAmount=30
+MeteorType3_FallenID={ 03946 1 03956 1 03967 1 03979 1 }
+MeteorType3_DamageType=dam_energy|dam_magic
+MeteorType3_DamageAmount=6,25
+
+MeteorType4_Name=Blades
+MeteorType4_Radius=10
+MeteorType4_FallingID=037c4
+MeteorType4_FallingAmount=30
+MeteorType4_FallenID={ 08fe 1 08ff 1 0900 1 0901 1 0902 1 0904 1 0907 1 0908 1 090a 1 090b 1 090c 1 0f43 1 0f44 1 0f45 1 0f46 1 0f47 1 0f48 1 0f49 1 0f4a 1 0f4b 1 0f4c 1 0f4d 1 0f4e 1 0f51 1 0f52 1 0f5e 1 0f5f 1 0f60 1 0f61 1 0f62 1 0f63 1 013fa 1 013fb 1 013fe 1 013ff 1 01400 1 01401 1 01402 1 01403 1 01404 1 01405 1 02554 1 02558 1 0255b 1 0255d 1 0255e 1 0255f 1 02560 1 02564 1 02567 1 02570 1 02572 1 02573 1 02574 1 02575 1 02576 1 02577 1 02578 1 02579 1 0257a 1 0257b 1 0257c 1 0257d 1 0257e 1 0257f 1 026ba 1 026bb 1 026bc 1 026bd 1 026be 1 026bf 1 026c0 1 026c1 1 026c4 1 026c5 1 026c6 1 026c7 1 026c8 1 026c9 1 026ca 1 026cb 1 026ce 1 026cf 1 027a2 1 027a4 1 027a7 1 027ed 1 027ef 1 027f2 1 02d20 1 02d21 1 02d22 1 02d23 1 02d27 1 02d28 1 02d29 1 02d2c 1 02d2d 1 02d2e 1 02d2f 1 02d32 1 02d33 1 02d34 1 02d35 1 0406a 1 0406b 1 0406c 1 0406d 1 04071 1 04072 1 04073 1 04074 1 04075 1 04076 1 }
+MeteorType4_DamageType=dam_physical|dam_magic
+MeteorType4_DamageAmount=6,25
+
+MeteorType5_Name=Blood
+MeteorType5_Radius=10
+MeteorType5_FallingID=0122a
+MeteorType5_FallingAmount=30
+MeteorType5_FallenID={ 0122a 1 0122b 1 0122c 1 0122d 1 0122e 1 01cf1 1 01cf2 1 01cf3 1 01cf4 1 01cf5 1 01cf6 1 01cf7 1 01cf8 1 01cf9 1 01cfa 1 01cfb 1 01cfc 1 01cfd 1 01cfe 1 01cff 1 01d00 1 01d01 1 01d02 1 01d03 1 01d04 1 01d05 1 01d06 1 01d07 1 01d08 1 01d09 1 01d0a 1 01d0b 1 01d0c 1 01d0d 1 01d0e 1 01d0f 1 01d10 1 01d11 1 01d12 1 }
+MeteorType5_DamageType=dam_cold|dam_magic
+MeteorType5_DamageAmount=1,5
+
+MeteorType6_Name=Candy
+MeteorType6_Radius=10
+MeteorType6_FallingID=036f4
+MeteorType6_FallingAmount=30
+MeteorType6_FallenID={ i_cake 1 i_candycane_red 1 i_candycane_green 1 i_gingerbreadman 1 i_jellybeans 1 i_lollypop_red 1 i_lollypop_yellow 1 i_lollypop_green 1 i_candy_nougat 1 i_candy_taffy 1 i_candy_wrapped 1 i_cake_2 1 }
+MeteorType6_DamageType=dam_cold|dam_magic
+MeteorType6_DamageAmount=1,5
+
+MeteorType7_Name=Crystal
+MeteorType7_Radius=10
+MeteorType7_FallingID=03660
+MeteorType7_FallingAmount=30
+MeteorType7_FallenID={ 0223b 1 0223c 1 0223d 1 0223e 1 0223f 1 02240 1 02241 1 02242 1 02243 1 02244 1 02245 1 02246 1 02247 1 02248 1 02249 1 }
+MeteorType7_FallenID2={ 02206 1 02207 1 02208 1 02209 1 0220a 1 0220b 1 0220c 1 0220d 1 0220e 1 02210 1 02211 1 02212 1 02213 1 02214 1 02215 1 02216 1 02217 1 02218 1 0221a 1 0221b 1 0221c 1 0221d 1 0221e 1 0221f 1 02220 1 02221 1 02222 1 02224 1 02225 1 02226 1 02227 1 02228 1 02229 1 0222a 1 0222b 1 0222c 1 }
+MeteorType7_DamageType=dam_cold|dam_magic
+MeteorType7_DamageAmount=6,25
+
+MeteorType8_Name=Runes
+MeteorType8_Radius=10
+MeteorType8_FallingID=03789
+MeteorType8_FallingAmount=30
+MeteorType8_FallenID={ 0483b 1 0483e 1 04841 1 04844 1 04847 1 0484a 1 0484d 1 04850 1 04853 1 04856 1 04859 1 0485c 1 0485f 1 04862 1 04865 1 04868 1 0486b 1 0486e 1 04871 1 04871 1 04874 1 04877 1 0487a 1 0487d 1 04880 1 04883 1 }
+MeteorType8_DamageType=dam_magic
+MeteorType8_DamageAmount=10,25
+
+
+[FUNCTION f_meteor_swarm125a]
+SERV.NEWITEM=i_meteor_swarm_timer
+NEW.P=<P>
+NEW.LINK=<UID>
+NEW.TAG.MeteorType=<ARGV[0]>
+IF !(<ISITEM>)
+   ANIM=16
+   NEW.MORE=<DEF.MeteorType<dARGV[0]>_FallingAmount>
+ENDIF
+NEW.TRIGGER @Timer
+
+[ITEMDEF i_meteor_swarm_timer]
+ID=i_rune_meteor_swarm
+NAME=Meteor Swarm Timer
+TYPE=t_eq_script
+ON=@Create
+   COLOR=021
+   ATTR=attr_invis|attr_move_never
+ON=@Click
+   RETURN 1
+ON=@Timer
+   IF !(<MORE>)
+      REMOVE
+      RETURN 1
+   ENDIF
+   f_meteor_fall125a <LINK>,<TAG0.MeteorType>
+   MORE -= 1
+   TIMERD=4
+   RETURN 1
+
+[FUNCTION f_meteor_fall125a]
+LOCAL.FireballID=<DEF.MeteorType<dARGV[1]>_FallingID>
+SERV.NEWITEM=i_target_tile
+NEW.MOVENEAR <UID>,<DEF.MeteorType<dARGV[1]>_Radius>
+NEW.TAG.MeteorType=<ARGV[1]>
+NEW.TYPE=t_meteor_target
+NEW.ATTR=attr_invis|attr_decay|attr_can_decay
+NEW.LINK=<ARGV[0]>
+NEW.TIMERD=6
+
+LOCAL.FromX=<EVAL <NEW.P.X>-4>
+LOCAL.FromY=<EVAL <NEW.P.Y>-7>
+LOCAL.FromZ=<EVAL <NEW.P.Z>+50>
+LOCAL.ToX=<NEW.P.X>
+LOCAL.ToY=<NEW.P.Y>
+LOCAL.ToZ=<NEW.P.Z>
+
+FLEXEFFECT 0,<LOCAL.FireballID>,9,16,0,0,0,4,<dLOCAL.FromX>,<dLOCAL.FromY>,<dLOCAL.FromZ>,<dLOCAL.ToX>,<dLOCAL.ToY>,<dLOCAL.ToZ>,10
+RETURN 1
+
+[TYPEDEF t_meteor_target]
+ON=@Timer
+   SERV.NEWITEM=i_target_tile
+   NEW.TAG.MeteorType=<TAG0.MeteorType>
+   NEW.TYPE=t_meteor_object
+   NEW.ATTR=attr_move_never|attr_decay|attr_can_decay
+   NEW.P=<P>
+   NEW.LINK=<LINK>
+   NEW.MORE1=1
+   NEW.TIMERD=1
+   NEW.f_meteor_swarm125a <TAG0.MeteorType>
+
+   SERV.NEWITEM=<DEF.MeteorType<dTAG0.MeteorType>_fallenID>
+   NEW.TYPE=t_normal
+   NEW.P=<P>
+   NEW.ATTR=attr_decay|attr_can_decay
+   NEW.LINK=<LINK>
+   NEW.TIMER=4
+   NEW.TAG.MeteorType=<LOCAL.MeteorType>
+
+   REMOVE
+   RETURN 1
+
+[TYPEDEF t_meteor_object]
+ON=@Step
+   IF !(<LINK>==<SRC.UID>)
+      LOCAL.DamageFlags=<EVAL <DEF.MeteorType<dTAG0.MeteorType>_DamageType>>
+      LOCAL.DamageAmount=<R<DEF.MeteorType<dTAG0.MeteorType>_DamageAmount>>
+      SERV.LOG Step Damage Amount=<dLOCAL.DamageAmount>
+      SRC.DAMAGE <dLOCAL.DamageAmount> <LOCAL.DamageFlags> <LINK>
+   ENDIF
+ON=@Timer
+   IF (<MORE1>)
+      DORAND 11
+         SOUND=284
+         SOUND=285
+         SOUND=286
+         SOUND=287
+         SOUND=774
+         SOUND=775
+         SOUND=776
+         SOUND=777
+      ENDDO
+      TIMER=2
+      MORE1=0
+      LOCAL.DamageSource=<LINK>
+      FORCHARS 2
+         f_meteor_damage <LOCAL.DamageSource> <TAG0.MeteorType>
+      ENDFOR
+      RETURN 1
+   ENDIF
+   REMOVE
+   RETURN 1
+
+[FUNCTION f_meteor_damage]
+IF !(<ARGV[0]>==<UID>)
+   LOCAL.DamageFlags=<EVAL <DEF.MeteorType<dARGV[1]>_DamageType>>
+   LOCAL.DamageAmount=<R<DEF.MeteorType<dARGV[1]>_DamageAmount>>
+   SERV.LOG Hit Damage Amount=<dLOCAL.DamageAmount>
+   SRC.DAMAGE <LOCAL.DamageAmount> <LOCAL.DamageFlags> <ARGV[0]>
+ENDIF
+
+[FUNCTION flexeffect]
+FORCHARS <ARGV[14]>
+   IF !(<BRAIN>)
+      SENDPACKET 0c0 <argv[0]> d0 d0 w<argv[1]> w<argv[8]> w<argv[9]> <argv[10]> w<argv[11]> w<argv[12]> <argv[13]> <argv[2]> <argv[3]> w0 <argv[6]> <argv[4]> d<argv[5]> d<argv[7]>
+   ENDIF
+ENDFOR
+
+//Saving Dialog
+
+[DIALOG D_SAVING_DLG]
+180,340
+noclose
+nomove
+
+PAGE 0
+resizepic 10 10 5120 280 100
+checkertrans 10 10 280 100
+tilepic 30 30 4168
+dtext 80 25 55 The game is being saved...
+dtext 80 45 55 This process may take
+dtext 80 65 55 sometime.
+
+[FUNCTION CLOSESAVINGDLG]
+TRYSRC <UID> SRC.DIALOGCLOSE D_SAVING_DLG
+
+
+//Monsters scripted, need correct HP/skills, events & functions
+//Quest Givers need quest functions with gumps - All 52 speeches are done
+//@DEATH fire function needs to be done
+
+////Events
+
+///Diminishing Poison - Poison works once, then monster becomes invul for 5 minutes
+
+[EVENTS e_diminishing_poison]
+ON=@GETHIT
+IF (<ARGN2> & dam_poison)
+//IF (<tag0.poison_resist> >= 100)
+FLAGS &= ~statf_poisoned
+findid.i_rune_poison.remove
+SRC.SYSMESSAGE @0482 <name> has become immune to poison.
+ENDIF
+local.poisoned=<eval {3 5}>
+tag0.poison_resist += <local.poisoned>
+timerf 300,tag0.poison_resist -= <local.poisoned>
+ARGN1 -= <eval ((<tag0.poison_resist>*<argn1>)/100)>
+ENDIF
+
+///Evil Curse - Once monster hits are lower than 350, tanker HP goes to 1
+
+[EVENTS e_evil_curse]
+ON=@GETHIT
+IF <HITS> < 350
+SRC.NEWITEM=i_curse_timer
+SRC.ACT.BOUNCE
+SRC.ACT.EQUIP
+SOUND=496
+EVENTS=-e_evil_curse
+SAY In Jux Xen
+Return 0
+ENDIF
+
+[ITEMDEF i_curse_timer]
+NAME=Delay Teleport
+ID=i_handr_1
+TYPE=T_EQ_SCRIPT
+
+ON=@Create
+ATTR=attr_invis|attr_decay
+MORE1=5 
+
+ON=@Equip
+TIMER=1
+
+ON=@Timer
+IF ( <CONT> )
+IF ( <MORE1> )
+CONT.SAY <MORE1>
+MORE1 -= 1
+TIMER=1
+RETURN 1
+ELSE
+CONT.EMOTE Get Horribly Cursed
+SOUND=531
+CONT.HITS=1
+REMOVE
+ENDIF
+REMOVE
+RETURN 1
+
+///Resist Arrows
+
+[EVENTS e_resist_arrows]
+ON=@GetHit
+IF (<ARGN2> == 08001)
+RETURN 0
+ELSEIF (<SRC.ACTION> == Skill_Archery)
+DAMAGE (<ARGN1>/3) 08001 <SRC.UID>
+RETURN 1
+ENDIF
+RETURN 0
+
+///Resist Blade
+
+[EVENTS e_resist_swords]
+ON=@GetHit
+IF (<ARGN2> == 04001)
+RETURN 0
+ELSEIF (<SRC.ACTION> == Skill_Swordsmanship)
+DAMAGE (<ARGN1>/3) 04001 <SRC.UID>
+RETURN 1
+ENDIF
+RETURN 0
+
+///Resist Blunt
+
+[EVENTS e_resist_mace]
+ON=@GetHit
+IF (<ARGN2> == 04001)
+RETURN 0
+ELSEIF (<SRC.ACTION> == Skill_Macefighting)
+DAMAGE (<ARGN1>/3) 04001 <SRC.UID>
+RETURN 1
+ENDIF
+RETURN 0
+
+///Resist Fencing
+
+[EVENTS e_resist_fence]
+ON=@GetHit
+IF (<ARGN2> == 04001)
+RETURN 0
+ELSEIF (<SRC.ACTION> == Skill_Fencing)
+DAMAGE (<ARGN1>/3) 04001 <SRC.UID>
+RETURN 1
+ENDIF
+RETURN 0
+
+///Resist Unarmed
+
+[EVENTS e_resist_punch]
+ON=@GetHit
+IF (<ARGN2> == 04001)
+RETURN 0
+ELSEIF (<SRC.ACTION> == Skill_Wrestling)
+DAMAGE (<ARGN1>/3) 04001 <SRC.UID>
+RETURN 1
+ENDIF
+RETURN 0
+
+///Resist Magery
+
+[EVENTS e_resist_magic]
+ON=@GetHit
+IF (<ARGN2> == 04001)
+RETURN 0
+ELSEIF (<SRC.ACTION> == Skill_Magery)
+DAMAGE (<ARGN1>/3) 04001 <SRC.UID>
+RETURN 1
+ENDIF
+RETURN 0
+
+///Resist Any Physical Damage
+
+[EVENTS e_resist_physical]
+ON=@GetHit
+IF (<ARGN2> == 04001)
+RETURN 0
+ELSEIF (<hval (<ARGN2>)> &0002)
+DAMAGE (<ARGN1>/3) 04001 <SRC.UID>
+RETURN 1
+ENDIF
+RETURN 0
+
+[EVENTS e_resist_poison]
+ON=@SPELLEFFECT
+IF ((<ARGN> == 20) || (<ARGN> == 39))
+EMOTE absorbing the spell
+RETURN 1
+ENDIF
+
+[EVENTS e_fire_resistance]
+ON=@SPELLEFFECT
+IF (<ARGN1> == 28) || (<ARGN1> == 05) || (<ARGN1> == 18) || (<ARGN1> == 43) || (<ARGN1> == 51)
+EMOTE absorbing the spell
+RETURN 1
+
+////Functions
+
+///Poison All players in 10 tiles distance - weak effect
+
+[FUNCTION poison_all_weak]
+FORCHARS 10
+IF (<UID>!=<SRC>)
+EFFECT 3, i_fx_smoke, 1, 12, 0, 004f5
+SPELLEFFECT S_POISON 500,1,<uid>
+ENDIF
+ENDFOR
+
+///Poison All players in 10 tiles distance - strong effect
+
+[FUNCTION poison_all_strong]
+FORCHARS 10
+IF (<UID>!=<SRC>)
+EFFECT 3, i_fx_smoke, 1, 12, 0, 004f5
+SPELLEFFECT S_POISON 5000,1,<uid>
+ENDIF
+ENDFOR
+
+///Flamestrike All players in 10 tiles distance
+
+[FUNCTION flamestike_all]
+FORCHARS 10 //loop through all chars in 10 tiles distance
+IF (<UID>!=<SRC>)
+EFFECT 3, i_fire_column, 1, 12, 0, 004f5
+SPELLEFFECT S_FLAMESTRIKE 1000,1,<uid>
+ENDIF
+ENDFOR
+
+///Earthquake All players in 10 tiles distance
+
+[FUNCTION cast_earthquake]
+IF ( <DISTANCE> > 10 )
+RETURN 0
+ENDIF
+SYSMESSAGE @79c You feel the ground of hell cracking…
+LOCAL.DAM=<EVAL( { 10 20 } )>
+IF ( <HITS> < <LOCAL.DAM> )
+HITS=0
+ELSE
+HITS=<eval (<HITS> - <LOCAL.DAM>)>
+ENDIF
+
+///Ice Winds Effect
+
+[function ef_ice_winds]
+effect 3,i_fx_sparkle,0,16,0,07a1,5
+sector.allclients sendpacket 0c0 00 D0 D0 W0375a W<src.p.x> W<src.p.y> B<eval(<src.p.z>+2)> W<eval(<src.p.x>+4)> W<eval(<src.p.y>)> B<eval(<src.p.z>+10+{1 15})> B0 B16 00 00 00 B0 D07a1 D5
+sector.allclients sendpacket 0c0 00 D0 D0 W0375a W<src.p.x> W<src.p.y> B<eval(<src.p.z>+2)> W<eval(<src.p.x>)> W<eval(<src.p.y>+4)> B<eval(<src.p.z>+10+{1 15})> B0 B16 00 00 00 B0 D07a1 D5
+sector.allclients sendpacket 0c0 00 D0 D0 W0375a W<src.p.x> W<src.p.y> B<eval(<src.p.z>+2)> W<eval(<src.p.x>-2)> W<eval(<src.p.y>)> B<eval(<src.p.z>+10+{1 15})> B0 B16 00 00 00 B0 D07a1 D5
+sector.allclients sendpacket 0c0 00 D0 D0 W0375a W<src.p.x> W<src.p.y> B<eval(<src.p.z>+2)> W<eval(<src.p.x>)> W<eval(<src.p.y>-2)> B<eval(<src.p.z>+10+{1 15})> B0 B16 00 00 00 B0 D07a1 D5
+
+///Spirits Effect
+
+[function ef_spirits]
+sector.allclients sendpacket 0c0 00 D0 D0 W036d4 W<src.p.x> W<src.p.y> B<eval(<src.p.z>+9)> W<eval(<src.p.x>+4)> W<eval(<src.p.y>)> B<eval(<src.p.z>+10+{1 15})> B0 B13 00 00 00 B0 D1152 D5
+sector.allclients sendpacket 0c0 00 D0 D0 W036d4 W<src.p.x> W<src.p.y> B<eval(<src.p.z>+9)> W<eval(<src.p.x>)> W<eval(<src.p.y>+4)> B<eval(<src.p.z>+10+{1 15})> B0 B13 00 00 00 B0 D1152 D5
+sector.allclients sendpacket 0c0 00 D0 D0 W036d4 W<src.p.x> W<src.p.y> B<eval(<src.p.z>+9)> W<eval(<src.p.x>-2)> W<eval(<src.p.y>)> B<eval(<src.p.z>+10+{1 15})> B0 B13 00 00 00 B0 D1152 D5
+sector.allclients sendpacket 0c0 00 D0 D0 W036d4 W<src.p.x> W<src.p.y> B<eval(<src.p.z>+9)> W<eval(<src.p.x>)> W<eval(<src.p.y>-2)> B<eval(<src.p.z>+10+{1 15})> B0 B13 00 00 00 B0 D1152 D5
+
+
+
+///Lastest News and Join us Stone
+
+[ITEMDEF i_rayannounce_stone]
+Name=Updates Every 45 Minutes DO NOT REMOVE
+ID=i_guildstone
+Type=t_script
+
+On=@Create
+COLOR=0799
+ATTR=010
+TIMER=1800
+
+ON=@TIMER
+SERV.ALLCLIENTS SYSMESSAGE @55,3,1 Check the latest news from The Imperial Uo
+//SERV.ALLCLIENTS SYSMESSAGE @55,3,1 using '.updates' or by accessing our forums! 
+SERV.ALLCLIENTS SYSMESSAGE @55,3,1 www.imperialuo.com/forums/ - Don't hesitate to join us!
+TIMER=1800
+RETURN 1
+
+//////////Monsters
+
+[CHARDEF c_hellquest_archer]
+ID=C_MAN
+NAME=Hell Archer
+SOUND=snd_HUMAN_M_DIE_01
+ARMOR=45
+CAN=MT_WALK|MT_RUN|MT_FIRE_IMMUNE|MT_USEHANDS|MT_EQUIP
+
+
+CATEGORY=Imperial uo
+SUBSECTION=Hell Quest Monsters
+DESCRIPTION=Hell Archer
+
+ON=@Create
+COLOR=1
+STR={250 300}
+DEX={80 90}
+INT={71 85}
+NPC=brain_monster
+PARRYING={75.0 80.0}
+ARCHERY={60.0 82.0}
+MAGICRESISTANCE={65.0 88.0}
+TACTICS={60.0 80.0}
+ANATOMY={60.0 80.0}
+DETECTION={40.0 50.0}
+FAME={100 200}
+KARMA={-4000 -4999}
+
+ITEMNEWBIE=random_male_hair
+COLOR=0799
+ITEMNEWBIE=i_ringmail_tunic_blackrock
+COLOR=0799
+ITEMNEWBIE=i_ringmail_gloves_blackrock
+COLOR=0799
+ITEMNEWBIE=i_ringmail_sleeves_blackrock
+COLOR=0799
+ITEMNEWBIE=i_ringmail_leggings_blackrock
+ITEMNEWBIE=i_boots_calf
+ITEMNEWBIE=i_bow_composite
+ITEMNEWBIE=i_cape
+COLOR=0799
+ITEMNEWBIE=i_sash
+COLOR=0799
+KARMA={-3500 -4999}
+
+ON=@NpcRestock
+ITEM= i_arrow,{20 45}
+ITEM= i_gold, {200 400}
+
+ON=@NPCSeeNewPlayer
+SAY You stand no chance here, human!
+ATTACK
+RETURN 1
+
+
+[CHARDEF c_hellquest_warrior]
+ID=C_MAN
+NAME=Hell Warrior
+SOUND=snd_HUMAN_M_DIE_01
+ARMOR=60
+CAN=MT_WALK|MT_RUN|MT_FIRE_IMMUNE|MT_USEHANDS|MT_EQUIP
+
+CATEGORY=Imperial uo
+SUBSECTION=Hell Quest Monsters
+DESCRIPTION=Hell Warrior
+
+ON=@Create
+COLOR=1
+STR={250 300}
+DEX= {80 110}
+INT={71 85}
+NPC=brain_monster
+PARRYING={75.0 80.0}
+SWORDSMANSHIP={80.0 90.0}
+MACEFIGHTING={80.0 90.0}
+FENCING={80.0 90.0}
+WRESTLING={87.0 90.0}
+MAGICRESISTANCE={65.0 88.0}
+TACTICS={80.0 90.0}
+DETECTION={40.0 50.0}
+ANATOMY={70.0 90.0}
+FAME=3000
+KARMA={-3500 -4999}
+
+ITEMNEWBIE=random_male_hair
+COLOR=0799
+ITEMNEWBIE={i_ringmail_gloves_blackrock 1 i_platemail_gloves_blackrock 1}
+COLOR=0799
+ITEMNEWBIE={i_chainmail_coif_blackrock 1 i_platemail_helm_blackrock 1}
+COLOR=0799
+ITEMNEWBIE={i_ringmail_sleeves_blackrock 1 i_platemail_arms_blackrock 1}
+COLOR=0799
+ITEMNEWBIE=i_platemail_gorget_blackrock
+COLOR=0799
+ITEMNEWBIE={i_chainmail_tunic_blackrock 1 i_platemail_chest_blackrock 1}
+COLOR=0799
+ITEMNEWBIE={i_chainmail_leggings_blackrock 1 i_platemail_leggings_blackrock 1}
+COLOR=0799
+ITEMNEWBIE=i_halberd_blackrock
+COLOR=0799
+ITEMNEWBIE=i_CAPE
+COLOR=0799
+ITEMNEWBIE=i_SASH
+COLOR=1
+
+ON=@NpcRestock
+ITEM= i_gold, {200 400}
+
+ON=@NPCSeeNewPlayer
+SAY Trespassers MUST DIE!
+ATTACK
+RETURN 1
+
+
+[CHARDEF c_hellquest_knight]
+ID=C_MAN
+NAME=Hell Knight
+SOUND=snd_HUMAN_M_DIE_01
+ARMOR=60
+CAN=MT_WALK|MT_RUN|MT_FIRE_IMMUNE|MT_USEHANDS|MT_EQUIP
+
+CATEGORY=Imperial uo
+SUBSECTION=Hell Quest Monsters
+DESCRIPTION=Hell Knight
+
+ON=@Create
+COLOR=1
+STR={250 300}
+DEX= {80 110}
+INT={71 85}
+NPC=brain_monster
+PARRYING={75.0 80.0}
+SWORDSMANSHIP={80.0 90.0}
+MACEFIGHTING={80.0 90.0}
+FENCING={80.0 90.0}
+WRESTLING={87.0 90.0}
+MAGICRESISTANCE={65.0 88.0}
+TACTICS={80.0 90.0}
+DETECTION={40.0 50.0}
+ANATOMY={70.0 90.0}
+FAME=3000
+KARMA={-3500 -4999}
+
+ITEMNEWBIE=random_male_hair
+COLOR=0799
+ITEMNEWBIE={i_ringmail_gloves_blackrock 1 i_platemail_gloves_blackrock 1}
+COLOR=0799
+ITEMNEWBIE={i_chainmail_coif_blackrock 1 i_platemail_helm_blackrock 1}
+COLOR=0799
+ITEMNEWBIE={i_ringmail_sleeves_blackrock 1 i_platemail_arms_blackrock 1}
+COLOR=0799
+ITEMNEWBIE=i_platemail_gorget_blackrock
+COLOR=0799
+ITEMNEWBIE={i_chainmail_tunic_blackrock 1 i_platemail_chest_blackrock 1}
+COLOR=0799
+ITEMNEWBIE={i_chainmail_leggings_blackrock 1 i_platemail_leggings_blackrock 1}
+COLOR=0799
+ITEMNEWBIE={i_sword_long_b_blackrock 1  i_mace_war_blackrock 1}
+COLOR=0799
+ITEMNEWBIE={i_shield_round_blackrock 1  i_shield_heater_blackrock 1}
+COLOR=0799
+ITEMNEWBIE=i_CAPE
+COLOR=0799
+ITEMNEWBIE=i_SASH
+COLOR=1
+
+ON=@NpcRestock
+ITEM= i_gold, {200 400}
+ITEM=i_mt_ostard_desert
+COLOR=0799
+
+ON=@NPCSeeNewPlayer
+SAY Trespassers MUST DIE!
+ATTACK
+RETURN 1
+
+[CHARDEF c_hellquest_hellfire_beast]
+ID=c_arcane_daemon
+NAME=Hellfire Beast
+SOUND=snd_monster_dragon1
+ICON=i_pet_arcanedaemon
+DAM=23,31
+RESDISPDNID=c_man
+RESLEVEL=2
+RESDISPDNHUE=33
+ARMOR=30
+CAN=MT_WALK|MT_FLY|MT_RUN
+MOVERATE=45
+CATEGORY=Imperial uo
+SUBSECTION=Hell Quest Monsters
+DESCRIPTION=Hellfire Beast
+
+ON=@Create
+NPC=brain_monster
+COLOR=0799
+FAME={100 3000}
+KARMA={-5000 -6999}
+STR={131 150}
+MAXHITS={101 115}
+INT={301 350}
+DEX={126 145}
+MAGICRESISTANCE={85.0 95.0}
+TACTICS={70.0 80.0}
+WRESTLING={60.0 80.0}
+MAGERY={80.0 90.0}
+EVALUATINGINTEL={70.0 80.0}
+MEDITATION={70.0 80.0}
+
+ON=@NpcRestock
+ITEM=i_gold,{295 345}
+
+
+[CHARDEF c_hellquest_hell_destroyer]
+ID=c_bog_thing
+NAME=Hell Destroyer
+SOUND=snd_monster_corpsr1
+ICON=i_pet_bogthing
+ARMOR=35
+DAM=40,95
+CAN=MT_WALK|MT_USEHANDS|MT_EQUIP|MT_RUN
+RESDISPDNID=c_man
+RESLEVEL=2
+RESDISPDNHUE=0ad
+CATEGORY=Imperial uo
+SUBSECTION=Hell Quest Monsters
+DESCRIPTION=Hell Destroyer
+
+ON=@Create
+COLOR=0799
+NPC=brain_monster
+FAME={100 3000}
+KARMA={-5000 -6999}
+STR={801 900}
+MAXHITS={481 540}
+INT={36 50}
+DEX={46 65}
+MAGICRESISTANCE={90.0 95.0}
+TACTICS={70.1 85.0}
+WRESTLING={65.0 80.0}
+
+ON=@NpcRestock
+ITEM=i_gold,{200 300}
+
+[CHARDEF c_hellquest_hell_keeper]
+ID=c_bogling
+NAME=Hell Keeper
+SOUND=snd_monster_headls1
+ICON=i_pet_bogling
+DAM=8,12
+RESDISPDNID=c_man
+RESLEVEL=2
+RESDISPDNHUE=0ad
+ARMOR=25
+CAN=MT_WALK|MT_RUN
+CATEGORY=Imperial uo
+SUBSECTION=Hell Quest Monsters
+DESCRIPTION=Hell Keeper
+
+ON=@Create 
+NPC=brain_monster
+COLOR=0799
+FAME=450
+KARMA={-450}
+STR={160 320}
+MAXHITS={58 72}
+INT={21 45}
+DEX={91 115} 
+MAGICRESISTANCE={75.0 100.0}
+TACTICS={55.1 80.0}
+WRESTLING={55.0 105.0}
+
+ON=@NpcRestock
+ITEM=random_jewel,{1 2}
+ITEM=i_gold,{85 145}
+
+
+[CHARDEF c_hellquest_hell_lord]
+ID=c_yamandon
+NAME=Hell Lord
+ICON=i_pet_yamandon
+ARMOR=18
+SOUND=snd_yomotsu
+CAN=MT_WALK|MT_RUN
+DAM=14,40
+RESDISPDNID=c_man
+RESLEVEL=3
+RESDISPDNHUE=33
+CATEGORY=Imperial uo
+SUBSECTION=Hell Quest Monsters
+DESCRIPTION=Hell Lord
+
+ON=@CREATE
+NPC=brain_monster
+COLOR=0799
+Str={285 330}
+MAXHITS={950 1100}
+Dex={50 65}
+Int={100 120}
+MagicResistance={115.0 135.0}
+Tactics={115.0 135.0}
+Wrestling={110.0 135.0}
+Poisoning={120.0 140.0}
+FAME=2000
+KARMA=-5000
+
+[CHARDEF c_hellquest_angel_death] 
+ID=c_destroyer_gargoyle
+name=Angel of Death
+SOUND=snd_monster_gargyl1
+ICON=i_pet_GARG
+ARMOR=50
+DAM=31,64
+CAN=MT_WALK|MT_USEHANDS|MT_EQUIP|MT_FLY|MT_RUN
+RESDISPDNID=c_man
+RESLEVEL=2
+RESDISPDNHUE=0ad
+CATEGORY=Imperial uo
+SUBSECTION=Hell Quest Monsters
+DESCRIPTION=Angel of Death
+
+ON=@Create 
+NPC=brain_monster
+COLOR=0799
+FAME=8000
+KARMA=-8000
+STR={1760 2850}
+MAXHITS=3000
+INT={152 200}
+DEX={102 150}
+MAGICRESISTANCE={120.0 160.0}
+MAGERY={91.0 100.0}
+EVALUATINGINTEL={91.0 100.0}
+MEDITATION={91.0 100.0}
+TACTICS={90.0 100.0}
+WRESTLING={90.0 100.0}
+ANATOMY={50.0 100.0}
+ITEMNEWBIE=i_spellbook
+ADDCIRCLE 8,1
+
+ON=@NpcRestock
+ITEM=i_gold,{750 950}
+ITEM=random_scroll
+ITEM=random_scroll
+
+
+[CHARDEF c_hellquest_hell_dragon]
+ID=c_ancient_wyrm
+NAME=Hell Dragon
+SOUND=snd_monster_dragon1
+ICON=i_pet_dragon
+TEVENTS=e_npc_dragon
+DAM=35,55
+RESDISPDNID=c_dragon_red
+RESLEVEL=2
+RESDISPDNHUE=78
+ARMOR=20
+CAN=MT_USEHANDS|MT_WALK|MT_FLY|MT_RUN
+CATEGORY=Imperial uo
+SUBSECTION=Hell Quest Monsters
+DESCRIPTION=Hell Dragon
+
+ON=@Create 
+NPC=brain_monster
+FAME={7000 9000} 
+KARMA={-5000 -6999} 
+STR={700 900}
+MAXHITS={1250 1400}
+INT=550
+DEX={40 90} 
+TAG.SCREECH.CHANCE.GOOD=1
+MAGICRESISTANCE={100.0 150.0}
+TACTICS={107.0 120.0}
+WRESTLING={107.0 120.0}
+MAGERY={90.0 100.0}
+EVALUATINGINTEL=100.0
+ITEMNEWBIE=i_spellbook
+ADDCIRCLE 8,1
+
+ON=@NpcRestock
+ITEM=random_jewel, {1 4}, R2
+ITEM=i_gold,{2095 2345}
+
+
+[CHARDEF c_hellquest_satan]
+DEFNAME=c_hellquest_satan
+ID=c_chief_paroxysmus
+NAME=Satan
+SOUND=snd_monster_daemon1
+ICON=i_worldgem_bit
+RESLEVEL=5
+RESDISPDNHUE=33
+RESDISPDNID=c_man
+DAM=4,20
+ARMOR=30
+RESOURCES=15 i_ribs_raw
+CAN=MT_WALK|MT_RUN|MT_FIRE_IMMUNE|MT_USEHANDS|MT_EQUIP
+
+TEVENTS=e_satan
+
+CATEGORY=Imperial uo
+SUBSECTION=Hell Quest Monsters
+DESCRIPTION=Satan
+
+ON=@Create
+COLOR=0799
+NPC=brain_monster
+FAME={100 3000}
+KARMA={-5000 -6999}
+STR={80 100}
+MAXHITS=500
+INT={100 200}
+DEX={50 100}
+PARRYING={60.0 95.0}
+MAGICRESISTANCE={50.0 70.0}
+MAGERY={60.0 75.0}
+TACTICS={60.0 90.0}
+WRESTLING={60.0 90.0}
+
+ON=@NpcRestock
+	ITEM=random_jewel,{1 4}
+	ITEM=i_gold,{80 130}
+
+ON=@GETHIT
+IF (<SRC.FINDLAYER(LAYER_HAND1).TDATA1>==mat_skargard)
+IF (RAND(5) == 1)
+EMOTE ITS WORKING
+HITS=<EVAL (<HITS> - 120)> 
+ef_ice_winds
+ENDIF         
+RETURN 1
+
+///Quest Givers
+
+[CHARDEF c_hellquest_questgiver]
+ID=c_man
+NAME=The Elder Mage
+CAN=MT_WALK|MT_RUN
+TSPEECH=spk_hell_quest
+
+CATEGORY=Imperial uo
+SUBSECTION=Hell Quest Monsters
+DESCRIPTION=The Elder Mage
+
+On=@Create 
+COLOR=07b5
+FLAGS=statf_invul|statf_freeze
+STR=1000
+DEX=1000
+INT=1000
+KARMA=10000
+ITEMNEWBIE=random_shoes
+COLOR=002
+ITEMNEWBIE=i_robe_gatemaster
+COLOR=002
+NAME=Wisdom Robe
+ITEMNEWBIE=i_staff_black_myst
+
+
+[SPEECH spk_hell_quest] 
+ON=*hi* 
+ON=*hello* 
+ON=*hail* 
+ON=*greeting* 
+ON=*sup* 
+ON=*mage*
+SAY Greetings adventurer.
+SRC.SYSMESSAGE @021 Nothing here ATM.  
+RETURN 1
+ENDIF
+
+
+
+
+[DIALOG d_hellquest_riddle42]
+0,0
+page 0
+resizepic 50 50 1228 400 300
+htmlgump 20 60 390 220 2 1 1
+text 125 55 0 0
+text 115 100 4 1
+text 115 125 4 2
+text 115 150 4 3
+text 115 175 4 4
+text 115 200 4 5
+button 240 280 4023 4025 1 0 0
+
+[DIALOG d_hellquest_riddle42 TEXT]
+Riddle 42
+Let's see...
+'The purest potion an alchemist can make...'
+What could it be?
+Any ideas? See you soon.
+
+
+
+
+
+[EOF]

@@ -1,0 +1,1467 @@
+[ITEMDEF i_book_armor_28]
+NAME	= Armor and Weapon Storage Book
+ID	= i_book_of_truth
+TYPE	= t_script
+WEIGHT  = 1
+DYE     = 1
+VALUE	= 14000
+RESOURCES = 1 i_hide, 1 i_thread, 10 i_scroll_blank, 1 i_scribe_powder
+SKILLMAKE=INSCRIPTION 90.0, ANIMALLORE 50.0, t_scribe_tools
+
+ON=@Create
+  COLOR	= 0
+  TAG.USESLOT=1
+  TAG.SLOTNUM=1
+  
+ON=@DClick
+  //Can't use if you don't have it in your pack
+  IF !(<CONT>==<SRC.FINDLAYER.21.UID>)
+     SRC.SYSMESSAGE You must have it in your pack to use it.
+     RETURN 1
+  ENDIF
+
+  DIALOG	d_AR_book
+
+  RETURN 1
+
+ON=@TARGON_ITEM
+   //Can't use if you don't have it in your pack
+   IF !(<CONT>==<SRC.FINDLAYER.21.UID>)
+      SRC.SYSMESSAGE You must have it in your pack to use it.
+      RETURN 1
+   ENDIF
+
+   //Remove AR that was targeted and add to the book
+   IF !(<SRC.TARG.CONT>==<SRC.FINDLAYER.21.UID>)
+      IF !(<SRC.TARG.CONT>==<SRC.FINDLAYER.29.UID>)
+         SRC.SYSMESSAGE You must have it in your pack or your bank to add it to the book.
+         RETURN 1
+      ENDIF
+   ENDIF
+
+   IF ( <SRC.TARG.ATTR> & attr_newbie )
+     SRC.SYSMESSAGE You cannot book newbied items at this time.
+     RETURN 1
+   ENDIF
+
+   IF ((<SRC.TARG.TYPE>=T_ARMOR) || (<SRC.TARG.TYPE>=T_SHIELD) || (<SRC.TARG.TYPE>=T_WEAPON_FENCE) || (<SRC.TARG.TYPE>=T_WEAPON_SWORD) || (<SRC.TARG.TYPE>=T_WEAPON_MACE_SHARP) || (<SRC.TARG.TYPE>=T_WEAPON_MACE_STAFF) || (<SRC.TARG.TYPE>=T_WEAPON_BOW) || (<SRC.TARG.TYPE>=T_WEAPON_AXE) || (<SRC.TARG.TYPE>=T_WEAPON_XBOW) || (<SRC.TARG.TYPE>=T_WEAPON_MACE_SMITH) || (<SRC.TARG.TYPE>=T_WEAPON_MACE_CROOK) || (<SRC.TARG.TYPE>=T_ARMOR_LEATHER))
+      TRYP 0 TAG.AR<EVAL 0<TAG.USESLOT>>_NAME=<SRC.TARG.NAME>
+      TRYP 0 TAG.AR<EVAL 0<TAG.USESLOT>>_ID=<SRC.TARG.BASEID>
+      TRYP 0 TAG.AR<EVAL 0<TAG.USESLOT>>_CLR=<SRC.TARG.COLOR>
+      TRYP 0 TAG.AR<EVAL 0<TAG.USESLOT>>_QUAL=<SRC.TARG.QUALITY>
+      TRYP 0 TAG.AR<EVAL 0<TAG.USESLOT>>_MOREM=<SRC.TARG.MOREM>
+      TRYP 0 TAG.AR<EVAL 0<TAG.USESLOT>>_MOREP=<SRC.TARG.MOREP>
+      TRYP 0 TAG.AR<EVAL 0<TAG.USESLOT>>_MORE1=<SRC.TARG.MORE1>
+      SRC.TARG.REMOVE
+   ELSE
+      SRC.SYSMESSAGE That does not appear to be a piece of armor or a weapon.
+      RETURN 1
+   ENDIF
+      
+   IF (<EVAL 0<TAG.USESLOT>> < 15)
+      DIALOG d_AR_book 1
+   ELSE
+      DIALOG d_AR_book 2
+   ENDIF
+   RETURN 1
+
+ON=@TARGON_CHAR
+   SRC.SYSMESSAGE Only piece of armor can be added to this book.
+   RETURN 1
+
+
+CATEGORY=Items by Professions
+SUBSECTION=Scribe
+DESCRIPTION=4-Set Armor Storage Book
+
+
+[FUNCTION DEFINE_QUAL_WORD]
+IF <EVAL (<EVAL 0<TAG.AR<args>_QUAL>> < 70)>
+   LOCAL.QUAL_WORD = None
+ELSEIF <EVAL (<EVAL 0<TAG.AR<args>_QUAL>> < 100)>
+   LOCAL.QUAL_WORD = Fine
+ELSEIF <EVAL (<EVAL 0<TAG.AR<args>_QUAL>> < 150)>
+   LOCAL.QUAL_WORD = Superior
+ELSEIF <EVAL (<EVAL 0<TAG.AR<args>_QUAL>> < 199)>
+   LOCAL.QUAL_WORD = Superb
+ELSE
+   LOCAL.QUAL_WORD = Exceptional
+ENDIF
+RETURN <LOCAL.QUAL_WORD>
+
+[FUNCTION DEFINE_JEWEL_INFO]
+IF <EVAL(<EVAL <TAG.AR<args>_MOREM>> = 0)>
+     VAR.JEWEL_INFO = No
+  ELSE
+     VAR.JEWEL_INFO = Yes
+  ENDIF
+RETURN 1
+
+[FUNCTION DEFINE_NAMED_COLOR]
+IF (0<TAG.AR<args>_CLR>=0484)
+   LOCAL.COLOR_NAME = Snow
+ELSEIF (0<TAG.AR<args>_CLR>=09e1)
+   LOCAL.COLOR_NAME = Snow
+ELSEIF (0<TAG.AR<args>_CLR>=07b5) 
+   LOCAL.COLOR_NAME = Mytheril
+ELSEIF (0<TAG.AR<args>_CLR>=07a1) 
+   LOCAL.COLOR_NAME = Stronghold
+ELSEIF (0<TAG.AR<args>_CLR>=07ad) 
+   LOCAL.COLOR_NAME = Sun
+ELSEIF (0<TAG.AR<args>_CLR>=0798) 
+   LOCAL.COLOR_NAME = Gold
+ELSEIF (0<TAG.AR<args>_CLR>=079a) 
+   LOCAL.COLOR_NAME = Butterscotch
+ELSEIF (0<TAG.AR<args>_CLR>=0785) 
+   LOCAL.COLOR_NAME = Fire [Reward]
+ELSEIF (0<TAG.AR<args>_CLR>=0afe) 
+   LOCAL.COLOR_NAME = Fire [Reward]
+ELSEIF (0<TAG.AR<args>_CLR>=0783) 
+   LOCAL.COLOR_NAME = Jupiter
+ELSEIF (0<TAG.AR<args>_CLR>=079c) 
+   LOCAL.COLOR_NAME = War
+ELSEIF (0<TAG.AR<args>_CLR>=04c2) 
+   LOCAL.COLOR_NAME = Maroon
+ELSEIF (0<TAG.AR<args>_CLR>=0af7
+   LOCAL.COLOR_NAME = Maroon
+ELSEIF (0<TAG.AR<args>_CLR>=0491) 
+   LOCAL.COLOR_NAME = Neon Green
+ELSEIF (0<TAG.AR<args>_CLR>=0795) 
+   LOCAL.COLOR_NAME = Jungle Green
+ELSEIF (0<TAG.AR<args>_CLR>=0488) 
+   LOCAL.COLOR_NAME = Bronze
+ELSEIF (0<TAG.AR<args>_CLR>=079e) 
+   LOCAL.COLOR_NAME = Dark Chocolate
+ELSEIF (0<TAG.AR<args>_CLR>=079b) 
+   LOCAL.COLOR_NAME = Verminard
+ELSEIF (0<TAG.AR<args>_CLR>=0489) 
+   LOCAL.COLOR_NAME = Blue
+ELSEIF (0<TAG.AR<args>_CLR>=07a0) 
+   LOCAL.COLOR_NAME = Moon
+ELSEIF (0<TAG.AR<args>_CLR>=0796) 
+   LOCAL.COLOR_NAME = Midnight
+ELSEIF (0<TAG.AR<args>_CLR>=07ab)
+   LOCAL.COLOR_NAME = Royal Blue
+ELSEIF (0<TAG.AR<args>_CLR>=01) 
+   LOCAL.COLOR_NAME = Pure Black
+ELSEIF (0<TAG.AR<args>_CLR>=0799)
+   LOCAL.COLOR_NAME = Blood
+ELSEIF (0<TAG.AR<args>_CLR>=0868)
+   LOCAL.COLOR_NAME = Lavender
+ELSEIF (0<TAG.AR<args>_CLR>=0aac)
+   LOCAL.COLOR_NAME = Cream
+ELSEIF (0<TAG.AR<args>_CLR>=09ef)
+   LOCAL.COLOR_NAME = Mud
+ELSEIF (0<TAG.AR<args>_CLR>=07b8)
+   LOCAL.COLOR_NAME = Onyx
+ELSEIF (0<TAG.AR<args>_CLR>=0aba)
+   LOCAL.COLOR_NAME = Pistachio
+ELSEIF (0<TAG.AR<args>_CLR>=0aff)
+   LOCAL.COLOR_NAME = Yellow
+
+ELSEIF (0<TAG.AR<args>_CLR>=0485)
+   LOCAL.COLOR_NAME = Pitch Black
+ELSEIF (0<TAG.AR<args>_CLR>=0480)
+   LOCAL.COLOR_NAME = Ice
+ELSEIF (0<TAG.AR<args>_CLR>=048f)
+   LOCAL.COLOR_NAME = Angel
+ELSEIF (0<TAG.AR<args>_CLR>=0481)
+   LOCAL.COLOR_NAME = White
+ELSEIF (0<TAG.AR<args>_CLR>=048c)
+   LOCAL.COLOR_NAME = Passion Pink [Old]
+ELSEIF (0<TAG.AR<args>_CLR>=09b1)
+   LOCAL.COLOR_NAME = Passion Pink
+ELSEIF (0<TAG.AR<args>_CLR>=0483)
+   LOCAL.COLOR_NAME = Purple
+ELSEIF (0<TAG.AR<args>_CLR>=0484)
+   LOCAL.COLOR_NAME = Pure White
+ELSEIF (0<TAG.AR<args>_CLR>=0486)
+   LOCAL.COLOR_NAME = Fire [Tailor]
+ELSEIF (0<TAG.AR<args>_CLR>=0487)
+   LOCAL.COLOR_NAME = Green
+ELSEIF (0<TAG.AR<args>_CLR>=048a)
+   LOCAL.COLOR_NAME = Soft Green
+ELSEIF (0<TAG.AR<args>_CLR>=079e)
+   LOCAL.COLOR_NAME = Dark Bronze
+ELSEIF (0<TAG.AR<args>_CLR>=0488)
+   LOCAL.COLOR_NAME = Bronze
+ELSEIF (0<TAG.AR<args>_CLR>=0489)
+   LOCAL.COLOR_NAME = Blue
+ELSEIF (0<TAG.AR<args>_CLR>=048d)
+   LOCAL.COLOR_NAME = Soft Blue
+ELSEIF (0<TAG.AR<args>_CLR>=048b)
+   LOCAL.COLOR_NAME = Soft Purple
+ELSEIF (0<TAG.AR<args>_CLR>=048e)
+   LOCAL.COLOR_NAME = Strong Pink [Old]
+ELSEIF (0<TAG.AR<args>_CLR>=0a10)
+   LOCAL.COLOR_NAME = Strong Pink
+ELSEIF (0<TAG.AR<args>_CLR>=0455)
+   LOCAL.COLOR_NAME = Black
+ELSEIF (0<TAG.AR<args>_CLR>=099d)
+   LOCAL.COLOR_NAME = Rain
+ELSEIF (0<TAG.AR<args>_CLR>=09f6)
+   LOCAL.COLOR_NAME = Swamp
+ELSEIF (0<TAG.AR<args>_CLR>=0af1)
+   LOCAL.COLOR_NAME = Cardinal
+ELSEIF (0<TAG.AR<args>_CLR>=07eb)
+   LOCAL.COLOR_NAME = Fog
+ELSEIF (0<TAG.AR<args>_CLR>=0ae3)
+   LOCAL.COLOR_NAME = Sunset
+ELSEIF (0<TAG.AR<args>_CLR>=0ac9)
+   LOCAL.COLOR_NAME = Passion Purple
+
+ELSEIF (0<TAG.AR<args>_CLR>=00)
+   LOCAL.COLOR_NAME = Standard
+ELSEIF (<ISSTANDARDCOLOUR>)
+   LOCAL.COLOR_NAME = <VAR.MATERIALCOLOUR> color
+ELSE
+   LOCAL.COLOR_NAME = <TAG.AR<args>_CLR>
+ENDIF
+RETURN <LOCAL.COLOR_NAME>
+
+[FUNCTION ISSTANDARDCOLOUR]
+   LOCAL.ISSTANDARDCOLOUR	= 0
+   IF ( strmatch( "*pure copper*", "<TAG.AR<args>_NAME>" )
+     VAR.MATERIALCOLOUR = pure_copper
+   ELSEIF ( strmatch( "*old copper*", "<TAG.AR<args>_NAME>" )
+     VAR.MATERIALCOLOUR = old_copper
+   ELSEIF ( strmatch( "*copper*", "<TAG.AR<args>_NAME>"  )
+     VAR.MATERIALCOLOUR = copper
+   ELSEIF ( strmatch( "*iron*", "<TAG.AR<args>_NAME>" )
+     VAR.MATERIALCOLOUR = iron
+   ELSEIF ( strmatch( "*ferrum*", "<TAG.AR<args>_NAME>" )
+     VAR.MATERIALCOLOUR = ferrum
+   ELSEIF ( strmatch( "*bronze*", "<TAG.AR<args>_NAME>" )
+     VAR.MATERIALCOLOUR = bronze
+   ELSEIF ( strmatch( "*brass*", "<TAG.AR<args>_NAME>" )
+     VAR.MATERIALCOLOUR = brass
+   ELSEIF ( strmatch( "*steel*", "<TAG.AR<args>_NAME>" )
+     VAR.MATERIALCOLOUR = steel
+   ELSEIF ( strmatch( "*chrome*", "<TAG.AR<args>_NAME>" )
+     VAR.MATERIALCOLOUR = chrome
+   ELSEIF ( strmatch( "*silver*", "<TAG.AR<args>_NAME>" )
+     VAR.MATERIALCOLOUR = silver
+   ELSEIF ( strmatch( "*gold*", "<TAG.AR<args>_NAME>" )
+     VAR.MATERIALCOLOUR = gold
+   ELSEIF ( strmatch( "*agapite*", "<TAG.AR<args>_NAME>" )
+     VAR.MATERIALCOLOUR = agapite
+   ELSEIF ( strmatch( "*shadow*", "<TAG.AR<args>_NAME>" )
+     VAR.MATERIALCOLOUR = shadow
+   ELSEIF ( strmatch( "*terathane*", "<TAG.AR<args>_NAME>" )
+     VAR.MATERIALCOLOUR = terathane
+   ELSEIF ( strmatch( "*verminard*", "<TAG.AR<args>_NAME>" )
+     VAR.MATERIALCOLOUR = verminard
+   ELSEIF ( strmatch( "*stronghold*", "<TAG.AR<args>_NAME>" )
+     VAR.MATERIALCOLOUR = stronghold
+   ELSEIF ( strmatch( "*verite*", "<TAG.AR<args>_NAME>" )
+     VAR.MATERIALCOLOUR = verite
+   ELSEIF ( strmatch( "*valorite*", "<TAG.AR<args>_NAME>" )
+     VAR.MATERIALCOLOUR = valorite
+   ELSEIF ( strmatch( "*skargard*", "<TAG.AR<args>_NAME>" )
+     VAR.MATERIALCOLOUR = skargard
+   ELSEIF ( strmatch( "*adamantine*", "<TAG.AR<args>_NAME>" )
+     VAR.MATERIALCOLOUR = adamantine
+   ELSEIF ( strmatch( "*enriched titanium*", "<TAG.AR<args>_NAME>" )
+     VAR.MATERIALCOLOUR = entit
+   ELSEIF ( strmatch( "*titanium*", "<TAG.AR<args>_NAME>" )
+     VAR.MATERIALCOLOUR = titanium
+   ELSEIF ( strmatch( "*black rock*", "<TAG.AR<args>_NAME>"  )
+     VAR.MATERIALCOLOUR = blackrock
+   ELSEIF ( strmatch( "*blood rock*", "<TAG.AR<args>_NAME>" )
+     VAR.MATERIALCOLOUR = bloodrock
+   ELSEIF ( strmatch( "*blackrock*", "<TAG.AR<args>_NAME>"  )
+     VAR.MATERIALCOLOUR = blackrock
+   ELSEIF ( strmatch( "*bloodrock*", "<TAG.AR<args>_NAME>" )
+     VAR.MATERIALCOLOUR = bloodrock
+   ELSEIF ( strmatch( "*phoenix*", "<TAG.AR<args>_NAME>" )
+     VAR.MATERIALCOLOUR = phoenix
+   ELSEIF ( strmatch( "*mytheril*", "<TAG.AR<args>_NAME>" )
+     VAR.MATERIALCOLOUR = mytheril
+   ENDIF
+   TRYP 0 VAR.MATERIALCOLOUR2=color_o_<VAR.MATERIALCOLOUR>
+   if (0<TAG.AR<args>_CLR>=(0<VAR.MATERIALCOLOUR2>))
+      LOCAL.ISSTANDARDCOLOUR = 1
+   endif
+   return <LOCAL.ISSTANDARDCOLOUR>
+
+
+
+[DIALOG d_AR_book]
+100, 100
+
+PAGE 0
+  gumppic   0   0 8016
+
+PAGE 1
+  button  320 284 8018 8018 0 2 0
+
+  dtext    45   20 0000 Select
+  dtext   280   20 0000 Details
+
+  button   57   43 2117 2224 1 0 1
+  button   57   60 2117 2224 1 0 2
+  button   57   77 2117 2224 1 0 3
+  button   57   94 2117 2224 1 0 4
+  button   57  111 2117 2224 1 0 5
+  button   57  128 2117 2224 1 0 6
+  button   57  145 2117 2224 1 0 7
+  
+  dcroppedtext  80    40 205 30 0000 <TAG.AR1_NAME>   
+  dcroppedtext  80    57 205 30 0000 <TAG.AR2_NAME>
+  dcroppedtext  80    74 205 30 0000 <TAG.AR3_NAME>
+  dcroppedtext  80    91 205 30 0000 <TAG.AR4_NAME>
+  dcroppedtext  80   108 205 30 0000 <TAG.AR5_NAME>
+  dcroppedtext  80   125 205 30 0000 <TAG.AR6_NAME>
+  dcroppedtext  80   142 205 30 0000 <TAG.AR7_NAME>
+
+  button  297   43 2117 2118 1 0 101  
+  button  297   60 2117 2118 1 0 102  
+  button  297   77 2117 2118 1 0 103  
+  button  297   94 2117 2118 1 0 104  
+  button  297  111 2117 2118 1 0 105
+  button  297  128 2117 2118 1 0 106  
+  button  297  145 2117 2118 1 0 107    
+
+
+  //Bottom page
+  button  57  175 2117 2224 1 0 8
+  button  57  192 2117 2224 1 0 9
+  button  57  209 2117 2224 1 0 10
+  button  57  226 2117 2224 1 0 11
+  button  57  243 2117 2224 1 0 12
+  button  57  260 2117 2224 1 0 13
+  button  57  277 2117 2224 1 0 14
+  
+  dcroppedtext  80   172 205 30 0000 <TAG.AR8_NAME>   
+  dcroppedtext  80   189 205 30 0000 <TAG.AR9_NAME>
+  dcroppedtext  80   206 205 30 0000 <TAG.AR10_NAME>
+  dcroppedtext  80   223 205 30 0000 <TAG.AR11_NAME>
+  dcroppedtext  80   240 205 30 0000 <TAG.AR12_NAME>
+  dcroppedtext  80   257 205 30 0000 <TAG.AR13_NAME>
+  dcroppedtext  80   274 205 30 0000 <TAG.AR14_NAME>
+
+  button  297  175 2117 2118 1 0 108  
+  button  297  192 2117 2118 1 0 109  
+  button  297  209 2117 2118 1 0 110  
+  button  297  226 2117 2118 1 0 111  
+  button  297  243 2117 2118 1 0 112
+  button  297  260 2117 2118 1 0 113  
+  button  297  277 2117 2118 1 0 114    
+
+PAGE 2
+  button  320   0 8017 8017 0 1 0
+
+  dtext    50   20 0000 Select
+  dtext   280   20 0000 Details
+
+  button   57   43 2117 2224 1 0 15
+  button   57   60 2117 2224 1 0 16
+  button   57   77 2117 2224 1 0 17
+  button   57   94 2117 2224 1 0 18
+  button   57  111 2117 2224 1 0 19
+  button   57  128 2117 2224 1 0 20
+  button   57  145 2117 2224 1 0 21
+  
+  dcroppedtext  80    40 205 30 0000 <TAG.AR15_NAME>   
+  dcroppedtext  80    57 205 30 0000 <TAG.AR16_NAME>
+  dcroppedtext  80    74 205 30 0000 <TAG.AR17_NAME>
+  dcroppedtext  80    91 205 30 0000 <TAG.AR18_NAME>
+  dcroppedtext  80   108 205 30 0000 <TAG.AR19_NAME>
+  dcroppedtext  80   125 205 30 0000 <TAG.AR20_NAME>
+  dcroppedtext  80   142 205 30 0000 <TAG.AR21_NAME>
+
+  button  297   43 2117 2118 1 0 115  
+  button  297   60 2117 2118 1 0 116  
+  button  297   77 2117 2118 1 0 117  
+  button  297   94 2117 2118 1 0 118  
+  button  297  111 2117 2118 1 0 119
+  button  297  128 2117 2118 1 0 120  
+  button  297  145 2117 2118 1 0 121    
+
+
+  //Bottom page
+  button  57  175 2117 2224 1 0 22
+  button  57  192 2117 2224 1 0 23
+  button  57  209 2117 2224 1 0 24
+  button  57  226 2117 2224 1 0 25
+  button  57  243 2117 2224 1 0 26
+  button  57  260 2117 2224 1 0 27
+  button  57  277 2117 2224 1 0 28
+  
+  dcroppedtext  80   172 205 30 0000 <TAG.AR22_NAME>   
+  dcroppedtext  80   189 205 30 0000 <TAG.AR23_NAME>
+  dcroppedtext  80   206 205 30 0000 <TAG.AR24_NAME>
+  dcroppedtext  80   223 205 30 0000 <TAG.AR25_NAME>
+  dcroppedtext  80   240 205 30 0000 <TAG.AR26_NAME>
+  dcroppedtext  80   257 205 30 0000 <TAG.AR27_NAME>
+  dcroppedtext  80   274 205 30 0000 <TAG.AR28_NAME>
+
+  button  297  175 2117 2118 1 0 122  
+  button  297  192 2117 2118 1 0 123  
+  button  297  209 2117 2118 1 0 124  
+  button  297  226 2117 2118 1 0 125  
+  button  297  243 2117 2118 1 0 126
+  button  297  260 2117 2118 1 0 127  
+  button  297  277 2117 2118 1 0 128    
+
+PAGE 3
+  dtext    62  23 0000 Index
+  button   45  25 2117 2118 0 1 0
+
+  dtext   125  50 0000 Add/Retrieve Armor
+  dtext    50 200 0000 Name:
+  dtext    50 220 0000 Quality:
+  dtext    50 240 0000 Color:
+  dtext    50 260 0000 Jeweled:
+
+  button  165  80 5549 5550 1 0 <EVAL 0<TAG.SLOTNUM>>
+  IF (<EVAL 0<TAG.SLOTNUM>>=1)
+    button  320 284 8018 8018 1 0 201
+  ELSEIF (<EVAL <TAG.SLOTNUM>>=28)
+    button  320   0 8017 8017 1 0 200
+  ELSE
+    button  320   0 8017 8017 1 0 200
+    button  320 284 8018 8018 1 0 201
+  ENDIF
+
+  dcroppedtext 115 200 250 30 0000 <TAG.AR<EVAL <TAG.SLOTNUM>>_NAME>
+
+ //DEFINE_QUAL_WORD <EVAL 0<TAG.SLOTNUM>>
+  dtext	  115 220 0000 <DEFINE_QUAL_WORD <EVAL 0<TAG.SLOTNUM>>>
+
+  //DEFINE_NAMED_COLOR <EVAL 0<TAG.SLOTNUM>>
+  dtext   115 240 0000 <DEFINE_NAMED_COLOR <EVAL 0<TAG.SLOTNUM>>>
+
+  DEFINE_JEWEL_INFO <EVAL 0<TAG.SLOTNUM>>
+  dtext   115 260 0000 <VAR.JEWEL_INFO>
+
+
+[DIALOG d_AR_book TEXT]
+
+
+[DIALOG d_AR_book BUTTON]
+ON = 1
+   TAG.USESLOT=1
+   IF (0<TAG.AR1_ID>=0)
+      TARGET Target the armor you would like to add to this book.
+   ELSEIF STRMATCH( "00", "<TAG.AR1_ID>" )
+      TARGET Target the armor you would like to add to this book.
+   ELSE
+      RetrieveFromArmorBook
+   ENDIF
+   RETURN 1	
+
+ON = 2
+   TAG.USESLOT=2
+   IF (0<TAG.AR2_ID>=0)
+      TARGET Target the armor you would like to add to this book.
+   ELSEIF STRMATCH( "00", "<TAG.AR2_ID>" )
+      TARGET Target the armor you would like to add to this book.
+   ELSE
+      RetrieveFromArmorBook
+   ENDIF
+   RETURN 1	
+
+ON = 3
+   TAG.USESLOT=3
+   IF (0<TAG.AR3_ID>=0)
+      TARGET Target the armor you would like to add to this book.
+   ELSEIF STRMATCH( "00", "<TAG.AR3_ID>" )
+      TARGET Target the armor you would like to add to this book.
+   ELSE
+      RetrieveFromArmorBook
+   ENDIF
+   RETURN 1	
+
+ON = 4
+   TAG.USESLOT=4
+   IF (0<TAG.AR4_ID>=0)
+      TARGET Target the armor you would like to add to this book.
+   ELSEIF STRMATCH( "00", "<TAG.AR4_ID>" )
+      TARGET Target the armor you would like to add to this book.
+   ELSE
+      RetrieveFromArmorBook
+   ENDIf
+   RETURN 1	
+
+ON = 5
+   TAG.USESLOT=5
+   IF (0<TAG.AR5_ID>=0)
+      TARGET Target the armor you would like to add to this book.
+   ELSEIF STRMATCH( "00", "<TAG.AR5_ID>" )
+      TARGET Target the armor you would like to add to this book.
+   ELSE
+      RetrieveFromArmorBook
+   ENDIf
+   RETURN 1
+
+ON = 6
+   TAG.USESLOT=6
+   IF (0<TAG.AR6_ID>=0)
+      TARGET Target the armor you would like to add to this book.
+   ELSEIF STRMATCH( "00", "<TAG.AR6_ID>" )
+      TARGET Target the armor you would like to add to this book.
+   ELSE
+      RetrieveFromArmorBook
+   ENDIf
+   RETURN 1
+
+ON = 7
+   TAG.USESLOT=7
+   IF (0<TAG.AR7_ID>=0)
+      TARGET Target the armor you would like to add to this book.
+   ELSEIF STRMATCH( "00", "<TAG.AR7_ID>" )
+      TARGET Target the armor you would like to add to this book.
+   ELSE
+      RetrieveFromArmorBook
+   ENDIf
+   RETURN 1
+
+ON = 8
+   TAG.USESLOT=8
+   IF (0<TAG.AR8_ID>=0)
+      TARGET Target the armor you would like to add to this book.
+   ELSEIF STRMATCH( "00", "<TAG.AR8_ID>" )
+      TARGET Target the armor you would like to add to this book.
+   ELSE
+      RetrieveFromArmorBook
+   ENDIf
+   RETURN 1
+
+ON = 9
+   TAG.USESLOT=9
+   IF (0<TAG.AR9_ID>=0)
+      TARGET Target the armor you would like to add to this book.
+   ELSEIF STRMATCH( "00", "<TAG.AR9_ID>" )
+      TARGET Target the armor you would like to add to this book.
+   ELSE
+      RetrieveFromArmorBook
+   ENDIf
+   RETURN 1
+
+ON = 10
+   TAG.USESLOT=10
+   IF (0<TAG.AR10_ID>=0)
+      TARGET Target the armor you would like to add to this book.
+   ELSEIF STRMATCH( "00", "<TAG.AR10_ID>" )
+      TARGET Target the armor you would like to add to this book.
+   ELSE
+      RetrieveFromArmorBook
+   ENDIf
+   RETURN 1
+
+ON = 11
+   TAG.USESLOT=11
+   IF (0<TAG.AR11_ID>=0)
+      TARGET Target the armor you would like to add to this book.
+   ELSEIF STRMATCH( "00", "<TAG.AR11_ID>" )
+      TARGET Target the armor you would like to add to this book.
+   ELSE
+      RetrieveFromArmorBook
+   ENDIf
+   RETURN 1
+
+ON = 12
+   TAG.USESLOT=12
+   IF (0<TAG.AR12_ID>=0)
+      TARGET Target the armor you would like to add to this book.
+   ELSEIF STRMATCH( "00", "<TAG.AR12_ID>" )
+      TARGET Target the armor you would like to add to this book.
+   ELSE
+      RetrieveFromArmorBook
+   ENDIf
+   RETURN 1
+
+ON = 13
+   TAG.USESLOT=13
+   IF (0<TAG.AR13_ID>=0)
+      TARGET Target the armor you would like to add to this book.
+   ELSEIF STRMATCH( "00", "<TAG.AR13_ID>" )
+      TARGET Target the armor you would like to add to this book.
+   ELSE
+      RetrieveFromArmorBook
+   ENDIf
+   RETURN 1
+
+ON = 14
+   TAG.USESLOT=14
+   IF (0<TAG.AR14_ID>=0)
+      TARGET Target the armor you would like to add to this book.
+   ELSEIF STRMATCH( "00", "<TAG.AR14_ID>" )
+      TARGET Target the armor you would like to add to this book.
+   ELSE
+      RetrieveFromArmorBook
+   ENDIf
+   RETURN 1
+
+ON = 15
+   TAG.USESLOT=15
+   IF (0<TAG.AR15_ID>=0)
+      TARGET Target the armor you would like to add to this book.
+   ELSEIF STRMATCH( "00", "<TAG.AR15_ID>" )
+      TARGET Target the armor you would like to add to this book.
+   ELSE
+      RetrieveFromArmorBook
+   ENDIf
+   RETURN 1
+
+ON = 16
+   TAG.USESLOT=16
+   IF (0<TAG.AR16_ID>=0)
+      TARGET Target the armor you would like to add to this book.
+   ELSEIF STRMATCH( "00", "<TAG.AR16_ID>" )
+      TARGET Target the armor you would like to add to this book.
+   ELSE
+      RetrieveFromArmorBook
+   ENDIf
+   RETURN 1
+
+ON = 17
+   TAG.USESLOT=17
+   IF (0<TAG.AR17_ID>=0)
+      TARGET Target the armor you would like to add to this book.
+   ELSEIF STRMATCH( "00", "<TAG.AR17_ID>" )
+      TARGET Target the armor you would like to add to this book.
+   ELSE
+      RetrieveFromArmorBook
+   ENDIf
+   RETURN 1
+
+ON = 18
+   TAG.USESLOT=18
+   IF (0<TAG.AR18_ID>=0)
+      TARGET Target the armor you would like to add to this book.
+   ELSEIF STRMATCH( "00", "<TAG.AR18_ID>" )
+      TARGET Target the armor you would like to add to this book.
+   ELSE
+      RetrieveFromArmorBook
+   ENDIf
+   RETURN 1
+
+ON = 19
+   TAG.USESLOT=19
+   IF (0<TAG.AR19_ID>=0)
+      TARGET Target the armor you would like to add to this book.
+   ELSEIF STRMATCH( "00", "<TAG.AR19_ID>" )
+      TARGET Target the armor you would like to add to this book.
+   ELSE
+      RetrieveFromArmorBook
+   ENDIf
+   RETURN 1
+
+ON = 20
+   TAG.USESLOT=20
+   IF (0<TAG.AR20_ID>=0)
+      TARGET Target the armor you would like to add to this book.
+   ELSEIF STRMATCH( "00", "<TAG.AR20_ID>" )
+      TARGET Target the armor you would like to add to this book.
+   ELSE
+      RetrieveFromArmorBook
+   ENDIf
+   RETURN 1
+
+ON = 21
+   TAG.USESLOT=21
+   IF (0<TAG.AR21_ID>=0)
+      TARGET Target the armor you would like to add to this book.
+   ELSEIF STRMATCH( "00", "<TAG.AR21_ID>" )
+      TARGET Target the armor you would like to add to this book.
+   ELSE
+      RetrieveFromArmorBook
+   ENDIf
+   RETURN 1
+
+ON = 22
+   TAG.USESLOT=22
+   IF (0<TAG.AR22_ID>=0)
+      TARGET Target the armor you would like to add to this book.
+   ELSEIF STRMATCH( "00", "<TAG.AR22_ID>" )
+      TARGET Target the armor you would like to add to this book.
+   ELSE
+      RetrieveFromArmorBook
+   ENDIf
+   RETURN 1
+
+ON = 23
+   TAG.USESLOT=23
+   IF (0<TAG.AR23_ID>=0)
+      TARGET Target the armor you would like to add to this book.
+   ELSEIF STRMATCH( "00", "<TAG.AR23_ID>" )
+      TARGET Target the armor you would like to add to this book.
+   ELSE
+      RetrieveFromArmorBook
+   ENDIf
+   RETURN 1
+
+ON = 24
+   TAG.USESLOT=24
+   IF (0<TAG.AR24_ID>=0)
+      TARGET Target the armor you would like to add to this book.
+   ELSEIF STRMATCH( "00", "<TAG.AR24_ID>" )
+      TARGET Target the armor you would like to add to this book.
+   ELSE
+      RetrieveFromArmorBook
+   ENDIf
+   RETURN 1
+
+ON = 25
+   TAG.USESLOT=25
+   IF (0<TAG.AR25_ID>=0)
+      TARGET Target the armor you would like to add to this book.
+   ELSEIF STRMATCH( "00", "<TAG.AR25_ID>" )
+      TARGET Target the armor you would like to add to this book.
+   ELSE
+      RetrieveFromArmorBook
+   ENDIf
+   RETURN 1
+
+ON = 26
+   TAG.USESLOT=26
+   IF (0<TAG.AR26_ID>=0)
+      TARGET Target the armor you would like to add to this book.
+   ELSEIF STRMATCH( "00", "<TAG.AR26_ID>" )
+      TARGET Target the armor you would like to add to this book.
+   ELSE
+      RetrieveFromArmorBook
+   ENDIf
+   RETURN 1
+
+ON = 27
+   TAG.USESLOT=27
+   IF (0<TAG.AR27_ID>=0)
+      TARGET Target the armor you would like to add to this book.
+   ELSEIF STRMATCH( "00", "<TAG.AR27_ID>" )
+      TARGET Target the armor you would like to add to this book.
+   ELSE
+      RetrieveFromArmorBook
+   ENDIf
+   RETURN 1
+
+ON = 28
+   TAG.USESLOT=28
+   IF (0<TAG.AR28_ID>=0)
+      TARGET Target the armor you would like to add to this book.
+   ELSEIF STRMATCH( "00", "<TAG.AR28_ID>" )
+      TARGET Target the armor you would like to add to this book.
+   ELSE
+      RetrieveFromArmorBook
+   ENDIf
+   RETURN 1
+
+ON = 101
+  TAG.SLOTNUM = 1
+  DIALOG d_AR_book 3
+  RETURN 1
+ON = 102
+  TAG.SLOTNUM = 2
+  DIALOG d_AR_book 3
+  RETURN 1
+ON = 103
+  TAG.SLOTNUM = 3
+  DIALOG d_AR_book 3
+  RETURN 1
+ON = 104
+  TAG.SLOTNUM = 4
+  DIALOG d_AR_book 3
+  RETURN 1
+ON = 105
+  TAG.SLOTNUM = 5
+  DIALOG d_AR_book 3
+  RETURN 1
+ON = 106
+  TAG.SLOTNUM = 6
+  DIALOG d_AR_book 3
+  RETURN 1
+ON = 107
+  TAG.SLOTNUM = 7
+  DIALOG d_AR_book 3
+  RETURN 1
+ON = 108
+  TAG.SLOTNUM = 8
+  DIALOG d_AR_book 3
+  RETURN 1
+ON = 109
+  TAG.SLOTNUM = 9
+  DIALOG d_AR_book 3
+  RETURN 1
+ON = 110
+  TAG.SLOTNUM = 10
+  DIALOG d_AR_book 3
+  RETURN 1
+ON = 111
+  TAG.SLOTNUM = 11
+  DIALOG d_AR_book 3
+  RETURN 1
+ON = 112
+  TAG.SLOTNUM = 12
+  DIALOG d_AR_book 3
+  RETURN 1
+ON = 113
+  TAG.SLOTNUM = 13
+  DIALOG d_AR_book 3
+  RETURN 1
+ON = 114
+  TAG.SLOTNUM = 14
+  DIALOG d_AR_book 3
+  RETURN 1
+ON = 115
+  TAG.SLOTNUM = 15
+  DIALOG d_AR_book 3
+  RETURN 1
+ON = 116
+  TAG.SLOTNUM = 16
+  DIALOG d_AR_book 3
+  RETURN 1
+ON = 117
+  TAG.SLOTNUM = 17
+  DIALOG d_AR_book 3
+  RETURN 1
+ON = 118
+  TAG.SLOTNUM = 18
+  DIALOG d_AR_book 3
+  RETURN 1
+ON = 119
+  TAG.SLOTNUM = 19
+  DIALOG d_AR_book 3
+  RETURN 1
+ON = 120
+  TAG.SLOTNUM = 20
+  DIALOG d_AR_book 3
+  RETURN 1
+ON = 121
+  TAG.SLOTNUM = 21
+  DIALOG d_AR_book 3
+  RETURN 1
+ON = 122
+  TAG.SLOTNUM = 22
+  DIALOG d_AR_book 3
+  RETURN 1
+ON = 123
+  TAG.SLOTNUM = 23
+  DIALOG d_AR_book 3
+  RETURN 1
+ON = 124
+  TAG.SLOTNUM = 24
+  DIALOG d_AR_book 3
+  RETURN 1
+ON = 125
+  TAG.SLOTNUM = 25
+  DIALOG d_AR_book 3
+  RETURN 1
+ON = 126
+  TAG.SLOTNUM = 26
+  DIALOG d_AR_book 3
+  RETURN 1
+ON = 127
+  TAG.SLOTNUM = 27
+  DIALOG d_AR_book 3
+  RETURN 1
+ON = 128
+  TAG.SLOTNUM = 28
+  DIALOG d_AR_book 3
+  RETURN 1
+
+ON = 200
+  TAG.SLOTNUM = <EVAL (<TAG.SLOTNUM> - 1)>
+  DIALOG d_AR_book 3
+  RETURN 1
+ON = 201
+  TAG.SLOTNUM = <EVAL (<TAG.SLOTNUM> + 1)>
+  DIALOG d_AR_book 3
+  RETURN 1
+
+
+
+[FUNCTION RetrieveFromArmorBook]
+//   SRC.SYSMESSAGE You cannot retrieve armor yet.
+//   RETURN 1
+
+   //Can't use if you don't have it in your pack
+   IF !(<CONT>==<SRC.FINDLAYER.21.UID>)
+      SRC.SYSMESSAGE You must have it in your pack to use it.
+      RETURN 1
+   ENDIF
+
+   ARMOR_ID_LOOKUP
+
+ 
+   SRC.NEWITEM <TAG.AR<EVAL <TAG.USESLOT>>_ID>
+   SRC.ACT.NAME = <TAG.AR<EVAL <TAG.USESLOT>>_NAME>
+   SRC.ACT.COLOR = <TAG.AR<EVAL <TAG.USESLOT>>_CLR>
+   SRC.ACT.QUALITY = <TAG.AR<EVAL <TAG.USESLOT>>_QUAL>
+   SRC.ACT.MOREM = <TAG.AR<EVAL <TAG.USESLOT>>_MOREM>
+   SRC.ACT.MOREP = <TAG.AR<EVAL <TAG.USESLOT>>_MOREP>
+   SRC.ACT.ATTR = <SRC.ACT.ATTR> | attr_identified
+   IF 0<TAG.AR<EVAL <TAG.USESLOT>>_MORE1>=0
+      //Do nothing if we didn't save it
+   ELSEIF 0<TAG.AR<EVAL <TAG.USESLOT>>_MORE1>=00
+      //Do nothing if we didn't save it
+   ELSE
+      SRC.ACT.MORE1 = <TAG.AR<EVAL <TAG.USESLOT>>_MORE1>
+   ENDIF
+   SRC.ACT.BOUNCE
+
+   TRY TAG.AR<EVAL <TAG.USESLOT>>_NAME=
+   TRY TAG.AR<EVAL <TAG.USESLOT>>_ID=
+   TRY TAG.AR<EVAL <TAG.USESLOT>>_CLR=
+   TRY TAG.AR<EVAL <TAG.USESLOT>>_QUAL=
+   TRY TAG.AR<EVAL <TAG.USESLOT>>_MOREM=
+   TRY TAG.AR<EVAL <TAG.USESLOT>>_MOREP=
+   TRY TAG.AR<EVAL <TAG.USESLOT>>_ATTR=
+   TRY TAG.AR<EVAL <TAG.USESLOT>>_MORE1=
+
+   IF (<EVAL <TAG.USESLOT>> < 15)
+      DIALOG d_AR_book 1
+   ELSE
+      DIALOG d_AR_book 2
+   ENDIF
+
+   RETURN 1
+   ENDIF
+
+
+
+[FUNCTION ARMOR_ID_LOOKUP]
+TAG.MATERIAL = 
+TAG.ITEM =
+
+///////////////////////////////////////////SPECIAL ITEMS////////////////////////////////////////////////
+IF ( strmatch( "*dragon crossbow*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+  TRYP 0 TAG.AR<EVAL <TAG.USESLOT>>_ID = i_xbow_dragon
+
+ELSEIF ( strmatch( "*Tricorne of Brilliance*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+  TRYP 0 TAG.AR<EVAL <TAG.USESLOT>>_ID = i_tricorne_brilliance
+ELSEIF ( strmatch( "*Circlet of Brilliance*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+  IF ( strmatch( "*+1*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TRYP 0 TAG.AR<EVAL <TAG.USESLOT>>_ID = i_floppy_brilliance
+  ELSE
+     TRYP 0 TAG.AR<EVAL <TAG.USESLOT>>_ID = i_circlet_brilliance 
+  ENDIF
+ELSEIF ( strmatch( "*Helm of Brilliance*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+  TRYP 0 TAG.AR<EVAL <TAG.USESLOT>>_ID = i_helm_brilliance
+
+ELSEIF ( strmatch( "*Sandals of Speed*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+  TRYP 0 TAG.AR<EVAL <TAG.USESLOT>>_ID = i_sandals_speed
+ELSEIF ( strmatch( "*Boots of Speed*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+  TRYP 0 TAG.AR<EVAL <TAG.USESLOT>>_ID = i_boots_speed
+
+ELSEIF ( strmatch( "*Gloves of Might*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+  IF ( strmatch( "*+2*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TRYP 0 TAG.AR<EVAL <TAG.USESLOT>>_ID = i_gloves_might
+  ELSE ( strmatch( "*+3*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TRYP 0 TAG.AR<EVAL <TAG.USESLOT>>_ID = i_gloves_might
+  ELSE ( strmatch( "*+4*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TRYP 0 TAG.AR<EVAL <TAG.USESLOT>>_ID = i_gloves_might
+  ELSE ( strmatch( "*+5*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TRYP 0 TAG.AR<EVAL <TAG.USESLOT>>_ID = i_ringmail_gloves_might
+  ELSE ( strmatch( "*+6*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TRYP 0 TAG.AR<EVAL <TAG.USESLOT>>_ID = i_ringmail_gloves_might
+  ELSE ( strmatch( "*+7*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TRYP 0 TAG.AR<EVAL <TAG.USESLOT>>_ID = i_ringmail_gloves_might
+  ENDIF
+ELSEIF ( strmatch( "*Gauntlets of Might*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+  TRYP 0 TAG.AR<EVAL <TAG.USESLOT>>_ID = i_gauntlets_might
+
+ELSEIF ( strmatch( "*Sash of Warriors*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+  TRYP 0 TAG.AR<EVAL <TAG.USESLOT>>_ID = i_sash_warrior
+
+ELSEIF ( strmatch( "*Warriors Leggings*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+  TRYP 0 TAG.AR<EVAL <TAG.USESLOT>>_ID = i_warrior_leggings
+ELSEIF ( strmatch( "*Warriors Coif*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+  TRYP 0 TAG.AR<EVAL <TAG.USESLOT>>_ID = i_warrior_coif
+ELSEIF ( strmatch( "*Warriors Sleeves*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+  TRYP 0 TAG.AR<EVAL <TAG.USESLOT>>_ID = i_warrior_sleeves
+ELSEIF ( strmatch( "*Warriors Gloves*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+  TRYP 0 TAG.AR<EVAL <TAG.USESLOT>>_ID = i_warrior_gloves
+ELSEIF ( strmatch( "*Warriors Tunic*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+  TRYP 0 TAG.AR<EVAL <TAG.USESLOT>>_ID = i_warrior_tunic
+ 
+ELSEIF ( strmatch( "*Magic Users Gloves*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+  TRYP 0 TAG.AR<EVAL <TAG.USESLOT>>_ID = i_mage_gloves
+ELSEIF ( strmatch( "*Magic Users Tunic*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+  IF (<DISPID>=i_chainmail_leggings)
+     TRYP 0 TAG.AR<EVAL <TAG.USESLOT>>_ID = i_mage_leggings
+  ELSE
+     TRYP 0 TAG.AR<EVAL <TAG.USESLOT>>_ID = i_mage_tunic
+  ENDIF
+ELSEIF ( strmatch( "*Magic Users Leggings*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+  TRYP 0 TAG.AR<EVAL <TAG.USESLOT>>_ID = i_mage_leggings
+ELSEIF ( strmatch( "*Magic Users Hat*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+  TRYP 0 TAG.AR<EVAL <TAG.USESLOT>>_ID = i_mage_hat
+ELSEIF ( strmatch( "*Magic Users Robe*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+  TRYP 0 TAG.AR<EVAL <TAG.USESLOT>>_ID = i_mage_robe
+
+ELSEIF ( strmatch( "*Wrestlers Shirt*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+  TRYP 0 TAG.AR<EVAL <TAG.USESLOT>>_ID = i_wrestling_shirt
+ELSEIF ( strmatch( "*Wrestler Plimpsoles*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+  TRYP 0 TAG.AR<EVAL <TAG.USESLOT>>_ID = i_wrestling_shoes
+ELSEIF ( strmatch( "*Wrestler Pants*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+  TRYP 0 TAG.AR<EVAL <TAG.USESLOT>>_ID = i_wrestling_leggings
+ELSEIF ( strmatch( "*Wrestler Bandana*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+  TRYP 0 TAG.AR<EVAL <TAG.USESLOT>>_ID = i_wrestling_bandana
+
+ELSEIF ( strmatch( "*Blade-user Leggings*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+  TRYP 0 TAG.AR<EVAL <TAG.USESLOT>>_ID = i_blade_leggings
+ELSEIF ( strmatch( "*Blade-user Coif*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+  TRYP 0 TAG.AR<EVAL <TAG.USESLOT>>_ID = i_blade_coif
+ELSEIF ( strmatch( "*Blade-user Sleeves*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+  TRYP 0 TAG.AR<EVAL <TAG.USESLOT>>_ID = i_blade_sleeves
+ELSEIF ( strmatch( "*Blade-user Gloves*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+  TRYP 0 TAG.AR<EVAL <TAG.USESLOT>>_ID = i_blade_gloves
+ELSEIF ( strmatch( "*Blade-user Tunic*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+  TRYP 0 TAG.AR<EVAL <TAG.USESLOT>>_ID = i_blade_tunic
+
+ELSEIF ( strmatch( "*Fencer Leggings*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+  TRYP 0 TAG.AR<EVAL <TAG.USESLOT>>_ID = i_fencing_leggings
+ELSEIF ( strmatch( "*Fencer Coif*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+  TRYP 0 TAG.AR<EVAL <TAG.USESLOT>>_ID = i_fencing_coif
+ELSEIF ( strmatch( "*Fencer Sleeves*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+  TRYP 0 TAG.AR<EVAL <TAG.USESLOT>>_ID = i_fencing_sleeves
+ELSEIF ( strmatch( "*Fencer Gloves*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+  TRYP 0 TAG.AR<EVAL <TAG.USESLOT>>_ID = i_fencing_gloves
+ELSEIF ( strmatch( "*Fencer Tunic*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+  TRYP 0 TAG.AR<EVAL <TAG.USESLOT>>_ID = i_fencing_tunic
+
+ELSEIF ( strmatch( "*Blunt-user Leggings*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+  TRYP 0 TAG.AR<EVAL <TAG.USESLOT>>_ID = i_blunt_leggings
+ELSEIF ( strmatch( "*Blunt-user Coif*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+  TRYP 0 TAG.AR<EVAL <TAG.USESLOT>>_ID = i_blunt_coif
+ELSEIF ( strmatch( "*Blunt-user Sleeves*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+  TRYP 0 TAG.AR<EVAL <TAG.USESLOT>>_ID = i_blunt_sleeves
+ELSEIF ( strmatch( "*Blunt-user Gloves*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+  TRYP 0 TAG.AR<EVAL <TAG.USESLOT>>_ID = i_blunt_gloves
+ELSEIF ( strmatch( "*Blunt-user Tunic*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+  TRYP 0 TAG.AR<EVAL <TAG.USESLOT>>_ID = i_blunt_tunic     
+         
+ELSEIF ( strmatch( "*wooden thin sword*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+  TRYP 0 TAG.AR<EVAL <TAG.USESLOT>>_ID = i_sword_katana_wood   
+
+//////////////////////////////////////EVERYTHING ELSE/////////////////////////////////////////////
+ELSE
+   ///////////////////////////////////////////////MATERIAL/////////////////////////////////////////////////
+
+   //Woods
+   IF ( strmatch( "jeweled pine*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _pine
+   ELSEIF ( strmatch( "pine*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _pine
+   ELSEIF ( strmatch( "jeweled eucalyptus*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _eucalyptus
+   ELSEIF ( strmatch( "eucalyptus*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _eucalyptus
+   ELSEIF ( strmatch( "jeweled rose*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _rose
+   ELSEIF ( strmatch( "rose*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _rose
+   ELSEIF ( strmatch( "jeweled holly*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _holly
+   ELSEIF ( strmatch( "holly*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _holly
+   ELSEIF ( strmatch( "jeweled ironwood*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _ironwood
+   ELSEIF ( strmatch( "ironwood*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _ironwood
+   ELSEIF ( strmatch( "jeweled mahogany*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _mahogany
+   ELSEIF ( strmatch( "mahogany*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _mahogany
+   ELSEIF ( strmatch( "jeweled cherry*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _cherry
+   ELSEIF ( strmatch( "cherry*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _cherry
+   ELSEIF ( strmatch( "jeweled imbued cherry*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _imbued
+   ELSEIF ( strmatch( "imbued cherry*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _imbued
+   ELSEIF ( strmatch( "jeweled composite*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _composite
+   ELSEIF ( strmatch( "composite*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _composite
+   ELSEIF ( strmatch( "jeweled interleaved *", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _interleaved
+   ELSEIF ( strmatch( "interleaved *", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _interleaved
+   ELSEIF ( strmatch( "jeweled myst*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _myst
+   ELSEIF ( strmatch( "myst*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _myst
+
+
+   //Leathers & Scale
+   ELSEIF ( strmatch( "jeweled drake leather*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _dragonhide_drake
+   ELSEIF ( strmatch( "drake leather*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _dragonhide_drake
+   ELSEIF ( strmatch( "jeweled green dragon leather*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _dragonhide_green
+   ELSEIF ( strmatch( "green dragon leather*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _dragonhide_green
+   ELSEIF ( strmatch( "jeweled red dragon leather*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _dragonhide_red
+   ELSEIF ( strmatch( "red dragon leather*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _dragonhide_red
+   ELSEIF ( strmatch( "jeweled ice dragon leather*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _dragonhide_ice
+   ELSEIF ( strmatch( "ice dragon leather*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _dragonhide_ice
+   ELSEIF ( strmatch( "jeweled crystal dragon leather*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _dragonhide_crystal
+   ELSEIF ( strmatch( "crystal dragon leather*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _dragonhide_crystal
+   ELSEIF ( strmatch( "jeweled enhanced dragon leather*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _dragonhide_enhanced
+   ELSEIF ( strmatch( "enhanced dragon leather*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _dragonhide_enhanced
+   ELSEIF ( strmatch( "jeweled Terathane Scale*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _tera_scale
+   ELSEIF ( strmatch( "Terathane Scale*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _tera_scale
+   ELSEIF ( strmatch( "jeweled ranger leather*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _ranger_Leather
+   ELSEIF ( strmatch( "jeweled ranger female leather*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _ranger_Leather
+   ELSEIF ( strmatch( "ranger leather*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _ranger_Leather
+   ELSEIF ( strmatch( "ranger female leather*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _ranger_Leather
+   ELSEIF (( strmatch( "jeweled studded*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )) && (<TAG.AR<EVAL <TAG.USESLOT>>_CLR> == 042))
+     TAG.MATERIAL = _ranger_Leather
+   ELSEIF (( strmatch( "studded*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )) && (<TAG.AR<EVAL <TAG.USESLOT>>_CLR> == 042))
+     TAG.MATERIAL = _ranger_Leather
+   ELSEIF ( strmatch( "jeweled studded*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _studded
+   ELSEIF ( strmatch( "studded*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _studded
+   ELSEIF ( strmatch( "jeweled leather*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _leather
+   ELSEIF ( strmatch( "leather*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _leather
+   ELSEIF ( strmatch( "jeweled bone*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _bone
+   ELSEIF ( strmatch( "bone*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _bone
+
+
+   //Metals
+   ELSEIF ( strmatch( "jeweled pure copper*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _pure_copper
+   ELSEIF ( strmatch( "pure copper*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _pure_copper
+   ELSEIF ( strmatch( "jeweled old copper*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _old_copper
+   ELSEIF ( strmatch( "old copper*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _old_copper
+   ELSEIF ( strmatch( "jeweled copper*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>"  )
+     TAG.MATERIAL = _copper
+   ELSEIF ( strmatch( "copper*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>"  )
+     TAG.MATERIAL = _copper
+   ELSEIF ( strmatch( "jeweled ferrum*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _ferrum
+   ELSEIF ( strmatch( "ferrum*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _ferrum
+   ELSEIF ( strmatch( "jeweled bronze*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _bronze
+   ELSEIF ( strmatch( "bronze*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _bronze
+   ELSEIF ( strmatch( "jeweled brass*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _brass
+   ELSEIF ( strmatch( "brass*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _brass
+   ELSEIF ( strmatch( "jeweled steel*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _steel
+   ELSEIF ( strmatch( "steel*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _steel
+   ELSEIF ( strmatch( "jeweled chrome*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _chrome
+   ELSEIF ( strmatch( "chrome*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _chrome
+   ELSEIF ( strmatch( "jeweled silver*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _silver
+   ELSEIF ( strmatch( "silver*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _silver
+   ELSEIF ( strmatch( "jeweled gold*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _gold
+   ELSEIF ( strmatch( "gold*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _gold
+   ELSEIF ( strmatch( "jeweled agapite*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _agapite
+   ELSEIF ( strmatch( "agapite*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _agapite
+   ELSEIF ( strmatch( "jeweled shadow*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _shadow
+   ELSEIF ( strmatch( "shadow*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _shadow
+   ELSEIF ( strmatch( "jeweled terathane*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _terathane
+   ELSEIF ( strmatch( "terathane*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _terathane
+   ELSEIF ( strmatch( "jeweled verminard*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _verminard
+   ELSEIF ( strmatch( "verminard*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _verminard
+   ELSEIF ( strmatch( "jeweled stronghold*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _stronghold
+   ELSEIF ( strmatch( "stronghold*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _stronghold
+   ELSEIF ( strmatch( "jeweled verite*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _verite
+   ELSEIF ( strmatch( "verite*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _verite
+   ELSEIF ( strmatch( "jeweled valorite*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _valorite
+   ELSEIF ( strmatch( "valorite*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _valorite
+   ELSEIF ( strmatch( "jeweled skargard*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _skargard
+   ELSEIF ( strmatch( "skargard*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _skargard
+   ELSEIF ( strmatch( "jeweled adamantine*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _adamantine
+   ELSEIF ( strmatch( "adamantine*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _adamantine
+   ELSEIF ( strmatch( "jeweled enriched titanium*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _entit
+   ELSEIF ( strmatch( "enriched titanium*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _entit
+   ELSEIF ( strmatch( "jeweled titanium*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _titanium
+   ELSEIF ( strmatch( "titanium*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _titanium
+   ELSEIF ( strmatch( "jeweled black rock*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>"  )
+     TAG.MATERIAL = _blackrock
+   ELSEIF ( strmatch( "black rock*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>"  )
+     TAG.MATERIAL = _blackrock
+   ELSEIF ( strmatch( "jeweled blood rock*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _bloodrock
+   ELSEIF ( strmatch( "blood rock*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _bloodrock
+   ELSEIF ( strmatch( "jeweled blackrock*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>"  )
+     TAG.MATERIAL = _blackrock
+   ELSEIF ( strmatch( "blackrock*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>"  )
+     TAG.MATERIAL = _blackrock
+   ELSEIF ( strmatch( "jeweled bloodrock*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _bloodrock
+   ELSEIF ( strmatch( "bloodrock*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _bloodrock
+   ELSEIF ( strmatch( "jeweled phoenix*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _phoenix
+   ELSEIF ( strmatch( "phoenix*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _phoenix
+   ELSEIF ( strmatch( "jeweled mytheril*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _mytheril
+   ELSEIF ( strmatch( "mytheril*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _mytheril
+   ELSEIF ( strmatch( "jeweled iron*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _iron
+   ELSEIF ( strmatch( "iron*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+     TAG.MATERIAL = _iron
+   ENDIF
+
+
+
+   ////////////////////////////////////////////////ITEM///////////////////////////////////////////////
+   //Bows
+   IF ( strmatch( "*heavy crossbow*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_crossbow_heavy
+   ELSEIF ( strmatch( "*crossbow*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_crossbow
+   ELSEIF ( strmatch( "*bow*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_bow
+
+
+   //Shields
+   ELSEIF ( strmatch( "*buckler*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_shield_buckler
+   ELSEIF ( strmatch( "*small round shield*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_shield_round_small
+   ELSEIF ( strmatch( "*round shield*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_shield_round
+   ELSEIF ( strmatch( "*kite shield*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_shield_kite
+   ELSEIF ( strmatch( "*heater shield*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_shield_heater
+
+
+   //Staves
+   ELSEIF ( strmatch( "*fine staff*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_staff_black
+   ELSEIF ( strmatch( "*quarterstaff*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_staff_quarter
+   ELSEIF ( strmatch( "*gnarled staff*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_staff_gnarled
+   ELSEIF ( strmatch( "*shepherd's crook*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_shepherds_crook
+   ELSEIF ( strmatch( "*club*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_club
+
+
+   //Axes
+   ELSEIF ( strmatch( "*double axe*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_axe_double
+   ELSEIF ( strmatch( "*war axe*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_axe_war
+   ELSEIF ( strmatch( "*large battle axe*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_axe_battle_large
+   ELSEIF ( strmatch( "*battle axe*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_axe_battle
+   ELSEIF ( strmatch( "*two handed axe*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_axe_two_hand
+   ELSEIF ( strmatch( "*executioner's axe*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_axe_exec
+   ELSEIF ( strmatch( "*axe*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_axe
+
+
+   //Blades
+   ELSEIF ( strmatch( "*dagger*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_dagger
+   ELSEIF ( strmatch( "*broadsword*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_sword_broad
+   ELSEIF ( strmatch( "*long sword*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_sword_long
+   ELSEIF ( strmatch( "*scimitar*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_scimitar
+   ELSEIF ( strmatch( "*thin sword*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_sword_long_b
+   ELSEIF ( strmatch( "*great sword*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_sword_great
+   ELSEIF ( strmatch( "*katana*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_katana
+   ELSEIF ( strmatch( "*kryss*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_kryss
+   ELSEIF ( strmatch( "*cutlass*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM =i_cutlass
+
+
+   //Blunts
+   ELSEIF ( strmatch( "*war mace*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_mace_war
+   ELSEIF ( strmatch( "*mace*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_mace
+   ELSEIF ( strmatch( "*hammer pick*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_hammer_pick
+   ELSEIF ( strmatch( "*maul*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_maul
+   ELSEIF ( strmatch( "*war hammer*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_hammer_war
+
+
+   //Pole
+   ELSEIF ( strmatch( "*short spear*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_spear_short
+   ELSEIF ( strmatch( "*spear*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_spear
+   ELSEIF ( strmatch( "*war fork*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_war_fork
+   ELSEIF ( strmatch( "*pitchfork*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_pitchfork
+   ELSEIF ( strmatch( "*bardiche*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_bardiche
+   ELSEIF ( strmatch( "*halberd*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_halberd
+
+
+   //Ring/Chain Mail Armors
+   ELSEIF ( strmatch( "*ringmail gloves*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_ringmail_gloves
+   ELSEIF ( strmatch( "*ringmail sleeves*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_ringmail_sleeves
+   ELSEIF ( strmatch( "*ringmail leggings*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_ringmail_leggings
+   ELSEIF ( strmatch( "*ringmail tunic*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_ringmail_tunic
+   ELSEIF ( strmatch( "*chainmail coif*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_chainmail_coif
+   ELSEIF ( strmatch( "*coif*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_chainmail_coif
+   ELSEIF ( strmatch( "*chainmail leggings*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_chainmail_leggings
+   ELSEIF ( strmatch( "*chainmail tunic*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_chainmail_tunic
+
+
+   //Platemail Armors
+   ELSEIF ( strmatch( "*plate gorget*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_platemail_gorget
+   ELSEIF ( strmatch( "*gauntlets*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_platemail_gloves
+   ELSEIF ( strmatch( "*armplates*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_platemail_arms
+   ELSEIF ( strmatch( "*legplates*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_platemail_leggings
+   ELSEIF ( strmatch( "*legs*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>")
+      TAG.ITEM = i_platemail_leggings
+   ELSEIF ( strmatch( "*female breastplate*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_armor_female_plate
+   ELSEIF ( strmatch( "*breastplate*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_platemail_chest
+   ELSEIF ( strmatch( "*bascinet*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_bascinet
+   ELSEIF ( strmatch( "*closed helm*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_helm_closed
+   ELSEIF ( strmatch( "*open helm*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_helm_open
+   ELSEIF ( strmatch( "*nose helm*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_helm_nose
+   ELSEIF ( strmatch( "*full helm*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_platemail_helm
+
+
+   //Leather Armor
+   ELSEIF ( strmatch( "*cap*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_cap
+   ELSEIF ( strmatch( "*helmet*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_helmet
+   ELSEIF ( strmatch( "*gorget*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_gorget
+   ELSEIF ( strmatch( "*gloves*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      IF ( strmatch( "*mytheril*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+         TAG.ITEM = i_ringmail_gloves      
+      ELSE
+         TAG.ITEM = i_gloves
+      ENDIF
+   ELSEIF ( strmatch( "*sleeves*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      IF ( strmatch( "*mytheril*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+         TAG.ITEM = i_ringmail_sleeves      
+      ELSE
+         TAG.ITEM = i_sleeves
+      ENDIF
+   ELSEIF ( strmatch( "*arms*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      IF ( strmatch( "verite*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+         TAG.ITEM = i_platemail_arms
+      ELSEIF ( strmatch( "valorite*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+         TAG.ITEM = i_platemail_arms
+      ELSE
+         TAG.ITEM = i_arms
+      ENDIF
+   ELSEIF ( strmatch( "*leggings*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      IF ( strmatch( "*mytheril*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+         TAG.ITEM = i_chainmail_leggings      
+      ELSE
+         TAG.ITEM = i_leggings
+      ENDIF
+   ELSEIF ( strmatch( "*female skirt*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_female_skirt
+   ELSEIF ( strmatch( "*shorts*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_female_shorts
+   ELSEIF ( strmatch( "*female bustier*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_female_bustier
+   ELSEIF ( strmatch( "*female*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      TAG.ITEM = i_female
+   ELSEIF ( strmatch( "*tunic*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+      IF ( strmatch( "*mytheril*", "<TAG.AR<EVAL <TAG.USESLOT>>_NAME>" )
+         TAG.ITEM = i_chainmail_tunic
+      ELSE
+         TAG.ITEM = i_tunic
+      ENDIF
+   ENDIF  
+   
+   IF ( 0<TAG.ITEM>=00 ) || ( 0<TAG.MATERIAL>=00 )
+      //Do nothing because we don't have a match...try the id that is saved.
+   ELSE
+      TRYP 0 TAG.AR<EVAL <TAG.USESLOT>>_ID = <TAG.ITEM><TAG.MATERIAL>
+   ENDIF
+
+ENDIF
+
+[EOF]

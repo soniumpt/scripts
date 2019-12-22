@@ -1,0 +1,613 @@
+// CHANGELOG
+// =========
+//
+// 18/08/18 - Wigifer - Removed references to e_all_npc 
+//
+
+[DIALOG d_boo_stone] 
+0,0 
+
+resizepic 190 175 5054 390 250 
+resizepic 200 185 3000 370 230 
+
+//Text Borders
+resizepic 370 200 3000 185 22 
+resizepic 370 235 3000 185 22 
+resizepic 370 270 3000 185 22 
+resizepic 370 305 3000 185 22 
+resizepic 370 340 3000 185 22 
+
+text 215 200 995 1 
+text 215 235 995 2 
+text 215 270 995 3 
+text 215 305 995 4 
+text 215 340 995 5 
+
+//Text where coordinates will be entered.
+textentry 375 200 175 25 0 0 6 
+textentry 375 235 175 25 0 1 7 
+textentry 375 270 175 25 0 2 8 
+textentry 375 305 175 25 0 3 9 
+textentry 375 340 175 25 0 4 10 
+
+text 295 375 0000 11 
+button 260 375 4005 4006 1 0 1 
+
+text 465 375 0000 12 
+button 430 375 4005 4006 1 0 0 
+
+
+[DIALOG d_boo_stone TEXT] 
+<VAR.BLANKLINE>
+Code DIGIT 1 (1-20):
+Code DIGIT 2 (1-20):
+Code DIGIT 3 (1-20):
+Code DIGIT 4 (1-20):
+Code DIGIT 5 (1-20):
+<TAG.GUESS1>
+<TAG.GUESS2>
+<TAG.GUESS3>
+<TAG.GUESS4>
+<TAG.GUESS5>
+Accept 
+Cancel 
+
+
+[DIALOG d_boo_stone BUTTON] 
+ON=0 
+   SRC.SYSMESSAGE Cancelled.
+   RETURN 1
+
+ON=1
+LOCAL.COUNT = 1
+   IF (0<TAG.NUMBER1> = <ARGTXT[0]>)
+   LOCAL.COUNT = <EVAL (<LOCAL.COUNT> + 1)>
+   ENDIF
+   IF (0<TAG.NUMBER2> = <ARGTXT[1]>)
+   LOCAL.COUNT = <EVAL (<LOCAL.COUNT> + 1)>
+   ENDIF
+   IF (0<TAG.NUMBER3> = <ARGTXT[2]>)
+   LOCAL.COUNT = <EVAL (<LOCAL.COUNT> + 1)>
+   ENDIF
+   IF (0<TAG.NUMBER4> = <ARGTXT[3]>)
+   LOCAL.COUNT = <EVAL (<LOCAL.COUNT> + 1)>
+   ENDIF
+   IF (0<TAG.NUMBER5> = <ARGTXT[4]>)
+   LOCAL.COUNT = <EVAL (<LOCAL.COUNT> + 1)>
+   ENDIF
+
+   IF (<LOCAL.COUNT> == 6)
+   say @00a4 ACCESS GRANTED, SYSTEM SHUTTING DOWN
+   TAG.SHUTDOWN = 1
+   ELSE
+   say @0026 INCORRECT CODE YOU GOT <EVAL (<LOCAL.COUNT> - 1)> CORRECT
+   ENDIF
+
+   LOCAL.COUNT = 0
+   RETURN 1 
+
+
+[ITEMDEF i_boo_stone]
+ID	= 02a94
+TYPE	= t_normal
+NAME	= container full of liquid
+
+ON = @Create
+   COLOR	= 0026
+   timer = 50000
+   TAG.NUMBER1  = <eval 1+(rand(19))>
+   TAG.NUMBER2  = <eval 1+(rand(19))>
+   TAG.NUMBER3  = <eval 1+(rand(19))>
+   TAG.NUMBER4  = <eval 1+(rand(19))>
+   TAG.NUMBER5  = <eval 1+(rand(19))>
+
+ON = @Click
+   src.sysmessage @0026 Its full of bubbling liquid
+   return 1
+
+ON = @DClick
+   IF (0<tag.shutdown> == 1)
+   TIMER= -1
+   say @0481 SYSTEM DEACTIVATED
+   COLOR = 0481
+   return 1
+   ENDIF
+      IF (0<tag.critical> > 1)
+         DIALOG d_boo_stone 
+         RETURN 1
+      ENDIF
+   say @0026 ACCESS DENIED
+   return 1
+   
+
+   
+
+ON= @timer
+   IF (0<tag.shutdown> == 1)
+   TIMER= -1
+   say @0481 SYSTEM DEACTIVATED
+   COLOR = 0481
+   return 1
+   ENDIF
+   IF (0<tag.critical> == 0)
+   TIMER= 52
+   say @0026 <LINK.TIMER>
+   return 1
+   ENDIF
+   IF (<tag.critical> == 1)
+      TIMER= 52
+      say @00a4 CRITICAL STATUS REACHED, STANDBY FOR RELEASE
+      COLOR = 00a4
+      return 1
+   ENDIF
+   IF (<tag.critical> == 2)
+         TIMER= 60
+         say @00a4 RELEASE IN 5 MINUTES
+         TAG.CRITICAL= 3
+         return 1
+   ENDIF
+      IF (<tag.critical> == 3)
+            TIMER= 60
+            say @00a4 RELEASE IN 4 MINUTES
+            TAG.CRITICAL= 4
+            return 1
+   ENDIF
+      IF (<tag.critical> == 4)
+            TIMER= 60
+            say @00a4 RELEASE IN 3 MINUTES
+            TAG.CRITICAL= 5
+            return 1
+   ENDIF
+      IF (<tag.critical> == 5)
+            TIMER= 60
+            say @00a4 RELEASE IN 2 MINUTES
+            TAG.CRITICAL= 6
+            return 1
+   ENDIF
+      IF (<tag.critical> == 6)
+            TIMER= 30
+            say @00a4 RELEASE IN 60 SECONDS
+            TAG.CRITICAL= 7
+            return 1
+   ENDIF
+         IF (<tag.critical> == 7)
+               TIMER= 10
+               say @00a4 RELEASE IN 30 SECONDS
+               TAG.CRITICAL= 8
+               return 1
+   ENDIF
+            IF (<tag.critical> == 8)
+                  TIMER= 10
+                  say @00a4 RELEASE IN 20 SECONDS
+                  TAG.CRITICAL= 9
+                  return 1
+   ENDIF
+            IF (<tag.critical> == 9)
+                  TIMER= 1
+                  say @00a4 RELEASE IN 10 SECONDS
+                  TAG.CRITICAL= 10
+                  return 1
+   ENDIF
+               IF (<tag.critical> == 10)
+                     TIMER= 1
+                     say @00a4 RELEASE IN 9 SECONDS
+                     TAG.CRITICAL= 11
+                     return 1
+   ENDIF
+                  IF (<tag.critical> == 11)
+                        TIMER= 1
+                        say @00a4 RELEASE IN 8 SECONDS
+                        TAG.CRITICAL= 12
+                        return 1
+   ENDIF
+                  IF (<tag.critical> == 12)
+                        TIMER= 1
+                        say @00a4 RELEASE IN 7 SECONDS
+                        TAG.CRITICAL= 13
+                        return 1
+   ENDIF
+                  IF (<tag.critical> == 13)
+                        TIMER= 1
+                        say @00a4 RELEASE IN 6 SECONDS
+                        TAG.CRITICAL= 14
+                        return 1
+   ENDIF
+                  IF (<tag.critical> == 14)
+                        TIMER= 1
+                        say @00a4 RELEASE IN 5 SECONDS
+                        TAG.CRITICAL= 15
+                        return 1
+   ENDIF
+                  IF (<tag.critical> == 15)
+                        TIMER= 1
+                        say @00a4 RELEASE IN 4 SECONDS
+                        TAG.CRITICAL= 16
+                        return 1
+   ENDIF
+                  IF (<tag.critical> == 16)
+                        TIMER= 1
+                        say @00a4 RELEASE IN 3 SECONDS
+                        TAG.CRITICAL= 17
+                        return 1
+   ENDIF
+                  IF (<tag.critical> == 17)
+                        TIMER= 1
+                        say @00a4 RELEASE IN 2 SECONDS
+                        TAG.CRITICAL= 18
+                        return 1
+   ENDIF
+                  IF (<tag.critical> == 18)
+                        TIMER= 1
+                        say @00a4 RELEASE IN 1 SECOND
+                        TAG.CRITICAL= 19
+                        return 1
+   ENDIF
+   IF (<tag.critical> == 19)
+   zombie_curse_place	 0,  0
+   zombie_curse_place	 0,  1
+   zombie_curse_place	 0,  2
+   zombie_curse_place	 2,  1
+   zombie_curse_place	 1,  1
+   zombie_curse_place	 1,  0
+   zombie_curse_place	-1,  0
+   zombie_curse_place	-1, -1
+   zombie_curse_place	 0, -1
+   zombie_curse_place	 2,  0
+   zombie_curse_place	-1,  2
+   zombie_curse_place	-2, -2
+   zombie_curse_place	 0, -2
+   zombie_curse_place	 2,  2
+   zombie_curse_place	-1,  0
+   zombie_curse_place	 2,  0
+   zombie_curse_place	 0, -1
+
+   ENDIF
+   REMOVE
+   
+   
+[ITEMDEF i_boo_stone2]
+ID	= 02a94
+TYPE	= t_normal
+NAME	= container full of liquid
+
+ON = @Create
+   COLOR	= 0f3
+   timer = 100
+   TAG.NUMBER1  = <eval 1+(rand(19))>
+   TAG.NUMBER2  = <eval 1+(rand(19))>
+   TAG.NUMBER3  = <eval 1+(rand(19))>
+   TAG.NUMBER4  = <eval 1+(rand(19))>
+   TAG.NUMBER5  = <eval 1+(rand(19))>
+
+ON = @Click
+   src.sysmessage @0f3 <name> is full of explosive liquid
+   return 1
+
+ON = @DClick
+   IF (0<tag.shutdown> == 1)
+   TIMER= -1
+   say @0481 SYSTEM DEACTIVATED
+   COLOR = 0481
+   return 1
+   ENDIF
+      IF (0<tag.critical> > 1)
+         DIALOG d_boo_stone 
+         RETURN 1
+      ENDIF
+   say @0026 ACCESS DENIED
+   return 1
+   
+
+   
+
+ON= @timer
+   IF (0<tag.shutdown> == 1)
+   TIMER= -1
+   say @0481 SYSTEM DEACTIVATED
+   COLOR = 0481
+   return 1
+   ENDIF
+   IF (0<tag.critical> == 0)
+   TIMER= 52
+	   IF (<LINK.TIMER> < 60 )
+	   TAG.CRITICAL= 1
+	   ELSE
+	   say @0026 <LINK.TIMER>
+	   ENDIF
+   return 1
+   ENDIF
+   IF (<tag.critical> == 1)
+      TIMER= 20
+      say @0f3 <name> CRITICAL STATUS REACHED, STANDBY FOR RELEASE
+      serv.allclients sysmessage @0f3 <name> CRITICAL STATUS REACHED, STANDBY FOR RELEASE
+      COLOR = 00a4
+      TAG.CRitical = 2
+      return 1
+   ENDIF
+   IF (<tag.critical> == 2)
+         TIMER= 60
+         say @00a4 RELEASE IN 5 MINUTES
+         TAG.CRITICAL= 3
+         return 1
+   ENDIF
+      IF (<tag.critical> == 3)
+            TIMER= 60
+            say @00a4 RELEASE IN 4 MINUTES
+            TAG.CRITICAL= 4
+            return 1
+   ENDIF
+      IF (<tag.critical> == 4)
+            TIMER= 60
+            say @00a4 RELEASE IN 3 MINUTES
+            TAG.CRITICAL= 5
+            return 1
+   ENDIF
+      IF (<tag.critical> == 5)
+            TIMER= 60
+            say @00a4 RELEASE IN 2 MINUTES
+            TAG.CRITICAL= 6
+            return 1
+   ENDIF
+      IF (<tag.critical> == 6)
+            TIMER= 30
+            say @00a4 RELEASE IN 60 SECONDS
+            TAG.CRITICAL= 7
+            return 1
+   ENDIF
+         IF (<tag.critical> == 7)
+               TIMER= 10
+               say @00a4 RELEASE IN 30 SECONDS
+               TAG.CRITICAL= 8
+               return 1
+   ENDIF
+            IF (<tag.critical> == 8)
+                  TIMER= 10
+                  say @00a4 RELEASE IN 20 SECONDS
+                  TAG.CRITICAL= 9
+                  return 1
+   ENDIF
+            IF (<tag.critical> == 9)
+                  TIMER= 1
+                  say @00a4 RELEASE IN 10 SECONDS
+                  TAG.CRITICAL= 10
+                  return 1
+   ENDIF
+               IF (<tag.critical> == 10)
+                     TIMER= 1
+                     say @00a4 RELEASE IN 9 SECONDS
+                     TAG.CRITICAL= 11
+                     return 1
+   ENDIF
+                  IF (<tag.critical> == 11)
+                        TIMER= 1
+                        say @00a4 RELEASE IN 8 SECONDS
+                        TAG.CRITICAL= 12
+                        return 1
+   ENDIF
+                  IF (<tag.critical> == 12)
+                        TIMER= 1
+                        say @00a4 RELEASE IN 7 SECONDS
+                        TAG.CRITICAL= 13
+                        return 1
+   ENDIF
+                  IF (<tag.critical> == 13)
+                        TIMER= 1
+                        say @00a4 RELEASE IN 6 SECONDS
+                        TAG.CRITICAL= 14
+                        return 1
+   ENDIF
+                  IF (<tag.critical> == 14)
+                        TIMER= 1
+                        say @00a4 RELEASE IN 5 SECONDS
+                        TAG.CRITICAL= 15
+                        return 1
+   ENDIF
+                  IF (<tag.critical> == 15)
+                        TIMER= 1
+                        say @00a4 RELEASE IN 4 SECONDS
+                        TAG.CRITICAL= 16
+                        return 1
+   ENDIF
+                  IF (<tag.critical> == 16)
+                        TIMER= 1
+                        say @00a4 RELEASE IN 3 SECONDS
+                        TAG.CRITICAL= 17
+                        return 1
+   ENDIF
+                  IF (<tag.critical> == 17)
+                        TIMER= 1
+                        say @00a4 RELEASE IN 2 SECONDS
+                        TAG.CRITICAL= 18
+                        return 1
+   ENDIF
+                  IF (<tag.critical> == 18)
+                        TIMER= 1
+                        say @00a4 RELEASE IN 1 SECOND
+                        TAG.CRITICAL= 19
+                        return 1
+   ENDIF
+   IF (<tag.critical> == 19)
+   say @00a4 You see a blinding white light
+   sector.allclients kill
+   ENDIF
+   REMOVE
+   
+[ITEMDEF i_zombie_curse_cure]
+ID	= i_flower_orfluer
+TYPE	= t_normal
+NAME	= a strange flower
+
+ON = @Create
+   COLOR	= 07a1
+
+ON = @DClick
+   src.emote eat the flowers pollen
+   remove_stat_spells
+   SRC.SOUND 01f7
+   SRC.tag.zombiecure	= 1
+   REMOVE
+   return 1
+
+[ITEMDEF i_zombie_curse]
+ID	= i_fx_smoke_small
+TYPE	= t_eq_script
+NAME	= Green Mist
+
+
+ON = @Create
+  TIMER		= 10
+  COLOR		= 0491
+  MOREx		= 0
+  ATTR		= attr_move_never
+  
+ON = @Timer
+  if !( <CONT> )
+     REMOVE
+     return 1
+  endif
+
+  TIMER		= { 20 70 }
+
+if ( <cont.NPC> )
+   cont.tag.zombiecure = 1
+endif
+if (0<cont.tag.zombiecure> = 1 )	
+   cont.tag.zombiecure = 0
+   cont.emote regain colour and composure
+   REMOVE
+   return 1
+endif 
+CONT.EVENTS +e_zombie_curse
+if ( <MORE2> >= 75 )	//stage 3
+IF !<CONT.ISDEAD>
+CONT.tag.zombiecure	= 1
+   CONT.EMOTE look extremely sick
+   CONT.TAKE_STAM 20
+   CONT.TAKE_Hits 10
+   CONT.TAKE_mana 10
+      CONT.zombie_curse_place	 0,  0
+      CONT.zombie_curse_place	 0,  1
+      CONT.zombie_curse_place	 1,  1
+      CONT.zombie_curse_place	 1,  0
+      CONT.zombie_curse_place	-1,  0
+      CONT.zombie_curse_place	-1, -1
+   CONT.zombie_curse_place	 0, -1
+   ENDIF
+elseif ( <MORE2> >= 50 )	//stage 2
+CONT.tag.zombiecure	= 1
+   CONT.EMOTE Cough
+   CONT.TAKE_STAM 20
+   CONT.TAKE_Hits 10
+elseif ( <MORE2> >= 10 )	//stage 1
+CONT.tag.zombiecure	= 1
+   CONT.EMOTE shiver
+   CONT.TAKE_STAM 15
+endif
+MORE2 = <eval (<MORE2> + 1)>
+return 1
+  
+ON = @Equip
+  NAME = Zombie Curse
+  TIMER		= { 50 70 }
+  IF (<SRC.ISGM>)
+     SRC.TAG.CURED = 1
+     SRC.SYSMESSAGE @40 Your enlightened form rejects the curse
+     REMOVE
+     RETURN 1
+  ENDIF
+  IF (<SRC.ISCOUNS>)
+     SRC.TAG.CURED = 1
+     SRC.SYSMESSAGE @40 Your enlightened form rejects the curse
+     REMOVE
+     RETURN 1
+  ENDIF
+  SRC.EVENTS +e_zombie_curse
+  remove_stat_spells
+  if !(0<src.tag.zombiecurse>)            
+     src.tag.zombiecurse = 1
+  endif
+
+ON = @Unequip
+   TIMER	= -1
+   SRC.EVENTS -e_zombie_curse
+
+ON=@Step
+   if ( <SRC.findid( i_zombie_curse ).uid> )
+      return 0
+   endif
+   SRC.tag.zombiecure = 0
+   SRC.NEWITEM 		i_zombie_curse
+   SRC.ACT.DISPID	= i_memory
+   SRC.EMOTE shiver
+   SRC.ACT.EQUIP
+
+
+[EVENTS e_zombie_curse]
+ON=@Spelleffect
+     if ( (<argn> == 11) || (<argn> == 25) )
+        EMOTE reject the cure
+        SOUND=snd_SPELL_MAGIC_REFLECTION
+        return 1
+     endif
+
+     if (<argn> == 20) || (<argn> == 39)
+        if (<rand(5)>)
+           EMOTE shrug off the poison
+           RETURN 1
+           SOUND=snd_SPELL_MAGIC_REFLECTION
+        endif
+     endif
+
+ON=@Death
+SRC.tag.zombiecure	= 1
+SRC.EMOTE shiver
+
+   
+[FUNCTION zombie_curse_place]
+   SERV.NEWITEM	i_zombie_curse
+   NEW.P	= <P>
+   NEW.MOVE	= <args>
+   NEW.UPDATEx
+
+
+[CHARDEF c_zombie_curse_1]
+ID		= c_zombie
+NAME		= Neo-Zombie
+SOUND		= snd_MONSTER_ZOMBIE1
+ICON		= i_pet_ZOMBIE
+ANIM		= 078c7f
+CAN		= MT_WALK
+DAM		= 11,18
+ARMOR		= 60
+RESOURCES	= 10 t_eerie_stuff
+FOODTYPE	= 20 t_meat_raw
+DESIRES		= i_gold,t_meat_raw, t_corpse
+AVERSIONS	= t_TRAP
+BLOODCOLOR	= colors_green
+TEVENTS		= e_undead
+
+ON=@Create
+  COLOR		= 079c
+  NPC		= brain_undead
+  FAME		= 1500
+  KARMA		= {-2000 -3999}
+  STR		= {680 760}
+  DEX		= {100 110}
+  INT		= {150 160}
+  PARRYING	= {20.0 30.0}
+  MAGICRESISTANCE={15.0 40.0}
+  TACTICS	= {35.0 50.0}
+  WRESTLING	= {35.0 50.0}
+
+ON=@NPCRestock
+  ITEM		= i_gold,{800 1000}
+
+ON=@Death
+//SRC.EMOTE shiver
+//   SRC.zombie_curse_place	 0,  0
+//   SRC.zombie_curse_place	 0,  1
+//   SRC.zombie_curse_place	 1,  1
+//   SRC.zombie_curse_place	 1,  0
+//   SRC.zombie_curse_place	-1,  0
+//   SRC.zombie_curse_place	-1, -1
+//   SRC.zombie_curse_place	 0, -1

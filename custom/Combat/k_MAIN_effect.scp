@@ -1,0 +1,1909 @@
+//Changelog
+//=========
+//26/10/2003 Boo - added enriched titanium mats
+//21/07/2003 - Wigifer - Skar reduced - Tested
+//23/10/2003 - Tiffany -  Stamina drain reduce - Tested
+//16/11/2003 - Wigifer -  Dragon Defense added - Tested
+
+
+[typedef t_eq_vendor_box]
+on=@click
+return 0
+
+[typedef t_potion]
+
+ON=@DCLICK
+
+IF !(<SRC.FINDLAYER(50)>) 
+IF (<AMOUNT> > 4)
+SRC.SYSMESSAGE @62 You have <EVAL <AMOUNT>-1> <name> left.
+ELSE
+SRC.SYSMESSAGE @079c You have <EVAL <AMOUNT>-1> <name> left.
+ENDIF
+endif
+
+
+
+[typedef t_corpse]
+ON=@dclick
+IF !(<src.isgm>)
+   IF (<SRC.TAG0.INEVENT>=1)
+      IF (<LINK.UID> == <SRC.UID>)  
+           return 0
+      ELSEIF (<LINK> == 04fffffff)
+           return 0
+      ENDIF
+      SRC.SYSMESSAGE @55 You cannot loot other peoples bodies in an event
+      return 1
+   ENDIF
+   IF !(<SRC.P.M> == 0)
+    IF (<LINK.UID> == <SRC.UID>)  
+       return 0
+    ELSEIF (<LINK> == 04fffffff)
+       return 0
+    ENDIF
+      src.sysmessage You cannot loot other players bodies
+      return 1
+   endif
+endif
+
+IF (<LINK.UID> == <SRC.UID>)  
+     return 0
+ELSEIF (<LINK> == 04fffffff)
+     return 0
+ELSE
+    SERV.LOG :PLAYER CORPSE: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> is opening <LINK.UID> <LINK.ACCOUNT> <LINK.NAME> corpse at <P>
+    return 0
+ENDIF
+
+
+
+[typedef t_scroll]
+on=@click
+  if !( <ISIDENTIFIED> )
+     return <MESSAGE_UNIDENTIFIED>
+  endif
+  MSG_EFFECT_CLEAR
+  SRC.MSG_EFFECT_INIT
+  VAR.HUE    = 0
+    if (0<ISNECROSCROLL>)
+         MSG_EFFECT_ADD <necro_spell_name <eval <morex> - 600>>
+         MSG_EFFECT_ADD <eval (<tag.skillmin_Necro>/10)>% Necromancy to use
+     endif
+     if !(0<ISNECROSCROLL>)
+     TRIGGER @GetItemVars
+     if ( <var.item.skillmin_magery> )
+        if ( <SRC.ITEMID> < 30.0 )
+           MSG_EFFECT_ADD Magery required to recite
+        else
+           MSG_EFFECT_ADD <eval (<var.item.skillmin_magery>/10)>% Magery to recite
+        endif
+     else
+        MSG_EFFECT_ADD no Magery to recite
+     endif
+     ENDIF
+  MESSAGE_NAME <eval <var.hue>> 
+  if ( strcmp( "<VAR.MSG_EFFECT>", "" ) )
+       MESSAGE (<VAR.MSG_EFFECT>)
+  endif  
+  return 1
+ON=@ClientTooltip
+  if !( <ISIDENTIFIED> )
+     src.addcliloc 1042971,Unidentified <DEF.BR><DEF.BFONTE><DEF.BRE> 
+  else
+  SRC.MSG_EFFECT_CLEAR
+  SRC.MSG_EFFECT_INIT
+    if (0<ISNECROSCROLL>)
+         MSG_EFFECT_ADD <necro_spell_name <eval <morex> - 600>>
+         MSG_EFFECT_ADD <eval (<tag.skillmin_Necro>/10)>% Necromancy to use
+     endif
+     if !(0<ISNECROSCROLL>)
+     TRIGGER @GetItemVars
+     if ( <var.item.skillmin_magery> )
+        if ( <SRC.ITEMID> < 30.0 )
+           MSG_EFFECT_ADD Magery required to recite
+        else
+           MSG_EFFECT_ADD <eval (<var.item.skillmin_magery>/10)>% Magery to recite
+        endif
+     else
+        MSG_EFFECT_ADD no Magery to recite
+     endif
+     ENDIF 
+
+  if ( strcmp( "<VAR.MSG_EFFECT>", "" ) )
+     src.addcliloc 1042971,<VAR.MSG_EFFECT><DEF.BR><DEF.BFONTE><DEF.BRE>
+  endif 
+endif
+
+
+[typedef t_shield]
+on=@click
+  if !( <ISIDENTIFIED> )
+     return <MESSAGE_UNIDENTIFIED>
+  endif
+  MSG_EFFECT_CLEAR
+  SRC.MSG_EFFECT_INIT
+  VAR.HUE    = 0
+  VAR.hue    = <COLOR>
+  MSG_EFFECT_ARMOUR
+  //serv.log MSG_EFFECT_ARMOUR
+  MESSAGE_NAME <eval <var.hue>> 
+  if ( strcmp( "<VAR.MSG_EFFECT>", "" ) )
+       MESSAGE (<VAR.MSG_EFFECT>)
+  endif  
+  return 1
+ON=@ClientTooltip
+  if !( <ISIDENTIFIED> )
+     src.addcliloc 1042971,Unidentified <DEF.BR><DEF.BFONTE><DEF.BRE> 
+  else
+  src.MSG_EFFECT_CLEAR
+  src.MSG_EFFECT_INIT
+  MSG_EFFECT_ARMOUR
+  if ( strcmp( "<VAR.MSG_EFFECT>", "" ) )
+     src.addcliloc 1042971,<VAR.MSG_EFFECT><DEF.BR><DEF.BFONTE><DEF.BRE>
+  endif 
+  endif
+[typedef t_armor_leather]
+on=@click
+  if !( <ISIDENTIFIED> )
+     return <MESSAGE_UNIDENTIFIED>
+  endif
+  MSG_EFFECT_CLEAR
+  SRC.MSG_EFFECT_INIT
+  VAR.HUE    = 0
+  VAR.hue    = <COLOR>
+  MSG_EFFECT_ARMOUR
+  MESSAGE_NAME <eval <var.hue>> 
+  if ( strcmp( "<VAR.MSG_EFFECT>", "" ) )
+       MESSAGE (<VAR.MSG_EFFECT>)
+  endif  
+  return 1
+ON=@ClientTooltip
+  if !( <ISIDENTIFIED> )
+     src.addcliloc 1042971,Unidentified <DEF.BR><DEF.BFONTE><DEF.BRE> 
+  else
+  src.MSG_EFFECT_CLEAR
+  src.MSG_EFFECT_INIT
+  MSG_EFFECT_ARMOUR
+  if ( strcmp( "<VAR.MSG_EFFECT>", "" ) )
+     src.addcliloc 1042971,<VAR.MSG_EFFECT><DEF.BR><DEF.BFONTE><DEF.BRE>
+  endif
+  endif
+[typedef t_armor]
+on=@click
+  if !( <ISIDENTIFIED> )
+     return <MESSAGE_UNIDENTIFIED>
+  endif
+  MSG_EFFECT_CLEAR
+  SRC.MSG_EFFECT_INIT
+  VAR.HUE    = 0
+  VAR.hue    = <COLOR>
+  MSG_EFFECT_ARMOUR
+  MESSAGE_NAME <eval <var.hue>> 
+  if ( strcmp( "<VAR.MSG_EFFECT>", "" ) )
+       MESSAGE (<VAR.MSG_EFFECT>)
+  endif  
+  return 1 
+ON=@ClientTooltip
+  if !( <ISIDENTIFIED> )
+     src.addcliloc 1042971,Unidentified <DEF.BR><DEF.BFONTE><DEF.BRE> 
+  else
+  src.MSG_EFFECT_CLEAR
+  src.MSG_EFFECT_INIT
+  MSG_EFFECT_ARMOUR
+  if ( strcmp( "<VAR.MSG_EFFECT>", "" ) )
+     src.addcliloc 1042971,<VAR.MSG_EFFECT><DEF.BR><DEF.BFONTE><DEF.BRE>
+  endif
+  endif
+  
+[typedef t_weapon_mace_smith]
+on=@click
+  if !( <ISIDENTIFIED> )
+     return <MESSAGE_UNIDENTIFIED>
+  endif
+  MSG_EFFECT_CLEAR
+  SRC.MSG_EFFECT_INIT
+  VAR.HUE    = 0
+  VAR.hue    = <COLOR>
+  MSG_EFFECT_WEAPON
+  MESSAGE_NAME <eval <var.hue>> 
+  if ( strcmp( "<VAR.MSG_EFFECT>", "" ) )
+       MESSAGE (<VAR.MSG_EFFECT>)
+  endif  
+  return 1
+ON=@ClientTooltip
+  if !( <ISIDENTIFIED> )
+     src.addcliloc 1042971,Unidentified <DEF.BR><DEF.BFONTE><DEF.BRE> 
+  else
+  src.MSG_EFFECT_CLEAR
+  src.MSG_EFFECT_INIT
+  MSG_EFFECT_WEAPON
+  if ( strcmp( "<VAR.MSG_EFFECT>", "" ) )
+     src.addcliloc 1042971,<VAR.MSG_EFFECT><DEF.BR><DEF.BFONTE><DEF.BRE>
+  endif
+  endif
+
+[typedef t_weapon_mace_sharp]
+on=@click
+  if !( <ISIDENTIFIED> )
+     return <MESSAGE_UNIDENTIFIED>
+  endif
+  MSG_EFFECT_CLEAR
+  SRC.MSG_EFFECT_INIT
+  VAR.HUE    = 0
+  VAR.hue    = <COLOR>
+  MSG_EFFECT_WEAPON
+  MESSAGE_NAME <eval <var.hue>> 
+  if ( strcmp( "<VAR.MSG_EFFECT>", "" ) )
+       MESSAGE (<VAR.MSG_EFFECT>)
+  endif  
+  return 1
+ON=@ClientTooltip
+  if !( <ISIDENTIFIED> )
+     src.addcliloc 1042971,Unidentified <DEF.BR><DEF.BFONTE><DEF.BRE> 
+  else
+  src.MSG_EFFECT_CLEAR
+  src.MSG_EFFECT_INIT
+  MSG_EFFECT_WEAPON
+  if ( strcmp( "<VAR.MSG_EFFECT>", "" ) )
+     src.addcliloc 1042971,<VAR.MSG_EFFECT><DEF.BR><DEF.BFONTE><DEF.BRE>
+  endif
+  endif
+[typedef t_weapon_mace_staff]
+on=@click
+  if !( <ISIDENTIFIED> )
+     return <MESSAGE_UNIDENTIFIED>
+  endif
+  MSG_EFFECT_CLEAR
+  SRC.MSG_EFFECT_INIT
+  VAR.HUE    = 0
+  VAR.hue    = <COLOR>
+  MSG_EFFECT_WEAPON
+  MESSAGE_NAME <eval <var.hue>> 
+  if ( strcmp( "<VAR.MSG_EFFECT>", "" ) )
+       MESSAGE (<VAR.MSG_EFFECT>)
+  endif  
+  return 1
+ON=@ClientTooltip
+  if !( <ISIDENTIFIED> )
+     src.addcliloc 1042971,Unidentified <DEF.BR><DEF.BFONTE><DEF.BRE> 
+  else
+  src.MSG_EFFECT_CLEAR
+  src.MSG_EFFECT_INIT
+  MSG_EFFECT_WEAPON
+  if ( strcmp( "<VAR.MSG_EFFECT>", "" ) )
+     src.addcliloc 1042971,<VAR.MSG_EFFECT><DEF.BR><DEF.BFONTE><DEF.BRE>
+  endif
+  endif
+[typedef t_weapon_mace_crook]
+on=@click
+  if !( <ISIDENTIFIED> )
+     return <MESSAGE_UNIDENTIFIED>
+  endif
+  MSG_EFFECT_CLEAR
+  SRC.MSG_EFFECT_INIT
+  VAR.HUE    = 0
+  VAR.hue    = <COLOR>
+  MSG_EFFECT_WEAPON
+  MESSAGE_NAME <eval <var.hue>> 
+  if ( strcmp( "<VAR.MSG_EFFECT>", "" ) )
+       MESSAGE (<VAR.MSG_EFFECT>)
+  endif  
+  return 1
+ON=@ClientTooltip
+  if !( <ISIDENTIFIED> )
+     src.addcliloc 1042971,Unidentified <DEF.BR><DEF.BFONTE><DEF.BRE> 
+  else
+  src.MSG_EFFECT_CLEAR
+  src.MSG_EFFECT_INIT
+  MSG_EFFECT_WEAPON
+  if ( strcmp( "<VAR.MSG_EFFECT>", "" ) )
+     src.addcliloc 1042971,<VAR.MSG_EFFECT><DEF.BR><DEF.BFONTE><DEF.BRE>
+  endif
+  endif
+[typedef t_weapon_mace_pick]
+on=@click
+  if !( <ISIDENTIFIED> )
+     return <MESSAGE_UNIDENTIFIED>
+  endif
+  MSG_EFFECT_CLEAR
+  SRC.MSG_EFFECT_INIT
+  VAR.HUE    = 0
+  VAR.hue    = <COLOR>
+  MSG_EFFECT_WEAPON
+  MESSAGE_NAME <eval <var.hue>> 
+  if ( strcmp( "<VAR.MSG_EFFECT>", "" ) )
+       MESSAGE (<VAR.MSG_EFFECT>)
+  endif  
+  return 1
+ON=@ClientTooltip
+  if !( <ISIDENTIFIED> )
+     src.addcliloc 1042971,Unidentified <DEF.BR><DEF.BFONTE><DEF.BRE> 
+  else
+  src.MSG_EFFECT_CLEAR
+  src.MSG_EFFECT_INIT
+  MSG_EFFECT_WEAPON
+  if ( strcmp( "<VAR.MSG_EFFECT>", "" ) )
+     src.addcliloc 1042971,<VAR.MSG_EFFECT><DEF.BR><DEF.BFONTE><DEF.BRE>
+  endif
+  endif
+[typedef t_weapon_sword]
+on=@click
+  if !( <ISIDENTIFIED> )
+     return <MESSAGE_UNIDENTIFIED>
+  endif
+  MSG_EFFECT_CLEAR
+  SRC.MSG_EFFECT_INIT
+  VAR.HUE    = 0
+  VAR.hue    = <COLOR>
+  MSG_EFFECT_WEAPON
+  MESSAGE_NAME <eval <var.hue>> 
+  if ( strcmp( "<VAR.MSG_EFFECT>", "" ) )
+       MESSAGE (<VAR.MSG_EFFECT>)
+  endif  
+  return 1
+ON=@ClientTooltip
+  if !( <ISIDENTIFIED> )
+     src.addcliloc 1042971,Unidentified <DEF.BR><DEF.BFONTE><DEF.BRE> 
+  else
+  src.MSG_EFFECT_CLEAR
+  src.MSG_EFFECT_INIT
+  MSG_EFFECT_WEAPON
+  if ( strcmp( "<VAR.MSG_EFFECT>", "" ) )
+     src.addcliloc 1042971,<VAR.MSG_EFFECT><DEF.BR><DEF.BFONTE><DEF.BRE>
+  endif
+  endif
+[typedef t_weapon_fence]
+on=@click
+  IF (<baseid>==i_dagger_newbied)   
+  message @07a1 [Newbied]   
+  ENDIF
+  if !( <ISIDENTIFIED> )
+     return <MESSAGE_UNIDENTIFIED>
+  endif
+  MSG_EFFECT_CLEAR
+  SRC.MSG_EFFECT_INIT
+  VAR.HUE    = 0
+  VAR.hue    = <COLOR>
+  MSG_EFFECT_WEAPON
+  MESSAGE_NAME <eval <var.hue>> 
+  if ( strcmp( "<VAR.MSG_EFFECT>", "" ) )
+       MESSAGE (<VAR.MSG_EFFECT>)
+  endif  
+  return 1
+ON=@ClientTooltip
+  if !( <ISIDENTIFIED> )
+     src.addcliloc 1042971,Unidentified <DEF.BR><DEF.BFONTE><DEF.BRE> 
+  else
+  src.MSG_EFFECT_CLEAR
+  src.MSG_EFFECT_INIT
+  MSG_EFFECT_WEAPON
+  if ( strcmp( "<VAR.MSG_EFFECT>", "" ) )
+     src.addcliloc 1042971,<VAR.MSG_EFFECT><DEF.BR><DEF.BFONTE><DEF.BRE>
+  endif
+endif
+
+
+[typedef t_weapon_axe]
+on=@click
+  if !( <ISIDENTIFIED> )
+     return <MESSAGE_UNIDENTIFIED>
+  endif
+  MSG_EFFECT_CLEAR
+  SRC.MSG_EFFECT_INIT
+  VAR.HUE    = 0
+  VAR.hue    = <COLOR>
+  MSG_EFFECT_WEAPON
+  MESSAGE_NAME <eval <var.hue>> 
+  if ( strcmp( "<VAR.MSG_EFFECT>", "" ) )
+       MESSAGE (<VAR.MSG_EFFECT>)
+  endif  
+  return 1
+ON=@ClientTooltip
+  if !( <ISIDENTIFIED> )
+     src.addcliloc 1042971,Unidentified <DEF.BR><DEF.BFONTE><DEF.BRE> 
+  else
+  src.MSG_EFFECT_CLEAR
+  src.MSG_EFFECT_INIT
+  MSG_EFFECT_WEAPON
+  if ( strcmp( "<VAR.MSG_EFFECT>", "" ) )
+     src.addcliloc 1042971,<VAR.MSG_EFFECT><DEF.BR><DEF.BFONTE><DEF.BRE>
+  endif
+  endif
+[typedef t_weapon_bow]
+on=@click
+  if !( <ISIDENTIFIED> )
+     return <MESSAGE_UNIDENTIFIED>
+  endif
+  MSG_EFFECT_CLEAR
+  SRC.MSG_EFFECT_INIT
+  VAR.HUE    = 0
+  VAR.hue    = <COLOR>
+  MSG_EFFECT_WEAPON
+  MESSAGE_NAME <eval <var.hue>> 
+  if ( strcmp( "<VAR.MSG_EFFECT>", "" ) )
+       MESSAGE (<VAR.MSG_EFFECT>)
+  endif  
+  return 1
+ON=@ClientTooltip
+  if !( <ISIDENTIFIED> )
+     src.addcliloc 1042971,Unidentified <DEF.BR><DEF.BFONTE><DEF.BRE> 
+  else
+  src.MSG_EFFECT_CLEAR
+  src.MSG_EFFECT_INIT
+  MSG_EFFECT_WEAPON
+  if ( strcmp( "<VAR.MSG_EFFECT>", "" ) )
+     src.addcliloc 1042971,<VAR.MSG_EFFECT><DEF.BR><DEF.BFONTE><DEF.BRE>
+  endif
+  endif
+[typedef t_weapon_xbow]
+on=@click
+  if !( <ISIDENTIFIED> )
+     return <MESSAGE_UNIDENTIFIED>
+  endif
+  MSG_EFFECT_CLEAR
+  SRC.MSG_EFFECT_INIT
+  VAR.HUE    = 0
+  VAR.hue    = <COLOR>
+  MSG_EFFECT_WEAPON
+  MESSAGE_NAME <eval <var.hue>> 
+  if ( strcmp( "<VAR.MSG_EFFECT>", "" ) )
+       MESSAGE (<VAR.MSG_EFFECT>)
+  endif  
+  return 1
+ON=@ClientTooltip
+  if !( <ISIDENTIFIED> )
+     src.addcliloc 1042971,Unidentified <DEF.BR><DEF.BFONTE><DEF.BRE> 
+  else
+  src.MSG_EFFECT_CLEAR
+  src.MSG_EFFECT_INIT
+  MSG_EFFECT_WEAPON
+  if ( strcmp( "<VAR.MSG_EFFECT>", "" ) )
+     src.addcliloc 1042971,<VAR.MSG_EFFECT><DEF.BR><DEF.BFONTE><DEF.BRE>
+  endif
+  endif
+
+[DEFNAME def_materials]
+mat_default    0
+mat_flesh    1    // fists
+
+mat_tin        4    // not used
+mat_copper    2
+mat_iron    3
+mat_pure_copper    30    // T2A copper
+mat_bronze    5
+mat_ferrum    31    // T2A iron
+mat_brass    32    // T2A bronze
+mat_silver    9
+mat_gold    10
+mat_steel    6
+mat_terathane    13
+mat_titanium    7
+mat_agapite     39
+mat_shadow      41
+mat_bloodrk     40
+mat_cobalt    51
+mat_enhanced    44    // CODE: Enhanced
+mat_entit       45
+mat_shakudo    52
+mat_billon    53
+mat_verite      42
+mat_valorite    43
+mat_skargard    14
+mat_manganese    54
+mat_verminard    17
+mat_stronghold    18
+mat_phoenix    11
+mat_adamantine    8
+mat_celestium    12    //CODE: Celestium
+mat_bloodrock    15
+mat_blackrock    16
+mat_electrum    55
+mat_melancholy    56
+mat_phoenicia    57
+mat_mytheril    49
+mat_stellite    58
+mat_stellar    59
+mat_ascension    60
+mat_deathrock    61
+mat_romancer    62
+mat_mysticite    63
+mat_ultimatum    64
+mat_deity    65
+mat_legendary   66
+mat_memory      67
+
+mat_chrome    33    // T2A steel
+
+mat_pine    20
+mat_eucalyptus    21
+mat_rose    22
+mat_oak        23
+mat_ironwood    24
+mat_mahogany    25
+mat_cherry    26
+mat_interleaved    27
+mat_composite    28
+
+mat_holly    29    // rose like
+
+mat_red         34
+mat_green       35
+mat_ice         36
+mat_crystal     37
+mat_drake       38
+
+mat_myst    46    // Myst
+mat_onyx    47    // CODE: ONYX
+mat_oldcopper   48
+
+
+mat_imbued      50      // Imbued Cherry
+
+mat_whiteoak    51    // White Oak
+mat_bloodoak    52  // Blood Oak
+
+
+[FUNCTION DAM_BONUS]
+   VAR.EFFECT.DAMAGE        = <eval (<VAR.EFFECT.DAMAGE> + <args>)>
+
+[FUNCTION DAM_UNDEAD]
+   VAR.EFFECT.ANTI_UNDEAD    = <eval (<VAR.EFFECT.ANTI_UNDEAD> + <args>)>
+
+[FUNCTION DAM_DRAGON]
+   VAR.EFFECT.ANTI_DRAGON    = <eval (<VAR.EFFECT.ANTI_DRAGON> + <args>)>
+
+[FUNCTION WPN_BLOCK]
+   VAR.EFFECT.WEAPON_BLOCK    = <eval (<VAR.EFFECT.WEAPON_BLOCK> + <args>)>
+
+[FUNCTION WPN_CRITICAL]
+   VAR.EFFECT.CRITICAL        = <eval (<VAR.EFFECT.CRITICAL> + <args>)>
+
+[FUNCTION WPN_inc_CRITICAL]
+   if ( <VAR.EFFECT.CRITICAL> < 1 )
+      return 0
+   endif
+   VAR.EFFECT.CRITICAL        = <eval (<VAR.EFFECT.CRITICAL> + <args>)>
+
+[FUNCTION NO_EFFECT]
+
+
+[FUNCTION check_mace]
+   if ( (<VAR.WPN.TYPE> == t_weapon_mace_smith) || (<VAR.WPN.TYPE> == t_weapon_mace_sharp) || (<VAR.WPN.TYPE> == t_weapon_mace_staff) || (<VAR.WPN.TYPE> == t_weapon_mace_staff)  || (<VAR.WPN.TYPE> == t_weapon_mace_crook)  || (<VAR.WPN.TYPE> == t_weapon_mace_pick) )
+      return 1
+   endif
+   return 0
+
+[FUNCTION check_spear]
+   if ( (<VAR.WPN.DISPID> == i_spear) || (<VAR.WPN.DISPID> == i_spear_short) || (<VAR.WPN.DISPID> == i_war_fork) || (<VAR.WPN.DISPID> == i_pitchfork) )
+      return 1
+   endif
+   return 0
+
+
+[FUNCTION check_sword]
+   if ( (<VAR.WPN.DISPID> == i_sword_broad) || (<VAR.WPN.DISPID> == i_sword_long) || (<VAR.WPN.DISPID> == i_scimitar) || (<VAR.WPN.DISPID> == i_sword_long_b) || (<VAR.WPN.DISPID> == i_sword_great) || (<VAR.WPN.DISPID> == i_katana) || (<VAR.WPN.DISPID> == i_cutlass) || (<VAR.WPN.DISPID> == i_sword_long_b) )
+      return 1
+   endif
+   return 0
+
+
+[FUNCTION f_weapon_effect_0]
+  VAR.EFFECT.DAMAGE        = 0        // diamond
+  VAR.EFFECT.ENERGY        = 0        // star sapphire
+  VAR.EFFECT.COLD        = 0        // sapphire
+  VAR.EFFECT.FIRE        = 0        // citrine
+  VAR.EFFECT.ACID        = 0        // emerald
+  VAR.EFFECT.SHADOW        = 0        // shadow
+  VAR.EFFECT.DRAIN_LIFE        = 0        // ruby
+  VAR.EFFECT.DRAIN_MANA        = 0        // amethyst
+  VAR.EFFECT.DRAIN_STAM        = 0        // cold
+                          // tourmaline
+  VAR.EFFECT.DISPELL        = 0        // dispell
+
+  VAR.EFFECT.ANTI_GOOD        = 0
+  VAR.EFFECT.ANTI_EVIL        = 0
+
+  VAR.EFFECT.ANTI_UNDEAD    = 0        // Stronghold and Silver
+  VAR.EFFECT.ANTI_DAEMON    = 0        // Stronghold
+  VAR.EFFECT.ANTI_SHADOW    = 0        // Terathane
+  VAR.EFFECT.ANTI_DRAGON    = 0        // Verminard
+  VAR.EFFECT.ANTI_GIANT        = 0
+
+  VAR.EFFECT.STAM_VAMPIRE    = 0        // Valorite
+  VAR.EFFECT.MANA_VAMPIRE    = 0        // Verite
+  VAR.EFFECT.PURITY        = 0        // Agapite
+  VAR.EFFECT.TAINTING        = 0        // Shadow
+  VAR.EFFECT.HITS_VAMPIRE    = 0        // Bloodrock
+
+  VAR.EFFECT.WEAPON_BLOCK    = 0
+  VAR.EFFECT.CRITICAL        = 0
+  VAR.EFFECT.LEGENDARY_ENERGY = 0
+  VAR.EFFECT.LEGENDARY_FIRE = 0
+  VAR.EFFECT.LEGENDARY_SUMMON = 0
+  VAR.DUR    = 0
+
+  if !( <VAR.WPN.ATTR> & attr_identified )
+     return 0
+  endif
+
+  if ( 0 )
+      elseif (<var.wpn.dispid> == i_halberd)
+          //DAM_BONUS -15
+          elseif (<var.wpn.dispid> == i_pitchfork)
+        //DAM_BONUS -7
+      elseif ( <var.wpn.dispid> == i_staff_quarter )
+          //WPN_BLOCK        10
+      //DAM_BONUS -7
+  elseif ( <var.wpn.dispid> == i_dagger )
+      //WPN_CRITICAL    5
+  DAM_BONUS -100 //balancing
+  elseif ( (<var.wpn.TYPE> == t_weapon_xbow) || (<var.wpn.TYPE> == t_weapon_bow))
+     // DAM_BONUS -60 //balancing moved to k_main_combat to apply reduction only on players and on hit
+  elseif ( <var.wpn.dispid> == i_kryss )
+      //WPN_CRITICAL   15
+  elseif ( (<var.wpn.dispid> == i_spear) || (<var.wpn.dispid> == i_spear_short) )
+      //WPN_CRITICAL   15
+  elseif ( <VAR.WPN.TYPE> == t_weapon_fence )
+      //WPN_CRITICAL   15
+  //elseif !( (<var.wpn.TYPE> == t_weapon_xbow) || (<var.wpn.TYPE> == t_weapon_bow))
+      
+  endif
+
+  if ( (<var.wpn.dispid> == i_war_fork) || (<var.wpn.dispid> == i_pitchfork) )
+      // WPN_BLOCK        15
+  endif
+
+  doswitch <VAR.WPN.QUAL>
+    WPN_inc_CRITICAL  0
+    WPN_inc_CRITICAL  1
+    WPN_inc_CRITICAL  3
+    WPN_inc_CRITICAL  5
+    WPN_inc_CRITICAL  7
+  enddo
+
+//NEW WEAPON SYSTEM
+//High end materials
+//+30% to +50% physical or elemental 
+//Mid end materials
+//-25% than before
+//Low end materials
+//-50% than before
+  if ( 0 )
+  elseif ( <VAR.WPN.MAT> == mat_copper )
+      no_effect//still using old weapon values
+     VAR.DUR    = -25
+  elseif ( <VAR.WPN.MAT> == mat_pure_copper )
+      DAM_BONUS  4//still using old weapon values
+     VAR.DUR    = -20
+  elseif ( <VAR.WPN.MAT> == mat_iron )
+      DAM_BONUS  10 //still using old weapon values
+     VAR.DUR    = -15
+  elseif ( <VAR.WPN.MAT> == mat_ferrum )
+      DAM_BONUS  14 //still using old weapon values
+     VAR.DUR    = -12
+  elseif ( <VAR.WPN.MAT> == mat_bronze )
+      DAM_BONUS  -32 //18
+     VAR.DUR    = -10
+  elseif ( <VAR.WPN.MAT> == mat_brass )
+      DAM_BONUS  -30 //20
+     VAR.DUR    = -8
+  elseif ( <VAR.WPN.MAT> == mat_steel )
+      DAM_BONUS -24 //26
+     WPN_inc_CRITICAL 1
+     VAR.DUR    = 30
+  elseif ( <VAR.WPN.MAT> == mat_chrome )
+      DAM_BONUS -20 //30
+     WPN_inc_CRITICAL 2
+     VAR.DUR    = 35
+  elseif ( <VAR.WPN.MAT> == mat_silver )
+      DAM_BONUS -30 //20
+     DAM_UNDEAD 60
+     VAR.DUR    = -20
+  elseif ( <VAR.WPN.MAT> == mat_gold )
+      DAM_BONUS -44//6
+    VAR.EFFECT.DISPELL    = <eval (<VAR.EFFECT.DISPELL> + 31)>
+     VAR.DUR    = -30
+  elseif ( <VAR.WPN.MAT> == mat_titanium )
+      DAM_BONUS 5//30
+     VAR.DUR    = 40
+  elseif ( <VAR.WPN.MAT> == mat_adamantine )
+      DAM_BONUS 30
+  WPN_inc_CRITICAL 2
+     VAR.DUR    = 60
+  elseif ( <VAR.WPN.MAT> == mat_blackrock )
+     DAM_BONUS 50
+     WPN_inc_CRITICAL 3
+     VAR.DUR    = 60
+    elseif ( <VAR.WPN.MAT> == mat_legendary )
+        DAM_BONUS 50
+       WPN_inc_CRITICAL 3
+     VAR.DUR    = 60
+     VAR.EFFECT.LEGENDARY_ENERGY    = <eval (<VAR.EFFECT.LEGENDARY_ENERGY> + 5)>
+  elseif ( <VAR.WPN.MAT> == mat_terathane )
+      DAM_BONUS  5
+  //WPN_inc_CRITICAL 1
+     VAR.EFFECT.ANTI_SHADOW    = <eval (<VAR.EFFECT.ANTI_SHADOW> + 150)>
+  elseif ( <VAR.WPN.MAT> == mat_phoenix )
+      DAM_BONUS        45
+     VAR.DUR        = -20
+     VAR.EFFECT.FIRE    = <eval (<VAR.EFFECT.FIRE> + 5)>
+  elseif ( <VAR.WPN.MAT> == mat_skargard )
+      DAM_BONUS        30
+     WPN_inc_CRITICAL     2
+     VAR.EFFECT.COLD    = 5
+     VAR.EFFECT.DRAIN_STAM = 4
+  elseif ( <VAR.WPN.MAT> == mat_stronghold )
+      DAM_BONUS        20
+  VAR.EFFECT.ANTI_DAEMON    = <eval (<VAR.EFFECT.ANTI_DAEMON> + 110)>
+  VAR.EFFECT.ANTI_UNDEAD    = <eval (<VAR.EFFECT.ANTI_UNDEAD> + 110)>
+     VAR.EFFECT.ANTI_EVIL    = <eval (<VAR.EFFECT.ANTI_EVIL> + 15)>
+  elseif ( <VAR.WPN.MAT> == mat_verminard )
+      DAM_BONUS        20
+  VAR.EFFECT.ANTI_DRAGON    = <eval (<VAR.EFFECT.ANTI_DRAGON> + 110)>
+     VAR.EFFECT.ANTI_GOOD    = <eval (<VAR.EFFECT.ANTI_GOOD> + 15)>
+  elseif ( <VAR.WPN.MAT> == mat_pine )
+     NO_EFFECT//still using old weapons values
+  elseif ( <VAR.WPN.MAT> == mat_eucalyptus )
+      DAM_BONUS -42
+  elseif ( <VAR.WPN.MAT> == mat_holly )
+      DAM_BONUS -36
+  elseif ( <VAR.WPN.MAT> == mat_rose )
+      DAM_BONUS -34
+  elseif ( <VAR.WPN.MAT> == mat_oak )
+      DAM_BONUS -26
+  elseif ( <VAR.WPN.MAT> == mat_interleaved )
+      DAM_BONUS 3
+  elseif ( <VAR.WPN.MAT> == mat_ironwood )
+      DAM_BONUS 7
+  elseif ( <VAR.WPN.MAT> == mat_mahogany )
+      DAM_BONUS 1
+  elseif ( <VAR.WPN.MAT> == mat_cherry )
+      DAM_BONUS 11
+  elseif ( <VAR.WPN.MAT> == mat_composite )
+      DAM_BONUS 30
+  WPN_inc_CRITICAL 2
+  //VAR.EFFECT.COLD    = <eval (<VAR.EFFECT.ACID> + 5)>
+  elseif ( <VAR.WPN.MAT> == mat_myst )
+      DAM_BONUS 45 //50 with 10 energy damage at 100% proc rate
+  WPN_inc_CRITICAL 3
+  //VAR.EFFECT.MANA_VAMPIRE    = <eval(<VAR.EFFECT.MANA_VAMPIRE> + 15)>
+  VAR.EFFECT.DRAIN_MANA = <eval (<VAR.EFFECT.DRAIN_MANA> + 4)>
+  VAR.EFFECT.ENERGY   = <eval (<VAR.EFFECT.ENERGY> + 5)>
+  elseif ( <VAR.WPN.MAT> == mat_imbued )
+      DAM_BONUS 30
+  WPN_inc_CRITICAL 3
+  VAR.EFFECT.ANTI_DAEMON    = <eval (<VAR.EFFECT.ANTI_DAEMON> + 110)>
+  VAR.EFFECT.ANTI_UNDEAD    = <eval (<VAR.EFFECT.ANTI_UNDEAD> + 110)>
+  VAR.EFFECT.ANTI_DRAGON     = <eval (<VAR.EFFECT.ANTI_DRAGON> + 110)>
+  elseif ( <VAR.WPN.MAT> == mat_verite )
+      DAM_BONUS 20
+  VAR.EFFECT.MANA_VAMPIRE    = <eval (<VAR.EFFECT.MANA_VAMPIRE> + 15)>
+     VAR.DUR    = 40
+  elseif ( <VAR.WPN.MAT> == mat_valorite )
+      DAM_BONUS 20
+  VAR.EFFECT.STAM_VAMPIRE    = <eval (<VAR.EFFECT.STAM_VAMPIRE> + 15)>
+     VAR.DUR    = 40
+  elseif ( <VAR.WPN.MAT> == mat_bloodrock )
+     DAM_BONUS 50
+     WPN_inc_CRITICAL 3
+     VAR.EFFECT.HITS_VAMPIRE    = <eval (<VAR.EFFECT.HITS_VAMPIRE> + 15)>
+     VAR.DUR    = 60
+  elseif ( <VAR.WPN.MAT> == mat_agapite )
+      DAM_BONUS 10
+  VAR.EFFECT.PURITY    = <eval (<VAR.EFFECT.PURITY> + 11)>
+     VAR.DUR    = 35
+  elseif ( <VAR.WPN.MAT> == mat_shadow )
+      DAM_BONUS 10
+  VAR.EFFECT.TAINTING= <eval (<VAR.EFFECT.TAINTING> + 11)>
+     VAR.DUR    = 35
+  elseif ( <VAR.WPN.MAT> == mat_whiteoak )
+      DAM_BONUS 45
+  WPN_inc_CRITICAL 3
+  VAR.EFFECT.COLD    = <eval (<VAR.EFFECT.COLD> + 5)>
+  VAR.EFFECT.DRAIN_STAM = <eval (<VAR.EFFECT.DRAIN_STAM> + 4)> 
+  //VAR.EFFECT.STAM_VAMPIRE    = <eval (<VAR.EFFECT.STAM_VAMPIRE> + 15)>
+  elseif ( <VAR.WPN.MAT> == mat_bloodoak )
+      DAM_BONUS 50
+  VAR.EFFECT.HITS_VAMPIRE    = <eval (<VAR.EFFECT.HITS_VAMPIRE> + 15)>
+  WPN_inc_CRITICAL 3
+  //VAR.EFFECT.COLD    = <eval (<VAR.EFFECT.COLD> + 5)>
+  //VAR.EFFECT.DRAIN_STAM = <eval (<VAR.EFFECT.DRAIN_STAM> + 4)> 
+  //VAR.EFFECT.STAM_VAMPIRE    = <eval (<VAR.EFFECT.STAM_VAMPIRE> + 15)>
+  endif
+
+  if ( <VAR.WPN.TWOHANDS> )
+      DAM_BONUS 25
+  endif
+    
+  if ( <check_mace> )
+   doswitch <VAR.WPN.QUAL>
+    DAM_UNDEAD  5
+       DAM_UNDEAD  6
+       DAM_UNDEAD  7
+       DAM_UNDEAD  8
+       DAM_UNDEAD 10
+    enddo
+   //doswitch <VAR.WPN.QUAL>
+    //  WPN_BLOCK 10
+      //  WPN_BLOCK 11
+     // WPN_BLOCK 12
+    // WPN_BLOCK 13
+    // WPN_BLOCK 15     
+//enddo
+endif
+
+  if ( <check_spear> )
+     doswitch <VAR.WPN.QUAL>
+       DAM_DRAGON 15
+       DAM_DRAGON 17
+       DAM_DRAGON 19
+       DAM_DRAGON 22
+       DAM_DRAGON 25
+    enddo
+  endif
+
+  // informative only, because it's a defense modifier
+  //if ( <check_sword> )
+     doswitch <VAR.WPN.QUAL>
+       WPN_BLOCK 10
+       WPN_BLOCK 11
+       WPN_BLOCK 12
+       WPN_BLOCK 13
+       WPN_BLOCK 15     
+     enddo
+//endif
+
+  doswitch <VAR.WPN.QUAL>
+     NO_EFFECT
+     DAM_BONUS 2
+     DAM_BONUS 4
+     DAM_BONUS 6
+     DAM_BONUS 8
+  enddo
+  
+  if ( <VAR.WPN.SLOT1_GEM> )
+     f_jeweldata 1
+     if ( <VAR.WPN.SLOT2_GEM> )
+       f_jeweldata 2
+     endif
+  endif
+
+
+
+[FUNCTION f_jeweldata]
+
+  doswitch <eval <VAR.WPN.SLOT<args>_GEM>>
+    jeweldata_00  <VAR.WPN.SLOT<args>_VAL>
+    jeweldata_01  <VAR.WPN.SLOT<args>_VAL>
+    jeweldata_02  <VAR.WPN.SLOT<args>_VAL>
+    jeweldata_03  <VAR.WPN.SLOT<args>_VAL>
+    jeweldata_04  <VAR.WPN.SLOT<args>_VAL>
+    jeweldata_05  <VAR.WPN.SLOT<args>_VAL>
+    jeweldata_06  <VAR.WPN.SLOT<args>_VAL>
+    jeweldata_07  <VAR.WPN.SLOT<args>_VAL>
+    jeweldata_08  <VAR.WPN.SLOT<args>_VAL>
+    jeweldata_09  <VAR.WPN.SLOT<args>_VAL>
+    jeweldata_0a  <VAR.WPN.SLOT<args>_VAL>
+    jeweldata_0b  <VAR.WPN.SLOT<args>_VAL>
+    jeweldata_0c  <VAR.WPN.SLOT<args>_VAL>
+    jeweldata_0d  <VAR.WPN.SLOT<args>_VAL>
+    jeweldata_0e  <VAR.WPN.SLOT<args>_VAL>
+    jeweldata_0f  <VAR.WPN.SLOT<args>_VAL>
+  enddo     
+
+
+[FUNCTION f_weapon_effect]
+  VAR.WPN.DESCRIBE    = 0
+  f_weapon_effect_0
+  VAR.WPN.BONUS        = <eval (<VAR.WPN.BONUS> + <VAR.EFFECT.DAMAGE>)>
+
+  if ( 0 )
+  elseif ( <VAR.EFFECT.ANTI_UNDEAD> && <SRC.ISUNDEAD> )
+     VAR.WPN.BONUS        = <eval (<VAR.WPN.BONUS> + <VAR.EFFECT.ANTI_UNDEAD>)>
+  elseif ( <VAR.EFFECT.ANTI_DRAGON> && <SRC.ISDRAGON> )
+     VAR.WPN.BONUS        = <eval (<VAR.WPN.BONUS> + <VAR.EFFECT.ANTI_DRAGON>)>
+  elseif ( <VAR.EFFECT.ANTI_DAEMON> && <SRC.ISDAEMON> )
+     VAR.WPN.BONUS        = <eval (<VAR.WPN.BONUS> + <VAR.EFFECT.ANTI_DAEMON>)>
+  elseif ( <VAR.EFFECT.ANTI_SHADOW> && <SRC.ISSHADOW> )
+     VAR.WPN.BONUS        = <eval (<VAR.WPN.BONUS> + <VAR.EFFECT.ANTI_SHADOW>)>
+  elseif ( <VAR.EFFECT.ANTI_GOOD> && <SRC.ISGOOD> )
+     VAR.WPN.BONUS        = <eval (<VAR.WPN.BONUS> + <VAR.EFFECT.ANTI_GOOD>)>
+  elseif ( <VAR.EFFECT.ANTI_EVIL> && <SRC.ISEVIL> )
+     VAR.WPN.BONUS        = <eval (<VAR.WPN.BONUS> + <VAR.EFFECT.ANTI_EVIL>)>
+  endif
+
+
+[FUNCTION MSG_EFFECT_WEAPON]
+  VAR.WPN.BONUS        = 0
+  VAR.WPN.MAT        = <TDATA1>
+  VAR.WPN.SLOT1_GEM    = <SLOT1_GEM>
+  VAR.WPN.SLOT1_VAL    = <SLOT1_VAL>
+  VAR.WPN.ATTR        = <ATTR>
+  VAR.WPN.WEIGHT    = <WEIGHT>
+  VAR.WPN.TYPE        = <TYPE>
+  VAR.WPN.TWOHANDS    = <TWOHANDS>
+  VAR.WPN.MOREp        = <MOREp>
+  VAR.WPN.MOREp        = <MOREp>
+  //VAR.WPN.LEVEL         = <tag.level>
+    MOREp        = <DAM>
+    VAR.WPN.DAM_MIN    = <MOREx>
+    VAR.WPN.DAM_MAX    = <MOREy>
+    MOREp        = <VAR.WPN.MOREp>
+
+  if ( !strmatch( "i_*", "<dispid>" ) )
+     FLIP
+  endif
+  VAR.WPN.DISPID    = <DISPID>
+
+  if ( <VAR.WPN.SLOT1_GEM> )
+     VAR.WPN.SLOT2_GEM    = <SLOT2_GEM>
+     VAR.WPN.SLOT2_VAL    = <SLOT2_VAL>
+  else
+     VAR.WPN.SLOT2_GEM    = 0
+     VAR.WPN.SLOT2_VAL    = 0
+  endif
+  VAR.WPN.QUAL        = <QUAL>
+  MSG_EFFECT_WEAPON_0
+
+
+
+[FUNCTION LAYER_EFFECT]
+   VAR.LAYER_EFFECT    = <ARGS>
+   if ( 0 )
+   elseif ( <LAYER> == layer_hand2 )
+      VAR.LAYER_EFFECT        = <eval ((<VAR.LAYER_EFFECT> * 5)/ 12)>
+   elseif ( <LAYER> == layer_helm )
+      VAR.LAYER_EFFECT        = <eval ((<VAR.LAYER_EFFECT> * 1)/ 12)>
+   elseif ( <LAYER> == layer_collar )
+      VAR.LAYER_EFFECT        = <eval ((<VAR.LAYER_EFFECT> * 1)/ 12)>
+   elseif ( <LAYER> == layer_gloves )
+      VAR.LAYER_EFFECT        = <eval ((<VAR.LAYER_EFFECT> * 1)/ 12)>
+   elseif ( <LAYER> == layer_arms )
+      VAR.LAYER_EFFECT        = <eval ((<VAR.LAYER_EFFECT> * 2)/ 12)>
+   elseif ( <LAYER> == layer_shirt )
+      VAR.LAYER_EFFECT        = <eval ((<VAR.LAYER_EFFECT> * 2)/ 12)>
+   elseif ( <LAYER> == layer_legs )
+      VAR.LAYER_EFFECT        = <eval ((<VAR.LAYER_EFFECT> * 3)/ 12)>
+   elseif ( <LAYER> == layer_pants )
+      VAR.LAYER_EFFECT        = <eval ((<VAR.LAYER_EFFECT> * 3)/ 12)>
+   elseif ( <LAYER> == layer_chest )
+      VAR.LAYER_EFFECT        = <eval ((<VAR.LAYER_EFFECT> * 4)/ 12)>
+   else
+      VAR.LAYER_EFFECT        = <eval ((<VAR.LAYER_EFFECT> * 1)/ 12)> 
+   endif
+
+
+[FUNCTION f_armour_effect_init_var]
+   VAR.ARM.EFFECT.REBIRTH        = 0
+   VAR.ARM.EFFECT.RES_FIRE        = 0
+   VAR.ARM.EFFECT.RES_COLD        = 0
+   VAR.ARM.EFFECT.RES_ACID        = 0
+   VAR.ARM.EFFECT.RES_ENERGY        = 0
+   VAR.ARM.EFFECT.RES_SHADOW        = 0
+   VAR.ARM.EFFECT.RES_DAEMON        = 0
+   VAR.ARM.EFFECT.RES_DRAGON        = 0
+   VAR.ARM.EFFECT.WEAPON_BLOCK        = 0
+   VAR.ARM.EFFECT.INVIS            = 0
+   VAR.ARM.EFFECT.STRONGHOLD        = 0
+   VAR.ARM.EFFECT.VERMINARD        = 0
+   VAR.ARM.EFFECT.ASTRAL        = 0
+   VAR.ARM.EFFECT.MANA           = 0
+   VAR.ARM.EFFECT.STAM           = 0
+   VAR.ARM.EFFECT.HITS           = 0
+
+[FUNCTION f_armour_effect_init_tag]
+   TAG.ARM.EFFECT.REBIRTH        = <VAR.ARM.EFFECT.REBIRTH>
+   TAG.ARM.EFFECT.RES_FIRE        = <VAR.ARM.EFFECT.RES_FIRE>
+   TAG.ARM.EFFECT.RES_COLD        = <VAR.ARM.EFFECT.RES_COLD>
+   TAG.ARM.EFFECT.RES_ACID        = <VAR.ARM.EFFECT.RES_ACID>
+   TAG.ARM.EFFECT.RES_ENERGY        = <VAR.ARM.EFFECT.RES_ENERGY>
+   TAG.ARM.EFFECT.RES_DRAGON        = <VAR.ARM.EFFECT.RES_DRAGON>
+   TAG.ARM.EFFECT.RES_SHADOW        = <VAR.ARM.EFFECT.RES_SHADOW>
+   TAG.ARM.EFFECT.RES_DAEMON        = <VAR.ARM.EFFECT.RES_DAEMON>
+   TAG.ARM.EFFECT.WEAPON_BLOCK        = <VAR.ARM.EFFECT.WEAPON_BLOCK>
+   TAG.ARM.EFFECT.INVIS            = <VAR.ARM.EFFECT.INVIS>
+   TAG.ARM.EFFECT.STRONGHOLD        = <VAR.ARM.EFFECT.STRONGHOLD>
+   TAG.ARM.EFFECT.VERMINARD        = <VAR.ARM.EFFECT.VERMINARD>
+   TAG.ARM.EFFECT.ASTRAL        = <VAR.ARM.EFFECT.ASTRAL>
+   TAG.ARM.EFFECT.MANA          = <VAR.ARM.EFFECT.MANA>
+   TAG.ARM.EFFECT.STAM          = <VAR.ARM.EFFECT.STAM>
+   TAG.ARM.EFFECT.HITS          = <VAR.ARM.EFFECT.HITS>
+
+[FUNCTION f_armour_effect_update]
+   f_armour_effect_init_var
+   findlayer(layer_hand1).f_weapon_def_effect <args>
+   findlayer(layer_hand2).f_weapon_def_effect <args>
+
+   findlayer(layer_hand2).f_armour_effect_one <args>
+   findlayer(layer_helm).f_armour_effect_one <args>
+   findlayer(layer_gloves).f_armour_effect_one <args>
+   findlayer(layer_chest).f_armour_effect_one <args>
+   findlayer(layer_arms).f_armour_effect_one <args>
+   findlayer(layer_legs).f_armour_effect_one <args>
+   findlayer(layer_shirt).f_armour_effect_one <args>
+   findlayer(layer_collar).f_armour_effect_one <args>
+   findlayer(layer_tunic).f_armour_effect_one <args>
+
+   findlayer(layer_shirt).f_armour_effect_one <args>
+   findlayer(layer_pants).f_armour_effect_one <args>
+   
+   IF (0<FINDID.i_corpse_skin.timer> >= 1)
+   FINDID.i_corpse_skin.f_armour_effect_one <args>
+   ENDIF
+   IF (<FINDID.i_wraith_form>)
+   FINDID.i_wraith_form.f_armour_effect_one <args>
+   ENDIF
+   IF (<FINDID.i_beast_form>)
+   FINDID.i_beast_form.f_armour_effect_one <args>
+   ENDIF
+   IF (<FINDID.i_vampire_form>)
+   FINDID.i_vampire_form.f_armour_effect_one <args>
+   ENDIF   
+   
+   
+   // set up all vars as tags
+   f_armour_effect_init_tag
+
+[FUNCTION ADD_SWORDPARRY]
+   VAR.ARM.EFFECT.WEAPON_BLOCK    = <eval (<VAR.ARM.EFFECT.WEAPON_BLOCK>+<args>)>
+   
+[FUNCTION f_weapon_def_effect]
+   if ( <UID> == <args> )
+      return 0
+   endif
+
+   if ( !<ISIDENTIFIED> )
+      return 0
+   endif
+
+   if !( <ISWEAPON> )
+      return 0
+   endif
+
+  // if ( (<dispid> == i_war_fork) || (<dispid> == i_pitchfork) )
+       //ADD_SWORDPARRY        10
+   // endif
+
+  //if ( <ISSWORD> )
+  //doswitch <QUAL>
+  //  ADD_SWORDPARRY 10
+  //  ADD_SWORDPARRY 11
+   //   ADD_SWORDPARRY 12
+   //   ADD_SWORDPARRY 13
+   //   ADD_SWORDPARRY 15
+// enddo
+//endif
+
+
+[FUNCTION f_armour_effect_one]
+if !( <TDATA1> == mat_memory )
+   if ( <UID> == <args> )
+      return 0
+   endif
+
+   if ( !<ISIDENTIFIED> )
+      return 0
+   endif
+
+   if !( <ISARMOUR> || <ISSHIELD> )
+      return 0
+   endif
+ENDIF   
+   if ( 0 )
+//   elseif ( <TDATA1> == mat_terathane )
+//      LAYER_EFFECT 65
+//      VAR.ARM.EFFECT.RES_SHADOW    = <eval (<VAR.ARM.EFFECT.RES_SHADOW> + <VAR.LAYER_EFFECT>)>
+   elseif ( <TDATA1> == mat_verminard )
+      LAYER_EFFECT 80
+      VAR.ARM.EFFECT.RES_DRAGON    = <eval (<VAR.ARM.EFFECT.RES_DRAGON> + <VAR.LAYER_EFFECT>)>
+   elseif ( <TDATA1> == mat_stronghold )
+      LAYER_EFFECT 80
+      VAR.ARM.EFFECT.RES_DAEMON    = <eval (<VAR.ARM.EFFECT.RES_DAEMON> + <VAR.LAYER_EFFECT>)>
+   elseif ( <TDATA1> == mat_phoenix )
+      LAYER_EFFECT 80
+      VAR.ARM.EFFECT.REBIRTH        = <eval (<VAR.ARM.EFFECT.REBIRTH> + <VAR.LAYER_EFFECT>)>
+      LAYER_EFFECT 30
+      VAR.ARM.EFFECT.RES_COLD        = <eval (<VAR.ARM.EFFECT.RES_COLD> + <VAR.LAYER_EFFECT>)>
+   elseif ( <TDATA1> == mat_skargard )
+      LAYER_EFFECT 50
+      VAR.ARM.EFFECT.INVIS        = <eval (<VAR.ARM.EFFECT.INVIS> + <VAR.LAYER_EFFECT>)>
+      LAYER_EFFECT 30
+      VAR.ARM.EFFECT.RES_FIRE        = <eval (<VAR.ARM.EFFECT.RES_FIRE> + <VAR.LAYER_EFFECT>)>
+   elseif ( <TDATA1> == mat_adamantine )
+       LAYER_EFFECT 30
+       VAR.ARM.EFFECT.RES_ENERGY        = <eval (<VAR.ARM.EFFECT.RES_ENERGY> + <VAR.LAYER_EFFECT>)>
+    elseif ( <TDATA1> == mat_legendary )
+        LAYER_EFFECT 30
+        VAR.ARM.EFFECT.RES_ENERGY        = <eval (<VAR.ARM.EFFECT.RES_ENERGY> + <VAR.LAYER_EFFECT>)>
+  
+  elseif ( <TDATA1> == mat_gold )
+      LAYER_EFFECT 30 // old was 15
+      VAR.ARM.EFFECT.RES_FIRE        = <eval (<VAR.ARM.EFFECT.RES_FIRE> + <VAR.LAYER_EFFECT>)>
+      VAR.ARM.EFFECT.RES_ENERGY        = <eval (<VAR.ARM.EFFECT.RES_ENERGY> - <VAR.LAYER_EFFECT>)>
+      elseif ( <TDATA1> == mat_silver )
+      LAYER_EFFECT 15
+      VAR.ARM.EFFECT.RES_FIRE        = <eval (<VAR.ARM.EFFECT.RES_FIRE> - <VAR.LAYER_EFFECT>)>
+      VAR.ARM.EFFECT.RES_ENERGY        = <eval (<VAR.ARM.EFFECT.RES_ENERGY> + <VAR.LAYER_EFFECT>)>
+    elseif ( <TDATA1> == mat_memory )
+        VAR.ARM.EFFECT.RES_COLD        = <eval (<VAR.ARM.EFFECT.RES_COLD> + <tag.coldresist>)>
+        VAR.ARM.EFFECT.RES_FIRE        = <eval (<VAR.ARM.EFFECT.RES_FIRE> + <tag.fireresist>)>
+        VAR.ARM.EFFECT.RES_ENERGY    = <eval (<VAR.ARM.EFFECT.RES_ENERGY> + <tag.energyresist>)>
+        VAR.ARM.EFFECT.RES_ACID        = <eval (<VAR.ARM.EFFECT.RES_ACID> + <tag.poisonresist>)>
+   elseif ( <TDATA1> == mat_red)
+    LAYER_EFFECT 30
+    VAR.ARM.EFFECT.RES_FIRE        = <eval (<VAR.ARM.EFFECT.RES_FIRE> + <VAR.LAYER_EFFECT>)>
+   elseif ( <TDATA1> == mat_green)
+    LAYER_EFFECT 30
+    VAR.ARM.EFFECT.RES_ACID        = <eval (<VAR.ARM.EFFECT.RES_ACID> + <VAR.LAYER_EFFECT>)>
+   elseif ( <TDATA1> == mat_ice)
+    LAYER_EFFECT 30
+    VAR.ARM.EFFECT.RES_COLD        = <eval (<VAR.ARM.EFFECT.RES_COLD> + <VAR.LAYER_EFFECT>)>
+   elseif ( <TDATA1> == mat_crystal)
+    LAYER_EFFECT 50
+    VAR.ARM.EFFECT.REBIRTH        = <eval (<VAR.ARM.EFFECT.REBIRTH> + <VAR.LAYER_EFFECT>)>
+   elseif ( <TDATA1> == mat_drake)
+    LAYER_EFFECT 25
+    VAR.ARM.EFFECT.RES_COLD        = <eval (<VAR.ARM.EFFECT.RES_COLD> - <VAR.LAYER_EFFECT>)>
+    VAR.ARM.EFFECT.RES_FIRE        = <eval (<VAR.ARM.EFFECT.RES_FIRE> + <VAR.LAYER_EFFECT>)>
+    VAR.ARM.EFFECT.RES_ENERGY    = <eval (<VAR.ARM.EFFECT.RES_ENERGY> + <VAR.LAYER_EFFECT>)>
+    VAR.ARM.EFFECT.RES_ACID        = <eval (<VAR.ARM.EFFECT.RES_ACID> + <VAR.LAYER_EFFECT>)>
+   elseif (<TDATA1> == mat_blackrock)
+    LAYER_EFFECT 45
+    VAR.ARM.EFFECT.RES_COLD        = <eval (<VAR.ARM.EFFECT.RES_COLD> + <VAR.LAYER_EFFECT>)>
+    VAR.ARM.EFFECT.RES_FIRE        = <eval (<VAR.ARM.EFFECT.RES_FIRE> + <VAR.LAYER_EFFECT>)>
+    VAR.ARM.EFFECT.RES_ENERGY    = <eval (<VAR.ARM.EFFECT.RES_ENERGY> + <VAR.LAYER_EFFECT>)>
+    VAR.ARM.EFFECT.RES_ACID        = <eval (<VAR.ARM.EFFECT.RES_ACID> + <VAR.LAYER_EFFECT>)>
+elseif (<TDATA1> == mat_bloodrock)
+    LAYER_EFFECT 45
+    VAR.ARM.EFFECT.RES_COLD        = <eval (<VAR.ARM.EFFECT.RES_COLD> + <VAR.LAYER_EFFECT>)>
+    VAR.ARM.EFFECT.RES_FIRE        = <eval (<VAR.ARM.EFFECT.RES_FIRE> + <VAR.LAYER_EFFECT>)>
+    VAR.ARM.EFFECT.RES_ENERGY    = <eval (<VAR.ARM.EFFECT.RES_ENERGY> + <VAR.LAYER_EFFECT>)>
+    VAR.ARM.EFFECT.RES_ACID        = <eval (<VAR.ARM.EFFECT.RES_ACID> + <VAR.LAYER_EFFECT>)>
+   elseif (<TDATA1> == mat_celestium)
+       LAYER_EFFECT 20
+       VAR.ARM.EFFECT.ASTRAL        = <eval (<VAR.ARM.EFFECT.ASTRAL> + <VAR.LAYER_EFFECT>)>
+   endif    
+
+   TRIGGER @ArmorEffect
+
+  VAR.WPN.SLOT1_GEM    = <SLOT1_GEM>
+  VAR.WPN.SLOT1_VAL    = <SLOT1_VAL>
+
+  if ( <VAR.WPN.SLOT1_GEM> )
+     VAR.WPN.SLOT2_GEM    = <SLOT2_GEM>
+     VAR.WPN.SLOT2_VAL    = <SLOT2_VAL>
+  else
+     VAR.WPN.SLOT2_GEM    = 0
+     VAR.WPN.SLOT2_VAL    = 0
+  endif
+  VAR.WPN.QUAL        = <QUAL>
+
+   if ( <VAR.WPN.SLOT1_GEM> )
+     f_jeweldata 1
+     if ( <VAR.WPN.SLOT2_GEM> )
+       f_jeweldata 2
+     endif
+  endif
+
+  
+[FUNCTION DEF_BONUS]
+   VAR.DEF    = <args>
+
+[FUNCTION DUR_BONUS]
+   VAR.DUR    = <eval (<VAR.DUR> + <args>)>
+   
+[FUNCTION ARMOUR_UPDATE]
+  VAR.DEF    = 0
+  attr    = <attr> | attr_magic
+  doswitch <QUAL>
+     DEF_BONUS   0
+     DEF_BONUS   3
+     DEF_BONUS   6
+     DEF_BONUS  10
+     DEF_BONUS  15
+  enddo
+
+  VAR.AR    = (<eval ((<eval <armor>> * <VAR.DEF>) / 100)> + 1)
+  VAR.MOREy    = <eval (<VAR.AR> * 10)>
+
+  //if ( <MOREy> == 0 )     
+     MOREy    = <VAR.MOREy>
+  //endif
+
+  if !( <ATTR> & attr_identified )
+     attr    = <attr> & ~ attr_magic
+     return 0
+  endif
+
+
+[FUNCTION MSG_EFFECT_ARMOUR]
+  VAR.WPN.DESCRIBE    = 1
+  ARMOUR_UPDATE
+
+  VAR.DUR    = 0
+  VAR.WEIGHT    = 0
+  
+  f_armour_effect_init_var
+
+  if ( 0 )
+  elseif ( <TDATA1> == mat_copper )
+     VAR.WEIGHT    = -25
+     VAR.DUR    = -20
+  elseif ( <TDATA1> == mat_pure_copper )
+     VAR.DEF    = <eval <VAR.DEF> +  2)>
+     VAR.WEIGHT    = -25
+     VAR.DUR    = -15
+  elseif ( <TDATA1> == mat_iron )
+     VAR.DEF    = <eval <VAR.DEF> +  5)>
+     VAR.WEIGHT    = 0
+     VAR.DUR    = -20
+  elseif ( <TDATA1> == mat_ferrum )
+     VAR.DEF    = <eval <VAR.DEF> +  7)>
+     VAR.WEIGHT    = 0
+     VAR.DUR    = -15
+  elseif ( <TDATA1> == mat_bronze )
+     VAR.DEF    = <eval <VAR.DEF> +  10)>
+     VAR.DUR    = -10
+  elseif ( <TDATA1> == mat_brass )
+     VAR.DEF    = <eval <VAR.DEF> +  13)>
+     VAR.DUR    = -7
+  elseif ( <TDATA1> == mat_steel )
+     VAR.DEF    = <eval <VAR.DEF> +  25)>
+     VAR.DUR    = 25
+  elseif ( <TDATA1> == mat_chrome )
+     VAR.DEF    = <eval <VAR.DEF> +  28)>
+     VAR.DUR    = 30
+  elseif ( <TDATA1> == mat_silver )
+     VAR.DEF    = <eval <VAR.DEF> +  20)>
+     VAR.WEIGHT    = -20
+     VAR.DUR    = -20
+  elseif ( <TDATA1> == mat_gold )
+     VAR.DEF    = <eval <VAR.DEF> +  0)>
+     VAR.WEIGHT    = -30
+     VAR.DUR    = -30
+  elseif ( <TDATA1> == mat_titanium )
+     VAR.DEF    = <eval <VAR.DEF> +  35)>
+     VAR.WEIGHT    = -15
+     VAR.DUR    = 40
+  elseif ( <TDATA1> == mat_adamantine )
+     VAR.DEF    = <eval <VAR.DEF> +  60)>
+     VAR.WEIGHT    = 30
+     VAR.DUR    = 60
+  elseif ( <TDATA1> == mat_terathane )
+     VAR.DEF    = <eval <VAR.DEF> +  40)>
+     VAR.WEIGHT    = 20
+  elseif ( <TDATA1> == mat_verminard )
+     VAR.DEF    = <eval <VAR.DEF> +  50)>
+     VAR.WEIGHT    = 20
+  elseif ( <TDATA1> == mat_stronghold )
+     VAR.DEF    = <eval <VAR.DEF> +  50)>
+     VAR.WEIGHT    = 10
+  elseif ( <TDATA1> == mat_phoenix )
+     VAR.DEF    = <eval <VAR.DEF> +  30)>
+     VAR.WEIGHT    = 0
+     VAR.DUR    = -20
+  elseif ( <TDATA1> == mat_bloodrock )
+     VAR.DEF    = <eval <VAR.DEF> +  60)>
+     VAR.WEIGHT    = 60
+     VAR.DUR    = -40
+  elseif ( <TDATA1> == mat_blackrock )
+     VAR.DEF    = <eval <VAR.DEF> + 100)>
+     VAR.WEIGHT    = 70
+     VAR.DUR    = 60
+  elseif ( <TDATA1> == mat_entit )
+     VAR.DEF    = <eval <VAR.DEF> +  100)>
+     VAR.WEIGHT    = 30
+     VAR.DUR    = 60
+  endif
+
+  VAR.DEF    = 0
+  
+  doswitch <QUAL>
+     DUR_BONUS   0
+     DUR_BONUS   5
+     DUR_BONUS  10
+     DUR_BONUS  15
+     DUR_BONUS  20
+  enddo
+     doswitch <QUAL>
+          MSG_EFFECT_ADD ""
+          MSG_EFFECT_ADD "fine quality"
+          MSG_EFFECT_ADD "superior quality"
+          MSG_EFFECT_ADD "superb quality"
+          MSG_EFFECT_ADD "exceptional quality"
+     enddo
+  MSG_EFFECT_ADD_x "<eval <ARMOR>> armor rating"
+  
+  if ( <VAR.WEIGHT> > 0 )
+    MSG_EFFECT_ADD_0 "extra weight"
+    MSG_EFFECT_ADD_x "+<eval <var.WEIGHT>>% weight"
+  elseif ( <VAR.WEIGHT> < 0 )
+    MSG_EFFECT_ADD_0 "reduced weight"
+    MSG_EFFECT_ADD_x "<eval (<var.WEIGHT>)>% weight"
+  endif
+  
+  if ( <VAR.DUR> > 0 )
+    MSG_EFFECT_ADD_0 "extra durability"
+    MSG_EFFECT_ADD_x "+<eval (<var.DUR>)>% durability"
+  elseif ( <VAR.DUR> < 0 )
+    MSG_EFFECT_ADD_0 "reduced durability"
+    MSG_EFFECT_ADD_x "<eval (<var.DUR>)>% durability"
+  endif
+  
+  if ( <VAR.DEF> )     
+     MSG_EFFECT_ADD_0 "enhanced defense"
+     MSG_EFFECT_ADD_x "+<eval <var.DEF>>% defense"
+  endif
+
+  f_armour_effect_one 0
+
+  if ( <VAR.ARM.EFFECT.STRONGHOLD> )
+     MSG_EFFECT_ADD_0 "retribution"
+     MSG_EFFECT_ADD_x "+<eval (<VAR.ARM.EFFECT.STRONGHOLD>)>% retribution"
+  endif
+
+  if ( <VAR.ARM.EFFECT.VERMINARD> )
+     MSG_EFFECT_ADD_0 "vengeance"
+     MSG_EFFECT_ADD_x "+<eval (<VAR.ARM.EFFECT.VERMINARD>)>% vengeance"
+  endif
+
+  if ( <VAR.ARM.EFFECT.RES_DRAGON> )
+     MSG_EFFECT_ADD_0 "protection vs dragons"
+     MSG_EFFECT_ADD_x "+<eval (<VAR.ARM.EFFECT.RES_DRAGON>)>% protection vs dragons"
+  endif
+
+  if ( <VAR.ARM.EFFECT.RES_SHADOW> )
+     MSG_EFFECT_ADD_0 "protection vs shadow"
+     MSG_EFFECT_ADD_x "+<eval (<VAR.ARM.EFFECT.RES_SHADOW>)>% protection vs shadows"
+  endif
+
+  if ( <VAR.ARM.EFFECT.RES_DAEMON> )
+     MSG_EFFECT_ADD_0 "protection vs daemon"
+     MSG_EFFECT_ADD_x "+<eval (<VAR.ARM.EFFECT.RES_DAEMON>)>% protection vs daemons"
+  endif
+
+  if ( <VAR.ARM.EFFECT.RES_FIRE> > 0 )
+     MSG_EFFECT_ADD_0 "fire resistance"
+     MSG_EFFECT_ADD_x "+<eval (<VAR.ARM.EFFECT.RES_FIRE>)>% fire resistance"
+  elseif ( <VAR.ARM.EFFECT.RES_FIRE> < 0 )
+     MSG_EFFECT_ADD_0 "fire susceptibility"
+     MSG_EFFECT_ADD_x "+<eval (0-<VAR.ARM.EFFECT.RES_FIRE>)>% fire susceptibility"
+  endif
+
+  if ( <VAR.ARM.EFFECT.RES_COLD> > 0 )
+     MSG_EFFECT_ADD_0 "cold resistance"
+     MSG_EFFECT_ADD_x "+<eval (<VAR.ARM.EFFECT.RES_COLD>)>% cold resistance"
+  elseif ( <VAR.ARM.EFFECT.RES_COLD> < 0 )
+     MSG_EFFECT_ADD_0 "cold susceptibility"
+     MSG_EFFECT_ADD_x "+<eval (0-<VAR.ARM.EFFECT.RES_COLD>)>% cold susceptibility"
+  endif
+
+  if ( <VAR.ARM.EFFECT.RES_ACID> > 0 )
+     MSG_EFFECT_ADD_0 "acid resistance"
+     MSG_EFFECT_ADD_x "+<eval (<VAR.ARM.EFFECT.RES_ACID>)>% acid resistance"
+  elseif ( <VAR.ARM.EFFECT.RES_ACID> < 0 )
+     MSG_EFFECT_ADD_0 "acid susceptibility"
+     MSG_EFFECT_ADD_x "+<eval (0-<VAR.ARM.EFFECT.RES_ACID>)>% acid susceptibility"
+  endif
+
+  if ( <VAR.ARM.EFFECT.RES_ENERGY> > 0 )
+     MSG_EFFECT_ADD_0 "energy resistance"
+     MSG_EFFECT_ADD_x "+<eval (<VAR.ARM.EFFECT.RES_ENERGY>)>% energy resistance"
+  elseif ( <VAR.ARM.EFFECT.RES_ENERGY> < 0 )
+     MSG_EFFECT_ADD_0 "energy susceptibility"
+     MSG_EFFECT_ADD_x "+<eval (0-<VAR.ARM.EFFECT.RES_ENERGY>)>% energy susceptibility"
+  endif
+  if ( <VAR.ARM.EFFECT.REBIRTH> )
+     MSG_EFFECT_ADD_0 "rebirth"
+     MSG_EFFECT_ADD_x "+<eval (<VAR.ARM.EFFECT.REBIRTH>)>% rebirth"
+  endif
+
+  if ( <VAR.ARM.EFFECT.INVIS> )
+     MSG_EFFECT_ADD_0 "phasing"
+     MSG_EFFECT_ADD_x "+<eval (<VAR.ARM.EFFECT.INVIS>)>% phasing"
+  endif
+  
+  if ( <VAR.ARM.EFFECT.ASTRAL> )
+     MSG_EFFECT_ADD_0 "astral projection"
+     MSG_EFFECT_ADD_x "+<eval (<VAR.ARM.EFFECT.ASTRAL>)>% astral projection"
+  endif
+
+
+  if ( <TYPE> == t_shield )
+     MSG_EFFECT_ADD_x <eval (( 500-((<REQSTR> + 50)*3))/10)>% base chance to parry
+  endif
+  if ( <VAR.ARM.EFFECT.MANA> )
+       MSG_EFFECT_ADD_x "Min <eval (<VAR.ARM.EFFECT.MANA>)> mana requirement"
+  endif
+  if ( <VAR.ARM.EFFECT.HITS> )
+       MSG_EFFECT_ADD_x "Min <eval (<VAR.ARM.EFFECT.HITS>)> health requirement"
+  endif
+  if ( <VAR.ARM.EFFECT.STAM> )
+         MSG_EFFECT_ADD_x "Min <eval (<VAR.ARM.EFFECT.STAM>)> stamina requirement"
+  endif  
+
+  if ( <VAR.ARM.EFFECT.WEAPON_BLOCK> )
+     MSG_EFFECT_ADD_0 "weapon parry"
+     MSG_EFFECT_ADD_x "+<eval <VAR.ARM.EFFECT.WEAPON_BLOCK>>% weapon parry"
+  endif
+  if (<TDATA1> == mat_agapite)
+     MSG_EFFECT_ADD_0 "divine intervention"
+     MSG_EFFECT_ADD_x "divine intervention"
+     MSG_EFFECT_ADD_0 "positive karma requirement"
+     MSG_EFFECT_ADD_x "+5000 karma requirement and low kills"
+  endif
+  if (<TDATA1> == mat_bloodrk)
+     MSG_EFFECT_ADD_0 "health regeneration"
+     MSG_EFFECT_ADD_x "health regeneration"
+  endif
+  if (<TDATA1> == mat_shadow)
+     MSG_EFFECT_ADD_0 "unholy intervention"
+     MSG_EFFECT_ADD_x "unholy intervention"
+     MSG_EFFECT_ADD_0 "kill requirement"
+     MSG_EFFECT_ADD_x "10 kill requirement"
+  endif
+  if (<TDATA1> == mat_verite)
+     MSG_EFFECT_ADD_0 "mana regeneration"
+     MSG_EFFECT_ADD_x "mana regeneration"
+  endif
+  if (<TDATA1> == mat_valorite)
+     MSG_EFFECT_ADD_0 "stamina regeneration"
+     MSG_EFFECT_ADD_x "stamina regeneration"
+  endif
+  if (<TDATA1> == mat_enhanced)
+     MSG_EFFECT_ADD_0 "stamina regeneration"
+     MSG_EFFECT_ADD_x "stamina regeneration"
+     MSG_EFFECT_ADD_0 "health regeneration"
+     MSG_EFFECT_ADD_x "health regeneration"
+     MSG_EFFECT_ADD_0 "mana regeneration"
+     MSG_EFFECT_ADD_x "mana regeneration"
+  endif
+  if (<TDATA1> == mat_entit)
+     MSG_EFFECT_ADD_0 "spell absorb"
+     MSG_EFFECT_ADD_x "spell absorb"
+  endif
+  if (<TDATA1> == mat_melancholy)
+       MSG_EFFECT_ADD_0 "stamina regeneration"
+       MSG_EFFECT_ADD_x "stamina regeneration"
+  endif
+  if (<TDATA1> == mat_electrum)
+       MSG_EFFECT_ADD_0 "mana regeneration"
+       MSG_EFFECT_ADD_x "mana regeneration"
+  endif
+  
+[FUNCTION MSG_EFFECT_WEAPON_0]
+  VAR.WPN.DESCRIBE    = 1
+  f_weapon_effect_0
+     doswitch <QUAL>
+          MSG_EFFECT_ADD ""
+          MSG_EFFECT_ADD "fine quality"
+          MSG_EFFECT_ADD "superior quality"
+          MSG_EFFECT_ADD "superb quality"
+          MSG_EFFECT_ADD "exceptional quality"
+     enddo
+  MSG_EFFECT_ADD_x "<eval <VAR.WPN.DAM_MIN>> to <eval <VAR.WPN.DAM_MAX>> base damage"
+  
+  if ( <VAR.WPN.TWOHANDS> )
+     MSG_EFFECT_ADD "two-handed"
+  else
+     MSG_EFFECT_ADD "single-handed"
+  endif
+
+  VAR.WEIGHT    = <eval ((1+<VAR.WPN.WEIGHT>)/10)>
+  if ( 0 )
+  elseif ( <VAR.WEIGHT> ==  0 )
+     MSG_EFFECT_ADD "ultra fast"
+  elseif ( <VAR.WEIGHT> ==  1 )
+     MSG_EFFECT_ADD "extremely fast"
+  elseif ( <VAR.WEIGHT> ==  2 )
+     MSG_EFFECT_ADD "very fast"
+  elseif ( <VAR.WEIGHT> ==  3 )
+     MSG_EFFECT_ADD "fast"
+  elseif ( <VAR.WEIGHT> ==  4 )
+     MSG_EFFECT_ADD "quite fast"
+  elseif ( <VAR.WEIGHT> ==  5 )
+     MSG_EFFECT_ADD "normal speed"
+  elseif ( <VAR.WEIGHT> ==  6 )
+     MSG_EFFECT_ADD "below normal speed"
+  elseif ( <VAR.WEIGHT> ==  7 )
+     MSG_EFFECT_ADD "a bit slow"
+  elseif ( <VAR.WEIGHT> ==  8 )
+     MSG_EFFECT_ADD "slow"
+  elseif ( <VAR.WEIGHT> ==  9 )
+     MSG_EFFECT_ADD "very slow"
+  elseif ( <VAR.WEIGHT> == 10 )
+     MSG_EFFECT_ADD "extremely slow"
+  elseif ( <VAR.WEIGHT> == 11 )
+     MSG_EFFECT_ADD " ultra slow"
+  else
+     MSG_EFFECT_ADD "stupidly slow"
+  endif
+
+  if ( <VAR.DUR> > 0 )
+    MSG_EFFECT_ADD_0 "extra durability"
+    MSG_EFFECT_ADD_x "+<eval (<var.DUR>)>% durability"
+  elseif ( <VAR.DUR> < 0 )
+    MSG_EFFECT_ADD_0 "reduced durability"
+    MSG_EFFECT_ADD_x "<eval (<var.DUR>)>% durability"
+  endif
+
+  // informative only
+  if ( <VAR.EFFECT.WEAPON_BLOCK> )
+     MSG_EFFECT_ADD_0 "weapon parry"
+     MSG_EFFECT_ADD_x "+<eval <var.EFFECT.WEAPON_BLOCK>>% weapon parry"
+  endif
+  
+  //if ( <VAR.WPN.LEVEL> 0)
+    // MSG_EFFECT_ADD_0 "Level <eval <VAR.WPN.LEVEL>>"
+    // MSG_EFFECT_ADD_x "Level <eval <VAR.WPN.LEVEL>>"
+  //endif  
+  
+
+  if ( <VAR.EFFECT.CRITICAL> )
+     MSG_EFFECT_ADD_0 "armour pierce"
+     MSG_EFFECT_ADD_x "+<eval <var.EFFECT.CRITICAL>>% armour pierce"
+  endif
+
+  if ( <VAR.EFFECT.ANTI_UNDEAD> )
+     MSG_EFFECT_ADD_0 "undead slaying"
+     MSG_EFFECT_ADD_x "+<eval <var.EFFECT.ANTI_UNDEAD>>% undead slaying"
+  endif
+
+  if ( <VAR.EFFECT.ANTI_DAEMON> )
+     MSG_EFFECT_ADD_0 "daemon slaying"
+     MSG_EFFECT_ADD_x "+<eval <var.EFFECT.ANTI_DAEMON>>% daemon slaying"
+  endif
+
+  if ( <VAR.EFFECT.ANTI_DRAGON> )
+     MSG_EFFECT_ADD_0 "dragon slaying"
+     MSG_EFFECT_ADD_x "+<eval <var.EFFECT.ANTI_DRAGON>>% dragon slaying"
+  endif
+
+  if ( <VAR.EFFECT.ANTI_GIANT> )
+     MSG_EFFECT_ADD_0 "giant slaying"
+     MSG_EFFECT_ADD_x "+<eval <var.EFFECT.ANTI_GIANT>>% giant slaying"
+  endif
+ 
+  if ( <VAR.EFFECT.ANTI_SHADOW> )
+     MSG_EFFECT_ADD_0 "shadow bane"
+     MSG_EFFECT_ADD_x "+<eval <var.EFFECT.ANTI_SHADOW>>% shadow bane"
+  endif
+
+  if ( <VAR.EFFECT.ANTI_GOOD> )
+     MSG_EFFECT_ADD_0 "justice slaying"
+     MSG_EFFECT_ADD_x "+<eval <var.EFFECT.ANTI_GOOD>>% justice slaying"
+  endif
+
+  if ( <VAR.EFFECT.ANTI_EVIL> )
+     MSG_EFFECT_ADD_0 "criminal slaying"
+     MSG_EFFECT_ADD_x "+<eval <var.EFFECT.ANTI_EVIL>>% criminal slaying"
+  endif
+
+  if ( <VAR.EFFECT.DAMAGE> )
+     MSG_EFFECT_ADD_0 "enhanced damage"
+  if ( <VAR.EFFECT.DAMAGE> > 0 )
+MSG_EFFECT_ADD_x "+<eval <var.EFFECT.DAMAGE>>% damage"
+  else
+MSG_EFFECT_ADD_x "<eval <var.EFFECT.DAMAGE>>% damage"
+
+  endif
+
+  if ( <VAR.EFFECT.FIRE> )
+     MSG_EFFECT_ADD_0 "fire damage"
+     MSG_EFFECT_ADD_x "+<eval <var.EFFECT.FIRE>>% fire damage"
+  endif
+
+  if ( <VAR.EFFECT.COLD> )
+     MSG_EFFECT_ADD_0 "cold damage"
+     MSG_EFFECT_ADD_x "+<eval <var.EFFECT.COLD>>% cold damage"
+  endif
+
+  if ( <VAR.EFFECT.ENERGY> )
+     MSG_EFFECT_ADD_0 "energy damage"
+     MSG_EFFECT_ADD_x "+<eval <var.EFFECT.ENERGY>>% energy damage"
+  endif
+
+  if ( <VAR.EFFECT.ACID> )
+     MSG_EFFECT_ADD_0 "acid damage"
+     MSG_EFFECT_ADD_x "+<eval <var.EFFECT.ACID>>% acid damage"
+  endif
+
+  if ( <VAR.EFFECT.ACID> )
+     MSG_EFFECT_ADD_0 "shadow damage"
+     MSG_EFFECT_ADD_x "+<eval <var.EFFECT.SHADOW>>% shadow damage"
+  endif
+
+  if ( <VAR.EFFECT.DISPELL> )
+     MSG_EFFECT_ADD_0 "spelldrain"
+     MSG_EFFECT_ADD_x "<eval <var.EFFECT.DISPELL>>% spelldrain"
+  endif
+
+  if ( <VAR.EFFECT.DRAIN_LIFE> )
+     MSG_EFFECT_ADD_0 "drain life"
+     MSG_EFFECT_ADD_x "<eval <var.EFFECT.DRAIN_LIFE>>% drain life"
+  endif
+
+  if ( <VAR.EFFECT.DRAIN_MANA> )
+     MSG_EFFECT_ADD_0 "drain mana"
+     MSG_EFFECT_ADD_x "<eval <var.EFFECT.DRAIN_MANA>>% drain mana"
+  endif
+
+  if ( <VAR.EFFECT.DRAIN_STAM> )
+     MSG_EFFECT_ADD_0 "drain stamina"
+     MSG_EFFECT_ADD_x "<eval <var.EFFECT.DRAIN_STAM>>% drain stamina"
+  endif
+
+  if ( <VAR.EFFECT.MANA_VAMPIRE> )
+     MSG_EFFECT_ADD_0 "mana vampire"
+     MSG_EFFECT_ADD_x "<eval <var.EFFECT.MANA_VAMPIRE>>% mana vampire"
+  endif
+  
+  if ( <VAR.EFFECT.STAM_VAMPIRE> )
+     MSG_EFFECT_ADD_0 "stamina vampire"
+     MSG_EFFECT_ADD_x "<eval <var.EFFECT.STAM_VAMPIRE>>% stamina vampire"
+  endif
+
+  if ( <VAR.EFFECT.HITS_VAMPIRE> )
+     MSG_EFFECT_ADD_0 "pure vampire"
+     MSG_EFFECT_ADD_x "<eval <var.EFFECT.HITS_VAMPIRE>>% pure vampire"
+  endif
+  
+  if (<MORE2> > 0 )
+     MSG_EFFECT_ADD_0 "poisoning"
+     MSG_EFFECT_ADD_x "<eval <MORE2>> poisoning blows"
+  endif
+  
+  if ( <VAR.EFFECT.PURITY> )
+     MSG_EFFECT_ADD_0 "purity"
+     MSG_EFFECT_ADD_x "<eval <var.EFFECT.PURITY>>% purity"
+  endif
+
+  if ( <VAR.EFFECT.TAINTING> )
+     MSG_EFFECT_ADD_0 "tainting"
+     MSG_EFFECT_ADD_x "<eval <var.EFFECT.TAINTING>>% tainting"
+  endif
+ 
+ if ( <VAR.EFFECT.LEGENDARY_ENERGY> )
+     MSG_EFFECT_ADD_0 "lightning enchanted"
+     MSG_EFFECT_ADD_x "<eval <var.EFFECT.LEGENDARY_ENERGY>>% lightning damage"
+  endif
+
+[FUNCTION MESSAGE_NAME]
+   VAR.MESSAGE_NAME    = <NAME>
+   if !( <ISIDENTIFIED> )
+      VAR.ADJ    = ""
+      if ( <TYPE> == t_scroll )
+        if (0<ISNECROSCROLL> )
+         if ( <AMOUNT> > 1 )
+            VAR.MESSAGE_NAME    = necro scrolls
+         else
+            VAR.MESSAGE_NAME    = necro scroll
+         endif   
+        else
+         if ( <AMOUNT> > 1 )
+            VAR.MESSAGE_NAME    = scrolls
+         else
+            VAR.MESSAGE_NAME    = scroll
+         endif
+        endif
+      endif
+   else
+     doswitch <QUAL>
+        VAR.ADJ    = ""
+        VAR.ADJ    = " of fine quality"
+        VAR.ADJ    = " of superior quality"
+        VAR.ADJ    = " of superb quality"
+        VAR.ADJ    = " of exceptional quality"
+     enddo
+   endif
+
+
+   if ( (<AMOUNT> > 1) && (<TYPE> != t_corpse) )
+      MESSAGE @<eval <args>> <AMOUNT> <VAR.MESSAGE_NAME><VAR.ADJ>
+   elseif ( 0<tag.legendary> == 1 )
+      MESSAGE @<eval <args>> <VAR.MESSAGE_NAME><VAR.ADJ>
+   elseif ( strmatch( "a*", "<VAR.MESSAGE_NAME>" ) || strmatch( "e*", "<VAR.MESSAGE_NAME>" ) || strmatch( "i*", "<VAR.MESSAGE_NAME>" ) || strmatch( "o*", "<VAR.MESSAGE_NAME>" ) || strmatch( "u*", "<VAR.MESSAGE_NAME>" ) || strmatch( "h*", "<VAR.MESSAGE_NAME>" ) )
+      MESSAGE @<eval <args>> an <VAR.MESSAGE_NAME><VAR.ADJ>
+   else
+      MESSAGE @<eval <args>> a <VAR.MESSAGE_NAME><VAR.ADJ>
+   endif
+endif
+
+[FUNCTION MESSAGE_UNIDENTIFIED]
+  if !( <ISWEAPON> || <ISARMOUR> || <ISSHIELD> || <ISMAGIC> )
+     // MESSAGE_NAME 0
+     return 0
+  endif
+  
+  VAR.NAME    = <NAME>
+  if ( !strmatch( "<TYPEDEF.NAME> crafted by*", "<VAR.NAME>" ) )
+     NAME    =
+  endif
+  if !( <ISWEAPON> || <ISARMOUR> || <ISSHIELD> )
+     MESSAGE_NAME 0
+     MESSAGE (unidentified)
+  elseif ( <SLOT1_GEM> )
+     MESSAGE a jeweled <NAME>
+     MESSAGE (unidentified)
+  else
+     MESSAGE_NAME 0
+     MESSAGE (unidentified)
+  endif
+  NAME        = <VAR.NAME>  
+  return 1
+
+
+// -Message Effects for Pre-AoS-
+
+[FUNCTION MESSAGE_EFFECT]
+
+
+
+// -Message Effects for AoS and Beyond-
+
+[FUNCTION MESSAGE_EFFECT_CLITOOLTIP]
+  
+//  if ( 0<OBJ.CONT> == 0 )
+//  elseif ( <OBJ.CONT.ISCHAR> )
+//  elseif ( <OBJ.CONT.TYPE> == t_eq_vendor_box )
+//     return 0
+//  endif
+
+  if !( <OBJ.ISWEAPON> || <OBJ.ISARMOUR> || <OBJ.ISSHIELD> || <OBJ.ISMAGIC> )
+     if ( <OBJ.ATTR> & attr_move_never )
+        OBJ.ATTR    = <OBJ.ATTR> & ~attr_identified
+     endif
+  endif
+
+//  if !( <OBJ.ISIDENTIFIED> )
+//     return <MESSAGE_UNIDENTIFIED>
+//  endif
+
+//  SRC.MSG_EFFECT_INIT
+  VAR.HUE    = 0
+
+  if ( 0 )
+  elseif ( <OBJ.ISWEAPON> )
+     VAR.hue    = <COLOR>
+     MSG_EFFECT_WEAPON
+  elseif ( <OBJ.ISARMOUR> || <OBJ.ISSHIELD> )
+     VAR.hue    = <COLOR>
+     MSG_EFFECT_ARMOUR
+  elseif ( <OBJ.TYPE> == t_scroll )
+     if ( <OBJ.ISNECROSCROLL> )
+           MSG_EFFECT_ADD <eval (<tag.item.skillmin_Necro>/10)>% Necromancy to use
+     endif
+     OBJ.TRIGGER @GetItemVars
+     if ( <var.item.skillmin_magery> )
+        if ( <SRC.ITEMID> < 30.0 )
+           MSG_EFFECT_ADD Magery required to recite
+        else
+           MSG_EFFECT_ADD <eval (<var.item.skillmin_magery>/10)>% Magery to recite
+        endif
+     else
+        MSG_EFFECT_ADD no Magery to recite
+     endif
+  else
+     OBJ.TRIGGER @MessageEffect
+  endif
+
+  OBJ.MESSAGE_NAME <eval <var.hue>>
+  
+  if ( strcmp( "<VAR.MSG_EFFECT>", "" ) )
+     ADDCLILOC 1042971,<VAR.MSG_EFFECT>
+  endif
+
+
+[FUNCTION SLOT_INIT]
+  //VAR.HIGH    = <eval (<QUALITY> / 256)>
+  VAR.HIGH    = 0
+  VAR.LOW    = <eval (<QUALITY> - (<VAR.HIGH>*256))>
+
+[FUNCTION SLOT1_GEM]
+//serv.log 1: <MOREm>
+//serv.log 2: <eval (<MOREm> - ((<MOREm> / 64)*64) )>
+  return <eval (<MOREm> - ((<MOREm> / 64)*64) )>
+
+[FUNCTION SLOT1_VAL]
+  return <eval (<MOREm> / 64)>
+
+[FUNCTION SLOT2_GEM]
+  VAR.MOREz    = <MOREz>
+  if ( <VAR.MOREz> < 0 )
+     VAR.MOREz    = <eval (<VAR.MOREz> + 256)>
+  endif
+  return <eval (<VAR.MOREz> - ((<VAR.MOREz> / 64)*64) )>
+
+[FUNCTION SLOT2_VAL]
+  VAR.MOREz    = <MOREz>
+  if ( <VAR.MOREz> < 0 )
+     VAR.MOREz    = <eval (<VAR.MOREz> + 256)>
+  endif
+  return <eval (<VAR.MOREz> / 64)>
+
+
+[FUNCTION GETQUAL]
+  SLOT_INIT
+  return <eval (<VAR.LOW>)>
+
+[FUNCTION QUAL]
+   VAR.QUAL    = <GETQUAL>
+   if ( 0 )
+   elseif ( <VAR.QUAL> <  70 )
+      VAR.QUAL    = 0
+   elseif ( <VAR.QUAL> < 100 )
+      VAR.QUAL    = 1
+   elseif ( <VAR.QUAL> < 150 )
+      VAR.QUAL    = 2
+   elseif ( <VAR.QUAL> < 199 )
+      VAR.QUAL    = 3
+   else
+      VAR.QUAL    = 4
+   endif
+
+   return <var.qual>
+
+
+[FUNCTION SETQUAL]
+  SLOT_INIT
+  VAR.LOW    = <args>
+  if ( 0<VAR.LOW> == 0 )
+     VAR.LOW    = 0
+  elseif ( <VAR.LOW> > 200 )
+     VAR.LOW    = 200
+  endif
+  QUALITY = <eval ((<VAR.HIGH>*256)+<VAR.LOW>)>
+
+
+//
+//  EFFECT list MESSAGES
+//
+[FUNCTION MSG_EFFECT_CLEAR]
+   VAR.MSG_EFFECT    = ""
+
+[FUNCTION MSG_EFFECT_ADD]
+   if ( !strcmp( "x<VAR.MSG_EFFECT>", "x" )
+      VAR.MSG_EFFECT    = <args>
+   else
+      VAR.MSG_EFFECT    = "<VAR.MSG_EFFECT>, <args>"
+   endif
+
+[FUNCTION MSG_EFFECT_INIT]
+   if ( (<ItemID> < 30.0) && (<ArmsLore> < 30.0) )
+      VAR.MSG_EFFECT_ADD = 1
+   else
+      VAR.MSG_EFFECT_ADD = 0
+   endif
+
+[FUNCTION MSG_EFFECT_ADD_0]
+   if ( 0<VAR.WPN.DESCRIBE> == 0 )
+      return 0
+   endif
+   if ( 0<VAR.MSG_EFFECT_ADD> == 1 )
+      MSG_EFFECT_ADD <args>
+   endif
+
+[FUNCTION MSG_EFFECT_ADD_x]
+   if ( 0<VAR.WPN.DESCRIBE> == 0 )
+      return 0
+   endif
+   if ( 0<VAR.MSG_EFFECT_ADD> == 0 )
+      MSG_EFFECT_ADD <args>
+   endif
+
+
+[FUNCTION MAKE_NAME]
+   if ( !<ISWEAPON> && !<ISARMOUR> && !<ISSHIELD> )
+      return 0
+   endif
+
+   if ( <SLOT1_GEM> )
+      if ( !strmatch( "jeweled*", "<NAME>" ) )
+         NAME    = jeweled <NAME>
+      endif
+   endif
+   return 1
+
+
+[EOF]

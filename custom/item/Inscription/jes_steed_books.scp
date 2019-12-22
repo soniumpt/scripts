@@ -1,0 +1,861 @@
+//Steed Books
+
+//Scripted by Wren (Jessica Graham)
+
+//09-24-03
+
+//Add an elseif to the retrieve and get_steed_name functions to add additional types of steedbook.
+//Added call to function "fix_stupid" before retrieving the steed.
+//Jan 19 '04 - Wren - Just call me a dumbass...helps if you call the function after you write it >_>
+//Feb 02 '04 - Wren - Changed getname function for unmatched names
+//Feb 03 '04 - Wren - Fixing so you can't put a book in a book :E
+//Feb 06 '04 - Wren - Upped the number of steeds they can hold
+
+//////////////FUNCTIONS FOR STEED BOOKS' RETRIEVE AND STORE/////////////////
+
+[FUNCTION store_steed]
+
+//Put the steed in the book
+
+IF !(<EVAL (<MOREZ>=25)>)
+
+   TARGET Target the <ARGS> you would like to add to this book.
+
+   RETURN 1
+
+ELSE
+
+   SRC.SYSMESSAGE This book is full.
+
+ENDIF
+
+
+
+
+
+[FUNCTION retrieve_steed]
+//Put the steed in the person's backpack
+
+IF !(<EVAL (<MOREZ>=0)>)
+
+
+
+   SRC.NEWITEM <ARGS>
+
+   SRC.ACT.COLOR=<COLOR>
+
+   SRC.ACT.MORE1=<MORE1>
+
+   SRC.ACT.NAME=<NAME>
+
+   SRC.ACT.BOUNCE
+
+
+
+   MOREZ = (<MOREZ>+-1)
+
+   IF <EVAL (<EVAL (<MOREZ>+-9)>=0)>
+
+      MOREM=1
+
+   ENDIF
+
+   RETURN 1
+
+
+
+ELSE
+
+   SRC.SYSMESSAGE This book appears to be empty.
+
+ENDIF
+
+
+
+[FUNCTION get_steed_name]
+
+//Give book default steed name
+   IF !STRCMPI("<TAG.STEED_ID>", "C_LLAMA")
+      NAME=Llama
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_LLAMA_ANGELIC")
+      NAME=Angelic Llama  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_LLAMA_RED_ROAN")
+      NAME=Red Roan Llama  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_LLAMA_ROAN")
+      NAME=Roan Llama  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_LLAMA_BLACK")
+      NAME=Black Llama  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_LLAMA_CRIMSON")
+      NAME=Crimson Llama  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_LLAMA_SKYGREY")
+      NAME=Sky Grey Llama  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_LLAMA_GREY")
+      NAME=Grey Llama  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_LLAMA_SKYBLUE")
+      NAME=Sky Blue Llama  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_LLAMA_CHOCOLATE")
+      NAME=Chocolate Llama  
+
+   ELSEIF <!STRCMPI("<TAG.STEED_ID>", "C_ETHEREAL_LLAMA")
+      NAME=Ethereal Llama  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_LLAMA_OF_THE_MOON")
+      NAME=Llama of the Moon  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_LLAMA_WINNIMATE")
+      NAME=Winnimate Llama  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_LLAMA_PANAMINO")
+      NAME=Panamino Llama  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_LLAMA_PACK")
+      NAME=Pack Llama  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_OSTARD_DESERT")
+      NAME=Oclock  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_ANGELIC_OCLOCK")
+      NAME=Angelic Oclock  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_OCLOCK_OF_THE_MOON")
+      NAME=Oclock of the Moon  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_EXPERIMENTAL_STEED")
+      NAME=Experimental Steed  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_DEATH_STEED")
+      NAME=Death Steed  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_OSTARD_ZOSTRICH")
+      NAME=Zostrich  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_ETHEREAL_ZOSTRICH")
+      NAME=Ethereal Zostrich  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_ICE_ZOSTRICH")
+      NAME=Ice Zostrich  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_LAVA_ZOSTRICH")
+      NAME=Lava Zostrich  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_VOID_ZOSTRICH")
+      NAME=Void Zostrich  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_TERATHANE_ZOST")
+      NAME=terathane zostrich  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_DARK_ZOST")
+      NAME=dark zostrich  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_ANGELIC_ZOST")
+      NAME=Angelic Zostrich  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_ZOSTRICH_OF_THE_MOON")
+      NAME=Zostrich of the Moon  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_OSTARD_FOREST")
+      NAME=Orn  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_ETHEREAL_ORN")
+      NAME=Ethereal Orn  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_JUNGLE_ORN")
+      NAME=Jungle Orn  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_ANGELIC_ORN")
+      NAME=Angelic Orn  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_ORN_OF_THE_MOON")
+      NAME=Orn of the Moon  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_HORSE_PACK")
+      NAME=Pack Horse  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_HORSE_GRAY")
+      NAME=Gray Horse  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_UNDEAD_HORSE")
+      NAME=Undead Horse  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_HORSE_DARKONIAN")
+      NAME=Evil Steed  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_HORSE_UNICORN")
+      NAME=Unicorn  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_HORSE_NIGHTMARE")
+      NAME=Nightmare  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_HORSE_HK")
+      NAME=Holy Steed  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_HORSE_HELL")
+      NAME=Hell Horse  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_HORSE_TAN")
+      NAME=Tan Horse  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_ETHEREAL_HORSE")
+      NAME=Ethereal Horse  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_ICE_HORSE")
+      NAME=Ice Horse  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_STEED_SAND")
+      NAME=Steed of Sand  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_UNICORN")
+      NAME=Unicorn  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_MOON_STEED")
+      NAME=Moon Steed  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_WAR_HORSE")
+      NAME=War Horse  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_JUNGLE_STEED")
+      NAME=Jungle Steed  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_FIRE_STEED")
+      NAME=Fire Steed  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "c_HORSE_PLASMASTEED")
+      NAME=Plasma Steed  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "c_HORSE_SHADOW")
+      NAME=Shadow
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_HORSE_SUN")
+      NAME = Steed of the Sun
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_HORSE_BROWN_DK")
+      NAME=DK Brown Horse  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_NIGHTMARE")
+      NAME=Nightmare  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_A_MUSTANG_WIMMIMATE")
+      NAME=Wimmimate Mustang  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_A_MUSTANG_BLACK")
+      NAME=Black Mustang  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_A_MUSTANG_CRIMSON")
+      NAME=Crimson Mustang  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_A_MUSTANG_SKYGRAY")
+      NAME=Sky Gray Mustang  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_A_MUSTANG_CHOCOLATE")
+      NAME=Chocolate Mustang  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_A_MUSTANG_ROAN")
+      NAME=Roan Mustang  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_A_MUSTANG_PAMAMINO")
+      NAME=Pamamino Mustang  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_M_NIGHTMARE")
+      NAME=Nightmare  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_A_MUSTANG_GREY")
+      NAME=Grey Mustang  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_A_MUSTANG_REDROAN")
+      NAME=Red Roan Mustang  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_HORSE_BROWN_LT")
+      NAME=LT Brown Horse  
+
+   ELSEIF !STRCMPI("<TAG.STEED_ID>", "C_A_MUSTANG_SKY")
+      NAME=Sky Blue Mustang  
+
+   ELSE
+      NAME=<SRC.TARG.NAME> 
+   ENDIF
+
+
+
+
+
+[FUNCTION fix_stupid]
+//Books are being retarded and MORE1 isn't saving right or something...so setting it every double-click to fix
+   
+   IF !STRCMPI("<NAME>", "Llama")
+      MORE1=C_LLAMA
+      TAG.STEED_ID=C_LLAMA
+     
+   ELSEIF !STRCMPI("<NAME>", "Angelic Llama")
+      MORE1=C_LLAMA_ANGELIC
+      TAG.STEED_ID=C_LLAMA_ANGELIC
+
+   ELSEIF !STRCMPI("<NAME>", "Red Roan Llama")
+      MORE1=C_LLAMA_RED_ROAN
+      TAG.STEED_ID=C_LLAMA_RED_ROAN
+
+   ELSEIF !STRCMPI("<NAME>", "Roan Llama")
+      MORE1=C_LLAMA_ROAN
+      TAG.STEED_ID=C_LLAMA_ROAN
+
+   ELSEIF !STRCMPI("<NAME>", "Black Llama")
+      MORE1=C_LLAMA_BLACK
+      TAG.STEED_ID=C_LLAMA_BLACK
+
+   ELSEIF !STRCMPI("<NAME>", "Crimson Llama")
+      MORE1=C_LLAMA_CRIMSON
+      TAG.STEED_ID=C_LLAMA_CRIMSON
+
+   ELSEIF !STRCMPI("<NAME>", "Sky Grey Llama")
+      MORE1=C_LLAMA_SKYGREY
+      TAG.STEED_ID=C_LLAMA_SKYGREY
+
+   ELSEIF !STRCMPI("<NAME>", "Grey Llama")
+      MORE1=C_LLAMA_GREY
+      TAG.STEED_ID=C_LLAMA_GREY
+
+   ELSEIF !STRCMPI("<NAME>", "Sky Blue Llama")
+      MORE1=C_LLAMA_SKYBLUE
+      TAG.STEED_ID=C_LLAMA_SKYBLUE
+
+   ELSEIF !STRCMPI("<NAME>", "Chocolate Llama")
+      MORE1=C_LLAMA_CHOCOLATE
+      TAG.STEED_ID=C_LLAMA_CHOCOLATE
+
+   ELSEIF !STRCMPI("<NAME>", "Ethereal Llama")
+      MORE1=C_ETHEREAL_LLAMA
+      TAG.STEED_ID=C_ETHEREAL_LLAMA
+
+   ELSEIF !STRCMPI("<NAME>", "Llama of the Moon")
+      MORE1=C_LLAMA_OF_THE_MOON
+      TAG.STEED_ID=C_LLAMA_OF_THE_MOON
+
+   ELSEIF !STRCMPI("<NAME>", "Winnimate Llama")
+      MORE1=C_LLAMA_WINNIMATE
+      TAG.STEED_ID=C_LLAMA_WINNIMATE
+
+   ELSEIF !STRCMPI("<NAME>", "Panamino Llama")
+      MORE1=C_LLAMA_PANAMINO
+      TAG.STEED_ID=C_LLAMA_PANAMINO
+
+   ELSEIF !STRCMPI("<NAME>", "Pack Llama")
+      MORE1=C_LLAMA_PACK
+      TAG.STEED_ID=C_LLAMA_PACK
+
+   ELSEIF !STRCMPI("<NAME>", "Oclock")
+      MORE1=C_OSTARD_DESERT
+      TAG.STEED_ID=C_OSTARD_DESERT
+
+   ELSEIF !STRCMPI("<NAME>", "Angelic Oclock")
+      MORE1=C_ANGELIC_OCLOCK
+      TAG.STEED_ID=C_ANGELIC_OCLOCK
+
+   ELSEIF !STRCMPI("<NAME>", "Oclock of the Moon")
+      MORE1=C_OCLOCK_OF_THE_MOON
+      TAG.STEED_ID=C_OCLOCK_OF_THE_MOON
+
+   ELSEIF !STRCMPI("<NAME>", "Experimental Steed")
+      MORE1=C_EXPERIMENTAL_STEED
+      TAG.STEED_ID=C_EXPERIMENTAL_STEED
+
+   ELSEIF !STRCMPI("<NAME>", "Death Steed")
+      MORE1=C_DEATH_STEED
+      TAG.STEED_ID=C_DEATH_STEED
+
+   ELSEIF !STRCMPI("<NAME>", "Zostrich")
+      MORE1=C_OSTARD_ZOSTRICH
+      TAG.STEED_ID=C_OSTARD_ZOSTRICH
+
+   ELSEIF !STRCMPI("<NAME>", "Ethereal Zostrich")
+      MORE1=C_ETHEREAL_ZOSTRICH
+      TAG.STEED_ID=C_ETHEREAL_ZOSTRICH
+
+   ELSEIF !STRCMPI("<NAME>", "Ice Zostrich")
+      MORE1=C_ICE_ZOSTRICH
+      TAG.STEED_ID=C_ICE_ZOSTRICH
+
+   ELSEIF !STRCMPI("<NAME>", "Lava Zostrich")
+      MORE1=C_LAVA_ZOSTRICH
+      TAG.STEED_ID=C_LAVA_ZOSTRICH
+
+   ELSEIF !STRCMPI("<NAME>", "Void Zostrich")
+      MORE1=C_VOID_ZOSTRICH
+      TAG.STEED_ID=C_VOID_ZOSTRICH
+
+   ELSEIF !STRCMPI("<NAME>", "terathane zostrich")
+      MORE1=C_TERATHANE_ZOST
+      TAG.STEED_ID=C_TERATHANE_ZOST
+
+   ELSEIF !STRCMPI("<NAME>", "dark zostrich")
+      MORE1=C_DARK_ZOST
+      TAG.STEED_ID=C_DARK_ZOST
+
+   ELSEIF !STRCMPI("<NAME>", "Angelic Zostrich")
+      MORE1=C_ANGELIC_ZOST
+      TAG.STEED_ID=C_ANGELIC_ZOST
+
+   ELSEIF !STRCMPI("<NAME>", "Zostrich of the Moon")
+      MORE1=C_ZOSTRICH_OF_THE_MOON
+      TAG.STEED_ID=C_ZOSTRICH_OF_THE_MOON
+
+   ELSEIF !STRCMPI("<NAME>", "Orn")
+      MORE1=C_OSTARD_FOREST
+      TAG.STEED_ID=C_OSTARD_FOREST
+
+   ELSEIF !STRCMPI("<NAME>", "Ethereal Orn")
+      MORE1=C_ETHEREAL_ORN
+      TAG.STEED_ID=C_ETHEREAL_ORN
+
+   ELSEIF !STRCMPI("<NAME>", "Jungle Orn")
+      MORE1=C_JUNGLE_ORN
+      TAG.STEED_ID=C_JUNGLE_ORN
+
+   ELSEIF !STRCMPI("<NAME>", "Angelic Orn")
+      MORE1=C_ANGELIC_ORN
+      TAG.STEED_ID=C_ANGELIC_ORN
+
+   ELSEIF !STRCMPI("<NAME>", "Orn of the Moon")
+      MORE1=C_ORN_OF_THE_MOON
+      TAG.STEED_ID=C_ORN_OF_THE_MOON
+
+   ELSEIF !STRCMPI("<NAME>", "Pack Horse")
+      MORE1=C_HORSE_PACK
+      TAG.STEED_ID=C_HORSE_PACK
+
+   ELSEIF !STRCMPI("<NAME>", "Gray Horse")
+      MORE1=C_HORSE_GRAY
+      TAG.STEED_ID=C_HORSE_GRAY
+
+   ELSEIF !STRCMPI("<NAME>", "Undead Horse")
+      MORE1=C_UNDEAD_HORSE
+      TAG.STEED_ID=C_UNDEAD_HORSE
+
+   ELSEIF !STRCMPI("<NAME>", "Evil Steed")
+      MORE1=C_HORSE_DARKONIAN
+      TAG.STEED_ID=C_HORSE_DARKONIAN
+
+//   ELSEIF !STRCMPI("<NAME>", "Unicorn")
+//      MORE1=C_HORSE_UNICORN
+//      TAG.STEED_ID=C_HORSE_UNICORN
+
+//   ELSEIF !STRCMPI("<NAME>", "Nightmare")
+//      MORE1=C_HORSE_NIGHTMARE
+//      TAG.STEED_ID=C_HORSE_NIGHTMARE
+
+   ELSEIF !STRCMPI("<NAME>", "Holy Steed")
+      MORE1=C_HORSE_HK
+      TAG.STEED_ID=C_HORSE_HK
+
+   ELSEIF !STRCMPI("<NAME>", "Hell Horse")
+      MORE1=C_HORSE_HELL
+      TAG.STEED_ID=C_HORSE_HELL
+
+   ELSEIF !STRCMPI("<NAME>", "Tan Horse")
+      MORE1=C_HORSE_TAN
+      TAG.STEED_ID=C_HORSE_TAN
+
+   ELSEIF !STRCMPI("<NAME>", "Ethereal Horse")
+      MORE1=C_ETHEREAL_HORSE
+      TAG.STEED_ID=C_ETHEREAL_HORSE
+
+   ELSEIF !STRCMPI("<NAME>", "Ice Horse")
+      MORE1=C_ICE_HORSE
+      TAG.STEED_ID=C_ICE_HORSE
+
+   ELSEIF !STRCMPI("<NAME>", "Steed of Sand")
+      MORE1=C_STEED_SAND
+      TAG.STEED_ID=C_STEED_SAND
+
+   ELSEIF !STRCMPI("<NAME>", "Unicorn")
+      MORE1=C_UNICORN
+      TAG.STEED_ID=C_UNICORN
+
+   ELSEIF !STRCMPI("<NAME>", "Moon Steed")
+      MORE1=C_MOON_STEED
+      TAG.STEED_ID=C_MOON_STEED
+
+   ELSEIF !STRCMPI("<NAME>", "War Horse")
+      MORE1=C_WAR_HORSE
+      TAG.STEED_ID=C_WAR_HORSE
+
+   ELSEIF !STRCMPI("<NAME>", "Jungle Steed")
+      MORE1=C_JUNGLE_STEED
+      TAG.STEED_ID=C_JUNGLE_STEED
+
+   ELSEIF !STRCMPI("<NAME>", "Fire Steed")
+      MORE1=C_FIRE_STEED
+      TAG.STEED_ID=C_FIRE_STEED
+
+   ELSEIF !STRCMPI("<NAME>", "Plasma Steed")
+      MORE1=c_HORSE_PLASMASTEED
+      TAG.STEED_ID=c_HORSE_PLASMASTEED
+
+   ELSEIF !STRCMPI("<NAME>", "DK Brown Horse")
+      MORE1=C_HORSE_BROWN_DK
+      TAG.STEED_ID=C_HORSE_BROWN_DK
+
+   ELSEIF !STRCMPI("<NAME>", "Nightmare")
+      MORE1=C_NIGHTMARE
+      TAG.STEED_ID=C_NIGHTMARE
+
+   ELSEIF !STRCMPI("<NAME>", "Wimmimate Mustang")
+      MORE1=C_A_MUSTANG_WIMMIMATE
+      TAG.STEED_ID=C_A_MUSTANG_WIMMIMATE
+
+   ELSEIF !STRCMPI("<NAME>", "Black Mustang")
+      MORE1=C_A_MUSTANG_BLACK
+      TAG.STEED_ID=C_A_MUSTANG_BLACK
+
+   ELSEIF !STRCMPI("<NAME>", "Crimson Mustang")
+      MORE1=C_A_MUSTANG_CRIMSON
+      TAG.STEED_ID=C_A_MUSTANG_CRIMSON
+
+   ELSEIF !STRCMPI("<NAME>", "Sky Gray Mustang")
+      MORE1=C_A_MUSTANG_SKYGRAY
+      TAG.STEED_ID=C_A_MUSTANG_SKYGRAY
+
+   ELSEIF !STRCMPI("<NAME>", "Chocolate Mustang")
+      MORE1=C_A_MUSTANG_CHOCOLATE
+      TAG.STEED_ID=C_A_MUSTANG_CHOCOLATE
+
+   ELSEIF !STRCMPI("<NAME>", "Roan Mustang")
+      MORE1=C_A_MUSTANG_ROAN
+      TAG.STEED_ID=C_A_MUSTANG_ROAN
+
+   ELSEIF !STRCMPI("<NAME>", "Pamamino Mustang")
+      MORE1=C_A_MUSTANG_PAMAMINO
+      TAG.STEED_ID=C_A_MUSTANG_PAMAMINO
+
+//   ELSEIF !STRCMPI("<NAME>", "Nightmare")
+//      MORE1=C_M_NIGHTMARE
+//      TAG.STEED_ID=C_M_NIGHTMARE
+ 
+   ELSEIF !STRCMPI("<NAME>", "Grey Mustang")
+      MORE1=C_A_MUSTANG_GREY
+      TAG.STEED_ID=C_A_MUSTANG_GREY
+ 
+   ELSEIF !STRCMPI("<NAME>", "Red Roan Mustang")
+      MORE1=C_A_MUSTANG_REDROAN
+      TAG.STEED_ID=C_A_MUSTANG_REDROAN
+ 
+   ELSEIF !STRCMPI("<NAME>", "LT Brown Horse")
+      MORE1=C_HORSE_BROWN_LT
+      TAG.STEED_ID=C_HORSE_BROWN_LT
+ 
+   ELSEIF !STRCMPI("<NAME>", "Sky Blue Mustang")
+      MORE1=C_A_MUSTANG_SKY
+      TAG.STEED_ID=C_A_MUSTANG_SKY
+
+   ELSEIF !STRCMPI("<NAME>", "Shadow")
+      MORE1=c_HORSE_SHADOW
+      TAG.STEED_ID=c_HORSE_SHADOW
+
+   ELSEIF !STRCMPI("<NAME>", "Steed of the Sun")
+      MORE1=C_HORSE_SUN
+      TAG.STEED_ID=C_HORSE_SUN
+
+   ELSE
+      'Do Nothing
+   ENDIF
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+///////////////////////////STEED BOOK GUMP///////////////////////////////////
+
+[DIALOG d_steed_book]
+
+0, 0
+
+
+
+PAGE 0
+
+  gumppic 0 17 2200
+
+  text 30   50  50 0
+
+  text 30   70  50 1
+
+  text 30  120   0 2
+
+  text 30  140   0 3
+
+  text 30  160   0 4
+
+  text 30  180   0 5
+
+
+
+PAGE 1
+
+  tilepic 230  40 <EVAL <MOREX>>
+
+  button  185  95 2472 2473 1 0 1
+
+  text    215  98   50 6
+
+  button  185 130 2472 2473 1 0 2
+
+  text    215 133   50 7
+
+  gumppic 225 170   51
+
+  text <QVAL <EVAL (<MOREM>=2)> ? 244  184  50  8 : 247  184  50  8 >
+
+
+
+
+
+[DIALOG d_steed_book TEXT]
+
+<NAME>
+
+Library
+
+Note: Adding a 
+
+Steed to this book
+
+resets its name to
+
+the default.
+
+Add to Book
+
+Retrieve Steed
+
+<EVAL <MOREZ>>
+
+
+
+
+
+[DIALOG d_steed_book BUTTON]
+
+ON = 1
+
+   store_steed <NAME>
+
+ON = 2
+   //Remove animal that was targeted and add to the book
+  IF !(<CONT>==<SRC.FINDLAYER.21.UID>)
+     SRC.SYSMESSAGE You must have it in your pack to use it.
+     RETURN 1
+  ENDIF
+
+   If <MOREX>=8438 //Llama
+
+      retrieve_steed i_pet_llama
+
+   ELSEIF <MOREX>=8487 //Pack Llama
+
+      retrieve_steed i_pet_llama_pack
+
+   ELSEIF <MOREX>=8501 //Oclock
+
+      retrieve_steed i_pet_ostard_desert
+
+   ELSEIF <MOREX>=8502 //Zostrich
+
+      retrieve_steed i_pet_ostard_zostrich
+
+   ELSEIF <MOREX>=8503 //Orn
+
+      retrieve_steed i_pet_ostard_forest
+
+   ELSEIF <MOREX>=8486 //Pack Horse
+
+      retrieve_steed i_pet_horse_pack
+
+   ELSEIF <MOREX>=8479 //Gray Horse
+
+      retrieve_steed i_pet_horse_gray
+
+   ELSEIF <MOREX>=8480 //Tan Horse
+
+      retrieve_steed i_pet_horse_tan
+
+   ELSEIF <MOREX>=8481 //Dark Brown Horse
+
+      retrieve_steed i_pet_horse_brown_dk
+
+   ELSEIF <MOREX>=8484 //Light Brown Horse
+
+      retrieve_steed i_pet_horse_brown_lt
+
+   ENDIF
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+
+///////////////////////////////STEED BOOKS///////////////////////////////////
+
+///MOREX = Shrunken Steed Image Number  
+
+///MOREY = Not Used Currently
+
+///MOREZ = Number of Steeds Stored
+
+///MOREM = Number of Digits (used for displaying the number of steeds centered)
+
+///MORE1 = CharDef Name
+
+///MORE2 = Not Used Currently
+
+///COLOR = Color of Steed
+
+///NAME = Name of Steed...Click event changes name displayed
+
+
+
+[ITEMDEF i_book_steed]
+
+NAME	= Steed Book
+
+ID	= i_book_of_truth
+
+TYPE	= t_script
+
+WEIGHT  = 1
+
+VALUE	= 500
+
+RESOURCES = 1 i_hide, 1 i_thread, 10 i_scroll_blank
+
+SKILLMAKE=INSCRIPTION 75.0, ANIMALLORE 50.0, t_scribe_tools
+
+
+
+ON=@Create
+
+  COLOR	= 0
+
+  MOREX = 8438
+
+  MOREZ = 0
+
+  MOREM = 1
+
+  MORE1 = c_llama
+
+
+
+ON=@Click
+
+  MESSAGE <NAME> Storage Book (<MOREZ>)
+  RETURN 1
+
+ON = @IdentifyMsg
+   VAR.ITEM.IDENTIFY.MSG	= This book contains <MOREZ> Steed(s).
+
+ON=@IDENTIFY
+  ATTR=<ATTR> &~ attr_identified
+
+
+ON=@DClick
+
+  //Can't use if you don't have it in your pack
+
+  IF !(<CONT>==<SRC.FINDLAYER.21.UID>)
+
+     SRC.SYSMESSAGE You must have it in your pack to use it.
+
+     RETURN 1
+
+  ENDIF
+
+  fix_stupid
+
+  DIALOG	d_steed_book
+
+  RETURN 1
+
+
+
+ON=@TARGON_ITEM
+   //Remove animal that was targeted and add to the book
+  IF (!(<CONT>==<SRC.FINDLAYER.21.UID>) || (<SRC.TARG.CONT>!=<SRC.FINDLAYER.21.UID>))
+     SRC.SYSMESSAGE You must have it in your pack to use it.
+     RETURN 1
+  ENDIF
+
+   //Remove Steed that is targeted and place in book
+   IF STRMATCH( "<SRC.TARG.BASEID>", "i_book_steed" )
+      SRC.SYSMESSAGE You cannot store the book inside the book.
+      RETURN 1
+   ENDIF
+
+   IF STRMATCH( "*donator*", "<SRC.TARG.MORE1>" )
+      SRC.SYSMESSAGE You cannot store donator steeds in steed books.
+      RETURN 1
+   ENDIF
+   
+   IF !(<MORE1>=<SRC.TARG.MORE1>)
+      SRC.SYSMESSAGE That does not appear to be a shrunken <NAME>.         
+      RETURN 1
+   ENDIF
+
+   IF (<SRC.TARG.COLOR>=<COLOR>)
+
+      SRC.TARG.REMOVE
+
+      MOREZ=(<MOREZ>+1)
+
+      IF <EVAL (<EVAL (<MOREZ>+-10)>=0)>
+
+         MOREM=2
+
+      ENDIF
+
+      SRC.SYSMESSAGE The <NAME> has been added to your collection.
+
+   ELSE
+
+      SRC.SYSMESSAGE That <NAME> appears to dyed.  You cannot save it in this book.
+
+   ENDIF
+
+
+
+   RETURN 1
+
+
+
+ON=@TARGON_CHAR
+
+   SRC.SYSMESSAGE Only shrunken <NAME>s can be added to this book.
+
+   RETURN 1
+
+
+
+CATEGORY=Items by Professions
+
+SUBSECTION=Scribe
+
+DESCRIPTION=<NAME> Storage Book
+
+
+
+[eof]

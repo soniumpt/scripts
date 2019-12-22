@@ -1,0 +1,256 @@
+[SKILLMENU sm_jewelry]
+Jewelry
+
+ON=M_Jewel_Combo <NAME> (<resmake>)
+  SERV.NEWITEM M_Jewel_Combo
+  NEW.EQUIP
+ON=i_beads <name> (<resmake>)
+  MAKEITEM=i_beads
+  TAG.MAKEITEM.LEVEL	= 100.0
+ON=i_necklace_metal_beads <name> (<resmake>)
+  MAKEITEM=i_necklace_metal_beads
+  TAG.MAKEITEM.LEVEL	= 100.0
+ON=i_necklace_gold <name> (<resmake>)
+  MAKEITEM=i_necklace_gold
+  TAG.MAKEITEM.LEVEL	= 100.0
+ON=i_necklace_gold_beads <name> (<resmake>)
+  MAKEITEM=i_necklace_gold_beads
+  TAG.MAKEITEM.LEVEL	= 100.0
+ON=i_earrings_gold <name> (<resmake>)
+  MAKEITEM=i_earrings_gold
+  TAG.MAKEITEM.LEVEL	= 100.0
+ON=i_ring_gold <name> (<resmake>)
+  MAKEITEM=i_ring_gold
+  TAG.MAKEITEM.LEVEL	= 100.0
+ON=i_bracelet_gold <name> (<resmake>)
+  MAKEITEM=i_bracelet_gold
+  TAG.MAKEITEM.LEVEL	= 100.0
+
+
+
+[ITEMDEF M_Jewel_Combo]
+ID=i_toolcase
+NAME	= Combine Magic Jewelry
+RESOURCES=i_Jewelry_Kit
+SKILLMAKE=TINKERING 90.0, EVALUATINGINTEL 75.0, ITEMID 50.0, t_tinker_tools
+TYPE	= t_eq_script
+
+ON=@Create
+   TIMER=60
+
+ON=@EQUIP
+   IF ((<SRC.TINKERING> < 900)||(<SRC.EVALUATINGINTEL> < 750)||(<SRC.ITEMID> < 500))
+      SRC.SYSMESSAGE You are not skilled enough to do this.
+      TIMER=1
+      RETURN 1
+   ELSE
+      TARGET Target the first piece of magic jewelry.
+   ENDIF
+
+ON=@TARGON_ITEM
+   IF !(<SRC.TARG.ISMAGICJEWELRY>)
+      SRC.SYSMESSAGE This tool will only combine magic jewelry.
+      REMOVE
+      RETURN 1
+   ELSEIF (<SRC.TARG.MORE2>>26)
+      SRC.SYSMESSAGE This tool will only combine magic jewelry up to +2.6.
+      REMOVE
+      RETURN 1
+   ELSEIF !(<SRC.TARG.CONT>==<SRC.FINDLAYER.21.UID>)
+      SRC.SYSMESSAGE You must have it in your pack to use it.
+      REMOVE
+      RETURN 1
+   ENDIF
+
+   IF ( <LINK> == 04fffffff ) 
+      LINK = <SRC.TARG.UID>
+      TAG.SKILLNUM1=<SRC.TARG.MORE1>
+      TAG.SKILLAMT1=<SRC.TARG.MORE2>
+      TARGET Target the piece of jewelry you would like to combine with this one.
+   ELSE
+      IF (<LINK.UID>=<SRC.TARG.UID>)
+         SRC.SYSMESSAGE STOP TRYING TO CHEAT! You need a second piece of jewelry to combine.
+         REMOVE
+         RETURN 1
+      ENDIF
+      TAG.SKILLNUM2=<SRC.TARG.MORE1>
+      TAG.SKILLAMT2=<SRC.TARG.MORE2>
+      IF (<TAG.SKILLNUM1>==<TAG.SKILLNUM2>)
+ 
+         //Lock it at 3% minimum chance for fail
+         IF (<EVAL <VAR.FAILCHANCE>>>100)
+            VAR.FAILCHANCE=1020
+         ELSE
+            VAR.FAILCHANCE=<SRC.TINKERING>
+         ENDIF
+
+         IF (RAND(1050) <= <VAR.FAILCHANCE>)
+
+            //Remove Required Resources
+            LINK.REMOVE
+            SRC.TARG.REMOVE
+
+            //Random selection of which piece of jewelry we will give back
+            IF (RAND(20) < 10)
+               SERV.NEWITEM <LINK.BASEID>
+            ELSE
+               SERV.NEWITEM <SRC.TARG.BASEID>
+            ENDIF
+            
+            //Set attributes of the jewelry
+            NEW.MORE1	= <TAG.SKILLNUM1>
+            NEW.COLOR	= color_skill_jewelry
+            NEW.TYPE	= t_skill_jewelry
+
+            //If they are holding a luck stone use it up and don't subtract as much
+            IF (<SRC.RESTEST 1 i_luck_stone>)
+               SRC.CONSUME	= 1 i_luck_stone
+               NEW.MORE2	= <EVAL (0<TAG.SKILLAMT1>+0<TAG.SKILLAMT2>-5)>		//Lucky
+            ELSE
+               NEW.MORE2	= <EVAL (0<TAG.SKILLAMT1>+0<TAG.SKILLAMT2>-10)>		//Normal
+            ENDIF
+
+            //Figure out name
+            VAR.INT		= <eval (<NEW.MORE2>/10)>
+            VAR.DEC		= <eval (<NEW.MORE2> - (<VAR.INT>*10))>
+            NEW.ISMAGICJEWELRY             
+            NEW.NAME <VAR.JewelryName> of +<eval <VAR.INT>>.<eval <VAR.DEC>> <SKILL_NAME <eval <NEW.MORE1>>>
+
+            //Bounce the item to their pack
+            NEW.BOUNCE
+            
+            //Log this for a bit
+            SERV.LOG <SRC.NAME> (<SRC.ACCOUNT>) created <NEW.NAME>.
+            
+            //Remove crafting object
+            REMOVE
+         ELSE
+            SRC.SYSMESSAGE You fail to combine the jewelry.
+	    IF (<SRC.RESTEST 1 i_luck_stone>)
+               SRC.CONSUME	= 1 i_luck_stone
+            ELSE
+               IF (RAND(20) < 10)
+                  IF (<SRC.EvaluatingIntel><900)
+                     IF (<LINK.MORE2>>5)
+                        LINK.MORE2	= <EVAL (<LINK.MORE2>-5)>
+                        LINK.ISMAGICJEWELRY
+                        LINK.NAME <VAR.JewelryName> of +<eval <VAR.INT>>.<eval <VAR.DEC>> <SKILL_NAME <EVAL <LINK.MORE1>>>
+                     ELSE
+                        LINK.REMOVE
+                     ENDIF
+                  ELSEIF (<SRC.EvaluatingIntel><=1000)
+                     IF (<LINK.MORE2>>4)
+                        LINK.MORE2	= <EVAL (<LINK.MORE2>-4)>
+                        LINK.ISMAGICJEWELRY
+                        LINK.NAME <VAR.JewelryName> of +<eval <VAR.INT>>.<eval <VAR.DEC>> <SKILL_NAME <EVAL <LINK.MORE1>>>
+                     ELSE
+                        LINK.REMOVE
+                     ENDIF
+                  ELSEIF (<SRC.EvaluatingIntel>>1000)
+                     IF (<LINK.MORE2>>3)
+                        LINK.MORE2	= <EVAL (<LINK.MORE2>-3)>
+                        LINK.ISMAGICJEWELRY
+                        LINK.NAME <VAR.JewelryName> of +<eval <VAR.INT>>.<eval <VAR.DEC>> <SKILL_NAME <EVAL <LINK.MORE1>>>
+                     ELSE
+                        LINK.REMOVE
+                     ENDIF
+                  ELSE
+                     SERV.LOG Error: EvaluatingIntel did not catch.
+                  ENDIF
+               ELSE
+                  IF (<SRC.EvaluatingIntel><900)
+                     IF (<SRC.TARG.MORE2>>5)
+                        SRC.TARG.MORE2	= <EVAL (<SRC.TARG.MORE2>-5)>
+                        SRC.TARG.ISMAGICJEWELRY
+                        SRC.TARG.NAME <VAR.JewelryName> of +<eval <VAR.INT>>.<eval <VAR.DEC>> <SKILL_NAME <EVAL <SRC.TARG.MORE1>>>
+                     ELSE
+                        SRC.TARG.REMOVE
+                     ENDIF
+                  ELSEIF (<SRC.EvaluatingIntel><=1000)
+                     IF (<SRC.TARG.MORE2>>4)
+                        SRC.TARG.MORE2	= <EVAL (<SRC.TARG.MORE2>-4)>
+                        SRC.TARG.ISMAGICJEWELRY
+                        SRC.TARG.NAME <VAR.JewelryName> of +<eval <VAR.INT>>.<eval <VAR.DEC>> <SKILL_NAME <EVAL <SRC.TARG.MORE1>>>
+                     ELSE
+                        SRC.TARG.REMOVE
+                     ENDIF
+                  ELSEIF (<SRC.EvaluatingIntel>>1000)
+                     IF (<SRC.TARG.MORE2>>3)
+                        SRC.TARG.MORE2	= <EVAL (<SRC.TARG.MORE2>-3)>
+                        SRC.TARG.ISMAGICJEWELRY
+                        SRC.TARG.NAME <VAR.JewelryName> of +<eval <VAR.INT>>.<eval <VAR.DEC>> <SKILL_NAME <EVAL <SRC.TARG.MORE1>>>
+                     ELSE
+                        SRC.TARG.REMOVE
+                     ENDIF
+                  ELSE
+                     SERV.LOG Error: EvaluatingIntel did not catch.
+                  ENDIF
+               ENDIF
+            ENDIF
+         ENDIF
+         REMOVE
+      ELSE
+         SRC.SYSMESSAGE You must have 2 pieces of jewelry that are for the same skill.
+         REMOVE
+      ENDIF
+   ENDIF
+   RETURN 1
+
+ON=@TARGON_CHAR
+   SRC.SYSMESSAGE You must target a piece of magic jewelry.
+   REMOVE
+   RETURN 1
+
+ON=@TARGON_GROUND
+   SRC.SYSMESSAGE You must target a piece of magic jewelry.
+   REMOVE 
+   RETURN 1
+
+ON=@TARGON_CANCEL
+   REMOVE
+   RETURN 1
+
+ON=@Timer
+   Remove 
+   RETURN 1
+
+
+[FUNCTION ISMAGICJEWELRY]
+IF (0) 
+ELSEIF (<BASEID>==i_skill_necklace_1)
+   VAR.JewelryName=Necklace
+ELSEIF (<BASEID>==i_skill_necklace_2)
+   VAR.JewelryName=Necklace
+ELSEIF (<BASEID>==i_skill_necklace_3)
+   VAR.JewelryNameE=Necklace
+ELSEIF (<BASEID>==i_skill_earrings)
+   VAR.JewelryName=Earrings
+ELSEIF (<BASEID>==i_skill_ring)
+   VAR.JewelryName=Ring
+ELSEIF (<BASEID>==i_skill_bracelet))
+   VAR.JewelryName=Bracelet
+ELSE
+  RETURN 0
+ENDIF
+RETURN 1
+
+
+
+[ITEMDEF i_jewelry_kit]
+NAME=Jewelry Kit
+ID=i_toolcase
+RESOURCES=i_TOOLCASE_EMPTY, 4 i_ingot_iron,1 i_log
+SKILLMAKE=TINKERING 50.0,t_tinker_tools
+WEIGHT=6
+TYPE=t_tinker_tools
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Jewelry Kit
+VALUE = 5000
+
+ON=@DCLICK
+  SRC.SKILLMENU sm_jewelry
+  RETURN 1
+
+
+[EOF]

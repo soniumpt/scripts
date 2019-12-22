@@ -1,0 +1,1262 @@
+//********************************************************//
+//Treasure Hunt - START THE EVENT   Actualizado 17-08-2015//
+//********************************************************//
+
+[FUNCTION thunt]
+
+IF (<VAR0.THUNTCHEST>)
+	SRC.SYSMESSAGE A Treasure Hunt is going on already.
+	RETURN 1
+ENDIF
+
+IF !(<ISNUM <ARGS>>)
+	SRC.SYSMESSAGE Please enter a number between 12 and 48 to start the Treasure Hunt.
+	SRC.SYSMESSAGE It's recommended to enter either 12, 24, 36 or 48.
+	RETURN 1
+ENDIF
+
+IF (<ARGS> < 12) || (<ARGS> > 48)
+	SRC.SYSMESSAGE Please enter a number between 12 and 48 to start the Treasure Hunt.
+	SRC.SYSMESSAGE It's recommended to enter either 12, 24, 36 or 48.
+	RETURN 1
+ENDIF
+
+SERV.ALLCLIENTS SYSMESSAGE @0798 A Treasure Hunt has begun with <ARGS> Clues!
+SERV.ALLCLIENTS SYSMESSAGE @0798 Get the first Treasure Hunt Clue from the Treasure Hunt Chest located at Britain Bridge and be the first to find <ARGS> other chests!
+SERV.ALLCLIENTS SYSMESSAGE @0798 Type .thuntratings during the event to see who is ahead!
+SERV.ALLCLIENTS SYSMESSAGE @0798 Type .thunthint to get an Hint for the current clue!
+
+SERV.LOG :TREASURE HUNT: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> is starting a Treasure Hunt. Number of Clues: <ARGS>
+
+FOR 1 <EVAL <ARGS>>
+	pick_thunt_clues <EVAL <LOCAL._FOR>>
+ENDFOR
+
+LOCAL.CHESTLOCATION=1386,1744,1
+
+FOR 1 <EVAL <ARGS>>
+	SERV.NEWITEM i_chest_thunt
+	NEW.MORE1=<LOCAL._FOR>
+	NEW.MORE2=<ARGS>
+	NEW.P=<LOCAL.CHESTLOCATION>
+	LOCAL.CHEST=<NEW.UID>
+	SERV.NEWITEM i_map_thunt_<EVAL <VAR.MAP<EVAL <LOCAL._FOR>>>>
+	SERV.LOG :TREASURE HUNT: Map <EVAL <LOCAL._FOR>> Number: <EVAL <VAR.MAP<EVAL <LOCAL._FOR>>>>
+	LOCAL.CHESTLOCATION=<NEW.MOREP>
+	NEW.CONT=<LOCAL.CHEST>
+	NEW.TAG.CLUE=<EVAL <LOCAL._FOR>>
+	NEW.DUPE 100
+ENDFOR
+
+SERV.NEWITEM i_chest_thunt_final
+NEW.MORE1=<EVAL <ARGS>+1>
+NEW.P=<LOCAL.CHESTLOCATION>
+LOCAL.CHEST=<NEW.UID>
+SERV.NEWITEM i_bag
+NEW.COLOR=020
+NEW.NAME=Treasure Hunt Prize Bag
+NEW.CONT=<LOCAL.CHEST>
+LOCAL.BAG=<NEW.UID>	
+SERV.NEWITEM i_pvptoken,{3}
+NEW.CONT=<LOCAL.BAG>
+SERV.NEWITEM i_gold,{50000}
+NEW.CONT=<LOCAL.BAG>
+
+SRC.SYSMESSAGE You have succesfully spawned the Treasure Hunt Chests. (<ARGS> Clues)
+SRC.SYSMESSAGE Final chest location is at: <LOCAL.CHESTLOCATION>
+VAR.THUNTCHEST=<ARGS>
+
+SRC.CLEAN_SELF_THUNT_TAGS_AND_VARS
+
+[FUNCTION pick_thunt_clues]
+TAG.Map=<EVAL <EVAL Rand(48)>>
+
+IF (<EVAL <TAG0.UsedMap<EVAL (<TAG.Map>+1)>>>==0)
+	TAG.UsedMap<EVAL (<TAG.Map>+1)> = 1
+	VAR.MAP<EVAL <ARGS>>=<EVAL (<TAG.Map>+1)>
+ELSE
+	pick_thunt_clues <EVAL <ARGS>>
+ENDIF
+
+[FUNCTION CLEAN_SELF_THUNT_TAGS_AND_VARS]
+TAG.MAP=
+
+FOR 1 48
+	TAG.USEDMAP<EVAL <LOCAL._FOR>>=
+	VAR.MAP<EVAL <LOCAL._FOR>>=
+ENDFOR
+
+//********************************************************//
+//				  Treasure Hunt - CHESTS 		          //
+//********************************************************//
+
+[ITEMDEF i_chest_thunt]
+ID=0e41
+NAME=Treasure Hunt Clue Chest
+TYPE=t_container
+TDATA2=042
+FLIP=1
+WEIGHT=20
+DUPELIST=0e40,0e41
+	
+
+ON=@CREATE
+ATTR=08000
+COLOR=079b
+
+ON=@CLICK
+IF (<SRC.ACCOUNT.PLEVEL> > 1)
+	SAY <NAME> - <EVAL <MORE1>>
+ELSE
+	SAY <NAME>
+ENDIF
+RETURN 1
+
+ON=@DCLICK
+IF !(<SRC.ISGM>)
+
+	IF (<SRC.FINDID.i_rune_incognito.UID>)
+		SRC.FINDID.i_rune_incognito.REMOVE
+	ENDIF
+
+	IF !(<SRC.ISEVENT.e_thunt>)
+		SRC.EVENTS +e_thunt
+	ENDIF
+	
+	IF (<EVAL <SRC.TAG0.THUNT_PROGRESS>> == <EVAL <MORE1>-1>)
+		SRC.ARROWQUEST 0,0
+		SRC.TAG.THUNT_PROGRESS = <MORE1>
+		SRC.EMOTE found the Treasure Hunt Clue number <EVAL <MORE1>>!
+		SERV.ALLCLIENTS SYSMESSAGE @07ac <SRC.NAME> has found a Treasure Hunt Clue! [<EVAL <MORE1>>/<EVAL <MORE2>>]
+		SERV.LOG :TREASURE HUNT: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> has found a Treasure Hunt Clue! [<EVAL <MORE1>>/<EVAL <MORE2>>]
+		FORCONT <SRC.FINDLAYER.21.UID> 0 
+			IF (<TAG0.CLUE>)
+				REMOVE
+			ENDIF
+		ENDFOR
+		OBJ=<SRC.TARG.FINDTYPE.T_MAP>
+		OBJ.BOUNCE	
+		OBJ.CONTP=95,88
+		SRC.thunt_ratings
+	ELSEIF (<EVAL <SRC.TAG0.THUNT_PROGRESS>> >= <EVAL <MORE1>>) 
+		SRC.SYSMESSAGE @079c You have already got a Treasure Hunt Clue from this Treasure Hunt Chest!
+	ELSE
+		SRC.SYSMESSAGE @079c You are unable to open this Treasure Hunt Chest yet!
+	ENDIF
+	RETURN 1
+	
+ENDIF
+	
+[ITEMDEF i_chest_thunt_final]
+ID=0e41
+NAME=Treasure Hunt Prize Chest
+TYPE=t_container
+TDATA2=042
+FLIP=1
+WEIGHT=20
+DUPELIST=0e40,0e41
+	
+ON=@CREATE
+ATTR=08000
+COLOR=0798
+
+ON=@DCLICK
+IF !(<SRC.ISGM>)
+
+	IF (<SRC.FINDID.i_rune_incognito.UID>)
+		SRC.FINDID.i_rune_incognito.REMOVE
+	ENDIF
+	
+	IF (<EVAL <SRC.TAG.THUNT_PROGRESS>> == <EVAL <MORE1>-1>)
+		SRC.ACCOUNT.TAG.THUNTWINNER=1
+		SRC.EMOTE won the Treasure Hunt!
+		SERV.ALLCLIENTS SYSMESSAGE @0798 <SRC.NAME> won the Treasure Hunt!
+		FORCONT <SRC.FINDLAYER.21.UID> 0 
+			IF (<TAG0.CLUE>)
+				REMOVE
+			ENDIF
+		ENDFOR
+		OBJ = <SRC.TARG.FINDID.I_BAG>
+		OBJ.BOUNCE
+		OBJ.CONTP=95,88
+		REMOVE
+		SRC.SYSMESSAGE @07a1 Congratulations! You have won the Treasure Hunt and your prize has been put in your backpack inside a red bag.
+		SERV.LOG :TREASURE HUNT: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> won the Treasure Hunt.
+		SRC.THUNT_FINISH
+		SERV.ALLCLIENTS SYSMESSAGE @0798 The Treasure Hunt is now over and all its related items have been successfully removed.
+	ELSE
+		SRC.SYSMESSAGE @079c You are unable to open this Treasure Hunt Chest yet!
+	ENDIF
+	RETURN 1
+	
+ENDIF
+	
+
+[FUNCTION THUNT_FINISH]
+
+// Give a Prize to other players (Optional) Must be placed at the start of this function if it is going to be used.
+
+FORCLIENTS 6144
+	IF !(<ACCOUNT.TAG0.THUNTWINNER>==1)
+		IF (<EVAL <TAG0.THUNT_PROGRESS>> >= <EVAL <EVAL <EVAL <EVAL <VAR.THUNTCHEST>*3>/4>+(<VAR.THUNTCHEST>/12)>>)
+			SERV.NEWITEM i_pvptoken,{2}
+			NEW.CONT=<FINDLAYER.21.UID>
+			SYSMESSAGE @07a1 Congratulations! You have found enough Treasure Hunt Clues to be rewarded with 2 PvP Ticket!
+			SERV.LOG :TREASURE HUNT: <UID> <ACCOUNT> <NAME> got 2 PvP Tickets for the Treasure Hunt. Clues Found: <EVAL <TAG.THUNT_PROGRESS>>
+		ELSEIF (<EVAL <TAG0.THUNT_PROGRESS>> >= <EVAL <EVAL <VAR.THUNTCHEST>*2>/3>)
+			SERV.NEWITEM i_pvptoken
+			NEW.CONT=<FINDLAYER.21.UID>
+			SYSMESSAGE @07a1 Congratulations! You have found enough Treasure Hunt Clues to be rewarded with 1 PvP Ticket!
+			SERV.LOG :TREASURE HUNT: <UID> <ACCOUNT> <NAME> got 1 PvP Ticket for the Treasure Hunt. Clues Found: <EVAL <TAG.THUNT_PROGRESS>>
+		ENDIF
+	ENDIF
+	ARROWQUEST 0,0
+ENDFOR
+
+// Clear Player Tags and Events
+
+FORPLAYERS 6144
+	TAG.THUNT_PROGRESS= 
+	TAG.THUNT_HINT=
+	ACCOUNT.TAG.THUNTWINNER=
+	EVENTS -e_thunt
+ENDFOR
+
+// Remove Chests 
+
+FORINSTANCES i_chest_thunt
+	REMOVE
+ENDFOR
+
+FORINSTANCES i_chest_thunt_final
+	REMOVE
+ENDFOR
+
+// Clean Vars
+VAR.THUNTCHEST=
+
+// Clear Ratings
+
+FOR 1 5
+
+	TRY UID.thuntratings.TAG.THUNT_PROGRESS<EVAL <LOCAL._FOR>>=
+	TRY UID.thuntratings.TAG.THUNT_HINT<EVAL <LOCAL._FOR>>=
+	TRY UID.thuntratings.TAG.THUNT_NAME<EVAL <LOCAL._FOR>>=
+
+ENDFOR
+
+//********************************************************//
+//					 Treasure Hunt - EVENTS		          //
+//********************************************************//
+
+[EVENTS e_thunt]
+ON=@CLICK
+MESSAGE @079b [Treasure Hunter - <EVAL <TAG.THUNT_PROGRESS>>/<EVAL <VAR.THUNTCHEST>>]
+
+ON=@DEATH
+SERV.ALLCLIENTS SYSMESSAGE @079c <SRC.NAME> has died while on the Treasure Hunt!
+
+ON=@LOGOUT
+ARROQUEST O,0
+
+ON=@UserQuestArrowClick
+SRC.SYSMESSAGE This Arrow will take you to the next Treasure Hunt Chest.
+
+//********************************************************//
+//					 Treasure Hunt - HINTS               //
+//********************************************************//
+
+[FUNCTION thunthint]
+IF !(<VAR0.THUNTCHEST>)
+	SRC.SYSMESSAGE There is no Treasure Hunt going on at the moment.
+	RETURN 1
+ELSE
+	SRC.SYSMESSAGE Please target the Treasure Hunt Clue you want to get an Hint to.
+	TARGETF thunthint_
+ENDIF	
+
+[FUNCTION thunthint_]
+IF (<ARGO.TAG0.CLUE>)
+
+	IF !(<VAR0.THUNTCHEST>)
+		ARGO.REMOVE
+		SRC.SYSMESSAGE @079c This Treasure Hunt Clue was removed since there is no Treasure Hunt going on at the moment.
+		RETURN 1
+	ENDIF
+
+	IF !(<ARGO.TOPOBJ.UID>==<SRC.UID>)
+		SRC.SYSMESSAGE @079c You must carry the Treasure Hunt Clue with yourself to get a Hint.
+		RETURN 1
+	ENDIF
+	
+	IF (<EVAL <ARGO.TAG0.GOTHINT>>==1)
+		SRC.SYSMESSAGE @0afe Hint: <ARGO.TAG.HINTGIVEN>
+		SRC.ARROWQUEST <ARGO.MOREP>
+		RETURN 1
+	ELSE
+		IF (<EVAL <SRC.TAG0.THUNT_PROGRESS>> <= <EVAL (<VAR.THUNTCHEST>/2)>)
+			IF (<EVAL <SRC.TAG0.THUNT_PROGRESS>> == <EVAL <ARGO.TAG0.CLUE>>)
+				IF (<EVAL <SRC.TAG0.THUNT_HINT>> < <EVAL (<VAR.THUNTCHEST>/4)>)
+					ARGO.TAG.GOTHINT=1
+					ARGO.TAG.HINT=<ARGO.TAG.HINT<EVAL <EVAL RAND(3)+1>>>
+					ARGO.TAG.HINTGIVEN=The next Treasure Hunt Chest is located at <ARGO.TAG.HINT>!
+					SRC.SYSMESSAGE @07ac You got a Hint! Follow the Arrow!
+					SRC.SYSMESSAGE @0afe Hint: <ARGO.TAG.HINTGIVEN>
+					SRC.TAG0.THUNT_HINT=<EVAL <SRC.TAG0.THUNT_HINT>+1>
+					SRC.ARROWQUEST <ARGO.MOREP>
+					RETURN 1
+				ELSE
+					SRC.SYSMESSAGE @079c You can't get more Hints for this Treasure Hunt!
+					RETURN 1
+				ENDIF
+			ELSE
+				SRC.SYSMESSAGE @079c This doesn't seem to be the Treasure Hunt Clue you are trying to decipher at the moment.
+				RETURN 1
+			ENDIF
+		ELSE
+			SRC.SYSMESSAGE @079c You can no longer ask for Hints at this point.
+			RETURN 1
+		ENDIF
+	ENDIF
+	
+ELSE
+	SRC.SYSMESSAGE @079c This is not a Treasure Hunt Clue.
+	RETURN 1
+ENDIF
+	
+RETURN 1
+
+[TYPEDEF t_map]
+
+ON=@DCLICK
+IF (<TAG0.CLUE>)
+
+	IF !(<VAR0.THUNTCHEST>)
+		REMOVE
+		SRC.SYSMESSAGE This Treasure Hunt Clue was removed since there is no Treasure Hunt going on at the moment.
+		RETURN 1
+	ELSE
+		IF !(<TAG0.TOBEREMOVED>)
+			TIMERF 3600, remove_me
+			TAG.TOBEREMOVED=1
+			SRC.SYSMESSAGE This Treasure Hunt Clue will be automatically removed in 1 hour.
+		ENDIF
+	ENDIF
+	
+ENDIF
+
+ON=@CLICK
+IF (<TAG0.CLUE>)
+
+	IF !(<VAR0.THUNTCHEST>)
+		REMOVE
+		SRC.SYSMESSAGE This Treasure Hunt Clue was removed since there is no Treasure Hunt going on at the moment.
+		RETURN 1
+	ENDIF
+
+	MESSAGE=Treasure Hunt Clue <EVAL <TAG.CLUE>>
+
+	IF !(<TOPOBJ.UID>==<SRC.UID>)
+		RETURN 1
+	ENDIF
+	
+	IF (<EVAL <TAG0.GOTHINT>>==1)
+		SRC.SYSMESSAGE @0afe Hint: <TAG.HINTGIVEN>
+		SRC.ARROWQUEST <MOREP>
+		RETURN 1
+	ELSE
+		IF (<EVAL <SRC.TAG0.THUNT_HINT>> < <EVAL (<VAR.THUNTCHEST>/4)>)
+			SRC.SYSMESSAGE @0afe Type .thunthint and target a Treasure Hunt Clue to get a Hint!
+			SRC.SYSMESSAGE @0afe You have <EVAL <EVAL (<VAR.THUNTCHEST>/4)>-<SRC.TAG0.THUNT_HINT>> Hints left.
+			RETURN 1
+		ENDIF
+	ENDIF
+	
+RETURN 1
+	
+ENDIF
+
+[PLEVEL 1]
+thunthint
+
+//********************************************************//
+//					 Treasure Hunt - RATINGS              //
+//********************************************************//
+
+[DEFNAME thunt_ratings]
+thuntratings 0438f5b66
+
+[FUNCTION thunt_ratings]
+
+FOR 1 5
+
+IF (<EVAL <SRC.TAG0.THUNT_PROGRESS>> > <EVAL <UID.thuntratings.TAG0.THUNT_PROGRESS<EVAL <LOCAL._FOR>>>>) || ((<EVAL <SRC.TAG0.THUNT_PROGRESS>> == <EVAL <UID.thuntratings.TAG0.THUNT_PROGRESS<EVAL <LOCAL._FOR>>>>) && (<EVAL <SRC.TAG0.THUNT_HINT>> < <EVAL <UID.thuntratings.TAG0.THUNT_HINT<EVAL <LOCAL._FOR>>>>))
+
+	IF STRMATCH("<UID.thuntratings.TAG.THUNT_NAME<EVAL <LOCAL._FOR>>>","<SRC.NAME>")
+						
+		TRY UID.thuntratings.TAG.THUNT_PROGRESS<EVAL <LOCAL._FOR>>=<EVAL <SRC.TAG.THUNT_PROGRESS>>
+		TRY UID.thuntratings.TAG.THUNT_HINT<EVAL <LOCAL._FOR>>=<EVAL <SRC.TAG.THUNT_HINT>>
+		
+		RETURN 1
+		
+	ELSEIF STRMATCH("<UID.thuntratings.TAG.THUNT_NAME<EVAL (<LOCAL._FOR>+1)>>","<SRC.NAME>")
+						
+		TRY UID.thuntratings.TAG.THUNT_PROGRESS<EVAL (<LOCAL._FOR>+1)>=<UID.thuntratings.TAG.THUNT_PROGRESS<EVAL <LOCAL._FOR>>>
+		TRY UID.thuntratings.TAG.THUNT_HINT<EVAL (<LOCAL._FOR>+1)>=<UID.thuntratings.TAG.THUNT_HINT<EVAL <LOCAL._FOR>>>
+		TRY UID.thuntratings.TAG.THUNT_NAME<EVAL (<LOCAL._FOR>+1)>=<UID.thuntratings.TAG.THUNT_NAME<EVAL <LOCAL._FOR>>>	
+				
+		TRY UID.thuntratings.TAG.THUNT_PROGRESS<EVAL <LOCAL._FOR>>=<EVAL <SRC.TAG.THUNT_PROGRESS>>
+		TRY UID.thuntratings.TAG.THUNT_HINT<EVAL <LOCAL._FOR>>=<EVAL <SRC.TAG.THUNT_HINT>>
+		TRY UID.thuntratings.TAG.THUNT_NAME<EVAL <LOCAL._FOR>>=<SRC.NAME>
+
+		RETURN 1
+	
+	ELSEIF STRMATCH("<UID.thuntratings.TAG.THUNT_NAME<EVAL (<LOCAL._FOR>+2)>>","<SRC.NAME>")
+	
+		TRY UID.thuntratings.TAG.THUNT_PROGRESS<EVAL (<LOCAL._FOR>+2)>=<UID.thuntratings.TAG.THUNT_PROGRESS<EVAL (<LOCAL._FOR>+1)>>
+		TRY UID.thuntratings.TAG.THUNT_HINT<EVAL (<LOCAL._FOR>+2)>=<UID.thuntratings.TAG.THUNT_HINT<EVAL (<LOCAL._FOR>+1)>>
+		TRY UID.thuntratings.TAG.THUNT_NAME<EVAL (<LOCAL._FOR>+2)>=<UID.thuntratings.TAG.THUNT_NAME<EVAL (<LOCAL._FOR>+1)>>
+		
+		TRY UID.thuntratings.TAG.THUNT_PROGRESS<EVAL (<LOCAL._FOR>+1)>=<UID.thuntratings.TAG.THUNT_PROGRESS<EVAL <LOCAL._FOR>>>
+		TRY UID.thuntratings.TAG.THUNT_HINT<EVAL (<LOCAL._FOR>+1)>=<UID.thuntratings.TAG.THUNT_HINT<EVAL <LOCAL._FOR>>>
+		TRY UID.thuntratings.TAG.THUNT_NAME<EVAL (<LOCAL._FOR>+1)>=<UID.thuntratings.TAG.THUNT_NAME<EVAL <LOCAL._FOR>>>	
+		
+		TRY UID.thuntratings.TAG.THUNT_PROGRESS<EVAL <LOCAL._FOR>>=<EVAL <SRC.TAG.THUNT_PROGRESS>>
+		TRY UID.thuntratings.TAG.THUNT_HINT<EVAL <LOCAL._FOR>>=<EVAL <SRC.TAG.THUNT_HINT>>
+		TRY UID.thuntratings.TAG.THUNT_NAME<EVAL <LOCAL._FOR>>=<SRC.NAME>
+		
+		RETURN 1
+		
+	ELSEIF STRMATCH("<UID.thuntratings.TAG.THUNT_NAME<EVAL (<LOCAL._FOR>+3)>>","<SRC.NAME>")
+	
+		TRY UID.thuntratings.TAG.THUNT_PROGRESS<EVAL (<LOCAL._FOR>+3)>=<UID.thuntratings.TAG.THUNT_PROGRESS<EVAL (<LOCAL._FOR>+2)>>
+		TRY UID.thuntratings.TAG.THUNT_HINT<EVAL (<LOCAL._FOR>+3)>=<UID.thuntratings.TAG.THUNT_HINT<EVAL (<LOCAL._FOR>+2)>>
+		TRY UID.thuntratings.TAG.THUNT_NAME<EVAL (<LOCAL._FOR>+3)>=<UID.thuntratings.TAG.THUNT_NAME<EVAL (<LOCAL._FOR>+2)>>
+	
+		TRY UID.thuntratings.TAG.THUNT_PROGRESS<EVAL (<LOCAL._FOR>+2)>=<UID.thuntratings.TAG.THUNT_PROGRESS<EVAL (<LOCAL._FOR>+1)>>
+		TRY UID.thuntratings.TAG.THUNT_HINT<EVAL (<LOCAL._FOR>+2)>=<UID.thuntratings.TAG.THUNT_HINT<EVAL (<LOCAL._FOR>+1)>>
+		TRY UID.thuntratings.TAG.THUNT_NAME<EVAL (<LOCAL._FOR>+2)>=<UID.thuntratings.TAG.THUNT_NAME<EVAL (<LOCAL._FOR>+1)>>
+		
+		TRY UID.thuntratings.TAG.THUNT_PROGRESS<EVAL (<LOCAL._FOR>+1)>=<UID.thuntratings.TAG.THUNT_PROGRESS<EVAL <LOCAL._FOR>>>
+		TRY UID.thuntratings.TAG.THUNT_HINT<EVAL (<LOCAL._FOR>+1)>=<UID.thuntratings.TAG.THUNT_HINT<EVAL <LOCAL._FOR>>>
+		TRY UID.thuntratings.TAG.THUNT_NAME<EVAL (<LOCAL._FOR>+1)>=<UID.thuntratings.TAG.THUNT_NAME<EVAL <LOCAL._FOR>>>	
+		
+		TRY UID.thuntratings.TAG.THUNT_PROGRESS<EVAL <LOCAL._FOR>>=<EVAL <SRC.TAG.THUNT_PROGRESS>>
+		TRY UID.thuntratings.TAG.THUNT_HINT<EVAL <LOCAL._FOR>>=<EVAL <SRC.TAG.THUNT_HINT>>
+		TRY UID.thuntratings.TAG.THUNT_NAME<EVAL <LOCAL._FOR>>=<SRC.NAME>
+		
+		RETURN 1
+		
+	ELSE
+	
+		TRY UID.thuntratings.TAG.THUNT_PROGRESS<EVAL (<LOCAL._FOR>+4)>=<UID.thuntratings.TAG.THUNT_PROGRESS<EVAL (<LOCAL._FOR>+3)>>
+		TRY UID.thuntratings.TAG.THUNT_HINT<EVAL (<LOCAL._FOR>+4)>=<UID.thuntratings.TAG.THUNT_HINT<EVAL (<LOCAL._FOR>+3)>>
+		TRY UID.thuntratings.TAG.THUNT_NAME<EVAL (<LOCAL._FOR>+4)>=<UID.thuntratings.TAG.THUNT_NAME<EVAL (<LOCAL._FOR>+3)>>
+	
+		TRY UID.thuntratings.TAG.THUNT_PROGRESS<EVAL (<LOCAL._FOR>+3)>=<UID.thuntratings.TAG.THUNT_PROGRESS<EVAL (<LOCAL._FOR>+2)>>
+		TRY UID.thuntratings.TAG.THUNT_HINT<EVAL (<LOCAL._FOR>+3)>=<UID.thuntratings.TAG.THUNT_HINT<EVAL (<LOCAL._FOR>+2)>>
+		TRY UID.thuntratings.TAG.THUNT_NAME<EVAL (<LOCAL._FOR>+3)>=<UID.thuntratings.TAG.THUNT_NAME<EVAL (<LOCAL._FOR>+2)>>
+	
+		TRY UID.thuntratings.TAG.THUNT_PROGRESS<EVAL (<LOCAL._FOR>+2)>=<UID.thuntratings.TAG.THUNT_PROGRESS<EVAL (<LOCAL._FOR>+1)>>
+		TRY UID.thuntratings.TAG.THUNT_HINT<EVAL (<LOCAL._FOR>+2)>=<UID.thuntratings.TAG.THUNT_HINT<EVAL (<LOCAL._FOR>+1)>>
+		TRY UID.thuntratings.TAG.THUNT_NAME<EVAL (<LOCAL._FOR>+2)>=<UID.thuntratings.TAG.THUNT_NAME<EVAL (<LOCAL._FOR>+1)>>
+		
+		TRY UID.thuntratings.TAG.THUNT_PROGRESS<EVAL (<LOCAL._FOR>+1)>=<UID.thuntratings.TAG.THUNT_PROGRESS<EVAL <LOCAL._FOR>>>
+		TRY UID.thuntratings.TAG.THUNT_HINT<EVAL (<LOCAL._FOR>+1)>=<UID.thuntratings.TAG.THUNT_HINT<EVAL <LOCAL._FOR>>>
+		TRY UID.thuntratings.TAG.THUNT_NAME<EVAL (<LOCAL._FOR>+1)>=<UID.thuntratings.TAG.THUNT_NAME<EVAL <LOCAL._FOR>>>	
+		
+		TRY UID.thuntratings.TAG.THUNT_PROGRESS<EVAL <LOCAL._FOR>>=<EVAL <SRC.TAG.THUNT_PROGRESS>>
+		TRY UID.thuntratings.TAG.THUNT_HINT<EVAL <LOCAL._FOR>>=<EVAL <SRC.TAG.THUNT_HINT>>
+		TRY UID.thuntratings.TAG.THUNT_NAME<EVAL <LOCAL._FOR>>=<SRC.NAME>
+		
+		RETURN 1
+	
+	ENDIF
+	
+ENDIF
+
+ENDFOR
+
+[DIALOG d_thunt_ratings]
+0,0
+page 0
+resizepic 92 56 3600 370 310
+dtext 212 90 137 Treasure Hunt Ratings
+dtext 120 130 1157 Pos
+dtext 190 130 1157 Name
+dtext 275 130 1157 Chests Found
+dtext 370 130 1157 Hints Used
+
+dtext 125 160 2300 1
+dtext 150 160 2300 <UID.thuntratings.TAG.THUNT_NAME1>
+dtext 305 160 2300 <EVAL <UID.thuntratings.TAG.THUNT_PROGRESS1>>
+dtext 395 160 2300 <EVAL <UID.thuntratings.TAG.THUNT_HINT1>>
+
+dtext 125 190 2300 2
+dtext 150 190 2300 <UID.thuntratings.TAG.THUNT_NAME2>
+dtext 305 190 2300 <EVAL <UID.thuntratings.TAG.THUNT_PROGRESS2>>
+dtext 395 190 2300 <EVAL <UID.thuntratings.TAG.THUNT_HINT2>>
+
+dtext 125 220 2300 3
+dtext 150 220 2300 <UID.thuntratings.TAG.THUNT_NAME3>
+dtext 305 220 2300 <EVAL <UID.thuntratings.TAG.THUNT_PROGRESS3>>
+dtext 395 220 2300 <EVAL <UID.thuntratings.TAG.THUNT_HINT3>>
+
+dtext 125 250 2300 4
+dtext 150 250 2300 <UID.thuntratings.TAG.THUNT_NAME4>
+dtext 305 250 2300 <EVAL <UID.thuntratings.TAG.THUNT_PROGRESS4>>
+dtext 395 250 2300 <EVAL <UID.thuntratings.TAG.THUNT_HINT4>>
+
+dtext 125 280 2300 5
+dtext 150 280 2300 <UID.thuntratings.TAG.THUNT_NAME5>
+dtext 305 280 2300 <EVAL <UID.thuntratings.TAG.THUNT_PROGRESS5>>
+dtext 395 280 2300 <EVAL <UID.thuntratings.TAG.THUNT_HINT5>>
+
+dtext 180 315 47 Total Treasure Hunts Chests: <EVAL <VAR.THUNTCHEST>>
+
+[FUNCTION thuntratings]
+IF (<VAR.THUNTCHEST>)
+	SRC.DIALOG d_thunt_ratings
+	RETURN 1
+ELSE
+	SRC.SYSMESSAGE There is no Treasure Hunt going on at the moment.
+ENDIF
+
+[PLEVEL 1]
+thuntratings
+
+//********************************************************//
+//					 Treasure Hunt - CLUES                //
+//********************************************************//
+
+[ITEMDEF i_map_thunt_1]
+ID=i_map
+NAME=Treasure Hunt Clue
+
+ON=@Create
+TYPE=T_MAP
+MORE1=040706ec
+MORE2=07270a0c
+MOREP=1431,2172
+PIN=100,100
+
+TAG.HINT1=E from the Hedge Maze
+TAG.HINT2=<MOREP>
+TAG.HINT3=48o9'S,7o35'E
+
+[ITEMDEF i_map_thunt_2]
+ID=i_map
+NAME=Treasure Hunt Clue
+
+ON=@Create
+TYPE=T_MAP
+MORE1=02330000
+MORE2=055302a1
+MOREP=963,273
+PIN=105,90
+
+TAG.HINT1=N from the Yew Moongate
+TAG.HINT2=<MOREP>
+TAG.HINT3=118o44'N,25o18'W
+
+[ITEMDEF i_map_thunt_3]
+ID=i_map
+NAME=Treasure Hunt Clue
+
+ON=@Create
+TYPE=T_MAP
+MORE1=06d70258
+MORE2=09f70578
+MOREP=2151,1000
+PIN=105,100
+
+TAG.HINT1=SE from the Desert
+TAG.HINT2=<MOREP>
+TAG.HINT3=54o50'N,58o13'E
+
+[ITEMDEF i_map_thunt_4]
+ID=i_map
+NAME=Treasure Hunt Clue
+
+ON=@Create
+TYPE=T_MAP
+MORE1=06ad0000
+MORE2=09cd01a9
+MOREP=2109,25
+PIN=105,20
+
+TAG.HINT1=N from Wrong
+TAG.HINT2=<MOREP>
+TAG.HINT3=140o32'N,55o15'E
+
+[ITEMDEF i_map_thunt_5]
+ID=i_map
+NAME=Treasure Hunt Clue
+
+ON=@Create
+TYPE=T_MAP
+MORE1=0c050083
+MORE2=0f2503a3
+MOREP=3477,531
+PIN=105,105
+
+TAG.HINT1=SE from the Sacrifice Shrine
+TAG.HINT2=<MOREP>
+TAG.HINT3=96o3'N,151o27'E
+
+[ITEMDEF i_map_thunt_6]
+ID=i_map
+NAME=Treasure Hunt Clue
+
+ON=@Create
+TYPE=T_MAP
+MORE1=08080000
+MORE2=0b28029b
+MOREP=2456,267
+PIN=105,85
+
+TAG.HINT1=N from Minoc
+TAG.HINT2=<MOREP>
+TAG.HINT3=119o16'N,79o39'E
+
+[ITEMDEF i_map_thunt_7]
+ID=i_map
+NAME=Treasure Hunt Clue
+
+ON=@Create
+TYPE=T_MAP
+MORE1=0f80594
+MORE2=041808b4
+MOREP=648,1828
+PIN=105,100
+
+TAG.HINT1=N from Skara Brae
+TAG.HINT2=<MOREP>
+TAG.HINT3=17o55'W,47o27'S
+
+[ITEMDEF i_map_thunt_8]
+ID=i_map
+NAME=Treasure Hunt Clue
+
+ON=@Create
+TYPE=T_MAP
+MORE1=063d047f
+MORE2=095d079f
+MOREP=1997,1551
+PIN=100,100
+
+TAG.HINT1=E from Britain
+TAG.HINT2=<MOREP>
+TAG.HINT3=6o24'N,47o23'E
+
+[ITEMDEF i_map_thunt_9]
+ID=i_map
+NAME=Treasure Hunt Clue
+
+ON=@Create
+TYPE=T_MAP
+MORE1=02db0a41
+MORE2=05dd0d61
+MOREP=1101,3025
+PIN=100,100
+
+TAG.HINT1=S from Destard
+TAG.HINT2=<MOREP>
+TAG.HINT3=123o8'S,15o36'W
+
+[ITEMDEF i_map_thunt_10]
+ID=i_map
+NAME=Treasure Hunt Clue
+
+ON=@Create
+TYPE=T_MAP
+MORE1=07f70dc5
+MORE2=0b171000
+MOREP=2439,3925,4
+PIN=105,135
+
+TAG.HINT1=W from the Valor Shrine
+TAG.HINT2=<MOREP>
+TAG.HINT3=202o14'S,78o28'E
+
+[ITEMDEF i_map_thunt_11]
+ID=i_map
+NAME=Treasure Hunt Clue
+
+ON=@Create
+TYPE=T_MAP
+MORE1=06d60cb5
+MORE2=09f60fd5
+MOREP=2150,3653
+PIN=100,100
+
+TAG.HINT1=E from the Honor Shrine
+TAG.HINT2=<MOREP>
+TAG.HINT3=178o19'S,58o8'E
+
+[ITEMDEF i_map_thunt_12]
+ID=i_map
+NAME=Treasure Hunt Clue
+
+ON=@Create
+TYPE=T_MAP
+MORE1=05df0697
+MORE2=08ff09b7
+MOREP=1903,2087,10
+PIN=105,105
+
+TAG.HINT1=the Marble Island
+TAG.HINT2=<MOREP>
+TAG.HINT3=40o41'S,40o46'E
+
+[ITEMDEF i_map_thunt_13]
+ID=i_map
+NAME=Treasure Hunt Clue
+
+ON=@Create
+TYPE=T_MAP
+MORE1=02e30777
+MORE2=06030a97
+MOREP=1139,2311
+PIN=100,100
+
+TAG.HINT1=S from the Hedge Maze
+TAG.HINT2=<MOREP>
+TAG.HINT3=60o22'S,12o56'W
+
+[ITEMDEF i_map_thunt_14]
+ID=i_map
+NAME=Treasure Hunt Clue
+
+ON=@Create
+TYPE=T_MAP
+MORE1=04b20c45
+MORE2=07d20f65
+MOREP=1602,3541
+PIN=105,100
+
+TAG.HINT1=W from the Honor Shrine
+TAG.HINT2=<MOREP>
+TAG.HINT3=168o29'S,19o37'E
+
+[ITEMDEF i_map_thunt_15]
+ID=i_map
+NAME=Treasure Hunt Clue
+
+ON=@Create
+TYPE=T_MAP
+MORE1=03140000
+MORE2=06340218
+MOREP=1188,136,5
+PIN=105,60
+
+TAG.HINT1=WN from the Justice Shrine
+TAG.HINT2=<MOREP>
+TAG.HINT3=130o46'N,9o29'W
+
+[ITEMDEF i_map_thunt_16]
+ID=i_map
+NAME=Treasure Hunt Clue
+
+ON=@Create
+TYPE=T_MAP
+MORE1=0bd60000
+MORE2=0ef601fc
+MOREP=3430,108
+PIN=105,50
+
+TAG.HINT1=N from the Sacrifice Shrine
+TAG.HINT2=<MOREP>
+TAG.HINT3=133o14'N,148o8'E
+
+[ITEMDEF i_map_thunt_17]
+ID=i_map
+NAME=Treasure Hunt Clue
+
+ON=@Create
+TYPE=T_MAP
+MORE1=05c802a0
+MORE2=08e805c0
+MOREP=1880,1072
+PIN=105,100
+
+TAG.HINT1=S from the Desert
+TAG.HINT2=<MOREP>
+TAG.HINT3=48o30'N,39o9'E
+
+[ITEMDEF i_map_thunt_18]
+ID=i_map
+NAME=Treasure Hunt Clue
+
+ON=@Create
+TYPE=T_MAP
+MORE1=042d
+MORE2=0213074d
+MOREP=131,1469,-2
+PIN=60,100
+
+TAG.HINT1=W from Shame
+TAG.HINT2=<MOREP>
+TAG.HINT3=13o37'N,83o48'W
+
+[ITEMDEF i_map_thunt_19]
+ID=i_map
+NAME=Treasure Hunt Clue
+
+ON=@Create
+TYPE=T_MAP
+MORE1=0adb0194
+MORE2=0dfb04b4
+MOREP=3179,804
+PIN=105,100
+
+TAG.HINT1=E from Vesper
+TAG.HINT2=<MOREP>
+TAG.HINT3=72o4'N,130o30'E
+
+[ITEMDEF i_map_thunt_20]
+ID=i_map
+NAME=Treasure Hunt Clue
+
+ON=@Create
+TYPE=T_MAP
+MORE1=04be0000
+MORE2=07de02bf
+MOREP=1614,303,1
+PIN=105,85
+
+TAG.HINT1=W from Wrong
+TAG.HINT2=<MOREP>
+TAG.HINT3=116o6'N,20o27'E
+
+[ITEMDEF i_map_thunt_21]
+ID=i_map
+NAME=Treasure Hunt Clue
+
+ON=@Create
+TYPE=T_MAP
+MORE1=04b90bfb
+MORE2=07d90f1b
+MOREP=1609,3467
+PIN=105,95
+
+TAG.HINT1=WN from the Honor Shrine
+TAG.HINT2=<MOREP>
+TAG.HINT3=161o58'S,20o6'E
+
+[ITEMDEF i_map_thunt_22]
+ID=i_map
+NAME=Treasure Hunt Clue
+
+ON=@Create
+TYPE=T_MAP
+MORE1=08330e3b
+MORE2=0b531000
+MOREP=2499,4043
+PIN=105,170
+
+TAG.HINT1=S from the Valor Shrine
+TAG.HINT2=<MOREP>
+TAG.HINT3=212o36'S,82o41'E
+
+[ITEMDEF i_map_thunt_23]
+ID=i_map
+NAME=Treasure Hunt Clue
+
+ON=@Create
+TYPE=T_MAP
+MORE1=06d80755
+MORE2=09f80a75
+MOREP=2153,2277
+PIN=105,100
+
+TAG.HINT1=E from the Spirituality Shrine
+TAG.HINT2=<MOREP>
+TAG.HINT3=57o23'S,58o21'E
+
+[ITEMDEF i_map_thunt_24]
+ID=i_map
+NAME=Treasure Hunt Clue
+
+ON=@Create
+TYPE=T_MAP
+MORE1=03f10007
+MORE2=07110327
+MOREP=1409,407,22
+PIN=105,100
+
+TAG.HINT1=N from the Justice Shrine
+TAG.HINT2=<MOREP>
+TAG.HINT3=106o57'N,6o2'E
+
+[ITEMDEF i_map_thunt_25]
+ID=i_map
+NAME=Treasure Hunt Clue
+
+ON=@Create
+TYPE=T_MAP
+MORE1=04730285
+MORE2=079305a5
+MOREP=1539,1045
+PIN=105,100
+
+TAG.HINT1=E from Despise
+TAG.HINT2=<MOREP>
+TAG.HINT3=50o53'N,15o11'E
+
+[ITEMDEF i_map_thunt_26]
+ID=i_map
+NAME=Treasure Hunt Clue
+
+ON=@Create
+TYPE=T_MAP
+MORE1=07280000
+MORE2=0a480302
+MOREP=2232,370
+PIN=105,100
+
+TAG.HINT1=NE from the Desert
+TAG.HINT2=<MOREP>
+TAG.HINT3=110o12'N,63o54'E
+
+[ITEMDEF i_map_thunt_27]
+ID=i_map
+NAME=Treasure Hunt Clue
+
+ON=@Create
+TYPE=T_MAP
+MORE1=07870000
+MORE2=0aa701c3
+MOREP=2327,51
+PIN=105,25
+
+TAG.HINT1=N from Minoc
+TAG.HINT2=<MOREP>
+TAG.HINT3=138o15'N,70o35'E
+
+[ITEMDEF i_map_thunt_28]
+ID=i_map
+NAME=Treasure Hunt Clue
+
+ON=@Create
+TYPE=T_MAP
+MORE1=0a3b0000
+MORE2=0d5b0319
+MOREP=3019,393,1
+PIN=100,100
+
+TAG.HINT1=N from Vesper
+TAG.HINT2=<MOREP>
+TAG.HINT3=108o11'N,119o15'E
+
+[ITEMDEF i_map_thunt_29]
+ID=i_map
+NAME=Treasure Hunt Clue
+
+ON=@Create
+TYPE=T_MAP
+MORE1=09250604
+MORE2=0c450924
+MOREP=2741,1940
+PIN=105,100
+
+TAG.HINT1=N from Buccaneer's Den
+TAG.HINT2=<MOREP>
+TAG.HINT3=27o46'S,99o42'E
+
+[ITEMDEF i_map_thunt_30]
+ID=i_map
+NAME=Treasure Hunt Clue
+
+ON=@Create
+TYPE=T_MAP
+MORE1=05e40838
+MORE2=09040b58
+MOREP=1908,2504
+PIN=100,100
+
+TAG.HINT1=E from the Spirituality Shrine
+TAG.HINT2=<MOREP>
+TAG.HINT3=42o11'S,41o7'E
+
+[ITEMDEF i_map_thunt_31]
+ID=i_map
+NAME=Treasure Hunt Clue
+
+ON=@Create
+TYPE=T_MAP
+MORE1=04b005cd
+MORE2=07d008ed
+MOREP=1600,1885
+PIN=100,100
+
+TAG.HINT1=S from Britain
+TAG.HINT2=<MOREP>
+TAG.HINT3=22o56'S,19o28'E
+
+[ITEMDEF i_map_thunt_32]
+ID=i_map
+NAME=Treasure Hunt Clue
+
+ON=@Create
+TYPE=T_MAP
+MORE1=02f4
+MORE2=03120614
+MOREP=386,1156
+PIN=100,100
+
+TAG.HINT1=N from Shame
+TAG.HINT2=<MOREP>
+TAG.HINT3=41o7'N,65o52'W
+
+
+[ITEMDEF i_map_thunt_33]
+ID=i_map
+NAME=Treasure Hunt Clue
+
+ON=@Create
+TYPE=T_MAP
+MORE1=052c0111
+MORE2=084c0431
+MOREP=1724,673,16
+PIN=105,105
+
+TAG.HINT1=NE from Skara Brae
+TAG.HINT2=<MOREP>
+TAG.HINT3=83o35'N,28o11'E
+
+[ITEMDEF i_map_thunt_34]
+ID=i_map
+NAME=Treasure Hunt Clue
+
+ON=@Create
+TYPE=T_MAP
+MORE1=031006dc
+MORE2=063009fc
+MOREP=1184,2156
+PIN=90,95
+
+TAG.HINT1=N from the Hedge Maze	
+TAG.HINT2=<MOREP>
+TAG.HINT3=46o45'S,9o46'W
+
+[ITEMDEF i_map_thunt_35]
+ID=i_map
+NAME=Treasure Hunt Clue
+
+ON=@Create
+TYPE=T_MAP
+MORE1=04610099
+MORE2=078103b9
+MOREP=1521,553,1
+PIN=105,100
+
+TAG.HINT1=NE from the Desert	
+TAG.HINT2=<MOREP>
+TAG.HINT3=94o7'N,13o55'E
+
+[ITEMDEF i_map_thunt_36]
+ID=i_map
+NAME=Treasure Hunt Clue
+
+ON=@Create
+TYPE=T_MAP
+MORE1=010dd03fb
+MORE2=013fd071b
+MOREP=4717,1419
+PIN=105,100
+
+TAG.HINT1=SE from Moonglow	
+TAG.HINT2=<MOREP>
+TAG.HINT3=18o1'N,238o38'E
+
+[ITEMDEF i_map_thunt_37]
+ID=i_map
+NAME=Treasure Hunt Clue
+
+ON=@Create
+TYPE=T_MAP
+MORE1=03b4073b
+MORE2=06d40a5b
+MOREP=1348,2251
+PIN=100,100
+
+TAG.HINT1=E from the Hedge Maze
+TAG.HINT2=<MOREP>
+TAG.HINT3=55o6'S,1o45'E
+
+[ITEMDEF i_map_thunt_38]
+ID=i_map
+NAME=Treasure Hunt Clue
+
+ON=@Create
+TYPE=T_MAP
+MORE1=0387099d
+MORE2=06a70cbd
+MOREP=1303,2861
+PIN=105,100
+
+TAG.HINT1=NW from the Honor Shrine
+TAG.HINT2=<MOREP>
+TAG.HINT3=108o43'S,1o24'W
+
+
+[ITEMDEF i_map_thunt_39]
+ID=i_map
+NAME=Treasure Hunt Clue
+
+ON=@Create
+TYPE=T_MAP
+MORE1=06da0bf0
+MORE2=09fa0f10
+MOREP=2154,3456
+PIN=105,100
+
+TAG.HINT1=E from the Honor Shrine
+TAG.HINT2=<MOREP>
+TAG.HINT3=161o0'S,58o25'E
+
+
+[ITEMDEF i_map_thunt_40]
+ID=i_map
+NAME=Treasure Hunt Clue
+
+ON=@Create
+TYPE=T_MAP
+MORE1=063b07c2
+MORE2=095b0ae2
+MOREP=1995,2386
+PIN=105,100
+
+TAG.HINT1=E from the Spirituality Shrine
+TAG.HINT2=<MOREP>
+TAG.HINT3=66o58'S,47o15'E
+
+
+[ITEMDEF i_map_thunt_41]
+ID=i_map
+NAME=Treasure Hunt Clue
+
+ON=@Create
+TYPE=T_MAP
+MORE1=069202f6
+MORE2=09b20616
+MOREP=2082,1158
+PIN=105,100
+
+TAG.HINT1=S from the Desert
+TAG.HINT2=<MOREP>
+TAG.HINT3=40o57'N,53o22'E
+
+
+[ITEMDEF i_map_thunt_42]
+ID=i_map
+NAME=Treasure Hunt Clue
+
+ON=@Create
+TYPE=T_MAP
+MORE1=08b60000
+MORE2=0bd601c2
+MOREP=2630,50,38
+PIN=100,30
+
+TAG.HINT1=N from Minoc
+TAG.HINT2=<MOREP>
+TAG.HINT3=138o20'N,91o53'E
+
+
+[ITEMDEF i_map_thunt_43]
+ID=i_map
+NAME=Treasure Hunt Clue
+
+ON=@Create
+TYPE=T_MAP
+MORE1=073e0280
+MORE2=0a5e05a0
+MOREP=2254,1040
+PIN=105,105
+
+TAG.HINT1=N from Cove
+TAG.HINT2=<MOREP>
+TAG.HINT3=51o19'N,65o27'E
+
+[ITEMDEF i_map_thunt_44]
+ID=i_map
+NAME=Treasure Hunt Clue
+
+ON=@Create
+TYPE=T_MAP
+MORE1=0a800000
+MORE2=0da002c6
+MOREP=3088,310
+PIN=105,90
+
+TAG.HINT1=W from Sacrifice
+TAG.HINT2=<MOREP>
+TAG.HINT3=115o29'N,124o6'E
+
+
+
+[ITEMDEF i_map_thunt_45]
+ID=i_map
+NAME=Treasure Hunt Clue
+
+ON=@Create
+TYPE=T_MAP
+MORE1=098806b8
+MORE2=0ca809d8
+MOREP=2840,2120
+PIN=105,100
+
+
+TAG.HINT1=E from Buccaneer's Den
+TAG.HINT2=<MOREP>
+TAG.HINT3=43o35'S,106o39'E
+
+
+[ITEMDEF i_map_thunt_46]
+ID=i_map
+NAME=Treasure Hunt Clue
+
+ON=@Create
+TYPE=T_MAP
+MORE1=058706d1
+MORE2=08a709f1
+MOREP=1815,2145
+PIN=105,100
+
+TAG.HINT1=NE from the Spirituality Shrine
+TAG.HINT2=<MOREP>
+TAG.HINT3=45o47'S,34o35'E
+
+[ITEMDEF i_map_thunt_47]
+ID=i_map
+NAME=Treasure Hunt Clue
+
+ON=@Create
+TYPE=T_MAP
+MORE1=029903c6
+MORE2=05b906e6
+MOREP=1065,1366
+PIN=105,100
+
+
+TAG.HINT1=SE from Yew
+TAG.HINT2=<MOREP>
+TAG.HINT3=22o40'N,18o8'W
+
+
+[ITEMDEF i_map_thunt_48]
+ID=i_map
+NAME=Treasure Hunt Clue
+
+ON=@Create
+TYPE=T_MAP
+MORE1=062e0000
+MORE2=094e0300
+MOREP=1982,368,3
+PIN=105,100
+
+TAG.HINT1=S from Wrong
+TAG.HINT2=<MOREP>
+TAG.HINT3=110o23'N,46o20'E

@@ -1,0 +1,916 @@
+//21/3/13 - Arkos: Added Pecicular, Wonderous and Rare fishes.
+//09/01/14 - Ray: Transfered FIX_FISHING.scp to here.
+
+[ITEMDEF 09cc]
+DEFNAME=i_fish_big_1
+VALUE=6
+TYPE=T_FISH
+WEIGHT=1
+
+CATEGORY=Items by Professions
+SUBSECTION=Fisherman
+DESCRIPTION=Fish (Whole)
+
+
+[ITEMDEF 09cd]
+DEFNAME=i_fish_big_2
+VALUE=7
+TYPE=T_FISH
+WEIGHT=1
+
+CATEGORY=Items by Professions
+SUBSECTION=Fisherman
+DESCRIPTION=Fish
+
+[ITEMDEF 09ce]
+DEFNAME=i_fish_big_3
+VALUE=7
+TYPE=T_FISH
+WEIGHT=1
+
+CATEGORY=Items by Professions
+SUBSECTION=Fisherman
+DESCRIPTION=Fish
+
+[ITEMDEF 09cf]
+DEFNAME=i_fish_big_4
+VALUE=8
+TYPE=T_FISH
+WEIGHT=1
+
+CATEGORY=Items by Professions
+SUBSECTION=Fisherman
+DESCRIPTION=Fish
+
+[ITEMDEF 097b]
+// Cooked_fish
+DEFNAME=i_fish_cut_cooked
+RESOURCES=1 I_FISH_SMALL
+TYPE=T_FOOD
+VALUE=3
+WEIGHT=0.1
+CATEGORY=Items by Professions
+SUBSECTION=Cook
+DESCRIPTION=Fish Steak (Cooked)
+
+[REGIONRESOURCE mr_sos_bottle]
+SKILL=90.0,100.0
+AMOUNT=1
+REAP=i_bottle_ale
+REGEN=60*30*10
+
+[REGIONRESOURCE mr_fish1]
+// fishing default
+// t_water
+SKILL=1.0 100.0
+AMOUNT=9 30
+REAP=i_fish_big_1
+REGEN=60*60*10
+
+[REGIONRESOURCE mr_fish2]
+// fishing default
+// t_water
+SKILL=30.0 100.0
+REAP=i_fish_big_2
+AMOUNT=9 30
+REGEN=60*60*10
+
+[REGIONRESOURCE mr_fish3]
+// fishing default
+// t_water
+SKILL=50.0 100.0
+AMOUNT=9 30
+REAP=i_fish_big_3
+REGEN=60*60*10
+
+[REGIONRESOURCE mr_fish4]
+// fishing default
+// t_water
+SKILL=60.0 100.0
+AMOUNT=9 30
+REAP=i_fish_big_4
+REGEN=60*60*10
+
+[REGIONRESOURCE mr_boots]
+SKILL=0.0 40.0
+AMOUNT=1 1
+REAP=random_fishing_junk
+REGEN=60*60*10
+
+////////// NEw fishing ///////////
+//// boo and Sqweak ////////////
+
+//Prize Fish//
+
+[ITEMDEF i_fish_prize] 
+DEFNAME=i_fish_prize
+NAME=Prize Fish 
+ID=i_fish_small 
+TYPE=t_normal 
+VALUE=7 
+WEIGHT=1 
+CATEGORY=Imperial uo 
+SUBSECTION=Fishing
+DESCRIPTION=Prize Fish (magic) 
+
+ON=@create 
+COLOR=colors_brown 
+
+ON=@DCLICK
+SRC.MESSAGE Yummy! 
+SOUND=snd_spell_cunning 
+SRC.SPELLEFFECT=10,100 
+REMOVE 
+RETURN 1
+
+[ITEMDEF i_fish_wondrous]
+DEFNAME=i_fish_wondrous 
+NAME=Wondrous Fish 
+ID=i_fish_small 
+TYPE=t_normal 
+VALUE=7 
+WEIGHT=1 
+CATEGORY=Imperial uo 
+SUBSECTION=Fishing
+DESCRIPTION=Wondrous Fish (magic) 
+
+ON=@CREATE 
+COLOR=colors_blue 
+
+ON=@DCLICK
+SRC.MESSAGE Yummy! 
+SOUND=snd_spell_agility 
+SRC.SPELLEFFECT=9,100 
+REMOVE 
+RETURN 1
+
+
+[ITEMDEF i_prize_fish]
+DEFNAME=i_prize_fish
+ID=i_trophy_fish
+RESOURCES=15 i_log,10 i_hides_cut
+WEIGHT=3
+NAME= Prize Fish
+CATEGORY=Imperial uo
+SUBSECTION=Fish
+DESCRIPTION=Prize Fish
+SKILLMAKE=75.0 CARPENTRY, t_carpentry
+RESOURCES=1 i_fish_prize,1 i_log_mahogany,1 i_nails_steel
+
+[ITEMDEF i_fish_danger]
+DEFNAME=i_fish_danger
+ID=I_HOLE
+TYPE=T_SPAWN_CHAR
+NAME= Water Elemental
+Weight=1
+DESCRIPTION=One Shot Water Ele Spawn
+SUBSECTION=Water Ele Spawn
+CATEGORY=Custom Items
+
+ON=@Create
+ATTR=attr_move_never|attr_invis
+MORE1={ c_elem_water 1 c_elem_water 1 }
+MORE2=0
+MOREP=0,1,3
+TIMER=2
+
+ON=@TIMER
+	IF <AMOUNT>==0
+		REMOVE
+		RETURN 1
+	ENDIF
+	IF <MORE2>==1
+		MOREP=30,30,3
+		AMOUNT=0
+		RETURN 0
+	ENDIF
+	RETURN 0
+
+
+[ITEMDEF i_killfish]
+DEFNAME=i_killfish
+ID=i_fish_big_1
+NAME=Unknown Fish
+VALUE=200
+
+ON=@DCLICK
+   IF (<MORE1>==0)
+      IF (<SRC.FISHING>>99.9)
+         MORE1=1
+         NAME=Holy Fish
+         SRC.MESSAGE You identify the fish as a Holly Fish.
+         RETURN 1
+      ELSE
+         SRC.MESSAGE You aren't skilled enough to identify the fish.
+         RETURN 1
+      ENDIF
+   ENDIF
+   IF (<SRC.KILLS>==0)
+      SRC.MESSAGE You take a bite in the fish but you feel no change.
+   ELSEIF (<SRC.KILLS>>0) && (<AMOUNT>>1)
+      SRC.KILLS=<SRC.KILLS>-1
+      SRC.MESSAGE As you eat the fish, you feel some weight leaving your mind.
+      CONSUME 1
+   ELSEIF (<SRC.KILLS>>0) && (<AMOUNT>==1)
+      SRC.KILLS=<SRC.KILLS>-1
+      SRC.MESSAGE As you eat the fish, you feel some weight leaving your mind.
+      REMOVE
+   ENDIF
+   RETURN 1
+
+[ITEMDEF i_temp_str]
+DEFNAME=i_temp_str
+ID=i_fish_big_3
+NAME=Unknown Fish
+VALUE=200
+
+ON=@DCLICK
+IF (<MORE1>==0)
+   IF (<SRC.FISHING>>89.9)
+      MORE1=1
+      NAME=Lion Fish
+      SRC.MESSAGE You identify the fish as a Lion Fish.
+      RETURN 1
+   ELSE
+      SRC.MESSAGE You aren't skilled enough to identify the fish.
+      RETURN 1
+   ENDIF
+ENDIF
+
+IF (<SRC.TAG.TEMPFISH>==0)
+   IF (<AMOUNT>=1)
+      SRC.NEWITEM=i_temp_str_effect
+      SRC.ACT.LINK=<SRC.UID>
+      SRC.ACT.EQUIP
+      REMOVE
+   ELSE
+      SRC.NEWITEM=i_temp_str_effect
+      SRC.ACT.LINK=<SRC.UID>
+      SRC.ACT.EQUIP
+      CONSUME 1
+   ENDIF
+ELSE
+   SRC.MESSAGE You can't use another fish yet.
+ENDIF
+RETURN 1
+
+[ITEMDEF i_temp_str_effect]
+DEFNAME	= i_temp_str_effect
+ID	= i_memory
+type	= t_eq_script
+NAME	= Lion Fish
+
+ON=@CREATE
+   ATTR=attr_invis
+   TIMER=90
+
+ON=@EQUIP
+   MORE1=RAND(10)+5
+   LINK.MODSTR=<LINK.MODSTR>+<EVAL <MORE1>>
+   LINK.TAG.TEMPFISH=1
+   RETURN 1
+
+ON=@TIMER
+   LINK.MODSTR=<LINK.MODSTR>-<EVAL <MORE1>>
+   LINK.TAG.TEMPFISH=
+   REMOVE
+   RETURN 1
+
+
+[ITEMDEF i_temp_dex]
+DEFNAME=i_temp_dex
+ID=i_fish_big_1
+NAME=Unknown Fish
+VALUE=200
+
+ON=@DCLICK
+IF (<MORE1>==0)
+   IF (<SRC.FISHING>>89.9)
+      MORE1=1
+      COLOR=084C
+      NAME=Monkey Fish
+      SRC.MESSAGE You identify the fish as a Monkey Fish.
+      RETURN 1
+   ELSE
+      SRC.MESSAGE You aren't skilled enough to identify the fish.
+      RETURN 1
+   ENDIF
+ENDIF
+IF (<SRC.TAG.TEMPFISH>==0)
+   IF (<AMOUNT>=1)
+      SRC.NEWITEM=i_temp_dex_effect
+      SRC.ACT.LINK=<SRC.UID>
+      SRC.ACT.EQUIP
+      REMOVE
+   ELSE
+      SRC.NEWITEM=i_temp_dex_effect
+      SRC.ACT.LINK=<SRC.UID>
+      SRC.ACT.EQUIP
+      CONSUME 1
+   ENDIF
+ELSE
+   SRC.MESSAGE You can't use another fish yet.
+ENDIF
+RETURN 1
+
+[ITEMDEF i_temp_dex_effect]
+DEFNAME=i_temp_dex_effect
+ID	= i_memory
+type	= t_eq_script
+NAME	= Monkey Fish
+
+ON=@CREATE
+   ATTR=attr_invis
+   TIMER=90
+
+ON=@EQUIP
+   MORE1=RAND(10)+5
+   LINK.MODDEX=<LINK.MODDEX>+<EVAL <MORE1>>
+   LINK.TAG.TEMPFISH=1
+   RETURN 1
+
+ON=@TIMER
+   LINK.MODDEX=<LINK.MODDEX>-<EVAL <MORE1>>
+   LINK.TAG.TEMPFISH=
+   REMOVE
+   RETURN 1
+
+[ITEMDEF i_temp_int]
+DEFNAME=i_temp_int
+ID=i_fish_big_3
+NAME=Unknown Fish
+VALUE=200
+
+ON=@DCLICK
+IF (<MORE1>==0)
+   IF (<SRC.FISHING>>89.9)
+      MORE1=1
+      NAME=Sage Fish
+      SRC.MESSAGE You identify the fish as a Sage Fish.
+      RETURN 1
+   ELSE
+      SRC.MESSAGE You aren't skilled enough to identify the fish.
+      RETURN 1
+   ENDIF
+ENDIF
+IF (<SRC.TAG.TEMPFISH>==0)
+   IF (<AMOUNT>=1)
+      SRC.NEWITEM=i_temp_int_effect
+      SRC.ACT.LINK=<SRC.UID>
+      SRC.ACT.EQUIP
+      REMOVE
+   ELSE
+      SRC.NEWITEM=i_temp_int_effect
+      SRC.ACT.LINK=<SRC.UID>
+      SRC.ACT.EQUIP
+      CONSUME 1
+   ENDIF
+ELSE
+   SRC.MESSAGE You can't use another fish yet.
+ENDIF
+RETURN 1
+
+[ITEMDEF i_temp_int_effect]
+DEFNAME=i_temp_int_effect
+ID	= i_memory
+type	= t_eq_script
+NAME	= Sage Fish
+
+ON=@CREATE
+   ATTR=attr_invis
+   TIMER=90
+
+ON=@EQUIP
+   MORE1=RAND(10)+5
+   LINK.MODINT=<LINK.MODINT>+<EVAL <MORE1>>
+   LINK.TAG.TEMPFISH=1
+   RETURN 1
+
+ON=@TIMER
+   LINK.MODINT=<LINK.MODINT>-<EVAL <MORE1>>
+   LINK.TAG.TEMPFISH=
+   REMOVE
+   RETURN 1
+
+[ITEMDEF i_fish_healing]
+DEFNAME=i_fish_healing
+ID=i_fish_big_3
+NAME=Unknown Fish
+VALUE=200
+
+ON=@DCLICK
+IF (<MORE1>==0)
+   IF (<SRC.FISHING>>89.9)
+      MORE1=1
+      NAME=Angel Fish
+      SRC.MESSAGE You identify the fish as a Angel Fish.
+      RETURN 1
+   ELSE
+      SRC.MESSAGE You aren't skilled enough to identify the fish.
+      RETURN 1
+   ENDIF
+ENDIF
+IF !(0<SRC.TAG.HEALINGFISH>==01) && !(<SRC.HITS>>=<SRC.STR>)
+   IF (<AMOUNT>=1)
+      SRC.TAG.HEALINGFISH=1
+      SRC.NEWITEM=i_fish_healing_effect
+      SRC.ACT.LINK=<SRC.UID>
+      SRC.ACT.EQUIP
+      REMOVE
+   ELSE
+      SRC.TAG.HEALINGFISH=1
+      SRC.NEWITEM=i_fish_healing_effect
+      SRC.ACT.LINK=<SRC.UID>
+      SRC.ACT.EQUIP
+      CONSUME 1
+   ENDIF
+ELSE
+   SRC.MESSAGE You cannot use the Angel Fish with full health.
+ENDIF
+RETURN 1
+
+[ITEMDEF i_fish_healing_effect]
+DEFNAME=i_fish_healing_effect
+ID	= i_memory
+type	= t_eq_script
+NAME	= Angel Fish
+
+ON=@CREATE
+   MORE1=0
+   MORE2={1 15}
+   SAY <EVAL <MORE2>>
+   TIMER=1
+   ATTR=attr_invis
+
+ON=@TIMER
+   MORE1=<MORE1>+1
+   TIMER = 1
+
+   IF (<MORE1> > 0) && (<MORE1> <= 15) && (<MORE1><=<MORE2>)
+      LINK.HITS=<LINK.HITS>+1
+   ELSE
+      LINK.TAG.HEALINGFISH=
+      REMOVE     
+   ENDIF
+   return 1
+
+[ITEMDEF i_fish_mana_healing]
+DEFNAME=i_fish_mana_healing
+ID=i_fish_big_1
+NAME=Unknown Fish
+VALUE=200
+
+ON=@DCLICK
+   IF (<MORE1>==0)
+      IF (<SRC.FISHING>>79.9)
+         MORE1=1
+         NAME=Owl Fish
+         SRC.MESSAGE You identify the fish as a Owl Fish.
+         RETURN 1
+      ELSE
+         SRC.MESSAGE You aren't skilled enough to identify the fish.
+         RETURN 1
+      ENDIF
+   ENDIF
+   IF !(0<SRC.TAG.MANAHEALINGFISH>==01) && !(<SRC.MANA>>=<SRC.INT>)
+      IF (<AMOUNT>=1)
+         SRC.TAG.MANAHEALINGFISH=1
+         SRC.NEWITEM=i_fish_mana_healing_effect
+         SRC.ACT.LINK=<SRC.UID>
+         SRC.ACT.EQUIP
+         REMOVE
+      ELSE
+         SRC.TAG.MANAHEALINGFISH=1
+         SRC.NEWITEM=i_fish_mana_healing_effect
+         SRC.ACT.LINK=<SRC.UID>
+         SRC.ACT.EQUIP
+         CONSUME 1
+      ENDIF
+   ELSE
+      SRC.MESSAGE You cannot use the Owl Fish with full mana.
+   ENDIF
+   RETURN 1
+
+[ITEMDEF i_fish_mana_healing_effect]
+DEFNAME=i_fish_mana_healing_effect
+ID	= i_memory
+type	= t_eq_script
+NAME	= Owl Fish
+
+ON=@CREATE
+   MORE1=0
+   MORE2={1 15}
+   SAY <EVAL <MORE2>>
+   TIMER=1
+   ATTR=attr_invis
+
+ON=@TIMER
+   MORE1=<MORE1>+1
+   TIMER = 1
+
+   IF (<MORE1> > 0) && (<MORE1> <= 15) && (<MORE1><=<MORE2>)
+      LINK.MANA=<LINK.MANA>+1
+   ELSE
+      LINK.TAG.MANAHEALINGFISH=
+      REMOVE     
+   ENDIF
+   return 1
+
+
+[ITEMDEF i_fish_stam_healing]
+DEFNAME=i_fish_stam_healing
+ID=i_fish_big_1
+NAME=Unknown Fish
+VALUE=200
+
+ON=@DCLICK
+   IF (<MORE1>==0)
+      IF (<SRC.FISHING>>69.9)
+         MORE1=1
+         NAME=Camel Fish
+         SRC.MESSAGE You identify the fish as a Camel Fish.
+         RETURN 1
+      ELSE
+         SRC.MESSAGE You aren't skilled enough to identify the fish.
+         RETURN 1
+      ENDIF
+   ENDIF
+   IF !(0<SRC.TAG.STAMHEALINGFISH>==01) && !(<SRC.STAM>>=<SRC.DEX>)
+      IF (<AMOUNT>=1)
+         SRC.TAG.STAMHEALINGFISH=1
+         SRC.NEWITEM=i_fish_stam_healing_effect
+         SRC.ACT.LINK=<SRC.UID>
+         SRC.ACT.EQUIP
+         REMOVE
+      ELSE
+         SRC.TAG.STAMHEALINGFISH=1
+         SRC.NEWITEM=i_fish_stam_healing_effect
+         SRC.ACT.LINK=<SRC.UID>
+         SRC.ACT.EQUIP
+         CONSUME 1
+      ENDIF
+   ELSE
+      SRC.MESSAGE You cannot use the stamina fish with full stamina.
+   ENDIF
+   RETURN 1
+
+[ITEMDEF i_fish_stam_healing_effect]
+DEFNAME=i_fish_stam_healing_effect
+ID	= i_memory
+type	= t_eq_script
+NAME	= Camel Fish
+
+ON=@CREATE
+   MORE1=0
+   MORE2={1 15}
+   TIMER=1
+   ATTR=attr_invis
+
+ON=@TIMER
+   MORE1=<MORE1>+1
+   TIMER = 1
+
+   IF (<MORE1> > 0) && (<MORE1> <= 15) && (<MORE1><=<MORE2>)
+      LINK.STAM=<LINK.STAM>+1
+   ELSE
+      LINK.TAG.STAMHEALINGFISH=
+      REMOVE     
+   ENDIF
+   return 1
+
+//Truly Rare Fish//
+
+[ITEMDEF i_fish_rare]
+DEFNAME=i_fish_rare 
+NAME=Truly Rare Fish 
+ID=i_fish_small 
+TYPE=t_normal 
+VALUE=7 
+WEIGHT=1 
+CATEGORY=Imperial uo 
+SUBSECTION=Fishing 
+DESCRIPTION=Truly Rare Fish (magic) 
+
+on=@create
+COLOR=colors_orange 
+
+on=@dclick
+SRC.MESSAGE Yummy! 
+SOUND=snd_spell_strength 
+SRC.SPELLEFFECT=16,100 
+REMOVE 
+RETURN 1
+
+
+[ITEMDEF i_fish_peculiar]
+DEFNAME=i_fish_peculiar  
+NAME=Highly Peculiar Fish 
+ID=i_fish_small 
+TYPE=t_normal 
+VALUE=7 
+WEIGHT=1 
+CATEGORY=Imperial uo 
+SUBSECTION=Fishing
+DESCRIPTION=Highly Peculiar Fish (magic) 
+
+on=@create
+COLOR=colors_green 
+
+on=@dclick
+SRC.MESSAGE Yummy! 
+SOUND=snd_spell_agility 
+src.stamina = <src.stamina>+10 
+IF <src.stamina> > <src.dex> 
+src.stamina = <src.dex> 
+ENDIF 
+REMOVE 
+RETURN 1
+
+
+[REGIONRESOURCE mr_temp_str]
+// fishing default
+// t_water
+SKILL=70.0 100.0
+AMOUNT=1 1
+REAP=i_temp_str
+REGEN=60*60*10
+
+
+[REGIONRESOURCE mr_temp_dex]
+// fishing default
+// t_water
+SKILL=80.0 100.0
+AMOUNT=1 1
+REAP=i_temp_dex
+REGEN=60*60*10
+
+[REGIONRESOURCE mr_temp_int]
+// fishing default
+// t_water
+SKILL=90.0 100.0
+AMOUNT=1 1
+REAP=i_temp_int
+REGEN=60*60*10
+
+[REGIONRESOURCE mr_healing]
+// fishing default
+// t_water
+SKILL=98.0 100.0
+AMOUNT=1 1
+REAP=i_fish_healing
+REGEN=60*60*10
+
+[REGIONRESOURCE mr_mana_healing]
+// fishing default
+// t_water
+SKILL=96.0 100.0
+AMOUNT=1 1
+REAP=i_fish_mana_healing
+REGEN=60*60*10
+
+[REGIONRESOURCE mr_stam_healing]
+// fishing default
+// t_water
+SKILL=92.0 100.0
+AMOUNT=1 1
+REAP=i_fish_stam_healing
+REGEN=60*60*10
+
+[REGIONRESOURCE mr_killfish]
+// fishing default
+// t_water
+SKILL=100.0 100.0
+AMOUNT=1 1
+REAP=i_killfish
+REGEN=60*60*10
+
+[REGIONRESOURCE mr_fish_danger]
+// fishing default
+// t_water
+SKILL=0.0 100.0
+AMOUNT=1 1
+REAP=i_fish_danger
+REGEN=60*60*10
+
+[REGIONRESOURCE mr_fish_prize]
+// fishing default
+// t_water
+SKILL=75.0 100.0
+AMOUNT=1 1
+REAP=i_fish_prize
+REGEN=60*60*10
+
+[REGIONRESOURCE mr_fish_wondrous]
+// fishing default
+// t_water
+SKILL=85.0 100.0
+AMOUNT=1 2
+REAP=i_fish_wondrous
+REGEN=60*60*10
+
+[REGIONRESOURCE mr_fish_rare]
+// fishing default
+// t_water
+SKILL=100.0 100.0
+AMOUNT=1 1
+REAP=i_fish_rare
+REGEN=60*60*10
+
+[REGIONRESOURCE mr_fish_peculiar]
+// fishing default
+// t_water
+SKILL=65.0 100.0
+AMOUNT=1 2
+REAP=i_fish_peculiar
+REGEN=60*60*10
+
+
+//********************************************************************//
+//                            COVE RESOURCES                          //
+//********************************************************************//
+[ITEMDEF i_sodden_flesh]
+ID=i_flesh_head2
+NAME=Sodden Flesh
+WEIGHT=3
+VALUE=200
+
+ON=@Create
+   DISPID=random_body_parts_2
+
+//********************************************************************//
+[REGIONRESOURCE mr_fish_scary]
+SKILL=75.0 100.0
+AMOUNT=1 1
+REAP=i_sodden_flesh
+REGEN=60*60*10
+
+//********************************************************************//
+
+[ITEMDEF i_fishing_net_green] 
+DEFNAME=i_fishing_net_green
+NAME=Special Fishing Net
+ID=i_fishing_net_3 
+WEIGHT=5 
+RESOURCES=10 I_ROPE, 10 I_THREAD, 4 I_SHELL 
+CATEGORY=Imperial uo 
+SUBSECTION=Fishing
+DESCRIPTION=Special Fishing Net (green) 
+
+on=@create 
+COLOR=color_o_verite 
+
+on=@dclick
+TARGETG Where would you like to throw the net?
+RETURN 1
+
+on=@targon_item
+src.message You can't throw the net there!
+return 1
+
+on=@targon_char
+src.message You can't catch a person in this net!
+return 1
+
+on=@targon_ground
+src.home=<src.p>
+src.p=<src.targp>
+if (!<SRC.isonwater>)
+src.p=<src.home>
+src.message You must use the net in water.
+else
+remove
+src.p=<src.home>
+src.newitem=0dca
+src.act.p=<src.targp>
+src.act.attr=attr_decay
+src.act.timer=3
+src.anim 12
+src.sound 027
+src.home=<src.p>
+src.p=<src.targp>
+SRC.MESSAGE=Oh no - that will attract sea monsters! 
+dorand 3
+src.newnpc=096
+src.newnpc=01024
+src.newnpc=010
+enddo
+dorand 3
+src.newnpc=096
+src.newnpc=01024
+src.newnpc=010
+enddo
+dorand 3
+src.newnpc=096
+src.newnpc=01024
+src.newnpc=010
+enddo
+src.p=<src.home>
+endif
+return 1
+
+
+
+
+
+
+
+ 
+
+[ITEMDEF I_SHIPWRECK_CHAIR]
+ID=0c1b
+NAME=Chair Recovered From a Shipwreck
+TYPE=40
+VALUE=5
+
+ON=@CREATE
+ATTR=04008
+
+ON=@DCLICK
+RETURN 1
+
+CATEGORY=Imperial uo 
+SUBSECTION=Shipwreck Stuff
+DESCRIPTION=Chair Recovered From a Shipwreck 
+
+[ITEMDEF I_SHIPWRECK_clock]
+ID=0c1f
+NAME=Clock Recovered From a Shipwreck
+TYPE=24
+VALUE=5
+
+ON=@CREATE
+ATTR=04008
+
+ON=@DCLICK
+RETURN 1
+
+CATEGORY=Imperial uo 
+SUBSECTION= Shipwreck Stuff
+DESCRIPTION=Clock Recovered From a Shipwreck
+
+[ITEMDEF I_SHIPWRECK_painting]
+ID=0c2c
+NAME=Painting Recovered From a Shipwreck
+TYPE=64
+VALUE=5
+
+ON=@CREATE
+ATTR=04008
+
+ON=@DCLICK
+RETURN 1
+
+CATEGORY=Imperial uo 
+SUBSECTION=Shipwreck Stuff
+DESCRIPTION=Painting Recovered From a Shipwreck
+
+[ITEMDEF I_SHIPWRECK_dresser]
+ID=0c24
+NAME=Dresser Recovered From a Shipwreck
+TYPE=t_container
+VALUE=5
+
+ON=@CREATE
+ATTR=04008
+
+ON=@DCLICK
+RETURN 1
+
+CATEGORY=Imperial uo 
+SUBSECTION=Shipwreck Stuff
+DESCRIPTION=Dresser Recovered From a Shipwreck
+
+[ITEMDEF I_SHIPWRECK_books]
+ID=0c16
+NAME=Books Recovered From a Shipwreck
+TYPE=19
+VALUE=5
+
+ON=@CREATE
+ATTR=04008
+
+ON=@DCLICK
+RETURN 1
+
+CATEGORY=Imperial uo 
+SUBSECTION= Shipwreck Stuff
+DESCRIPTION=Books Recovered From a Shipwreck
+
+[ITEMDEF I_SHIPWRECK_bookcase]
+ID=0c14
+NAME=Bookcase Recovered From a Shipwreck
+TYPE=t_container
+VALUE=5
+
+ON=@CREATE
+ATTR=04008
+
+ON=@DCLICK
+RETURN 1
+
+CATEGORY=Imperial uo 
+SUBSECTION=Shipwreck Stuff
+DESCRIPTION=Bookcase Recovered From a Shipwreck
+
+
+[EOF]

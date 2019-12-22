@@ -1,0 +1,319 @@
+[FUNCTION ISPC]
+   if ( 0 )
+   elseif !(<NPC> > 0)
+   elseif (<ISEVENT.e_all_pc>)
+   else
+      return 0
+   endif
+   return 1
+   
+[FUNCTION ISNEWBIE]
+   if ( 0 )
+   elseif (<ISEVENT.e_newbie>)
+   else
+      return 0
+   endif
+   return 1
+
+[FUNCTION ISNPC]
+   if ( 0 )
+   elseif (<NPC> > 0)
+   elseif (<ISEVENT.e_all_npc>)   
+   elseif (!(<ISEVENT.e_all_pc>) && (<BRAIN> > 0))
+      //EVENTS +e_all_npc
+   else
+      return 0
+   endif
+   return 1
+
+[FUNCTION ISSHADOW]
+   if ( 0 )
+   elseif ( <BODY> == c_shadow_corpser )
+   elseif ( <BODY> == c_shadow_elemental )
+   elseif ( <BODY> == c_shadow_serpent )
+   elseif ( <BODY> == c_shadow_slime )
+   elseif ( <BODY> == c_shadow_spider )
+   else
+      return 0
+   endif
+   return 1
+   
+[FUNCTION ISUNDEAD]
+  if ( 0 )
+  elseif ( <NPC> == brain_undead )
+  elseif ( <ID> == c_grim_reaper )
+  else
+     return 0
+  endif
+  return 1
+
+
+[FUNCTION ISDRAGON]
+   if ( 0 )
+   elseif ( <NPC> == brain_dragon )
+   elseif ( <BODY> == c_dragon_green )
+   elseif ( <BODY> == c_dragon_red )
+   else
+      return 0
+   endif
+   return 1
+
+
+[FUNCTION ISDAEMON]
+   if ( 0 )
+   elseif ( <BODY> == c_daemon )
+   elseif ( <BODY> == c_daemon_w_sword )
+   elseif ( <BODY> == c_mongbat )
+   elseif ( <BODY> == c_GARGOYLE )
+   else
+      return 0
+   endif
+   return 1
+
+
+[FUNCTION ISGIANT]
+   if ( 0 )
+   elseif ( <BODY> == c_ogre )
+   elseif ( <BODY> == c_ettin )
+   elseif ( <BODY> == c_ettin_w_axe )
+   elseif ( <BODY> == c_titan )
+   elseif ( <BODY> == c_cyclops )
+   elseif ( <BODY> == c_toad_giant )
+   else
+      return 0
+   endif
+   return 1
+
+
+[FUNCTION ISORC]
+   if ( 0 )
+   elseif ( <BODY> == c_orc_lord )
+   elseif ( <BODY> == c_orc )
+   elseif ( <BODY> == c_orc_w_club )
+   else
+      return 0
+   endif
+   return 1
+
+
+[FUNCTION ISTROLL]
+   if ( 0 )
+   elseif ( <BODY> == c_troll_w_axe )
+   elseif ( <BODY> == c_troll )
+   elseif ( <BODY> == c_troll_w_mace )
+   else
+      return 0
+   endif
+   return 1
+
+
+[FUNCTION ISHORSE]
+   if ( 0 )
+   elseif (<BODY> == c_horse_tan )
+   elseif (<BODY> == c_horse_brown_dk )
+   elseif (<BODY> == c_horse_brown_lt )
+   elseif (<BODY> == c_horse_gray )
+   elseif (<BODY> == c_llama )
+   elseif (<BODY> == c_horse_pack )
+   else
+      return 0
+   endif
+   return 1
+
+
+[FUNCTION ISZOST]
+   if ( 0 )
+   elseif ( <BODY> == c_ostard_forest )
+   elseif ( <BODY> == c_ostard_zostrich )
+   elseif ( <BODY> == c_ostard_desert )
+   else
+      return 0
+   endif
+   return 1
+
+
+[FUNCTION ISEVIL]
+   if ( <KARMA> < -3000 )
+      return 1
+   elseif ( <KILLS> > 3 )
+      return 1
+   endif
+   return 0
+
+
+[FUNCTION ISGOOD]
+   if ( <KARMA> > 3000 ) 
+      return 1
+   endif
+   return 0
+
+
+[FUNCTION ISPOISONED]
+   IF ( <FINDID.i_poisoning1.UID> ) 
+      RETURN 1
+   ELSEIF ( <FINDID.i_poisoning2.UID> ) 
+      RETURN 1
+   ELSEIF ( <FINDID.i_poisoning3.UID> ) 
+      RETURN 1   
+   ELSEIF ( <FINDID.i_poisoning4.UID> ) 
+      RETURN 1
+   ELSEIF ( <FLAGS>&statf_poisoned )
+      RETURN 1
+   ELSE
+      RETURN 0
+   ENDIF
+
+
+[FUNCTION STATTOTAL]
+   return <eval (<STR> + <DEX> + <INT>)>
+
+[FUNCTION FIX_HITS]
+   if ( <HITS> > <STR> )
+      HITS	= <STR>
+   endif
+
+[FUNCTION FIX_STAM]
+   if ( <STAM> > <DEX> )
+      STAM	= <DEX>
+   endif
+
+[FUNCTION FIX_MANA]
+   if ( <MANA> > <INT> )
+      MANA	= <INT>
+   endif
+
+[FUNCTION TAKE_HITS]
+  if ( <HITS> < <args> )
+     HITS	= 0
+  else
+     HITS	= (<HITS> - <args>)
+  endif
+
+
+[FUNCTION TAKE_MANA]
+  if ( <MANA> < <args> )
+     MANA	= 0
+  else
+     MANA	= (<MANA> - <args>)
+  endif
+
+
+[FUNCTION TAKE_STAM]
+  if ( <STAM> < <args> )
+     STAM	= 0
+  else
+     STAM	= (<STAM> - <args>)
+  endif
+
+
+[FUNCTION ISDEAD]
+  // if ( !<NPC> && ((<BODY> == c_ghost_man) || (<BODY> == c_ghost_woman)) )
+  if ( <FLAGS> & statf_dead )
+     return 1
+  endif
+  return 0
+
+
+
+[FUNCTION UNDERGROUND]
+   if ( (<REGION.FLAGS> & region_flag_underground) )
+      IF (0<TAG.DEBUG>)
+         SAY Yep!
+      ENDIF
+      return 1
+   endif
+   return 0
+
+[FUNCTION INDOORS]
+   if ( (<FLAGS> & statf_indoors) || (<REGION.FLAGS> & region_flag_underground) )
+      IF (0<TAG.DEBUG>)
+         SAY Yep!
+      ENDIF
+      return 1
+   endif
+
+   return 0
+
+
+[FUNCTION ISHIDDEN]
+   if ( <FLAGS> & statf_hidden )
+      return 1
+   else
+      return 0
+   endif
+
+
+[FUNCTION ISINVIS]
+   if ( <FLAGS> & statf_insubstantial )
+      return 2
+   elseif ( <FLAGS> & statf_invisible )
+      return 1
+   else
+      return 0
+   endif
+
+
+[FUNCTION ISRIDING]
+   if ( <FLAGS> & statf_onhorse )
+      return 1
+   endif
+   return 0
+
+
+[FUNCTION horse_bump]
+  if !( <ISRIDING> )
+    return 1
+  endif
+  LOCAL.ACT		= <ACT>
+  ACT		= <findlayer(layer_horse).more2>
+  findlayer(layer_horse).MORE2	= 0
+  findlayer(layer_horse).REMOVE
+  ACT.P		= <P>
+  ACT.FLAGS	= 0
+  FLAGS		= <FLAGS> & ~statf_onhorse
+  UPDATE
+  ACT.UPDATE
+  if ( 0<args> )
+    ACT.ANIM	5
+    ACT.SOUND <ACT.SOUND>
+  endif
+  ANIM		21
+  ACT		= <LOCAL.ACT>
+
+
+[FUNCTION ISCOUNS]
+   LOCAL.ISCOUNS = 0
+   IF (0<ACCOUNT.PLEVEL>=2)
+      LOCAL.ISCOUNS = 1
+   ENDIF
+   RETURN <LOCAL.ISCOUNS>
+
+   
+
+[FUNCTION FIXNAME]
+  if ( 0 )
+  elseif ( strmatch( "Sir *",		"<NAME>" ) )
+  elseif ( strmatch( "Lord *",		"<NAME>" ) )
+  elseif ( strmatch( "Master *",	"<NAME>" ) )
+  elseif ( strmatch( "Lady *",		"<NAME>" ) )
+  else
+     return 0
+  endif
+  TRY FIXNAME_<NAME>
+
+
+
+[FUNCTION FIXNAME_sir]
+   NAME	= <args>
+[FUNCTION FIXNAME_lord]
+   NAME	= <args>
+[FUNCTION FIXNAME_master]
+   NAME	= <args>
+[FUNCTION FIXNAME_super]
+   NAME	= <args>
+[FUNCTION FIXNAME_lady]
+   NAME	= <args>
+
+
+[EOF]
+

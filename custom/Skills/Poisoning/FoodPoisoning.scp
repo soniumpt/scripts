@@ -1,0 +1,174 @@
+//--------------------------------------------------------------------
+//Poisoning addition:
+//Poisoned food/ uses strong poison and player hallucinates! hallucination is brough from Songs of War hallu
+//NOTE YOU MUST ADD i_poison_food to what Greater Cure Pots can cure to avoid nasty results!
+//--------------------------------------------------------------------
+
+[TYPEDEF T_Food_Poisoned]
+
+ON=@DCLICK
+
+If ((<ATTR> !=08010) && (<SRC.HITS> > 0))	//makes sure player isn't dead and the item isn't locked down
+   SERV.NEWITEM i_poison_food
+   SRC.NEW.EQUIP
+   SERV.NEWITEM M_SongHallucinate
+   SRC.NEW.EQUIP
+   SRC.SYSMESSAGE You have ingested a poisoned food or drink!!
+
+   // Consume only one
+   AMOUNT = <EVAL (<AMOUNT>-1)>
+   IF (<AMOUNT> == 0)
+      REMOVE
+   ENDIF
+   SRC.UPDATE
+
+EndIf
+RETURN 1
+
+ON = @GetItemVars
+  VAR.ITEM.MINSKILL_id	= 30.0
+  RETURN 1
+  
+ON = @UnIdentify
+  NAME	=
+  RETURN 1
+  
+ON = @Identify
+  NAME	= Poisoned <NAME>
+  RETURN 1
+
+
+//The item that causes the poison damage
+//High damage because you aren't being forced to eat it!
+[ITEMDEF i_poison_food]//pc food poison damage
+ID=i_memory
+TYPE=t_eq_script
+
+ON=@CREATE
+    ATTR=attr_can_decay|attr_move_never
+    MORE2=<EVAL(7)>
+    TIMER=1
+
+ON=@UNEQUIP
+   IF <SRC.FINDID.M_SongHallucinate.UID>
+      SRC.FINDID.M_SongHallucinate.REMOVE
+   ENDIF   
+   RETURN 1
+   
+ON=@TIMER
+   IF (<CONT.HITS> = 0)
+       REMOVE
+       RETURN 1
+   EndIf
+
+   IF <EVAL(<MORE2>)>>=1
+       CONT.EMOTE grab his stomach in pain.
+       CONT.BOW
+       If ((<CONT.HITS>-<EVAL(<EVAL(<CONT.STR>*23)>/100)>) > 0)
+          CONT.HITS=<EVAL(<CONT.HITS>-<EVAL(<EVAL(<CONT.STR>*23)>/100)>)>
+       ELSE
+          IF <CONT.FINDID.M_SongHallucinate.UID>
+             CONT.FINDID.M_SongHallucinate.REMOVE
+          ENDIF
+          CONT.HITS=0
+          REMOVE
+       ENDIF
+       MORE2=<EVAL(<EVAL(<MORE2>)>-1)>
+       TIMER=5
+   Else
+       REMOVE
+   EndIf
+   RETURN 1
+
+
+   
+//Potion to apply food poison
+[ITEMDEF i_potion_PoisonFood]
+NAME	=Food Poison
+ID	=i_bottle_empty
+TYPE	=T_POTION
+TDATA1	=i_bottle_empty
+RESOURCES=i_reag_nightshade 8, i_reag_Dragons_heart 1, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 101.0
+VALUE	=90	// 117
+ON=@Create
+  MORE1	=s_poison
+  MORE2	=70.0
+  COLOR	=0487
+
+ON=@DClick
+   IF   <CONT.LAYER>=21
+      SRC.SYSMESSAGE Target the food you wish to poison.
+      TARGET
+   Else 
+      SRC.SYSMESSAGE The potion must be in your backpack for you to use it
+   EndIf    
+   RETURN 1
+
+
+ON=@Targon_item
+   IF  (<SRC.TARG.AMOUNT> = 1 )
+      IF ( ((<SRC.POISONING>>=950) && (<SRC.TARG.TOPOBJ.UID>=<SRC.UID>) && ((<SRC.TARG.TYPE>=t_fruit) || (<SRC.TARG.TYPE>=t_food) || (<SRC.TARG.TYPE>=t_booze) || (<SRC.TARG.TYPE>=t_drink)) )
+         IF  (<EVAL(<EVAL(-{85 110})>+<EVAL(<SRC.POISONING>/10)>)> > 0 )
+            SRC.TARG.TYPE=T_FOOD_POISONED
+            SRC.SYSMESSAGE You successfully apply the poison food, or drink you targeted.
+            SRC.SKILLCHECK_RUN Skill_POISONING    
+            IF <AMOUNT>>1
+               AMOUNT=<EVAL(<AMOUNT>-1)>
+            Else 
+               REMOVE
+            EndIf     
+         Else
+            SRC.SYSMESSAGE You fail to apply poison on the item!
+            IF <AMOUNT>>1
+	       AMOUNT=<EVAL(<AMOUNT>-1)>
+            Else
+               REMOVE
+            EndIf   
+          EndIf
+       Else 
+          SRC.SYSMESSAGE You can't apply poison on this item!
+       EndIf
+    Else
+       SRC.SYSMESSAGE You can only target one piece of food or drink at a time.
+    EndIf
+
+
+
+[ITEMDEF i_poison_food2]//npc food poison damage
+ID=i_memory
+TYPE=t_eq_script
+
+ON=@CREATE
+    ATTR=attr_can_decay|attr_move_never
+    MORE2=<EVAL(5)>
+    TIMER=1
+
+ON=@TIMER
+   IF (<CONT.HITS> = 0)
+       REMOVE
+       RETURN 1
+   EndIf
+
+   IF <EVAL(<MORE2>)>>=1
+       CONT.EMOTE in great pain.
+       If ((<CONT.HITS>-<EVAL(<EVAL(<CONT.STR>*12)>/100)>) > 0)
+          CONT.HITS=<EVAL(<CONT.HITS>-<EVAL(<EVAL(<CONT.STR>*12)>/100)>)>
+       ELSE
+          IF <CONT.FINDID.M_SongHallucinate.UID>
+             CONT.FINDID.M_SongHallucinate.REMOVE
+          ENDIF
+          CONT.HITS=0
+          REMOVE
+       ENDIF
+
+       MORE2=<EVAL(<EVAL(<MORE2>)>-1)>
+       TIMER=5
+   Else
+       REMOVE
+   EndIf
+   RETURN 1
+
+
+
+[EOF]

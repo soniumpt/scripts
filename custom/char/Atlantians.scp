@@ -1,0 +1,313 @@
+// #-----------#
+// # CHANGELOG #
+// #-----------#
+//
+// 18/08/18 - Wigifer - Removed random loot from these monsters, ready for conversion to the new f_central_loot table.
+
+// Atlanteans 
+// Created by Anya on 23rd January 2006
+// Updated by Anya on 30th January 2006
+
+// Atlantean Scholar 
+
+[CHARDEF c_atlantean_scholar]
+DEFNAME=c_atlantean_scholar
+ID=055
+NAME=Atlantean Scholar
+
+SOUND=snd_MONSTER_OPHIDIAN_MAGE1
+ICON=i_pet_ophid_mage
+ANIM=07fc7f
+CAN=MT_WALK|MT_USEHANDS
+
+TSPEECH=spk_atlantean_greeting
+TSPEECH=spk_atlantean_whereami
+TSPEECH=spk_atlantean_whatru
+
+
+TEVENTS=e_atlantean_newplayer
+TEVENTS=e_atlantean_unknown
+
+CATEGORY=Memory UO
+SUBSECTION=Atlantis
+DESCRIPTION=Atlantean Scholar
+
+ON=@Create
+NPC=BRAIN_HUMAN
+FAME={100 2000}
+KARMA={400 1000}
+COLOR=0ae4
+
+STR={205 305}
+DEX={70 120}
+INT={95 120}
+
+PARRYING={65.0 85.0}
+MAGERY={60.0 70.0}
+MAGICRESISTANCE={85.0 100.0}
+TACTICS={65.0 90.0}
+WRESTLING={20.0 70.0}
+
+//ALIGNMENT=GOOD
+//SPELLCIRCLES=3-5
+ITEMNEWBIE=i_spellbook
+ADDSPELL=s_feeblemind
+ADDSPELL=s_lightning
+ADDSPELL=s_poison
+ADDSPELL=s_explosion
+
+DAM=7,24
+ARMOR=20
+
+[TEMPLATE loot_Atlantean]
+DEFNAME=loot_Atlantean
+CATEGORY=Memory UO
+SUBSECTION=Atlanteans Templates
+DESCRIPTION=Atlanteans
+ITEM=Random_Potion
+ITEM=RANDOM_REAGENT,{ 4 6 }
+ITEM=RANDOM_SCROLL
+ITEM=i_gold,{150 450}
+
+[SPEECH spk_atlantean_greeting]
+ON=*hello*
+ON=*hi*
+          IF (<SRC.KARMA><-2000)
+	  EMOTE  Looks at you, suspiciously
+	  SAY Yu ar bad! Away with yu!
+	  SRC.EFFECT=3,036b0,6,16,0
+	  FLEE 
+          ELSE
+	  EMOTE  Looks at you, suspiciously
+	  SAY Greetingssss friend! Ar yu well?
+	  SRC.EFFECT=3,0375a,6,16,0
+          ENDIF
+RETURN 1
+
+[SPEECH spk_atlantean_whereami]
+ON=*where*
+          IF (<SRC.KARMA><-2000)
+	  EMOTE Looks at you, confused
+	  SAY Yu ar in Atlantisssss: a place yu ar not welkom!
+	  SRC.EFFECT=3,036b0,6,16,0
+	  FLEE
+          ELSE
+	  EMOTE Looks at you confused
+	  SAY Yu ar in the great city of Atlantisssss!
+	  SRC.EFFECT=3,0375a,6,16,0
+          ENDIF
+RETURN 1
+
+[SPEECH spk_atlantean_whatru]
+ON=*what*
+          IF (<SRC.KARMA><-2000)
+	  EMOTE Looks at you, confused
+	  SAY I be an Atlantean! Get out befor I call guardsssss!
+	  SRC.EFFECT=3,036b0,6,16,0
+	  FLEE
+          ELSE
+	  EMOTE Looks at you confused
+	  SAY I be an Atlantean! We ar a passssssive race of intellectual beingssss.
+	  SRC.EFFECT=3,0375a,6,16,0
+          ENDIF
+RETURN 1
+
+[EVENTS e_atlantean_newplayer]
+ON=@NPCSeeNewPlayer
+          IF (<SRC.KILLS>>1)
+                    EMOTE Looks nervous
+	  SAY Humann Infidelssss!
+	  SRC.EFFECT=3,03709,6,16,0
+	  FLEE
+          ELSE
+	  EMOTE Looks nervous
+	  SAY Humansssss!
+	  SRC.EFFECT=3,0375a,6,16,0
+          ENDIF
+RETURN 1
+
+[EVENTS e_atlantean_unknown]
+ON=@NPCHearUnknown
+          IF (<SRC.KILLS>>1)
+                    EMOTE Looks nervous
+	  SAY What do yu want with me murderer?!
+	  SRC.EFFECT=3,03709,6,16,0
+	  FLEE
+          ELSE
+	  EMOTE Looks nervous
+	  SAY What issss it yu want?
+	  SRC.EFFECT=3,0375a,6,16,0
+          ENDIF
+RETURN 1
+
+// Atlantean Wizard
+
+[CHARDEF c_atlantean_wizard]
+DEFNAME=c_atlantean_wizard
+ID=055
+NAME=Atlantean Wizard
+
+SOUND=snd_MONSTER_OPHIDIAN_MAGE1
+ICON=i_pet_ophid_mage
+ANIM=07fc7f
+CAN=MT_WALK|MT_USEHANDS
+
+TSPEECH=spk_atlantean_greeting
+TSPEECH=spk_atlantean_whereami
+TSPEECH=spk_atlantean_whatru
+
+
+TEVENTS=e_atlantean_newplayer
+TEVENTS=e_atlantean_unknown
+
+CATEGORY=Memory UO
+SUBSECTION=Atlantis
+DESCRIPTION=Atlantean Wizard
+
+ON=@Create
+NPC=BRAIN_HUMAN
+FAME={100 2500}
+KARMA={400 1500}
+COLOR=0bb2
+
+STR={205 350}
+DEX={70 120}
+INT={95 120}
+
+PARRYING={65.0 90.0}
+MAGERY={80.0 100.0}
+MAGICRESISTANCE={85.0 100.0}
+TACTICS={65.0 90.0}
+WRESTLING={20.0 70.0}
+
+//ALIGNMENT=GOOD
+//SPELLCIRCLES=3-5
+ITEMNEWBIE=i_spellbook
+ADDSPELL=s_feeblemind
+ADDSPELL=s_lightning
+ADDSPELL=s_poison
+ADDSPELL=s_explosion
+
+DAM=7,24
+ARMOR=20
+
+// Atlantean King
+
+[CHARDEF c_atlantean_king]
+DEFNAME=c_atlantean_king
+ID=057
+NAME=King Atlas
+
+SOUND=snd_MONSTER_OPHIDIAN_MAGE1
+ICON=i_pet_ophid_mage
+ANIM=07fc7f
+CAN=MT_WALK|MT_USEHANDS
+
+TSPEECH=spk_atlantean_king_greeting
+TSPEECH=spk_atlantean_king_whereami
+TSPEECH=spk_atlantean_king_whatru
+
+
+TEVENTS=e_atlantean_king_newplayer
+TEVENTS=e_atlantean_king_unknown
+
+CATEGORY=Memory UO
+SUBSECTION=Atlantis
+DESCRIPTION=Atlantean King
+
+ON=@Create
+NPC=BRAIN_HUMAN
+FAME={1000 3000}
+KARMA={500 1500}
+COLOR=0afd
+
+STR={250 350}
+DEX={90 20}
+INT={100 120}
+
+PARRYING={65.0 100.0}
+MAGERY={80.0 100.0}
+MAGICRESISTANCE={85.0 100.0}
+TACTICS={65.0 100.0}
+WRESTLING={20.0 90.0}
+
+//ALIGNMENT=GOOD
+//SPELLCIRCLES=3-5
+ITEMNEWBIE=i_spellbook
+ADDSPELL=s_feeblemind
+ADDSPELL=s_lightning
+ADDSPELL=s_poison
+ADDSPELL=s_explosion
+
+DAM=20,50
+ARMOR=40
+
+[SPEECH spk_atlantean_king_greeting]
+ON=*hello*
+ON=*hi*
+          IF (<SRC.KARMA><-2000)
+	  EMOTE  Appears to be disgusted
+	  SAY Yu ar evil! Yu will remoove yursssself from my Kingdom!
+	  SRC.EFFECT=3,036b0,6,16,0
+          ELSE
+	  EMOTE  Looks at you suspiciously
+	  SAY Yu will adresssss me assss "Your highnesssss" in de future!
+	  SRC.EFFECT=3,0375a,6,16,0
+          ENDIF
+RETURN 1
+
+[SPEECH spk_atlantean_king_whereami]
+ON=*where*
+          IF (<SRC.KARMA><-2000)
+	  EMOTE  Appears to be mortified
+	  SAY How dare yu adresssss me in ssssuch a manner! Thissss be Atlantissss. Realm of learning and peace! Get out of my hier or I hav guardssssss remove yu!
+	  SRC.EFFECT=3,036b0,6,16,0
+          ELSE
+	  EMOTE  Looks at you suspiciously
+	  SAY How dare yu adresssss me in ssssuch a manner! Thissss be Atlantissss. Realm of learning and peace!
+	  SRC.EFFECT=3,0375a,6,16,0
+          ENDIF
+RETURN 1
+
+[SPEECH spk_atlantean_king_whatru]
+ON=*what*
+          IF (<SRC.KARMA><-2000)
+	  EMOTE  Appears to be disgusted
+	  SAY How dare yu adresssss me in ssssuch a manner! I be de King of thissss, Atlantisssss! Yu will remoove yursssself from my Kingdom!
+	  SRC.EFFECT=3,036b0,6,16,0
+          ELSE
+	  EMOTE  Looks at you suspiciously
+	  SAY How dare yu adresssss me in ssssuch a manner! I be de King of thissss, Atlantisssss! 
+	  SRC.EFFECT=3,0375a,6,16,0
+          ENDIF
+RETURN 1
+
+[EVENTS e_atlantean_king_newplayer]
+ON=@NPCSeeNewPlayer
+          IF (<SRC.KILLS>>1)
+                    EMOTE Looks outraged
+	  SAY Humann Infidelssss! What isssss yur bussssinesss hier?
+	  SRC.EFFECT=3,03709,6,16,0
+	  FLEE
+          ELSE
+	  EMOTE Looks shocked
+	  SAY Humansssss?
+	  SRC.EFFECT=3,0375a,6,16,0
+          ENDIF
+RETURN 1
+
+[EVENTS e_atlantean_king_unknown]
+ON=@NPCHearUnknown
+          IF (<SRC.KILLS>>1)
+	  EMOTE Looks nervous
+	  SAY What ar yu doing in my realm murderer?!
+	  SRC.EFFECT=3,03709,6,16,0
+	  FLEE
+          ELSE
+	  EMOTE Looks nervous
+	  SAY What issss it yu want?
+	  SRC.EFFECT=3,0375a,6,16,0
+          ENDIF
+RETURN 1
+
+[EOF]

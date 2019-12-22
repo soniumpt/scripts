@@ -1,0 +1,885 @@
+//*********************************************************************************************************//
+//                                   Misc Christmas Items Created by Pink Panther                         //
+//*********************************************************************************************************//
+
+[ITEMDEF i_snowball_decorative]
+NAME=Snow Ball's Pile
+ID=0e74
+TYPE=t_normal
+WEIGHT=10
+
+ON=@Create
+COLOR=0481
+
+[ITEMDEF i_deed_reindeer]
+NAME=deed to a Reindeer
+ID=i_deed
+
+ON=@Create
+MORE=i_reindeer
+
+[ITEMDEF i_snowman_decorative]
+NAME=Snowman
+ID=03DDD
+TYPE=t_normal
+WEIGHT=10
+DUPELIST=03DDC,03DDD
+
+
+//*********************************************************************************************************//
+//                                 Deathrun Items Created by Pink Panther                                 //
+//*********************************************************************************************************//
+
+
+[ITEMDEF i_xpot_snowball]
+ID=i_cannon_ball
+NAME=Snow Ball
+TYPE=T_POTION
+TDATA1=0
+WEIGHT=1
+
+ON=@Create
+  MORE1=s_explosion
+  MORE2=100.0
+  COLOR=0481
+
+ON=@DClick
+
+  IF (<SRC.TAG0.XPOTPVP>==1)
+	SRC.SYSMESSAGE You can't use this yet.
+	return 1
+  endif
+
+  if (<src.findid.i_xpot_memory>)
+     SRC.MESSAGE You cant throw another Snow Ball yet!
+     return 1
+  else 
+     src.newitem=i_xpot_memory
+     src.act.cont=<src.uid>
+     return 0
+  endif
+  return 1
+
+[ITEMDEF i_deathrun_stone]
+ID=0ed6
+NAME=Deathrun Checkpoint Stone
+
+ON=@CREATE
+COLOR=07A1
+ATTR=08000
+
+
+ON=@DClick 
+IF !(<SRC.ISGM>)
+	IF (<SRC.TAG0.DEATHRUNSTONE>==1)
+		SRC.SYSMESSAGE You have already used this stone.
+		RETURN 1
+	ELSE
+		SRC.TAG.DEATHRUNSTONE=1
+		NEW.EQUIP <SRC.UID>
+		SERV.NEWITEM i_potion_healgreat,2
+		NEW.BOUNCE
+		SERV.NEWITEM i_scroll_blank
+		NEW.COLOR=07a1
+		NEW.NAME=Freedom Certificate
+		NEW.BOUNCE
+		RETURN 1
+	ENDIF
+ELSE
+	SERV.ALLCLIENTS TAG0.DEATHRUNSTONE=
+	SRC.SYSMESSAGE All players can use this stone again.
+ENDIF
+RETURN 1
+
+
+//*********************************************************************************************************//
+//                                   Deathrace Gates Created by Pink Panther                               //
+//*********************************************************************************************************//
+
+
+[ITEMDEF i_christmasrun_gate_start]
+NAME= START THE RACE
+ID=i_moongate_blue
+TYPE=t_normal
+
+ON=@CREATE
+ATTR=08010
+COLOR=07a0
+
+ON=@STEP
+IF (<SRC.ISDEAD>)
+SRC.MESSAGE Only the living can start the race!
+RETURN 1
+ELSE
+SRC.HITS = <SRC.STR>
+SRC.GO <MOREP>
+ENDIF
+
+[ITEMDEF i_christmasrun_gate]
+NAME= Back to base!
+ID=i_fire_column
+TYPE=t_normal
+
+ON=@CREATE
+ATTR=08010
+COLOR=0481
+
+ON=@STEP
+IF (RAND(100) < 50)
+SRC.NEWITEM = i_giftbox
+NEW.NAME = Santa's Gift Box
+NEW.COLOR=0481
+NEW.BOUNCE
+SRC.SYSMESSAGE You successfully retrieved one Santa's Gift Box!
+ELSE
+SRC.SYSMESSAGE Oh... No Gift Box retrieved.
+ENDIF
+SRC.GO <MOREP>
+
+//*********************************************************************************************************//
+//                   Public Christmas Tree Created by Pink Panther                                         //
+//                                                                                                         //
+// The tree allows you to exchange reward tickets.                                                         //
+// When the tree reachs 500.000 reward tickets, whoever exchanged last will get a reward.                  //
+//*********************************************************************************************************//
+
+
+[DEFNAME christmas_tree_uid]
+christmas_tree_event 043cbf695
+
+[itemdef i_christmas_tree_event]
+ID=i_foliage_cedar2
+NAME=Christmas Tree
+TYPE=t_script
+
+ON=@Create
+   COLOR=0bb0
+   
+ON=@DClick
+SRC.NEWITEM i_rewardticketchristmas_targetter
+SRC.ACT.TARGET Please target the desired Reward Tickets
+RETURN 1
+
+
+[ITEMDEF i_rewardticketchristmas_targetter]
+NAME=Reward Christmas Targetter
+ID=i_memory
+TYPE=T_EQ_SCRIPT
+LAYER=30
+
+ON=@CREATE
+   ATTR=attr_decay
+
+on=@targon_item
+if ( <SRC.TARG.TOPOBJ.UID> != <SRC.UID> )
+     SRC.SYSMESSAGE You must have it in your backpack.
+     return 1
+  endif
+IF <SRC.TARG.BASEID>=i_reward_ticket
+   SRC.ACT = christmas_tree_event
+   SRC.ACT.MORE1=<EVAL (<SRC.ACT.MORE1> + <SRC.TARG.AMOUNT>)>
+   
+   SERV.LOG <SRC.ACCOUNT> (<SRC.NAME>) sold <SRC.TARG.AMOUNT> tickets bringing the total to <EVAL <SRC.ACT.MORE1>>.
+
+   IF <EVAL ( (<SRC.TARG.AMOUNT>*2) <= 65535)>
+      SERV.NEWITEM i_gold, <EVAL (<SRC.TARG.AMOUNT> * 2) >, <SRC.FINDLAYER.LAYER_PACK.UID>
+   ELSE
+      VAR.PILES = 1
+      VAR.GOLD = <EVAL <SRC.TARG.AMOUNT> * 2 >
+      SRC.f_gold_divide125a
+   ENDIF
+   SRC.TARG.REMOVE
+   
+   IF (<SRC.ACT.MORE1> > 500000) && !(<SRC.ACT.TAG0.PRIZE1>==1)
+   SRC.NEWITEM i_wreath
+   NEW.NAME=Imperial UO Christmas 2015 Snowman
+   NEW.BOUNCE
+   SRC.ACT.TAG.PRIZE1=1
+   ELSEIF (<SRC.ACT.MORE1> > 1000000) && !(<SRC.ACT.TAG0.PRIZE2>==1)
+   SRC.NEWITEM i_snowman_decorative
+   NEW.NAME=Imperial UO Christmas 2015 Snowman
+   NEW.BOUNCE
+   SRC.ACT.TAG.PRIZE2=1
+   ELSEIF (<SRC.ACT.MORE1> > 1500000) && !(<SRC.ACT.TAG0.PRIZE3>==1)
+   SRC.NEWITEM i_wreath
+   NEW.NAME=Imperial UO Christmas 2015 Snowman
+   NEW.BOUNCE
+   SRC.ACT.TAG.PRIZE3=1
+   ELSEIF (<SRC.ACT.MORE1> > 2000000) && !(<SRC.ACT.TAG0.PRIZE4>==1)
+   SRC.NEWITEM i_snowman_decorative
+   NEW.NAME=Imperial UO Christmas 2015 Snowman
+   NEW.BOUNCE
+   SRC.ACT.TAG.PRIZE4=1  
+   ENDIF
+
+ELSE
+   SRC.SYSMESSAGE You can only sell Reward Tickets to this.
+ENDIF
+RETURN 1
+
+on=@targon_char
+SRC.SYSMESSAGE This is not a reward ticket.
+RETURN 1
+
+on=@targon_ground
+SRC.SYSMESSAGE This is not a reward ticket.
+RETURN 1
+
+
+
+//*********************************************************************************************************//
+//                   Christmas 2015 Function Created by Pink Panther                                       //
+//                                                                                                         //
+// Anyone with more than 5000 account total connect time can claim 25% claimskill and a decorative wreath  //
+//*********************************************************************************************************//
+
+[FUNCTION christmas2015]
+SRC.SYSMESSAGE You can't claim a gift at this time anymore.
+RETURN 1
+
+IF (<SRC.ACCOUNT.TOTALCONNECTTIME> >=1440)
+IF !(<SRC.ACCOUNT.TAG0.CHRISTMAS2015>==1)
+   SRC.ACCOUNT.TAG.CHRISTMAS2015=1
+   SRC.ACCOUNT.TAG.ELIGIBLEFORSKILL=1
+   SRC.ACCOUNT.TAG0.ALLOCATEDSKILL=<EVAL <SRC.ACCOUNT.TAG0.ALLOCATEDSKILL> + 25>
+   SERV.NEWITEM i_wreath_christmas2015
+   NEW.CONT=<SRC.FINDLAYER.LAYER_BANKBOX.UID>
+   SRC.SYSMESSAGE @07ad Your account has been awarded 25% claimskill and a decorative wreath.
+   SRC.SYSMESSAGE @07ad You can claim your skill by typing .claimskill. The wreath was placed inside your bankbox.
+   SRC.SYSMESSAGE @07ad Merry Christmas, from the Imperial UO Staff Team!
+   SERV.LOG :CHRISTMAS2015: Claimed on account <SRC.ACCOUNT>: <SRC.NAME> <SRC.UID>
+ELSE
+	SRC.SYSMESSAGE You already got your christmas gift!
+	RETURN 1
+ENDIF
+ELSE
+	SRC.SYSMESSAGE Sorry but your account is not old enough to be worthy of a gift.
+	RETURN 1
+ENDIF
+RETURN 1
+
+[PLEVEL 1]
+christmas2015
+
+//*********************************************************************************************************//
+//        Treasure Hunt Created by Charm adapted to Santa's Stolen Sleigh by Pink Panther                  //
+//*********************************************************************************************************//
+
+[ITEMDEF i_christmas_thunt_box_final]
+	ID=i_giftbox
+	DISPID=i_giftbox
+	NAME=Santa's Lost Gift Box
+	TYPE=t_container
+
+ON=@CREATE
+     ATTR=08000
+	 COLOR=07ad
+
+ON=@Click
+	 IF (<SRC.ISGM>)
+		SAY <MORE1>
+	 RETURN 1
+	 ENDIF
+	 
+ON=@DClick 
+    IF !(<SRC.ISGM>)
+		IF (<EVAL <SRC.TAG.THUNT_PROGRESS>> == <EVAL <MORE1>-1>)
+				SRC.EMOTE win the Santa's Lost Sleigh Hunt!
+				SRC.SYSMESSAGE You have won the Santa's Lost Sleigh Hunt and your prize has been put in your backpack inside a bag.
+				SERV.ALLCLIENTS TAG.THUNT_PROGRESS = 
+				BOODELETE i_christmas_thunt_box
+				OBJ = <src.targ.findid.i_bag>
+				OBJ.BOUNCE
+				REMOVE
+				//SERV.ALLCLIENTS SYSMESSAGE @7ad <SRC.NAME> has won the Santa's Lost Sleigh Hunt!
+		ELSE
+			SRC.SYSMESSAGE You are unable to open this Lost Gift Box yet!
+		ENDIF
+		RETURN 1
+	ENDIF
+
+[ITEMDEF i_christmas_thunt_box]
+	ID=i_giftbox
+	DISPID=i_giftbox
+	NAME=Santa's Lost Gift Box
+	TYPE=t_container
+
+ON=@CREATE
+     ATTR		= 08000
+	 COLOR=07a0
+
+ON=@Click
+	 IF (<SRC.ISGM>)
+		SAY <MORE1>
+		return 1
+	endif
+	 
+ON=@DClick // open
+    IF !(<SRC.ISGM>)
+		IF (<EVAL <SRC.TAG.THUNT_PROGRESS>> == <EVAL <MORE1>-1>)
+			SRC.EMOTE found the next clue for the Santa's Lost Sleigh Hunt!
+			SRC.SYSMESSAGE The next clue for the Santa's Lost Sleigh Hunt has been added to your backpack.
+			SRC.TAG.THUNT_PROGRESS = <MORE1>
+			OBJ = <src.targ.findtype.t_map>
+			OBJ.BOUNCE
+		ELSE
+			SRC.SYSMESSAGE You are unable to open this Lost Gift Box yet!
+		ENDIF
+		RETURN 1
+	ENDIF
+	
+  
+[FUNCTION christmashunt]
+LOCAL.CHEST_COUNT = <ARGS>
+
+FOR <EVAL <LOCAL.CHEST_COUNT>-1>
+	SERV.NEWITEM i_christmas_thunt_box
+	NEW.MORE1=<EVAL <LOCAL._FOR>>
+	NEW.BOUNCE
+ENDFOR
+
+SERV.NEWITEM i_christmas_thunt_box_final
+NEW.MORE1=<ARGS>
+NEW.BOUNCE
+
+[PLEVEL 4]
+christmashunt
+
+
+//*********************************************************************************************************//
+//                              Snow Ball Created by Pink Panther                                          //
+//*********************************************************************************************************//
+
+
+//**************************************Snow Ball********************************************//
+//                                                                                           //
+// Can only be used if TAG.XPOTPVP=0. Type .throwxpot to activate/deactivate it.             //
+// Snow Ball damage range from 5 to 15                                                       //
+// 3 seconds delay between each ball thrown                                                  //
+// Can only have the ball on hand for 3 seconds                                              //
+// Type .snowball to automatically double click a ball, if it is inside your backpack        //
+//**************************************Snow Ball********************************************//
+
+[ITEMDEF i_snowball_event_ball]
+NAME=Snow Ball
+ID=i_cannon_ball
+WEIGHT=10
+
+ON=@Create
+COLOR=0481
+
+
+ON=@DCLICK
+
+IF (<SRC.TAG0.XPOTPVP>==1)
+	SRC.SYSMESSAGE You can't use this yet.
+	RETURN 1
+ENDIF
+  
+IF <CONT.UID>!=<SRC.FINDLAYER(21).UID>
+SRC.SYSMESSAGE You don't have the ball at your hand!
+RETURN 1
+ENDIF
+
+IF (<SRC.FINDID.I_SNOWBALL_MEMORY>)
+	SRC.MESSAGE You can't throw another Snow Ball yet!
+	RETURN 1
+ELSE
+	SRC.NEWITEM=I_SNOWBALL_MEMORY
+	SRC.ACT.CONT=<SRC.UID>
+	SRC.NEWITEM=I_SNOWBALL2_MEMORY
+	SRC.ACT.CONT=<SRC.UID>
+	RETURN 0
+ENDIF
+
+
+SRC.ACT.TARGET To whom do you want to trow this Snow Ball at?
+
+
+ON=@TARGON_CHAR
+IF (<SRC.TARG.UID>=<SRC.UID>)
+	SRC.SYSMESSAGE You can't throw a Snow Ball at yourself!
+	RETURN 1
+ENDIF
+
+IF (<SRC.TARG.ISGM> || <SRC.TARG.ISCOUNS>)
+	SRC.SYSMESSAGE Why would you wan't to hurt staff members?
+	RETURN 1
+ENDIF
+
+IF (<SRC.TARG.ISDEAD>)
+	SRC.SYSMESSAGE They are already dead!
+	RETURN 1
+ENDIF
+
+IF (<SRC.TARG.TAG0.SNOWBALLTEAM>==<SRC.TAG0.SNOWBALLTEAM>)
+	SRC.SYSMESSAGE You can't throw a Snow Ball at a member of your team!
+	RETURN 1
+ENDIF
+
+IF !(<SRC.FINDID.I_SNOWBALL2_MEMORY>)
+	SRC.MESSAGE Too late! The Snow Ball melted in your hand right before you throw it.
+	CONSUME
+	RETURN 1
+ENDIF
+
+SRC.TARG.HITS=<SRC.TARG.HITS>+ - {5 15}
+SRC.TARG.ANIM=20
+SRC.TARG.SFX=0158
+CONSUME
+
+SRC.f_snowball_event_points
+
+DORAND 4
+SRC.SAY What a shot! Right in <SRC.TARG.NAME> head!
+SRC.SAY Get that <SRC.TARG.NAME>!
+SRC.SAY Ah, Ah, Ah, Merry Christmas!
+SRC.SAY Sorry, had to throw it at someone, my hands were freezing.
+SRC.SAY He Shoots, He Scores!
+ENDDO
+DORAND 4
+SRC.TARG.SAY Ouch, that hurts!
+SRC.TARG.SAY You will get your payback soon <SRC.NAME>!
+SRC.TARG.SAY That Snow Ball was cold!
+SRC.TARG.SAY I give up after that one, <SRC.NAME>.
+ENDDO
+
+RETURN 1
+
+
+ON=@TARGON_GROUND
+
+IF !(<SRC.FINDID.I_SNOWBALL2_MEMORY>)
+	SRC.MESSAGE Too late! The Snow Ball melted in your hand right before you throw it.
+	CONSUME
+	RETURN 1
+ENDIF
+
+DORAND 3
+SRC.MESSAGE Oh no, what a miss!
+SRC.MESSAGE You throwed the Snow Ball back to the floor!
+SRC.MESSAGE Close, but not where you were aiming at!
+ENDDO
+CONSUME
+RETURN 1
+
+ON=@TARGON_ITEM
+
+IF !(<SRC.FINDID.I_SNOWBALL2_MEMORY>)
+	SRC.MESSAGE Too late! The Snow Ball melted in your hand right before you throw it.
+	CONSUME
+	RETURN 1
+ENDIF
+
+DORAND 3
+SRC.MESSAGE Oh no, what a miss!
+SRC.MESSAGE Stop hiting items with Snow Balls!
+SRC.MESSAGE Close, but not where you were aiming at!
+ENDDO
+CONSUME
+RETURN 1
+
+[ITEMDEF i_snowball_memory]
+ID=i_memory
+TYPE=t_eq_script
+NAME=Snowball Timer
+
+ON=@create
+ATTR=attr_invis|attr_decay
+timer=3
+
+ON=@timer
+REMOVE
+RETURN 1
+
+[ITEMDEF i_snowball2_memory]
+ID=i_memory
+TYPE=t_eq_script
+NAME=Snowball 2 Timer
+
+ON=@create
+ATTR=attr_invis|attr_decay
+timer=3
+
+ON=@timer
+REMOVE
+RETURN 1
+
+[FUNCTION snowball]
+
+IF (<RESTEST 1 i_snowball_event_ball>)
+FINDID.i_snowball_event_ball.USE
+RETURN 1
+ELSE
+SRC.SYSMESSAGE You are all out of Snow Balls!
+RETURN 1
+
+[PLEVEL 1]
+snowball
+
+//**************************************Snow Ball Gates**************************************//
+//                                                                                           //
+// Using an entry gate will automatically:                                                   //
+// - Set player tags, give 30 Snow Balls, give a Team Color Robe, reduce visualrange to 5    //
+// - Teleport players to the arena                                                           //
+//                                                                                           // 
+// Using an exit gate will automatically:                                                    //
+// - Remove player tags, remove Snow Balls inside backpack, remove UN-EQUIPPED Team Robes    //
+// - Reset visual range to 18 and teleport players to the exit pit                           //
+//**************************************Snow Ball Gates**************************************//
+
+[ITEMDEF i_snowball_event_gate1]
+ID=i_moongate_blue
+NAME= Snow Ball Team 1 Gate
+
+ON=@CREATE
+COLOR=079c
+
+ON=@STEP
+SRC.TAG.SNOWBALLTEAM=1
+SRC.NEWITEM=i_snowball_event_ball,30
+NEW.BOUNCE
+SRC.NEWITEM=i_robe_snowball
+NEW.NAME=Snow Ball Event Red Team Robe
+NEW.COLOR=079C
+NEW.TAG.UID=<SRC.UID>
+NEW.BOUNCE
+NEW.EQUIP
+SRC.MESSAGE You joined Team 1. Snow Balls have been placed inside your backpack.
+SRC.SYSMESSAGE @07ad There is so much wind and snow that you can barely see anything ahead of you.
+SRC.GO 4092,570,0,10
+SRC.VISUALRANGE 5
+SRC.UPDATE
+
+[ITEMDEF i_snowball_event_gate2]
+ID=i_moongate_blue
+NAME= Snow Ball Team 2 Gate
+
+ON=@CREATE
+COLOR=07a0
+
+ON=@STEP
+SRC.TAG.SNOWBALLTEAM=2
+SRC.NEWITEM=i_snowball_event_ball,30
+NEW.BOUNCE
+SRC.NEWITEM=i_robe_snowball
+NEW.NAME=Snow Ball Event Blue Team Robe
+NEW.COLOR=07a0
+NEW.TAG.UID=<SRC.UID>
+NEW.BOUNCE
+NEW.EQUIP
+SRC.MESSAGE You joined Team 2. Snow Balls have been placed inside your backpack.
+SRC.SYSMESSAGE @07ad There is so much wind and snow that you can barely see anything ahead of you.
+SRC.GO 4092,570,0,10
+SRC.VISUALRANGE 5
+SRC.UPDATE
+
+[ITEMDEF i_snowball_event_gate_exit]
+ID=i_moongate_blue
+NAME= Snow Ball Exit Gate
+
+ON=@CREATE
+COLOR=07a1
+
+ON=@STEP
+
+IF (<SRC.TAG.SNOWBALLTEAM>==1)
+SRC.F_SNOWBALL_EXIT
+SRC.TAG.SNOWBALLTEAM=
+SRC.TAG.TEAMPOINTS1=
+SRC.TAG.XPOTPVP=
+SRC.GO 4082,569,0,10
+SRC.VISUALRANGE 18
+SRC.UPDATE
+ELSEIF (<SRC.TAG.SNOWBALLTEAM>==2)
+SRC.F_SNOWBALL_EXIT
+SRC.TAG.SNOWBALLTEAM=
+SRC.TAG.TEAMPOINTS2=
+SRC.TAG.XPOTPVP=
+SRC.GO 4082,574,0,10
+SRC.VISUALRANGE 18
+SRC.UPDATE
+ELSE
+SRC.SAY I DONT BELONG TO ANY TEAM!
+RETURN 1
+ENDIF
+
+[ITEMDEF i_robe_snowball]
+ID=i_robe
+NAME= Snow Ball Event Robe
+
+ON=@CREATE
+ATTR=010
+
+ON=@DCLICK
+IF !(<TAG.UID>==<SRC.UID>)
+SRC.SYSMESSAGE You can not use this robe.
+RETURN 1
+ENDIF
+
+ON=@EQUIP
+IF !(<TAG.UID>==<SRC.UID>)
+SRC.SYSMESSAGE You can not use this robe.
+RETURN 1
+ENDIF
+
+
+[FUNCTION f_snowball_exit]
+
+IF (<SRC.FINDID.I_SNOWBALL_EVENT_BALL>)
+WHILE (<SRC.FINDID.I_SNOWBALL_EVENT_BALL>)   
+SRC.FINDID.I_SNOWBALL_EVENT_BALL.REMOVE  
+ENDWHILE
+ENDIF
+
+IF (<SRC.FINDID.I_ROBE_SNOWBALL>)
+WHILE (<SRC.FINDID.I_ROBE_SNOWBALL>)   
+SRC.FINDID.I_ROBE_SNOWBALL.REMOVE  
+ENDWHILE
+ENDIF
+
+
+
+
+
+//**************************************Snow Ball Stones*************************************//
+//                                                                                           //
+// Double Clicking a rock will give the player 10 Snow Balls                                  //
+// Rocks respawn with 2 more Snow Balls every 5 seconds                                      //
+//                                                                                           // 
+// Resurrection stone resurrects a player at full HP regardless of his team                  //
+// It also gives the player 30 Snow Balls and another Team Color Robe                        //
+// Which means you can keep removing bodies as player die                                    //
+//**************************************Snow Ball Stones*************************************//
+
+[ITEMDEF i_snowball_event_stone]
+ID=i_winter_snowrock5
+Name= Snow Stone
+DUPELIST=i_winter_snowrock4,i_winter_snowrock2,i_winter_snowrock7,i_winter_snowrock4
+TYPE=t_normal
+
+ON=@CREATE
+ATTR=08010
+
+ON=@DCLICK
+
+IF ((<SRC.TAG0.SNOWBALLTEAM>==1) || (<SRC.TAG0.SNOWBALLTEAM>==2))
+IF (<MORE1>=0)
+SRC.NEWITEM=i_snowball_event_ball,10
+NEW.BOUNCE
+SRC.EMOTE got a Snow Ball!
+MORE=1
+TIMER=5
+ELSE
+SRC.SYSMESSAGE There is not enough snow in this stone yet to throw.
+ENDIF
+ELSE
+SRC.SAY I DONT BELONG TO ANY TEAM!
+ENDIF
+RETURN 1
+
+
+ON=@TIMER
+MORE1=0
+TIMER=-1
+
+[ITEMDEF i_snowball_event_resstone]
+ID=0ed6
+NAME=Snow Ball Resurrection Stone
+
+
+on=@create 
+COLOR=0481
+
+ON=@DClick
+IF (<SRC.ISDEAD>)
+IF (<SRC.TAG0.SNOWBALLTEAM>==1)
+SRC.RESURRECT
+SRC.HITS=<SRC.STR>
+SRC.NEWITEM=i_snowball_event_ball,30
+NEW.BOUNCE
+SRC.NEWITEM=i_robe_snowball
+NEW.COLOR=079c
+NEW.TAG.UID=<SRC.UID>
+NEW.BOUNCE
+NEW.EQUIP
+ELSEIF (<SRC.TAG0.SNOWBALLTEAM>==2)
+SRC.RESURRECT
+SRC.HITS=<SRC.STR>
+SRC.NEWITEM=i_snowball_event_ball,30
+NEW.BOUNCE
+SRC.NEWITEM=i_robe_snowball
+NEW.COLOR=07a0
+NEW.TAG.UID=<SRC.UID>
+NEW.BOUNCE
+NEW.EQUIP
+ELSE
+SRC.SAY I DONT BELONG TO ANY TEAM!
+ENDIF
+ELSE
+SRC.MESSAGE You are not dead.
+ENDIF
+RETURN 1
+
+//**************************************Snow Ball Points*************************************//
+//                                                                                           //
+// Everytime a player hits another he gets +1 team point                                     //
+// Points only update on the board when that player double clicks it                         //
+// Each round has a duration of 900 seconds and round can be reseted through the board       //
+// After a round ends, players have 10 seconds left to collect points at the board.          //      
+//**************************************Snow Ball Points*************************************//
+
+
+[ITEMDEF i_snowball_event_board] 
+NAME=Snow Ball Event Points Board
+ID=01e5e 
+type=t_normal
+
+ON=@CREATE 
+ATTR=04050 
+COLOR=07a1
+tag.teampoints1=00 
+tag.teampoints2=00 
+TIMER=900 
+RETURN 1 
+
+ON=@dclick 
+IF !(<SRC.ISGM> || <SRC.ISCOUNS>) && (<MORE1>=2)
+SRC.SYSMESSAGE No more points can be collected at this time.
+RETURN 1
+ENDIF
+
+IF (<SRC.ISGM> || <SRC.ISCOUNS>)
+DIALOG d_snowball_event
+RETURN 1
+ENDIF
+
+IF <SRC.TAG0.SNOWBALLTEAM>==1)
+TAG.TEAMPOINTS1= <EVAL <TAG0.TEAMPOINTS1>> + <EVAL <SRC.TAG0.TEAMPOINTS1>>
+SRC.TAG.TEAMPOINTS1=
+DIALOG d_snowball_event
+return 1 
+else 
+IF <SRC.TAG0.SNOWBALLTEAM>==2)
+TAG.TEAMPOINTS2= <EVAL <TAG0.TEAMPOINTS2>> + <EVAL <SRC.TAG0.TEAMPOINTS2>>
+SRC.TAG.TEAMPOINTS2=
+DIALOG d_snowball_event
+return 1 
+else 
+SRC.SAY I DONT BELONG TO ANY TEAM!
+return 1 
+endif 
+
+ON=@TIMER 
+IF (<MORE1>=1)
+REGION.ALLCLIENTS SYSMESSAGE @07ad Game Over. You have 10 seconds to collect points at scoreboard. 
+REGION.ALLCLIENTS SYSMESSAGE @07ad Game Over. You have 10 seconds to collect points at scoreboard. 
+REGION.ALLCLIENTS SYSMESSAGE @07ad Game Over. You have 10 seconds to collect points at scoreboard. 
+TIMER=10
+MORE1=0
+ELSEIF (<MORE1>=0)
+REGION.ALLCLIENTS SYSMESSAGE @07a1 Times Up. No more points can be collected. 
+Timer=-1
+MORE1=2
+ENDIF
+
+
+[DIALOG d_snowball_event] 
+0, 0 
+PAGE 0 
+resizepic 0 0 3500 325 280 
+gumppic 11 9 1418 
+dtext 25 55 95  Red Team
+dtext 25 90 95  Blue Team
+dtext 130 55 95 <EVAL <tag0.teampoints1>> 
+dtext 130 90 95  <EVAL <tag0.teampoints2>> 
+dtext 75 189 95 Time untill Game is Over 
+dtext 135 222 95 <TIMER> 
+IF (<SRC.ISGM> || <SRC.ISCOUNS>)
+button 25 130 2152 2154 1 0 1
+dtext 65 133 95 Reset and Start
+ENDIF
+
+[DIALOG d_snowball_event button] 
+ON=1
+TAG.TEAMPOINTS1=
+TAG.TEAMPOINTS2=
+TIMER=900
+MORE1=1
+serv.newitem M_snowball_start_Delay
+SRC.EQUIP <NEW.UID>
+
+[ItemDef M_snowball_start_Delay]
+id=i_memory
+Name=Snow Ball Start Delay
+type=t_eq_script
+
+ON=@Create
+TIMER = 1
+MORE1 = 11
+
+ON=@Timer
+If (<more1> == 11)
+cont.region.allclients sysmessage @07ad EVENT ROUND STARTING IN 10 SECONDS !!!
+timer = 1
+more1 = 10
+elseif (<more1> == 10)
+cont.region.allclients sysmessage @07ad Event Round Starting in 9
+timer = 1
+more1 = 9
+elseif (<more1> == 9)
+cont.region.allclients sysmessage @07ad Event Round Starting in 8
+timer = 1
+more1 = 8
+elseif (<more1> == 8)
+cont.region.allclients sysmessage @07ad Event Round Starting in 7
+timer = 1
+more1 = 7
+elseif (<more1> == 7)
+cont.region.allclients sysmessage @07ad Event Round Starting in 6
+timer = 1
+more1 = 6
+elseif (<more1> == 6)
+cont.region.allclients sysmessage @07ad Event Round Starting in 5
+timer = 1
+more1 = 5
+elseif (<more1> == 5)
+cont.region.allclients sysmessage @07ad Event Round Starting in 4
+timer = 1
+more1 = 4
+elseif (<more1> == 4)
+cont.region.allclients sysmessage @07ad Event Round Starting in 3
+timer = 1
+more1 = 3
+elseif (<more1> == 3)
+cont.region.allclients sysmessage @07ad Event Round Starting in 2
+timer = 1
+more1 = 2
+elseif (<more1> == 2)
+cont.region.allclients sysmessage @07ad Event Round Starting in 1
+timer = 1
+more1 = 1
+elseif (<more1> == 1)
+cont.region.allclients sysmessage @07ad START!!! START!!! START!!!
+remove
+endif
+return 1
+
+[FUNCTION f_snowball_event_points] 
+IF (<SRC.TAG0.SNOWBALLTEAM>==1) 
+SRC.TAG0.TEAMPOINTS1=<EVAL <SRC.TAG0.TEAMPOINTS1>+1>
+RETURN 1
+ELSEIF (<SRC.TAG0.SNOWBALLTEAM>==2)
+SRC.TAG0.TEAMPOINTS2=<EVAL <SRC.TAG0.TEAMPOINTS2>+1>
+RETURN 1
+ELSE
+SRC.SAY I DONT BELONG TO ANY TEAM!
+RETURN 1
+ENDIF
+
+
+
+
+
+
+[EOF]

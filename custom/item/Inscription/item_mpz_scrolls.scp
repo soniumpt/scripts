@@ -1,0 +1,1995 @@
+[ITEMDEF 0e34]
+DEFNAME=i_scroll_blank
+NAME	= blank scroll%s
+TYPE=T_SCROLL_BLANK
+RESOURCES=1 i_log_pine
+REPLICATE=1
+SKILLMAKE=CARPENTRY 50.0, t_carpentry
+WEIGHT=1
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls
+DESCRIPTION=BLANK SCROLL
+DUPELIST=0ef3
+VALUE	= 14
+
+
+[FUNCTION f_scroll_identify]
+   NAME = 
+   return 0
+
+[FUNCTION f_scroll_click]
+  if !( <ISIDENTIFIED> )
+     if ( <AMOUNT> > 1 )
+        MESSAGE <AMOUNT> scrolls
+     else
+        MESSAGE a scroll
+     endif
+     return 1
+  endif
+  return 0
+
+
+[FUNCTION f_scroll_dclick]
+  TRIGGER @GetItemVars
+  if ( <SRC.MAGERY> < <VAR.ITEM.SKILLMIN_Magery> )
+     SRC.SYSMESSAGE You aren't skilled enough in magery to use this.
+     return 1
+  endif
+  if ( <SRC.EVALUATINGINTEL> < <VAR.ITEM.SKILLMIN_Mystic>)
+     SRC.SYSMESSAGE You aren't skilled enough in mystic lore to use this.
+     return 1
+  endif
+  if !( <ISIDENTIFIED> )
+     SRC.SYSMESSAGE The scroll isn't properly identified.
+     return 1
+  endif
+
+  MOREy = <eval (<VAR.ITEM.SKILLMIN_Magery> + 30.0)>
+  return 0
+
+
+[ITEMDEF 01f2d]
+DEFNAME=i_scroll_reactive_armor
+NAME	=  reactive armour scroll%s
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=1
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_sulfur_ash, i_reag_garlic, i_reag_spider_silk
+SKILLMAKE=INSCRIPTION 12.0, MAGERY 5.0, t_scribe_tools
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 1st Circle
+DESCRIPTION=Reactive Armor
+VALUE=14
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_reactive_armor
+MOREy=30
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 0.0
+  VAR.ITEM.SKILLMIN_Mystic	= 10.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f2e]
+DEFNAME=i_scroll_clumsy
+NAME	= clumsy scroll%s
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=1
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_blood_moss, i_reag_nightshade
+SKILLMAKE=INSCRIPTION 10.0, MAGERY 5.0, t_scribe_tools
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 1st Circle
+DESCRIPTION=Clumsy Scroll
+VALUE=14
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_clumsy
+MOREy=30
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 0.0
+  VAR.ITEM.SKILLMIN_Mystic	= 10.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f2f]
+DEFNAME=i_scroll_create_food
+NAME	= create food scroll%s
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=1
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_garlic, i_reag_ginseng, i_reag_mandrake_root
+SKILLMAKE=INSCRIPTION 8.0, MAGERY 5.0, t_scribe_tools
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 1st Circle
+DESCRIPTION=Create Food Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_create_food
+MOREy=30
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 0.0
+  VAR.ITEM.SKILLMIN_Mystic	= 10.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f30]
+DEFNAME=i_scroll_feeblemind
+NAME	= feeblemind scroll%s
+TYPE=T_SCROLL
+WEIGHT=1
+VALUE=14
+//CIRCLE=1
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_nightshade, i_reag_ginseng
+SKILLMAKE=INSCRIPTION 10.0, MAGERY 5.0, t_scribe_tools
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 1st Circle
+DESCRIPTION=Feeblemind Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_feeblemind
+MOREy=30
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 0.0
+  VAR.ITEM.SKILLMIN_Mystic	= 10.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f31]
+DEFNAME=i_scroll_heal
+NAME	= heal scroll%s
+TYPE=T_SCROLL
+VALUE=14
+WEIGHT=1
+//CIRCLE=1
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_garlic, i_reag_ginseng, i_reag_spider_silk
+SKILLMAKE=INSCRIPTION 9.0, MAGERY 5.0, t_scribe_tools
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 1st Circle
+DESCRIPTION=Heal Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_heal
+MOREy=30
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 0.0
+  VAR.ITEM.SKILLMIN_Mystic	= 10.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f32]
+DEFNAME=i_scroll_magic_arrow
+NAME	= magic arrow scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_sulfur_ash
+SKILLMAKE=INSCRIPTION  7.0, MAGERY 5.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+VALUE=14
+//CIRCLE=1
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 1st Circle
+DESCRIPTION=Magic Arrow Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_magic_arrow
+MOREy=30
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 0.0
+  VAR.ITEM.SKILLMIN_Mystic	= 10.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f33]
+DEFNAME=i_scroll_night_sight
+VALUE=14
+NAME	= night sight scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_spider_silk, i_reag_sulfur_ash
+SKILLMAKE=INSCRIPTION 10.0, MAGERY 5.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=1
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 1st Circle
+DESCRIPTION=Night Sight Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_night_sight
+MOREy=30
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 0.0
+  VAR.ITEM.SKILLMIN_Mystic	= 10.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f34]
+DEFNAME=i_scroll_weaken
+NAME	= weaken scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_garlic, i_reag_nightshade
+SKILLMAKE=INSCRIPTION 10.0, MAGERY 5.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+VALUE=14
+//CIRCLE=1
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 1st Circle
+DESCRIPTION=Weaken Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_weaken
+MOREy=50
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 0.0
+  VAR.ITEM.SKILLMIN_Mystic	= 10.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f35]
+DEFNAME=i_scroll_agility
+NAME	= agility scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_blood_moss, i_reag_mandrake_root
+SKILLMAKE=INSCRIPTION 25.0, MAGERY 10.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+VALUE=28
+//CIRCLE=2
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 2nd Circle
+DESCRIPTION=Agility Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_agility
+MOREy=50
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 0.0
+  VAR.ITEM.SKILLMIN_Mystic	= 20.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f36]
+DEFNAME=i_scroll_cunning
+NAME	= cunning scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_mandrake_root, i_reag_nightshade
+SKILLMAKE=INSCRIPTION 20.0, MAGERY 10.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+VALUE=28
+//CIRCLE=2
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 2nd Circle
+DESCRIPTION=Cunning Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_cunning
+MOREy=50
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 0.0
+  VAR.ITEM.SKILLMIN_Mystic	= 20.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f37]
+DEFNAME=i_scroll_cure
+NAME	= cure scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_garlic, i_reag_ginseng
+SKILLMAKE=INSCRIPTION 20.0, MAGERY 10.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+VALUE=28
+//CIRCLE=2
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 2nd Circle
+DESCRIPTION=Cure Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_cure
+MOREy=50
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 0.0
+  VAR.ITEM.SKILLMIN_Mystic	= 20.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f38]
+DEFNAME=i_scroll_harm
+NAME	= harm scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_nightshade, i_reag_spider_silk
+SKILLMAKE=INSCRIPTION 20.0, MAGERY 10.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+VALUE=28
+//CIRCLE=2
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 2nd Circle
+DESCRIPTION=Harm Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_harm
+MOREy=50
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 0.0
+  VAR.ITEM.SKILLMIN_Mystic	= 20.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f39]
+DEFNAME=i_scroll_magic_trap
+NAME	= magic trap scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_garlic, i_reag_spider_silk, i_reag_sulfur_ash
+SKILLMAKE=INSCRIPTION 20.0, MAGERY 10.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=2
+VALUE=28
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 2nd Circle
+DESCRIPTION=Magic Trap Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_magic_trap
+MOREy=50
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 0.0
+  VAR.ITEM.SKILLMIN_Mystic	= 20.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f3a]
+DEFNAME=i_scroll_magic_untrap
+NAME	= magic untrap scroll%s
+VALUE=28
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_blood_moss, i_reag_sulfur_ash
+SKILLMAKE=INSCRIPTION 20.0, MAGERY 10.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=2
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 2nd Circle
+DESCRIPTION=Magic Remove Trap Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_magic_untrap
+MOREy=50
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 0.0
+  VAR.ITEM.SKILLMIN_Mystic	= 20.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f3b]
+DEFNAME=i_scroll_protection
+VALUE=28
+NAME	= protection scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_garlic, i_reag_ginseng, i_reag_sulfur_ash
+SKILLMAKE=INSCRIPTION 25.0, MAGERY 10.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=2
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 2nd Circle
+DESCRIPTION=Protection Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_protection
+MOREy=50
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 0.0
+  VAR.ITEM.SKILLMIN_Mystic	= 20.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f3c]
+DEFNAME=i_scroll_strength
+NAME	= strength scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_mandrake_root, i_reag_nightshade
+SKILLMAKE=INSCRIPTION 25.0, MAGERY 10.0, t_scribe_tools
+TYPE=T_SCROLL
+VALUE=28
+WEIGHT=1
+//CIRCLE=2
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 2nd Circle
+DESCRIPTION=Strength Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_strength
+MOREy=50
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 0.0
+  VAR.ITEM.SKILLMIN_Mystic	= 20.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f3d]
+DEFNAME=i_scroll_bless
+NAME	= bless scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_garlic, i_reag_mandrake_root
+SKILLMAKE=INSCRIPTION 35.0, MAGERY 20.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+VALUE=39
+//CIRCLE=3
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 3rd Circle
+DESCRIPTION=Bless Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_bless
+MOREy=50
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 5.0
+  VAR.ITEM.SKILLMIN_Mystic	= 30.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f3e]
+DEFNAME=i_scroll_fireball
+NAME	= fireball scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_black_pearl
+SKILLMAKE=INSCRIPTION 30.0, MAGERY 20.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=3
+VALUE=39
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 3rd Circle
+DESCRIPTION=Fireball Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_fireball
+MOREy=50
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 5.0
+  VAR.ITEM.SKILLMIN_Mystic	= 30.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f3f]
+DEFNAME=i_scroll_magic_lock
+NAME	= magic lock scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_blood_moss, i_reag_garlic, i_reag_sulfur_ash
+SKILLMAKE=INSCRIPTION 30.0, MAGERY 20.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+VALUE=39
+//CIRCLE=3
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 3rd Circle
+DESCRIPTION=Magic Lock Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_magic_lock
+MOREy=50
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 5.0
+  VAR.ITEM.SKILLMIN_Mystic	= 30.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f40]
+DEFNAME=i_scroll_poison
+NAME	= poison scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_nightshade
+SKILLMAKE=INSCRIPTION 35.0, MAGERY 20.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=3
+VALUE=39
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 3rd Circle
+DESCRIPTION=Poison Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_poison
+MOREy=50
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 5.0
+  VAR.ITEM.SKILLMIN_Mystic	= 30.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f41]
+DEFNAME=i_scroll_telekinesis
+NAME	= telekinesis scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_blood_moss, i_reag_mandrake_root
+SKILLMAKE=INSCRIPTION 30.0, MAGERY 20.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=3
+VALUE=39
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 3rd Circle
+DESCRIPTION=telekinesis Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_telekinesis
+MOREy=50
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 5.0
+  VAR.ITEM.SKILLMIN_Mystic	= 30.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f42]
+DEFNAME=i_scroll_teleport
+NAME	= teleport scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_blood_moss, i_reag_mandrake_root
+SKILLMAKE=INSCRIPTION 30.0, MAGERY 20.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=3
+VALUE=39
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 3rd Circle
+DESCRIPTION=Teleport Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_teleport
+MOREy=50
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 5.0
+  VAR.ITEM.SKILLMIN_Mystic	= 30.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f43]
+DEFNAME=i_scroll_unlock
+NAME	= unlock scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_blood_moss, i_reag_sulfur_ash
+SKILLMAKE=INSCRIPTION 30.0, MAGERY 20.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=3
+VALUE=39
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 3rd Circle
+DESCRIPTION=Unlock Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_unlock
+MOREy=50
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 5.0
+  VAR.ITEM.SKILLMIN_Mystic	= 30.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f44]
+DEFNAME=i_scroll_wall_of_stone
+NAME	= wall of stone scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_blood_moss, i_reag_garlic
+SKILLMAKE=INSCRIPTION 35.0, MAGERY 20.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=3
+VALUE=39
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 3rd Circle
+DESCRIPTION=Wall of Stone Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_wall_of_stone
+MOREy=50
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 5.0
+  VAR.ITEM.SKILLMIN_Mystic	= 30.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f45]
+DEFNAME=i_scroll_archcure
+NAME	= arch cure scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_garlic, i_reag_ginseng, i_reag_mandrake_root
+SKILLMAKE=INSCRIPTION 40.0, MAGERY 30.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=4
+VALUE=48
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 4th Circle
+DESCRIPTION=Archcure Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_archcure
+MOREy=50
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 10.0
+  VAR.ITEM.SKILLMIN_Mystic	= 40.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f46]
+DEFNAME=i_scroll_archprotection
+NAME	= arch protection scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_garlic, i_reag_ginseng, i_reag_mandrake_root, i_reag_sulfur_ash
+SKILLMAKE=INSCRIPTION 40.0, MAGERY 30.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=4
+VALUE=48
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 4th Circle
+DESCRIPTION=Arch Protection Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_archprotection
+MOREy=50
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 10.0
+  VAR.ITEM.SKILLMIN_Mystic	= 40.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f47]
+DEFNAME=i_scroll_curse
+NAME	= curse scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_garlic, i_reag_nightshade, i_reag_sulfur_ash
+SKILLMAKE=INSCRIPTION 40.0, MAGERY 30.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=4
+VALUE=48
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 4th Circle
+DESCRIPTION=Curse Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_curse
+MOREy=50
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 10.0
+  VAR.ITEM.SKILLMIN_Mystic	= 40.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f48]
+DEFNAME=i_scroll_fire_field
+NAME	= fire field scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_black_pearl, i_reag_spider_silk, i_reag_sulfur_ash
+SKILLMAKE=INSCRIPTION 50.0, MAGERY 30.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=4
+VALUE=48
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 4th Circle
+DESCRIPTION=Fire Field Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_fire_field
+MOREy=50
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 10.0
+  VAR.ITEM.SKILLMIN_Mystic	= 40.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f49]
+DEFNAME=i_scroll_greater_heal
+NAME	= greater heal scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_garlic, i_reag_ginseng, i_reag_mandrake_root, i_reag_spider_silk
+SKILLMAKE=INSCRIPTION 45.0, MAGERY 30.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=4
+VALUE=48
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 4th Circle
+DESCRIPTION=Greater Heal Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_greater_heal
+MOREy=50
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 10.0
+  VAR.ITEM.SKILLMIN_Mystic	= 40.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f4a]
+DEFNAME=i_scroll_lightning
+NAME	= lightning scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_mandrake_root, i_reag_sulfur_ash
+SKILLMAKE=INSCRIPTION 52.0, MAGERY 30.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=4
+VALUE=48
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 4th Circle
+DESCRIPTION=Lightning Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_lightning
+MOREy=50
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 10.0
+  VAR.ITEM.SKILLMIN_Mystic	= 40.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f4b]
+DEFNAME=i_scroll_mana_drain
+NAME	= mana drain scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_black_pearl, i_reag_mandrake_root, i_reag_spider_silk
+SKILLMAKE=INSCRIPTION 40.0, MAGERY 30.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=4
+VALUE=48
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 4th Circle
+DESCRIPTION=Mana Drain Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_mana_drain
+MOREy=50
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 10.0
+  VAR.ITEM.SKILLMIN_Mystic	= 40.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f4c]
+DEFNAME=i_scroll_recall
+NAME	= recall scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_black_pearl, i_reag_blood_moss, i_reag_mandrake_root
+SKILLMAKE=INSCRIPTION 55.0, MAGERY 30.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=4
+VALUE=48
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 4th Circle
+DESCRIPTION=Recall Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_recall
+MOREy=50
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 20.0
+  VAR.ITEM.SKILLMIN_Mystic	= 00.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f4d]
+DEFNAME=i_scroll_blade_spirits
+NAME	= blade spirits scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_black_pearl, i_reag_mandrake_root, i_reag_nightshade
+SKILLMAKE=INSCRIPTION 60.0, MAGERY 40.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=5
+VALUE=62
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 5th Circle
+DESCRIPTION=Blade Spirits Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_blade_spirits
+MOREy=60
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 20.0
+  VAR.ITEM.SKILLMIN_Mystic	= 50.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f4e]
+DEFNAME=i_scroll_dispel_field
+NAME	= dispel field scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_black_pearl, i_reag_garlic, i_reag_spider_silk, i_reag_sulfur_ash
+SKILLMAKE=INSCRIPTION 55.0, MAGERY 40.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=5
+VALUE=62
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 5th Circle
+DESCRIPTION=Dispel Field Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_dispel_field
+MOREy=60
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 20.0
+  VAR.ITEM.SKILLMIN_Mystic	= 50.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f4f]
+DEFNAME=i_scroll_incognito
+NAME	= incognito scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_blood_moss, i_reag_garlic, i_reag_nightshade
+SKILLMAKE=INSCRIPTION 60.0, MAGERY 40.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=5
+VALUE=62
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 5th Circle
+DESCRIPTION=Incognito Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_incognito
+MOREy=60
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 20.0
+  VAR.ITEM.SKILLMIN_Mystic	= 50.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f50]
+DEFNAME=i_scroll_magic_reflection
+NAME	= magic reflection scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_garlic, i_reag_mandrake_root, i_reag_spider_silk
+SKILLMAKE=INSCRIPTION 65.0, MAGERY 40.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=5
+VALUE=62
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 5th Circle
+DESCRIPTION=Magic Reflection Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_magic_reflection
+MOREy=60
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 20.0
+  VAR.ITEM.SKILLMIN_Mystic	= 50.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f51]
+DEFNAME=i_scroll_mind_blast
+NAME	= mind blast scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_black_pearl, i_reag_mandrake_root, i_reag_nightshade, i_reag_sulfur_ash
+SKILLMAKE=INSCRIPTION 55.0, MAGERY 40.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=5
+VALUE=62
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 5th Circle
+DESCRIPTION=Mind Blast Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_mind_blast
+MOREy=60
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 20.0
+  VAR.ITEM.SKILLMIN_Mystic	= 50.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f52]
+DEFNAME=i_scroll_paralyze
+NAME	= paralyze scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_garlic, i_reag_mandrake_root, i_reag_spider_silk
+SKILLMAKE=INSCRIPTION 65.0, MAGERY 40.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=5
+VALUE=62
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 5th Circle
+DESCRIPTION=Paralyze Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_paralyze
+MOREy=60
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 20.0
+  VAR.ITEM.SKILLMIN_Mystic	= 50.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f53]
+DEFNAME=i_scroll_poison_field
+NAME	= poison field scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_black_pearl, i_reag_nightshade, i_reag_spider_silk
+SKILLMAKE=INSCRIPTION 55.0, MAGERY 40.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=5
+VALUE=62
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 5th Circle
+DESCRIPTION=Poison Field Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_poison_field
+MOREy=60
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 20.0
+  VAR.ITEM.SKILLMIN_Mystic	= 50.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f54]
+DEFNAME=i_scroll_summon_creature
+NAME	= summon creature scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_blood_moss, i_reag_mandrake_root, i_reag_spider_silk
+SKILLMAKE=INSCRIPTION 65.0, MAGERY 45.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=5
+VALUE=62
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 5th Circle
+DESCRIPTION=Summon Creature Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_summon_creature
+MOREy=60
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 20.0
+  VAR.ITEM.SKILLMIN_Mystic	= 50.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f55]
+DEFNAME=i_scroll_dispel
+NAME	= dispel scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_garlic, i_reag_mandrake_root, i_reag_sulfur_ash
+SKILLMAKE=INSCRIPTION 70.0, MAGERY 55.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=6
+VALUE=79
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 6th Circle
+DESCRIPTION=Dispel Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_dispel
+MOREy=70
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 30.0
+  VAR.ITEM.SKILLMIN_Mystic	= 60.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f56]
+DEFNAME=i_scroll_energy_bolt
+NAME	= energy bolt scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_black_pearl, i_reag_nightshade
+SKILLMAKE=INSCRIPTION 75.0, MAGERY 55.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=6
+VALUE=79
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 6th Circle
+DESCRIPTION=Energy Bolt Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_energy_bolt
+MOREy=70
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 30.0
+  VAR.ITEM.SKILLMIN_Mystic	= 60.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f57]
+DEFNAME=i_scroll_explosion
+NAME	= explosion scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_blood_moss, i_reag_mandrake_root
+SKILLMAKE=INSCRIPTION 70.0, MAGERY 55.0, t_scribe_tools
+TYPE=T_SCROLL
+VALUE={60 64}
+WEIGHT=1
+//CIRCLE=6
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 6th Circle
+DESCRIPTION=Explosion Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_explosion
+MOREy=70
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 30.0
+  VAR.ITEM.SKILLMIN_Mystic	= 60.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f58]
+DEFNAME=i_scroll_invisibility
+NAME	= invisibility scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_blood_moss, i_reag_nightshade
+SKILLMAKE=INSCRIPTION 75.0, MAGERY 55.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=6
+VALUE=79
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 6th Circle
+DESCRIPTION=Invisibility Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_invisibility
+MOREy=70
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 30.0
+  VAR.ITEM.SKILLMIN_Mystic	= 60.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f59]
+DEFNAME=i_scroll_mark
+NAME	= mark scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_black_pearl, i_reag_blood_moss, i_reag_mandrake_root
+SKILLMAKE=INSCRIPTION 80.0, MAGERY 60.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+VALUE=79
+//CIRCLE=6
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 6th Circle
+DESCRIPTION=Mark Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_mark
+MOREy=70
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 30.0
+  VAR.ITEM.SKILLMIN_Mystic	= 00.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f5a]
+DEFNAME=i_scroll_mass_curse
+NAME	= mass curse scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_garlic, i_reag_mandrake_root, i_reag_nightshade, i_reag_sulfur_ash
+SKILLMAKE=INSCRIPTION 70.0, MAGERY 50.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=6
+VALUE=79
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 6th Circle
+DESCRIPTION=Mass Curse Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_mass_curse
+MOREy=70
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 30.0
+  VAR.ITEM.SKILLMIN_Mystic	= 60.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f5b]
+DEFNAME=i_scroll_paralyze_field
+NAME	= paralyze field scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_black_pearl, i_reag_ginseng, i_reag_spider_silk
+SKILLMAKE=INSCRIPTION 75.0, MAGERY 50.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+VALUE=79
+//CIRCLE=6
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 6th Circle
+DESCRIPTION=Paralyze Field Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_paralyzation_field
+MOREy=70
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 30.0
+  VAR.ITEM.SKILLMIN_Mystic	= 60.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f5c]
+DEFNAME=i_scroll_reveal
+NAME	= reveal scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_blood_moss, i_reag_sulfur_ash
+SKILLMAKE=INSCRIPTION 70.0, MAGERY 50.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=6
+VALUE=79
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 6th Circle
+DESCRIPTION=Reveal Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_reveal
+MOREy=70
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 30.0
+  VAR.ITEM.SKILLMIN_Mystic	= 60.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f5d]
+DEFNAME=i_scroll_chain_lightning
+NAME	= chain lightning scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_black_pearl, i_reag_blood_moss, i_reag_mandrake_root, i_reag_sulfur_ash
+SKILLMAKE=INSCRIPTION 85.0, MAGERY 60.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=7
+VALUE=85
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 7th Circle
+DESCRIPTION=Chain Lightning Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_chain_lightning
+MOREy=70
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 40.0
+  VAR.ITEM.SKILLMIN_Mystic	= 70.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f5e]
+DEFNAME=i_scroll_energy_field
+NAME	= energy field scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_black_pearl, i_reag_mandrake_root, i_reag_spider_silk, i_reag_sulfur_ash
+SKILLMAKE=INSCRIPTION 90.0, MAGERY 60.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=7
+VALUE=85
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 7th Circle
+DESCRIPTION=Energy Field Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_energy_field
+MOREy=80
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 40.0
+  VAR.ITEM.SKILLMIN_Mystic	= 70.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f5f]
+DEFNAME=i_scroll_flamestrike
+NAME	= flamestrike scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_spider_silk, i_reag_sulfur_ash
+SKILLMAKE=INSCRIPTION 95.0, MAGERY 60.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=7
+VALUE=85
+
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 7th Circle
+DESCRIPTION=Flame Strike Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_flamestrike
+MOREy=80
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 40.0
+  VAR.ITEM.SKILLMIN_Mystic	= 70.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f60]
+DEFNAME=i_scroll_gate_travel
+NAME	= gate travel scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_black_pearl, i_reag_mandrake_root, i_reag_sulfur_ash
+SKILLMAKE=INSCRIPTION 95.0, MAGERY 60.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=7
+VALUE=85
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 7th Circle
+DESCRIPTION=Gate Travel Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_gate_travel
+MOREy=80
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 40.0
+  VAR.ITEM.SKILLMIN_Mystic	= 00.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f61]
+DEFNAME=i_scroll_mana_vampire
+NAME	= mana vampire scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_black_pearl, i_reag_blood_moss, i_reag_mandrake_root, i_reag_spider_silk
+SKILLMAKE=INSCRIPTION 90.0, MAGERY 60.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=7
+VALUE=85
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 7th Circle
+DESCRIPTION=Mana Vampire Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_mana_vampire
+MOREy=80
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 40.0
+  VAR.ITEM.SKILLMIN_Mystic	= 70.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f62]
+DEFNAME=i_scroll_mass_dispel
+NAME	= mass dispel scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_black_pearl, i_reag_garlic, i_reag_mandrake_root, i_reag_sulfur_ash
+SKILLMAKE=INSCRIPTION 95.0, MAGERY 60.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=7
+VALUE=85
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 7th Circle
+DESCRIPTION=Mass Dispel Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_mass_dispel
+MOREy=80
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 40.0
+  VAR.ITEM.SKILLMIN_Mystic	= 70.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f63]
+DEFNAME=i_scroll_meteor_swarm
+NAME	= meteor swarm scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_blood_moss, i_reag_mandrake_root, i_reag_spider_silk, i_reag_sulfur_ash
+SKILLMAKE=INSCRIPTION 90.0, MAGERY 60.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=7
+VALUE=85
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 7th Circle
+DESCRIPTION=Meteor Storm Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_meteor_swarm
+MOREy=80
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 45.0
+  VAR.ITEM.SKILLMIN_Mystic	= 70.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f64]
+DEFNAME=i_scroll_polymorph
+NAME	= polymorph scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_blood_moss, i_reag_mandrake_root, i_reag_spider_silk
+SKILLMAKE=INSCRIPTION 90.0, MAGERY 60.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=7
+VALUE=85
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 7th Circle
+DESCRIPTION=Polymorph Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_polymorph
+MOREy=80
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 40.0
+  VAR.ITEM.SKILLMIN_Mystic	= 70.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f65]
+DEFNAME=i_scroll_earthquake
+NAME	= earthquake scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_blood_moss, i_reag_ginseng, i_reag_mandrake_root, i_reag_sulfur_ash
+SKILLMAKE=INSCRIPTION 90.0, MAGERY 70.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=8
+VALUE=98
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 8th Circle
+DESCRIPTION=Earthquake Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_earthquake
+MOREy=90
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 50.0
+  VAR.ITEM.SKILLMIN_Mystic	= 80.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f66]
+DEFNAME=i_scroll_energy_vortex
+NAME	= energy vortex scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_black_pearl, i_reag_blood_moss, i_reag_mandrake_root, i_reag_nightshade
+SKILLMAKE=INSCRIPTION 98.0, MAGERY 70.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=8
+VALUE=98
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 8th Circle
+DESCRIPTION=Energy Vortex Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_energy_vortex
+MOREy=90
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 50.0
+  VAR.ITEM.SKILLMIN_Mystic	= 80.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f67]
+DEFNAME=i_scroll_resurrection
+NAME	= resurrection scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_blood_moss, i_reag_garlic, i_reag_ginseng
+SKILLMAKE=INSCRIPTION 99.0, MAGERY 70.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=8
+VALUE=98
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 8th Circle
+DESCRIPTION=Resurrection Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_resurrection
+MOREy=90
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 40.0
+  VAR.ITEM.SKILLMIN_Mystic	= 00.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f68]
+DEFNAME=i_scroll_summon_elem_air
+NAME	= air elemental scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_blood_moss, i_reag_mandrake_root, i_reag_spider_silk
+SKILLMAKE=INSCRIPTION 95.0, MAGERY 70.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=8
+VALUE=98
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 8th Circle
+DESCRIPTION=Summon Elemental Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_summon_elem_air
+MOREy=90
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 50.0
+  VAR.ITEM.SKILLMIN_Mystic	= 80.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f69]
+DEFNAME=i_scroll_summon_daemon
+NAME	= daemon scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_blood_moss, i_reag_mandrake_root, i_reag_spider_silk, i_reag_sulfur_ash
+SKILLMAKE=INSCRIPTION 99.0, MAGERY 70.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=8
+VALUE=98
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 8th Circle
+DESCRIPTION=Summon Deamon Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_summon_daemon
+MOREy=90
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 50.0
+  VAR.ITEM.SKILLMIN_Mystic	= 80.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f6a]
+DEFNAME=i_scroll_summon_elem_earth
+NAME	= earth elemental scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_blood_moss, i_reag_mandrake_root, i_reag_spider_silk
+SKILLMAKE=INSCRIPTION 95.0, MAGERY 70.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=8
+VALUE=98
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 8th Circle
+DESCRIPTION=Summon Earth Elemental Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_summon_elem_earth
+MOREy=90
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 50.0
+  VAR.ITEM.SKILLMIN_Mystic	= 80.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f6b]
+DEFNAME=i_scroll_summon_elem_fire
+NAME	= fire elemental scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_blood_moss, i_reag_mandrake_root, i_reag_spider_silk, i_reag_sulfur_ash
+SKILLMAKE=INSCRIPTION 95.0, MAGERY 70.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=8
+VALUE=98
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 8th Circle
+DESCRIPTION=Summon Fire Elemental Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_summon_elem_fire
+MOREy=90
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 50.0
+  VAR.ITEM.SKILLMIN_Mystic	= 80.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+[ITEMDEF 01f6c]
+DEFNAME=i_scroll_summon_elem_water
+NAME	= water elemental scroll%s
+RESOURCES=i_scroll_blank, i_scribe_powder, i_reag_blood_moss, i_reag_mandrake_root, i_reag_spider_silk
+SKILLMAKE=INSCRIPTION 95.0, MAGERY 70.0, t_scribe_tools
+TYPE=T_SCROLL
+WEIGHT=1
+//CIRCLE=8
+VALUE=98
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - 8th Circle
+DESCRIPTION=Summon Water Elemental Scroll
+
+ON=@Create
+ATTR=attr_magic | attr_identified
+MOREX=s_summon_elem_water
+MOREy=90
+ON=@Click
+  return <f_scroll_click>
+ON=@GetItemVars
+  VAR.ITEM.SKILLMIN_Magery	= 50.0
+  VAR.ITEM.SKILLMIN_Mystic	= 80.0
+ON=@Dclick
+  return <f_scroll_dclick>
+ON = @Identify
+  return <f_scroll_identify>
+
+  
+[ITEMDEF i_bag_first_circle]
+CATEGORY=Item Templates
+SUBSECTION=Scrolls
+DESCRIPTION=1st Circle Scrolls
+NAME=1st Circle Scrolls
+ID=i_bag
+RESOURCES=7 i_scroll_blank, 7 i_scribe_powder, 7 i_reag_sulfur_ash, 7 i_reag_garlic, 7 i_reag_spider_silk, 7 i_reag_nightshade, 7 i_reag_blood_moss, 7 i_reag_black_pearl, 7 i_reag_mandrake_root, 7 i_reag_ginseng
+SKILLMAKE=INSCRIPTION 80.0, MAGERY 5.0, t_scribe_tools
+
+ON=@Create
+	SERV.NEWITEM=i_scroll_reactive_armor
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_clumsy
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_feeblemind
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_heal
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_magic_arrow
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_night_sight
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_weaken
+	NEW.CONT = <UID>
+
+[ITEMDEF i_bag_second_circle]
+CATEGORY=Item Templates
+SUBSECTION=Scrolls
+DESCRIPTION=2nd Circle Scrolls
+NAME=2nd Circle Scrolls
+ID=i_bag
+RESOURCES=8 i_scroll_blank, 8 i_scribe_powder, 8 i_reag_sulfur_ash, 8 i_reag_garlic, 8 i_reag_spider_silk, 8 i_reag_nightshade, 8 i_reag_blood_moss, 8 i_reag_black_pearl, 8 i_reag_mandrake_root, 8 i_reag_ginseng
+SKILLMAKE=INSCRIPTION 80.0, MAGERY 10.0, t_scribe_tools
+
+ON=@Create
+	SERV.NEWITEM=i_scroll_agility
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_cunning
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_cure
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_harm
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_magic_trap
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_magic_untrap
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_protection
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_strength
+	NEW.CONT = <UID>
+
+
+[ITEMDEF i_bag_third_circle]
+CATEGORY=Item Templates
+SUBSECTION=Scrolls
+DESCRIPTION=3rd Circle Scrolls
+NAME=3rd Circle Scrolls
+ID=i_bag
+RESOURCES=8 i_scroll_blank, 8 i_scribe_powder, 8 i_reag_sulfur_ash, 8 i_reag_garlic, 8 i_reag_spider_silk, 8 i_reag_nightshade, 8 i_reag_blood_moss, 8 i_reag_black_pearl, 8 i_reag_mandrake_root, 8 i_reag_ginseng
+SKILLMAKE=INSCRIPTION 90.0, MAGERY 20.0, t_scribe_tools
+
+ON=@Create
+	SERV.NEWITEM=i_scroll_bless
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_fireball
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_magic_lock
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_poison
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_teleport
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_unlock
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_wall_of_stone
+	NEW.CONT = <UID>
+
+[ITEMDEF i_bag_forth_circle]
+CATEGORY=Item Templates
+SUBSECTION=Scrolls
+DESCRIPTION=4th Circle Scrolls
+NAME=4th Circle Scrolls
+ID=i_bag
+RESOURCES=8 i_scroll_blank, 8 i_scribe_powder, 8 i_reag_sulfur_ash, 8 i_reag_garlic, 8 i_reag_spider_silk, 8 i_reag_nightshade, 8 i_reag_blood_moss, 8 i_reag_black_pearl, 8 i_reag_mandrake_root, 8 i_reag_ginseng
+SKILLMAKE=INSCRIPTION 90.0, MAGERY 30.0, t_scribe_tools
+
+ON=@Create
+	SERV.NEWITEM=i_scroll_archcure
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_archprotection
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_curse
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_fire_field
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_greater_heal
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_lightning
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_mana_drain
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_recall
+	NEW.CONT = <UID>
+
+
+[ITEMDEF i_bag_fifth_circle]
+CATEGORY=Item Templates
+SUBSECTION=Scrolls
+DESCRIPTION=5th Circle Scrolls
+NAME=5th Circle Scrolls
+ID=i_bag
+RESOURCES=8 i_scroll_blank, 8 i_scribe_powder, 8 i_reag_sulfur_ash, 8 i_reag_garlic, 8 i_reag_spider_silk, 8 i_reag_nightshade, 8 i_reag_blood_moss, 8 i_reag_black_pearl, 8 i_reag_mandrake_root, 8 i_reag_ginseng
+SKILLMAKE=INSCRIPTION 100.0, MAGERY 40.0, t_scribe_tools
+
+ON=@Create
+	SERV.NEWITEM=i_scroll_blade_spirits
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_dispel_field
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_incognito
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_magic_reflection
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_mind_blast
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_paralyze
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_poison_field
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_summon_creature
+	NEW.CONT = <UID>
+
+[ITEMDEF i_bag_sixth_circle]
+CATEGORY=Item Templates
+SUBSECTION=Scrolls
+DESCRIPTION=6th Circle Scrolls
+NAME=6th Circle Scrolls
+ID=i_bag
+RESOURCES=8 i_scroll_blank, 8 i_scribe_powder, 8 i_reag_sulfur_ash, 8 i_reag_garlic, 8 i_reag_spider_silk, 8 i_reag_nightshade, 8 i_reag_blood_moss, 8 i_reag_black_pearl, 8 i_reag_mandrake_root, 8 i_reag_ginseng
+SKILLMAKE=INSCRIPTION 100.0, MAGERY 50.0, t_scribe_tools
+
+ON=@Create
+	SERV.NEWITEM=i_scroll_dispel
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_energy_bolt
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_explosion
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_invisibility
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_mark
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_mass_curse
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_paralyze_field
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_reveal
+	NEW.CONT = <UID>
+
+[ITEMDEF i_bag_seventh_circle]
+CATEGORY=Item Templates
+SUBSECTION=Scrolls
+DESCRIPTION=7th Circle Scrolls
+NAME=7th Circle Scrolls
+ID=i_bag
+RESOURCES=8 i_scroll_blank, 8 i_scribe_powder, 8 i_reag_sulfur_ash, 8 i_reag_garlic, 8 i_reag_spider_silk, 8 i_reag_nightshade, 8 i_reag_blood_moss, 8 i_reag_black_pearl, 8 i_reag_mandrake_root, 8 i_reag_ginseng
+SKILLMAKE=INSCRIPTION 105.0, MAGERY 60.0, t_scribe_tools
+
+ON=@Create
+	SERV.NEWITEM=i_scroll_chain_lightning
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_energy_field
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_flamestrike
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_gate_travel
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_mana_vampire
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_mass_dispel
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_meteor_swarm
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_polymorph
+	NEW.CONT = <UID>
+
+
+[ITEMDEF i_bag_eighth_circle]
+CATEGORY=Item Templates
+SUBSECTION=Scrolls
+DESCRIPTION=8th Circle Scrolls
+NAME=8th Circle Scrolls
+ID=i_bag
+RESOURCES=8 i_scroll_blank, 8 i_scribe_powder, 8 i_reag_sulfur_ash, 8 i_reag_garlic, 8 i_reag_spider_silk, 8 i_reag_nightshade, 8 i_reag_blood_moss, 8 i_reag_black_pearl, 8 i_reag_mandrake_root, 8 i_reag_ginseng
+SKILLMAKE=INSCRIPTION 105.0, MAGERY 70.0, t_scribe_tools
+
+ON=@Create
+	SERV.NEWITEM=i_scroll_earthquake
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_energy_vortex
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_resurrection
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_summon_elem_air
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_summon_daemon
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_summon_elem_earth
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_summon_elem_fire
+	NEW.CONT = <UID>
+	SERV.NEWITEM=i_scroll_summon_elem_water
+	NEW.CONT = <UID>
+
+[EOF]

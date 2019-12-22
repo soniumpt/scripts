@@ -1,0 +1,579 @@
+// *****************************************************************
+//                        Bizzaro Functions
+// *****************************************************************
+
+[FUNCTION f_bizzaroregiontest]
+   IF strmatch("Bizzaro*", "<SRC.REGION.NAME>"))
+      SRC.SYSMESSAGE 9 Success! This is <SRC.REGION.NAME>!
+   ELSE
+      SRC.SYSMESSAGE 9 Failure! This is <SRC.REGION.NAME>!
+   ENDIF
+
+[FUNCTION f_bizzarospawntimers]
+   SERV.B Initiating spawn timer alterations for <SRC.REGION.NAME>...
+   FORINSTANCES i_worldgem_bit
+      IF (( strmatch( "*bizzaro*", "<MORE1>" ))
+         MOREP=3,5,2
+      ENDIF
+   ENDFOR
+   SERV.B Spawn alterations complete
+   
+[FUNCTION f_RespawnBizzaroShame]
+SERV.B Respawning Bizzaro Shame, please hold...  
+FORINSTANCES i_worldgem_bit
+   IF ((strmatch( "*bizzaro*", "<MORE1>" ) && ( strmatch( "Bizzaro Shame", "<REGION.NAME>" ))
+      SRC.SYSMESSAGE <MORE1>
+      TIMER=1
+   ENDIF
+ENDFOR
+SERV.B Bizzaro Shame has been respawned
+
+[FUNCTION f_illegalbizzarocheck]
+SERV.B Wigs Script is checking for illegal items in the world, please hold...
+//FORINSTANCES *Template*
+//   IF (<TAG.ILLEGALBIZZAROITEM>=1)
+//      SERV.LOG ::CRITICAL:: Illegal item has been found! <NAME>:<UID>:<TOPOBJ.NAME>
+//   ENDIF
+//ENDFOR
+FORINSTANCES i_helm_nose_adamantine
+   IF (<TAG0.ILLEGALBIZZAROITEM>=1)
+      SERV.LOG ::CRITICAL:: Illegal item has been found! <NAME>:<UID>:<TOPOBJ.NAME>
+   ENDIF
+ENDFOR
+FORINSTANCES i_platemail_chest_adamantine
+   IF (<TAG0.ILLEGALBIZZAROITEM>=1)
+      SERV.LOG ::CRITICAL:: Illegal item has been found! <NAME>:<UID>:<TOPOBJ.NAME>
+   ENDIF
+ENDFOR
+FORINSTANCES i_platemail_gloves_adamantine
+   IF (<TAG0.ILLEGALBIZZAROITEM>=1)
+      SERV.LOG ::CRITICAL:: Illegal item has been found! <NAME>:<UID>:<TOPOBJ.NAME>
+   ENDIF
+ENDFOR
+FORINSTANCES i_platemail_arms_verite
+   IF (<TAG0.ILLEGALBIZZAROITEM>=1)
+      SERV.LOG ::CRITICAL:: Illegal item has been found! <NAME>:<UID>:<TOPOBJ.NAME>
+   ENDIF
+ENDFOR
+FORINSTANCES i_platemail_leggings_valorite
+   IF (<TAG0.ILLEGALBIZZAROITEM>=1)
+      SERV.LOG ::CRITICAL:: Illegal item has been found! <NAME>:<UID>:<TOPOBJ.NAME>
+   ENDIF
+ENDFOR
+FORINSTANCES i_shield_kite_bloodrock
+   IF (<TAG0.ILLEGALBIZZAROITEM>=1)
+      SERV.LOG ::CRITICAL:: Illegal item has been found! <NAME>:<UID>:<TOPOBJ.NAME>
+   ENDIF
+ENDFOR
+FORINSTANCES i_war_fork_stronghold
+   IF (<TAG0.ILLEGALBIZZAROITEM>=1)
+      SERV.LOG ::CRITICAL:: Illegal item has been found! <NAME>:<UID>:<TOPOBJ.NAME>
+   ENDIF
+ENDFOR
+FORINSTANCES i_spellbook
+   IF (<TAG0.ILLEGALBIZZAROITEM>=1)
+      SERV.LOG ::CRITICAL:: Illegal item has been found! <NAME>:<UID>:<TOPOBJ.NAME>
+   ENDIF
+ENDFOR
+SERV.B Illegal items have been logged
+
+[FUNCTION BizzaroTravelPapers]
+
+IF !(<SRC.ACCOUNT.TAG0.BIZZARO.SHAME.POINTS>)
+   dtext 150 250 20 * You have not been in Bizzaro Shame yet!
+ELSE
+   dtext 150 250 0 * Bizzaro Shame Points: <EVAL <SRC.ACCOUNT.TAG0.BIZZARO.SHAME.POINTS>>
+ENDIF
+IF !(<SRC.ACCOUNT.TAG0.BIZZARO.HYTHLOTH.POINTS>)
+   dtext 150 265 20 * You have not been in Bizzaro Hythloth yet!
+ELSE
+   dtext 150 265 0 * Bizzaro Hythloth Points: <EVAL <SRC.ACCOUNT.TAG0.BIZZARO.HYTHLOTH.POINTS>>
+ENDIF
+
+
+[FUNCTION GENERATEBIZZAROGOLD]
+   IF (<ARGS> > 50)
+//      SERV.LOG :: BIZZARO LOG :: Can find no items after 50 items!
+      SRC.SYSMESSAGE You earned <EVAL <VAR.BIZZAROGOLD>> gold during your time here!
+      SERV.LOG :: BIZZARO LOG :: GENERATEBIZZAROGOLD: <SRC.NAME>:<SRC.ACCOUNT> earned <EVAL <VAR.BIZZAROGOLD>>!
+      return 0
+   ELSEIF ( <FINDLAYER(21).findid.i_gold>)
+//      SERV.LOG :: BIZZARO LOG :: FOUND <FINDLAYER(21).findid.i_gold> gold!
+      TRY VAR.BIZZAROGOLD = <VAR.BIZZAROGOLD> + <FINDLAYER(21).findid.i_gold.amount>
+      OBJ=<FINDLAYER(21).findid.i_gold.UID>
+      TRY OBJ.CONT <FINDLAYER.29.UID>
+      GENERATEBIZZAROGOLD <eval (1+<args>)>
+      return 0
+   endif
+
+
+
+[FUNCTION ISBIZZARO]
+   IF (<TAG0.BIZZAROMONSTER>) = 1
+      RETURN 1
+   ENDIF
+   RETURN 0
+
+[FUNCTION BIZZAROSTORESKILLS]
+TAG.BIZZARO.ALCHEMY=<ALCHEMY>
+TAG.BIZZARO.ANATOMY=<ANATOMY>
+TAG.BIZZARO.ANIMALLORE=<ANIMALLORE>
+TAG.BIZZARO.ITEMID=<ITEMID>
+TAG.BIZZARO.PARRYING=<PARRYING>
+TAG.BIZZARO.UNUSED=<UNUSED>
+TAG.BIZZARO.BLACKSMITHING=<BLACKSMITHING>
+TAG.BIZZARO.BOWCRAFT=<BOWCRAFT>
+TAG.BIZZARO.PEACEMAKING=<PEACEMAKING>
+TAG.BIZZARO.SURVIVIAL=<SURVIVAL>
+TAG.BIZZARO.CARPENTRY=<CARPENTRY>
+TAG.BIZZARO.CARTOGRAPHY=<CARTOGRAPHY>
+TAG.BIZZARO.COOKING=<COOKING>
+TAG.BIZZARO.DETECTION=<DETECTION>
+TAG.BIZZARO.ENTICEMENT=<ENTICEMENT>
+TAG.BIZZARO.EVALUATINGINTEL=<EVALUATINGINTEL>
+TAG.BIZZARO.HEALING=<HEALING>
+TAG.BIZZARO.FISHING=<FISHING>
+TAG.BIZZARO.NETHERLORE=<NETHERLORE>
+TAG.BIZZARO.HERDING=<HERDING>
+TAG.BIZZARO.HIDING=<HIDING>
+TAG.BIZZARO.PROVOCATION=<PROVOCATION>
+TAG.BIZZARO.INSCRIPTION=<INSCRIPTION>
+TAG.BIZZARO.LOCKPICKING=<LOCKPICKING>
+TAG.BIZZARO.MAGERY=<MAGERY>
+TAG.BIZZARO.MAGICRESISTANCE=<MAGICRESISTANCE>
+TAG.BIZZARO.TACTICS=<TACTICS>
+TAG.BIZZARO.SNOOPING=<SNOOPING>
+TAG.BIZZARO.MUSICIANSHIP=<MUSICIANSHIP>
+TAG.BIZZARO.POISONING=<POISONING>
+TAG.BIZZARO.ARCHERY=<ARCHERY>
+TAG.BIZZARO.NECROMANCY=<NECROMANCY>
+TAG.BIZZARO.STEALING=<STEALING>
+TAG.BIZZARO.TAILORING=<TAILORING>
+TAG.BIZZARO.TAMING=<TAMING>
+TAG.BIZZARO.HERBLORE=<HERBLORE>
+TAG.BIZZARO.TINKERING=<TINKERING>
+TAG.BIZZARO.TRACKING=<TRACKING>
+TAG.BIZZARO.MASONRY=<MASONRY>
+TAG.BIZZARO.SWORDSMANSHIP=<SWORDSMANSHIP>
+TAG.BIZZARO.MACEFIGHTING=<MACEFIGHTING>
+TAG.BIZZARO.FENCING=<FENCING>
+TAG.BIZZARO.WRESTLING=<WRESTLING>
+TAG.BIZZARO.LUMBERJACKING=<LUMBERJACKING>
+TAG.BIZZARO.MINING=<MINING>
+TAG.BIZZARO.MEDITATION=<MEDITATION>
+TAG.BIZZARO.STEALTH=<STEALTH>
+TAG.BIZZARO.UNUSED1=<UNUSED1>
+TAG.BIZZARO.UNUSED2=<UNUSED2>
+TAG.BIZZARO.ARMSLORE=<ARMSLORE>
+TAG.BIZZARO.OSTR=<OSTR>
+TAG.BIZZARO.OINT=<OINT>
+TAG.BIZZARO.ODEX=<ODEX>
+TAG.BIZZARO.FOOD=<FOOD>
+
+
+[FUNCTION BIZZARORESTORESKILLS]
+ALCHEMY=<TAG.BIZZARO.ALCHEMY>
+ANATOMY=<TAG.BIZZARO.ANATOMY>
+ANIMALLORE=<TAG.BIZZARO.ANIMALLORE>
+ITEMID=<TAG.BIZZARO.ITEMID>
+PARRYING=<TAG.BIZZARO.PARRYING>
+UNUSED=<TAG.BIZZARO.UNUSED>
+BLACKSMITHING=<TAG.BIZZARO.BLACKSMITHING>
+BOWCRAFT=<TAG.BIZZARO.BOWCRAFT>
+PEACEMAKING=<TAG.BIZZARO.PEACEMAKING>
+SURVIVAL=<TAG.BIZZARO.SURVIVIAL>
+CARPENTRY=<TAG.BIZZARO.CARPENTRY>
+CARTOGRAPHY=<TAG.BIZZARO.CARTOGRAPHY>
+COOKING=<TAG.BIZZARO.COOKING>
+DETECTION=<TAG.BIZZARO.DETECTION>
+ENTICEMENT=<TAG.BIZZARO.ENTICEMENT>
+EVALUATINGINTEL=<TAG.BIZZARO.EVALUATINGINTEL>
+HEALING=<TAG.BIZZARO.HEALING>
+FISHING=<TAG.BIZZARO.FISHING>
+NETHERLORE=<TAG.BIZZARO.NETHERLORE>
+HERDING=<TAG.BIZZARO.HERDING>
+HIDING=<TAG.BIZZARO.HIDING>
+PROVOCATION=<TAG.BIZZARO.PROVOCATION>
+INSCRIPTION=<TAG.BIZZARO.INSCRIPTION>
+LOCKPICKING=<TAG.BIZZARO.LOCKPICKING>
+MAGERY=<TAG.BIZZARO.MAGERY>
+MAGICRESISTANCE=<TAG.BIZZARO.MAGICRESISTANCE>
+TACTICS=<TAG.BIZZARO.TACTICS>
+SNOOPING=<TAG.BIZZARO.SNOOPING>
+MUSICIANSHIP=<TAG.BIZZARO.MUSICIANSHIP>
+POISONING=<TAG.BIZZARO.POISONING>
+ARCHERY=<TAG.BIZZARO.ARCHERY>
+NECROMANCY=<TAG.BIZZARO.NECROMANCY>
+STEALING=<TAG.BIZZARO.STEALING>
+TAILORING=<TAG.BIZZARO.TAILORING>
+TAMING=<TAG.BIZZARO.TAMING>
+HERBLORE=<TAG.BIZZARO.HERBLORE>
+TINKERING=<TAG.BIZZARO.TINKERING>
+TRACKING=<TAG.BIZZARO.TRACKING>
+MASONRY=<TAG.BIZZARO.MASONRY>
+SWORDSMANSHIP=<TAG.BIZZARO.SWORDSMANSHIP>
+MACEFIGHTING=<TAG.BIZZARO.MACEFIGHTING>
+FENCING=<TAG.BIZZARO.FENCING>
+WRESTLING=<TAG.BIZZARO.WRESTLING>
+LUMBERJACKING=<TAG.BIZZARO.LUMBERJACKING>
+MINING=<TAG.BIZZARO.MINING>
+MEDITATION=<TAG.BIZZARO.MEDITATION>
+STEALTH=<TAG.BIZZARO.STEALTH>
+UNUSED1=<TAG.BIZZARO.UNUSED1>
+UNUSED2=<TAG.BIZZARO.UNUSED2>
+ARMSLORE=<TAG.BIZZARO.ARMSLORE>
+OSTR=<TAG.BIZZARO.OSTR>
+OINT=<TAG.BIZZARO.OINT>
+ODEX=<TAG.BIZZARO.ODEX>
+MAXHITS=
+MAXSTAM=
+MAXMANA=
+HITS=<OSTR>
+STAM=<ODEX>
+MANA=<OINT>
+FOOD=<TAG.BIZZARO.FOOD>
+
+// *****************************************************************
+//                           Bizzaro Rewards
+// *****************************************************************
+
+[ITEMDEF i_reward_bizzaro]
+NAME		= Bizzaro Reward Board
+ID		= i_bulletin_board
+TYPE		= t_normal
+
+ON=@CREATE
+  COLOR		= 0aea
+  ATTR		= 8010
+
+ON=@DCLICK
+  DIALOG d_reward_bizzaro
+  RETURN 1
+
+
+  
+[DIALOG d_reward_bizzaro]
+100,60
+
+page 0
+gumppic    0    0 <eval   0ce>			// top
+gumppic   44    0 <eval   0c9>
+gumppic  471    0 <eval   0cf>
+
+gumppic    0   44 <eval   0ca>			// middle
+gumppic   44   44 <eval  0a2c>
+gumppic  471   44 <eval   0cb>
+
+gumppic    0  360 <eval   0cc>			// bottom
+gumppic   44  360 <eval   0e9>
+gumppic  471  360 <eval   0cd>
+
+
+page 1
+  button  25   50  <eval 0868> <eval 0867> 0 2 2
+  button  25   85  <eval 0868> <eval 0867> 0 3 3
+//  button  25  120  <eval 0868> <eval 0867> 1 0 4
+//  button  25  155  <eval 0868> <eval 0867> 1 0 5
+//  button  25  190  <eval 0868> <eval 0867> 1 0 6
+
+
+  dtext    100   20  50 Select the Bizzaro Points you wish to claim against!
+  
+  dtext    60   55 80 Shame
+  dtext    100  55 0 ----
+  IF (<SRC.ACCOUNT.TAG0.BIZZARO.SHAME.POINTS>)
+     dtext 130 55 20 Your account has <EVAL <SRC.ACCOUNT.TAG0.BIZZARO.SHAME.POINTS>> Bizzaro Shame Points.
+  ELSE
+     dtext 130 55 20 You have no Bizzaro Shame Points at this time.
+  ENDIF
+  
+  dtext    60   90 80 Hythloth
+  dtext    110  90 0 --
+  IF (<SRC.ACCOUNT.TAG0.BIZZARO.HYTHLOTH.POINTS>)
+     dtext 130 90 20 Your account has <EVAL <SRC.ACCOUNT.TAG0.BIZZARO.HYTHLOTH.POINTS>> Bizzaro Hythloth Points.
+  ELSE
+     dtext 130 90 20 You have no Bizzaro Hythloth Points at this time.
+  ENDIF
+  
+  dtext    60  125 80 Britain
+  dtext    105  125 0 ---
+  IF (<SRC.ACCOUNT.TAG0.BIZZARO.BRITAIN.POINTS>)
+     dtext 130 125 20 Your account has <EVAL <SRC.ACCOUNT.TAG0.BIZZARO.BRITAIN.POINTS>> Bizzaro Britain Points.
+  ELSE
+     dtext 130 125 20 You have no Bizzaro Britain Points at this time.
+  ENDIF  
+  
+  dtext    60  160  0 ???
+  dtext    60  195  0 ???
+
+page 2
+  dtext 70 20 50 Your account has <EVAL <SRC.ACCOUNT.TAG0.BIZZARO.SHAME.POINTS>> Points. Please pick a reward from below!
+
+  button  50   50  <eval 0868> <eval 0867> 1 0 11
+  button  50   85  <eval 0868> <eval 0867> 1 0 12
+  button  50  120  <eval 0868> <eval 0867> 1 0 13
+  button  50  155  <eval 0868> <eval 0867> 1 0 14
+  button  50  190  <eval 0868> <eval 0867> 1 0 15
+  button  50  225  <eval 0868> <eval 0867> 1 0 16
+  button  50  260  <eval 0868> <eval 0867> 1 0 17
+
+  dtext 85 55 25 Random Circle 1-4 Spell Scroll
+  dtext 300 55 0 -------
+  dtext 370 55 80 2 Points 
+
+  dtext 85 90 25 Random Circle 1-8 Spell Scroll
+  dtext 300 90 0 -------
+  dtext 370 90 80 4 Points 
+
+  dtext 85 125 25 Random Circle 5-8 Spell Scroll
+  dtext 300 125 0 -------
+  dtext 370 125 80 8 Points 
+  
+  dtext 85 160 25 1 Angel Dust
+  dtext 300 160 0 -------
+  dtext 370 160 80 50 Points 
+  
+  dtext 85 195 25 1 Black Gem
+  dtext 300 195 0 -------
+  dtext 370 195 80 50 Points   
+
+  dtext 85 230 25 Random Level 1-5 Treasure Map
+  dtext 300 230 0 -------
+  dtext 370 230 80 150 Points   
+  
+  dtext 85 265 25 +5% Account Skill Claim Scroll
+  dtext 300 265 0 -------
+  dtext 370 265 80 250 Points   
+
+page 3
+  dtext 70 20 50 Your account has <EVAL <SRC.ACCOUNT.TAG0.BIZZARO.HYTHLOTH.POINTS>> Points. Please pick a reward from below!
+
+  button  50   50  <eval 0868> <eval 0867> 1 0 21
+//  button  50   85  <eval 0868> <eval 0867> 1 0 22
+  button  50  120  <eval 0868> <eval 0867> 1 0 23
+  button  50  155  <eval 0868> <eval 0867> 1 0 24
+//  button  50  190  <eval 0868> <eval 0867> 1 0 25
+//  button  50  225  <eval 0868> <eval 0867> 1 0 26
+  button  50  260  <eval 0868> <eval 0867> 1 0 27
+
+  dtext 85 55 25 Random Circle 5-8 Spell Scroll
+  dtext 300 55 0 -------
+  dtext 370 55 80 8 Points 
+
+  dtext 85 90 25 ???
+  dtext 300 90 0 -------
+  dtext 370 90 80 50 Points
+
+  dtext 85 125 25 10000 Gold Coins
+  dtext 300 125 0 -------
+  dtext 370 125 80 100 Points
+  
+  dtext 85 160 25 +5% Account Skill Claim Scroll
+  dtext 300 160 0 -------
+  dtext 370 160 80 250 Points 
+  
+  dtext 85 195 25 ???
+  dtext 300 195 0 -------
+  dtext 370 195 80 500 Points   
+
+  dtext 85 230 25 ???
+  dtext 300 230 0 -------
+  dtext 370 230 80 2500 Points   
+  
+  dtext 85 265 25 Polar Bear Riding Scroll (1 Char)
+  dtext 300 265 0 -------
+  dtext 370 265 80 10000 Points   
+
+[DIALOG d_reward_bizzaro TEXT]
+
+
+[DIALOG d_reward_bizzaro BUTTON]
+ONBUTTON=11
+  IF (<SRC.ACCOUNT.TAG0.BIZZARO.SHAME.POINTS> >= 2)
+     SRC.SYSMESSAGE @32 You have redeemed your points for a Random Circle 1-4 Spell Scroll!
+     SERV.LOG :: BIZZARO LOG :: <SRC.NAME>:<SRC.ACCOUNT> redeemed 2 Bizzaro Shame points for C1-4 Scroll!     
+     SRC.ACCOUNT.TAG.BIZZARO.SHAME.POINTS = <EVAL <SRC.ACCOUNT.TAG0.BIZZARO.SHAME.POINTS> - 2>
+     SERV.NEWITEM random_lower_scroll
+     NEW.BOUNCE <SRC.UID>
+     DIALOG d_reward_bizzaro
+  ELSE
+     SRC.SYSMESSAGE @16 You do not have enough points for this reward.
+  ENDIF
+  
+ONBUTTON=12
+  IF (<SRC.ACCOUNT.TAG0.BIZZARO.SHAME.POINTS> >= 4)
+     SRC.SYSMESSAGE @32 You have redeemed your points for a Random Circle 1-8 Spell Scroll!
+     SERV.LOG :: BIZZARO LOG :: <SRC.NAME>:<SRC.ACCOUNT> redeemed 4 Bizzaro Shame points for C1-8 Scroll!
+     SRC.ACCOUNT.TAG.BIZZARO.SHAME.POINTS = <EVAL <SRC.ACCOUNT.TAG0.BIZZARO.SHAME.POINTS> - 4>
+     SERV.NEWITEM random_scroll
+     NEW.BOUNCE <SRC.UID>
+     DIALOG d_reward_bizzaro
+  ELSE
+     SRC.SYSMESSAGE @16 You do not have enough points for this reward.
+  ENDIF
+
+ONBUTTON=13
+  IF (<SRC.ACCOUNT.TAG0.BIZZARO.SHAME.POINTS> >= 8)
+     SRC.SYSMESSAGE @32 You have redeemed your points for a Random Circle 4-8 Spell Scroll!
+     SERV.LOG :: BIZZARO LOG :: <SRC.NAME>:<SRC.ACCOUNT> redeemed 8 Bizzaro Shame points for C4-8 Scroll!
+     SRC.ACCOUNT.TAG.BIZZARO.SHAME.POINTS = <EVAL <SRC.ACCOUNT.TAG0.BIZZARO.SHAME.POINTS> - 8>
+     SERV.NEWITEM random_upper_scroll
+     NEW.BOUNCE <SRC.UID>
+     DIALOG d_reward_bizzaro
+  ELSE
+     SRC.SYSMESSAGE @16 You do not have enough points for this reward.
+  ENDIF
+
+ONBUTTON=14
+  IF (<SRC.ACCOUNT.TAG0.BIZZARO.SHAME.POINTS> >= 50)
+     SRC.SYSMESSAGE @32 You have redeemed your points for an Angel Dust!
+     SERV.LOG :: BIZZARO LOG :: <SRC.NAME>:<SRC.ACCOUNT> redeemed 50 Bizzaro Shame points for an Angel Dust!
+     SRC.ACCOUNT.TAG.BIZZARO.SHAME.POINTS = <EVAL <SRC.ACCOUNT.TAG0.BIZZARO.SHAME.POINTS> - 50>
+     SERV.NEWITEM i_angel_dust
+     NEW.BOUNCE <SRC.UID>
+     DIALOG d_reward_bizzaro
+  ELSE
+     SRC.SYSMESSAGE @16 You do not have enough points for this reward.
+  ENDIF
+
+ONBUTTON=15
+  IF (<SRC.ACCOUNT.TAG0.BIZZARO.SHAME.POINTS> >= 50)
+     SRC.SYSMESSAGE @32 You have redeemed your points for a Black Gem!
+     SERV.LOG :: BIZZARO LOG :: <SRC.NAME>:<SRC.ACCOUNT> redeemed 50 Bizzaro Shame points for a Black Gem!
+     SRC.ACCOUNT.TAG.BIZZARO.SHAME.POINTS = <EVAL <SRC.ACCOUNT.TAG0.BIZZARO.SHAME.POINTS> - 50>
+     SERV.NEWITEM i_gem_shadow
+     NEW.BOUNCE <SRC.UID>
+     DIALOG d_reward_bizzaro
+  ELSE
+     SRC.SYSMESSAGE @16 You do not have enough points for this reward.
+  ENDIF  
+
+ONBUTTON=16
+  IF (<SRC.ACCOUNT.TAG0.BIZZARO.SHAME.POINTS> >= 150)
+     SRC.SYSMESSAGE @32 You have redeemed your points for a random Treasure Map!
+     SERV.LOG :: BIZZARO LOG :: <SRC.NAME>:<SRC.ACCOUNT> redeemed 200 Bizzaro Shame points for the treasure map!
+     SRC.ACCOUNT.TAG.BIZZARO.SHAME.POINTS = <EVAL <SRC.ACCOUNT.TAG0.BIZZARO.SHAME.POINTS> - 150>
+     SERV.NEWITEM ttm_random_all
+     NEW.BOUNCE <SRC.UID>
+     DIALOG d_reward_bizzaro
+  ELSE
+     SRC.SYSMESSAGE @16 You do not have enough points for this reward.
+  ENDIF
+
+
+ONBUTTON=17
+  IF (<SRC.ACCOUNT.TAG0.BIZZARO.SHAME.POINTS> >= 250)
+     SRC.SYSMESSAGE @32 You have redeemed your points for a +5% Account Skill Claim Scroll!
+     SERV.LOG :: BIZZARO LOG :: <SRC.NAME>:<SRC.ACCOUNT> redeemed 250 Bizzaro Shame points for the 5 percent scroll!
+     SRC.ACCOUNT.TAG.BIZZARO.SHAME.POINTS = <EVAL <SRC.ACCOUNT.TAG0.BIZZARO.SHAME.POINTS> - 250>
+     SERV.NEWITEM i_scroll_bizzaro_skill
+     NEW.BOUNCE <SRC.UID>
+     DIALOG d_reward_bizzaro
+  ELSE
+     SRC.SYSMESSAGE @16 You do not have enough points for this reward.
+  ENDIF
+
+// ** Bizzaro Hythloth **
+
+ONBUTTON=21
+  IF (<SRC.ACCOUNT.TAG0.BIZZARO.HYTHLOTH.POINTS> >= 8)
+     SRC.SYSMESSAGE @32 You have redeemed your points for a Random Circle 4-8 Spell Scroll!
+     SERV.LOG :: BIZZARO LOG :: <SRC.NAME>:<SRC.ACCOUNT> redeemed 8 Bizzaro Hythloth points for C4-8 Scroll!
+     SRC.ACCOUNT.TAG.BIZZARO.HYTHLOTH.POINTS = <EVAL <SRC.ACCOUNT.TAG0.BIZZARO.HYTHLOTH.POINTS> - 8>
+     SERV.NEWITEM random_upper_scroll
+     NEW.BOUNCE <SRC.UID>
+     DIALOG d_reward_bizzaro
+  ELSE
+     SRC.SYSMESSAGE @16 You do not have enough points for this reward.
+  ENDIF
+  
+ONBUTTON=22
+  IF (<SRC.ACCOUNT.TAG0.BIZZARO.HYTHLOTH.POINTS> >= 50)
+     SRC.SYSMESSAGE @32 DISABLED
+  ELSE
+     SRC.SYSMESSAGE @16 You do not have enough points for this reward.
+  ENDIF
+
+ONBUTTON=23
+  IF (<SRC.ACCOUNT.TAG0.BIZZARO.HYTHLOTH.POINTS> >= 100)
+     SRC.SYSMESSAGE @32 You have redeemed your points for 10000 gold coins!
+     SERV.LOG :: BIZZARO LOG :: <SRC.NAME>:<SRC.ACCOUNT> redeemed 100 Bizzaro Hythloth points for 10k gold!
+     SRC.ACCOUNT.TAG.BIZZARO.HYTHLOTH.POINTS = <EVAL <SRC.ACCOUNT.TAG0.BIZZARO.HYTHLOTH.POINTS> - 100>
+     SERV.NEWITEM i_gold
+     NEW.AMOUNT=10000
+     NEW.BOUNCE <SRC.UID>
+     DIALOG d_reward_bizzaro
+  ELSE
+     SRC.SYSMESSAGE @16 You do not have enough points for this reward.
+  ENDIF
+
+ONBUTTON=24
+  IF (<SRC.ACCOUNT.TAG0.BIZZARO.HYTHLOTH.POINTS> >= 250)
+     SRC.SYSMESSAGE @32 You have redeemed your points for a +5% Account Skill Claim Scroll!
+     SERV.LOG :: BIZZARO LOG :: <SRC.NAME>:<SRC.ACCOUNT> redeemed 250 Bizzaro Hythloth points for the 5 percent scroll!
+     SRC.ACCOUNT.TAG.BIZZARO.HYTHLOTH.POINTS = <EVAL <SRC.ACCOUNT.TAG0.BIZZARO.HYTHLOTH.POINTS> - 250>
+     SERV.NEWITEM i_scroll_bizzaro_skill
+     NEW.BOUNCE <SRC.UID>
+     DIALOG d_reward_bizzaro
+  ELSE
+     SRC.SYSMESSAGE @16 You do not have enough points for this reward.
+  ENDIF
+  
+ONBUTTON=25
+  IF (<SRC.ACCOUNT.TAG0.BIZZARO.HYTHLOTH.POINTS> >= 500)
+     SRC.SYSMESSAGE @32 DISABLED
+  ELSE
+     SRC.SYSMESSAGE @16 You do not have enough points for this reward.
+  ENDIF  
+
+ONBUTTON=26
+  IF (<SRC.ACCOUNT.TAG0.BIZZARO.HYTHLOTH.POINTS> >= 2500)
+     SRC.SYSMESSAGE @32 DISABLED
+  ELSE
+     SRC.SYSMESSAGE @16 You do not have enough points for this reward.
+  ENDIF
+
+
+ONBUTTON=27
+  IF (<SRC.ACCOUNT.TAG0.BIZZARO.HYTHLOTH.POINTS> >= 10000)
+     SRC.SYSMESSAGE @32 You have redeemed your points for a Polar Bear Riding Scroll!
+     SERV.LOG :: BIZZARO LOG :: <SRC.NAME>:<SRC.ACCOUNT> redeemed 10000 Bizzaro Hythloth points for the 5 percent scroll!
+     SRC.ACCOUNT.TAG.BIZZARO.HYTHLOTH.POINTS = <EVAL <SRC.ACCOUNT.TAG0.BIZZARO.HYTHLOTH.POINTS> - 10000>
+     SERV.NEWITEM i_scroll_ride_polar
+     NEW.BOUNCE <SRC.UID>
+     DIALOG d_reward_bizzaro
+  ELSE
+     SRC.SYSMESSAGE @16 You do not have enough points for this reward.
+  ENDIF
+
+
+
+// *****************************************************************
+//                         Bizzaro Rewards
+// *****************************************************************
+
+[ITEMDEF i_scroll_bizzaro_skill]
+ID=i_scroll_heal
+NAME=Bizzaro Reward: 5 Percent Skill Scroll
+
+ON=@CREATE
+   COLOR=0aea
+
+ON=@DCLICK
+   IF ( <CONT.TOPOBJ.UID> != <SRC.UID> )
+      SRC.SYSMESSAGE This scroll must be in your backpack to be used...
+      RETURN 1
+   ELSE
+      SRC.ACCOUNT.TAG.ELIGIBLEFORSKILL = 1
+      SRC.ACCOUNT.TAG.ALLOCATEDSKILL = <SRC.ACCOUNT.TAG0.ALLOCATEDSKILL> + 5
+      SERV.LOG :: BIZZARO LOG :: <SRC.NAME>:<SRC.ACCOUNT.NAME> redeemed a Bizzaro 5 Percent Skill Scroll!
+      SRC.SYSMESSAGE @25 You now have an extra 5% skill to claim on any character on your account!
+      SRC.SYSMESSAGE @25 Please use the command '.claimskill' to use it at any time.
+      REMOVE
+      RETURN 1
+   ENDIF
+      
+
+
+
+[EOF]

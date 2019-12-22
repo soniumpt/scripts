@@ -1,0 +1,333 @@
+[REGIONTYPE r_Cove]
+//ON=@ENTER
+//   SRC.MUSIC=midi_Cove
+
+ON=@CLIPERIODIC
+   SRC.MUSIC=midi_Cove
+   //SRC.SECTOR.LIGHT=15
+
+[REGIONTYPE r_lootzone]
+on=@enter
+serv.allclients sysmessage <src.name> has entered the looting zone.
+
+[REGIONTYPE r_ocllo]
+
+
+[REGIONTYPE r_nujelm]
+
+[REGIONTYPE r_order]
+//ON=@ENTER
+//   IF !(<SRC.NPC> == 1)
+//   IF (<SRC.ACCOUNT.PLEVEL>=1)
+//      IF <SRC.ISCHAOS>
+//        SRC.SYSMESSAGE You have trigger the Order alert system, all Order members have been notified of your presence.
+//        SRC.VAR.LASTMSG=<SRC.NAME>[<SRC.CHAOS_TITLE>] has invaded Magincia!!!
+//        SRC.VAR.LASTPERSON=Alert System
+//        SERV.ALLCLIENTS OTALKPROCESS 1
+//      ENDIF
+//   ENDIF
+//   ENDIF
+   
+//ON=@EXIT
+//   IF !(<SRC.NPC> == 1)
+//   IF (<SRC.ACCOUNT.PLEVEL>=1)
+//      IF <SRC.ISCHAOS>
+//        SRC.VAR.LASTMSG=<SRC.NAME>[<SRC.CHAOS_TITLE>] has left Magincia.
+//        SRC.VAR.LASTPERSON=Notice
+//        SERV.ALLCLIENTS OTALKPROCESS 1
+//      ENDIF
+//   ENDIF
+   
+[REGIONTYPE r_chaos]
+//ON=@ENTER
+//   IF !(<SRC.NPC> == 1)
+//   IF (<SRC.ACCOUNT.PLEVEL>=1)
+//      IF <SRC.ISORDER>
+//         SRC.SYSMESSAGE You have trigger the Chaos alert system, all Chaos members have been notified of your presence.
+//         SRC.VAR.LASTMSG=<SRC.NAME>[<SRC.ORDER_TITLE>] has invaded Serpent's Hold!!!
+//         SRC.VAR.LASTPERSON=Alert System
+//         SERV.ALLCLIENTS CTALKPROCESS 1
+//      ENDIF
+//   ENDIF
+//   ENDIF
+   
+//ON=@EXIT
+//   IF !(<SRC.NPC> == 1)
+//   IF (<SRC.ACCOUNT.PLEVEL>=1)
+//      IF <SRC.ISORDER>
+//        SRC.VAR.LASTMSG=<SRC.NAME>[<SRC.CHAOS_TITLE>] has left Serpent's Hold.
+//        SRC.VAR.LASTPERSON=Notice
+//        SERV.ALLCLIENTS CTALKPROCESS 1
+//      ENDIF
+//   ENDIF
+//   ENDIF
+   
+[REGIONTYPE r_default]
+// Unclaimed regions.
+ON=@ENTER
+   SRC.MUSIC=midi_britain1,midi_ForestA,midi_JungleA,midi_MountainA,midi_Plains,midi_Victory
+
+ON=@CLIPERIODIC
+   SRC.MUSIC=midi_britain1,midi_ForestA,midi_JungleA,midi_MountainA,midi_Plains,midi_Victory
+
+[REGIONRESOURCE mr_nothing]
+// there is nothing here
+REAP=i_unused
+REGEN=60*60*10	// maybe something here later.
+
+
+[REGIONRESOURCE mr_tree]
+// lumberjacking default
+// t_tree
+AMOUNT=9 30
+SKILL=1.0 80.0
+REAP=i_kindling
+REGEN=60*60*10
+
+
+[REGIONRESOURCE mr_grass]
+// grazing animals
+// t_grass
+AMOUNT=9 30
+REGEN=60*60*10
+REAP=i_hay_sheaf
+
+
+[REGIONTYPE r_default_grass t_grass]
+// All grass can be eaten by default.
+RESOURCES=1.0 mr_grass
+
+
+[REGIONTYPE r_guard_tower]
+// Guard tower.
+ON=@ENTER
+//	SRC.MUSIC=midi_ForestA
+ON=@CLIPERIODIC
+	SRC.MUSIC=midi_ForestA
+
+
+[REGIONTYPE r_black_castle]
+// Lord Blackthorne's Castle
+ON=@ENTER
+//	SRC.MUSIC=midi_BtCastle
+ON=@CLIPERIODIC
+	SRC.MUSIC=midi_BtCastle
+
+
+[REGIONTYPE r_bucs_den]
+// Bucs den
+
+ON=@CLIPERIODIC
+	SRC.MUSIC=midi_BucsDen
+
+
+[REGIONTYPE r_plains]
+// Plains night and day.
+ON=@REGPERIODIC
+	src.SOUND={0a,1,0b,1}
+
+
+[REGIONTYPE r_forests]
+// Forest Day and night.
+ON=@REGPERIODIC
+	IF <src.sector.ISNIGHTTIME>
+		src.SOUND={00,2,01,2,02,2,07d,1}
+	ELSE
+		src.SOUND={08,10,09,10,0219,1,07d,1}
+	ENDIF
+
+
+[REGIONTYPE r_jungle]
+// Jungle Day and night.
+ON=@REGPERIODIC
+	IF <src.sector.ISNIGHTTIME>
+		src.SOUND={0c,2,0d,2,0b3,1}
+	ELSE
+		src.SOUND={03,2,04,2,05,2,0b3,1}
+	ENDIF
+
+
+[REGIONTYPE r_brit]
+// Brit
+ON=@ENTER
+        if ( <SRC.REGION.GUARDED> )
+	   SRC.MESSAGE Welcome to Britain <SRC.NAME>!
+	   SRC.MESSAGE Lord British Guards are here to protect you!
+	   SRC.MUSIC=midi_britain1,midi_britain2
+	endif
+ON=@CLIPERIODIC
+	SRC.MUSIC=midi_britain1,midi_britain2
+
+[REGIONTYPE r_brit_castle]
+// Lord brit castle.
+ON=@ENTER
+	SRC.MUSIC=midi_LBCastle
+ON=@CLIPERIODIC
+	SRC.MUSIC=midi_LBCastle
+
+
+[REGIONTYPE r_wind]
+ON=@Enter
+   src.sysmessage You feel the wind rushing through the tunnels.
+   
+
+
+[REGIONTYPE r_ice]
+ON=@REGPERIODIC
+  if ( <SRC.NPC> )
+     return 0
+  endif
+ON=@ENTER
+   if ( 0<src.findid(m_kell_periodic).uid> )
+      src.findid.m_kell_periodic.remove
+   endif
+   SRC.NEWITEM		m_kell_periodic
+   SRC.ACT.EQUIP
+ON=@Exit
+   if ( 0<src.findid(m_kell_periodic).uid> )
+      src.findid.m_kell_periodic.remove
+   endif
+
+
+[REGIONTYPE r_monastery]
+ON = @Enter
+  src.sysmessage You feel the righteous presence of the Templars.
+  SRC.MUSIC 24
+  return 0
+
+ON = @Step
+  if ( <SRC.NPC> )
+     return 0
+  elseif ( <SRC.KILLS> > 3 )
+     src.sysmessage Holy forces hold you at the gates of the Monastery.
+     SRC.P	= 1343, 1748, 20
+     SRC.UPDATE
+     return 0
+  elseif ( <SRC.MEMORYFINDTYPE(memory_fight).uid> )
+     src.sysmessage You must come in peace, to pass the gates of the Monastery.
+     SRC.P	= 1343, 1748, 20
+     SRC.UPDATE
+     return 0
+  endif
+
+
+[REGIONTYPE r_Khaldun]
+ON=@ENTER
+	src.message "You feel a strange force is acting on you"
+	src.events +e_Khaldun_Curse
+	src.sector.light 30
+ON=@Exit
+	src.events -e_Khaldun_Curse
+
+
+[REGIONTYPE r_newbie]
+ON=@ENTER
+ 
+   SRC.EVENTS=+e_newbdungeon
+   src.message @07a1 "You enter the Imperial Newbie Dungeon."  
+
+ON=@EXIT
+   SRC.EVENTS=-e_newbdungeon
+   src.message @07a1 "You exit the Imperial Newbie Dungeon"
+
+   
+[REGIONTYPE r_wrooong]
+ON=@ENTER
+ 
+   SRC.EVENTS=+r_wrooong
+   src.message @0086 "You have a feeling you lost all your abilities to use magery."  
+
+ON=@EXIT
+   SRC.EVENTS=-r_wrooong
+
+   
+   
+[REGIONTYPE r_guildtownAaa]
+ON=@ENTER
+	SRC.TAG.GUILDTOWN 1
+ON=@Exit
+	SRC.TAG.GUILDTOWN
+
+
+
+
+   
+
+[EVENTS e_newbdungeon]//the event
+//On=@ItemDclick
+//    IF ( (<ACT.BASEID>=i_corpse ) && <ACT.LINK>!=04fffffff )
+//       IF ( <ACT.LINK>=<SRC.UID> )
+//          RETURN 0
+//       ELSE
+//          SRC.SYSMESSAGE This corpse isn't yours.
+//          RETURN 1
+//      EndIf         
+//      EndIf
+
+
+[REGIONTYPE r_newbiedungeon]
+ON=@ENTER
+   SRC.EVENTS=+e_dungeonnewbie
+   SRC.EVENTS=+e_dungeonnewbie2
+ON=@EXIT
+   SRC.EVENTS=-e_dungeonnewbie
+   SRC.EVENTS=-e_dungeonnewbie2
+
+
+[EVENTS e_dungeonnewbie]
+On=@hittry
+   if ( <ISPLAYER> && <SRC.ISPLAYER> )
+      sysmessage You can't attack other players in this dungeon.
+   return 1
+   endif 
+
+
+   
+[EVENTS e_dungeonnewbie2]
+ON=@SpellEffect
+if ( <ISPLAYER> && <SRC.ISPLAYER> )
+if (<serv.spell.<argn1>.flags>&spellflag_harm)
+SRC.SYSMESSAGE You cannot harm players in this dungeon.
+RETURN 1
+ENDIF
+ENDIF 
+
+ON=@SpellCast
+	If ( <Argn> == 33 )
+		src.message " You can't use that spell in this dungeon"
+		return 1
+	Endif
+	If ( <Argn> == 40 )
+		src.message " You can't use that spell in this dungeon"
+		return 1
+	Endif	
+	If ( <Argn> == 58 )
+		src.message " You can't use that spell in this dungeon"
+		return 1
+	Endif	
+	If ( <Argn> == 60 )
+		src.message " You can't use that spell in this dungeon"
+		return 1
+	Endif	
+	If ( <Argn> == 61 )
+		src.message " You can't use that spell in this dungeon"
+		return 1
+	Endif	
+	If ( <Argn> == 62 )
+		src.message " You can't use that spell in this dungeon"
+		return 1
+	Endif	
+	If ( <Argn> == 63 )
+		src.message " You can't use that spell in this dungeon"
+		return 1	
+    Endif		
+	If ( <Argn> == 64 )
+		src.message " You can't use that spell in this dungeon"
+		return 1		
+	endif
+ 
+ 
+
+ 
+ 
+[EOF]

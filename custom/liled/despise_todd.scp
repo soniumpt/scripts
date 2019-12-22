@@ -1,0 +1,208 @@
+[CHARDEF c_despise_todd]
+ID=c_man
+NAME=Todd, the Hunter
+DEFNAME=c_despise_todd
+CAN=MT_NONMOVER
+CATEGORY=Imperial uo
+SUBSECTION=PvM Quests - Despise
+DESCRIPTION=Todd
+DESIRES=i_axe_orc
+
+TSPEECH=spk_despise_todd
+
+on=@create
+FLAGS |= statf_invul
+title=the Hunter
+str=100
+dex=100
+int=100
+ITEMNEWBIE=i_robe
+COLOR=035
+ITEMNEWBIE=i_hair_long
+COLOR=063
+
+on=@gethit
+return 1
+
+on=@spelleffect
+return 1
+
+
+
+[SPEECH spk_despise_todd]
+ON=*info*
+SDIALOG D_DESPISE_TODD
+RETURN 1
+
+ON=*accept*
+//see if the player has already done the quest (select despise_todd var from quests where uid=src.uid)
+serv.log db query
+DB.QUERY "SELECT `total`, `despise_todd` FROM `quests` WHERE `uid` = '<SRC.UID>'"
+
+IF (0<DB.ROW.NUMROWS>)
+    FOR CURRENTROW 0 <eval <DB.ROW.NUMROWS>-1>
+	//Player has completed the quest if var=10
+        IF (<DB.ROW.<eval <LOCAL.CURRENTROW>>.despise_todd> == 10)
+            SAY You have already helped me, I thank thee!
+	    RETURN 1
+	ENDIF
+	//Player has started the quest if var=1
+	IF (<DB.ROW.<eval <LOCAL.CURRENTROW>>.despise_todd> == 1)
+            SAY You are already helping me, go and kill orcs!
+	    RETURN 1
+        ELSE
+	//Player has not started the quest
+	serv.log db execute
+            DB.EXECUTE "UPDATE `quests` SET `despise_todd`='1' WHERE `uid`='<SRC.UID>';"
+	    SAY Thank you for helping me, go get those axes!
+	    SERV.LOG <SRC.ACCOUNT> - <SRC.NAME>: Has begun Despise, Todd Quest.
+    		 SERV.NEWITEM i_mem_despise
+   		 NEW.TAG.DESPISE=1
+   		 NEW.TIMER = 86400
+   		 NEW.EQUIP <SRC.UID>
+   		 RETURN 1
+        ENDIF
+     END
+ELSE
+    //Player has not started any quests, and needs adding to the database
+    serv.log db execute
+    DB.EXECUTE "INSERT INTO `quests` (`uid` ,`pname` ,`despise_todd`) VALUES ('<SRC.UID>', '<SRC.NAME>', '1')"
+    SAY Thank you for helping me, go get those axes, brave new Hunter!
+    SERV.LOG <SRC.ACCOUNT> - <SRC.NAME>: Has begun Despise, Todd Quest.
+    SERV.NEWITEM i_mem_despise
+    NEW.TAG.DESPISE=1
+    NEW.TIMER = 86400
+    NEW.EQUIP <SRC.UID>
+    RETURN 1
+ENDIF
+
+
+ON=*reward*
+IF !(<SRC.FINDID(i_mem_despise)>)
+    SAY Reward for what? You've not done anything for me yet.
+    RETURN 1
+ENDIF
+IF (<SRC.FINDID(i_mem_despise).tag.despise> == 11)
+serv.log db query
+SERV.LOG <SRC.ACCOUNT> - <SRC.NAME>: Has completed Despise, Todd Quest.
+DB.QUERY "SELECT `total` FROM `quests` WHERE `uid` = '<SRC.UID>'"
+IF (0<DB.ROW.NUMROWS>)
+    FOR CURRENTROW 0 <eval <DB.ROW.NUMROWS>-1>
+    IF (<DB.ROW.<eval <LOCAL.CURRENTROW>>.total>==0)
+    LOCAL.QTOTAL=1
+    ELSE
+    LOCAL.QTOTAL=<eval <DB.ROW.<eval <LOCAL.CURRENTROW>>.total>+1>
+    ENDIF
+    END
+ENDIF
+serv.log db execute
+DB.EXECUTE "UPDATE `quests` SET `total`='<EVAL <LOCAL.QTOTAL>>', `despise_todd`='10' WHERE `uid`='<SRC.UID>'"
+LOCAL.QTOTAL=
+SAY Thank you! Here is your reward
+    SRC.FINDID(i_mem_despise).REMOVE
+    SRC.EVENTS -e_despise_todd
+    SERV.NEWITEM i_gold
+    NEW.AMOUNT 10000
+    NEW.BOUNCE
+RETURN 1
+ELSE
+SAY You have not collected me enough axes yet. You need <eval 11 - <SRC.FINDID(i_mem_despise).tag.despise>> more.
+RETURN 1
+ENDIF
+
+[CHARDEF c_orc_event]
+DEFNAME=c_orc_event
+ID=c_orc
+NAME=#NAMES_ORC the Orc
+SOUND=snd_MONSTER_ORC1
+ICON=i_pet_ORC
+ANIM=078c7f
+DAM=3,9
+ARMOR=14
+CAN=MT_WALK|MT_RUN|MT_USEHANDS|MT_EQUIP
+
+TEVENTS=e_despise_todd
+RESOURCES=8 i_ribs_raw, 1 i_Orc_spine
+FOODTYPE=15 t_meat_raw
+DESIRES=i_gold,spk_orc
+
+CATEGORY=Imperial uo
+SUBSECTION=PvM Quests - Despise
+DESCRIPTION=Orc
+
+ON=@Create
+  NPC=brain_monster
+  FAME={100 1000}
+  KARMA={-1000 -5000}
+  STR={76 100}
+  DEX={81 105}
+  INT={55 72}
+  PARRYING={50.0 75.0}
+  MAGICRESISTANCE={50.0 75.0}
+  TACTICS={55.0 80.0}
+  WRESTLING={50.0 70.0}
+
+on=@Death
+  y_region_loot_death
+  y_region_loot_calculator
+  loot_ORC
+  addlootitem ,loot_newrares_Easy,1
+
+[EVENTS e_despise_todd]
+ON=@DeathCorpse
+//IF (<ACT.FINDID(i_mem_despise).tag.despise> == 10)
+//ENDIF
+//IF (<ACT.FINDID(i_mem_despise).tag.despise> >= 01)
+//   	IF (rand(100) < 30)
+//   	SERV.NEWITEM i_axe_orc, 1, <ARGO.UID>
+//   	ENDIF
+//ENDIF
+
+
+[DIALOG D_DESPISE_TODD]
+200,180
+PAGE 1
+resizepic 20 20 3500 350 170
+checkertrans 20 20 350 170
+dhtmlgump 60 40 280 120 1 1 <DEF.BFONT_DGREEN>Hello brave hunter. I am Todd, an expert in the hunting world.<DEF.BR>I have been asked to gather up some axes from the orcs within this dungeon. But I am begining to tire.<DEF.BR>Could you help me out by killing orcs and trying to find me 10 more orc axes? When you have collected me 10, come back here and ask for your reward<DEF.BFONTE>
+
+
+[ITEMDEF i_mem_despise]
+ID=i_memory
+TYPE=t_eq_script
+NAME=Depsise quest
+
+on=@Timer
+serv.log db execute
+    DB.EXECUTE "UPDATE `quests` SET `despise_todd`='0' WHERE `uid`='<CONT.UID>';"
+    REMOVE
+    CONT.EVENTS -e_despise_todd
+    RETURN 1
+
+
+[ITEMDEF i_axe_orc]
+ID=i_axe
+TYPE=t_script
+NAME=Orc Axe
+
+
+ON=@dclick
+IF !(<SRC.FINDID(i_mem_despise).tag.despise>)
+SRC.EMOTE chuck away the useless item.
+REMOVE
+RETURN 1
+ENDIF
+IF (<SRC.FINDID(i_mem_despise).tag.despise>==11)
+SRC.SYSMESSAGE @35 You already have enough axes. Go and speak with Todd.
+REMOVE
+RETURN 1
+ELSE
+SRC.FINDID(i_mem_despise).tag.despise=<eval <SRC.FINDID(i_mem_despise).tag.despise> + 1>
+SRC.SYSMESSAGE @35 You found an Orc Axe! You now have <eval <SRC.FINDID(i_mem_despise).tag.despise> - 1>
+REMOVE
+RETURN 1
+ENDIF
+RETURN 1
+
+
+[eof]

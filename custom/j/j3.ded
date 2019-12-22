@@ -1,0 +1,1887 @@
+////////////////////////
+//Miscellaneous Things//
+//By Wigifer and Tiff //
+////////////////////////
+//Last update:        //
+//10.08.10            //
+//By Wigifer          //
+////////////////////////
+
+[PLEVEL 1]
+//tester
+//testerrunes
+//testeringots
+//testerstone
+//testerrestore
+
+[FUNCTION serverallcharactersquestreset]
+SERV.B Server is being PAUSED for an emergency player quest reset...
+FORPLAYERS 6144
+   SERV.LOG <NAME>:<ACCOUNT.NAME> Tags reset.
+   TAG.NPC_QUEST_START=
+   TAG.NPC_QUEST_DONE=
+   TAG.NPC_QUEST_START_2=
+   TAG.NPC_QUEST_DONE_2=
+   TAG.NPC_QUEST_START_3=
+   TAG.NPC_QUEST_DONE_3=   
+ENDFOR
+SERV.B Emergency player quest reset complete...
+
+[FUNCTION testerrestore]
+SRC.HITS=120
+SRC.STAM=120
+SRC.MANA=120
+
+[FUNCTION testerstone]
+SRC.STONE
+
+[FUNCTION tester]
+GO Yew
+
+[FUNCTION TesterIngots]
+SRC.NEWITEM i_chest_phoenix
+SRC.ACT.BOUNCE
+SRC.NEWITEM i_ingot_titanium
+SRC.ACT.AMOUNT=100
+SRC.ACT.BOUNCE
+SRC.NEWITEM i_ingot_adamantine
+SRC.ACT.AMOUNT=100
+SRC.ACT.BOUNCE
+SRC.NEWITEM i_ingot_skargard
+SRC.ACT.AMOUNT=100
+SRC.ACT.BOUNCE
+SRC.NEWITEM i_ingot_phoenix
+SRC.ACT.AMOUNT=100
+SRC.ACT.BOUNCE
+SRC.NEWITEM i_ingot_celestium
+SRC.ACT.AMOUNT=100
+SRC.ACT.BOUNCE
+SRC.NEWITEM i_ingot_blackrock
+SRC.ACT.AMOUNT=100
+SRC.ACT.BOUNCE
+SRC.NEWITEM i_ingot_bloodrock
+SRC.ACT.AMOUNT=100
+SRC.ACT.BOUNCE
+SRC.NEWITEM i_ingot_verite
+SRC.ACT.AMOUNT=100
+SRC.ACT.BOUNCE
+SRC.NEWITEM i_ingot_valorite
+SRC.ACT.AMOUNT=100
+SRC.ACT.BOUNCE
+SRC.NEWITEM i_ingot_agapite
+SRC.ACT.AMOUNT=100
+SRC.ACT.BOUNCE
+SRC.NEWITEM i_ingot_shadow
+SRC.ACT.AMOUNT=100
+SRC.ACT.BOUNCE
+SRC.NEWITEM i_ingot_stronghold
+SRC.ACT.AMOUNT=100
+SRC.ACT.BOUNCE
+SRC.NEWITEM i_ingot_verminard
+SRC.ACT.AMOUNT=100
+SRC.ACT.BOUNCE
+SRC.NEWITEM i_deed_anvil
+SRC.ACT.BOUNCE
+SRC.NEWITEM i_deed_forge
+SRC.ACT.BOUNCE
+SRC.NEWITEM i_hammer_smith
+SRC.ACT.BOUNCE
+SRC.NEWITEM i_tinkers_tools
+SRC.ACT.BOUNCE
+SRC.NEWITEM i_coal
+SRC.ACT.AMOUNT=1000
+SRC.ACT.BOUNCE
+
+[FUNCTION TesterRunes]
+SRC.NEWITEM tm_tester_runes
+SRC.ACT.BOUNCE
+
+[TEMPLATE tm_tester_runes]
+CONTAINER=i_bag
+NAME=Runes Bag
+COLOR=025
+ATTR=01
+
+ITEM=i_reag_black_pearl
+AMOUNT=150
+ITEM=i_reag_blood_moss
+AMOUNT=150
+ITEM=i_reag_garlic
+AMOUNT=150
+ITEM=i_reag_ginseng
+AMOUNT=150
+ITEM=i_reag_mandrake_root
+AMOUNT=150
+ITEM=i_reag_nightshade
+AMOUNT=150
+ITEM=i_reag_sulfur_ash
+AMOUNT=150
+ITEM=i_reag_spider_silk
+AMOUNT=150
+ITEM=i_potion_ra
+AMOUNT=50
+ITEM=i_potion_managreat
+AMOUNT=50
+ITEM=i_potion_permanencegreat
+AMOUNT=50
+ITEM=i_potion_curegreat
+AMOUNT=50
+ITEM=i_rune_marker
+ITEM=i_rune_marker
+ITEM=i_rune_marker
+ITEM=i_rune_marker
+ITEM=i_rune_marker
+ITEM=i_rune_marker
+ITEM=i_rune_marker
+ITEM=i_rune_marker
+ITEM=i_rune_marker
+ITEM=i_rune_marker
+ITEM=i_rune_marker
+ITEM=i_rune_marker
+ITEM=i_rune_marker
+ITEM=i_rune_marker
+ITEM=i_rune_marker
+ITEM=i_rune_marker
+ITEM=i_rune_marker
+ITEM=i_rune_marker
+ITEM=i_rune_marker
+ITEM=i_rune_marker
+ITEM=i_rune_marker
+ITEM=i_rune_marker
+ITEM=i_rune_marker
+ITEM=i_rune_marker
+ITEM=i_rune_marker
+ITEM=i_rune_marker
+ITEM=i_rune_marker
+ITEM=i_rune_marker
+ITEM=i_rune_marker
+ITEM=i_rune_marker
+ITEM=i_rune_marker
+
+[FUNCTION GOTEST]
+SRC.STONE
+GO <ARGS>
+
+[ITEMDEF i_tester_stone]
+ID=i_guildstone
+NAME=Testers Kit Stone
+
+ON=@DCLICK
+PROMPTCONSOLE GOTEST Type in the Town Name or co-ordinates you'd like to go to.
+SRC.SYSMESSAGE @42 If you do not go anywhere, then you have made a mistake...
+SRC.SYSMESSAGE @82 You will be unstoned when you enter a location
+SRC.STONE
+RETURN 1
+
+[ITEMDEF i_tester_moongate]
+ID=i_moongate_blue
+NAME=Testers Moongate
+
+ON=@STEP
+SRC.STR=120
+SRC.INT=120
+SRC.DEX=120
+SRC.ALLSKILLS=1000
+SERV.NEWITEM=i_check, 40
+NEW.MORE2=1000000
+NEW.BOUNCE
+SERV.NEWITEM=i_spellbook
+NEW.MORE1=04ffffffff
+NEW.MORE2=04ffffffff
+NEW.BOUNCE
+SRC.NIGHTSIGHT
+SRC.TESTERRUNES
+RETURN 0
+
+[ITEMDEF i_companion_bell]
+ID=i_bell_of_courage
+NAME=Companion Bell
+TYPE=t_normal
+
+ON=@DCLICK
+VAR.COMPANIONSONLINE=0
+SERV.ALLCLIENTS companioncheck
+companioncheck2
+RETURN 1
+
+[FUNCTION companioncheck]
+IF (0<TAG.COMPANION>)
+   IF !(<ISGM>)
+      VAR.COMPANIONSONLINE= <eval <VAR.COMPANIONSONLINE>> + 1
+      SYSMESSAGE @82 <SRC.NAME> has requested companion assistance from <SRC.REGION.NAME>.
+   ELSE
+      SYSMESSAGE @82 <SRC.NAME> has requested companion assistance from <SRC.REGION.NAME>.
+   ENDIF
+ENDIF
+
+[FUNCTION companioncheck2]
+IF (<EVAL <VAR.COMPANIONSONLINE> = 0 > )
+   SRC.SYSMESSAGE @82 There are no companions on at this time. We apologise for the inconvenience.
+ELSE
+   SRC.SYSMESSAGE @82 There are <EVAL <VAR.COMPANIONSONLINE>> companions online. One will be with you as soon as possible.
+ENDIF
+
+[FUNCTION fixdaemonspawns]
+   SERV.B Automated Daemon fixing...
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_daemon_summoned"))
+         SERV.LOG <UID>:<P>:<REGION.NAME>:<NAME> fixed
+         MORE1=c_daemon
+      ENDIF
+   ENDFOR
+   SERV.B Automated Daemon fixing complete!
+
+
+[ITEMDEF i_test_stone]
+ID=i_guildstone
+NAME=Testers stone
+TYPE=t_normal
+
+ON=@DCLICK
+SRC.ALLSKILLS=100.0
+SRC.STR=120
+SRC.INT=120
+SRC.DEX=120
+SRC.GO Britain
+RETURN 1
+
+[ITEMDEF i_cycle_init]
+ID=i_guildstone
+NAME=Cycle Resetter
+TYPE=t_normal
+
+ON=@CREATE
+COLOR=095
+
+ON=@DCLICK
+SRC.TAG.CYCLE=0
+SRC.SYSMESSAGE @74 Cycle Reset
+RETURN 1
+
+// Donators Robes and Checker
+
+[ITEMDEF i_robe_donator]
+ID=i_deathshroud
+NAME=Donators Robe
+TYPE=t_script
+
+ON=@CREATE
+   TYPE=t_clothing
+   ATTR=05
+   MORE1L=9999
+   MORE1H=9999
+
+ON=@DCLICK
+   IF (<SRC.ACCOUNT.PLEVEL>>1)
+      TARGET Who do you want to set as the owner of the robe
+      RETURN 1
+   ELSE
+      IF ( strmatch("<SRC.ACCOUNT>","<TAG.ACCOUNTOWNER>"))
+         SRC.SYSMESSAGE @84 You put on the donators robe
+      ELSE
+         SRC.SYSMESSAGE @85 You cannot wear these, as they do not belong to you!
+         RETURN 1
+      ENDIF
+   ENDIF
+
+ON=@EQUIP
+      IF ( strmatch("<SRC.ACCOUNT>","<TAG.ACCOUNTOWNER>"))
+         SRC.SYSMESSAGE @84 You put on the donators robe
+      ELSE
+         SRC.SYSMESSAGE @85 You cannot wear these, as they do not belong to you!
+         RETURN 1
+      ENDIF
+
+ON=@TARGON_CHAR
+   LINK=<SRC.TARG.UID>
+   TAG.ORIGINALOWNER=<SRC.TARG.NAME>
+   TAG.ACCOUNTOWNER=<SRC.TARG.ACCOUNT>
+   SRC.SYSMESSAGE @88 Owner set
+   RETURN 1
+
+   
+[ITEMDEF i_robe_donator_big]
+ID=i_deathshroud
+NAME=Big Money Donators Robe
+TYPE=t_script
+
+ON=@CREATE
+   TYPE=t_clothing
+   ATTR=05
+   MORE1L=9999
+   MORE1H=9999
+
+ON=@DCLICK
+   IF (<SRC.ISGM>)
+      TARGET Who do you want to set as the owner of the robe
+      RETURN 1
+   ENDIF
+
+   IF (<CONT> == <SRC.UID>)
+      SRC.NIGHTSIGHT
+      SRC.SYSMESSAGE @25 You feel yourself surrounded in your own benevolent light.
+   endif
+   
+ON=@EQUIP
+   SRC.SYSMESSAGE @84 You put on the big money donators robe and feel proud!
+   SRC.SYSMESSAGE @85 Thank you so much for your generous donation!
+   IF <SRC.UID> == <LINK> THEN
+      SRC.FLAGS= (<SRC.FLAGS> | statf_nightsight)
+      SRC.UPDATE
+   ENDIF
+  
+ON=@UNEQUIP
+   IF <SRC.UID> == <LINK> THEN
+      SRC.FLAGS= (<SRC.FLAGS>&~statf_nightsight)
+      SRC.UPDATE
+   ENDIF
+   
+ON=@TARGON_CHAR
+   LINK=<SRC.TARG.UID>
+   TAG.ORIGINALOWNER=<SRC.TARG.NAME>
+   TAG.ACCOUNTOWNER=<SRC.TARG.ACCOUNT>
+   SRC.SYSMESSAGE @88 Owner set
+   RETURN 1
+
+
+
+[ITEMDEF i_shades_donator]
+ID=i_goggles
+NAME=Donators Sunshades
+TYPE=t_script
+
+ON=@CREATE
+   TYPE=t_clothing
+   ATTR=05
+   MORE1L=9999
+   MORE1H=9999
+
+ON=@DCLICK
+   IF (<SRC.ISGM>)
+      TARGET Who do you want to set as the owner of the shades
+      RETURN 1
+   ELSE
+      IF (<SRC.ACCOUNT>==<TAG.ACCOUNTOWNER>)
+         SRC.SYSMESSAGE @84 You put on the donators sunshades
+      ELSE
+         SRC.SYSMESSAGE @85 You cannot wear these, as they do not belong to you!
+         RETURN 1
+      ENDIF
+   ENDIF
+
+ON=@TARGON_CHAR
+   LINK=<SRC.TARG.UID>
+   TAG.ORIGINALOWNER=<SRC.TARG.NAME>
+   TAG.ACCOUNTOWNER=<SRC.TARG.ACCOUNT>
+   SRC.SYSMESSAGE @88 Owner set
+   RETURN 1
+
+[ITEMDEF i_donator_robe_check]
+ID=i_wand_2
+NAME=Donator Robe IDer
+TYPE=t_normal
+
+ON=@CREATE
+   COLOR=07a0
+
+ON=@DCLICK
+   TARGET Which donator robe or shades do you wish to check?
+   RETURN 1
+
+ON=@TARGON_ITEM
+   SRC.SYSMESSAGE @62 Linked to UID <SRC.TARG.LINK>
+   SRC.SYSMESSAGE @64 Account registered to is <SRC.TARG.TAG.ACCOUNTOWNER>
+   SRC.SYSMESSAGE @66 Character registered to is <SRC.TARG.TAG.ORIGINALOWNER>
+
+[ITEMDEF i_player_info]
+ID=i_wand_2
+NAME=Player Info
+TYPE=t_normal
+
+ON=@CREATE
+   COLOR=07a1
+
+ON=@DCLICK
+   TARGET Which player do you want info on?
+   RETURN 1
+
+ON=@TARGON_CHAR
+   SRC.SYSMESSAGE @22 Name: <SRC.TARG.NAME>
+   SRC.SYSMESSAGE @24 Account: <SRC.TARG.ACCOUNT>
+   SRC.SYSMESSAGE @26 UID: <SRC.TARG.UID>
+   IF (<SRC.TARG.FINDID.i_punished_timer>)
+      SRC.SYSMESSAGE @40 Punished for <eval (<SRC.TARG.FINDID.i_punished_timer.TIMER> / 60)> minutes
+   ENDIF
+
+[ITEMDEF i_player_afktest]
+ID=i_wand_2
+NAME=AFK Checker
+TYPE=t_normal
+
+ON=@CREATE
+   COLOR=07a0
+
+ON=@DCLICK
+   TARGET Which player do you want to AFK Check?
+   RETURN 1
+
+ON=@TARGON_CHAR
+   SRC.TARG.AFKTEST
+   SERV.LOG <SRC.NAME> is afk testing <SRC.TARG.NAME>
+
+
+// Unique Wedding rings
+
+[ITEMDEF i_ring_wedding_wren]
+ID=i_ring_gold
+NAME=Sephiroths Promise of Love
+TYPE=t_jewelry
+
+ON=@CREATE
+   ATTR=05
+
+ON=@DCLICK
+   IF (<SRC.NAME>=="Wren")
+      SRC.SYSMESSAGE @62 You read the engraving on the ring:
+      SRC.SYSMESSAGE @48 To my best friend, my love, my companion through time.
+      SRC.SYSMESSAGE @48 This ring I give to you as a promise of my love.
+      SRC.SYSMESSAGE @48 - Sephiroth
+      RETURN 0
+   ELSE
+      SRC.SYSMESSAGE @22 This ring is not yours to have.
+      BOUNCE
+      RETURN 1
+   ENDIF
+  
+ON=@CLICK
+   IF (<SRC.NAME>=="Wren")
+      SRC.MESSAGE You look at the ring and remember one beautiful Christmas Day.
+      RETURN 1
+   ENDIF
+   
+
+// By Tiffany
+
+
+[ITEMDEF i_robe_tamer]
+ID	= i_deathshroud
+NAME	= Tiff's Taming Robe
+TYPE	= T_CLOTHING
+ARMOR	= 5
+DYE	= 0
+
+ON = @Create
+  HITPOINTS	= 350
+  COLOR		= 079c
+  RETURN1
+
+
+// By Wigifer
+
+
+
+
+
+
+
+
+
+
+//////////////
+//PvP Trader//
+//////////////
+
+[CHARDEF c_pvp_trader]
+DEFNAME=c_pvp_trader
+NAME=Leilani the PvP trader
+ID=C_WOMAN
+DESIRES=i_gold,e_notoriety
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_trainer
+TSPEECH=spk_shopkeep
+TSPEECH=spk_needs
+TSPEECH=spk_rehello
+TSPEECH=spk_human_default
+
+TEVENTS=e_all_npc
+TEVENTS=e_Human_HearUnk
+TEVENTS=e_Human_Needs
+TEVENTS=e_Human_ConvInit
+TEVENTS=e_Human_Greet
+TEVENTS=e_Human_Space
+TEVENTS=e_Human_Refuse
+TEVENTS=e_Human_Environ
+
+ON=@Create
+NPC=brain_vendor
+COLOR=colors_skin
+STR={16 30}
+DEX={26 40}
+INT={31 45}
+
+EVALUATINGINTEL={45.0 68.0}
+WRESTLING={15.0 38.0}
+MAGICRESISTANCE={15.0 38.0}
+TACTICS={15.0 38.0}
+INSCRIPTION={50.0 70.0}
+
+ITEMNEWBIE=random_female_hair
+COLOR=colors_hair
+
+ON=@NPCRestock
+ITEM=RANDOM_LIGHT
+ITEMNEWBIE=i_shirt_plain
+COLOR=07a0
+ITEMNEWBIE=random_skirt
+COLOR=0793
+ITEMNEWBIE=random_shoes
+COLOR=colors_neutral
+
+SELL=VENDOR_PVP_SELL
+BUY=VENDOR_PVP_BUY
+
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Vendors
+DESCRIPTION=PvP Vendor
+
+[TEMPLATE VENDOR_PVP_SELL]
+DEFNAME=VENDOR_PVP_SELL
+CATEGORY=Wigifer MPZ
+SUBSECTION=Templates
+DESCRIPTION=PvP Vendor Sell
+SELL=i_bandage,{51 150}
+SELL=i_potion_refresh,{51 100}
+SELL=i_potion_nightsight,{51 100}
+SELL=i_potion_heal,{51 100}
+SELL=i_potion_cure,{51 100}	
+SELL=i_reag_black_pearl,{500 500}
+SELL=i_reag_blood_moss,{500 500}
+SELL=i_reag_garlic,{500 500}
+SELL=i_reag_ginseng,{500 500}
+SELL=i_reag_mandrake_root,{500 500}
+SELL=i_reag_nightshade,{500 500}
+SELL=i_reag_sulfur_ash,{500 500}
+SELL=i_reag_spider_silk,{500 500}
+SELL=i_xbolt,{250 500}
+SELL=i_arrow,{250 500}
+
+[TEMPLATE VENDOR_PVP_BUY]
+DEFNAME=VENDOR_PVP_BUY
+CATEGORY=Wigifer MPZ
+SUBSECTION=Templates
+DESCRIPTION=PvP Vendor Buy
+BUY=i_bandage,{100 150}
+
+
+////////////////
+//Fallen Ones //
+////////////////
+
+[CHARDEF c_fallen_angel]
+DEFNAME=c_fallen_angel
+NAME=Fallen Angel
+ID=c_harpy
+SOUND=snd_MONSTER_DAEMON1
+DAM=10,14
+ARMOR=20
+RESOURCES=1 i_ribs_raw_angel, 1 i_angel_dust
+
+//ALIGNMENT=EVIL
+CAN=MT_WALK|MT_FLY
+TEVENTS=e_npc_daemon
+TEVENTS=e_all_npc
+//SPELLCIRCLES=6,8
+DESIRES=c_DAEMON,i_gold,t_wand
+AVERSIONS=r_water,r_mountains
+
+ON=@Create
+COLOR=07a1
+STR={1285 1385}
+DEX={175 255}
+INT={100 120}
+
+PARRYING={90.0 100.0}
+MAGERY={90.0 100.0}
+MAGICRESISTANCE={500.0 550.0}
+TACTICS={60.0 70.0}
+WRESTLING={80.0 90.0}
+DETECTION=200.0
+NPC=brain_monster
+
+FAME={2000 6000}
+KARMA={-4000 -4999}
+
+ON=@NPCRestock
+ITEM=loot_daemon
+ITEM=loot_newrares_hard
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Fallen Ones
+DESCRIPTION=Fallen Angel
+
+[CHARDEF c_fallen_arch_angel]
+DEFNAME=c_fallen_arch_angel
+NAME=Fallen Arch-Angel
+ID=c_DAEMON
+SOUND=snd_MONSTER_DAEMON1
+ICON=i_pet_dragon
+DAM=20,35
+ARMOR=120
+RESOURCES=3 i_ribs_raw_angel, 8 i_reag_daemon_bone, 2 i_angel_dust
+
+//ALIGNMENT=EVIL
+CAN=MT_WALK|MT_FLY
+TEVENTS=e_npc_daemon
+TEVENTS=e_all_npc
+//SPELLCIRCLES=6,8
+DESIRES=c_DAEMON,i_gold,t_wand
+AVERSIONS=r_water,r_mountains
+
+ON=@Create
+COLOR=07a1
+STR={1785 1985}
+DEX={175 255}
+INT={130 140}
+
+PARRYING={90.0 100.0}
+MAGERY={90.0 100.0}
+MAGICRESISTANCE={100.0 150.0}
+TACTICS={100.0 120.0}
+WRESTLING={80.0 90.0}
+DETECTION=200.0
+NPC=brain_monster
+
+FAME={4000 8000}
+KARMA={-6000 -6999}
+ON = @Hit
+   IF !(<SRC.ACT.BASEID>=m_kell_control)
+      IF ( <SRC.ACT.ICON> == 020D6 )
+         
+            VAR.FORGIVER = <UID>
+            SRC.FOR_MEMORY f_peace
+            VAR.FORGIVER = <SRC.UID>
+            FOR_MEMORY f_peace
+            RETURN 1
+         
+      ENDIF   
+   ENDIF
+   
+
+
+ON=@GetHit
+   IF ( <SRC.ICON> == 020D6 )
+         VAR.FORGIVER = <SRC.UID>
+         FOR_MEMORY f_peace
+   ENDIF
+ON=@NPCRestock
+ITEM=random_rare_2,R15
+ITEM=loot_newrares_hard
+ITEM=i_gold,{7000 9000}
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Fallen Ones
+DESCRIPTION=Fallen Arch-Angel
+
+[CHARDEF c_fallen_high_arch_angel]
+DEFNAME=c_fallen_high_arch_angel
+NAME=Fallen High Arch-Angel
+ID=c_DAEMON_W_SWORD
+SOUND=snd_MONSTER_DAEMON1
+ICON=i_pet_dragon
+DAM=25,40
+ARMOR=80
+RESOURCES=8 i_ribs_raw_angel, 8 i_reag_daemon_bone, 4 i_angel_dust
+
+//ALIGNMENT=EVIL
+CAN=MT_WALK|MT_FLY
+TEVENTS=e_npc_daemon
+TEVENTS=e_all_npc
+//SPELLCIRCLES=6,8
+DESIRES=c_DAEMON,i_gold,t_wand
+AVERSIONS=r_water,r_mountains
+
+ON=@Create
+COLOR=07a1
+STR={6795 6995}
+DEX={125 185}
+INT={140 150}
+
+PARRYING=120.0
+MAGERY=100.0
+MAGICRESISTANCE=150.0
+TACTICS=100.0
+WRESTLING=100.0
+DETECTION=200.0
+NPC=brain_monster
+
+FAME={7500 9000}
+KARMA={-8500 -8999}
+ON = @Hit
+   IF !(<SRC.ACT.BASEID>=m_kell_control)
+      IF ( <SRC.ACT.ICON> == 020D6 )
+         
+            VAR.FORGIVER = <UID>
+            SRC.FOR_MEMORY f_peace
+            VAR.FORGIVER = <SRC.UID>
+            FOR_MEMORY f_peace
+            RETURN 1
+         
+      ENDIF   
+   ENDIF
+   
+
+
+ON=@GetHit
+   IF ( <SRC.ICON> == 020D6 )
+         VAR.FORGIVER = <SRC.UID>
+         FOR_MEMORY f_peace
+   ENDIF
+ON=@NPCRestock
+ITEM=loot_BALRON
+ITEM=loot_newrares_hard
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Fallen Ones
+DESCRIPTION=Fallen High Arch-Angel
+
+////////////////
+//Neo Monsters//
+////////////////
+
+[CHARDEF c_headless_neo]
+DEFNAME=c_headless_neo
+NAME=Neo Headless
+ID=c_headless
+SOUND=snd_MONSTER_DAEMON1
+ICON=i_pet_headless
+DAM=20,34
+ARMOR=75
+RESOURCES=4 i_ribs_raw
+
+//ALIGNMENT=EVIL
+CAN=MT_WALK|MT_FLY
+TEVENTS=e_npc_daemon
+TEVENTS=e_all_npc
+//SPELLCIRCLES=6,8
+DESIRES=c_headless,i_gold,t_wand
+AVERSIONS=r_water
+
+ON=@Create
+COLOR=079c
+STR={1200 1400}
+DEX={175 255}
+INT={15 25}
+
+PARRYING={50.0 55.0}
+MAGERY={50.0 55.0}
+MAGICRESISTANCE={20.0 40.0}
+TACTICS={70.0 80.0}
+WRESTLING={60.0 70.0}
+HIDING={120.0 130.0}
+STEALTH={10.0 20.0}
+
+NPC=brain_monster
+
+FAME={2000 2500}
+KARMA={-4000 -4999}
+
+ON=@NPCRestock
+ITEM=loot_daemon
+ITEM=i_gold,{1500,2000}
+ITEM=loot_newrares_hard
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Monsters
+DESCRIPTION=Neo Headless
+
+[CHARDEF c_mongbat_neo]
+ID=c_mongbat
+NAME=Neo Mongbat
+SOUND=snd_MONSTER_MNGBAT1
+ICON=i_pet_mongbat
+
+DAM=22,38
+ARMOR=80
+RESOURCES=3 i_ribs_raw, 1 i_Mongbat_Jaw
+
+//ALIGNMENT=EVIL
+CAN=MT_WALK|MT_FLY
+TEVENTS=e_all_npc
+FOODTYPE=5 t_meat_raw
+DESIRES=i_gold
+
+ON=@Create
+COLOR=079c
+STR={1300 1500}
+DEX={145 205}
+INT={25 35}
+
+PARRYING={50.0 55.0}
+MAGERY={50.0 55.0}
+MAGICRESISTANCE={20.0 40.0}
+TACTICS={70.0 80.0}
+WRESTLING={60.0 70.0}
+HIDING={120.0 130.0}
+STEALTH={140.0 160.0}
+
+NPC=brain_monster
+
+FAME={100 300}
+KARMA={-1000 -1999}
+
+ON=@NPCRestock
+ITEM=i_gold,{1550 2550}
+ITEM=loot_newrares_hard
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Monsters
+DESCRIPTION=Neo Mongbat
+
+
+////////////////
+//Moon Demons //
+////////////////
+
+[CHARDEF c_angel_of_the_moon]
+DEFNAME=c_angel_of_the_moon
+NAME=Angel of the Moon
+ID=c_DAEMON_W_SWORD
+SOUND=snd_MONSTER_DAEMON1
+ICON=i_pet_dragon
+DAM=15,25
+ARMOR=90
+RESOURCES=8 i_ribs_raw, 8 i_reag_daemon_bone
+
+//ALIGNMENT=EVIL
+CAN=MT_WALK|MT_FLY
+TEVENTS=e_npc_daemon
+TEVENTS=e_all_npc
+//SPELLCIRCLES=6,8
+DESIRES=c_DAEMON,i_gold,t_wand
+AVERSIONS=r_water,r_mountains
+
+ON=@Create
+   COLOR=07a0
+   STR={2795 2995}
+   DEX={125 185}
+   INT={110 220}
+   PARRYING=120.0
+   MAGERY=100.0
+   MAGICRESISTANCE=950.0
+   TACTICS=100.0
+   WRESTLING=60.0
+   NPC=brain_monster
+   FAME={7500 9000}
+   KARMA={-8500 -8999}
+
+ON=@NPCRestock
+   ITEM=i_gold,{7000 8000}
+   ITEM=loot_newrares_hard
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Monsters
+DESCRIPTION=Angel of the Moon
+
+
+//////////
+//Nukes //
+//////////
+
+
+[CHARDEF c_elem_nuke]
+NAME=Nuclear Elemental
+ID=c_elem_water
+SOUND=snd_ELEMENTL_WATREL1
+DAM=18,38
+ARMOR=90
+CAN=MT_WALK
+TEVENTS=e_all_npc
+DESIRES=r_dungeon_rock
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Nuclear
+DESCRIPTION=Nuke Elemental
+
+ON=@Create
+NPC=BRAIN_MONSTER
+COLOR=077a
+STR={1400 1600}
+DEX={80 85}
+INT={190 315}
+
+
+PARRYING={95.0 105.0}
+MAGERY={99.0 100.0}
+MAGICRESISTANCE=180.0
+TACTICS={80.0 100.0}
+WRESTLING={80.0 100.0}
+
+FAME={1000 2000}
+KARMA={-5000 -5999}
+
+ITEMNEWBIE=i_spellbook	// knows fire type spells.
+ADDSPELL=s_flamestrike
+ADDSPELL=s_explosion
+ADDSPELL=s_magic_arrow
+ADDSPELL=s_fire_bolt
+
+ON=@NPCRestock
+ITEM=i_gold,{2131 3242}
+
+
+[CHARDEF c_elem_atomic]
+NAME=Atomic Elemental
+ID=c_elem_water
+SOUND=snd_ELEMENTL_WATREL1
+DAM=22,42
+ARMOR=80
+CAN=MT_WALK
+TEVENTS=e_all_npc
+DESIRES=r_dungeon_rock
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Nuclear
+DESCRIPTION=Atomic Elemental
+
+ON=@Create
+NPC=BRAIN_MONSTER
+COLOR=017b
+STR={600 700}
+DEX={80 85}
+INT={60 65}
+
+
+PARRYING={95.0 105.0}
+MAGERY={99.0 100.0}
+MAGICRESISTANCE=140.0
+TACTICS={80.0 100.0}
+WRESTLING={80.0 100.0}
+
+FAME={1000 2000}
+KARMA={-5000 -5999}
+
+ITEMNEWBIE=i_spellbook	// knows fire type spells.
+ADDSPELL=s_flamestrike
+ADDSPELL=s_explosion
+ADDSPELL=s_magic_arrow
+ADDSPELL=s_fire_bolt
+
+ON=@NPCRestock
+ITEM=i_gold,{1020 2120}
+
+[CHARDEF c_h_nuke_warrior]
+ID=C_MAN
+NAME=#NAMES_HOLYKNIGHT the Nuclear Warrior
+SOUND=snd_HUMAN_M_DIE_01
+DAM=18,31
+ARMOR=60
+AVERSIONS=t_TRAP,t_eerie_stuff
+TEVENTS=e_all_npc
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Nuclear
+DESCRIPTION=Nuclear Warrior(Halberd)
+
+ON=@Create
+  COLOR		= colors_skin
+  STR		= {250 270}
+  DEX		= 110
+  INT		= {71 85}
+  NPC		= brain_monster
+  SWORDSMANSHIP	= 100.0
+  WRESTLING	= {67.0 90.0}
+  MAGICRESISTANCE={65.0 88.0}
+  TACTICS	= 100.0
+  POISONING	= {90.0 100.0}
+  DETECTION	={40.0 50.0}
+  ANATOMY       = 110.0
+  FAME		= 3000
+  KARMA		= -6000
+
+  ITEMNEWBIE=random_male_hair
+  COLOR=077a
+  ITEMNEWBIE=random_facial_hair
+  COLOR=match_hair
+
+  ITEM=m_posdef_army
+
+  ITEMNEWBIE=i_platemail_gloves_stronghold
+  NAME=Nuclear Standard Issue Armour
+  COLOR=077a
+  ATTR=00015
+  ITEMNEWBIE=i_platemail_helm_stronghold
+  NAME=Nuclear Standard Issue Armour
+  COLOR=077a
+  ATTR=00015
+  ITEMNEWBIE=i_platemail_arms_stronghold
+  NAME=Nuclear Standard Issue Armour
+  COLOR=077a
+  ATTR=00015
+  ITEMNEWBIE=i_platemail_gorget_stronghold
+  NAME=Nuclear Standard Issue Armour
+  COLOR=077a
+  ATTR=00015
+  ITEMNEWBIE=i_platemail_chest_stronghold
+  NAME=Nuclear Standard Issue Armour
+  COLOR=077a
+  ATTR=00015
+  ITEMNEWBIE=i_platemail_leggings_stronghold
+  NAME=Nuclear Standard Issue Armour
+  COLOR=077a  
+  ATTR=00015
+  ITEMNEWBIE=i_bardiche_stronghold
+  NAME=Nuclear Standard Issue Halberd
+  COLOR=077a  
+  ATTR=00015
+  ITEMNEWBIE=i_CAPE
+  COLOR=077a
+  ATTR=015
+  ITEMNEWBIE=i_SASH
+  COLOR=077a
+  ATTR=015
+  
+  ITEM=i_gold,{300 400}
+  
+[CHARDEF c_nuke_hybrid]
+  ID = c_terathan_matriarch
+  NAME = Nuclear Hybrid
+  SOUND	= snd_MONSTER_TERA_MATRIARCH1
+  ICON = i_pet_terathan_queen
+  ANIM = 07fc7f
+  DAM = 18,28
+  ARMOR = 75
+  CAN = MT_WALK|MT_USEHANDS
+ 
+  AVERSIONS = r_civilization
+  TEVENTS = e_aggressive
+  TEVENTS = e_all_npc
+
+  CATEGORY	= Wigifer MPZ
+  SUBSECTION	= Nuclear
+  DESCRIPTION	= Nuclear Hybrid
+
+ON=@Create
+  COLOR=077a
+  NPC	= brain_monster
+  FAME = {100 2000}
+  KARMA = {-4000 -4999}
+  STR	= {1615 1805}
+  DEX	= {110 115}
+  INT	= {365 455}
+  PARRYING = {95.0 105.0}
+  MAGERY = {90.0 100.0}
+  MAGICRESISTANCE ={140.0 180.0}
+  TACTICS = {110.0 120.0}
+  WRESTLING = {90.0 100.0}
+    
+  ITEM=i_gold,{2800 3400}
+  
+  ITEMNEWBIE=i_spellbook	// knows fire type spells.
+  ADDSPELL=s_flamestrike
+  ADDSPELL=s_explosion
+  ADDSPELL=s_magic_arrow
+  ADDSPELL=s_fire_bolt
+  
+ON=@Spelleffect
+   if (<argn> == 20) || (<argn> == 39)
+      NEWNPC c_nuke_hybrid_baby
+      SAY The poison makes a piece of flesh drop off...
+      return 1
+   endif
+   if ( (<argn> == 5) || (<argn> == 51) || (<argn> == 43) || (<argn> == 69) )
+      EMOTE absorb the spell.
+      return 1
+   endif
+
+ON=@GetHit
+   if (<src.findlayer(layer_hand2).type> == t_weapon_bow )
+      EMOTE absorb the damage from the arrow...
+      return 1
+   endif
+   if (<src.findlayer(layer_hand2).type> == t_weapon_xbow )
+      EMOTE absorb the damage from the bolt...
+      return 1
+   endif
+     
+
+[CHARDEF c_nuke_hybrid_baby]
+  ID = c_terathan_drone
+  NAME = Nuclear Hybrid Birth
+  SOUND	= snd_MONSTER_TERA_DRONE1
+  ICON = i_pet_terathan_drone
+  ANIM = 07fc7f
+  DAM = 9,14
+  ARMOR = 25
+  CAN = MT_WALK|MT_USEHANDS
+  AVERSIONS = r_civilization
+  TEVENTS = e_aggressive
+  TEVENTS = e_all_npc
+
+  CATEGORY	= Wigifer MPZ
+  SUBSECTION	= Nuclear
+  DESCRIPTION	= Nuclear Hybrid
+
+ON=@Create
+    COLOR=077a
+    NPC	= brain_monster
+    FAME = {100 2000}
+    KARMA = {-4000 -4999}
+    STR	= {215 305}
+    DEX	= {110 115}
+    INT	= {365 455}
+    PARRYING = {95.0 105.0}
+    MAGERY = {90.0 100.0}
+    MAGICRESISTANCE ={140.0 180.0}
+    TACTICS = {110.0 120.0}
+    WRESTLING = {90.0 100.0}
+    
+  ITEMNEWBIE=i_spellbook	// knows fire type spells.
+  ADDSPELL=s_flamestrike
+  ADDSPELL=s_explosion
+  ADDSPELL=s_magic_arrow
+  ADDSPELL=s_fire_bolt
+  
+ON=@Spelleffect
+     if ( (<argn> == 20) || (<argn> == 39) || (<argn> == 5) || (<argn> == 51) || (<argn> == 43) || (<argn> == 69) )
+        EMOTE absorb the spell.
+        return 1
+     endif
+
+ON=@GetHit
+     if (<src.findlayer(layer_hand2).type> == t_weapon_bow )
+        EMOTE absorb the damage from the arrow...
+        return 1
+     endif
+     if (<src.findlayer(layer_hand2).type> == t_weapon_xbow )
+        EMOTE absorb the damage from the bolt...
+        return 1
+     endif
+
+[CHARDEF c_atomic_hybrid]
+  ID = c_terathan_matriarch
+  NAME = Atomic Hybrid
+  SOUND	= snd_MONSTER_TERA_MATRIARCH1
+  ICON = i_pet_terathan_queen
+  ANIM = 07fc7f
+  DAM = 18,28
+  ARMOR = 75
+  CAN = MT_WALK|MT_USEHANDS
+  AVERSIONS = r_civilization
+  TEVENTS = e_aggressive
+  TEVENTS = e_all_npc
+
+  CATEGORY	= Wigifer MPZ
+  SUBSECTION	= Atomic
+  DESCRIPTION	= Atomic Hybrid
+
+ON=@Create
+    COLOR=017b
+    NPC	= brain_monster
+    FAME = {100 2000}
+    KARMA = {-4000 -4999}
+    STR	= {1615 1805}
+    DEX	= {110 115}
+    INT	= {365 455}
+    PARRYING = {95.0 105.0}
+    MAGERY = {90.0 100.0}
+    MAGICRESISTANCE ={140.0 180.0}
+    TACTICS = {110.0 120.0}
+    WRESTLING = {90.0 100.0}
+    
+  ITEM=i_gold,{2800 3400}
+  
+  ITEMNEWBIE=i_spellbook	// knows fire type spells.
+  ADDSPELL=s_flamestrike
+  ADDSPELL=s_explosion
+  ADDSPELL=s_magic_arrow
+  ADDSPELL=s_fire_bolt
+  
+ON=@Spelleffect
+     if (<argn> == 20) || (<argn> == 39)
+        NEWNPC c_atomic_hybrid_baby
+        SAY The poison makes a piece of flesh drop off...
+        return 1
+     endif
+
+ON=@GetHit
+     if (<src.findlayer(layer_hand1).type> == t_weapon_bow )
+        EMOTE absorb the damage from the arrow...
+        return 1
+     endif
+     if (<src.findlayer(layer_hand1).type> == t_weapon_xbow )
+        EMOTE absorb the damage from the bolt...
+        return 1
+     endif
+     
+
+[CHARDEF c_atomic_hybrid_baby]
+  ID = c_terathan_drone
+  NAME = Atomic Hybrid Birth
+  SOUND	= snd_MONSTER_TERA_DRONE1
+  ICON = i_pet_terathan_drone
+  ANIM = 07fc7f
+  DAM = 9,14
+  ARMOR = 25
+  CAN = MT_WALK|MT_USEHANDS
+  AVERSIONS = r_civilization
+  TEVENTS = e_aggressive
+  TEVENTS = e_all_npc
+
+  CATEGORY	= Wigifer MPZ
+  SUBSECTION	= Atomic
+  DESCRIPTION	= Atomic Hybrid
+
+ON=@Create
+    COLOR=017b
+    NPC	= brain_monster
+    FAME = {100 2000}
+    KARMA = {-4000 -4999}
+    STR	= {215 305}
+    DEX	= {110 115}
+    INT	= {365 455}
+    PARRYING = {95.0 105.0}
+    MAGERY = {90.0 100.0}
+    MAGICRESISTANCE ={140.0 180.0}
+    TACTICS = {110.0 120.0}
+    WRESTLING = {90.0 100.0}
+    
+  ITEMNEWBIE=i_spellbook	// knows fire type spells.
+  ADDSPELL=s_flamestrike
+  ADDSPELL=s_explosion
+  ADDSPELL=s_magic_arrow
+  ADDSPELL=s_fire_bolt
+  
+ON=@Spelleffect
+     if ( (<argn> == 20) || (<argn> == 39) )
+        EMOTE absorb the spell.
+        return 1
+     endif
+
+ON=@GetHit
+     if (<src.findlayer(layer_hand1).type> == t_weapon_bow )
+        EMOTE absorb the damage from the arrow...
+        return 1
+     endif
+     if (<src.findlayer(layer_hand1).type> == t_weapon_xbow )
+        EMOTE absorb the damage from the bolt...
+        return 1
+     endif
+     
+
+     
+
+//////////
+//Morphs//
+//////////
+
+[CHARDEF c_morph_headless]
+DEFNAME=c_morph_headless
+ID=c_headless
+NAME=Headless
+SOUND=snd_MONSTER_HEADLS1
+ICON=i_pet_HEADLESS
+ANIM=078c7f
+DAM=3,12
+ARMOR=9
+RESOURCES=4 i_ribs_raw
+CAN=MT_WALK|MT_USEHANDS
+TEVENTS=e_all_npc
+DESIRES=i_gold,c_headless
+AVERSIONS=r_civilization
+CATEGORY=Wigifer MPZ
+SUBSECTION=Monsters
+DESCRIPTION=Morph - Headless
+
+ON=@Create
+   NPC=brain_monster
+   //ALIGNMENT=EVIL
+   FAME={300 1000}
+   KARMA={-1000 -1999}
+   COLOR=colors_skin
+   STR={26 50}
+   DEX={36 55}
+   INT={16 30}
+   PARRYING={35.0 45.0}
+   MAGICRESISTANCE={15.0 20.0}
+   TACTICS={25.0 40.0}
+   WRESTLING={25.0 40.0}
+
+ON=@NPCRestock
+   ITEM=loot_HEADLESS
+   ITEM=loot_newrares_Easy
+
+ON=@Death
+	NEWITEM i_transform_smoke
+	SRC.ACT.P	= <P>
+	
+	
+	NEWNPC c_morph_troll
+	SRC.ACT.P = <P>
+	
+	RETURN 0
+
+[CHARDEF c_morph_troll]
+DEFNAME=c_morph_troll
+ID=c_troll
+NAME=Troll
+	SOUND=snd_MONSTER_TROLL1
+ICON=i_pet_TROLL
+ANIM=078c7f
+DAM=10,23
+ARMOR=20
+RESOURCES=10 i_ribs_raw
+CAN=MT_WALK|MT_USEHANDS
+TEVENTS=e_all_npc
+FOODTYPE=15 t_meat_raw
+DESIRES=i_gold
+AVERSIONS=r_civilization
+CATEGORY=Wigifer MPZ
+SUBSECTION=Monsters
+DESCRIPTION=Morph - Troll
+
+ON=@Create
+   NPC=brain_monster
+   STR={175 205}
+   DEX={46 65}
+   INT={46 70}
+   SWORDSMANSHIP={50.0 70.0}
+   PARRYING={45.0 60.0}
+   MAGICRESISTANCE={45.0 60.0}
+   TACTICS={50.0 70.0}
+   WRESTLING={50.0 70.0}
+   FAME={100 5000}
+   KARMA={-3000 -3999}
+
+ON=@DEATH
+  y_region_loot_death
+  y_region_loot_calculator
+  loot_TROLL
+  addlootitem ,loot_newrares_Easy,1
+  
+  NEWITEM i_transform_smoke
+  SRC.ACT.P	= <P>
+	
+  NEWNPC c_morph_gargoyle
+  SRC.ACT.P = <P>
+	
+  RETURN 0
+
+[CHARDEF c_morph_gargoyle]
+DEFNAME=c_morph_gargoyle
+ID=c_gargoyle
+NAME=Gargoyle
+SOUND=snd_MONSTER_GARGYL1
+ICON=i_pet_GARG
+ANIM=03fbc7f
+CAN=MT_WALK|MT_FLY|MT_USEHANDS
+TEVENTS=e_npc_daemon
+TEVENTS=e_all_npc
+DAM=6,25
+ARMOR=25
+RESOURCES=8 i_ribs_raw
+FOODTYPE=15 t_meat_raw
+DESIRES=c_GARGOYLE
+AVERSIONS=t_TRAP,r_civilization
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Monsters
+DESCRIPTION=Morph - Gargoyle
+
+ON=@Create
+   NPC=brain_Dragon
+   FAME={100 200}
+   KARMA={-4000 -4999}
+   STR={245 275}
+   DEX={96 105}
+   INT={81 105}
+   PARRYING={35.0 45.0}
+   MAGERY={70.0 85.0}
+   MAGICRESISTANCE={70.0 85.0}
+   TACTICS={50.0 70.0}
+   WRESTLING={70.0 80.0}
+
+ON=@NPCRestock
+   ITEM=loot_GARGOYLE
+   ITEM=loot_newrares_Easy
+
+ON=@Death
+	NEWITEM i_transform_smoke
+	SRC.ACT.P	= <P>
+	
+	
+	NEWNPC c_morph_daemon
+	SRC.ACT.P = <P>
+	
+	RETURN 0
+
+[CHARDEF c_morph_daemon]
+DEFNAME=c_morph_daemon
+ID=c_daemon
+NAME=#NAMES_DAEMON the Daemon
+//TITLE=the Daemon
+SOUND=snd_MONSTER_DAEMON1
+ICON=i_pet_DAEMON
+ANIM=03fbc7f
+CAN=MT_WALK|MT_FLY|MT_USEHANDS
+TEVENTS=e_npc_daemon
+TEVENTS=e_all_npc
+DAM=20,35
+ARMOR=65
+RESOURCES=9 i_ribs_raw, 8 i_reag_daemon_bone
+FOODTYPE=
+DESIRES=i_gold
+AVERSIONS=r_civilization
+CATEGORY=Wigifer MPZ
+SUBSECTION=Monsters
+DESCRIPTION=Morph - Daemon
+
+ON=@Create
+   NPC=brain_monster
+   FAME={4000 8000}
+   KARMA={-5000 -5999}
+   STR={675 705}
+   DEX={96 106}
+   INT={300 325}
+   PARRYING={65.0 75.0}
+   MAGERY={70.0 85.0}
+   MAGICRESISTANCE={70.0 80.0}
+   TACTICS={70.0 80.0}
+   WRESTLING={60.0 80.0}
+   
+ON=@NPCRestock
+   ITEM=loot_DAEMON
+   ITEM=loot_newrares_Med
+
+[CHARDEF c_morph_spider]
+ID=c_spider_giant
+NAME=Giant Spider
+SOUND=snd_MONSTER_GISPIDR1
+ICON=i_pet_SPIDER_GIANT
+ANIM=078c7f
+DAM=3,15
+ARMOR=8
+RESOURCES={ 3 8 } i_reag_spider_silk
+CAN=MT_WALK
+TEVENTS=e_all_npc
+FOODTYPE=15 t_meat_raw
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Monsters
+DESCRIPTION=Morph - Spider
+
+ON=@Create
+NPC=brain_monster
+FAME={300 1000}
+KARMA={-999 -2999}
+//ALIGNMENT=EVIL
+STR={76 100}
+DEX={76 95}
+INT={36 60}
+
+PARRYING={35.0 55.0}
+MAGICRESISTANCE={25.0 40.0}
+TACTICS={35.0 50.0}
+WRESTLING={50.0 65.0}
+POISONING={60.0 80.0}
+TAMING=70.0
+
+ON=@NPCRestock
+ITEM=i_backpack
+ITEM={i_reag_spider_silk 1 0 1},{3 6}
+
+ON=@Death
+	NEWITEM i_transform_smoke
+	SRC.ACT.P	= <P>
+	
+	
+	NEWNPC c_morph_drone
+	SRC.ACT.P = <P>
+	
+	RETURN 0
+	
+[CHARDEF c_morph_drone]
+ID		= c_terathan_drone
+NAME		= Terathan Drone
+SOUND		= snd_MONSTER_TERA_DRONE1
+ICON		= i_pet_terathan_drone
+ANIM		= 078c7f
+DAM		= 4,14
+ARMOR		= 12
+RESOURCES	= 20 i_ribs_raw
+CAN		= MT_WALK
+TEVENTS		= e_all_npc
+FOODTYPE	= 15 t_meat_raw
+AVERSIONS	= r_civilization
+DESIRES		= e_TERATHAN
+TEVENTS		= e_TERATHAN
+CATEGORY=Wigifer MPZ
+SUBSECTION=Monsters
+DESCRIPTION=Morph - Tera Drone
+ON = @Create
+  NPC		= brain_monster
+  FAME		= {100 2000}
+  KARMA		= {-2000 -2999}
+  STR		= {36 65}
+  DEX		= {96 145}
+  INT		= {21 45}
+  PARRYING	= {30.0 40.0}
+  MAGICRESISTANCE={30.0 45.0}
+  TACTICS	= {30.0 50.0}
+  WRESTLING	= {40.0 50.0}
+ON = @NPCRestock
+ITEM		= loot_TERATHAN_DRONE
+ITEM=loot_newrares_Easy
+
+ON=@Death
+	NEWITEM i_transform_smoke
+	SRC.ACT.P	= <P>
+	
+	
+	NEWNPC c_morph_frostspider
+	SRC.ACT.P = <P>
+	
+	RETURN 0
+	
+[CHARDEF c_morph_frostspider]
+NAME=Frost Spider
+ID=c_SPIDER_GIANT
+SOUND=snd_MONSTER_GISPIDR1
+ICON=i_pet_SPIDER_GIANT
+DAM=3,19
+ARMOR=10
+RESOURCES=8 i_reag_spider_silk, 5 t_eerie_stuff
+CAN=MT_WALK
+TEVENTS=e_all_npc
+FOODTYPE=15 t_meat_raw
+
+ON=@Create
+COLOR=color_snow
+STR={76 100}
+DEX={76 95}
+INT={36 60}
+//ALIGNMENT=EVIL
+
+PARRYING={35.0 45.0}
+MAGICRESISTANCE={25.0 40.0}
+TACTICS={35.0 50.0}
+WRESTLING={50.0 65.0}
+
+NPC=BRAIN_MONSTER
+
+FAME={100 2000}
+KARMA={-1000 -5000}
+
+ON=@NPCRestock
+ITEM=loot_FROST_SPIDER
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Monsters
+DESCRIPTION=Morph - Frost Spider
+
+ON=@Death
+	NEWITEM i_transform_smoke
+	SRC.ACT.P	= <P>
+	
+	
+	NEWNPC c_morph_matriach
+	SRC.ACT.P = <P>
+	
+	RETURN 0
+
+[CHARDEF c_morph_matriach]
+ID		= c_terathan_matriarch
+NAME		= Terathan Matriarch
+SOUND		= snd_MONSTER_TERA_MATRIARCH1
+ICON		= i_pet_terathan_queen
+ANIM		= 07fc7f
+DAM		= 5,20
+ARMOR		= 25
+CAN		= MT_WALK|MT_USEHANDS
+AVERSIONS	= r_civilization
+DESIRES		= e_TERATHAN
+TEVENTS		= e_aggressive
+TEVENTS		= e_all_npc
+TEVENTS		= e_TERATHAN
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Monsters
+DESCRIPTION=Morph - Tera Matriarch
+
+ON=@Create
+  NPC		= brain_monster
+  FAME		= {100 2000}
+  KARMA		= {-4000 -4999}
+  STR		= {315 405}
+  DEX		= {96 115}
+  INT		= {365 455}
+  PARRYING	= {55.0 65.0}
+  MAGERY	= {90.0 100.0}
+  MAGICRESISTANCE={90.0 100.0}
+  TACTICS	= {90.0 100.0}
+  WRESTLING	= {60.0 80.0}
+
+ON = @NPCRestock
+   ITEM=loot_TERATHAN_MATRIARCH
+   ITEM=loot_newrares_Med
+   
+ON=@Death
+	NEWITEM i_transform_smoke
+	SRC.ACT.P	= <P>
+	
+	
+	NEWNPC c_morph_shadowspider
+	SRC.ACT.P = <P>
+	
+	RETURN 0
+
+[CHARDEF c_morph_shadowspider]
+NAME=Shadow
+ID=c_spider_giant
+DAM=20,50
+ARMOR=100
+CAN=MT_WALK|MT_FIRE_IMMUNE|MT_RUN|MT_FLY
+TEVENTS = e_shadow
+TEVENTS = e_all_npc
+
+ON=@CREATE
+NPC=BRAIN_MONSTER
+COLOR=0485
+STR=1000
+DEX={65 100}
+INT={50 150}
+MAGICRESISTANCE={70.0 100.0}
+PARRYING={80.0 95.0}
+TACTICS={80.0 95.0}
+WRESTLING={80.0 95.0}
+FAME={1000 2000}
+KARMA={-4500 -5500}
+
+ON=@NPCRestock
+TAG.SHADOW=1
+TAG.SUMMONS=c_shadow_slime
+ITEM = m_w_light
+
+ITEM=i_gem_shadow
+ITEM=i_gem_shadow, R20
+ITEM=i_gem_shadow, R99
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Monsters
+DESCRIPTION=Morph - Shadow Spider
+
+////////
+//Misc//
+////////
+
+[ITEMDEF i_wand_stoner]
+NAME=Wand of Stone
+ID=0df3
+ON=@CREATE
+COLOR=07a1
+ATTR=05
+
+ON=@DCLICK
+   TARGET Target the player to stone
+   RETURN 1
+
+ON=@TARGON_ITEM
+   SRC.SYSMESSAGE Items can not be stoned!
+   RETURN 1
+
+ON=@TARGON_CHAR 
+   SRC.TARG.STONE
+   SRC.TARG.SYSMESSAGE You have been stoned!
+
+
+[ITEMDEF i_bow_elven]
+ID=013b1
+NAME=Elven Bow
+TYPE=T_WEAPON_BOW
+WEIGHT = 5
+DAM = 15, 40
+VALUE = 30
+SKILL = Archery
+REQSTR = 20
+TWOHANDS = Y
+TDATA3 = i_arrow
+TDATA4 = i_arrow_x
+
+ON=@Create
+   HITPOINTS = {92 153}
+   COLOR = 00787
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Weapons - Ranged
+DESCRIPTION=Elven Bow
+
+[ITEMDEF i_robe_fair]
+ID=i_robe
+NAME=Fairground Robe!
+TYPE=t_script
+
+ON=@CREATE
+   TYPE=t_clothing
+   ATTR=05
+   MORE1L=9999
+   MORE1H=9999
+   COLOR=0765
+
+ON=@DCLICK
+   IF (<SRC.ISGM>)
+      TARGET Who do you want to set as the owner of the robe
+      RETURN 1
+   ENDIF
+   if (<CONT> == <SRC.UID>)
+      SRC.NIGHTSIGHT
+      SRC.SYSMESSAGE @25 You feel yourself surrounded by the fun of the fair!
+   endif
+  
+ON=@TARGON_CHAR
+   TAG.ORIGINALOWNER=<SRC.TARG.NAME>
+   TAG.ACCOUNTOWNER=<SRC.TARG.ACCOUNT>
+   SRC.SYSMESSAGE @88 Owner set
+   SERV.NEWITEM i_robe_fair_deed
+   NEW.LINK=<SRC.TARG.UID>
+   NEW.TAG.ROBEUID=<UID>
+   NEW.TAG.ORIGINALOWNER=<SRC.TARG.NAME>
+   NEW.TAG.ACCOUNTOWNER=<SRC.TARG.ACCOUNT>
+   NEW.BOUNCE
+   RETURN 1
+   
+[ITEMDEF i_robe_fair_deed]
+ID=i_deed
+NAME=Fairground Robe Locator Deed
+TYPE=t_script
+
+ON=@CLICK
+IF !(<ATTR> & attr_identified )
+   MESSAGE Fairground Robe Locator Deed
+   MESSAGE Robe belongs to <TAG.ORIGINALOWNER>, UID <LINK>, Robe UID <TAG.ROBEUID>
+   MESSAGE (Do not identify this deed)
+   RETURN 1
+ENDIF
+
+ON=@DCLICK
+   SRC.GOUID <LINK>
+   SRC.SYSMESSAGE You have been taken to the robe owner
+
+[ITEMDEF i_musical_chairs_fair]
+ID=i_snowflake_1
+NAME=Musical Snowflake!
+
+ON=@CREATE
+   TIMERD=1
+
+ON=@DCLICK
+   IF !(<SRC.ACCOUNT.PLEVEL>>1)
+      SRC.SYSMESSAGE This snowflake is too magical for your mortal hands!
+      RETURN 1
+   ENDIF
+   IF !(0<TAG.MUSIC>)
+      SRC.SYSMESSAGE You begin the music
+      TIMERD=1
+      TAG.MUSIC=1
+   ELSE
+      SRC.SYSMESSAGE You end the music
+      TAG.MUSIC=
+   ENDIF
+   RETURN 1
+
+ON=@TIMER
+   IF !(0<TAG.MUSIC>)
+      TIMERD=1
+   ELSE
+      SOUND 043
+      TIMERD=1
+   ENDIF
+   RETURN 1
+
+
+[ITEMDEF i_portable_sector_light]
+ID=i_snowflake_1
+NAME=Sector Lighter!
+
+ON=@CREATE
+   ATTR=08080
+
+ON=@DCLICK
+   IF !(<SRC.ISGM>)
+      SRC.SYSMESSAGE This snowflake is too magical for your mortal hands!
+      RETURN 1
+   ENDIF
+   IF !(0<TAG.LIGHT>)
+      SRC.SYSMESSAGE You switch on the region lights
+      TIMERD=1
+      TAG.LIGHT=1
+   ELSE
+      SRC.SYSMESSAGE You switch off the region lights
+      TAG.LIGHT=
+   ENDIF
+   RETURN 1
+
+ON=@TIMER
+   IF !(0<TAG.LIGHT>)
+      TIMERD=1
+      COLOR=01
+   ELSE
+      SECTOR.LIGHT=0
+      TIMERD=1
+      DORAND 3
+         COLOR=0486
+         COLOR=07a0
+         COLOR=07a8
+      ENDDO
+   ENDIF
+   RETURN 1
+
+// This was done for Loth as a favour (imo which should be returned...)
+
+[ITEMDEF i_wigownzthis_robe]
+ID=i_robe
+NAME=Lothlorien Rare Robe
+TYPE=t_script
+
+ON=@CREATE
+   TYPE=t_clothing
+   ATTR=05
+   MORE1L=9999
+   MORE1H=9999
+
+ON=@DCLICK
+   IF (<SRC.ISGM>)
+      TARGET Who do you want to set as the owner of the robe
+      RETURN 1
+   ENDIF
+      //Match the two strings <Stored Named Account Owner> and <Account Name>
+   IF strmatch("<TAG.ACCOUNTOWNER>","<SRC.ACCOUNT>")
+      //I am empty in case you want to insert anything here
+   ELSE
+      SRC.SYSMESSAGE @44 This robe does not belong to your account.
+      RETURN 1
+   ENDIF
+
+
+ON=@EQUIP
+      //Match the two strings <Stored Named Account Owner> and <Account Name>
+   IF strmatch("<TAG.ACCOUNTOWNER>","<SRC.ACCOUNT>")
+      //I am empty in case you want to insert anything here
+   ELSE
+      SRC.SYSMESSAGE @44 This robe does not belong to your account.
+      MESSAGE 1 <TAG.ACCOUNTOWNER> 2 <SRC.ACCOUNT> 3 <SRC.ACCOUNT.NAME>
+      RETURN 1
+   ENDIF
+  
+ON=@TARGON_CHAR
+   LINK=<SRC.TARG.UID>
+      //These two are definitive checks to see who the robe was originally given to. Useful for checking up on bent GM's, trust me ;)
+   TAG.ORIGINALOWNER=<SRC.TARG.NAME>
+   TAG.ORIGINALOWNERUID=<SRC.TARG.UID>
+      //This tag is the comparative one
+   TAG.ACCOUNTOWNER=<SRC.TARG.ACCOUNT>
+   SRC.SYSMESSAGE @88 Owner set
+   RETURN 1   
+
+[EOF]

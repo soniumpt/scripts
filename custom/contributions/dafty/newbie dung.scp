@@ -1,0 +1,202 @@
+///////////////////////////////////////////
+[ITEMDEF i_dungeon_newbie_gate]
+Name=Imperial Newbie Dungeon Gate
+ID=i_moongate_black
+
+CATEGORY=Imperial uo
+SUBSECTION=Newbie Dungeon
+DESCRIPTION=gate
+ON=@CREATE
+ATTR=010
+
+ON=@STEP
+IF (<SRC.SKILLTOTAL> >= 7500)
+   src.message Your character is too strong to enter.
+   src.move s 1
+   return 1
+ELSE
+   src.go 6267,131,5
+   return 0
+
+   
+/////////////////////////////////////
+   
+   
+[ITEMDEF i_dungeon_newbie_gate2]
+Name=Imperial Newbie Dungeon Gate
+ID=i_moongate_black
+
+CATEGORY=Imperial uo
+SUBSECTION=Newbie Dungeon
+DESCRIPTION=gate
+ON=@CREATE
+ATTR=010
+
+ON=@STEP
+IF (<SRC.SKILLTOTAL> >= 7500)
+   src.message Your character is too strong to enter.
+   src.move s 1
+   return 1
+ELSE
+   src.go 6256,100,-10
+   return 0
+   
+///////////////////////////////////////////   
+
+[CHARDEF C_H_ARMORER_NEWBIE_DUNGEON]
+CATEGORY	= Imperial uo
+SUBSECTION	= Newbie Dungeon
+DESCRIPTION	= Armorer
+ID		= C_MAN
+NAME		= #NAMES_HUMANMALE the Armorer
+DESIRES		= i_gold,e_notoriety,t_ingot
+AVERSIONS	= t_TRAP,t_eerie_stuff
+TSPEECH		= spk_human_prime
+TSPEECH		= spk_trainer
+TSPEECH		= jobArmourer
+TSPEECH		= spk_shopkeep
+TSPEECH		= spk_needs
+TSPEECH		= spk_rehello
+TSPEECH		= spk_human_default
+
+TEVENTS		= e_Human_HearUnk
+TEVENTS		= e_Human_Needs
+TEVENTS		= e_Human_ConvInit
+TEVENTS		= e_Human_Greet
+TEVENTS		= e_Human_Space
+TEVENTS		= e_Human_Refuse
+TEVENTS		= e_Human_Environ
+ON = @Create
+  TAG.VENDMARKUP_FIXED	= 5
+  NPC		= brain_vendor
+  COLOR		= colors_skin
+  STR		= {86 100}
+  DEX		= {76 90}
+  INT		= {61 75}
+  MINING	= {35.0 55.0}
+  ARMSLORE	= {65.0 88.0}
+  BLACKSMITHING	= {55.0 78.0}
+  FENCING	= {35.0 55.0}
+  PARRYING	= {35.0 50.0}
+  SWORDSMANSHIP	= {35.0 50.0}
+  WRESTLING	= {45.0 68.0}
+  MACEFIGHTING	= {35.0 50.0}
+  TACTICS	= {35.0 55.0}
+  ITEMNEWBIE	= random_male_hair
+  COLOR		= colors_hair
+  ITEMNEWBIE	= random_facial_hair
+  COLOR		= match_hair
+ON = @NPCRestock
+  ITEM		= RANDOM_LIGHT
+  ITEM		= i_shirt_plain
+  COLOR		= colors_all
+  ITEM		= random_pants
+  COLOR		= colors_all
+  ITEM		= i_apron_half
+  COLOR		= color_metal
+  ITEM		= i_boots_calf
+  COLOR		= colors_neutral
+  ITEM		= random_coin_purse
+  
+  SELL		= vendor_s_armorer_newbie_dungeon
+  BUY		= vendor_b_armorer
+  
+[TEMPLATE vendor_s_armorer_newbie_dungeon]
+SELL=i_chainmail_coif_copper,{3 5}
+SELL=i_chainmail_leggings_copper,{3 5}
+SELL=i_chainmail_tunic_copper,{3 5}
+SELL=i_ringmail_sleeves_copper,{3 5}
+SELL=i_ringmail_gloves_copper,{3 5}
+SELL=i_chainmail_coif,{3 5}
+SELL=i_chainmail_leggings,{3 5}
+SELL=i_chainmail_tunic,{3 5}
+SELL=i_ringmail_gloves,{3 5}
+SELL=i_ringmail_leggings,{3 5}
+SELL=i_platemail_chest_copper,{3 5}
+SELL=i_platemail_helm_copper,{3 5}
+SELL=i_platemail_gloves_copper,{3 5}
+SELL=i_platemail_leggings_copper,{3 5}
+SELL=i_platemail_gorget_copper,{3 5}
+SELL=i_platemail_helm,{3 5}
+SELL=i_platemail_gloves,{3 5}
+SELL=i_platemail_leggings,{3 5}
+SELL=i_platemail_gorget,{3 5}
+
+[CHARDEF C_H_WEAPONSMITH_NEWBIE_DUNGEON]
+CATEGORY	= Imperial uo
+SUBSECTION	= Newbie Dungeon
+DESCRIPTION	= Weaponsmith
+ID		= C_MAN
+NAME		= #NAMES_HUMANMALE the Weaponsmith
+DESIRES		= i_gold,e_notoriety,t_log,t_ingot
+AVERSIONS	= t_TRAP,t_eerie_stuff
+TSPEECH		= spk_human_prime
+TSPEECH		= spk_trainer
+TSPEECH		= jobWeaponsmith
+TSPEECH		= spk_shopkeep
+TSPEECH		= spk_needs
+TSPEECH		= spk_rehello
+TSPEECH		= spk_human_default
+
+TEVENTS		= e_Human_HearUnk
+TEVENTS		= e_Human_Needs
+TEVENTS		= e_Human_ConvInit
+TEVENTS		= e_Human_Greet
+TEVENTS		= e_Human_Space
+TEVENTS		= e_Human_Refuse
+TEVENTS		= e_Human_Environ
+ON = @Create
+  TAG.VENDMARKUP_FIXED	= 5
+  NPC		= brain_vendor
+  COLOR		= colors_skin
+  STR		= {86 100}
+  DEX		= {86 100}
+  INT		= {81 95}
+  ARMSLORE	= {45.0 68.0}
+  BLACKSMITHING	= {65.0 88.0}
+  FENCING	= {45.0 68.0}
+  PARRYING	= {55.0 78.0}
+  SWORDSMANSHIP	= {55.0 70.0}
+  WRESTLING	= {45.0 68.0}
+  MACEFIGHTING	= {45.0 68.0}
+  TACTICS	= {55.0 78.0}
+  ITEMNEWBIE	= random_male_hair
+  COLOR		= colors_hair
+  ITEMNEWBIE	= random_facial_hair
+  COLOR		= match_hair
+ON = @NPCRestock
+  ITEM		= RANDOM_LIGHT
+  ITEM		= i_shirt_plain
+  COLOR		= colors_all
+  ITEM		= random_pants
+  COLOR		= colors_all
+  ITEM		= random_boots
+  ITEM		= i_apron_half
+  ITEM		= random_coin_purse
+
+  SELL		= vendor_s_weaponsmith_newbie_dungeon
+  BUY		= vendor_b_weaponsmith
+    
+[TEMPLATE vendor_s_weaponsmith_newbie_dungeon]
+SELL=i_axe_double_copper,{3 5}
+SELL=i_axe_exec_copper,{3 5}
+SELL=i_axe_exec,{3 5}
+SELL=i_axe_double,{3 5}
+SELL=i_sword_broad_copper,{3 5}
+SELL=i_katana_copper,{3 5}
+SELL=i_kryss_copper,{3 5}
+SELL=i_kryss,{3 5}
+SELL=i_katana,{3 5}
+SELL=i_maul_copper,{3 5}
+SELL=i_mace_war_copper,{3 5}
+SELL=i_maul,{3 5}
+SELL=i_mace_war,{3 5}
+SELL=i_shield_buckler_copper,{3 5}
+SELL=i_shield_round_small_copper,{3 5}
+SELL=i_shield_heater_copper,{3 5}
+SELL=i_shield_buckler,{3 5}
+SELL=i_shield_round_small,{3 5}
+SELL=i_shield_heater,{3 5}
+
+
+

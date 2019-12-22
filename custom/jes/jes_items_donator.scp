@@ -1,0 +1,1498 @@
+//CHANGELOG
+//17-01-13 - Wigifer - Added donators cake
+//04-06-13 - Ray - Added Old Donator Steeds Back
+
+//-------------------------
+//- Donator Skill Scrolls -
+//-------------------------
+
+// i_scroll_donatorskills
+// MORE1 = Duration in hours
+// MORE2 = VAR.CHANCE multiplier
+
+[FUNCTION rollstatus]
+IF (<SRC.FINDID.i_memory_donatorskills>)
+	SRC.SYSMESSAGE @60 You have <SRC.FINDID.i_memory_donatorskills.timer> seconds left of bonus skill rolls.
+ELSE
+	SRC.SYSMESSAGE @60 You do not have any bonus skill roll time left.
+ENDIF
+
+
+[FUNCTION donatorskillscroll]
+IF !(<ARGS>)
+   SYSMESSAGE @42 Please include the number of hours the scroll will last for, e.g. .donatorskillscroll 24
+   RETURN 1
+ELSEIF (<ARGS> < 1)
+   SYSMESSAGE @42 Please include a positive number of hours the scroll will last for, e.g. .donatorskillscroll 24
+   RETURN 1
+ELSE
+   SERV.NEWITEM i_scroll_donatorskills
+   NEW.LINK <SRC.UID>
+   NEW.MORE1=<ARGS>
+   NEW.MORE2=2
+   NEW.NAME=<NEW.NAME> - <EVAL <ARGS>> hours
+   NEW.BOUNCE <SRC.UID>
+   SRC.SYSMESSAGE @45 You have been given a donator skills scroll with <EVAL <ARGS>> hours allocated!
+   SERV.LOG <NAME>:<UID> gives <SRC.NAME>:<SRC.UID>:<SRC.ACCOUNT> a donator skill scroll with <EVAL <ARGS>> hours allocated!
+ENDIF
+ 
+
+[ITEMDEF i_scroll_donatorskills]
+ID=i_scroll_blank
+NAME=Double Skill Rolls Scroll
+TYPE=t_normal
+
+ON=@CREATE
+   ATTR=05
+   COLOR=020
+   
+ON=@DCLICK
+   IF (<SRC.FINDID.i_memory_donatorskills>)
+      SRC.SYSMESSAGE @23 You cannot double up your skill gain - wait until your current time is up!
+      RETURN 1
+   ELSE
+      SERV.NEWITEM i_memory_donatorskills
+      NEW.TIMER=<EVAL <MORE1> * 60 * 60>
+      NEW.MORE2=<MORE2>
+      NEW.EQUIP <SRC.UID>
+      SRC.SYSMESSAGE @22 You activate your <NAME>
+      REMOVE
+      RETURN 1
+   ENDIF
+
+
+
+[ITEMDEF i_memory_donatorskills]
+ID=i_memory
+TYPE=t_eq_script
+NAME=Donator Skills Timer
+
+ON=@TIMER
+   CONT.SYSMESSAGE @55 The power hour is over!
+   CONT.TAG.DONATORSKILLS.BONUSTIME=
+   REMOVE
+   RETURN 1
+
+[ITEMDEF i_donator_cake]
+ID=i_cake
+NAME=Donators Cake
+TYPE=t_normal
+
+ON=@CREATE
+   ATTR=05
+   
+ON=@DCLICK
+//   IF (<SRC.ISGM>)
+//      TARGET Who do you wish to link this cake to?
+   IF (<SRC.FINDID.i_cake_colour>)
+      SRC.SYSMESSAGE @45 You can't eat this again while already under its effect!
+   ELSEIF (STRCMP(<TAG.UID>,<SRC.ACCOUNT>) == 0)
+      SERV.NEWITEM i_cake_colour
+      NEW.EQUIP <SRC.UID>
+      NEW.TIMER=604800
+      SRC.TAG.OCOLOUR=<SRC.COLOR>
+      SRC.COLOR=<COLOR>
+      SRC.EMOTE eat a slice of delicious donators cake!
+      SRC.SYSMESSAGE @32 Your skin color will be different for the next four hours.
+	  REMOVE
+    ELSE
+      SRC.SYSMESSAGE @45 You cannot eat what is not yours...
+    ENDIF
+    RETURN 1
+
+ON=@TARGON_CHAR
+    LINK=<SRC.TARG.ACCOUNT.NAME>
+    SRC.SYSMESSAGE @33 <SRC.TARG.NAME>:<SRC.TARG.UID> is now linked to the cake and can eat it. Make sure the colour is set!
+    RETURN 1
+
+[ITEMDEF i_cake_colour]
+ID=i_memory
+NAME=Cake Colour
+TYPE=t_eq_script
+
+ON=@TIMER
+   CONT.COLOR=<CONT.TAG.OCOLOUR>
+   CONT.SYSMESSAGE @32 Your skin colour returns to normal.
+   REMOVE
+   RETURN 1
+
+
+
+// Donator Mounts
+
+
+[CHARDEF c_polar_bear_donator]
+ID=c_bear_polar
+NAME=Polar Bear
+SOUND=snd_ANIMALS_BEAR1
+ICON=i_pet_bear_polar
+TSPEECH=DONATOR_STEED 
+CAN=MT_WALK|MT_RUN
+ANIM=01fff
+DAM=0
+ARMOR=9
+
+RESOURCES=12 i_ribs_raw, 6 i_fur_light
+FOODTYPE=6 t_FISH,5 t_fruit, 15 t_meat_raw
+DESIRES=r_snow
+AVERSIONS=r_civilization
+
+ON=@Create
+NPC=brain_animal
+
+EVENTS +e_donatormount
+
+INVUL
+
+STR=1
+DEX=55
+INT=30
+
+PARRYING=40.0
+MAGICRESISTANCE=20.0
+TACTICS=30.0
+WRESTLING=50.0
+TAMING=200.0
+
+FAME=10
+KARMA=0
+ 
+ON=@DROPON_CHAR
+   SAY <ARGO.NAME>
+   IF (<ARGO.TYPE> == t_food )
+      RETURN 0
+   ELSEIF (<ARGO.TYPE> == t_grain )
+      RETURN 0
+   ELSE
+      RETURN 1
+   ENDIF
+
+ON=@SPELLEFFECT
+   RETURN 1
+
+ON=@ATTACK
+   RETURN 1
+
+ON=@CallGuards
+   RETURN 1
+   
+ON=@HUNGER
+   RETURN 1
+   
+ON=@DCLICK
+IF !(<TAG0.OWNER> == <SRC.UID>)
+src.sysmessage You can't mount this steed.
+return 1
+endif
+   
+[CHARDEF c_armor_steed_donator]
+//HORSE,Gray,White
+ID=c_m_armor_steed
+NAME=Armoured Steed
+SOUND=snd_ANIMALS_HORSE1
+TSPEECH=DONATOR_STEED 
+ICON=i_pet_horse_gray
+CAN=MT_WALK|MT_RUN
+ANIM=01fff
+DAM=0
+ARMOR=9
+RESLEVEL=5
+RESDISPDNHUE=0763
+RESDISPDNID=c_horse_gray
+DESIRES=c_horse_gray,c_man,c_woman
+FOODTYPE=55 t_crops, 55 t_fruit, 55 t_grain, 64 t_grass
+AVERSIONS=e_carnivores3
+RESOURCES=15 i_ribs_raw, 8 i_hide
+
+
+CATEGORY=Imperial uo
+SUBSECTION=Donator Steeds
+DESCRIPTION=Donator Horse (Gray)
+ON=@Create
+NPC=brain_animal
+
+EVENTS +e_donatormount
+
+INVUL
+
+STR=1
+DEX=55
+INT=30
+
+PARRYING=40.0
+MAGICRESISTANCE=20.0
+TACTICS=30.0
+WRESTLING=50.0
+TAMING=200.0
+
+FAME=10
+KARMA=0
+ 
+ON=@DROPON_CHAR
+   SAY <ARGO.NAME>
+   IF (<ARGO.TYPE> == t_food )
+      RETURN 0
+   ELSEIF (<ARGO.TYPE> == t_grain )
+      RETURN 0
+   ELSE
+      RETURN 1
+   ENDIF
+
+ON=@SPELLEFFECT
+   RETURN 1
+
+ON=@ATTACK
+   RETURN 1
+
+ON=@CallGuards
+   RETURN 1
+   
+ON=@HUNGER
+   RETURN 1
+   
+ON=@DCLICK
+IF !(<TAG0.OWNER> == <SRC.UID>)
+src.sysmessage You can't mount this steed.
+return 1
+endif
+
+[CHARDEF c_horse_gray_donator]
+//HORSE,Gray,White
+ID=c_horse_gray
+NAME=Horse
+SOUND=snd_ANIMALS_HORSE1
+TSPEECH=DONATOR_STEED 
+ICON=i_pet_horse_gray
+CAN=MT_WALK|MT_RUN
+ANIM=01fff
+DAM=0
+ARMOR=9
+DESIRES=c_horse_gray,c_man,c_woman
+FOODTYPE=55 t_crops, 55 t_fruit, 55 t_grain, 64 t_grass
+AVERSIONS=e_carnivores3
+RESOURCES=15 i_ribs_raw, 8 i_hide
+CATEGORY=Imperial uo
+SUBSECTION=Donator Steeds
+DESCRIPTION=Donator Horse (White)
+
+ON=@Create
+NPC=brain_animal
+
+EVENTS +e_donatormount
+
+INVUL
+
+STR=1
+DEX=55
+INT=30
+
+PARRYING=40.0
+MAGICRESISTANCE=20.0
+TACTICS=30.0
+WRESTLING=50.0
+TAMING=200.0
+
+FAME=10
+KARMA=0
+ 
+ON=@DROPON_CHAR
+   SAY <ARGO.NAME>
+   IF (<ARGO.TYPE> == t_food )
+      RETURN 0
+   ELSEIF (<ARGO.TYPE> == t_grain )
+      RETURN 0
+   ELSE
+      RETURN 1
+   ENDIF
+
+ON=@SPELLEFFECT
+   RETURN 1
+
+ON=@ATTACK
+   RETURN 1
+
+ON=@CallGuards
+   RETURN 1
+
+ON=@HUNGER
+   RETURN 1
+   
+ON=@DCLICK
+IF !(<TAG0.OWNER> == <SRC.UID>)
+src.sysmessage You can't mount this steed.
+return 1
+endif
+
+[CHARDEF c_horse_brown_lt_donator]
+//HORSE3 light tan
+ID=c_horse_brown_lt
+NAME=Horse
+SOUND=snd_ANIMALS_HORSE1
+TSPEECH=DONATOR_STEED 
+ICON=i_pet_horse_brown_lt
+ANIM=01fff
+DAM=0
+ARMOR=9
+RESOURCES=15 i_ribs_raw, 8 i_hide
+CAN=MT_WALK|MT_RUN
+FOODTYPE=55 t_crops, 55 t_fruit, 55 t_grain, 64 t_grass
+DESIRES=e_horses,c_man,c_woman
+AVERSIONS=e_carnivores3
+CATEGORY=Imperial uo
+SUBSECTION=Donator Steeds
+DESCRIPTION=Donator Horse (Tan)
+
+ON=@Create
+NPC=brain_animal
+
+EVENTS +e_donatormount
+
+INVUL
+
+STR=1
+DEX=55
+INT=30
+
+PARRYING=40.0
+MAGICRESISTANCE=20.0
+TACTICS=30.0
+WRESTLING=50.0
+TAMING=200.0
+
+FAME=10
+KARMA=0
+ 
+ON=@DROPON_CHAR
+   SAY <ARGO.NAME>
+   IF (<ARGO.TYPE> == t_food )
+      RETURN 0
+   ELSEIF (<ARGO.TYPE> == t_grain )
+      RETURN 0
+   ELSE
+      RETURN 1
+   ENDIF
+
+ON=@SPELLEFFECT
+   RETURN 1
+
+ON=@ATTACK
+   RETURN 1
+
+ON=@CallGuards
+   RETURN 1
+   
+ON=@HUNGER
+   RETURN 1
+   
+ON=@DCLICK
+IF !(<TAG0.OWNER> == <SRC.UID>)
+src.sysmessage You can't mount this steed.
+return 1
+endif
+
+[CHARDEF c_horse_brown_dk_donator]
+//HORSE (Brown)
+ID=c_horse_brown_dk
+NAME=Horse
+ANIM=01fff
+SOUND=snd_ANIMALS_HORSE1
+TSPEECH=DONATOR_STEED 
+ICON=i_pet_horse_brown_dk
+CAN=MT_WALK|MT_RUN
+DAM=0
+ARMOR=9
+RESOURCES=15 i_ribs_raw, 3 i_hide
+FOODTYPE=55 t_crops,55 t_fruit,55 t_grain,64 t_grass
+DESIRES=e_horses,c_man,c_woman
+AVERSIONS=e_carnivores3
+CATEGORY=Imperial uo
+SUBSECTION=Donator Steeds
+DESCRIPTION=Donator Horse (Brown)
+
+ON=@Create
+NPC=brain_animal
+
+EVENTS +e_donatormount
+
+INVUL
+
+STR=1
+DEX=55
+INT=30
+
+PARRYING=40.0
+MAGICRESISTANCE=20.0
+TACTICS=30.0
+WRESTLING=50.0
+TAMING=200.0
+
+FAME=10
+KARMA=0
+ 
+ON=@DROPON_CHAR
+   SAY <ARGO.NAME>
+   IF (<ARGO.TYPE> == t_food )
+      RETURN 0
+   ELSEIF (<ARGO.TYPE> == t_grain )
+      RETURN 0
+   ELSE
+      RETURN 1
+   ENDIF
+
+ON=@SPELLEFFECT
+   RETURN 1
+
+ON=@ATTACK
+   RETURN 1
+
+ON=@CallGuards
+   RETURN 1
+
+ON=@HUNGER
+   RETURN 1
+   
+ON=@DCLICK
+IF !(<TAG0.OWNER> == <SRC.UID>)
+src.sysmessage You can't mount this steed.
+return 1
+endif
+
+[CHARDEF c_horse_tan_donator]
+//HORSE (Warm Tan)(light brown)
+ID=c_horse_tan
+NAME=Horse
+SOUND=snd_ANIMALS_HORSE1
+TSPEECH=DONATOR_STEED 
+ICON=i_pet_horse_tan
+ANIM=01fff
+CAN=MT_WALK|MT_RUN
+RESOURCES=15 i_ribs_raw, 8 i_hide
+FOODTYPE=55 t_crops,55 t_fruit,55 t_grain, 64 t_grass
+DAM=0
+ARMOR=9
+DESIRES=e_horses,c_man,c_woman
+AVERSIONS=e_carnivores3
+CATEGORY=Imperial uo
+SUBSECTION=Donator Steeds
+DESCRIPTION=Donator Horse (Biege)
+
+ON=@Create
+NPC=brain_animal
+
+EVENTS +e_donatormount
+
+INVUL
+
+STR=1
+DEX=55
+INT=30
+
+PARRYING=40.0
+MAGICRESISTANCE=20.0
+TACTICS=30.0
+WRESTLING=50.0
+TAMING=200.0
+
+FAME=10
+KARMA=0
+ 
+ON=@DROPON_CHAR
+   SAY <ARGO.NAME>
+   IF (<ARGO.TYPE> == t_food )
+      RETURN 0
+   ELSEIF (<ARGO.TYPE> == t_grain )
+      RETURN 0
+   ELSE
+      RETURN 1
+   ENDIF
+
+ON=@SPELLEFFECT
+   RETURN 1
+
+ON=@ATTACK
+   RETURN 1
+
+ON=@CallGuards
+   RETURN 1
+   
+ON=@HUNGER
+   RETURN 1
+   
+ON=@DCLICK
+IF !(<TAG0.OWNER> == <SRC.UID>)
+src.sysmessage You can't mount this steed.
+return 1
+endif
+
+[CHARDEF c_llama_donator]
+ID=c_llama
+NAME=Llama
+SOUND=snd_ANIMALS_LLAMA3
+TSPEECH=DONATOR_STEED 
+ICON=i_pet_LLAMA
+CAN=MT_WALK|MT_RUN
+ANIM=01fff
+DAM=0
+ARMOR=8
+RESOURCES=7 i_ribs_raw,2 i_fur_light
+FOODTYPE=5 t_crops, 5 t_fruit, 5 t_grain, 5 i_hay, 64 t_grass
+DESIRES=c_llama,c_llama_pack,spk_human_prime
+CATEGORY=Imperial uo
+SUBSECTION=Donator Steeds
+DESCRIPTION=Donator Llama
+
+ON=@Create
+NPC=brain_animal
+
+EVENTS +e_donatormount
+
+INVUL
+
+STR=1
+DEX=55
+INT=30
+
+PARRYING=40.0
+MAGICRESISTANCE=20.0
+TACTICS=30.0
+WRESTLING=50.0
+TAMING=200.0
+
+FAME=10
+KARMA=0
+ 
+ON=@DROPON_CHAR
+   SAY <ARGO.NAME>
+   IF (<ARGO.TYPE> == t_food )
+      RETURN 0
+   ELSEIF (<ARGO.TYPE> == t_grain )
+      RETURN 0
+   ELSE
+      RETURN 1
+   ENDIF
+
+ON=@SPELLEFFECT
+   RETURN 1
+
+ON=@ATTACK
+   RETURN 1
+
+ON=@CallGuards
+   RETURN 1
+   
+ON=@HUNGER
+   RETURN 1
+   
+ON=@DCLICK
+IF !(<TAG0.OWNER> == <SRC.UID>)
+src.sysmessage You can't mount this steed.
+return 1
+endif
+
+
+[CHARDEF c_ostard_desert_donator]
+//OSTARD (OCLOCK) Desert Ostard
+ID=c_ostard_desert
+NAME=Oclock
+SOUND=snd_ANIMAL_OSTARD_DESERT1
+TSPEECH=DONATOR_STEED 
+ICON=i_pet_OSTARD_Desert
+DAM=0
+ARMOR=9
+RESOURCES=15 i_ribs_raw
+CAN=MT_WALK|MT_RUN
+FOODTYPE=55 t_crops, 55 t_fruit, 5 t_grain, 64 t_grass
+DESIRES=e_OSTARDS
+ANIM=01fff
+CATEGORY=Imperial uo
+SUBSECTION=Donator Steeds
+DESCRIPTION=Donator Oclock
+
+ON=@Create
+NPC=brain_animal
+
+EVENTS +e_donatormount
+
+INVUL
+
+STR=1
+DEX=55
+INT=30
+
+PARRYING=40.0
+MAGICRESISTANCE=20.0
+TACTICS=30.0
+WRESTLING=50.0
+TAMING=200.0
+
+FAME=10
+KARMA=0
+ 
+ON=@DROPON_CHAR
+   SAY <ARGO.NAME>
+   IF (<ARGO.TYPE> == t_food )
+      RETURN 0
+   ELSEIF (<ARGO.TYPE> == t_grain )
+      RETURN 0
+   ELSE
+      RETURN 1
+   ENDIF
+
+ON=@SPELLEFFECT
+   RETURN 1
+
+ON=@ATTACK
+   RETURN 1
+
+ON=@CallGuards
+   RETURN 1
+
+ON=@HUNGER
+   RETURN 1
+   
+ON=@DCLICK
+IF !(<TAG0.OWNER> == <SRC.UID>)
+src.sysmessage You can't mount this steed.
+return 1
+endif
+
+[CHARDEF c_ostard_zostrich_donator]
+ID=c_ostard_zostrich
+NAME=Zostrich
+SOUND=snd_ANIMAL_OSTARD_FRENZIED1
+TSPEECH=DONATOR_STEED 
+ICON=i_pet_OSTARD_ZOSTRICH
+CAN=MT_WALK|MT_RUN
+DAM=0
+ARMOR=15
+RESOURCES=15 i_ribs_raw
+FOODTYPE=55 t_crops, 55 t_fruit, 5 t_grain, 64 t_grass
+DESIRES=e_OSTARDS
+ANIM=01fff
+CATEGORY=Imperial uo
+SUBSECTION=Donator Steeds
+DESCRIPTION=Donator Zostrich
+ON=@Create
+NPC=brain_animal
+
+EVENTS +e_donatormount
+
+INVUL
+
+STR=1
+DEX=55
+INT=30
+
+PARRYING=40.0
+MAGICRESISTANCE=20.0
+TACTICS=30.0
+WRESTLING=50.0
+TAMING=200.0
+
+FAME=10
+KARMA=0
+ 
+ON=@DROPON_CHAR
+   SAY <ARGO.NAME>
+   IF (<ARGO.TYPE> == t_food )
+      RETURN 0
+   ELSEIF (<ARGO.TYPE> == t_grain )
+      RETURN 0
+   ELSE
+      RETURN 1
+   ENDIF
+
+ON=@SPELLEFFECT
+   RETURN 1
+
+ON=@ATTACK
+   RETURN 1
+
+ON=@CallGuards
+   RETURN 1
+
+ON=@HUNGER
+   RETURN 1
+
+ON=@DCLICK
+IF !(<TAG0.OWNER> == <SRC.UID>)
+src.sysmessage You can't mount this steed.
+return 1
+endif
+
+[CHARDEF c_ostard_forest_donator]
+ID=c_ostard_forest
+NAME=Orn
+SOUND=snd_ANIMAL_OSTARD_DESERT1
+TSPEECH=DONATOR_STEED 
+ICON=i_pet_OSTARD_Forest
+CAN=MT_WALK|MT_RUN
+DAM=0
+ARMOR=9
+RESOURCES=15 i_ribs_raw
+FOODTYPE=55 t_crops, 55 t_fruit, 5 t_grain, 64 t_grass
+DESIRES=e_OSTARDS,c_man,c_woman
+AVERSIONS=e_carnivores3
+ANIM=01fff
+CATEGORY=Imperial uo
+SUBSECTION=Donator Steeds
+DESCRIPTION=Donator Orn
+
+ON=@Create
+NPC=brain_animal
+
+EVENTS +e_donatormount
+
+INVUL
+
+STR=1
+DEX=55
+INT=30
+
+PARRYING=40.0
+MAGICRESISTANCE=20.0
+TACTICS=30.0
+WRESTLING=50.0
+TAMING=200.0
+
+FAME=10
+KARMA=0
+ 
+ON=@DROPON_CHAR
+   SAY <ARGO.NAME>
+   IF (<ARGO.TYPE> == t_food )
+      RETURN 0
+   ELSEIF (<ARGO.TYPE> == t_grain )
+      RETURN 0
+   ELSE
+      RETURN 1
+   ENDIF
+
+ON=@SPELLEFFECT
+   RETURN 1
+   
+ON=@ATTACK
+   RETURN 1
+
+ON=@CallGuards
+   RETURN 1
+
+ON=@HUNGER
+   RETURN 1
+   
+ON=@DCLICK
+IF !(<TAG0.OWNER> == <SRC.UID>)
+src.sysmessage You can't mount this steed.
+return 1
+endif
+
+//[SPEECH DONATOR_STEED] 
+//ON=*cycle colors*
+//IF (<TAG.OWNER>=<SRC.UID>) 
+//   IF ( (<EVAL <TAG.COLOR>>=0) || (<EVAL <TAG.COLOR>>=1))
+//      TAG.COLOR=2
+//      COLOR=0485
+//   ELSEIF (<EVAL <TAG.COLOR>>=2)
+//      TAG.COLOR=3
+//      COLOR=0455
+//   ELSEIF (<EVAL <TAG.COLOR>>=3)
+//      TAG.COLOR=4
+//      COLOR=048a
+//   ELSEIF (<EVAL <TAG.COLOR>>=4)
+//      TAG.COLOR=5
+//      COLOR=048b
+//   ELSEIF (<EVAL <TAG.COLOR>>=5)
+//      TAG.COLOR=6
+//      COLOR=0593
+//   ELSEIF (<EVAL <TAG.COLOR>>=6)
+//      TAG.COLOR=7
+//      COLOR=018d
+//   ELSEIF (<EVAL <TAG.COLOR>>=7)
+//      TAG.COLOR=8
+//      COLOR=0482
+//   ELSEIF (<EVAL <TAG.COLOR>>=8)
+//      TAG.COLOR=9
+//      COLOR=047d
+//   ELSEIF (<EVAL <TAG.COLOR>>=9)
+//      TAG.COLOR=10
+//      COLOR=0156
+//   ELSEIF (<EVAL <TAG.COLOR>>=10)
+//      TAG.COLOR=11
+//      COLOR=048e
+//   ELSEIF (<EVAL <TAG.COLOR>>=11)
+//      TAG.COLOR=12
+//      COLOR=048c
+//   ELSEIF (<EVAL <TAG.COLOR>>=12)
+//      TAG.COLOR=13
+//      COLOR=0486
+//   ELSEIF (<EVAL <TAG.COLOR>>=13)
+//      TAG.COLOR=14
+//      COLOR=0799
+//   ELSEIF (<EVAL <TAG.COLOR>>=14)
+//      TAG.COLOR=15
+//      COLOR=079c
+//   ELSEIF (<EVAL <TAG.COLOR>>=15)
+//      TAG.COLOR=16
+//      COLOR=0487
+//   ELSEIF (<EVAL <TAG.COLOR>>=16)
+//      TAG.COLOR=17
+//      COLOR=0488
+//   ELSEIF (<EVAL <TAG.COLOR>>=17)
+//      TAG.COLOR=18
+//      COLOR=0489
+//   ELSEIF (<EVAL <TAG.COLOR>>=18)
+//      TAG.COLOR=19
+//      COLOR=048d
+//   ELSEIF (<EVAL <TAG.COLOR>>=19)
+//      TAG.COLOR=20
+//      COLOR=079e
+//   ELSEIF (<EVAL <TAG.COLOR>>=20)
+//      TAG.COLOR=1
+//      COLOR=00
+//   ENDIF
+//ENDIF
+//RETURN 1
+
+[CHARDEF c_raptor_donator]
+ID=c_custom_raptor_spikes
+NAME=Dark Raptor
+SOUND=snd_ANIMALS_BEAR1
+ICON=i_pet_horse_gray
+TSPEECH=DONATOR_STEED 
+CAN=MT_WALK|MT_RUN
+ANIM=01fff
+DAM=0
+ARMOR=9
+
+RESOURCES=12 i_ribs_raw, 6 i_fur_light
+FOODTYPE=6 t_FISH,5 t_fruit, 15 t_meat_raw
+DESIRES=r_snow
+AVERSIONS=r_civilization
+
+ON=@Create
+NPC=brain_animal
+
+EVENTS +e_donatormount
+
+INVUL
+
+STR=1
+DEX=55
+INT=30
+
+PARRYING=40.0
+MAGICRESISTANCE=20.0
+TACTICS=30.0
+WRESTLING=50.0
+TAMING=200.0
+
+FAME=10
+KARMA=0
+ 
+ON=@DROPON_CHAR
+   SAY <ARGO.NAME>
+   IF (<ARGO.TYPE> == t_food )
+      RETURN 0
+   ELSEIF (<ARGO.TYPE> == t_grain )
+      RETURN 0
+   ELSE
+      RETURN 1
+   ENDIF
+
+ON=@SPELLEFFECT
+   RETURN 1
+
+ON=@ATTACK
+   RETURN 1
+
+ON=@CallGuards
+   RETURN 1
+   
+ON=@HUNGER
+   RETURN 1
+   
+ON=@DCLICK
+IF !(<TAG.OWNER> == <SRC.UID>)
+src.sysmessage You can't mount this steed.
+return 1
+endif
+
+[CHARDEF c_grizzly_polar_bear_donator]
+ID=c_custom_polar_bear
+NAME=Grizzly Polar Bear
+SOUND=snd_ANIMALS_BEAR1
+ICON=i_pet_horse_gray
+TSPEECH=DONATOR_STEED 
+CAN=MT_WALK|MT_RUN
+ANIM=01fff
+DAM=0
+ARMOR=9
+
+RESOURCES=12 i_ribs_raw, 6 i_fur_light
+FOODTYPE=6 t_FISH,5 t_fruit, 15 t_meat_raw
+DESIRES=r_snow
+AVERSIONS=r_civilization
+
+ON=@Create
+NPC=brain_animal
+
+EVENTS +e_donatormount
+
+INVUL
+
+STR=1
+DEX=55
+INT=30
+
+PARRYING=40.0
+MAGICRESISTANCE=20.0
+TACTICS=30.0
+WRESTLING=50.0
+TAMING=200.0
+
+FAME=10
+KARMA=0
+ 
+ON=@DROPON_CHAR
+   SAY <ARGO.NAME>
+   IF (<ARGO.TYPE> == t_food )
+      RETURN 0
+   ELSEIF (<ARGO.TYPE> == t_grain )
+      RETURN 0
+   ELSE
+      RETURN 1
+   ENDIF
+
+ON=@SPELLEFFECT
+   RETURN 1
+
+ON=@ATTACK
+   RETURN 1
+
+ON=@CallGuards
+   RETURN 1
+   
+ON=@HUNGER
+   RETURN 1
+   
+ON=@DCLICK
+IF !(<TAG.OWNER> == <SRC.UID>)
+src.sysmessage You can't mount this steed.
+return 1
+endif
+
+[CHARDEF c_ostrich_donator]
+ID=c_custom_ostrich
+NAME=Ferret
+SOUND=snd_ANIMALS_BEAR1
+ICON=i_pet_horse_gray
+TSPEECH=DONATOR_STEED 
+CAN=MT_WALK|MT_RUN
+ANIM=01fff
+DAM=0
+ARMOR=9
+
+RESOURCES=12 i_ribs_raw, 6 i_fur_light
+FOODTYPE=6 t_FISH,5 t_fruit, 15 t_meat_raw
+DESIRES=r_snow
+AVERSIONS=r_civilization
+
+ON=@Create
+NPC=brain_animal
+
+EVENTS +e_donatormount
+
+INVUL
+
+STR=1
+DEX=55
+INT=30
+
+PARRYING=40.0
+MAGICRESISTANCE=20.0
+TACTICS=30.0
+WRESTLING=50.0
+TAMING=200.0
+
+FAME=10
+KARMA=0
+ 
+ON=@DROPON_CHAR
+   SAY <ARGO.NAME>
+   IF (<ARGO.TYPE> == t_food )
+      RETURN 0
+   ELSEIF (<ARGO.TYPE> == t_grain )
+      RETURN 0
+   ELSE
+      RETURN 1
+   ENDIF
+
+ON=@SPELLEFFECT
+   RETURN 1
+
+ON=@ATTACK
+   RETURN 1
+
+ON=@CallGuards
+   RETURN 1
+   
+ON=@HUNGER
+   RETURN 1
+   
+ON=@DCLICK
+IF !(<TAG.OWNER> == <SRC.UID>)
+src.sysmessage You can't mount this steed.
+return 1
+endif
+
+[CHARDEF c_raptor_light_donator]
+ID=c_custom_raptor_light
+NAME=Raptor
+SOUND=snd_ANIMALS_BEAR1
+ICON=i_pet_horse_gray
+TSPEECH=DONATOR_STEED 
+CAN=MT_WALK|MT_RUN
+ANIM=01fff
+DAM=0
+ARMOR=9
+
+RESOURCES=12 i_ribs_raw, 6 i_fur_light
+FOODTYPE=6 t_FISH,5 t_fruit, 15 t_meat_raw
+DESIRES=r_snow
+AVERSIONS=r_civilization
+
+ON=@Create
+NPC=brain_animal
+
+EVENTS +e_donatormount
+
+INVUL
+
+STR=1
+DEX=55
+INT=30
+
+PARRYING=40.0
+MAGICRESISTANCE=20.0
+TACTICS=30.0
+WRESTLING=50.0
+TAMING=200.0
+
+FAME=10
+KARMA=0
+ 
+ON=@DROPON_CHAR
+   SAY <ARGO.NAME>
+   IF (<ARGO.TYPE> == t_food )
+      RETURN 0
+   ELSEIF (<ARGO.TYPE> == t_grain )
+      RETURN 0
+   ELSE
+      RETURN 1
+   ENDIF
+
+ON=@SPELLEFFECT
+   RETURN 1
+
+ON=@ATTACK
+   RETURN 1
+
+ON=@CallGuards
+   RETURN 1
+   
+ON=@HUNGER
+   RETURN 1
+   
+ON=@DCLICK
+IF !(<TAG.OWNER> == <SRC.UID>)
+src.sysmessage You can't mount this steed.
+return 1
+endif
+
+[CHARDEF c_billy_goat_donator]
+ID=c_custom_horse_3
+NAME=Billy-Goat
+SOUND=snd_ANIMALS_BEAR1
+ICON=i_pet_horse_gray
+TSPEECH=DONATOR_STEED 
+CAN=MT_WALK|MT_RUN
+ANIM=01fff
+DAM=0
+ARMOR=9
+
+RESOURCES=12 i_ribs_raw, 6 i_fur_light
+FOODTYPE=6 t_FISH,5 t_fruit, 15 t_meat_raw
+DESIRES=r_snow
+AVERSIONS=r_civilization
+
+ON=@Create
+NPC=brain_animal
+
+EVENTS +e_donatormount
+
+INVUL
+
+STR=1
+DEX=55
+INT=30
+
+PARRYING=40.0
+MAGICRESISTANCE=20.0
+TACTICS=30.0
+WRESTLING=50.0
+TAMING=200.0
+
+FAME=10
+KARMA=0
+ 
+ON=@DROPON_CHAR
+   SAY <ARGO.NAME>
+   IF (<ARGO.TYPE> == t_food )
+      RETURN 0
+   ELSEIF (<ARGO.TYPE> == t_grain )
+      RETURN 0
+   ELSE
+      RETURN 1
+   ENDIF
+
+ON=@SPELLEFFECT
+   RETURN 1
+
+ON=@ATTACK
+   RETURN 1
+
+ON=@CallGuards
+   RETURN 1
+   
+ON=@HUNGER
+   RETURN 1
+   
+ON=@DCLICK
+IF !(<TAG.OWNER> == <SRC.UID>)
+src.sysmessage You can't mount this steed.
+return 1
+endif
+
+
+[CHARDEF c_lion_wings_donator]
+ID=c_custom_lion_wings
+NAME=Lion Wings
+SOUND=snd_ANIMALS_BEAR1
+ICON=i_pet_horse_gray
+TSPEECH=DONATOR_STEED 
+CAN=MT_WALK|MT_RUN
+ANIM=01fff
+DAM=0
+ARMOR=9
+
+RESOURCES=12 i_ribs_raw, 6 i_fur_light
+FOODTYPE=6 t_FISH,5 t_fruit, 15 t_meat_raw
+DESIRES=r_snow
+AVERSIONS=r_civilization
+
+ON=@Create
+NPC=brain_animal
+
+EVENTS +e_donatormount
+
+INVUL
+
+STR=1
+DEX=55
+INT=30
+
+PARRYING=40.0
+MAGICRESISTANCE=20.0
+TACTICS=30.0
+WRESTLING=50.0
+TAMING=200.0
+
+FAME=10
+KARMA=0
+ 
+ON=@DROPON_CHAR
+   SAY <ARGO.NAME>
+   IF (<ARGO.TYPE> == t_food )
+      RETURN 0
+   ELSEIF (<ARGO.TYPE> == t_grain )
+      RETURN 0
+   ELSE
+      RETURN 1
+   ENDIF
+
+ON=@SPELLEFFECT
+   RETURN 1
+
+ON=@ATTACK
+   RETURN 1
+
+ON=@CallGuards
+   RETURN 1
+   
+ON=@HUNGER
+   RETURN 1
+   
+ON=@DCLICK
+IF !(<TAG.OWNER> == <SRC.UID>)
+src.sysmessage You can't mount this steed.
+return 1
+endif
+
+
+[CHARDEF c_cusidhe_donator]
+ID=c_custom_cusidhe
+NAME=Cu Sidhe
+SOUND=snd_ANIMALS_BEAR1
+ICON=i_pet_horse_gray
+TSPEECH=DONATOR_STEED 
+CAN=MT_WALK|MT_RUN
+ANIM=01fff
+DAM=0
+ARMOR=9
+
+RESOURCES=12 i_ribs_raw, 6 i_fur_light
+FOODTYPE=6 t_FISH,5 t_fruit, 15 t_meat_raw
+DESIRES=r_snow
+AVERSIONS=r_civilization
+
+ON=@Create
+NPC=brain_animal
+
+EVENTS +e_donatormount
+
+INVUL
+
+STR=1
+DEX=55
+INT=30
+
+PARRYING=40.0
+MAGICRESISTANCE=20.0
+TACTICS=30.0
+WRESTLING=50.0
+TAMING=200.0
+
+FAME=10
+KARMA=0
+ 
+ON=@DROPON_CHAR
+   SAY <ARGO.NAME>
+   IF (<ARGO.TYPE> == t_food )
+      RETURN 0
+   ELSEIF (<ARGO.TYPE> == t_grain )
+      RETURN 0
+   ELSE
+      RETURN 1
+   ENDIF
+
+ON=@SPELLEFFECT
+   RETURN 1
+
+ON=@ATTACK
+   RETURN 1
+
+ON=@CallGuards
+   RETURN 1
+   
+ON=@HUNGER
+   RETURN 1
+   
+ON=@DCLICK
+IF !(<TAG0.OWNER> == <SRC.UID>)
+src.sysmessage You can't mount this steed.
+return 1
+endif
+
+[CHARDEF c_flame_steed_donator]
+ID=c_custom_horse_5
+NAME=Flame Steed
+SOUND=snd_ANIMALS_BEAR1
+ICON=i_pet_horse_gray
+TSPEECH=DONATOR_STEED 
+CAN=MT_WALK|MT_RUN
+ANIM=01fff
+DAM=0
+ARMOR=9
+
+RESOURCES=12 i_ribs_raw, 6 i_fur_light
+FOODTYPE=6 t_FISH,5 t_fruit, 15 t_meat_raw
+DESIRES=r_snow
+AVERSIONS=r_civilization
+
+ON=@Create
+NPC=brain_animal
+
+EVENTS +e_donatormount
+
+INVUL
+
+STR=1
+DEX=55
+INT=30
+
+PARRYING=40.0
+MAGICRESISTANCE=20.0
+TACTICS=30.0
+WRESTLING=50.0
+TAMING=200.0
+
+FAME=10
+KARMA=0
+ 
+ON=@DROPON_CHAR
+   SAY <ARGO.NAME>
+   IF (<ARGO.TYPE> == t_food )
+      RETURN 0
+   ELSEIF (<ARGO.TYPE> == t_grain )
+      RETURN 0
+   ELSE
+      RETURN 1
+   ENDIF
+
+ON=@SPELLEFFECT
+   RETURN 1
+
+ON=@ATTACK
+   RETURN 1
+
+ON=@CallGuards
+   RETURN 1
+   
+ON=@HUNGER
+   RETURN 1
+   
+ON=@DCLICK
+IF !(<TAG.OWNER> == <SRC.UID>)
+src.sysmessage You can't mount this steed.
+return 1
+endif
+
+[CHARDEF c_armored_steed_donator]
+ID=c_custom_horse_2
+NAME=Armored Steed
+SOUND=snd_ANIMALS_BEAR1
+ICON=i_pet_horse_gray
+TSPEECH=DONATOR_STEED 
+CAN=MT_WALK|MT_RUN
+ANIM=01fff
+DAM=0
+ARMOR=9
+
+RESOURCES=12 i_ribs_raw, 6 i_fur_light
+FOODTYPE=6 t_FISH,5 t_fruit, 15 t_meat_raw
+DESIRES=r_snow
+AVERSIONS=r_civilization
+
+ON=@Create
+NPC=brain_animal
+
+EVENTS +e_donatormount
+
+INVUL
+
+STR=1
+DEX=55
+INT=30
+
+PARRYING=40.0
+MAGICRESISTANCE=20.0
+TACTICS=30.0
+WRESTLING=50.0
+TAMING=200.0
+
+FAME=10
+KARMA=0
+ 
+ON=@DROPON_CHAR
+   SAY <ARGO.NAME>
+   IF (<ARGO.TYPE> == t_food )
+      RETURN 0
+   ELSEIF (<ARGO.TYPE> == t_grain )
+      RETURN 0
+   ELSE
+      RETURN 1
+   ENDIF
+
+ON=@SPELLEFFECT
+   RETURN 1
+
+ON=@ATTACK
+   RETURN 1
+
+ON=@CallGuards
+   RETURN 1
+   
+ON=@HUNGER
+   RETURN 1
+   
+ON=@DCLICK
+IF !(<TAG0.OWNER> == <SRC.UID>)
+src.sysmessage You can't mount this steed.
+return 1
+endif
+
+[CHARDEF c_casual_horse_donator]
+ID=c_custom_horse_brown
+NAME=Casual Horse
+SOUND=snd_ANIMALS_BEAR1
+ICON=i_pet_horse_gray
+TSPEECH=DONATOR_STEED 
+CAN=MT_WALK|MT_RUN
+ANIM=01fff
+DAM=0
+ARMOR=9
+
+RESOURCES=12 i_ribs_raw, 6 i_fur_light
+FOODTYPE=6 t_FISH,5 t_fruit, 15 t_meat_raw
+DESIRES=r_snow
+AVERSIONS=r_civilization
+
+ON=@Create
+NPC=brain_animal
+
+EVENTS +e_donatormount
+
+INVUL
+
+STR=1
+DEX=55
+INT=30
+
+PARRYING=40.0
+MAGICRESISTANCE=20.0
+TACTICS=30.0
+WRESTLING=50.0
+TAMING=200.0
+
+FAME=10
+KARMA=0
+ 
+ON=@DROPON_CHAR
+   SAY <ARGO.NAME>
+   IF (<ARGO.TYPE> == t_food )
+      RETURN 0
+   ELSEIF (<ARGO.TYPE> == t_grain )
+      RETURN 0
+   ELSE
+      RETURN 1
+   ENDIF
+
+ON=@SPELLEFFECT
+   RETURN 1
+
+ON=@ATTACK
+   RETURN 1
+
+ON=@CallGuards
+   RETURN 1
+   
+ON=@HUNGER
+   RETURN 1
+   
+ON=@DCLICK
+IF !(<TAG0.OWNER> == <SRC.UID>)
+src.sysmessage You can't mount this steed.
+return 1
+endif
+
+[EOF]

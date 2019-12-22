@@ -1,0 +1,76 @@
+// #-----------#
+// # CHANGELOG #
+// #-----------#
+//
+// 18/08/18 - Wigifer - Removed random loot from these monsters, ready for conversion to the new f_central_loot table.
+//                    - i_log_myst moved to RESOURCES
+
+
+[CHARDEF c_reaper_myst]
+DEFNAME=c_reaper_myst
+ID=c_reaper
+NAME=Myst Reaper
+SOUND=snd_MONSTER_REAPER1
+ICON=i_pet_REAPER
+ANIM=078c7f
+DAM=5,15
+ARMOR=20
+RESOURCES=8 i_reag_bone, 2 i_log_myst
+FOODTYPE=15 t_meat_raw
+CAN=MT_WALK
+
+DESIRES=r_foliage
+
+CATEGORY=Monsters
+SUBSECTION=Miscellaneous
+DESCRIPTION=myst Reaper
+
+ON=@Create
+  color=007a0
+  NPC=brain_monster
+  STR={1966 2415}
+  DEX={126 175}
+  INT={386 635}
+
+  PARRYING={105.0 165.0}
+  MAGERY={170.0 200.0}
+  MAGICRESISTANCE={505.0 650.0}
+  TACTICS={155.0 260.0}
+  WRESTLING={190.0 200.0}
+  ANATOMY=200.0
+
+  FAME={2100 5000}
+  KARMA={-3000 -5999}
+  
+  NEWITEM i_myst_timer
+  ACT.CONT	= <UID>
+
+ON=@GetHit
+  IF (<FINDID.i_myst_timer.TIMER> < 300)
+     FINDID.i_myst_timer.Timer = 300
+  ENDIF
+  RETURN 0
+  
+ON=@Spelleffect
+  IF (<FINDID.i_myst_timer.TIMER> < 300)
+     FINDID.i_myst_timer.Timer = 300
+  ENDIF
+  RETURN 0
+  
+  
+[ITEMDEF i_myst_timer]
+NAME    = Myst Spawn Timer
+ID	= i_memory
+TYPE	= t_eq_script
+LAYER	= layer_special
+
+ON=@Create
+  Timer= 1800
+  
+ON=@Timer
+  CONT.EMOTE retreat back into the woods
+  CONT.REMOVE
+  RETURN 1
+  
+
+[EOF]

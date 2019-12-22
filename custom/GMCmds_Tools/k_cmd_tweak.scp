@@ -1,0 +1,1234 @@
+//Changed by Wren - Oct 10 2003 - added functions to moditor skill drops and changed skill drop from -1 to -10
+//Wren - Feb 07 '04 - <BEGGING> to <UNUSED>/<FORENSICS> to <NETHERLORE>/<REMOVETRAP> to <UNUSED1>/<TASTEID> to <HERBLORE>/<SPIRITSPEAK> to <NECROMANCY>
+
+// this was coppied from a post in www.sphereserver.com,
+// originally named VoE menu, I think
+
+
+[PLEVEL 1]
+SKILL_REDUCE
+FAILED_REDUCE
+
+
+[FUNCTION SKILL_REDUCE]
+   RETURN 1
+
+[FUNCTION FAILED_REDUCE]
+   RETURN 1
+
+[FUNCTION GUMP_PLEV_CHECK]
+IF !(<SRC.ACCOUNT.PLEVEL> > 1)
+   serv.log <SRC.NAME> (Account <SRC.ACCOUNT>) was kicked for abusing info menu
+   SRC.SYSMESSAGE @07a0 You have been blocked for abusing an exploit
+   SERV.ACCOUNT <SRC.ACCOUNT> block 1
+   SRC.BLOCK_NOW
+   RETURN 1
+ENDIF
+
+[FUNCTION TRYREDUCESTAT]
+SRC.GUMP_PLEV_CHECK
+
+if 0
+elseif ( <ISITEM> )
+elseif ( <NPC> )
+elseif ( <SRC.UID> == <UID> )
+else
+   if ( <<args>> > 1 )
+      TRYP 2 <args> = <eval (<<args>> - 1)>
+   elseif ( <<args>> > 0.0 )
+      TRYP 2 <args> = 0
+   else
+      SRC.FAILED_REDUCE
+      SRC.SYSMESSAGE Couldn't reduce.
+      return 1
+   endif
+   SRC.SKILL_REDUCE
+   SRC.SYSMESSAGE Stat reduced to <<args>>.
+   return 1
+endif
+TRYP 3 INPDLG = <args> 6
+
+
+[FUNCTION TRYREDUCE]
+SRC.GUMP_PLEV_CHECK
+
+if 0
+elseif ( <ISITEM> )
+elseif ( <NPC> )
+elseif ( <SRC.UID> == <UID> )
+else
+   if ( <<args>> > 10.0 )
+      TRYP 2 <args> = <eval (<<args>> - 10.0)>
+   elseif ( <<args>> > 0.0 )
+      TRYP 2 <args> = 0
+   else
+      SRC.FAILED_REDUCE
+      SRC.SYSMESSAGE Couldn't reduce skill.
+      return 1
+   endif
+   SRC.SKILL_REDUCE
+   SRC.SYSMESSAGE Skill reduced to <<args>>.
+   return 1
+endif
+TRYP 4 INPDLG = <args> 6
+
+
+[DIALOG d_charprop1] 
+1,1
+//resizepic 1 1 2620 500 430 // Background
+resizepic 0 0 2600 500 400 // Curved Grey background 
+//checkertrans 5 5 500 430
+
+
+PAGE 0 
+   dtext 25 35 025 Account:
+   dtext 100 35 0c1 <ACCOUNT> 
+   dtext 25 50 025 IP:
+   dtext 100 50 0c1 <ACCOUNT.LASTIP>
+   dtext 250 35 025 Client:
+   dtext 315 35 0c1 <CLIENTVERSION>
+   dtext 250 50 025 Serial:
+   dtext 315 50 0c1 <UID> 
+
+   IF ( strmatch("[a-z]*","<ACCOUNT>")
+      SERV.LOG <SRC.NAME>, on <SRC.ACCOUNT>, is getting info on <NAME>, <ACCOUNT>
+   ELSEIF ( strmatch("[0-9]*","<ACCOUNT>")
+      SERV.LOG <SRC.NAME>, on <SRC.ACCOUNT>, is getting info on <NAME>, <ACCOUNT>
+   ENDIF
+
+PAGE 1 
+   button 25 74 5031 5031 1 0 50 
+   dtext 32 73 025 General Info 
+   button 140 74 5031 5031 1 0 51
+   dtext 165 73 025 Skills 
+   button 255 74 5031 5031 1 0 52
+   dtext 270 73 025 Misc Info
+   button 370 74 5031 5031 1 0 55 
+   dtext 400 73 025 Flags
+
+   button 25 104 2224 2117 1 0 2
+   dtext  50 100 025 Name: 
+   dtext 150 100 0c1 <NAME>
+
+   button 25 124 2224 2117 1 0 3 
+   dtext  50 120 025 Title: 
+   dtext 150 120 0c1 <TITLE>
+ 
+   button 25 144 2224 2117 1 0 4
+   dtext  50 140 025 Color: 
+   dtext 150 140 0c1 <COLOR> 
+
+   button 25 164 2224 2117 1 0 26 
+   dtext  50 160 025 Oskin: 
+   dtext 150 160 0c1 <OSKIN> 
+
+   button 25 184 2224 2117 1 0 5  
+   dtext  50 180 025 ID: 
+   dtext 150 180 0c1 <ID> 
+
+   button 25 204 2224 2117 1 0 6
+   dtext  50 200 025 Body: 
+   dtext 150 200 0c1 <BODY> 
+
+   button 25 224 2224 2117 1 0 7 
+   dtext  50 220 025 OBody: 
+   dtext 150 220 0c1 <OBODY> 
+
+   button 25 244 2224 2117 1 0 8  
+   dtext  50 240 025 Timer: 
+   dtext 150 240 0c1 <TIMER> 
+
+   button 25 264 2224 2117 1 0 9  
+   dtext  50 260 025 P: 
+   dtext 150 260 0c1 <P> 
+
+   button 25 284 2224 2117 1 0 10  
+   dtext  50 280 025 Home: 
+   dtext 150 280 0c1 <HOME> 
+
+   button 25 304 2224 2117 1 0 11  
+   dtext  50 300 025 Action: 
+   dtext 150 300 0c1 <ACTION> 
+
+   button 25 324 2224 2117 1 0 12 
+   dtext  50 320 025 Food: 
+   dtext 150 320 0c1 <FOOD> 
+
+   button 25 344 2224 2117 1 0 54 
+   dtext 50 340 025 Open Bank 
+
+   button 275 104 2224 2117 1 0 13 
+   dtext 300 100 025 NPC: 
+   dtext 400 100 0c1 <NPC> 
+
+   button 275 144 2224 2117 1 0 15 
+   dtext 300 140 025 Karma: 
+   dtext 400 140 0c1 <KARMA>
+
+   button 275 164 2224 2117 1 0 16 
+   dtext 300 160 025 Fame:  
+   dtext 400 160 0c1 <FAME> 
+
+   dtext 300 180 025 Skill Total: 
+   dtext 400 180 0c1 <SKILLTOTAL> 
+
+   dtext 300 200 025 Bank Balance: 
+   dtext 400 200 0c1 <BANKBALANCE> 
+
+   button 275 224 2224 2117 1 0 20 
+   dtext 300 220 025 STR:   
+   dtext 400 220 0c1 <STR> 
+
+   button 275 244 2224 2117 1 0 21 
+   dtext 300 240 025 DEX:   
+   dtext 400 240 0c1 <DEX> 
+
+   button 275 264 2224 2117 1 0 22 
+   dtext 300 260 025 INT:    
+   dtext 400 260 0c1 <INT> 
+
+   button 275 284 2224 2117 1 0 23 
+   dtext 300 280 025 Hits:   
+   dtext 400 280 0c1 <HITS> 
+
+   button 275 304 2224 2117 1 0 24 
+   dtext 300 300 025 Stam:
+   dtext 400 300 0c1 <STAM> 
+
+   button 275 324 2224 2117 1 0 25 
+   dtext 300 320 025 Mana:
+   dtext 400 320 0c1 <MANA> 
+
+   button 275 344 2224 2117 1 0 53 
+   dtext 300 340 025 Kills: 
+   dtext 400 340 0c1 <KILLS> 
+
+[DIALOG d_charprop1 BUTTON] 
+   ONBUTTON=2 
+      SRC.GUMP_PLEV_CHECK
+
+      TRYP 3 INPDLG=NAME 30 
+   ONBUTTON=3 
+      SRC.GUMP_PLEV_CHECK
+
+      TRYP 3 INPDLG=TITLE 30 
+   ONBUTTON=4 
+      SRC.GUMP_PLEV_CHECK
+
+      TRYP 2 INPDLG=COLOR 5 
+   ONBUTTON=5 
+      SRC.GUMP_PLEV_CHECK
+
+      TRYP 3 INPDLG=ID 15 
+   ONBUTTON=6 
+      SRC.GUMP_PLEV_CHECK
+
+      TRYP 3 INPDLG=BODY 15 
+   ONBUTTON=7 
+      SRC.GUMP_PLEV_CHECK
+
+      TRYP 3 INPDLG=OBODY 15 
+   ONBUTTON=8 
+      SRC.GUMP_PLEV_CHECK
+
+      TRYP 3 INPDLG=TIMER 15 
+   ONBUTTON=9 
+      SRC.GUMP_PLEV_CHECK
+
+      TRYP 3 INPDLG=P 16 
+   ONBUTTON=10 
+      SRC.GUMP_PLEV_CHECK
+
+      TRYP 3 INPDLG=HOME 16 
+   ONBUTTON=11 
+      SRC.GUMP_PLEV_CHECK
+
+      TRYP 3 INPDLG=ACTION 8 
+   ONBUTTON=12 
+      SRC.GUMP_PLEV_CHECK
+
+      TRYP 3 INPDLG=FOOD 3 
+   ONBUTTON=13 
+      SRC.GUMP_PLEV_CHECK
+
+      TRYP 3 INPDLG=NPC 10 
+   ONBUTTON=14 
+      SRC.GUMP_PLEV_CHECK
+
+      TRYP 3 INPDLG=SPEECH 10 
+   ONBUTTON=15 
+      SRC.GUMP_PLEV_CHECK
+
+      TRYP 3 INPDLG=KARMA 10 
+   ONBUTTON=16 
+      SRC.GUMP_PLEV_CHECK
+
+      TRYP 3 INPDLG=FAME 10 
+   ONBUTTON=20 
+      TRYREDUCESTAT STR 
+   ONBUTTON=21 
+      TRYREDUCESTAT DEX 
+   ONBUTTON=22 
+      TRYREDUCESTAT INT
+   ONBUTTON=23 
+      SRC.GUMP_PLEV_CHECK
+
+      TRYP 3 INPDLG=HITS 4 
+   ONBUTTON=24 
+      SRC.GUMP_PLEV_CHECK
+
+      TRYP 3 INPDLG=STAM 4 
+   ONBUTTON=25 
+      SRC.GUMP_PLEV_CHECK
+
+      TRYP 3 INPDLG=MANA 3 
+   ONBUTTON=26 
+      SRC.GUMP_PLEV_CHECK
+
+      TRYP 3 INPDLG=OCOLOR 5 
+   ONBUTTON=50 
+      dialog d_charprop1 
+   ONBUTTON=51 
+      dialog d_tar_tweak_1 
+   ONBUTTON=52 
+      dialog d_tar_tweak_2 
+   ONBUTTON=53 
+      TRYREDUCESTAT KILLS
+//      TRYP 3 INPDLG=KILLS 3 
+   ONBUTTON=54
+   IF (<SRC.ACCOUNT.PLEVEL> > 3)
+      bank 
+   ELSE
+   	SRC.SYSMESSAGE This for GM's only
+   ENDIF
+   
+   ONBUTTON=55  
+      dialog d_tar_tweak_flags 
+
+[DIALOG d_charprop1 TEXT]
+
+[DIALOG d_tar_tweak_1] 
+1,1
+//resizepic 1 1 2620 500 430 // Background
+resizepic 0 0 2600 500 400 // Curved Grey background 
+//checkertrans 5 5 500 430
+
+PAGE 0 
+   dtext 25 50 025 Account:
+   dtext 100 50 0c1 <ACCOUNT> 
+   dtext 250 50 025 Serial:
+   dtext 315 50 0c1 <UID> 
+
+PAGE 1 
+   button 25 74 5031 5031 1 0 50 
+   dtext 32 73 025 General Info 
+   button 140 74 5031 5031 1 0 51
+   dtext 165 73 025 Skills 
+   button 255 74 5031 5031 1 0 52
+   dtext 270 73 025 Misc Info
+   button 370 74 5031 5031 1 0 53 
+   dtext 400 73 025 Flags
+
+   button 25 104 2224 2117 1 0 2  
+   dtext 50 100 025 Alchemy
+   dtext 175 100 0c1 <ALCHEMY>
+ 
+   button 25 124 2224 2117 1 0 3 
+   dtext 50 120 025 Anatomy 
+   dtext 175 120 0c1 <ANATOMY>
+
+   button 25 144 2224 2117 1 0 4
+   dtext 50 140 025 Animal Lore
+   dtext 175 140 0c1 <ANIMALLORE> 
+
+   button 25 164 2224 2117 1 0 26  
+   dtext 50 160 025 Animal Taming 
+   dtext 175 160 0c1 <TAMING>
+
+   button 25 184 2224 2117 1 0 5  
+   dtext 50 180 025 Archery 
+   dtext 175 180 0c1 <ARCHERY> 
+
+   button 25 204 2224 2117 1 0 6  
+   dtext 50 200 025 Arms Lore
+   dtext 175 200 0c1 <ARMSLORE> 
+ 
+   button 25 224 2224 2117 1 0 7  
+   dtext 50 220 025 Unused 
+   dtext 175 220 0c1 <UNUSED> 
+
+   button 25 244 2224 2117 1 0 8  
+   dtext 50 240 025 Blacksmithing 
+   dtext 175 240 0c1 <BLACKSMITHING> 
+
+   button 25 264 2224 2117 1 0 9  
+   dtext 50 260 025 Bowcraft 
+   dtext 175 260 0c1 <BOWCRAFT> 
+
+   button 25 284 2224 2117 1 0 10 
+   dtext 50 280 025 Survival 
+   dtext 175 280 0c1 <SURVIVAL> 
+
+   button 25 304 2224 2117 1 0 11  
+   dtext 50 300 025 Carpentry 
+   dtext 175 300 0c1 <CARPENTRY> 
+
+   button 25 324 2224 2117 1 0 12 
+   dtext 50 320 025 Cartography 
+   dtext 175 320 0c1 <CARTOGRAPHY> 
+
+   button 275 104 2224 2117 1 0 13  
+   dtext 300 100 025 Cooking 
+   dtext 425 100 0c1 <COOKING> 
+
+   button 275 124 2224 2117 1 0 14 
+   dtext 300 120 025 Detection 
+   dtext 425 120 0c1 <DETECTION> 
+
+   button 275 144 2224 2117 1 0 15  
+   dtext 300 140 025 Enticement 
+   dtext 425 140 0c1 <ENTICEMENT> 
+
+   button 275 164 2224 2117 1 0 16  
+   dtext 300 160 025 Evaluating Intelligence 
+   dtext 425 160 0c1 <EVALUATINGINTEL> 
+
+   button 275 184 2224 2117 1 0 17  
+   dtext 300 180 025 Fencing 
+   dtext 425 180 0c1 <FENCING> 
+
+   button 275 204 2224 2117 1 0 18  
+   dtext 300 200 025 Fishing 
+   dtext 425 200 0c1 <FISHING> 
+
+   button 150 364 2224 2117 1 0 19 // Goto 
+   dtext 175 360 0c1 Go To 
+   dtext 220 360 0c1 Page 2 
+   dtext 60 360 0c1 More Skills 
+
+   button 275 224 2224 2117 1 0 20  
+   dtext 300 220 025 Netherworld Lore 
+   dtext 425 220 0c1 <NETHERLORE> 
+
+   button 275 244 2224 2117 1 0 21  
+   dtext 300 240 025 Healing 
+   dtext 425 240 0c1 <HEALING> 
+
+   button 275 264 2224 2117 1 0 22  
+   dtext 300 260 025 Herding 
+   dtext 425 260 0c1 <HERDING> 
+
+   button 275 284 2224 2117 1 0 23  
+   dtext 300 280 025 Hiding 
+   dtext 425 280 0c1 <HIDING> 
+
+   button 275 304 2224 2117 1 0 24  
+   dtext 300 300 025 Inscription 
+   dtext 425 300 0c1 <INSCRIPTION> 
+
+   button 275 324 2224 2117 1 0 25  
+   dtext 300 320 025 Item ID 
+   dtext 425 320 0c1 <ITEMID> 
+
+   button 275 344 2224 2117 1 0 27  
+   dtext 300 340 025 Lock Picking 
+   dtext 425 340 0c1 <LOCKPICKING> 
+
+[DIALOG d_tar_tweak_1 BUTTON] 
+   ONBUTTON=2 
+      TRYREDUCE ALCHEMY
+   ONBUTTON=3 
+      TRYREDUCE ANATOMY
+   ONBUTTON=4 
+      TRYREDUCE ANIMALLORE
+   ONBUTTON=5 
+      TRYREDUCE ARCHERY
+   ONBUTTON=6 
+      TRYREDUCE ARMSLORE
+   ONBUTTON=7 
+      TRYREDUCE UNUSED
+   ONBUTTON=8 
+      TRYREDUCE BLACKSMITHING
+   ONBUTTON=9 
+      TRYREDUCE BOWCRAFT
+   ONBUTTON=10 
+      TRYREDUCE SURVIVAL
+   ONBUTTON=11 
+      TRYREDUCE CARPENTRY
+   ONBUTTON=12 
+      TRYREDUCE CARTOGRAPHY
+   ONBUTTON=13 
+      TRYREDUCE COOKING
+   ONBUTTON=14 
+      TRYREDUCE DETECTION
+   ONBUTTON=15 
+      TRYREDUCE ENTICEMENT
+   ONBUTTON=16 
+      TRYREDUCE EVALUATINGINTEL
+   ONBUTTON=17 
+      TRYREDUCE FENCING
+   ONBUTTON=18 
+      TRYREDUCE FISHING
+   ONBUTTON=19 
+      dialog d_tar_tweak_3 
+   ONBUTTON=20 
+      TRYREDUCE NETHERLORE
+   ONBUTTON=21 
+      TRYREDUCE HEALING
+   ONBUTTON=22 
+      TRYREDUCE HERDING
+   ONBUTTON=23 
+      TRYREDUCE HIDING
+   ONBUTTON=24 
+      TRYREDUCE INSCRIPTION
+   ONBUTTON=25 
+      TRYREDUCE ITEMID
+   ONBUTTON=26 
+      TRYREDUCE TAMING
+   ONBUTTON=27 
+      TRYREDUCE LOCKPICKING
+   ONBUTTON=50 
+      dialog d_charprop1 
+   ONBUTTON=51 
+      dialog d_tar_tweak_1 
+   ONBUTTON=52 
+      dialog d_tar_tweak_2 
+   ONBUTTON=53
+      dialog d_tar_tweak_flags 
+
+[DIALOG d_tar_tweak_1 TEXT] 
+
+[DIALOG d_tar_tweak_3] 
+1,1
+//resizepic 1 1 2620 500 430 // Background
+resizepic 0 0 2600 500 400 // Curved Grey background 
+//checkertrans 5 5 500 430
+
+PAGE 0 
+   dtext 25 50 025 Account:
+   dtext 100 50 0c1 <ACCOUNT> 
+   dtext 250 50 025 Serial:
+   dtext 315 50 0c1 <UID> 
+
+PAGE 1 
+   button 25 74 5031 5031 1 0 50 
+   dtext 32 73 33 General Info 
+   button 140 74 5031 5031 1 0 51
+   dtext 165 73 33 Skills 
+   button 255 74 5031 5031 1 0 52
+   dtext 270 73 33 Misc Info
+   button 370 74 5031 5031 1 0 53 
+   dtext 400 73 33 Flags
+
+   button 25 104 2224 2117 1 0 2 
+   dtext 50 100 025 Lumberjacking 
+   dtext 175 100 0c1 <LUMBERJACKING>
+
+   button 25 124 2224 2117 1 0 3 
+   dtext 50 120 025 Mace Fighting 
+   dtext 175 120 0c1 <MACEFIGHTING> 
+
+   button 25 144 2224 2117 1 0 4  
+   dtext 50 140 025 Magery 
+   dtext 175 140 0c1 <MAGERY>
+
+   button 25 164 2224 2117 1 0 26 
+   dtext 50 160 025 Meditation 
+   dtext 175 160 0c1 <MEDITATION>
+
+   button 25 184 2224 2117 1 0 5 
+   dtext 50 180 025 Mining 
+   dtext 175 180 0c1 <MINING>
+
+   button 25 204 2224 2117 1 0 6 
+   dtext 50 200 025 Musicianship
+   dtext 175 200 0c1 <MUSICIANSHIP> 
+
+   button 25 224 2224 2117 1 0 7 
+   dtext 50 220 025 Parrying 
+   dtext 175 220 0c1 <PARRYING>
+
+   button 25 244 2224 2117 1 0 8  
+   dtext 50 240 025 Peacemaking 
+   dtext 175 240 0c1 <PEACEMAKING>
+
+   button 25 264 2224 2117 1 0 9 
+   dtext 50 260 025 Poisoning 
+   dtext 175 260 0c1 <POISONING>
+
+   button 25 284 2224 2117 1 0 10 
+   dtext 50 280 025 Provocation 
+   dtext 175 280 0c1 <PROVOCATION>
+
+   button 25 304 2224 2117 1 0 11 
+   dtext 50 300 025 Magic Resist
+   dtext 175 300 0c1 <MAGICRESISTANCE> 
+
+   button 25 324 2224 2117 1 0 12 
+   dtext 50 320 025 Unused1 
+   dtext 175 320 0c1 <UNUSED1> 
+
+   button 275 104 2224 2117 1 0 13
+   dtext 300 100 025 Snooping 
+   dtext 425 100 0c1 <SNOOPING>
+
+   button 275 124 2224 2117 1 0 14 
+   dtext 300 120 025 Unused 2 
+   dtext 425 120 0c1 <UNUSED2> 
+
+   button 275 144 2224 2117 1 0 15
+   dtext 300 140 025 Stealing 
+   dtext 425 140 0c1 <STEALING>
+
+   button 275 164 2224 2117 1 0 16 
+   dtext 300 160 025 Stealth 
+   dtext 425 160 0c1 <STEALTH>
+
+   button 275 184 2224 2117 1 0 17
+   dtext 300 180 025 Swordsmanship 
+   dtext 425 180 0c1 <SWORDSMANSHIP>
+
+   button 275 204 2224 2117 1 0 18
+   dtext 300 200 025 Tactics 
+   dtext 425 200 0c1 <TACTICS>
+
+   button 150 364 2224 2117 1 0 19
+   dtext 175 360 0c1 Go To
+   dtext 220 360 0c1 Page 1 
+   dtext 60 360 0c1 More Skills 
+
+   button 275 224 2224 2117 1 0 20
+   dtext 300 220 025 Tailoring 
+   dtext 425 220 0c1 <TAILORING> 
+
+   button 275 244 2224 2117 1 0 21
+   dtext 300 240 025 Herb Lore 
+   dtext 425 240 0c1 <HERBLORE>
+
+   button 275 264 2224 2117 1 0 22
+   dtext 300 260 025 Tinkering 
+   dtext 425 260 0c1 <TINKERING>
+
+   button 275 284 2224 2117 1 0 23 
+   dtext 300 280 025 Tracking 
+   dtext 425 280 0c1 <TRACKING>
+
+   button 275 304 2224 2117 1 0 24
+   dtext 300 300 025 Masonry
+   dtext 425 300 0c1 <MASONRY>
+
+   button 275 324 2224 2117 1 0 25
+   dtext 300 320 025 Wrestling 
+   dtext 425 320 0c1 <WRESTLING>
+
+   button 275 344 2224 2117 1 0 30
+   dtext 300 340 025 Necromancy 
+   dtext 425 340 0c1 <NECROMANCY>
+
+[DIALOG d_tar_tweak_3 BUTTON] 
+   ONBUTTON=2 
+      TRYREDUCE LUMBERJACKING
+   ONBUTTON=3 
+      TRYREDUCE MACEFIGHTING
+   ONBUTTON=4 
+      TRYREDUCE MAGERY
+   ONBUTTON=5 
+      TRYREDUCE MINING
+   ONBUTTON=6 
+      TRYREDUCE MUSICIANSHIP
+   ONBUTTON=7 
+      TRYREDUCE PARRYING
+   ONBUTTON=8 
+      TRYREDUCE PEACEMAKING
+   ONBUTTON=9 
+      TRYREDUCE POISONING
+   ONBUTTON=10 
+      TRYREDUCE PROVOCATION
+   ONBUTTON=11 
+   TRYREDUCE MAGICRESISTANCE
+   ONBUTTON=12 
+      TRYREDUCE UNUSED1
+   ONBUTTON=13 
+      TRYREDUCE SNOOPING
+   ONBUTTON=14 
+      TRYREDUCE UNUSED2
+   ONBUTTON=15 
+      TRYREDUCE STEALING
+   ONBUTTON=16 
+      TRYREDUCE STEALTH
+   ONBUTTON=17 
+      TRYREDUCE SWORDSMANSHIP
+   ONBUTTON=18 
+      TRYREDUCE TACTICS
+   ONBUTTON=19 
+      dialog d_tar_tweak_1 
+   ONBUTTON=20 
+      TRYREDUCE TAILORING
+   ONBUTTON=21 
+      TRYREDUCE HERBLORE
+   ONBUTTON=22 
+      TRYREDUCE TINKERING
+   ONBUTTON=23 
+      TRYREDUCE TRACKING
+   ONBUTTON=24 
+      TRYREDUCE Masonry
+   ONBUTTON=25 
+      TRYREDUCE WRESTLING
+   ONBUTTON=26 
+      TRYREDUCE MEDITATION
+   ONBUTTON=27 
+      TRYREDUCE LOCKPICKING
+   ONBUTTON=30 
+      TRYREDUCE NECROMANCY
+   ONBUTTON=50 
+      dialog d_charprop1 
+   ONBUTTON=51 
+      dialog d_tar_tweak_1 
+   ONBUTTON=52 
+      dialog d_tar_tweak_2 
+   ONBUTTON=53 
+      dialog d_tar_tweak_flags 
+
+[DIALOG d_tar_tweak_3 TEXT]
+
+[DIALOG d_tar_tweak_2] 
+1,1
+//resizepic 1 1 2620 500 430 // Background
+resizepic 0 0 2600 500 400 // Curved Grey background 
+//checkertrans 5 5 500 430
+
+PAGE 0 
+   dtext 25 50 025 Account:
+   dtext 100 50 0c1 <ACCOUNT> 
+   dtext 250 50 025 Serial:
+   dtext 315 50 0c1 <UID> 
+
+PAGE 1 
+   button 25 74 5031 5031 1 0 50 
+   dtext 32 73 025 General Info 
+   button 140 74 5031 5031 1 0 51
+   dtext 165 73 025 Skills 
+   button 255 74 5031 5031 1 0 52
+   dtext 270 73 025 Misc Info
+   button 370 74 5031 5031 1 0 53 
+   dtext 400 73 025 Flags
+
+   button 25 104 2224 2117 1 0 2  
+   dtext 50 100 025 Comment 0 
+   dtext 128 100 0c1 <TAG.COMMENT0> 
+
+   button 25 124 2224 2117 1 0 3 
+   dtext 50 120 025 Comment 1 
+   dtext 128 120 0c1 <TAG.COMMENT1> 
+
+   button 25 144 2224 2117 1 0 4  
+   dtext 50 140 025 Comment 2 
+   dtext 128 140 0c1 <TAG.COMMENT2> 
+
+   button 25 164 2224 2117 1 0 5  
+   dtext 50 160 025 Comment 3 
+   dtext 128 160 0c1 <TAG.COMMENT3> 
+
+   button 25 184 2224 2117 1 0 6  
+   dtext 50 180 025 Comment 4 
+   dtext 128 180 0c1 <TAG.COMMENT4> 
+
+   button 25 204 2224 2117 1 0 7  
+   dtext 50 200 025 Comment 5  
+   dtext 128 200 0c1 <TAG.COMMENT5>
+
+   button 25 224 2224 2117 1 0 8  
+   dtext 50 220 025 Comment 6 
+   dtext 128 220 0c1 <TAG.COMMENT6>  
+
+   button 25 244 2224 2117 1 0 9  
+   dtext 50 240 025 Comment 7  
+   dtext 128 240 0c1 <TAG.COMMENT7> 
+
+   button 25 264 2224 2117 1 0 10  
+   dtext 50 260 025 Comment 8 
+   dtext 128 260 0c1 <TAG.COMMENT8>
+ 
+   button 25 284 2224 2117 1 0 11 
+   dtext 50 280 025 Comment 9 
+   dtext 128 280 0c1 <TAG.COMMENT9>  
+
+   dtext 50 320 025 Guild Name: 
+   dtext 50 340 025 Guildmaster: 
+   dtext 140 320 0c1 <src.targ.memoryfindtype.memory_guild.link.name> 
+   dtext 140 340 0c1 <src.targ.memoryfindtype.memory_guild.link.master>  
+
+[DIALOG d_tar_tweak_2 BUTTON] 
+   ONBUTTON=2 
+      SRC.GUMP_PLEV_CHECK
+
+      TRYP 2 INPDLG=TAG.COMMENT0 30 
+   ONBUTTON=3 
+      SRC.GUMP_PLEV_CHECK
+
+      TRYP 2 INPDLG=TAG.COMMENT1 30 
+   ONBUTTON=4 
+      SRC.GUMP_PLEV_CHECK
+
+      TRYP 2 INPDLG=TAG.COMMENT2 30 
+   ONBUTTON=5 
+      SRC.GUMP_PLEV_CHECK
+
+      TRYP 2 INPDLG=TAG.COMMENT3 30 
+   ONBUTTON=6 
+      SRC.GUMP_PLEV_CHECK
+
+      TRYP 2 INPDLG=TAG.COMMENT4 30 
+   ONBUTTON=7 
+      SRC.GUMP_PLEV_CHECK
+
+      TRYP 2 INPDLG=TAG.COMMENT5 30 
+   ONBUTTON=8 
+      SRC.GUMP_PLEV_CHECK
+
+      TRYP 2 INPDLG=TAG.COMMENT6 30 
+   ONBUTTON=9 
+      SRC.GUMP_PLEV_CHECK
+
+      TRYP 2 INPDLG=TAG.COMMENT7 30 
+   ONBUTTON=10 
+      SRC.GUMP_PLEV_CHECK
+
+      TRYP 2 INPDLG=TAG.COMMENT8 30 
+   ONBUTTON=11 
+      SRC.GUMP_PLEV_CHECK
+
+      TRYP 2 INPDLG=TAG.COMMENT9 30 
+   ONBUTTON=50 
+      dialog d_charprop1 
+   ONBUTTON=51 
+      dialog d_tar_tweak_1 
+   ONBUTTON=52 
+      dialog d_tar_tweak_2 
+   ONBUTTON=53 
+      dialog d_tar_tweak_flags 
+
+[DIALOG d_tar_tweak_2 TEXT] 
+
+
+[DIALOG d_tar_tweak_flags]
+1,1
+//resizepic 1 1 2620 500 430 // Background
+resizepic 0 0 2600 500 400 // Curved Grey background 
+//checkertrans 5 5 500 430
+
+PAGE 0 
+   dtext 25 50 025 Account:
+   dtext 100 50 0c1 <ACCOUNT> 
+   dtext 250 50 025 Serial:
+   dtext 315 50 0c1 <UID> 
+
+PAGE 1 
+   button 25 74 5031 5031 1 0 50 
+   dtext 32 73 025 General Info 
+   button 140 74 5031 5031 1 0 51
+   dtext 165 73 025 Skills 
+   button 255 74 5031 5031 1 0 52
+   dtext 270 73 025 Misc Info
+   button 370 74 5031 5031 1 0 53
+   dtext 400 73 025 Flags
+
+   dtext 25 100 025 Current Flags: 
+   dtext 130 100 0c1 <src.targ.flags> 
+ 
+
+   button 40 124 2224 2117 1 0 1 
+   dtext 60 120 025 Invulnerable 
+   dtext 200 120 0c1 <eval (<src.targ.flags>&01)==01> 
+
+   dtext 60 140 025 Dead 
+   dtext 200 140 0c1 <eval (<src.targ.flags>&02)==02> 
+
+   button 40 164 2224 2117 1 0 2 
+   dtext 60 160 025 Frozen 
+   dtext 200 160 0c1 <eval (<src.targ.flags>&04)==04> 
+ 
+   button 40 184 2224 2117 1 0 3 
+   dtext 60 180 025 Invisible 
+   dtext 200 180 0c1 <eval (<src.targ.flags>&08)==08> 
+ 
+   dtext 60 200 025 Sleeping 
+   dtext 200 200 0c1 <eval (<src.targ.flags>&010)==010> 
+ 
+   button 40 224 2224 2117 1 0 4 
+   dtext 60 220 025 Warmode 
+   dtext 200 220 0c1 <eval (<src.targ.flags>&020)==020> 
+
+   dtext 60 240 025 Reactive Armor 
+   dtext 200 240 0c1 <eval (<src.targ.flags>&040)==040>
+  
+   dtext 60 260 025 Poisoned 
+   dtext 200 260 0c1 <eval (<src.targ.flags>&080)==080>  
+ 
+   button 40 284 2224 2117 1 0 5 
+   dtext 60 280 025 Nightsight 
+   dtext 200 280 0c1 <eval (<src.targ.flags>&0100)==0100> 
+
+   dtext 60 300 025 Magic Reflection 
+   dtext 200 300 0c1 <eval (<src.targ.flags>&0200)==0200> 
+
+   dtext 60 320 025 Polymorph 
+   dtext 200 320 0c1 <eval (<src.targ.flags>&0400)==0400> 
+
+   dtext 60 340 025 Incognito 
+   dtext 200 340 0c1 <eval (<src.targ.flags>&0800)==0800> 
+  
+   button 40 364 2224 2117 1 0 6 
+   dtext 60 360 025 Spirit Speak 
+   dtext 200 360 0c1 <eval (<src.targ.flags>&01000)==01000> 
+
+   dtext 60 380 025 Insubstantial? 
+   dtext 200 380 0c1 <eval (<src.targ.flags>&02000)==02000> 
+
+   button 40 404 2224 2117 1 0 7 
+   dtext 60 400 025 Emote Action? 
+   dtext 200 400 0c1 <eval (<src.targ.flags>&04000)==04000> 
+
+   dtext 300 100 025 Has Shield 
+   dtext 440 100 0c1 <eval (<src.targ.flags>&010000)==010000> 
+
+   dtext 300 120 025 Script Play 
+   dtext 440 120 0c1 <eval (<src.targ.flags>&020000)==020000> 
+
+   button 280 144 2224 2117 1 0 8 
+   dtext 300 140 025 Stone 
+   dtext 440 140 0c1 <eval (<src.targ.flags>&040000)==040000> 
+
+   dtext 300 160 025 Script Recording? 
+   dtext 440 160 0c1 <eval (<src.targ.flags>&080000)==080000> 
+
+   dtext 300 180 025 Fly 
+   dtext 440 180 0c1 <eval (<src.targ.flags>&0100000)==0100000> 
+
+   dtext 300 200 025 Stat Effect 
+   dtext 440 200 0c1 <eval (<src.targ.flags>&0200000)==0200000> 
+ 
+   button 280 224 2224 2117 1 0 9 
+   dtext 300 220 025 Hallucinating 
+   dtext 440 220 0c1 <eval (<src.targ.flags>&0400000)==0400000> 
+  
+   dtext 300 240 025 Hidden 
+   dtext 440 240 0c1 <eval (<src.targ.flags>&0800000)==0800000> 
+
+   dtext 300 260 025 Indoors? 
+   dtext 440 260 0c1 <eval (<src.targ.flags>&01000000)==01000000> 
+
+   dtext 300 280 025 Criminal 
+   dtext 440 280 0c1 <eval (<src.targ.flags>&02000000)==02000000> 
+
+   dtext 300 300 025 Conjured 
+   dtext 440 300 0c1 <eval (<src.targ.flags>&04000000)==04000000> 
+ 
+   dtext 300 320 025 Pet 
+   dtext 440 320 0c1 <eval (<src.targ.flags>&08000000)==08000000> 
+
+   dtext 300 340 025 Spawned 
+   dtext 440 340 0c1 <eval (<src.targ.flags>&010000000)==010000000>
+ 
+   dtext 300 360 025 Save Parity? 
+   dtext 440 360 0c1 <eval (<src.targ.flags>&020000000)==020000000> 
+
+   dtext 300 380 025 Ridden? 
+   dtext 440 380 0c1 <eval (<src.targ.flags>&040000000)==040000000> 
+
+   dtext 300 400 025 On Horse 
+   dtext 440 400 0c1 <eval (<src.targ.flags>&080000000)==080000000> 
+
+
+[DIALOG d_tar_tweak_flags BUTTON] 
+   ONBUTTON=1 
+      SRC.GUMP_PLEV_CHECK
+   IF (<SRC.ACCOUNT.PLEVEL> > 3)
+      IF (<eval (<src.targ.flags>&01)==01>)
+               src.targ.flags=<src.targ.flags>&~01
+            ELSE
+               src.targ.flags=<src.targ.flags>|01
+            ENDIF
+      src.targ.update
+   ELSE
+   	SRC.SYSMESSAGE This for GM's only
+   ENDIF
+      
+   ONBUTTON=2
+      SRC.GUMP_PLEV_CHECK
+
+      IF (<eval (<src.targ.flags>&04)==04>)
+         src.targ.flags=<src.targ.flags>&~04
+      ELSE
+         src.targ.flags=<src.targ.flags>|04
+      ENDIF
+      src.targ.update
+   ONBUTTON=3
+      SRC.GUMP_PLEV_CHECK
+
+      IF (<eval (<src.targ.flags>&08)==08>)
+         src.targ.flags=<src.targ.flags>&~08
+      ELSE
+         src.targ.flags=<src.targ.flags>|08
+      ENDIF
+      src.targ.update
+   ONBUTTON=4
+      SRC.GUMP_PLEV_CHECK
+
+      IF (<eval (<src.targ.flags>&020)==020>)
+         src.targ.flags=<src.targ.flags>&~020
+      ELSE
+         src.targ.flags=<src.targ.flags>|020
+      ENDIF
+      src.targ.update
+   ONBUTTON=5
+      SRC.GUMP_PLEV_CHECK
+
+      IF (<eval (<src.targ.flags>&0100)==0100>)
+         src.targ.flags=<src.targ.flags>&~0100
+      ELSE
+         src.targ.flags=<src.targ.flags>|0100
+      ENDIF
+      src.targ.update
+   ONBUTTON=6
+      SRC.GUMP_PLEV_CHECK
+
+      IF (<eval (<src.targ.flags>&01000)==01000>)
+         src.targ.flags=<src.targ.flags>&~01000
+      ELSE
+         src.targ.flags=<src.targ.flags>|01000
+      ENDIF
+      src.targ.update
+   ONBUTTON=7
+      SRC.GUMP_PLEV_CHECK
+
+      IF (<eval (<src.targ.flags>&04000)==04000>)
+         src.targ.flags=<src.targ.flags>&~04000
+      ELSE
+         src.targ.flags=<src.targ.flags>|04000
+      ENDIF
+      src.targ.update
+   ONBUTTON=8
+      SRC.GUMP_PLEV_CHECK
+
+      IF (<eval (<src.targ.flags>&040000)==040000>)
+         src.targ.flags=<src.targ.flags>&~040000
+      ELSE
+         src.targ.flags=<src.targ.flags>|040000
+      ENDIF
+      src.targ.update
+   ONBUTTON=9
+      SRC.GUMP_PLEV_CHECK
+
+      IF (<eval (<src.targ.flags>&0400000)==0400000>)
+         src.targ.flags=<src.targ.flags>&~0400000
+      ELSE
+         src.targ.flags=<src.targ.flags>|0400000
+      ENDIF
+      src.targ.update
+   ONBUTTON=50 
+      dialog d_charprop1 
+   ONBUTTON=51 
+      dialog d_tar_tweak_1 
+   ONBUTTON=52 
+      dialog d_tar_tweak_2 
+   ONBUTTON=53 
+      dialog d_tar_tweak_flags 
+
+[DIALOG d_tar_tweak_flags TEXT] 
+
+
+[DIALOG d_comment_tweak_2] 
+1,1
+resizepic 0 0 2600 500 400 // Curved Grey background 
+
+PAGE 0 
+   dtext 25 50 025 Account:
+   dtext 100 50 0c1 <ACCOUNT> 
+   dtext 250 50 025 Serial:
+   dtext 315 50 0c1 <UID> 
+
+PAGE 1 
+
+   button 25 104 2224 2117 1 0 2  
+   dtext 50 100 025 Comment 0 
+   dtext 128 100 0c1 <TAG.COMMENT0> 
+
+   button 25 124 2224 2117 1 0 3 
+   dtext 50 120 025 Comment 1 
+   dtext 128 120 0c1 <TAG.COMMENT1> 
+
+   button 25 144 2224 2117 1 0 4  
+   dtext 50 140 025 Comment 2 
+   dtext 128 140 0c1 <TAG.COMMENT2> 
+
+   button 25 164 2224 2117 1 0 5  
+   dtext 50 160 025 Comment 3 
+   dtext 128 160 0c1 <TAG.COMMENT3> 
+
+   button 25 184 2224 2117 1 0 6  
+   dtext 50 180 025 Comment 4 
+   dtext 128 180 0c1 <TAG.COMMENT4> 
+
+   button 25 204 2224 2117 1 0 7  
+   dtext 50 200 025 Comment 5  
+   dtext 128 200 0c1 <TAG.COMMENT5>
+
+   button 25 224 2224 2117 1 0 8  
+   dtext 50 220 025 Comment 6 
+   dtext 128 220 0c1 <TAG.COMMENT6>  
+
+   button 25 244 2224 2117 1 0 9  
+   dtext 50 240 025 Comment 7  
+   dtext 128 240 0c1 <TAG.COMMENT7> 
+
+   button 25 264 2224 2117 1 0 10  
+   dtext 50 260 025 Comment 8 
+   dtext 128 260 0c1 <TAG.COMMENT8>
+ 
+   button 25 284 2224 2117 1 0 11 
+   dtext 50 280 025 Comment 9 
+   dtext 128 280 0c1 <TAG.COMMENT9>  
+
+[DIALOG d_comment_tweak_2 BUTTON] 
+   ONBUTTON=2 
+      SRC.GUMP_PLEV_CHECK
+
+      TRYP 2 INPDLG=TAG.COMMENT0 30 
+   ONBUTTON=3 
+      SRC.GUMP_PLEV_CHECK
+
+      TRYP 2 INPDLG=TAG.COMMENT1 30 
+   ONBUTTON=4 
+      SRC.GUMP_PLEV_CHECK
+
+      TRYP 2 INPDLG=TAG.COMMENT2 30 
+   ONBUTTON=5 
+      SRC.GUMP_PLEV_CHECK
+
+      TRYP 2 INPDLG=TAG.COMMENT3 30 
+   ONBUTTON=6 
+      SRC.GUMP_PLEV_CHECK
+
+      TRYP 2 INPDLG=TAG.COMMENT4 30 
+   ONBUTTON=7 
+      SRC.GUMP_PLEV_CHECK
+
+      TRYP 2 INPDLG=TAG.COMMENT5 30 
+   ONBUTTON=8 
+      SRC.GUMP_PLEV_CHECK
+
+      TRYP 2 INPDLG=TAG.COMMENT6 30 
+   ONBUTTON=9 
+      SRC.GUMP_PLEV_CHECK
+
+      TRYP 2 INPDLG=TAG.COMMENT7 30 
+   ONBUTTON=10 
+      SRC.GUMP_PLEV_CHECK
+
+      TRYP 2 INPDLG=TAG.COMMENT8 30 
+   ONBUTTON=11 
+      SRC.GUMP_PLEV_CHECK
+
+      TRYP 2 INPDLG=TAG.COMMENT9 30 
+
+[DIALOG d_comment_tweak_2 TEXT] 
+
+[DIALOG d_afkinfo] 
+1,1
+resizepic 0 0 2600 500 400 // Curved Grey background 
+
+
+PAGE 0 
+   dtext 25 35 025 Account:
+   dtext 100 35 0c1 <ACCOUNT> 
+   dtext 25 50 025 IP:
+   dtext 100 50 0c1 <ACCOUNT.LASTIP>
+   dtext 250 35 025 Client:
+   dtext 315 35 0c1 <CLIENTVERSION>
+   dtext 250 50 025 Serial:
+   dtext 315 50 0c1 <UID> 
+
+   IF ( strmatch("[a-z]*","<ACCOUNT>")
+      SERV.LOG <SRC.NAME>, on <SRC.ACCOUNT>, is getting info on <NAME>, <ACCOUNT>
+   ELSEIF ( strmatch("[0-9]*","<ACCOUNT>")
+      SERV.LOG <SRC.NAME>, on <SRC.ACCOUNT>, is getting info on <NAME>, <ACCOUNT>
+   ENDIF
+
+PAGE 1 
+   dtext 32 73 025 General Info 
+   dtext 165 73 025 Skills 
+   dtext 270 73 025 Misc Info
+   dtext 400 73 025 Flags
+
+   dtext  50 100 025 Name: 
+   dtext 150 100 0c1 <NAME>
+
+   dtext  50 120 025 Title: 
+   dtext 150 120 0c1 <TITLE>
+ 
+   dtext  50 140 025 Color: 
+   dtext 150 140 0c1 <COLOR> 
+
+   dtext  50 160 025 Oskin: 
+   dtext 150 160 0c1 <OSKIN> 
+
+   dtext  50 180 025 ID: 
+   dtext 150 180 0c1 <ID> 
+
+   dtext  50 200 025 Body: 
+   dtext 150 200 0c1 <BODY> 
+
+   dtext  50 220 025 OBody: 
+   dtext 150 220 0c1 <OBODY> 
+ 
+   dtext  50 240 025 Timer: 
+   dtext 150 240 0c1 <TIMER> 
+
+   dtext  50 260 025 P: 
+   dtext 150 260 0c1 <P> 
+
+   dtext  50 280 025 Home: 
+   dtext 150 280 0c1 <HOME> 
+
+   dtext  50 300 025 Action: 
+   dtext 150 300 0c1 <ACTION> 
+
+   dtext  50 320 025 Food: 
+   dtext 150 320 0c1 <FOOD> 
+
+   dtext 300 140 025 Karma: 
+   dtext 400 140 0c1 <KARMA>
+
+   dtext 300 160 025 Fame:  
+   dtext 400 160 0c1 <FAME> 
+
+   dtext 300 180 025 Skill Total: 
+   dtext 400 180 0c1 <SKILLTOTAL> 
+
+   dtext 300 200 025 Bank Balance: 
+   dtext 400 200 0c1 <BANKBALANCE> 
+
+   dtext 300 220 025 STR:   
+   dtext 400 220 0c1 <STR> 
+   dtext 300 240 025 DEX:   
+   dtext 400 240 0c1 <DEX> 
+
+   dtext 300 260 025 INT:    
+   dtext 400 260 0c1 <INT> 
+ 
+   dtext 300 280 025 Hits:   
+   dtext 400 280 0c1 <HITS> 
+
+   dtext 300 300 025 Stam:
+   dtext 400 300 0c1 <STAM> 
+ 
+   dtext 300 320 025 Mana:
+   dtext 400 320 0c1 <MANA> 
+
+   dtext 300 340 025 Kills: 
+   dtext 400 340 0c1 <KILLS> 
+
+[DIALOG d_afkinfo TEXT]
+
+[EOF]

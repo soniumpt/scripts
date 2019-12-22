@@ -1,0 +1,249 @@
+[EOF]
+
+//fxt2 03728,09d6,02
+
+[EVENTS e_paragon]
+
+ON=@CLICK
+MESSAGE @07a1 [Paragon]
+
+ON=@DEATH
+
+LOCAL.PARAGON.LOOT = <EVAL <SRC.TAG.PARAGON.LOOT>>
+
+SERV.NEWITEM i_gold
+NEW.AMOUNT (<EVAL <SRC.TAG.PARAGON.LOOT>> * 600)
+NEW.CONT <SRC>
+
+SERV.NEWITEM i_reward_ticket
+NEW.AMOUNT (<EVAL <SRC.TAG.PARAGON.LOOT>> * 150)
+NEW.CONT <SRC>
+
+IF (RAND(100) > 30)
+SERV.NEWITEM random_UPPER_MERC
+NEW.CONT <SRC>
+ENDIF
+
+IF (RAND(100) > 30)
+SERV.NEWITEM random_LOWER_MERC
+NEW.CONT <SRC>
+ENDIF
+
+IF (RAND(100) > 30)
+SERV.NEWITEM random_LOWER_MERC
+NEW.CONT <SRC>
+ENDIF
+
+IF (RAND(100) < (<dLOCAL.PARAGON.LOOT>))
+SERV.NEWITEM random_rare_2
+NEW.CONT <SRC>
+ENDIF
+
+IF (RAND(100) < (<dLOCAL.PARAGON.LOOT> - 20))
+SERV.NEWITEM random_rare_3
+NEW.CONT <SRC>
+ENDIF
+
+IF (RAND(100) < (<dLOCAL.PARAGON.LOOT> - 20))
+SERV.NEWITEM random_user_ar_low
+NEW.CONT <SRC>
+ENDIF
+
+IF (RAND(100) < (<dLOCAL.PARAGON.LOOT> - 10))
+SERV.NEWITEM ingot_random_filthy_rich
+NEW.CONT <SRC>
+ENDIF
+
+IF (RAND(100) > 30)
+SERV.NEWITEM i_luck_stone
+NEW.CONT <SRC>
+ENDIF
+
+SERV.NEWITEM random_potion
+NEW.CONT <SRC>
+SERV.NEWITEM random_potion
+NEW.CONT <SRC>
+SERV.NEWITEM random_potion
+NEW.CONT <SRC>
+SERV.NEWITEM ingot_random_average
+NEW.CONT <SRC>
+SERV.NEWITEM ingot_random_average
+NEW.CONT <SRC>
+SERV.NEWITEM ingot_random_average
+NEW.CONT <SRC>
+
+// SAY <dLOCAL.PARAGON.LOOT>
+
+
+[FUNCTION F_CREATE_PARAGON125a]
+
+//moved the below to k_npc_events for better logic and less problems.
+
+// IF !(STRMATCH(*Shame*,<REGION.NAME>))
+//  IF !(<FLAGS>&STATF_PET)
+//   IF (((<FLAGS>&statf_spawned) && (!(<ISEVENT.e_paragon>))) || (<ARGN1>))
+//    IF (<MAXHITS> > 10)
+//    IF (<NPC> == brain_monster) || (<NPC> == brain_dragon)
+//      IF !(<FLAGS>&STATF_CONJURED)
+//       IF (RAND(100) < 5)
+
+SERV.ALLCLIENTS SYSMESSAGE @07a1 A Paragon was born!
+
+COLOR=09d6
+TAG.PARAGON.LOOT = (<EVAL <OSTR> + <ODEX> + <OINT>>/100)
+
+OSTR += <EVAL ((<OSTR>*20)/100)> // was *10
+ODEX += <EVAL ((<ODEX>*20)/100)>
+OINT += <EVAL ((<OINT>*20)/100)>
+MAXHITS *= 6			// was *5
+HITS=<MAXHITS>
+STAM=<MAXSTAM>
+MANA=<MAXMANA>
+KARMA += <EVAL ((<KARMA>*40)/100)>
+FAME += <EVAL ((<FAME>*40)/100)>
+
+TAG.OVERRIDE.MOVERATE=<EVAL <MOVERATE>-((40*<MOVERATE>)/100)>
+ IF (<TAG0.OVERRIDE.MOVERATE> < 20)
+TAG.OVERRIDE.MOVERATE=20
+  ENDIF
+
+ FOR 0 54
+ IF (<I.<SERV.SKILL.<dLOCAL._FOR>.KEY>>)
+TRY I.<SERV.SKILL.<dLOCAL._FOR>.KEY>=<EVAL ((<I.<SERV.SKILL.<dLOCAL._FOR>.KEY>>*200)/100)> // was *120
+  ENDIF
+   ENDFOR
+NPC=brain_monster
+TAG.OVERRIDE.REGENVAL_0=10
+TAG.OVERRIDE.REGENVAL_2=10
+EVENTS +e_paragon
+EVENTS +e_resist_poison
+EVENTS +e_dispeller
+fxt2 03728,09d6,02				//effect
+TIMERF 43200, paragon_remove
+// ENDIF
+//  ENDIF
+//   ENDIF
+//    ENDIF
+//     ENDIF
+//      ENDIF
+//       ENDIF
+
+
+[FUNCTION paragon_remove]
+EMOTE suddenly disappearing.
+FORPLAYERS 20
+SYSMESSAGE @07a1 The Paragon monster has returned to its normal state.
+ENDFOR
+REMOVE
+RETURN 1
+
+
+// Artifacts - Special Decoration Loots
+
+[ITEMDEF i_orc_chief_helm]
+ID=i_helm_orc
+NAME=Orc Chief Helm
+REQSTR=30
+ARMOR=20
+
+ON=@Create
+COLOR=0798
+HITPOINTS=150
+
+ON=@CLICK
+MESSAGE @09d6 [Paragon Artifact]
+
+ON=@EQUIP
+SRC.MODSTR=(<SRC.MODSTR> +5)
+
+ON=@UNEQUIP
+SRC.MODSTR=(<SRC.MODSTR> -5)
+
+
+[ITEMDEF i_royal_guard_survival_knife]
+ID=i_knife_butcher
+NAME=Royal Guard Survival Knife
+REQSTR=2
+
+ON=@Create
+COLOR=09f3
+HITPOINTS=150
+
+ON=@CLICK
+MESSAGE @09d6 [Paragon Artifact]
+
+
+[ITEMDEF i_ophidianarchmage_statue]
+ID=i_pet_ophid_mage
+NAME=Ophidian Archmage Statue
+TYPE=T_NORMAL
+
+ON=@CLICK
+MESSAGE @09d6 [Paragon Artifact]
+
+
+[ITEMDEF i_ophidianwarrior_statue]
+ID=i_pet_ophid_war
+NAME=Ophidian Warrior Statue
+TYPE=T_NORMAL
+
+ON=@CLICK
+MESSAGE @09d6 [Paragon Artifact]
+
+
+//[ITEMDEF i_death_scythe]
+//ID=i_scythe
+//NAME=Shame's Grim Reaper Scythe
+
+//ON=@Create
+//COLOR=03c2
+
+//ON=@CLICK
+//MESSAGE @09d6 [Paragon Artifact]
+
+//ON=@EQUIP
+//RETURN 1
+
+
+[ITEMDEF i_necromancer_shroud]
+ID=i_hooded_shroud
+NAME=Necromancer Shroud
+
+ON=@Create
+COLOR=07b2
+
+ON=@CLICK
+MESSAGE @09d6 [Paragon Artifact]
+
+ON=@EQUIP
+RETURN 1
+
+
+[ITEMDEF i_harrower_evil_idol]
+ID=01f18
+NAME=Evil Idol
+
+ON=@CREATE
+ATTR=08
+
+ON=@CLICK
+MESSAGE @09d6 [Paragon Artifact]
+
+
+[ITEMDEF i_paragon_hunter_statue]
+ID=i_custom_statue19
+NAME=@09bf A Golden Statue of Hermes, The Paragon Hunter
+
+ON=@CREATE
+COLOR=09bf
+ATTR=08
+
+ON=@CLICK
+MESSAGE @09d6 [Paragon Artifact]
+
+[TEMPLATE tm_paragon_artifacts]
+CONTAINER=i_bag
+NAME=Paragon Artifact
+
+ITEM={i_custom_telescope 1 i_paragon_hunter_statue 1 i_harrower_evil_idol 1 i_necromancer_shroud 1 i_ophidianwarrior_statue 1 i_ophidianarchmage_statue 1 i_royal_guard_survival_knife 1 i_orc_chief_helm 1}
+

@@ -1,0 +1,268 @@
+[ITEMDEF i_dig_gravestone]
+ID=i_custom_tomb6
+NAME=tomb
+TYPE=T_SIGN_GUMP
+FLIP=1
+
+ON=@CREATE
+TIMER=5
+MORE2=0		//can not provoke
+
+ON=@TIMER
+MORE2=1		//can provoke
+TIMER=14400
+
+ON=@DCLICK
+
+IF (<MORE2> == 0)
+RED_SYSMSG You can not provoke this grave again too soon.
+RETURN 1
+ENDIF
+
+LOCAL.NECROCHANCE=(<EVAL RAND(500)>) + (<SRC.NECROMANCY>/10)
+// SAY (<EVAL <LOCAL.NECROCHANCE>>) //to get to know our chance in numbers.
+
+IF !(<SRC.FINDLAYER(LAYER_HAND1).BASEID> == i_pickaxe)
+RED_SYSMSG You need a pickaxe to dig this grave.
+RETURN 1
+ENDIF
+
+IF (<SRC.NECROMANCY> < 600)
+RED_SYSMSG You do not have enough Necromancy to mess with this grave.
+RETURN 1
+ENDIF
+
+IF (<SRC.FLAGS> & statf_hidden) || (<SRC.FLAGS> & statf_invisible)
+RED_SYSMSG You can not dig a grave while invisible.
+RETURN 1
+ENDIF
+
+IF (<DISTANCE> > 2 )
+RED_SYSMSG You are too far away.
+RETURN 1
+ENDIF
+
+SRC.ANIM 26
+
+IF (<LOCAL.NECROCHANCE>) >= 570
+necrodig_chest
+MORE2=0
+RETURN 1
+
+ELSEIF (<LOCAL.NECROCHANCE>) >= 550
+necrodig_decoration
+poison_all_strong_necromancy
+MORE2=0
+RETURN 1
+
+ELSEIF (<LOCAL.NECROCHANCE>) >= 400
+necrodig_reagents
+poison_all_strong_necromancy
+MORE2=0
+RETURN 1
+
+ELSEIF (<LOCAL.NECROCHANCE>) >= 300
+necrodig_summon
+MORE2=0
+RETURN 1
+
+ELSEIF (<LOCAL.NECROCHANCE>) >= 200
+necrodig_attack
+MORE2=0
+RETURN 1
+
+ELSE
+poison_all_strong_necromancy
+MORE2=0
+ENDIF
+RETURN 1
+
+// RANDOM FUNCTION //
+
+[FUNCTION poison_all_strong_necromancy]
+FORCHARS 10
+EFFECT 3, i_fx_smoke, 1, 12, 0, 60
+SPELLEFFECT S_POISON 5000,1,<uid>
+ENDIF
+ENDFOR
+
+[FUNCTION necrodig_attack]
+RED_SYSMSG You disrupted the graveyard. Everyone nearby is now against you!
+FORCHARS 15
+SERV.NEWITEM i_damager
+NEW.MORE1=<UID>
+NEW.LINK=<SRC.UID>
+NEW.P=<P>
+SRC.UPDATE
+ENDFOR
+
+[FUNCTION necrodig_summon]
+RED_SYSMSG Your presence was felt by the cemetery spirits. They were brought to you.
+SRC.NEWITEM {i_necrodig_monsters}
+SRC.ACT.P=<P>
+SRC.NEWITEM {i_necrodig_monsters}
+SRC.ACT.P=<P>
+SRC.NEWITEM {i_necrodig_monsters}
+SRC.ACT.P=<P>
+SRC.NEWITEM {i_necrodig_monsters}
+SRC.ACT.P=<P>
+SRC.NEWITEM {i_necrodig_monsters}
+SRC.ACT.P=<P>
+SRC.NEWITEM {i_necrodig_monsters}
+SRC.ACT.P=<P>
+SRC.NEWITEM {i_necrodig_monsters}
+SRC.ACT.P=<P>
+RETURN 1
+
+[ITEMDEF i_necrodig_monsters]
+ID=I_HOLE
+TYPE=T_SPAWN_CHAR
+
+ON=@Create
+MOREP=0,1,3
+MORE2=0
+TIMER=0
+ATTR=attr_move_never|attr_invis
+MORE1={ c_liche 1 c_m_liche_lord 1 c_m_mummy 1 c_m_skeleton_hero 1 c_m_skeletonarcher 1}
+
+ON=@TIMER
+IF (<ATTR> & attr_identified)
+IF <MORE2>
+TIMER = 50
+RETURN 1
+ENDIF
+REMOVE
+RETURN 1
+ENDIF
+ATTR = (<ATTR>|attr_identified)
+RETURN 0
+
+[FUNCTION necrodig_decoration]
+RED_SYSMSG Your pickaxe hit something. You managed to pull the bag with your hands.
+SERV.NEWITEM necromancy_decoration
+NEW.BOUNCE <SRC.UID>
+RETURN 1
+
+[FUNCTION necrodig_reagents]
+RED_SYSMSG Your pickaxe hit something. You managed to pull the bag with your hands.
+SERV.NEWITEM necromancy_reagents
+NEW.BOUNCE <SRC.UID>
+RETURN 1
+
+[FUNCTION necrodig_chest]
+RED_SYSMSG Your pickaxe hit something. You found a treasure!!!
+SRC.NEWITEM necrodig_chest
+SRC.ACT.P=<P>
+SRC.NEWITEM i_necrodig_monsters
+SRC.ACT.P=<P>
+SRC.NEWITEM i_necrodig_monsters
+SRC.ACT.P=<P>
+SRC.NEWITEM i_necrodig_monsters
+SRC.ACT.P=<P>
+SRC.NEWITEM i_necrodig_monsters
+SRC.ACT.P=<P>
+SRC.NEWITEM i_necrodig_monsters
+SRC.ACT.P=<P>
+SRC.NEWITEM i_necrodig_monsters
+SRC.ACT.P=<P>
+SRC.NEWITEM i_necrodig_monsters
+SRC.ACT.P=<P>
+RETURN 1
+
+[TEMPLATE necrodig_chest]
+CONTAINER=i_chest_necrodig
+ITEM=i_gold,{20000 30000}
+ITEM=necromancy_reagents
+ITEM=necromancy_reagents
+ITEM=necromancy_reagents
+ITEM=necromancy_decoration
+ITEM=RANDOM_AVERAGE_MAGIC_LOOT
+ITEM=random_SCROLL
+ITEM=random_SCROLL
+ITEM=random_SCROLL
+ITEM=random_SCROLL
+ITEM=random_SCROLL
+ITEM=random_SCROLL
+ITEM=i_gem_random
+ITEM=i_gem_random
+ITEM=i_gem_random
+ITEM=i_gem_random
+ITEM=i_gem_random
+ITEM=i_gem_random
+ITEM=i_gem_random
+ITEM=ingot_random_average
+ITEM=ingot_random_average
+ITEM=ingot_random_average
+ITEM=ingot_random_average
+ITEM=ingot_random_average
+ITEM=ingot_random_average
+ITEM=ingot_random_average
+ITEM=ingot_random_average
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=tm_treasuremaplvl3_bonus
+ITEM=tm_treasuremaplvl3_bonus
+ITEM={rare_magicals 1 0 40}
+
+
+[ITEMDEF i_chest_necrodig]
+ID=i_chest_metal
+
+ON=@CREATE
+ATTR=attr_static|attr_move_never
+TYPE=t_script
+TIMER=900
+COLOR=06b6
+
+ON=@DCLICK
+IF (<SRC.FLAGS> & statf_hidden)
+SRC.FLAGS = (<SRC.FLAGS> & ~statf_hidden)
+ENDIF
+
+IF (<SRC.FLAGS> & statf_invisible)
+SRC.FLAGS = (<SRC.FLAGS> & ~statf_invisible)
+SRC.FINDID.i_rune_invisibility.remove
+ENDIF
+
+IF (<TIMER> > 700)
+RED_SYSMSG You can not open the chest yet.
+RETURN 1
+
+ELSE
+TYPE=T_CONTAINER
+ATTR=attr_move_never|attr_decay
+TIMER=650
+RETURN 0
+ENDIF
+
+[TEMPLATE necromancy_decoration]
+CONTAINER=i_backpack
+ITEM={03cf3 1, 035a2 1, i_custom_clock 1, i_custom_alchemystuff3 1, 03cf4 1, 03cd0 1, 03caa 1, 03bc4 1, 03bc0 1, 03bc8 1, 03bc9 1}
+ITEM={03d09 1 0 10}
+
+
+[TEMPLATE necromancy_reagents]
+CONTAINER=i_backpack
+ITEM=i_reag_ectoplasm_vial,{8 10}
+ITEM=i_reag_heart_zombie,{5 10}
+ITEM=i_reag_blood_vial,{2 5}
+ITEM=i_reag_volcanic_ash,{5 10}
+ITEM=i_reag_dragons_heart,{0 2}
+ITEM=i_reag_brimstone,{2 5}
+ITEM=i_necro_skeletons,{0 1}
+ITEM=i_necro_zombies,{0 1}
+ITEM=i_skull_light,{0 1}
+ITEM=i_reag_fertile_dirt,{8 10}
+ITEM=i_reag_bone,{12 20}
+
+[EOF]

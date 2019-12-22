@@ -1,0 +1,116 @@
+[FUNCTION f_spell_is_aggressive]
+   VAR.f_spell_is_aggressive	= 1
+   VAR.is_dispel	= 0
+   if ( 0 )
+   elseif ( <argn> == 1 )	// clumsy
+   elseif ( <argn> == 3 )	// feeblemind
+   elseif ( <argn> == 5 )	// magic arrow
+   elseif ( <argn> == 8 )	// weaken
+   elseif ( <argn> == 12 )	// harm
+   elseif ( <argn> == 18 )	// fireball
+   elseif ( <argn> == 20 )	// poison
+   elseif ( <argn> == 27 )	// curse
+   elseif ( <argn> == 28 )	// - Fire Field
+   elseif ( <argn> == 30 )	// lightning
+   elseif ( <argn> == 31 )	// mana drain
+   elseif ( <argn> == 33 )	// - Blade of Spirits
+   elseif ( <argn> == 37 )	// mind blast
+   elseif ( <argn> == 38 )	// paralyze
+   elseif ( <argn> == 39 )	// - Poison Field
+   elseif ( <argn> == 40 )	// - Summon Creature
+   elseif ( <argn> == 41 )	// dispel
+      VAR.is_dispel	= 1
+   elseif ( <argn> == 42 )	// energy bolt
+   elseif ( <argn> == 43 )	// explosion
+   elseif ( <argn> == 46 )	// mass curse
+   elseif ( <argn> == 47 )	// paralyze field
+   elseif ( <argn> == 49 )	// chain lightning
+   elseif ( <argn> == 51 )	// flamestrike
+   elseif ( <argn> == 53 )	// mana vampire
+   elseif ( <argn> == 54 )	// mass dispel
+      VAR.is_dispel	= 1
+   elseif ( <argn> == 55 )	// meteor swarm
+   elseif ( <argn> == 57 )	// - Earthquake 
+   elseif ( <argn> == 58 )	// - Energy Vortex
+   elseif ( <argn> == 60 )	// - Air Elemental
+   elseif ( <argn> == 61 )	// - Summon Daemon  
+   elseif ( <argn> == 62 )	// - Earth Elemental
+   elseif ( <argn> == 63 )	// - Fire Elemental
+   elseif ( <argn> == 64 )	// - Water Elemental    
+   else
+      VAR.f_spell_is_aggressive	= 0
+   endif
+
+
+[FUNCTION f_magic_reflection]
+  VAR.f_magic_reflection	= 0
+
+  if !( <SRC.UID> == <UID> )
+     if ( <findid(i_rune_magic_reflection).uid> )
+        f_spell_is_aggressive <argn>
+        if ( <VAR.f_spell_is_aggressive> )
+           EMOTE reflect the spell
+           findid(i_rune_magic_reflection).remove
+
+           SRC.mimic_reflect <argn>
+	   EFFECT 3, i_fx_glow, 6, 15, 1
+	   if ( <NPC> & !<var.is_dispel> & !<SRC.ISGM> )
+	      attack
+	   endif
+           VAR.f_magic_reflection	= 1
+        endif
+     endif
+     return 0     
+  endif
+  
+  SRC.mimic_reflect <argn>
+  
+
+
+
+[FUNCTION mimic_reflect]
+   VAR.f_spell_is_aggressive	= 1
+   VAR.is_dispel	= 0
+   if ( 0 )
+   elseif ( <argn> == 1 )	// clumsy
+   elseif ( <argn> == 3 )	// feeblemind
+   elseif ( <argn> == 5 )	// magic arrow
+      DAMAGE	= <eval ( { 4 12 } )>
+      EFFECT	= 3, 036cb, 1, 8
+   elseif ( <argn> == 8 )	// weaken
+   elseif ( <argn> == 12 )	// harm
+      DAMAGE	= <eval ( { 10 18 } )>
+      EFFECT	= 3, 0374b, 6, 15
+   elseif ( <argn> == 18 )	// fireball
+      DAMAGE	= <eval ( { 12 20 } )>
+      EFFECT	= 3, 036cb, 1, 8
+   elseif ( <argn> == 20 )	// poison
+   elseif ( <argn> == 27 )	// curse
+   elseif ( <argn> == 30 )	// lightning
+      DAMAGE	= <eval ( { 12 25 } )>
+      EFFECT	= 1, i_fx_explosion_3, 6, 15, 1
+   elseif ( <argn> == 31 )	// mana drain
+   elseif ( <argn> == 37 )	// mind blast
+   elseif ( <argn> == 38 )	// paralyze
+   elseif ( <argn> == 41 )	// dispel
+      VAR.is_dispel	= 1
+   elseif ( <argn> == 42 )	// energy bolt
+      DAMAGE	= <eval ( { 28 35 } )>
+      EFFECT	= 3, 036cb, 1, 8
+   elseif ( <argn> == 43 )	// explosion
+   elseif ( <argn> == 46 )	// mass curse
+   elseif ( <argn> == 47 )	// paralyze field
+   elseif ( <argn> == 49 )	// chain lightning
+   elseif ( <argn> == 51 )	// flamestrike
+      DAMAGE	= <eval ( { 35 40 } )>
+      EFFECT	= 3, i_fire_column, 6, 15, 1
+   elseif ( <argn> == 53 )	// mana vampire
+   elseif ( <argn> == 54 )	// mass dispel
+      VAR.is_dispel	= 1
+   elseif ( <argn> == 55 )	// meteor swarm
+   else
+      VAR.f_spell_is_aggressive	= 0
+   endif
+
+
+[EOF]

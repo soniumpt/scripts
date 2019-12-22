@@ -1,0 +1,311 @@
+[ITEMDEF i_book_pet_10]
+ID	= i_book_of_truth
+NAME	= 10 Pet Storage Book
+TYPE	= t_script
+WEIGHT  = 1
+VALUE	= 2000
+RESOURCES = 1 i_hide, 1 i_thread, 10 i_scroll_blank, 1 i_scribe_powder
+SKILLMAKE=INSCRIPTION 150.0, ANIMALLORE 50.0, t_scribe_tools
+
+ON=@Create
+  COLOR	= 0
+  TAG.USESLOT=1
+
+  TAG.PET1_DEF=0
+  TAG.PET2_DEF=0
+  TAG.PET3_DEF=0
+  TAG.PET4_DEF=0
+  TAG.PET5_DEF=0
+  TAG.PET6_DEF=0
+  TAG.PET7_DEF=0
+  TAG.PET8_DEF=0
+  TAG.PET9_DEF=0
+  TAG.PET10_DEF=0
+
+  TAG.PET1_ID=0
+  TAG.PET2_ID=0
+  TAG.PET3_ID=0
+  TAG.PET4_ID=0
+  TAG.PET5_ID=0
+  TAG.PET6_ID=0
+  TAG.PET7_ID=0
+  TAG.PET8_ID=0
+  TAG.PET9_ID=0
+  TAG.PET10_ID=0
+
+  TAG.PET1_CLR=0
+  TAG.PET2_CLR=0
+  TAG.PET3_CLR=0
+  TAG.PET4_CLR=0
+  TAG.PET5_CLR=0
+  TAG.PET6_CLR=0
+  TAG.PET7_CLR=0
+  TAG.PET8_CLR=0
+  TAG.PET9_CLR=0
+  TAG.PET10_CLR=0
+
+  TAG.PET1_PIC=0
+  TAG.PET2_PIC=0
+  TAG.PET3_PIC=0
+  TAG.PET4_PIC=0
+  TAG.PET5_PIC=0
+  TAG.PET6_PIC=0
+  TAG.PET7_PIC=0
+  TAG.PET8_PIC=0
+  TAG.PET9_PIC=0
+  TAG.PET10_PIC=0
+
+ON=@DClick
+  //Can't use if you don't have it in your pack
+  IF !(<CONT>==<SRC.FINDLAYER.21.UID>)
+     SRC.SYSMESSAGE You must have it in your pack to use it.
+     RETURN 1
+  ENDIF
+
+  DIALOG	d_pet_book
+
+  RETURN 1
+
+ON=@TARGON_ITEM
+   //Remove animal that was targeted and add to the book
+  IF (!(<CONT>==<SRC.FINDLAYER.21.UID>) || (<SRC.TARG.CONT>!=<SRC.FINDLAYER.21.UID>))
+     SRC.SYSMESSAGE You must have it in your pack to use it.
+     RETURN 1
+  ENDIF
+
+   IF STRMATCH( "i_pet*", "<SRC.TARG.BASEID>" )
+      TRYP 0 TAG.PET<EVAL <TAG.USESLOT>>_NAME=<SRC.TARG.NAME>
+      TRYP 0 TAG.PET<EVAL <TAG.USESLOT>>_DEF=<SRC.TARG.MORE1>
+      TRYP 0 TAG.PET<EVAL <TAG.USESLOT>>_ID=<SRC.TARG.BASEID>
+      TRYP 0 TAG.PET<EVAL <TAG.USESLOT>>_CLR=<SRC.TARG.COLOR>
+      TRYP 0 TAG.PET<EVAL <TAG.USESLOT>>_PIC=<SRC.TARG.DISPIDDEC>
+      SRC.TARG.REMOVE
+   ELSEIF STRMATCH( "i_golem*", "<SRC.TARG.BASEID>" )
+      TRYP 0 TAG.PET<EVAL <TAG.USESLOT>>_NAME=<SRC.TARG.NAME>
+      TRYP 0 TAG.PET<EVAL <TAG.USESLOT>>_DEF=<SRC.TARG.MORE1>
+      TRYP 0 TAG.PET<EVAL <TAG.USESLOT>>_ID=<SRC.TARG.BASEID>
+      TRYP 0 TAG.PET<EVAL <TAG.USESLOT>>_CLR=<SRC.TARG.COLOR>
+      TRYP 0 TAG.PET<EVAL <TAG.USESLOT>>_PIC=<SRC.TARG.DISPIDDEC>
+      SRC.TARG.REMOVE
+   ELSE
+      SRC.SYSMESSAGE That does not appear to be a shrunken animal.
+      RETURN 1
+   ENDIF
+   
+   RETURN 1
+
+ON=@TARGON_CHAR
+   SRC.SYSMESSAGE Only shrunken animals can be added to this book.
+   RETURN 1
+
+ON = @IdentifyMsg
+   VAR.ITEM.IDENTIFY.MSG = This book contains the following pets: <TAG.PET1_DEF> <TAG.PET2_DEF> <TAG.PET3_DEF> <TAG.PET4_DEF> <TAG.PET5_DEF> <TAG.PET6_DEF> <TAG.PET7_DEF> <TAG.PET8_DEF> <TAG.PET9_DEF> <TAG.PET10_DEF>
+   RETURN 1
+
+CATEGORY=Items by Professions
+SUBSECTION=Scribe
+DESCRIPTION=Animal Storage Book
+
+
+[DIALOG d_pet_book]
+0, 0
+
+PAGE 0
+  gumppic 0 17 2201
+  text 35 60 0 1
+
+PAGE 1
+  button  65  100 5549 5550 1 0 1
+  button  294 22 2206 2206 0 2 0
+  croppedtext 190  60 125 17 0 2
+  tilepic 235 100 <EVAL <TAG.PET1_PIC>>
+    
+PAGE 2
+  button  65  100 5549 5550 1 0 2
+  button  20 22 2205 2205 0 1 0
+  button 294 22 2206 2206 0 3 0
+  croppedtext 190  60 125 17 0 3
+  tilepic 235 100 <EVAL <TAG.PET2_PIC>>
+  
+PAGE 3
+  button  65  100 5549 5550 1 0 3
+  button  20 22 2205 2205 0 2 0
+  button 294 22 2206 2206 0 4 0
+  croppedtext 190  60 125 17 0 4
+  tilepic 235 100 <EVAL <TAG.PET3_PIC>>
+
+PAGE 4
+  button  65  100 5549 5550 1 0 4
+  button  20 22 2205 2205 0 3 0
+  button 294 22 2206 2206 0 5 0
+  croppedtext 190  60 125 17 0 5
+  tilepic 235 100 <EVAL <TAG.PET4_PIC>>
+
+PAGE 5
+  button  65  100 5549 5550 1 0 5
+  button  20 22 2205 2205 0 4 0
+  button 294 22 2206 2206 0 6 0
+  croppedtext 190  60 125 17 0 6
+  tilepic 235 100 <EVAL <TAG.PET5_PIC>>
+
+PAGE 6
+  button  65  100 5549 5550 1 0 6
+  button  20 22 2205 2205 0 5 0
+  button 294 22 2206 2206 0 7 0
+  croppedtext 190  60 125 17 0 7
+  tilepic 235 100 <EVAL <TAG.PET6_PIC>>
+
+PAGE 7
+  button  65  100 5549 5550 1 0 7
+  button  20 22 2205 2205 0 6 0
+  button 294 22 2206 2206 0 8 0
+  croppedtext 190  60 125 17 0 8
+  tilepic 235 100 <EVAL <TAG.PET7_PIC>>
+
+PAGE 8
+  button  65  100 5549 5550 1 0 8
+  button  20 22 2205 2205 0 7 0
+  button 294 22 2206 2206 0 9 0
+  croppedtext 190  60 125 17 0 9
+  tilepic 235 100 <EVAL <TAG.PET8_PIC>>
+
+PAGE 9
+  button  65  100 5549 5550 1 0 9
+  button  20 22 2205 2205 0 8 0
+  button 294 22 2206 2206 0 10 0
+  croppedtext 190  60 125 17 0 10
+  tilepic 235 100 <EVAL <TAG.PET9_PIC>>
+
+PAGE 10
+  button  65  100 5549 5550 1 0 10
+  button  20 22 2205 2205 0 9 0
+  croppedtext 190  60 125 17 0 11
+  tilepic 235 100 <EVAL <TAG.PET10_PIC>>
+
+
+[DIALOG d_pet_book TEXT]
+<VAR.BLANKLINE>
+Add/Retrieve Pet
+<TAG.PET1_NAME>
+<TAG.PET2_NAME>
+<TAG.PET3_NAME>
+<TAG.PET4_NAME>
+<TAG.PET5_NAME>
+<TAG.PET6_NAME>
+<TAG.PET7_NAME>
+<TAG.PET8_NAME>
+<TAG.PET9_NAME>
+<TAG.PET10_NAME>
+
+[DIALOG d_pet_book BUTTON]
+ON = 1
+   TAG.USESLOT=1
+   IF STRMATCH( "00", "<TAG.PET1_ID>" )
+      TARGET Target the pet you would like to add to this book.
+   ELSE
+      RetrieveFromPetBook
+   ENDIF
+   RETURN 1	
+
+ON = 2
+   TAG.USESLOT=2
+   IF STRMATCH( "00", "<TAG.PET2_ID>" )
+      TARGET Target the pet you would like to add to this book.
+   ELSE
+      RetrieveFromPetBook
+   ENDIF
+   RETURN 1	
+
+ON = 3
+   TAG.USESLOT=3
+   IF STRMATCH( "00", "<TAG.PET3_ID>" )
+      TARGET Target the pet you would like to add to this book.
+   ELSE
+      RetrieveFromPetBook
+   ENDIF
+   RETURN 1	
+
+ON = 4
+   TAG.USESLOT=4
+   IF STRMATCH( "00", "<TAG.PET4_ID>" )
+      TARGET Target the pet you would like to add to this book.
+   ELSE
+      RetrieveFromPetBook
+   ENDIf
+   RETURN 1	
+
+ON = 5
+   TAG.USESLOT=5
+   IF STRMATCH( "00", "<TAG.PET5_ID>" )
+      TARGET Target the pet you would like to add to this book.
+   ELSE
+      RetrieveFromPetBook
+   ENDIf
+   RETURN 1
+
+ON = 6
+   TAG.USESLOT=6
+   IF STRMATCH( "00", "<TAG.PET6_ID>" )
+      TARGET Target the pet you would like to add to this book.
+   ELSE
+      RetrieveFromPetBook
+   ENDIf
+   RETURN 1
+
+ON = 7
+   TAG.USESLOT=7
+   IF STRMATCH( "00", "<TAG.PET7_ID>" )
+      TARGET Target the pet you would like to add to this book.
+   ELSE
+      RetrieveFromPetBook
+   ENDIf
+   RETURN 1
+
+ON = 8
+   TAG.USESLOT=8
+   IF STRMATCH( "00", "<TAG.PET8_ID>" )
+      TARGET Target the pet you would like to add to this book.
+   ELSE
+      RetrieveFromPetBook
+   ENDIf
+   RETURN 1
+
+ON = 9
+   TAG.USESLOT=9
+   IF STRMATCH( "00", "<TAG.PET9_ID>" )
+      TARGET Target the pet you would like to add to this book.
+   ELSE
+      RetrieveFromPetBook
+   ENDIf
+   RETURN 1
+
+ON = 10
+   TAG.USESLOT=10
+   IF STRMATCH( "00", "<TAG.PET10_ID>" )
+      TARGET Target the pet you would like to add to this book.
+   ELSE
+      RetrieveFromPetBook
+   ENDIf
+   RETURN 1
+
+
+[FUNCTION RetrieveFromPetBook]
+    //Remove animal that was targeted and add to the book
+   IF !(<CONT>==<SRC.FINDLAYER.21.UID>)
+      SRC.SYSMESSAGE You must have it in your pack to use it.
+      RETURN 1
+   ENDIF
+   
+   SRC.NEWITEM <TAG.PET<EVAL <TAG.USESLOT>>_ID>
+   SRC.ACT.NAME = <TAG.PET<EVAL <TAG.USESLOT>>_NAME>
+   SRC.ACT.COLOR = <TAG.PET<EVAL <TAG.USESLOT>>_CLR>
+   SRC.ACT.MORE1 = <TAG.PET<EVAL <TAG.USESLOT>>_DEF>
+   SRC.ACT.BOUNCE
+
+   TRYP 0 TAG.PET<EVAL <TAG.USESLOT>>_NAME=
+   TRYP 0 TAG.PET<EVAL <TAG.USESLOT>>_DEF=0
+   TRYP 0 TAG.PET<EVAL <TAG.USESLOT>>_ID=0
+   TRYP 0 TAG.PET<EVAL <TAG.USESLOT>>_CLR=0
+   TRYP 0 TAG.PET<EVAL <TAG.USESLOT>>_PIC=0
+   
+   RETURN 1

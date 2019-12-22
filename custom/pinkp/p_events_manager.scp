@@ -1,0 +1,953 @@
+//*********************************************************************************************************//
+//                             Event Manager Created by Pink Panther                                       //
+//*********************************************************************************************************//
+
+[DIALOG d_eventmanager]
+0,0
+page 0
+resizepic 92 56 3600 333 381
+dtext 212 90 137 Event Manager
+dtext 168 130 1157 Event Usefull Functions
+button 143 133 1209 1210 1 0 1
+dtext 168 160 1157 Event Items
+button 143 163 1209 1210 1 0 2
+dtext 168 190 1157 Event NPC's
+button 143 193 1209 1210 1 0 3
+dtext 168 220 1157 Say Event Rules
+button 143 223 1209 1210 1 0 4
+dtext 168 250 1157 Event Arena Gates
+button 143 253 1209 1210 1 0 5
+dtext 168 300 1157 PvP Maker Stone Menu
+button 143 303 1209 1210 1 0 6
+dtext 168 330 1157 Show Event History
+button 143 333 1209 1210 1 0 7
+dtext 155 400 47 Event Manager v1.0 by PinkPanther
+
+[DIALOG d_eventmanager button]
+ON=0
+ON=1
+DIALOG d_eventmanagercommands
+ON=2
+DIALOG d_eventmanageritems
+on=3
+DIALOG d_eventmanagernpcs
+ON=4
+DIALOG d_eventmanagerrules
+ON=5
+DIALOG d_eventmanagergates
+ON=6
+DIALOG d_eventstone
+on=7
+SRC.EVENTHISTORY
+
+[DIALOG d_eventmanagerrules]
+0,0
+page 0
+resizepic 92 56 3600 333 381
+dtext 212 90 137 Event Manager
+dtext 115 130 137 N
+dtext 115 160 137 N
+dtext 115 190 137 N
+dtext 115 220 137 N
+dtext 115 250 137 N
+dtext 115 280 137 N
+dtext 115 310 137 N
+dtext 115 340 62 Y
+dtext 115 370 62 Y
+
+button 300 400 1209 1210 1 0 1
+dtext 320 397 2300 Say Rules
+
+dtext 170 397 2300 Previous Menu
+button 150 400 1209 1210 1 0 2
+
+
+//Text Borders
+
+resizepic 128 130 3000 270 22
+resizepic 128 160 3000 270 22
+resizepic 128 190 3000 270 22
+resizepic 128 220 3000 270 22
+resizepic 128 250 3000 270 22
+resizepic 128 280 3000 270 22
+resizepic 128 310 3000 270 22
+resizepic 128 340 3000 270 22
+resizepic 128 370 3000 270 22
+
+//Text where coordinates will be entered.
+
+dtextentry 130 130 253 25 0 1 No Looting/Resurrection/Team Killing
+dtextentry 130 160 253 25 0 2 No Mounts/Pets/Summons/Polymorph
+dtextentry 130 190 253 25 0 3 No Fields/Stone Walls/Mass Spells
+dtextentry 130 220 253 25 0 4 No Hiding/Stealth/Translucency/Invisibility
+dtextentry 130 250 253 25 0 5 No Skargard Spirits/Luck Stones
+dtextentry 130 280 253 25 0 6 No Bard/Food/Necromancy/Poisoning
+dtextentry 130 310 253 25 0 7 No Recall/Factionhome/Bindback/Gates
+dtextentry 130 340 253 25 0 8 Spell Up only: Bard/Food/Necromancy
+dtextentry 130 370 253 25 0 9 All armors allowed.
+
+[DIALOG d_eventmanagerrules button]
+ON=1
+f_say_event_rules <ARGTXT[1]>, <ARGTXT[2]>, <ARGTXT[3]>, <ARGTXT[4]>, <ARGTXT[5]>, <ARGTXT[6]>, <ARGTXT[7]>, <ARGTXT[8]>, <ARGTXT[9]>
+
+ON=2
+DIALOG d_eventmanager
+
+[FUNCTION f_say_event_rules125a]
+FORCLIENTS 100
+	SYSMESSAGE @07a1 PAY ATTENTION TO THE EVENT RULES:
+	SYSMESSAGE @079c <ARGV0>
+	SYSMESSAGE @079c <ARGV1>
+	SYSMESSAGE @079c <ARGV2>
+	SYSMESSAGE @079c <ARGV3>
+	SYSMESSAGE @079c <ARGV4>
+	SYSMESSAGE @079c <ARGV5>
+	SYSMESSAGE @079c <ARGV6>
+	SYSMESSAGE @07ac <ARGV7>
+	SYSMESSAGE @07ac <ARGV8>
+ENDFOR
+	
+
+[DIALOG d_eventmanagercommands]
+0,0
+page 0
+resizepic 92 56 3600 363 381
+dtext 212 90 137 Event Manager
+dtext 188 120 1157 Event Usefull Commands
+dtext 115 150 2300 ".eventhistory" - Display Event History
+dtext 115 180 2300 ".eventkick" - Kicks a player from the event
+dtext 115 210 2300 ".eventban" - Bans a player from next events (hours)
+dtext 115 240 2300 ".e message" - Talk chat during events
+dtext 115 270 2300 ".throwxpot" - Enable/Disable X-Pot Throwing
+dtext 115 300 2300 ".pickcorpse" - Picks all corpses from nearby area
+dtext 115 330 2300 ".dropcorpse" - Drops all corpses from backpack
+dtext 115 360 2300 ".pvpresurrect" - Resurrect all players at your location
+dtext 175 395 2300 Previous Menu
+button 155 398 1209 1210 1 0 1
+dtext 325 395 2300 Next Page
+button 305 398 1209 1210 1 0 2
+
+[DIALOG d_eventmanagercommands button]
+ON=1
+DIALOG d_eventmanager
+
+ON=2
+SYSMESSAGE This is currently the only page available in this menu.
+DIALOG d_eventmanagercommands
+
+[DIALOG d_eventmanageritems]
+0,0
+page 0
+resizepic 92 56 3600 333 381
+dtext 212 90 137 Event Manager
+dtext 118 140 1157 What kind of Event Item you want to create?
+dtext 168 190 2300 Stones
+button 143 193 1209 1210 1 0 1
+dtext 168 220 2300 Dice
+button 143 223 1209 1210 1 0 2
+dtext 168 250 2300 Misc Items
+button 143 253 1209 1210 1 0 3
+dtext 168 280 2300 4 Llamas
+button 143 283 1209 1210 1 0 4
+dtext 168 310 2300 X-Pot Crate
+button 143 313 1209 1210 1 0 5
+dtext 175 395 2300 Previous Menu
+button 155 398 1209 1210 1 0 6
+dtext 325 395 2300 Next Page
+button 305 398 1209 1210 1 0 7
+
+[DIALOG d_eventmanageritems button]
+ON=1
+DIALOG d_eventmanagerstones
+
+ON=2
+SERV.NEWITEM i_dice_cup2
+NEW.BOUNCE
+DIALOG d_eventmanageritems
+
+ON=3
+DIALOG d_eventmanageritemsmisc
+
+ON=4
+SERV.NEWITEM i_pet_llama
+NEW.BOUNCE
+SERV.NEWITEM i_pet_llama
+NEW.BOUNCE
+SERV.NEWITEM i_pet_llama
+NEW.BOUNCE
+SERV.NEWITEM i_pet_llama
+NEW.BOUNCE
+DIALOG d_eventmanageritems
+
+ON=5
+SERV.NEWITEM i_crate_lg
+NEW.COLOR 079d
+NEW.BOUNCE
+TAG.xpotcrate=<NEW.UID>
+SERV.NEWITEM i_potion_explosiongreat
+NEW.CONT=<TAG.xpotcrate>
+NEW.AMOUNT=50
+NEW.DUPE 150
+TAG.XPOTCRATE=
+DIALOG d_eventmanageritems
+
+ON=6
+DIALOG d_eventmanager
+
+ON=7
+SYSMESSAGE This is currently the only page available in this menu.
+DIALOG d_eventmanageritems
+
+[DIALOG d_eventmanageritemsmisc]
+0,0
+page 0
+resizepic 92 56 3600 333 381
+dtext 212 90 137 Event Manager
+dtext 118 120 1157 What kind of Event Item you want to create?
+dtext 168 160 2300 2 Random Teams Gate
+button 143 163 1209 1210 1 0 1
+dtext 168 190 2300 4 Random Teams Gate
+button 143 193 1209 1210 1 0 2
+dtext 168 220 2300 Move Character Wand
+button 143 223 1209 1210 1 0 3
+dtext 168 250 2300 Stone Character Wand
+button 143 253 1209 1210 1 0 4
+dtext 168 280 2300 Summon Character Wand
+button 143 283 1209 1210 1 0 5
+dtext 168 310 2300 2 Base Blocker Logs SN
+button 143 313 1209 1210 1 0 6
+dtext 168 340 2300 2 Base Blocker Logs WE
+button 143 343 1209 1210 1 0 7
+dtext 168 370 2300 PvP Starter (Remove Blocker Logs)
+button 143 373 1209 1210 1 0 8
+dtext 175 395 2300 Previous Menu
+button 155 398 1209 1210 1 0 9
+dtext 325 395 2300 Next Page
+button 305 398 1209 1210 1 0 10
+
+[DIALOG d_eventmanageritemsmisc button]
+ON=1
+SERV.NEWITEM = i_randomizer_tile
+NEW.NAME = 2 Random Teams Gate
+NEW.DISPID = i_moongate_blue
+NEW.TAG.UsedPoint0=0
+NEW.TAG.UsedPoint1=0
+NEW.TAG.UsedPoint2=0
+NEW.TAG.UsedPoint3=0
+NEW.TAG.UsedPoint4=0
+NEW.TAG.UsedPoint5=0
+NEW.TAG.UsedPoint6=0
+NEW.TAG.UsedPoint7=0
+NEW.TAG.COORD0=5207,1213
+NEW.TAG.COORD1=5207,1213
+NEW.TAG.COORD2=5207,1213
+NEW.TAG.COORD3=5207,1213
+NEW.TAG.COORD4=5186,1213
+NEW.TAG.COORD5=5186,1213
+NEW.TAG.COORD6=5186,1213
+NEW.TAG.COORD7=5186,1213
+NEW.BOUNCE
+SRC.SYSMESSAGE @09f3 This gate will split 8 players into 2 different teams.
+SRC.SYSMESSAGE @09f3 Once the 8 players are teleported to the respective team you must double click the gate and click "Accept" to split 8 more players.
+DIALOG d_eventmanageritemsmisc
+
+ON=2
+SERV.NEWITEM = i_randomizer_tile
+NEW.NAME = 4 Random Teams Gate
+NEW.DISPID = i_moongate_blue
+NEW.TAG.UsedPoint0=0
+NEW.TAG.UsedPoint1=0
+NEW.TAG.UsedPoint2=0
+NEW.TAG.UsedPoint3=0
+NEW.TAG.UsedPoint4=0
+NEW.TAG.UsedPoint5=0
+NEW.TAG.UsedPoint6=0
+NEW.TAG.UsedPoint7=0
+NEW.TAG.COORD0=5207,1213
+NEW.TAG.COORD1=5207,1213
+NEW.TAG.COORD2=5196,1203
+NEW.TAG.COORD3=5196,1203
+NEW.TAG.COORD4=5196,1224
+NEW.TAG.COORD5=5196,1224
+NEW.TAG.COORD6=5186,1213
+NEW.TAG.COORD7=5186,1213
+NEW.BOUNCE
+SRC.SYSMESSAGE @09f3 This gate will split 8 players into 4 different teams.
+SRC.SYSMESSAGE @09f3 Once the 8 players are teleported to the respective team you must double click the gate and click "Accept" to split 8 more players.
+DIALOG d_eventmanageritemsmisc
+
+ON=3
+SERV.NEWITEM i_wand_mover
+NEW.BOUNCE
+DIALOG d_eventmanageritemsmisc
+
+ON=4
+SERV.NEWITEM i_wand_stone
+NEW.BOUNCE
+DIALOG d_eventmanageritemsmisc
+
+ON=5
+SERV.NEWITEM i_wand_summon
+NEW.BOUNCE
+DIALOG d_eventmanageritemsmisc
+
+ON=6
+SERV.NEWITEM i_pvp_log_sn
+NEW.BOUNCE
+SERV.NEWITEM i_pvp_log_sn
+NEW.BOUNCE
+DIALOG d_eventmanageritemsmisc
+
+ON=7
+SERV.NEWITEM i_pvp_log_we
+NEW.BOUNCE
+SERV.NEWITEM i_pvp_log_we
+NEW.BOUNCE
+DIALOG d_eventmanageritemsmisc
+
+ON=8
+SERV.NEWITEM i_pvp_starter
+NEW.BOUNCE
+DIALOG d_eventmanageritemsmisc
+
+ON=9
+DIALOG d_eventmanageritems
+
+ON=10
+SYSMESSAGE This is currently the only page available in this menu.
+DIALOG d_eventmanageritemsmisc
+
+[DIALOG d_eventmanagerstones]
+0,0
+page 0
+resizepic 92 56 3600 332 412
+dtext 212 90 137 Event Manager
+dtext 118 120 1157 What kind of Stone you want to create?
+dtext 168 150 2300 Bank Stone
+button 143 153 1209 1210 1 0 1
+dtext 168 180 2300 Resurrection Stone
+button 143 183 1209 1210 1 0 2
+dtext 168 210 2300 Entry Stone
+button 143 213 1209 1210 1 0 3
+dtext 168 240 2300 Exit Stone
+button 143 243 1209 1210 1 0 4
+dtext 168 270 2300 Exit Stone Recorder
+button 143 273 1209 1210 1 0 5
+dtext 168 300 2300 Robe Dispenser
+button 143 303 1209 1210 1 0 6
+dtext 168 330 2300 Timer Stone
+button 143 333 1209 1210 1 0 7
+dtext 168 360 2300 PvP Kits Stone
+button 143 363 1209 1210 1 0 8
+dtext 175 425 2300 Previous Menu
+button 155 428 1209 1210 1 0 9
+dtext 325 425 2300 Next Page
+button 305 428 1209 1210 1 0 10
+
+[DIALOG d_eventmanagerstones button]
+ON=1
+SERV.NEWITEM i_gravestone_17
+NEW.BOUNCE
+NEW.TYPE= t_bankstone
+NEW.COLOR=0798
+NEW.ATTR=08010
+DIALOG d_eventmanagerstones
+
+ON=2
+SERV.NEWITEM i_resurrect_stonefull
+NEW.BOUNCE
+DIALOG d_eventmanagerstones
+
+ON=3
+SERV.NEWITEM i_famekarma_entry_stone
+NEW.BOUNCE
+DIALOG d_eventmanagerstones 
+
+ON=4
+SERV.NEWITEM i_famekarma_exit_stone
+NEW.BOUNCE
+DIALOG d_eventmanagerstones
+
+ON=5
+SERV.NEWITEM i_famekarma_exit_stone_record
+NEW.BOUNCE
+DIALOG d_eventmanagerstones
+
+ON=6
+SERV.NEWITEM i_stone_pvpclothes
+NEW.BOUNCE
+DIALOG d_eventmanagerstones
+
+ON=7
+SERV.NEWITEM b_autopvp_timer
+NEW.BOUNCE
+DIALOG d_eventmanagerstones
+
+ON=8
+SERV.NEWITEM i_pvp_kit_stone
+NEW.BOUNCE
+DIALOG d_eventmanagerstones
+
+ON=9
+DIALOG d_eventmanageritems
+
+ON=10
+SYSMESSAGE This is currently the only page available in this menu.
+DIALOG d_eventmanagerstones
+
+
+[DIALOG d_eventmanagernpcs]
+0,0
+page 0
+resizepic 92 56 3600 333 381
+dtext 212 90 137 Event Manager
+dtext 118 140 1157 What kind of Event NPC you want to create?
+dtext 168 190 2300 Banker
+button 143 193 1209 1210 1 0 1
+dtext 168 220 2300 Vendor
+button 143 223 1209 1210 1 0 2
+dtext 168 250 2300 Healer
+button 143 253 1209 1210 1 0 3
+dtext 175 395 2300 Previous Menu
+button 155 398 1209 1210 1 0 4
+dtext 325 395 2300 Next Page
+button 305 398 1209 1210 1 0 5
+
+[DIALOG d_eventmanagernpcs button]
+ON=1
+SERV.NEWNPC c_h_banker
+DIALOG d_eventmanagernpcs
+
+ON=2
+SERV.NEWNPC c_pvp_trader
+DIALOG d_eventmanagernpcs
+
+ON=3
+SERV.NEWNPC c_h_healer
+DIALOG d_eventmanagernpcs
+
+ON=4
+DIALOG d_eventmanager
+
+ON=5
+SYSMESSAGE This is currently the only page available in this menu.
+DIALOG d_eventmanagernpcs
+
+[DIALOG d_eventmanagergates]
+0,0
+page 0
+resizepic 92 56 3600 333 381
+dtext 212 90 137 Event Manager
+dtext 118 140 1157 What kind of Event Arena you want to use?
+dtext 168 190 2300 Team PvP Arenas
+button 143 193 1209 1210 1 0 1
+dtext 168 220 2300 Single PvP Arenas
+button 143 223 1209 1210 1 0 2
+dtext 168 250 2300 X-Pot Arenas
+button 143 253 1209 1210 1 0 3
+dtext 168 280 2300 Llama Race Arenas
+button 143 283 1209 1210 1 0 4
+dtext 168 310 2300 Non-PvP Arenas
+button 143 313 1209 1210 1 0 5
+dtext 175 395 2300 Previous Menu
+button 155 398 1209 1210 1 0 6
+dtext 325 395 2300 Next Page
+button 305 398 1209 1210 1 0 7
+
+[DIALOG d_eventmanagergates button]
+ON=1
+DIALOG d_eventmanagergatesteam
+
+ON=2
+DIALOG d_eventmanagergatessingle
+
+ON=3
+DIALOG d_eventmanagergatesxpot
+
+ON=4
+DIALOG d_eventmanagergatesllama
+
+ON=5
+DIALOG d_eventmanagergatesnonpvp
+
+ON=6
+DIALOG d_eventmanager
+
+ON=7
+SYSMESSAGE This is currently the only page available in this menu.
+DIALOG d_eventmanagergates
+
+[DIALOG d_eventmanagergatesteam]
+0,0
+page 0
+resizepic 92 56 3600 332 412
+dtext 212 90 137 Event Manager
+dtext 118 120 1157 What Team PvP Gate you want to create?
+dtext 168 150 2300 Ray's Three Sided Team PvP
+button 143 153 1209 1210 1 0 1
+dtext 168 180 2300 Carneige Traps Arena
+button 143 183 1209 1210 1 0 2
+dtext 168 210 2300 Pink Panther Docks Arena
+button 143 213 1209 1210 1 0 3
+dtext 168 240 2300 Britain Graveyard Arena
+button 143 243 1209 1210 1 0 4
+dtext 168 270 2300 Four Sided PvP Arena
+button 143 273 1209 1210 1 0 5
+dtext 168 300 2300 Castle Siege Arena
+button 143 303 1209 1210 1 0 6
+dtext 168 330 2300 Orc Camp Arena
+button 143 333 1209 1210 1 0 7
+dtext 168 360 2300 Street Fighting Arena
+button 143 363 1209 1210 1 0 8
+dtext 168 390 2300 Warrior + Trader PvP Arena
+button 143 393 1209 1210 1 0 9
+dtext 175 420 2300 Previous Menu
+button 155 423 1209 1210 1 0 10
+dtext 325 420 2300 Next Page
+button 305 423 1209 1210 1 0 11
+
+[DIALOG d_eventmanagergatesteam button]
+ON=1
+SERV.NEWITEM i_eventmanager_gate
+NEW.MOREP= 2070,792,20,10
+NEW.COLOR=07a0
+NEW.NAME= Ray's Team PvP Blue Base
+NEW.BOUNCE
+SERV.NEWITEM i_eventmanager_gate
+NEW.MOREP= 2070,815,20,10
+NEW.COLOR=07ac
+NEW.NAME= Ray's Team PvP Green Base
+NEW.BOUNCE
+SERV.NEWITEM i_eventmanager_gate
+NEW.MOREP= 2045,807,20,10
+NEW.COLOR=079c
+NEW.NAME= Ray's Team PvP Red Base
+NEW.BOUNCE
+
+ON=2
+SERV.NEWITEM i_eventmanager_gate
+NEW.MOREP= 6080,447,-22,20
+NEW.COLOR=09e1
+NEW.NAME= Carneige Traps Arena
+NEW.BOUNCE
+
+ON=3
+SERV.NEWITEM i_eventmanager_gate
+NEW.MOREP= 2514,1764,1,20
+NEW.COLOR=0b05
+NEW.NAME= Pink Panther Docks Arena
+NEW.BOUNCE
+
+ON=4
+SERV.NEWITEM i_eventmanager_gate
+NEW.MOREP= 1381,1487,10,10
+NEW.COLOR=079c
+NEW.NAME= Britain Graveyard Arena Red Base
+NEW.BOUNCE
+SERV.NEWITEM i_eventmanager_gate
+NEW.MOREP= 1363,1449,10,10
+NEW.COLOR=07a0
+NEW.NAME= Britain Graveyard Arena Blue Base
+NEW.BOUNCE
+
+ON=5
+SERV.NEWITEM i_eventmanager_gate
+NEW.MOREP= 5951,318
+NEW.NAME= Four Sided PvP Arena
+NEW.BOUNCE
+
+ON=6
+SERV.NEWITEM i_eventmanager_gate
+NEW.MOREP= 1522,1510,0,10
+NEW.COLOR=0795
+NEW.NAME= Castle Siege - Invasors
+NEW.BOUNCE
+SERV.NEWITEM i_eventmanager_gate
+NEW.MOREP= 1524,1446,15,10
+NEW.COLOR=0783
+NEW.NAME= Castle Siege - Defenders
+NEW.BOUNCE
+
+ON=7
+SERV.NEWITEM i_eventmanager_gate
+NEW.MOREP= 2187,1403,0,10
+NEW.COLOR=020
+NEW.NAME= Orc Camp Red Base
+NEW.BOUNCE
+SERV.NEWITEM i_eventmanager_gate
+NEW.MOREP= 2170,1339,0,10
+NEW.COLOR=02
+NEW.NAME= Orc Camp Blue Base
+NEW.BOUNCE
+
+ON=8
+SERV.NEWITEM i_eventmanager_gate
+NEW.MOREP= 574,2159,0,10
+NEW.COLOR=03
+NEW.NAME= Streed Fighting - Blue Base
+NEW.BOUNCE
+SERV.NEWITEM i_eventmanager_gate
+NEW.MOREP= 623,2231,0,10
+NEW.COLOR=025
+NEW.NAME= Stree Fighting - Red Base
+NEW.BOUNCE
+
+ON=9
+SERV.NEWITEM i_eventmanager_gate
+NEW.MOREP= 1445,981,0,10
+NEW.COLOR=07a0
+NEW.NAME= Warrior + Trader PvP Blue Base
+NEW.BOUNCE
+SERV.NEWITEM i_eventmanager_gate
+NEW.MOREP= 1627,995,0,10
+NEW.COLOR=0799
+NEW.NAME= Warrior + Trader PvP Red Base
+NEW.BOUNCE
+
+ON=10
+DIALOG d_eventmanagergates
+
+ON=11
+SYSMESSAGE This is currently the only page available in this menu.
+DIALOG d_eventmanagergatesteam
+
+[DIALOG d_eventmanagergatessingle]
+0,0
+page 0
+resizepic 92 56 3600 332 412
+dtext 212 90 137 Event Manager
+dtext 118 120 1157 What Single PvP Gate you want to create?
+dtext 168 150 2300 Pink Panther's 1vs1 Arena
+button 143 153 1209 1210 1 0 1
+dtext 168 180 2300 Pink Panther's Winter Arena
+button 143 183 1209 1210 1 0 2
+dtext 168 210 2300 Pink Panther's FFA Arena
+button 143 213 1209 1210 1 0 3
+dtext 168 240 2300 Carneige 1vs1 Arena
+button 143 243 1209 1210 1 0 4
+dtext 168 270 2300 Old 1vs1 Arena
+button 143 273 1209 1210 1 0 5
+dtext 175 420 2300 Previous Menu
+button 155 423 1209 1210 1 0 6
+dtext 325 420 2300 Next Page
+button 305 423 1209 1210 1 0 7
+
+[DIALOG d_eventmanagergatessingle button]
+ON=1
+SERV.NEWITEM i_eventmanager_gate
+NEW.MOREP= 5209,1756,0,10
+NEW.COLOR=0a0c
+NEW.NAME= Pink Panther 1vs1 Arena
+NEW.BOUNCE
+
+ON=2
+SERV.NEWITEM i_eventmanager_gate
+NEW.MOREP= 4110,522,0,20
+NEW.COLOR=09e1
+NEW.NAME= Pink Panther Winter Arena
+NEW.BOUNCE
+
+ON=3
+SERV.NEWITEM i_eventmanager_gate
+NEW.MOREP= 5315,738,0,10
+NEW.COLOR=079c
+NEW.NAME= Pink Panther FFA Arena
+NEW.BOUNCE
+
+ON=4
+SERV.NEWITEM i_eventmanager_gate
+NEW.MOREP= 5947,331,0,10
+NEW.COLOR=0aba
+NEW.NAME= Carneige 1vs1 Arena
+NEW.BOUNCE
+
+ON=5
+SERV.NEWITEM i_eventmanager_gate
+NEW.MOREP= 5350,1602,0,20
+NEW.COLOR=0799
+NEW.NAME= Old 1vs1 Arena
+NEW.BOUNCE
+
+ON=6
+DIALOG d_eventmanagergates
+
+ON=7
+SYSMESSAGE This is currently the only page available in this menu.
+DIALOG d_eventmanagergatessingle
+
+[DIALOG d_eventmanagergatesxpot]
+0,0
+page 0
+resizepic 92 56 3600 332 412
+dtext 212 90 137 Event Manager
+dtext 118 120 1157 What X-Pot PvP Gate you want to create?
+dtext 168 150 2300 Pink Panther's X-Pot Arena
+button 143 153 1209 1210 1 0 1
+dtext 168 180 2300 Ray's X-Pot Arena
+button 143 183 1209 1210 1 0 2
+dtext 168 210 2300 Carneige X-Pot Arena
+button 143 213 1209 1210 1 0 3
+dtext 175 420 2300 Previous Menu
+button 155 423 1209 1210 1 0 4
+dtext 325 420 2300 Next Page
+button 305 423 1209 1210 1 0 5
+
+
+[DIALOG d_eventmanagergatesxpot button]
+ON=1
+SERV.NEWITEM i_eventmanager_gate
+NEW.MOREP= 1338,1659,94,20
+NEW.COLOR=07a0
+NEW.NAME= Pink Panther X-Pot Arena Blue Base
+NEW.BOUNCE
+SERV.NEWITEM i_eventmanager_gate
+NEW.MOREP= 1346,1637,94,20
+NEW.COLOR=079c
+NEW.NAME= Pink Panther X-Pot Arena Red Base
+NEW.BOUNCE
+
+ON=2
+SERV.NEWITEM i_eventmanager_gate
+NEW.MOREP= 1342,1608,94,20
+NEW.COLOR=0796
+NEW.NAME= Ray X-Pot Arena Red Base
+NEW.BOUNCE
+SERV.NEWITEM i_eventmanager_gate
+NEW.MOREP= 1342,1620,94,20
+NEW.COLOR=09b8
+NEW.NAME= Ray X-Pot Arena Blue Base
+NEW.BOUNCE
+
+ON=3
+SERV.NEWITEM i_eventmanager_gate
+NEW.MOREP= 1530,1438,75,10
+NEW.COLOR=0af4
+NEW.NAME= Carneige X-Pot Arena Blue Base
+NEW.BOUNCE
+SERV.NEWITEM i_eventmanager_gate
+NEW.MOREP= 1530,1412,75,10
+NEW.COLOR=0b01
+NEW.NAME= Carneige X-Pot Arena Red Base
+NEW.BOUNCE
+
+ON=4
+DIALOG d_eventmanagergates
+
+ON=5
+SYSMESSAGE This is currently the only page available in this menu.
+DIALOG d_eventmanagergatesxpot
+
+[DIALOG d_eventmanagergatesllama]
+0,0
+page 0
+resizepic 92 56 3600 332 412
+dtext 212 90 137 Event Manager
+dtext 118 120 1157 What Llama Race Gate you want to create?
+dtext 168 150 2300 Pink Panther's Llama Race
+button 143 153 1209 1210 1 0 1
+dtext 168 180 2300 Ray's Llama Race
+button 143 183 1209 1210 1 0 2
+dtext 168 210 2300 Old Llama Race
+button 143 213 1209 1210 1 0 3
+dtext 175 420 2300 Previous Menu
+button 155 423 1209 1210 1 0 4
+dtext 325 420 2300 Next Page
+button 305 423 1209 1210 1 0 5
+
+[DIALOG d_eventmanagergatesllama button]
+ON=1
+SERV.NEWITEM i_eventmanager_gate
+NEW.MOREP= 6028,663
+NEW.COLOR=07a0
+NEW.NAME= Pink Panther Llama Race
+NEW.BOUNCE
+
+ON=2
+SERV.NEWITEM i_eventmanager_gate
+NEW.MOREP= 1400,3743,20,10
+NEW.COLOR=09e1
+NEW.COLOR= Ray Llama Race
+NEW.BOUNCE
+
+ON=3
+SERV.NEWITEM i_eventmanager_gate
+NEW.MOREP= 6087,537
+NEW.COLOR=0789
+NEW.NAME= Old Llama Race
+NEW.BOUNCE
+
+ON=4
+SRC.DIALOG d_eventmanagergates
+
+ON=5
+SYSMESSAGE This is currently the only page available in this menu.
+DIALOG d_eventmanagergatesllama
+
+[DIALOG d_eventmanagergatesnonpvp]
+0,0
+page 0
+resizepic 92 56 3600 332 412
+dtext 212 90 137 Event Manager
+dtext 118 120 1157 What Non-PvP Gate you want to create?
+dtext 168 150 2300 Pink Panther's CTF
+button 143 153 1209 1210 1 0 1
+dtext 168 180 2300 Vortex Event
+button 143 183 1209 1210 1 0 2
+dtext 168 210 2300 Fishing Event
+button 143 213 1209 1210 1 0 3
+dtext 168 240 2300 Mining Event
+button 143 243 1209 1210 1 0 4
+dtext 168 270 2300 Lumberjack Event
+button 143 273 1209 1210 1 0 5
+dtext 168 300 2300 Monster Bash
+button 143 303 1209 1210 1 0 6
+dtext 175 420 2300 Previous Menu
+button 155 423 1209 1210 1 0 7
+dtext 325 420 2300 Next Page
+button 305 423 1209 1210 1 0 8
+
+[DIALOG d_eventmanagergatesnonpvp button]
+ON=1
+SERV.NEWITEM i_eventmanager_gate
+NEW.MOREP= 5954,445,22,10
+NEW.COLOR=03
+NEW.NAME= Pink Panther CTF Blue Team Base
+NEW.BOUNCE
+SERV.NEWITEM i_eventmanager_gate
+NEW.MOREP= 5946,446,22,10
+NEW.COLOR=025
+NEW.NAME= Pink Panther CTF Red Team Base
+NEW.BOUNCE
+
+ON=2
+SERV.NEWITEM i_eventmanager_gate
+NEW.MOREP= 5951,318,0,10
+NEW.COLOR=09a3
+NEW.NAME= Vortex Event
+NEW.BOUNCE
+
+ON=3
+SERV.NEWITEM i_eventmanager_gate
+NEW.MOREP= 639,2235,-2,10
+NEW.COLOR=07a1
+NEW.NAME= Fishing Event
+NEW.BOUNCE
+
+ON=4
+SERV.NEWITEM i_eventmanager_gate
+NEW.MOREP= 370,1470,2,20
+NEW.COLOR=02
+NEW.NAME= Mining Event
+NEW.BOUNCE
+
+ON=5
+SERV.NEWITEM i_eventmanager_gate
+NEW.MOREP= 719,1897,0,20
+NEW.COLOR=07b5
+NEW.NAME= Lumberjack Event
+NEW.BOUNCE
+ON=6
+
+SERV.NEWITEM i_eventmanager_gate
+NEW.MOREP= 5738,872,0,10
+NEW.COLOR=0799
+NEW.NAME= Monster Bash Red Team
+NEW.BOUNCE
+SERV.NEWITEM i_eventmanager_gate
+NEW.MOREP= 5723,873,0,10
+NEW.COLOR=07a0
+NEW.NAME= Monster Bash Blue Team
+NEW.BOUNCE
+
+ON=7
+DIALOG d_eventmanagergates
+
+ON=8
+SYSMESSAGE This is currently the only page available in this menu.
+DIALOG d_eventmanagergatesnonpvp
+
+[ITEMDEF i_eventmanager_gate]
+ID=i_moongate_blue
+NAME= Event Manager Gate
+
+ON=@CREATE
+COLOR=07a1
+
+ON=@STEP
+
+IF !(<SRC.ISNPC>)
+	SRC.GO <MOREP>
+	SRC.SYSMESSAGE @09f3 Stay in your base/corner and don't spell up or fight before a Game Master says so.
+	TIMER=360
+ENDIF
+
+ON=@TIMER
+REMOVE
+
+[FUNCTION eventmanager]
+DIALOG d_eventmanager
+
+[FUNCTION eventhistory]
+dialog d_eventhistory
+
+[DIALOG d_eventhistory]
+0,0
+page 0
+resizepic 92 56 3600 383 381
+dtext 252 90 137 Event Manager
+dtext 253 130 1157 Event History
+dtext 118 170 2300 <UID.043c282b3.TAG.eventlog<eval <UID.043c282b3.More2>>>
+dtext 118 200 2300 <UID.043c282b3.TAG.eventlog<eval (<UID.043c282b3.More2>-1)>>
+dtext 118 230 2300 <UID.043c282b3.TAG.eventlog<eval (<UID.043c282b3.More2>-2)>>
+dtext 118 260 2300 <UID.043c282b3.TAG.eventlog<eval (<UID.043c282b3.More2>-3)>>
+dtext 118 290 2300 <UID.043c282b3.TAG.eventlog<eval (<UID.043c282b3.More2>-4)>>
+dtext 118 320 2300 <UID.043c282b3.TAG.eventlog<eval (<UID.043c282b3.More2>-5)>>
+dtext 230 360 1157 Current Server Time:
+dtext 227 390 2300 <SERV.RTIME>
+
+[FUNCTION autorecordevent]
+
+IF !(<UID.043c282b3.more2> == 6)
+
+TRY UID.043c282b3.more2=<eval (<UID.043c282b3.more2>+1)>
+TRY UID.043c282b3.TAG.eventlog<eval (<UID.043c282b3.more2>)>=<SERV.RTIME.FORMAT %d>-<SERV.RTIME.FORMAT %m>-<SERV.RTIME.FORMAT %y> at <SERV.RTIME.FORMAT %H>:<SERV.RTIME.FORMAT %M> by <SRC.NAME> - <SRC.TAG.PVPTYPE>
+SERV.LOG EVENT: <SRC.NAME> is running - <SRC.TAG.PVPTYPE>
+stafflog EVENT: <SRC.NAME> is running - <SRC.TAG.PVPTYPE>
+
+ELSE
+
+TRY UID.043c282b3.tag.eventlog1=<UID.043c282b3.TAG.eventlog2>
+TRY UID.043c282b3.tag.eventlog2=<UID.043c282b3.TAG.eventlog3>
+TRY UID.043c282b3.tag.eventlog3=<UID.043c282b3.TAG.eventlog4>
+TRY UID.043c282b3.tag.eventlog4=<UID.043c282b3.TAG.eventlog5>
+TRY UID.043c282b3.tag.eventlog5=<UID.043c282b3.TAG.eventlog6>
+TRY UID.043c282b3.tag.eventlog6=[<SERV.RTIME.FORMAT %d>-<SERV.RTIME.FORMAT %m>-<SERV.RTIME.FORMAT %y>] at <SERV.RTIME.FORMAT %H>:<SERV.RTIME.FORMAT %M> by <SRC.NAME> - <SRC.TAG.PVPTYPE>
+SERV.LOG EVENT: <SRC.NAME> is running - <SRC.TAG.PVPTYPE>
+stafflog EVENT: <SRC.NAME> is running - <SRC.TAG.PVPTYPE>
+
+VAR.EVENTLOG1 = <UID.043c282b3.TAG.eventlog6>
+VAR.EVENTLOG2 = <UID.043c282b3.TAG.eventlog5>
+VAR.EVENTLOG3 = <UID.043c282b3.TAG.eventlog4>
+VAR.EVENTLOG4 = <UID.043c282b3.TAG.eventlog3>
+RETURN 1
+ENDIF
+
+[ITEMDEF i_dice_cup2] 
+NAME=Dice Cup
+ID=i_dice_cup 
+WEIGHT=1 
+
+ON=@DCLICK 
+
+SRC.TAG.VAR.dice1=<eval(RAND(4)+3)> 
+SRC.TAG.VAR.dice2=<eval(RAND(4)+3)> 
+SRC.SAY @09f3 <SRC.NAME> shakes the cup and spills the dice. The dice come to a stop showing a <EVAL(<SRC.TAG.VAR.dice1>)> and a <eval(<SRC.TAG.VAR.dice2>)> for a total of <EVAL(<SRC.TAG.VAR.dice1>)+(<SRC.TAG.VAR.dice2>)> 
+SRC.TAG.VAR.dice1= 
+SRC.TAG.VAR.dice2= 
+return 1
+
+[PLEVEL 2]
+eventmanager
+eventhistory
+
+[EOF]

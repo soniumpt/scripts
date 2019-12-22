@@ -1,0 +1,237 @@
+//------------------------------
+//
+//
+//POISONING SCRIPT v1.0
+//By Raistilin Majere (RaistilinPK@hotmail.com)
+//
+//------------------------------
+//how to use:DCLICK the potions, target the items that you are allowed, and it will have a chance of adding charges
+//if it sucessfully adds a charge when it hits it will poison (more or less depending on the poison level of the
+//potion and use 1 charge.) The poison will only be applyed on fencing weapons and archery stuff. There are four poisons
+//which can only be removed by the usage of cure pots.
+//Associated Scripts:
+//item_mpz_potions (poison and cure)
+//k_main_events (@HIT)
+//k_skill_alchemy
+
+//Changes:Fixed the emote revealing players by adding a flag check that returns a sysmessage instead.
+//added a function that contains another, together they check the players equipement and if it's good it adds
+//some poison resistance as that would make it harder for the blade to penetrate or scratch
+//also added some resistance to players with over 120 on 0Str together they should give some leverage to highly
+//trained chars and hopefully encourage people to wear better stuff
+//also changed the amount of charges to lower amounts 
+//Memory items, the poison itself
+//March 2006 - Wren - MAJOR Clean up of script...Removed about a billion EVALS and moved common code to functions, removed vars
+
+//********************************************************************//
+//                        POISON EFFECT ITEMS                         //
+//********************************************************************//
+[ITEMDEF i_poisoning1]
+NAME=Lesser Poison Effect
+ID=i_memory
+TYPE=t_eq_script
+
+ON=@CREATE
+    MORE2=3 //The amount of times it will make the player lose hp
+    TIMER=1
+    
+ON=@UNEQUIP
+    SERV.NEWITEM i_poison_delay
+    SRC.EQUIP <NEW.UID>
+
+ON=@TIMER
+   LOCAL.POISON_MSG=Cough lightly
+   CALL POISON_EFFECT 6000 3 10
+   RETURN 1
+
+//********************************************************************//
+[ITEMDEF i_poisoning2]
+NAME=Poison Effect
+ID=i_memory
+TYPE=t_eq_script
+
+ON=@CREATE
+    MORE2=4
+    TIMER=1
+    
+ON=@UNEQUIP
+    SERV.NEWITEM i_poison_delay
+    SRC.EQUIP <NEW.UID>
+
+ON=@TIMER
+   LOCAL.POISON_MSG=Cough
+   CALL POISON_EFFECT 9000 6 8
+   RETURN 1
+
+//********************************************************************//
+[ITEMDEF i_poisoning3]
+NAME=Greater Poison Effect
+ID=i_memory
+TYPE=t_eq_script
+
+ON=@CREATE
+    MORE2=4
+    TIMER=1
+    
+ON=@UNEQUIP
+    SERV.NEWITEM i_poison_delay
+    SRC.EQUIP <NEW.UID>
+
+ON=@TIMER
+   LOCAL.POISON_MSG=Cough heavily
+   CALL POISON_EFFECT 13000 8 6
+   RETURN 1
+
+//********************************************************************//
+[ITEMDEF i_poisoning4]
+NAME=Deadly Poison Effect
+ID=i_memory
+TYPE=t_eq_script
+
+ON=@CREATE
+    MORE2=5
+    TIMER=1
+    
+ON=@UNEQUIP
+    SERV.NEWITEM i_poison_delay
+    SRC.EQUIP <NEW.UID>
+
+ON=@TIMER
+   LOCAL.POISON_MSG=Spasm violently
+   CALL POISON_EFFECT 18000 9 4  
+   RETURN 1
+
+//********************************************************************//
+[ITEMDEF i_poison_delay]
+ID=i_memory
+NAME=Poison Delay
+TYPE=t_eq_script
+
+ON=@CREATE
+    ATTR=attr_can_decay|attr_move_never
+    TIMER=10
+    
+ON=@TIMER
+   REMOVE
+   RETURN 1
+
+
+//********************************************************************//
+//                      POISON EFFECT FUNCTIONS                       //
+//********************************************************************//
+[FUNCTION POISON_EFFECT]
+   IF (<CONT.HITS> <= 0)
+      REMOVE
+      RETURN 1
+   ELSEIF (<MORE2> >= 1)
+      LOCAL.POISON_RESIST = <CONT.f_poisonresist <CONT.UID>>
+      
+      IF (<CONT.FLAGS>&statf_invisible) || (<CONT.FLAGS>&statf_hidden)
+         CONT.SYSMESSAGE You cough lightly
+      ELSE
+         CONT.EMOTE <LOCAL.POISON_MSG>
+      ENDIF
+
+      LOCAL.POISON_RESIST = <EVAL ( <EVAL (<ARGN1>-<LOCAL.POISON_RESIST>)> / 1000)>
+      IF ( <LOCAL.POISON_RESIST> <= <ARGN2> )
+         CONT.HITS=<CONT.HITS>-<eval ( <EVAL (<CONT.OSTR> * <ARGN2>)> / 100)>
+      ELSEIF ( <LOCAL.POISON_RESIST> > <ARGN2> )
+         CONT.HITS=<CONT.HITS> -<eval ( <EVAL (<CONT.OSTR> * <LOCAL.POISON_RESIST>)> / 100 )>
+      ENDIF
+
+      MORE2=<MORE2>-1
+      TIMER=<ARGN3>
+   ELSE
+      REMOVE
+   ENDIF
+   RETURN 1
+
+//********************************************************************//
+[FUNCTION f_poisonresist]
+//gorget 5%, helmet/gauntlets/armplates 10%, leggings 20%, legplates 25%, fem breast/male breast 40%
+LOCAL.Poisonlayer1=<EVAL (<f_calc_mats layer_collar> * 5)>
+LOCAL.Poisonlayer2=<EVAL (<f_calc_mats layer_pants> * 20)>
+LOCAL.Poisonlayer3=<EVAL (<f_calc_mats layer_shirt> * 40)>
+LOCAL.Poisonlayer4=<EVAL (<f_calc_mats layer_helm> * 10)>
+LOCAL.Poisonlayer5=<EVAL (<f_calc_mats layer_gloves> * 10)>
+LOCAL.Poisonlayer6=<EVAL (<f_calc_mats layer_chest> * 40)>
+LOCAL.Poisonlayer7=<EVAL (<f_calc_mats layer_arms> * 10)>
+LOCAL.Poisonlayer8=<EVAL (<f_calc_mats layer_legs> * 25)>
+
+LOCAL.PoisonResistance=<eval (<LOCAL.Poisonlayer1> + <LOCAL.Poisonlayer2> + <LOCAL.Poisonlayer3> + <LOCAL.Poisonlayer4> + <LOCAL.Poisonlayer5> + <LOCAL.Poisonlayer6> + <LOCAL.Poisonlayer7> + <LOCAL.Poisonlayer8>)>
+IF (<UID.<ARGS>.OSTR> > 120)
+     LOCAL.PoisonResistance = <eval (<LOCAL.PoisonResistance> + ((<UID.<ARGS>.OSTR> - 120) * 10))>
+ENDIF
+RETURN <LOCAL.PoisonResistance>
+
+//********************************************************************//
+[FUNCTION f_calc_mats]
+IF (strmatch("*chrome*","<findlayer.<args>.name>")
+   LOCAL.POISONBASE=12//max of 2.4% full set gives 1.5
+ELSEIF (strmatch("*terathane*","<findlayer.<args>.name>")
+   LOCAL.POISONBASE=30
+ELSEIF (strmatch("*titanium*","<findlayer.<args>.name>")//set to 20
+   LOCAL.POISONBASE=45
+ELSEIF (strmatch("*agapite*","<findlayer.<args>.name>")
+   LOCAL.POISONBASE=60
+ELSEIF (strmatch("*shadow*","<findlayer.<args>.name>")
+   LOCAL.POISONBASE=60
+ELSEIF (strmatch("*verite*","<findlayer.<args>.name>")
+   LOCAL.POISONBASE=80
+ELSEIF (strmatch("*stronghold*","<findlayer.<args>.name>")
+   LOCAL.POISONBASE=85
+ELSEIF (strmatch("*verminard*","<findlayer.<args>.name>")
+   LOCAL.POISONBASE=85
+ELSEIF (strmatch("*valorite*","<findlayer.<args>.name>")
+   LOCAL.POISONBASE=85
+ELSEIF (strmatch("*mytheril*","<findlayer.<args>.name>")
+   LOCAL.POISONBASE=90
+ELSEIF (strmatch("*skargard*","<findlayer.<args>.name>")
+   LOCAL.POISONBASE=90
+ELSEIF (strmatch("*adamantine*","<findlayer.<args>.name>")
+   LOCAL.POISONBASE=95
+ELSEIF (strmatch("*blackrock*","<findlayer.<args>.name>")
+   LOCAL.POISONBASE=95
+ELSEIF (strmatch("*bloodrock*","<findlayer.<args>.name>")
+   LOCAL.POISONBASE=110
+ELSEIF (strmatch("*enriched*","<findlayer.<args>.name>")
+   LOCAL.POISONBASE=120
+ELSEIF (strmatch("*phoenix*","<findlayer.<args>.name>")
+   LOCAL.POISONBASE=125
+ELSEIF (strmatch("*ranger*","<findlayer.<args>.name>")
+   LOCAL.POISONBASE=50
+ELSEIF (strmatch("*green dragon*","<findlayer.<args>.name>")
+   LOCAL.POISONBASE=50
+ELSEIF (strmatch("*red dragon*","<findlayer.<args>.name>")
+   LOCAL.POISONBASE=50
+ELSEIF (strmatch("*terathane scale*","<findlayer.<args>.name>")
+   LOCAL.POISONBASE=60
+ELSEIF (strmatch("*crystal dragon*","<findlayer.<args>.name>")
+   LOCAL.POISONBASE=60
+EndIf
+RETURN <LOCAL.POISONBASE>
+
+
+//********************************************************************//
+//                     POISON SKILLCHECK FUNCTION                     //
+//********************************************************************//
+[FUNCTION POISONING_CHECKFAIL]
+  IF ( RAND(1000) > (((2900+<POISONING>)/4) - (<ARGN1>*50)) )
+     SYSMESSAGE @62 You fail to poison <ACT.NAME>
+     IF RAND(3) = 1
+        TRY UID.<ARGN2>.MORE2=<EVAL (<ARGN3>-1)>	//reduces a charge on the weapon on fail
+     ENDIF
+     SERV.LOG Test::<NAME> failed to poison <ACT.NAME> with <UID.<ARGN2>.NAME>.
+     RETURN 0
+  ENDIF
+  
+  TRY UID.<ARGN2>.MORE2=<EVAL (<ARGN3>-1)>	//reduces a charge on the weapon on success
+  SYSMESSAGE @62 You successfully poison <ACT.NAME>
+  SKILLCHECK_START Skill_Poisoning
+  RETURN 1
+
+[FUNCTION TEST_POISONING]
+SRC.NEWITEM i_poisoning<argn>
+SRC.ACT.EQUIP
+
+[EOF]

@@ -1,0 +1,1159 @@
+// #-----------#
+// # CHANGELOG #
+// #-----------#
+//
+// 18/08/18 - Wigifer - Removed random loot from these monsters, ready for conversion to the new f_central_loot table.
+// 23/08/18 - Wigifer - Dropped Blade Spirits from 200/200 Wrestling/Tactics to 100/100. Dumb levels of damage.
+
+//General characters. MPZ UO Shard.
+//Assembled by Kell. (evren@portugalmail.pt)
+//Revamped by Warman. (warman@mail.pt)
+//Changed loot for @DeathCorpse event on all NPCs, by Yin (yinling@hong-kong-1.com) 25.03.2006
+//Changed for region kill related loot system by Yin (yinling@hong-kong-1.com) 04.04.2006
+
+
+
+//********************************************************************//
+//                              SUMMONS                               //
+//********************************************************************//
+[CHARDEF 023d]
+//T2A ENERGY VORTEX
+//Can't be seen by non-T2A clients, so we need to fix this before it should be used.
+//Regular clients will not be able to see what is attacking them.
+//In the mean time when this monster is summoned it will call monster number 1063, a hand-edited energy vortex.
+DEFNAME=c_vortex
+NAME=energy vortex
+CAN=MT_WALK|MT_FLY|MT_FIRE_IMMUNE|MT_RUN|MT_USEHANDS
+
+SOUND=snd_ELEMENTL_AIRELEM5
+ICON=i_FX_Blade_Spirit_1
+DAM=8,25
+ARMOR=30
+FOODTYPE=
+BLOODCOLOR=colors_pink
+CATEGORY=Miscellaneous
+SUBSECTION=Blade Spirits
+DESCRIPTION=Energy Vortex
+
+ON=@Create
+  //BODY	= c_elem_air //Edit Out to be New Style
+  NAME		= energy vortex
+  NPC		= brain_beserk
+  STR		= 350
+  DEX		= 100
+  INT		= {62 72}
+
+  TACTICS	= 100.0
+  WRESTLING	= 100.0
+  FAME		= 500
+  KARMA		= -100
+
+  COLOR		= { 0a 1 0b 1 0c 1 0d 1 023 1 01e 1 01e 1 }
+  IF ( <COLOR> == 01e )
+     NAME	= greater energy vortex 
+     STR	= 500
+  elseIF ( <COLOR> == 023 )
+     NAME	= pure energy vortex 
+     DEX	= 100
+     STR	= 600
+  ENDIF
+
+  ITEMNEWBIE	= i_light_source
+  ATTR		= attr_magic|attr_newbie
+
+ON = @Hittry
+   IF ( (<FLAGS> & statf_conjured) && <REGION.GUARDED> )
+      REMOVE
+   ENDIF
+
+ON = @EnvironChange
+   IF ( (<FLAGS> & statf_conjured) && <REGION.GUARDED> )
+      REMOVE
+   ENDIF
+
+//********************************************************************//
+[CHARDEF 023e]
+DEFNAME=c_blade_spirit
+DEFNAME2=blade_spirits
+Name=Blade Spirits
+SOUND=snd_WEAPONS_SWORD1
+ICON=i_FX_Blade_Spirit_1
+DAM=3,5
+ARMOR=20
+CAN=MT_WALK|MT_RUN|MT_FLY
+
+DESCRIPTION=Blade Spirits
+SUBSECTION=Blade Spirits
+CATEGORY=Miscellaneous
+
+ON=@Create
+   NPC=brain_beserk
+
+   STR=150
+   DEX=500
+   INT={62 72}
+   FAME=0
+   KARMA=-100
+
+   TACTICS=100.0
+   WRESTLING=100.0
+   POISONING=0.0
+
+ON = @Hittry
+   IF ( (<FLAGS> & statf_conjured) && <REGION.GUARDED> )
+      REMOVE
+   ENDIF
+
+ON = @EnvironChange
+   IF ( (<FLAGS> & statf_conjured) && <REGION.GUARDED> )
+      REMOVE
+   ENDIF
+
+
+//********************************************************************//
+//                             ELEMENTALS                             //
+//********************************************************************//
+[CHARDEF 0d]
+DEFNAME=c_elem_air
+NAME=Air Elemental
+SOUND=snd_ELEMENTL_AIRELEM1
+ICON=i_pet_elem_air
+ANIM=079dff
+DAM=5,13
+ARMOR=30
+CAN=MT_WALK|MT_RUN|MT_FLY
+
+FOODTYPE=
+DESIRES=r_mountains
+BLOODCOLOR=colors_white
+
+CATEGORY=Monsters
+SUBSECTION=Elementals
+DESCRIPTION=Air Elemental
+
+ON=@Create
+   NPC=brain_monster
+   STR={125 155}
+   DEX={165 185}
+   INT={71 93}
+   FAME={1000 6000}
+   KARMA={-4000 -4999}
+   PARRYING={65.0 75.0}
+   MAGERY={60.0 75.0}
+   MAGICRESISTANCE={60.0 75.0}
+   TACTICS={60.0 80.0}
+   WRESTLING={60.0 80.0}
+   	
+ON = @Hittry
+   IF ( (<FLAGS> & statf_conjured) && <REGION.GUARDED> )
+      REMOVE
+   ENDIF
+
+ON = @EnvironChange
+   IF ( (<FLAGS> & statf_conjured) && <REGION.GUARDED> )
+      REMOVE
+   ENDIF
+
+[FUNCTION loot_elem_air]
+   addlootgold ,550
+   addlootitem ,random_potion,1
+   addlootitem ,random_potion,1
+   addlootrandom ,20,25, 1, random_LOWER_MERC
+   addlootrandom ,2,4,1,RANDOM_SCROLL
+   addlootmisc 3,i_scroll_blank
+
+//********************************************************************//
+[CHARDEF 0e]
+// Should eat metals and ores.
+DEFNAME=c_elem_earth
+NAME=Earth Elemental
+SOUND=snd_ELEMENTL_ERTHEL1
+ICON=i_pet_elem_earth
+ANIM=079c7f
+DAM=5,20
+ARMOR=17
+RESOURCES=8 tm_rocks
+CAN=MT_WALK|MT_GHOST
+
+FOODTYPE=15 t_arock,t_coin,t_ore,t_ingot
+DESIRES=r_caves
+BLOODCOLOR=colors_brown
+
+CATEGORY=Monsters
+SUBSECTION=Elementals
+DESCRIPTION=Earth Elemental
+
+ON=@Create
+   NPC=brain_monster
+
+   STR={125 155}
+   DEX={66 85}
+   INT={71 92}
+   FAME={1000 6000}
+   KARMA={-3000 -3999}
+
+   PARRYING={40.0 65.0}
+   MAGICRESISTANCE={50.0 95.0}
+   TACTICS={60.0 100.0}
+   WRESTLING={60.0 100.0}
+   MINING=80.0
+
+   
+[FUNCTION loot_elem_earth]
+   addlootgold ,200
+   addlootrandom ,20,25, 1, random_LOWER_MERC
+   addlootrandom ,2,6,3,random_jewel
+
+
+//********************************************************************//
+[CHARDEF 0f]
+DEFNAME=c_elem_fire
+NAME=Fire Elemental
+SOUND=snd_ELEMENTL_FIRELEM1
+ICON=i_pet_elem_fire
+ANIM=079dff
+DAM=4,12
+ARMOR=20
+RESOURCES=8 t_MAGIC
+CAN=MT_WALK|MT_FIRE_IMMUNE|MT_RUN|MT_USEHANDS
+
+FOODTYPE=t_fire
+DESIRES=t_LAVA
+BLOODCOLOR=colors_red
+
+CATEGORY=Monsters
+SUBSECTION=Elementals
+DESCRIPTION=Fire Elemental
+
+
+ON=@Create
+   NPC=brain_monster
+
+   STR={125 155}
+   DEX={165 185}
+   INT={71 95}
+   FAME={1000 6000}
+   KARMA={-4000 -4999}
+
+   PARRYING={55.0 65.0}
+   MAGERY={60.0 75.0}
+   MAGICRESISTANCE={60.0 75.0}
+   TACTICS={80.0 100.0}
+   WRESTLING={70.0 100.0}
+
+   ITEMNEWBIE=i_light_source
+   ITEMNEWBIE=i_spellbook	// knows fire type spells.
+   ADDSPELL=s_fire_field
+   ADDSPELL=s_explosion
+   ADDSPELL=s_flamestrike
+   ADDSPELL=s_meteor_swarm
+   ADDSPELL=s_summon_elem_fire
+
+ON=@Death
+   // Create death explosion to damage those nearby.
+   NEWITEM=i_fx_explode
+   act.TYPE=T_EXPLOSION
+   act.ATTR=ATTR_MOVE_NEVER | ATTR_CAN_DECAY
+   act.LINK=<uid>
+   act.morex=10 // damage
+   act.morey=090 // wFlags DAMAGE_GENERAL
+   act.morez=2 // iDist
+   act.p=<p>
+   act.TIMERD=1 // immediate decay
+
+[FUNCTION loot_elem_fire]
+   addlootgold ,350
+   addlootrandom ,20,25, 1, random_LOWER_MERC
+   addlootrandom ,7,12,3,random_jewel
+
+  
+//********************************************************************//
+[CHARDEF 010]
+DEFNAME=c_elem_water
+NAME=Water Elemental
+SOUND=snd_ELEMENTL_WATREL1
+ICON=i_pet_elem_water
+ANIM=079dff
+DAM=4,12
+ARMOR=20
+RESOURCES=8 t_MAGIC
+CAN=MT_WALK|MT_SWIM|MT_USEHANDS
+
+FOODTYPE=t_water_wash
+DESIRES=r_WATER
+BLOODCOLOR=colors_blue
+CATEGORY=Monsters
+SUBSECTION=Elementals
+DESCRIPTION=Water Elemental
+
+
+ON=@Create
+   NPC=brain_monster
+
+   STR={125 155}
+   DEX={66 85}
+   INT={71 95}
+   FAME={1000 6000}
+   KARMA={-3000 -3999}
+
+   PARRYING={55.0 65.0}
+   MAGERY={60.0 75.0}
+   MAGICRESISTANCE={60.0 75.0}
+   TACTICS={55.0 65.0}
+   WRESTLING={70.0 90.0}
+
+   
+[FUNCTION loot_elem_water]
+   addlootgold ,190
+   addlootitem ,random_potion,1
+   addlootmisc 8,RANDOM_REAGENT
+   addlootmisc 8,RANDOM_REAGENT
+   addlootrandom ,20,25, 1, random_LOWER_MERC
+
+
+//********************************************************************//
+[CHARDEF 01012]
+DEFNAME=c_m_elem_blood
+NAME=Blood Elemental
+ID=c_elem_water
+SOUND=snd_ELEMENTL_WATREL1
+DAM=4,43
+ARMOR=50
+RESOURCES=i_reag_blood_vial
+CAN=MT_WALK|MT_RUN
+DESIRES=r_dungeon_rock
+
+CATEGORY=Monsters
+SUBSECTION=Elementals
+DESCRIPTION=Blood Elemental
+
+ON=@Create
+   NPC=BRAIN_MONSTER
+   COLOR=colors_blood
+
+   STR={900 1000}
+   DEX={80 185}
+   INT={143 153}
+   FAME={1000 2000}
+   KARMA={-5000 -5999}
+
+   PARRYING={85.0 95.0}
+   MAGERY={85.0 100.0}
+   MAGICRESISTANCE={80.0 95.0}
+   TACTICS={80.0 100.0}
+   WRESTLING={80.0 100.0}
+
+   ITEMNEWBIE=i_spellbook	// knows fire type spells.
+   ADDSPELL=s_weaken
+   ADDSPELL=s_clumsy
+   
+[FUNCTION loot_elem_blood]
+   addlootgold ,1800
+   addlootitem ,loot_newrares_Easy,1
+   addlootitem ,random_scroll,1
+   addlootrandom ,200,300,1,random_rare_1
+   addlootmisc 8,RANDOM_REAGENT
+   addlootmisc 8,RANDOM_REAGENT
+   addlootrandom ,10,15, 1, random_MERC
+
+//********************************************************************//
+[CHARDEF 01018]
+DEFNAME=c_m_elem_ice
+NAME=Ice Elemental
+ID=c_elem_earth
+SOUND=snd_ELEMENTL_ERTHEL1
+ICON=i_pet_elem_earth
+DAM=5,26
+ARMOR=20
+CAN=MT_WALK|mt_run
+
+RESOURCES=8 t_magic
+DESIRES=r_caves
+
+CATEGORY=Monsters
+SUBSECTION=Elementals
+DESCRIPTION=Ice Elemental
+
+ON=@Create
+   NPC=brain_monster
+   COLOR=color_ice
+
+   STR={155 185}
+   DEX={86 115}
+   INT={93 103}
+   FAME={100 2000}
+   KARMA={-3000 -3999}
+
+   PARRYING={40.0 65.0}
+   MAGICRESISTANCE={40.0 95.0}
+   TACTICS={70.0 100.0}
+   WRESTLING={60.0 100.0}
+
+[FUNCTION loot_elem_ice]
+   addlootgold ,900
+   addlootmisc 8,RANDOM_REAGENT   
+   addlootrandom ,15,25, 1, random_LOWER_MERC
+
+//********************************************************************//
+[CHARDEF 01038]
+DEFNAME=c_m_efreet
+NAME=Efreet
+ID=c_elem_air
+SOUND=snd_ELEMENTL_AIRELEM1
+ICON=i_pet_elem_air
+DAM=8,27
+ARMOR=27
+RESOURCES=8 t_magic
+CAN=MT_WALK
+
+FOODTYPE=
+DESIRES=r_mountains
+
+CATEGORY=Monsters
+SUBSECTION=Elementals
+DESCRIPTION=Efreet
+
+ON=@Create
+   NPC=brain_monster
+   COLOR=color_rock
+
+   STR={325 355}
+   DEX={265 285}
+   INT={93 103}
+   FAME={100 2000}
+   KARMA={-3000 -3999}
+
+   PARRYING={65.0 75.0}
+   MAGERY={60.0 75.0}
+   MAGICRESISTANCE={60.0 75.0}
+   TACTICS={60.0 80.0}
+   WRESTLING={60.0 80.0}
+
+[FUNCTION loot_EFREET]
+   addlootgold ,950
+   addlootitem ,loot_newrares_Easy,1
+   addlootitem ,Random_Potion,1
+   addlootrandom ,200,300,1,random_rare_1
+   addlootrandom ,15,25, 1, random_LOWER_MERC
+
+//********************************************************************//
+[CHARDEF 01043]
+DEFNAME=c_m_elem_poison
+NAME=Poison Elemental
+ID=c_elem_air
+SOUND=snd_ELEMENTL_WATREL1
+ICON=i_pet_elem_air
+CAN=MT_WALK|mt_run
+
+DAM=9,31
+ARMOR=35
+RESOURCES=3 t_magic
+DESIRES=r_dungeon_rock
+
+CATEGORY=Monsters
+SUBSECTION=Elementals
+DESCRIPTION=Poison Elemental
+
+ON=@Create
+   NPC=brain_monster
+   COLOR=colors_poison
+
+   STR={425 515}
+   DEX={165 185}
+   INT={106 116}
+   FAME={100 2000}
+   KARMA={-5000 -5999}
+
+   PARRYING={75.0 85.0}
+   MAGERY={80.0 95.0}
+   MAGICRESISTANCE={80.0 95.0}
+   TACTICS={80.0 100.0}
+   WRESTLING={70.0 90.0}
+
+   ITEMNEWBIE=i_spellbook	// knows fire type spells.
+   ADDSPELL=s_poison
+   ADDSPELL=s_clumsy
+   ADDSPELL=s_paralyze
+
+   
+[FUNCTION loot_elem_poison]
+   addlootgold ,2100
+   addlootitem ,Random_Potion,1
+   addlootmisc 8,RANDOM_REAGENT
+   addlootrandom ,15,25, 1, random_LOWER_MERC
+   addlootmisc 2,RANDOM_SCROLL
+
+//********************************************************************//
+[CHARDEF 01051]
+DEFNAME=c_m_elem_snow
+NAME=Snow Elemental
+ID=c_elem_earth
+SOUND=snd_ELEMENTL_AIRELEM1
+ICON=i_pet_elem_earth
+DAM=4,24
+ARMOR=25
+
+RESOURCES=8 t_magic
+DESIRES=r_mountains
+
+CATEGORY=Monsters
+SUBSECTION=Elementals
+DESCRIPTION=Snow Elemental
+
+
+ON=@Create
+   NPC=brain_monster
+   COLOR=color_snow
+
+   STR={325 355}
+   DEX={165 185}
+   INT={100 110}
+   FAME={100 2000}
+   KARMA={-4000 -4999}
+
+   PARRYING={65.0 75.0}
+   MAGICRESISTANCE={60.0 75.0}
+   TACTICS={80.0 100.0}
+   WRESTLING={80.0 100.0}
+
+[FUNCTION loot_elem_snow]
+   addlootgold ,1100
+   addlootmisc 12,i_ore_iron
+   addlootrandom ,15,25, 1, random_LOWER_MERC
+   addlootmisc 12,i_reag_black_pearl
+
+//********************************************************************//
+//                     GIANT INSECTS & REPTILES                       //
+//********************************************************************//
+[CHARDEF 015]
+DEFNAME=c_snake_giant
+NAME=Giant Serpent
+SOUND=snd_MONSTER_SEASERP1
+ICON=i_pet_SNAKE_GIANT
+ANIM=078c7f
+DAM=5,19
+ARMOR=16
+RESOURCES=8 i_ribs_raw,5 i_hide,8 i_reag_serpent_scale
+CAN=MT_WALK|MT_SWIM
+
+FOODTYPE=6 t_meat_raw
+AVERSIONS=r_civilization
+DESCRIPTION=Giant Serpent
+SUBSECTION=Giant Insects and Reptiles
+CATEGORY=Monsters
+
+ON=@Create
+   NPC=brain_monster
+   COLOR=colors_snake
+
+   STR={185 215}
+   DEX={56 80}
+   INT={56 80}
+   FAME={600 2000}
+   KARMA={-3000 -3999}
+
+   PARRYING={45.0 60.0}
+   MAGICRESISTANCE={25.0 40.0}
+   TACTICS={65.0 70.0}
+   WRESTLING={40.0 60.0}
+   POISONING={70.0 100.0}
+
+//********************************************************************//
+[CHARDEF 01c]
+DEFNAME=c_spider_giant
+NAME=Giant Spider
+SOUND=snd_MONSTER_GISPIDR1
+ICON=i_pet_SPIDER_GIANT
+ANIM=078c7f
+DAM=3,15
+ARMOR=8
+RESOURCES={ 3 8 } i_reag_spider_silk
+CAN=MT_WALK
+
+FOODTYPE=15 t_meat_raw
+
+CATEGORY=Monsters
+SUBSECTION=Giant Insects and Reptiles
+DESCRIPTION=Giant Spider
+
+ON=@Create
+   NPC=brain_monster
+
+   STR={76 100}
+   DEX={76 95}
+   INT={36 60}
+   FAME={300 1000}
+   KARMA={-999 -2999}
+
+   PARRYING={35.0 55.0}
+   MAGICRESISTANCE={25.0 40.0}
+   TACTICS={35.0 50.0}
+   WRESTLING={50.0 65.0}
+   POISONING={60.0 80.0}
+   TAMING=70.0
+
+
+//********************************************************************//
+[CHARDEF 030]
+DEFNAME=c_scorpion_giant
+NAME=Giant Scorpion
+SOUND=snd_MONSTER_GSCORP1
+ICON=i_pet_SCORP
+ANIM=078c7f
+CAN=MT_WALK
+
+DAM=3,12
+ARMOR=14
+RESOURCES=8 i_ribs_raw
+FOODTYPE=15 t_meat_raw
+AVERSIONS=r_civilization
+DESCRIPTION=Giant Scorpion
+SUBSECTION=Giant Insects and Reptiles
+CATEGORY=Monsters
+
+ON=@Create
+   NPC=brain_monster
+  
+   STR={93 135}
+   DEX={86 95}
+   INT={46 68}
+   FAME={100 2000}
+   KARMA={-2000 -2999}
+
+   PARRYING={60.0 70.0}
+   MAGICRESISTANCE={30.0 35.0}
+   TACTICS={60.0 75.0}
+   WRESTLING={50.0 65.0}
+   POISONING={80.0 100.0}
+   TAMING=60.0
+
+ON = @EnvironChange
+   IF ( <FLAGS> & statf_conjured )
+      POISONING = 0
+   ENDIF
+   
+
+//********************************************************************//
+[CHARDEF 03a]
+DEFNAME=c_wisp
+NAME=Wisp
+SOUND=snd_MONSTER_WISP1
+ICON=i_pet_WISP
+ANIM=078c7f
+DAM=15,20
+ARMOR=20
+CAN=MT_WALK|MT_FLY|MT_FIRE_IMMUNE|MT_USEHANDS
+
+FOODTYPE=t_spell
+RESOURCES=t_magic
+AVERSIONS=r_civilization
+CATEGORY=Miscellaneous
+SUBSECTION=Wisp
+DESCRIPTION=Wisp
+
+ON=@Create
+   NPC=brain_animal
+
+   STR={195 225}
+   DEX={195 225}
+   INT={137 147}
+   FAME={0 100}
+   KARMA=0
+
+   PARRYING=80.0
+   MAGERY=80.0
+   MAGICRESISTANCE=80.0
+   TACTICS=80.0
+   WRESTLING=80.0
+
+   ITEMNEWBIE=i_light_source
+   ATTR=attr_magic|attr_newbie
+
+
+//********************************************************************//
+[CHARDEF 050]
+DEFNAME=c_toad_giant
+NAME=Giant Toad
+SOUND=snd_MONSTER_GIANTTOAD1
+ICON=i_pet_toad_giant
+ANIM=078c7f
+DAM=2,20
+ARMOR=12
+RESOURCES=6 i_ribs_raw
+CAN=MT_WALK
+
+FOODTYPE=5 t_meat_raw
+AVERSIONS=r_civilization
+DESCRIPTION=Giant Toad
+SUBSECTION=Giant Insects and Reptiles
+CATEGORY=Monsters
+
+ON=@Create
+   NPC=brain_monster
+ 
+   STR={76 100}
+   DEX={6 25}
+   INT={37 50}
+   FAME={100 2000}
+   KARMA={-2000 -2999}
+
+   PARRYING={38.0 72.0}
+   MAGICRESISTANCE={25.0 40.0}
+   TACTICS={40.0 60.0}
+   WRESTLING={40.0 60.0}
+   TAMING=85.0
+
+//********************************************************************//
+[CHARDEF 01045]
+DEFNAME=c_m_silver_serpent
+NAME=Silver Serpent
+ID=c_SNAKE_GIANT
+SOUND=snd_ANIMALS_SNAKE1
+ICON=i_pet_SNAKE
+
+DAM=2,24
+ARMOR=20
+RESOURCES=1 i_ribs_raw, 8 i_reag_serpent_scale
+
+CAN=MT_WALK
+
+
+CATEGORY=Monsters
+SUBSECTION=Giant Insects and Reptiles
+DESCRIPTION=Silver Serpent
+
+ON=@Create
+   NPC=BRAIN_MONSTER
+
+   STR={160 360}
+   DEX={15 35}
+   INT={75 85}
+   FAME={100 2000}
+   KARMA={-4000 -4999}
+
+   MAGICRESISTANCE={25.0 40.0}
+   TACTICS={60.0 80.0}
+   WRESTLING={60.0 80.0}
+   TAMING=65.0
+
+
+//********************************************************************//
+[CHARDEF 01049]
+DEFNAME=c_m_ice_serpent
+NAME=Ice Serpent
+ID=c_SNAKE_GIANT
+SOUND=snd_MONSTER_SEASERP1
+ICON=i_pet_SNAKE_GIANT
+
+DAM=5,19
+ARMOR=16
+RESOURCES=20 i_ribs_raw, 15 i_hide, 8 i_reag_serpent_scale
+
+CAN=MT_WALK
+
+FOODTYPE=6 t_meat_raw
+AVERSIONS=r_civilization
+
+CATEGORY=Monsters
+SUBSECTION=Giant Insects and Reptiles
+DESCRIPTION=Ice Serpent
+
+ON=@Create
+   NPC=brain_monster
+   COLOR=color_ice
+
+   STR={215 245}
+   DEX={56 80}
+   INT={66 85}
+   FAME={100 2000}
+   KARMA={-4000 -4999}
+
+   PARRYING={45.0 60.0}
+   MAGICRESISTANCE={25.0 40.0}
+   TACTICS={75.0 80.0}
+   WRESTLING={60.0 80.0}
+
+//********************************************************************//
+[CHARDEF 01050]
+DEFNAME=c_m_lava_serpent
+NAME=Lava Serpent
+ID=c_SNAKE_GIANT
+CAN=MT_WALK|MT_FIRE_IMMUNE
+
+DAM=7,25
+ARMOR=20
+FOODTYPE=6 t_meat_raw
+RESOURCES=20 i_ribs_raw, 15 i_hide, 8 i_reag_serpent_scale
+AVERSIONS=r_civilization
+
+CATEGORY=Monsters
+SUBSECTION=Giant Insects and Reptiles
+DESCRIPTION=Lava Serpent
+
+ON=@Create
+   NPC=brain_monster
+   COLOR=065a
+
+   STR={385 415}
+   DEX={56 80}
+   INT={66 85}
+   FAME={100 2000}
+   KARMA={-5000 -5999}
+
+   PARRYING={45.0 60.0}
+   MAGICRESISTANCE={25.0 40.0}
+   TACTICS={65.0 70.0}
+   WRESTLING={60.0 80.0}
+
+//********************************************************************//
+[CHARDEF 01052]
+DEFNAME=c_m_frostspider
+NAME=Frost Spider
+ID=c_SPIDER_GIANT
+SOUND=snd_MONSTER_GISPIDR1
+ICON=i_pet_SPIDER_GIANT
+DAM=3,19
+ARMOR=10
+RESOURCES=8 i_reag_spider_silk, 5 t_eerie_stuff
+CAN=MT_WALK
+
+FOODTYPE=15 t_meat_raw
+
+CATEGORY=Monsters
+SUBSECTION=Giant Insects and Reptiles
+DESCRIPTION=Frost Spider
+
+
+
+ON=@Create
+   NPC=BRAIN_MONSTER
+   COLOR=color_snow
+
+   STR={110 140}
+   DEX={76 95}
+   INT={46 70}
+   FAME={100 2000}
+   KARMA={-1000 -5000}
+
+   PARRYING={60.0 65.0}
+   MAGICRESISTANCE={75.0 90.0}
+   TACTICS={75.0 90.0}
+   WRESTLING={50.0 65.0}
+ 
+//********************************************************************//
+//                               HUMANS                               //
+//********************************************************************//
+[CHARDEF 0190]
+DEFNAME=c_man
+Name=Man
+ICON=i_pet_MAN
+CAN=MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS
+RESOURCES=i_flesh_head2, i_flesh_torso, i_flesh_right_arm, i_flesh_left_arm, i_flesh_left_leg, i_flesh_right_leg, i_blood_2
+FOODTYPE=15 t_food, t_fruit
+DESIRES=i_gold,e_notoriety
+AVERSIONS=t_TRAP,t_eerie_stuff
+BLOODCOLOR=0
+TSPEECH=spk_human_prime
+TSPEECH=spk_human_default
+DESCRIPTION=Man
+SUBSECTION=Miscellaneous
+CATEGORY=Civilized
+
+ON=@Create
+   NPC=brain_human
+   COLOR=colors_skin
+
+   STR={50 75}
+   INT={50 75}
+   DEX={50 75}
+
+   FENCING={15.0 38.0}
+   PARRYING={15.0 38.0}
+   SWORDSMANSHIP={15.0 38.0}
+   WRESTLING={15.0 38.0}
+   MACEFIGHTING={15.0 38.0}
+   MAGICRESISTANCE={15.0 38.0}
+   TACTICS={15.0 38.0}
+
+//********************************************************************//
+[CHARDEF 0191]
+DEFNAME=c_woman
+NAME=Woman
+CAN=MT_EQUIP|MT_WALK|MT_RUN|MT_FEMALE|MT_USEHANDS
+ICON=i_pet_woman
+RESOURCES=i_flesh_head_2, i_flesh_torso, i_flesh_right_arm, i_flesh_left_arm, i_flesh_left_leg, i_flesh_right_leg, i_blood_2
+FOODTYPE=15 t_food,t_fruit
+AVERSIONS=t_TRAP,t_eerie_stuff
+DESIRES=i_gold,e_notoriety
+BLOODCOLOR=0
+TSPEECH=spk_human_prime
+TSPEECH=spk_human_default
+DESCRIPTION=Woman
+SUBSECTION=Miscellaneous
+CATEGORY=Civilized
+
+ON=@Create
+   NPC=brain_human
+   COLOR=colors_skin
+
+   STR={50 75}
+   INT={50 75}
+   DEX={50 75}
+
+   FENCING={15.0 38.0}
+   PARRYING={15.0 38.0}
+   SWORDSMANSHIP={15.0 38.0}
+   WRESTLING={15.0 38.0}
+   MACEFIGHTING={15.0 38.0}
+   MAGICRESISTANCE={15.0 38.0}
+   TACTICS={15.0 38.0}
+
+//********************************************************************//
+[CHARDEF 0192]
+//Ghost robe is not automatic !
+DEFNAME=c_ghost_man
+NAME=Ghost
+ICON=i_pet_MAN
+CAN=MT_EQUIP|MT_WALK|MT_RUN|MT_GHOST
+
+RESOURCES=
+FOODTYPE=
+AVERSIONS=t_TRAP,t_eerie_stuff
+DESIRES=i_gold,e_notoriety
+DESCRIPTION=Ghost
+SUBSECTION=Miscellaneous
+CATEGORY=Civilized
+
+ON=@Create
+   NPC=brain_human
+
+   FENCING={15.0 38.0}
+   PARRYING={15.0 38.0}
+   SWORDSMANSHIP={15.0 38.0}
+   WRESTLING={15.0 38.0}
+   MACEFIGHTING={15.0 38.0}
+   MAGICRESISTANCE={15.0 38.0}
+   TACTICS={15.0 38.0}
+
+//********************************************************************//
+[CHARDEF 0193]
+//Ghost robe is not automatic !
+DEFNAME=c_ghost_woman
+NAME=Ghost
+ICON=i_pet_woman
+CAN=MT_EQUIP|MT_WALK|MT_RUN|MT_GHOST|MT_FEMALE
+
+RESOURCES=8 i_ribs_raw
+FOODTYPE=
+DESIRES=i_gold,e_notoriety
+AVERSIONS=t_TRAP,t_eerie_stuff
+DESCRIPTION=Ghost Woman
+SUBSECTION=Miscellaneous
+CATEGORY=Civilized
+
+ON=@Create
+   NPC=brain_human
+
+   FENCING={15.0 38.0}
+   PARRYING={15.0 38.0}
+   SWORDSMANSHIP={15.0 38.0}
+   WRESTLING={15.0 38.0}
+   MACEFIGHTING={15.0 38.0}
+   MAGICRESISTANCE={15.0 38.0}
+   TACTICS={15.0 38.0}
+
+//********************************************************************//
+[CHARDEF 01a4]
+//Male Kid (Blond Hair) (not in t2a)
+//NOTE: NOT in T2a !
+DEFNAME=c_child_mb
+NAME=Child
+ID=C_MAN
+RESOURCES=4 t_food
+CAN=MT_WALK|MT_RUN|MT_USEHANDS
+
+ICON=i_pet_MAN
+FOODTYPE=15 t_food,t_fruit
+DESIRES=i_gold,e_notoriety
+AVERSIONS=t_TRAP,t_eerie_stuff
+TSPEECH=spk_human_prime
+TSPEECH=spk_human_default
+TEVENTS=e_Human_HearUnk
+DESCRIPTION=Child (Blond)
+SUBSECTION=Miscellaneous
+CATEGORY=Civilized
+
+ON=@Create
+   NPC=brain_human
+
+   STR={50 75}
+   INT={50 75}
+   DEX={50 75}
+
+   FENCING={8.0 19.0}
+   PARRYING={8.0 19.0}
+   SWORDSMANSHIP={8.0 19.0}
+   WRESTLING={8.0 19.0}
+   MACEFIGHTING={8.0 19.0}
+   MAGICRESISTANCE={8.0 19.0}
+   TACTICS={8.0 19.0}
+
+//********************************************************************//
+[CHARDEF 01a5]
+//Male Kid (Dark Hair)
+//NOTE: NOT in T2a !
+DEFNAME=c_child_md
+NAME=Child
+ID=C_MAN
+CAN=MT_WALK|MT_RUN|MT_USEHANDS
+
+ICON=i_pet_MAN
+FOODTYPE=15 t_food,t_fruit
+DESIRES=i_gold,e_notoriety
+RESOURCES=4 i_ribs_raw
+AVERSIONS=t_TRAP,t_eerie_stuff
+TSPEECH=spk_human_prime
+TSPEECH=spk_human_default
+TEVENTS=e_Human_HearUnk
+DESCRIPTION=Child (Brunette)
+SUBSECTION=Miscellaneous
+CATEGORY=Civilized
+
+ON=@Create
+   NPC=brain_human
+
+   STR={50 75}
+   INT={50 75}
+   DEX={50 75}
+
+   FENCING={8.0 19.0}
+   PARRYING={8.0 19.0}
+   SWORDSMANSHIP={8.0 19.0}
+   WRESTLING={8.0 19.0}
+   MACEFIGHTING={8.0 19.0}
+   MAGICRESISTANCE={8.0 19.0}
+   TACTICS={8.0 19.0}
+
+//********************************************************************//
+[CHARDEF 01a6]
+//Female Kid (Blond Hair) (toddler)
+//NOTE: NOT in T2a !
+DEFNAME=c_child_fb
+ID=C_WOMAN
+NAME=Child
+CAN=MT_WALK|MT_RUN|MT_FEMALE|MT_USEHANDS
+
+ICON=i_pet_woman
+FOODTYPE=15 t_food,t_fruit
+DESIRES=i_gold,e_notoriety
+RESOURCES=4 i_ribs_raw
+AVERSIONS=t_TRAP,t_eerie_stuff
+TSPEECH=spk_human_prime
+TSPEECH=spk_human_default
+TEVENTS=e_Human_HearUnk
+DESCRIPTION=Child (Female Blonde)
+SUBSECTION=Miscellaneous
+CATEGORY=Civilized
+BLOODCOLOR=0
+
+ON=@Create
+   NPC=brain_human
+
+   STR={50 75}
+   INT={50 75}
+   DEX={50 75}
+
+   FENCING={8.0 19.0}
+   PARRYING={8.0 19.0}
+   SWORDSMANSHIP={8.0 19.0}
+   WRESTLING={8.0 19.0}
+   MACEFIGHTING={8.0 19.0}
+   MAGICRESISTANCE={8.0 19.0}
+   TACTICS={8.0 19.0}
+
+//********************************************************************//
+[CHARDEF 01a7]
+//Female Kid (Dark Hair)
+//NOTE: NOT in T2a !
+DEFNAME=c_child_fd
+NAME=Child
+ID=C_WOMAN
+CAN=MT_WALK|MT_RUN|MT_FEMALE|MT_USEHANDS
+
+ICON=i_pet_woman
+FOODTYPE=15 t_food,t_fruit
+DESIRES=i_gold,e_notoriety
+RESOURCES=4 i_ribs_raw
+AVERSIONS=t_TRAP,t_eerie_stuff
+TSPEECH=spk_human_prime
+TSPEECH=spk_human_default
+TEVENTS=e_Human_HearUnk
+DESCRIPTION=Child (Female Brunette)
+SUBSECTION=Miscellaneous
+CATEGORY=Civilized
+BLOODCOLOR=0
+
+ON=@Create
+   NPC=brain_human
+
+   STR={50 75}
+   INT={50 75}
+   DEX={50 75}
+
+   FENCING={8.0 19.0}
+   PARRYING={8.0 19.0}
+   SWORDSMANSHIP={8.0 19.0}
+   WRESTLING={8.0 19.0}
+   MACEFIGHTING={8.0 19.0}
+   MAGICRESISTANCE={8.0 19.0}
+   TACTICS={8.0 19.0}
+
+//********************************************************************//
+[CHARDEF 01a8]
+//Use this as our invis man id.
+DEFNAME=c_man_invisible
+NAME=Man
+CAN=MT_WALK|MT_RUN|MT_USEHANDS
+
+ICON=i_pet_MAN
+RESOURCES=4 i_ribs_raw
+FOODTYPE=15 t_food,t_fruit
+DESIRES=i_gold,e_notoriety
+AVERSIONS=t_TRAP,t_eerie_stuff
+DESCRIPTION=Man (Invis)
+SUBSECTION=Miscellaneous
+CATEGORY=Civilized
+
+ON=@Create
+   NPC=brain_human
+
+   STR={50 75}
+   INT={50 75}
+   DEX={50 75}
+
+   FENCING={8.0 19.0}
+   PARRYING={8.0 19.0}
+   SWORDSMANSHIP={8.0 19.0}
+   WRESTLING={8.0 19.0}
+   MACEFIGHTING={8.0 19.0}
+   MAGICRESISTANCE={8.0 19.0}
+   TACTICS={8.0 19.0}
+
+//********************************************************************//
+[CHARDEF 03db]
+DEFNAME=c_man_gm
+NAME=GM
+ICON=i_pet_MAN
+FOODTYPE=15 t_food, t_fruit
+CAN=MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS|MT_SWIM|MT_GHOST
+
+DESCRIPTION=GM Body
+SUBSECTION=Other Bodies
+CATEGORY=Miscellaneous
+
+ON=@Create
+   STR={130 150}
+   INT={170 190}
+   DEX={100 150}
+
+[EOF]

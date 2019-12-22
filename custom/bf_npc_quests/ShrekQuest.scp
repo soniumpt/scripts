@@ -1,0 +1,239 @@
+//Quest by Sqweak
+
+///Shrek
+[CHARDEF c_Q_Dragon]
+DEFNAME=c_q_Dragon
+ID=c_DRAGON_RED
+NAME=Maiden Devouring Dragon 
+SOUND=snd_MONSTER_DRAGON1
+ICON=i_pet_dragon
+DAM=10,39
+ARMOR=50
+RESOURCES=99 i_ribs_raw,8 i_reag_dragon_blood,2 i_hide
+CAN=MT_WALK|MT_FLY|MT_FIRE_IMMUNE
+FOODTYPE=80 t_meat_raw
+DESIRES=i_gold
+AVERSIONS=r_water,r_civilization
+TEVENTS = e_npc_dragon
+
+ON=@Create
+NPC=brain_dragon
+FAME={1000 4000}
+KARMA={-5000 -5999}
+
+COLOR=065d
+STR={1000 1000}
+DEX={400 400}
+INT=10000
+
+PARRYING={90.0 100.0}
+MAGICRESISTANCE={99.0 100.0}
+TACTICS={98.0 100.0}
+WRESTLING={90.0 93.0}
+NECROMANCY={90.0 100.0}
+MAGERY={90.0 100.0}
+
+ON=@NPCRestock
+ITEM=i_QDragon_stone
+
+ON=@DEATH
+   loot_DRAGON
+   loot_dragonrares_Med
+
+CATEGORY=Imperial uo
+SUBSECTION=Quests 
+DESCRIPTION=(Shrek) Dragon
+
+[ITEMDEF i_Madiens_earrings]
+NAME=Lady Fionas Earings
+ID=01f07
+CATEGORY=Imperial uo
+SUBSECTION=Quests 
+DESCRIPTION=(Shrek) Damsels Earings
+
+[ITEMDEF i_QDragon_stone]
+NAME=Dragonstone
+ID=0136c
+ON=@Create
+COLOR=065d
+CATEGORY=Imperial uo
+SUBSECTION=Quests 
+DESCRIPTION=(Shrek) QDragon Stone
+
+[CHARDEF c_shrek]
+ID=01
+NAME=Shrek
+ICON=i_pet_OGRE
+ANIM=078c7f
+CAN=MT_USEHANDS
+
+DAM=30,60
+ARMOR=70
+RESOURCES=6 i_ribs_raw
+FOODTYPE=15 t_meat_raw
+DESIRES=c_ogre, t_arock
+
+TSPEECH=jobshrek
+
+AVERSIONS=t_TRAP,r_civilization
+
+TEVENTS=e_npc_quest
+ON=@Create
+COLOR=07d3	
+NPC=brain_monster
+STR={1000 100}
+DEX={46 65}
+INT={46 70}
+
+PARRYING={45.0 55.0}
+MAGICRESISTANCE={45.0 60.0}
+TACTICS={60.0 70.0}
+WRESTLING={200.0 200.0}
+
+FAME=4500
+KARMA={-100 -100}
+
+on=@hit 
+   FLAGS=000000005 
+   return 1 
+
+on=@gethit 
+   FLAGS=000000005 
+   return 1 
+
+on=@damage 
+   FLAGS=000000005 
+   return 1 
+
+CATEGORY=Imperial uo
+SUBSECTION=Quests 
+DESCRIPTION=(Shrek) Shrek
+
+[CHARDEF C_H_Fiona]
+DEFNAME=C_H_Fiona
+NAME=Fiona
+ID=C_WOMAN
+DESIRES=i_gold,e_notoriety
+AVERSIONS=t_TRAP,t_eerie_stuff,e_carnivores3
+TSPEECH=jobfiona
+
+
+ON=@Create
+STR={31 45}
+DEX={41 55}
+INT={51 65}
+
+Title=Lady
+COLOR=03ff
+
+FENCING={15.0 38.0}
+PARRYING={25.0 48.0}
+SWORDSMANSHIP={15.0 38.0}
+WRESTLING={15.0 38.0}
+MACEFIGHTING={15.0 38.0}
+MAGICRESISTANCE={25.0 48.0}
+TACTICS={25.0 48.0}
+
+NPC=brain_human
+on=@hit 
+   FLAGS=000000005 
+   return 1 
+
+on=@gethit 
+   FLAGS=000000005 
+   return 1 
+
+on=@damage 
+   FLAGS=000000005 
+   return 1 
+
+ON=@NPCRestock
+ITEMNEWBIE=i_hair_long
+COLOR=08a5
+
+ITEM=RANDOM_LIGHT
+ITEM=i_dress_full
+COLOR=00a3
+
+ITEM=random_boots
+
+On=@NPCSeeNewPlayer 
+say <SRC.SEX Sir/Lady> Please Help, I'm a Damsel in Destress
+
+CATEGORY=Imperial uo
+SUBSECTION=Quests 
+DESCRIPTION=(shrek) Lady Fiona
+
+[SPEECH jobshrek] 
+on=hi 
+on=hello
+on=hail
+on=sawat dee
+on=Greetings
+on=quest
+on=pid
+   IF ( <SRC.TAG.NPC_QUEST_DONE> & NPCQ_Shrek )
+      SAY You have already done this quest! 
+      return 1
+   ELSEIF ( <SRC.TAG.NPC_QUEST_START> & NPCQ_Shrek )
+      SAY You are already on this quest! 
+      return 1
+   ELSE 
+      SAY My Lady Fiona is being held captive in a tower by a Dragon. Can you rescue her? I will pay you 5,000gps For proof of her saftey. Bring back her earings to me and I shall reward you.
+      SRC.TAG.NPC_QUEST_START = <eval ( <SRC.TAG.NPC_QUEST_START> | NPCQ_Shrek )>
+      return 1 
+   ENDIF
+on=where
+   SAY I think the Tower is somewhere in the Forest of Yew.
+On=Shrek
+   SAY Aye, Thats my name.
+On=ok
+on=sure
+   SAY=Oh! Thank you.
+on=reward
+on=rangval 
+on=collect
+on=sa soam 
+   IF !( <SRC.TAG.NPC_QUEST_START> & NPCQ_Shrek )
+      SAY I must know if you will help me before I give you the
+      SAY information <SRC.SEX milord/milady>
+   ELSEIF (( <SRC.TAG.NPC_QUEST_START> & NPCQ_Shrek ) && !<SRC.RESTEST 1 i_Madiens_earrings>)
+      SAY You don't have the have the earings!! 
+   ELSEIF <SRC.RESTEST 1 i_Madiens_earrings> 
+      SRC.NEWITEM=i_gold 
+      SRC.ACT.AMOUNT=5000
+      SRC.ACT.BOUNCE 
+      SOUND=01FC 
+      SRC.SYSMESSAGE=You are now 5000 gps richer. 
+      SRC.consume i_Madiens_earrings
+      SRC.TAG.NPC_QUEST_START = <eval ( <SRC.TAG.NPC_QUEST_START> &~ NPCQ_Shrek )>
+      SRC.TAG.NPC_QUEST_DONE = <eval ( <SRC.TAG.NPC_QUEST_DONE> | NPCQ_Shrek )>
+      ANNOUNCE <SRC.NAME> has reunited Lady Foina with Shrek. They Live happily ever after.
+      Remove
+   ENDIF
+   RETURN 1 
+
+[SPEECH jobfiona] 
+on=hi 
+on=hello
+on=hail
+on=sawat dee
+on=Greetings
+   SAY Do you have the dragon stone? If you do say "rescue".
+on=shrek
+   SAY Hes is my big love. 
+on=rescue
+on=choau
+IF <SRC.RESTEST i_QDragon_stone> 
+   SRC.NEWITEM=i_Madiens_earrings 
+   SRC.ACT.BOUNCE 
+   SAY Thank you, here are my earings, Take them to Shrek he will reward you.
+   SRC.consume i_QDragon_stone
+   REMOVE
+ELSE
+   SAY You do not have the dragon Stone.
+   RETURN 1
+ENDIF
+
+
+[EOF]

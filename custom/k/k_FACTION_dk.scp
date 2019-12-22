@@ -1,0 +1,517 @@
+// Changelog
+// =========
+// 07-05-03 - Wigifer - Verminard made wearable by non-dk - Tested
+// 11-12-03 - Reaps   - Stopped non-dk (everyone!) from being .kill'ed on dbl click of rune, just get a msg now.
+
+[FUNCTION DK_REGION ]
+   if ( 0 )
+   elseif ( !strcmpi( "<REGION.NAME>", "Papua" ) )
+      return 1
+   elseif ( !strcmpi( "<REGION.NAME>", "Delucia" ) )
+      return 1
+   else
+      return 0
+   endif
+
+
+[FUNCTION ISFACTION_DK]
+   if ( <FACTION> == faction_dk )
+      return 1
+   endif
+   return 0
+
+
+[ITEMDEF m_dark_recall]
+  ID		= i_memory
+  TYPE	= t_eq_script
+  LAYER	= layer_special
+  NAME	= Recalling
+ON=@Create
+    ATTR = 02
+    TIMER = 8
+ON=@TIMER
+    CONT.GO <MOREp>
+    REMOVE
+
+
+[FUNCTION f_dark_recall]
+   IF !( <SRC.ISFACTION_DK> )
+      SRC.sysmessage You are unable to use this item.
+      return 1
+   endif
+   
+   IF ( <SRC.RESTEST m_dark_recall> )
+       RETURN 1
+   ENDIF
+
+   IF ( (<SRC.MEMORYFINDTYPE(memory_fight).uid>) || ( <SRC.FLAGS> & statf_freeze ) )
+      src.sysmessage Nothing happens...
+      return 1
+   ENDIF
+
+   if ( <src.findid.i_rune_weaken.uid> || <src.findid.i_rune_clumsy.uid> || <src.findid.i_rune_feeblemind.uid> || <src.findid.i_rune_poison.uid> || <src.findid.i_rune_curse.uid> )
+      SRC.SYSMESSAGE The negative energies upon you block the magic.
+      return 1
+   endif
+
+   SRC.CONSUME 1000 i_ore_skargard
+   IF ( <SRC.REGION.FLAGS> & 0E )
+      SRC.SYSMESSAGE A magic field blocks the Emperor's magic!
+      RETURN 1
+   ENDIF
+
+   SRC.NEWITEM m_dark_recall
+   SRC.ACT.EQUIP
+   SRC.ACT.TIMER = 5
+   SRC.ACT.ATTR = 02
+   SRC.ACT.MORE1 = <UID>
+   SRC.ACT.MOREP	= <MOREp>
+   SRC.NEWITEM m_dark_recall_effect
+   SRC.ACT.EQUIP
+   SRC.ACT.TIMER = 7
+   SRC.ACT.ATTR = 02
+   SRC.NEWITEM m_dark_recall_effect
+   SRC.ACT.EQUIP
+   SRC.ACT.TIMER = 6
+   SRC.ACT.ATTR = 02
+   SRC.NEWITEM m_dark_recall_effect
+   SRC.ACT.EQUIP
+   SRC.ACT.TIMER = 5
+   SRC.ACT.ATTR = 02
+   SRC.NEWITEM m_dark_recall_effect
+   SRC.ACT.EQUIP
+   SRC.ACT.TIMER = 3
+   SRC.ACT.ATTR = 02
+   SRC.NEWITEM m_dark_recall_effect
+   SRC.ACT.EQUIP
+   SRC.ACT.TIMER = 2
+   SRC.ACT.ATTR = 02
+   SRC.SYSMESSAGE You start felling nauseous...
+   RETURN 1
+
+
+
+[ITEMDEF i_rune_dark_delucia]
+  NAME=Delucia Recall Rune
+  DEFNAME=i_rune_dark_delucia
+  ID=01f17
+  TYPE=T_NORMAL
+  WEIGHT=1
+ON=@CREATE
+   COLOR=color_o_terathane
+   ATTR=04
+   MOREX = 0
+ON=@DCLICK
+   MOREp	= 5272, 3997, 37 // Delucia
+   return <f_dark_recall>
+ 
+
+[ITEMDEF i_rune_dark_papua]
+  NAME=Papua Recall Rune
+  DEFNAME=i_rune_dark_papua
+  ID=01f17
+  TYPE=T_NORMAL
+  WEIGHT=1
+ON=@CREATE
+   COLOR=color_o_terathane
+   ATTR=04
+   MOREX = 0
+
+ON=@DCLICK
+   MOREP	= 5729, 3209, 1	// Papua
+   return <f_dark_recall>
+
+
+[ITEMDEF m_dark_recall_effect]
+  ID		= i_memory
+  TYPE	= t_eq_script
+  LAYER	= layer_special
+  NAME	= Recall Effect
+
+ON=@Create
+    ATTR = 02
+    TIMER = 5
+
+ON=@TIMER
+    CONT.SOUND 01dc
+    CONT.EFFECT		= 1, i_fx_explosion_3, 6, 15, 1
+    CONT.EFFECT		= 1, i_fx_explosion_3, 6, 15, 1
+    CONT.EFFECT		= 1, i_fx_explosion_3, 6, 15, 1
+    CONT.EFFECT		= 1, i_fx_explosion_3, 6, 15, 1
+    REMOVE
+
+
+
+
+
+[TEMPLATE tp_full_plate_terathane]
+CONTAINER	=	i_bag
+COLOR	=	color_o_terathane
+ITEM	=	i_platemail_helm_terathane
+QUALITY	=	150
+ITEM	=	i_platemail_gloves_terathane
+QUALITY	=	150
+ITEM	=	i_platemail_arms_terathane
+QUALITY	=	150
+ITEM	=	i_platemail_gorget_terathane
+QUALITY	=	150
+ITEM	=	i_platemail_leggings_terathane
+QUALITY	=	150
+ITEM	=	i_platemail_chest_terathane
+QUALITY	=	150
+
+
+[TEMPLATE tp_full_chain_terathane]
+CONTAINER=	i_bag
+COLOR	=	color_o_terathane
+ITEM	=	i_chainmail_coif_terathane
+QUALITY	=	150
+ITEM	=	i_ringmail_gloves_terathane
+QUALITY	=	150
+ITEM	=	i_ringmail_sleeves_terathane
+QUALITY	=	150
+ITEM	=	i_ringmail_leggings_terathane
+QUALITY	=	150
+ITEM	=	i_ringmail_tunic_terathane
+QUALITY	=	150
+
+[FUNCTION DKSAY]
+   MESSAGE "<args>"
+
+[EVENTS e_dk_recruiter]
+ON=@GetHit
+   DKSAY For the powers invested in my by Milord Emperor Dagonar, I grant you death.
+   SRC.KILL
+   return 1
+
+ON=@SpellEffect
+   DKSAY Your magic is not welcome.
+   SRC.SPELLEFFECT s_lightning 1000
+   return 1
+
+
+
+[DIALOG d_dk_recruiter]
+100, 100
+
+PAGE 0
+  resizepic  0 0 5120 400 420
+  text 20 20 50 0
+  text 20 340 50 1
+
+  button 140 375 <eval bt_cancel_up> <eval bt_cancel_dn> 1 0 0
+  button 220 375 <eval bt_ok_up> <eval bt_ok_dn> 1 0 1
+
+  htmlgump 20 60 360 260 2 1 1
+
+
+[DIALOG d_dk_recruiter TEXT]
+Joining the Dark Knights
+Are you sure you want to join the Dark Knights?
+To learn more about the <VAR.lt>B<var.gt>Dark Knights<var.lt>/B<var.gt>, visit their section in the <var.lt>A href="www.Imperialuo.com"<var.gt>main website<var.lt>/A<var.gt>. <VAR.BREAK>You should know that this is a choice for life - once you commit to the Dark Knights you won't be able to join any other faction in the game (with this character).<VAR.BREAK>Also, you should contact the Elite Dark Knights before attempting to join, or you will most likely see your request denied.
+
+[DIALOG d_dk_recruiter BUTTON]
+ON = 0
+ON = 1
+   SRC.ACT = <SRC.TAG.RECRUITER>
+   if ( <SRC.ACT.FACTION_CAN_ACCEPT> )
+      SRC.ACT.DKSAY <FACTION_ACCEPT>
+      return 1
+   endif
+
+   SRC.ACT.DKSAY So be it! Your name will be placed for voting. Return within two days and I shall let you know the results.
+   SRC.ACT.FACTION_VOTE_START	i_dk_accept
+   return 1
+
+
+[SPEECH spk_dk_recruiter]
+ON=hi
+ON=hello
+ON=hail
+ON=greeting
+ON=greetings
+   if ( <SRC.ISFACTION_DK> )
+      dorand 2
+         DKSAY Greetings.
+         DKSAY Hail.
+      enddo
+   else
+      dorand 2
+         DKSAY Greetings. I take care of those who wish to JOIN our cause. I also attend for those who have gained a RANK.
+         DKSAY Hail. I take care of those who wish to JOIN our cause. I also attend for those who have gained a RANK.
+      enddo
+   endif
+
+ON = manage
+   if ( <SRC.ISGM> )
+   elseif ( 0<SRC.TAG.DK.RANK> < 9 )
+       DKSAY Only council members might vote.
+       return 1
+   endif
+   DIALOG_faction_manage
+   
+ON = finish voting
+   if ( <SRC.ISGM> )
+   elseif ( 0<SRC.TAG.DK.RANK> < 9 )
+       DKSAY Only council members might vote.
+       return 1
+   endif
+   
+   find_vote_term 0
+   find_vote_term 1
+   find_vote_term 2
+   find_vote_term 3
+   find_vote_term 4
+   find_vote_term 5
+   find_vote_term 6
+   find_vote_term 7
+   find_vote_term 8
+   find_vote_term 9
+   DKSAY All pending votes solved.
+
+
+ON=join
+   if ( <FACTION_CAN_ACCEPT> )
+      DKSAY <VAR.FACTION_ACCEPT>
+      return 1
+   endif
+   if ( <SRC.TACTICS> < 75.0 )
+      DKSAY You do not have enough knowledge of Tactics to be of any use.
+      return 1
+   endif
+   SRC.TAG.RECRUITER = <UID>
+   SRC.HTMLDIALOG d_dk_recruiter
+   return 1
+
+ON=vote
+   if ( <SRC.ISGM> )
+   elseif ( 0<SRC.TAG.DK.RANK> < 7 )
+       DKSAY Only council members might vote.
+       return 1
+   endif
+   if ( !<FACTION_VOTE> )
+      DKSAY There is noone to vote.
+      return 1
+   endif
+   return 1
+
+ON=more
+ON=more information
+   if ( <FACTION_CAN_ACCEPT> )
+      DKSAY <FACTION_ACCEPT>
+      return 1
+   endif
+   DKSAY Read the words of wisdom.
+   SRC.WEBLINK=www.Imperialuo.com
+
+ON=fast
+ON=my life for the emperor
+ON=My life for the Emperor
+ON=My life for the emperor
+ON=my life for the Emperor
+   if ( <FACTION_CAN_ACCEPT> )
+      DKSAY <FACTION_ACCEPT>
+      return 1
+   endif
+
+   DKSAY So be it! Your name will be placed for voting. Return within two days and I shall let you know the results.
+   FACTION_VOTE_START
+   return 1
+ 
+ON=rank
+   if ( <SRC.ISDEAD> )
+      EMOTE laugh
+      return 1
+   endif
+
+   if !( <SRC.ISFACTION_DK> )
+      DKSAY Stop wasting my time.
+      return 1
+   endif
+
+   if ( 0<SRC.TAG.DK.GOT> == 0 )
+      SRC.TAG.DK.GOT	= 0
+   endif
+
+   if ( <SRC.TAG.DK.GOT> >= 0<SRC.TAG.DK.RANK> )
+      DKSAY You already received equipment for this rank.
+      return 1
+   endif
+
+   if ( 0<SRC.TAG.DK.RANK> > 7 )
+      DKSAY The Emperor still hasn't appointed any equipment for this rank.
+      return 1
+   endif
+   
+   DKSAY There you go...
+
+   if ( !(0<SRC.TAG.DK.RANK> < 2)  && (<SRC.TAG.DK.GOT> < 2) )
+      SRC.NEWITEM i_rune_dark_papua
+      SRC.ACT.BOUNCE
+   ENDIF
+   if ( !(0<SRC.TAG.DK.RANK> < 3)  && (<SRC.TAG.DK.GOT> < 3) )
+      if ( <SRC.FENCING> > <SRC.SWORDSMANSHIP> && (<SRC.FENCING> > <SRC.MACEFIGHTING>))
+         SRC.NEWITEM i_war_fork_terathane
+      elseif ( <SRC.SWORDSMANSHIP> > <SRC.FENCING> && (<SRC.SWORDSMANSHIP> > <SRC.MACEFIGHTING>))
+         SRC.NEWITEM i_sword_long_terathane
+      else
+         SRC.NEWITEM i_axe_war_terathane
+      endif
+      SRC.ACT.QUALITY 150
+      SRC.ACT.BOUNCE
+      SRC.NEWITEM i_shield_round_terathane
+      SRC.ACT.QUALITY 150
+      SRC.ACT.BOUNCE
+   endif
+   if ( !(0<SRC.TAG.DK.RANK> < 4)  && (<SRC.TAG.DK.GOT> < 4) )
+      SRC.NEWITEM tp_chainmail_terathane
+      SRC.ACT.QUALITY 150
+      SRC.ACT.BOUNCE
+   endif
+   if ( !(0<SRC.TAG.DK.RANK> < 5)  && (<SRC.TAG.DK.GOT> < 5) )
+      SRC.SUMMONHERE c_dark_zost
+   endif
+   if ( !(0<SRC.TAG.DK.RANK> < 6)  && (<SRC.TAG.DK.GOT> < 6) )
+      if ( <SRC.FENCING> > <SRC.SWORDSMANSHIP> && (<SRC.FENCING> > <SRC.MACEFIGHTING>))
+         SRC.NEWITEM i_war_fork_verminard
+      elseif ( <SRC.SWORDSMANSHIP> > <SRC.FENCING> && (<SRC.SWORDSMANSHIP> > <SRC.MACEFIGHTING>))
+         SRC.NEWITEM i_sword_long_verminard
+      else
+         SRC.NEWITEM i_axe_war_verminard
+      endif
+      SRC.ACT.QUALITY 150
+      SRC.ACT.BOUNCE
+      SRC.NEWITEM i_shield_round_verminard
+      SRC.ACT.QUALITY 150
+      SRC.ACT.BOUNCE
+   endif
+
+   if ( !(0<SRC.TAG.DK.RANK> < 7)  && (<SRC.TAG.DK.GOT> < 7) )
+      SRC.NEWITEM tp_full_plate_terathane
+      SRC.ACT.BOUNCE
+   endif
+   SRC.TAG.DK.GOT	= 0<SRC.TAG.DK.RANK>
+
+   return 1
+
+
+[TYPEDEF t_w_dark_portal]
+
+ON=@DCLICK
+   IF !(0<SRC.TAG.DK.RANK> == 0)
+      IF (0<SRC.TAG.DK.RANK> >= <MORE2>)&&(0<MORE1>)
+         SRC.NEWITEM i_moongate_blue
+         SRC.ACT.COLOR color_o_terathane
+         SRC.ACT.P <P>
+         SRC.ACT.MOREP <MOREP>
+         SRC.ACT.TIMER 30
+         SRC.ACT.ATTR 012
+         MORE1 = 0
+         TIMER = 60
+         UPDATE
+      ENDIF
+   RETURN 1
+   ENDIF
+   SRC.KILL
+   RETURN 1
+
+ON=@TIMER
+   MORE1 = 1
+   RETURN 1
+
+
+[CHARDEF c_dk_recruiter]
+ID=C_MAN
+NAME=Saladin
+SOUND=snd_HUMAN_M_DIE_01
+DAM=50,70
+ARMOR=90
+AVERSIONS=t_TRAP,t_eerie_stuff
+TSPEECH = spk_dk_recruiter
+TEVENTS	= e_dk_recruiter
+
+
+  
+CATEGORY	= Darkonians
+SUBSECTION	= Darkonians
+DESCRIPTION	= Saladin the recruiter
+
+
+ON=@Create
+  TAG.NAME.SUFFIX	= ", the Recruitment Officer"
+  TAG.FACTION.RANK	= 6
+  TAG.FACTION	= faction_dk
+
+  COLOR		= colors_skin
+  STR		= {100 150}
+  DEX		= {80 95}
+  INT		= {71 85}
+  NPC		= brain_monster
+  SWORDSMANSHIP	= {60.0 70.0}
+  WRESTLING	= {67.0 90.0}
+  MAGICRESISTANCE={65.0 88.0}
+  TACTICS	= {60.0 80.0}
+  POISONING	= {90.0 100.0}
+  ANATOMY       = {40.0 50.0}
+  FAME		= 3000
+     KARMA	= -100
+
+  ITEMNEWBIE=random_male_hair
+  COLOR=colors_hair
+  ITEMNEWBIE=random_facial_hair
+  COLOR=match_hair
+
+  ITEMNEWBIE=i_platemail_gloves_terathane
+  ITEMNEWBIE=i_platemail_helm_terathane
+  ITEMNEWBIE=i_platemail_arms_terathane
+  ITEMNEWBIE=i_platemail_gorget_terathane
+  ITEMNEWBIE=i_platemail_chest_verminard
+  ITEMNEWBIE=i_platemail_leggings_terathane
+  ITEMNEWBIE=i_halberd_terathane
+  ITEMNEWBIE=i_CAPE
+  COLOR=color_o_verminard
+  ITEMNEWBIE=i_SASH
+  COLOR=color_o_verminard
+
+
+
+
+[EVENTS e_robe_faction_dk]
+ON = @Click
+   if ( !<DK_REGION> )
+      BOUNCE <findid.i_robe_faction_dk.uid>
+   endif
+
+[ITEMDEF i_robe_faction_dk]
+ID	= i_robe_gm
+NAME	= Dark Knight Elite robe
+TYPE	= T_CLOTHING
+ARMOR	= 5
+DYE	= 0
+
+ON = @Create
+  HITPOINTS	= 150
+  COLOR		= color_o_terathane
+
+ON = @Equip
+   if ( !<CONT.DK_REGION> )
+      CONT.SYSMESSAGE You can't wear this here.
+      UNEQUIP
+      return 1
+   endif
+   CONT.EVENTS +e_robe_faction_dk
+   if ( <CONT.findlayer.layer_hair.uid> )
+      CONT.findlayer.layer_hair.ATTR = (<CONT.findlayer.layer_hair.ATTR> | attr_invis)
+      CONT.findlayer.layer_hair.REMOVEFROMVIEW
+   endif
+
+ON = @Unequip
+   CONT.EVENTS -e_robe_faction_dk
+   if ( <CONT.findlayer.layer_hair.uid> )
+      CONT.findlayer.layer_hair.ATTR = (<CONT.findlayer.layer_hair.ATTR> & ~ attr_invis)
+      CONT.findlayer.layer_hair.UPDATE
+   endif
+
+
+[EOF]
+

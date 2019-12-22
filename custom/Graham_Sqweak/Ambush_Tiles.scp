@@ -1,0 +1,114 @@
+//Original idea scripted by Sqweak
+//Modified by Jessica "Wren" Graham to be dynamic - Oct 8, 2004
+//Modified to make spawns disappear after 30 minutes without combat - Nov 2, 2005
+    
+[EVENTS e_time_limited_spawn]
+ON=@GetHit
+  IF (<FINDID.i_spawn_timer.TIMER> < 300)
+     FINDID.i_spawn_timer.Timer = 300
+  ENDIF
+  RETURN 0
+  
+ON=@Spelleffect
+  IF (<FINDID.i_spawn_timer.TIMER> < 300)
+     FINDID.i_spawn_timer.Timer = 300
+  ENDIF
+  RETURN 0
+  
+  
+[ITEMDEF i_spawn_timer]
+NAME    = Spawn Timer
+ID	= i_memory
+TYPE	= t_eq_script
+LAYER	= layer_special
+
+ON=@Create
+  Timer= 1800
+  
+ON=@Timer
+  CONT.REMOVE
+  RETURN 1
+  
+
+[ITEMDEF i_ambush_tile]
+ID=049b
+NAME=Ambush Tile
+TYPE=t_ambush_tile 
+
+ON=@Create 
+   ATTR=08090
+   TAG.TOGGLE=0
+   TAG.CHAR=c_h_highwayman
+   TAG.MAX_TO_SPAWN=3
+   TAG.TIME_TO_SPAWN=3600 //Default to 1 hours
+
+[TYPEDEF t_ambush_tile] 
+ON=@Dclick
+   IF (<SRC.ISGM>)
+      IF (0<TAG.TOGGLE>=00)
+         TAG.TOGGLE=1
+         TRYP 3 INPDLG=TAG.CHAR 30 
+      ELSEIF (0<TAG.TOGGLE>=01)
+         TAG.TOGGLE=2      
+         TRYP 3 INPDLG=TAG.MAX_TO_SPAWN 2 
+      ELSE
+         TAG.TOGGLE=0      
+         TRYP 3 INPDLG=TAG.TIME_TO_SPAWN 6      
+      ENDIF
+   ENDIF
+   RETURN 1
+   
+ON=@Step
+   RETURN 1
+//   IF <MORE>==0 
+//      IF ((0<TAG.MAX_TO_SPAWN>==00))
+//         SERV.LOG Abush Tile (<UID>) is not properly configured.
+//         RETURN 1
+//      ENDIF
+//
+//      SRC.EMOTE feel something watching you....       
+//      TIMER=<EVAL <TAG.TIME_TO_SPAWN>> 
+//      
+//      IF (RAND(5) > 1)
+//         SRC.MESSAGE You've been Ambushed! 
+//         VAR.AMBUSH=<TAG.MAX_TO_SPAWN>
+//         ADD_AMBUSH
+//         RETURN 1 
+//      ELSE 
+//         SRC.MESSAGE Guess it was just my mind playing tricks on me... 
+//         MORE=1 
+//      ENDIF 
+//   ENDIF
+//   RETURN 1 
+
+ON=@Timer 
+   MORE=0 
+   RETURN 1 
+
+[FUNCTION ADD_AMBUSH]
+   IF RAND(2)==0
+      SRC.NEWNPC <TAG.CHAR>
+      SRC.ACT.EVENTS +e_time_limited_spawn
+      SRC.ACT.HOME = <P>
+      
+      SERV.NEWITEM i_spawn_timer
+      NEW.CONT	= <SRC.ACT.UID>
+   ENDIF
+   VAR.AMBUSH=(<VAR.AMBUSH>-1)
+   IF (<EVAL <VAR.AMBUSH>><=1)
+      SRC.NEWNPC <TAG.CHAR>
+      SRC.ACT.HOME = <P>
+      SRC.ACT.EVENTS +e_time_limited_spawn
+      SRC.ACT.P=<P> 
+      SRC.ACT.UPDATE 
+      SRC.ACT.P=<p> 
+      MORE=1 
+      
+      SERV.NEWITEM i_spawn_timer
+      NEW.CONT	= <SRC.ACT.UID>
+   ELSE
+      ADD_AMBUSH
+   ENDIF
+   RETURN 1
+
+[EOF]

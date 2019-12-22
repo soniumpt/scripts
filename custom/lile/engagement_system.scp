@@ -1,0 +1,175 @@
+//********************************************************************//
+//                         ENGAGEMENT RINGS                           //
+//      ALLOWS TWO PLAYERS TO BECOME ENGAGED. THEY MUST BE            //
+//		ENGAGED BEFORE THEY CAN GET MARRIED  		      //
+//********************************************************************//
+
+[ITEMDEF i_ring_engagement]
+ID = i_ring_silver
+TYPE = t_script
+NAME = Engagement Ring
+VALUE= 280000
+WEIGHT=1
+
+CATEGORY=Imperial uo	
+SUBSECTION=Engagement System
+DESCRIPTION=Engagement Ring
+
+ON=@Create
+MORE2=01
+ATTR = attr_newbie
+
+ON=@DCLICK
+   IF (<MORE2>=02)
+   RETURN 1
+   ELSE
+   TARGET To whom do you wish to propose?
+   RETURN 1
+   ENDIF
+
+ON=@TARGON_ITEM
+   SRC.SYSMESSAGE You cannot propose to an item!!
+   RETURN 1
+   
+ON=@TARGON_CHAR
+  // Check for combat - cant propose if fighting
+   IF (<SRC.TARG.UID>==<SRC.UID>)
+   	SRC.SYSMESSAGE You cannot propose to yourself!
+   	RETURN 1
+   ENDIF
+   IF (<SRC.TARG.TAG.ENGAGED>==)
+   	IF (<SRC.TAG.ENGAGED>==)
+      		   SRC.EMOTE propose to <SRC.TARG.NAME>
+		  // Check with other party if they accept the proposal
+		   SRC.TAG.ENGAGED=<SRC.TARG.NAME>
+		   SRC.TARG.TAG.ENGAGED=<SRC.NAME>
+		   SRC.ACT.NAME=<SRC.NAME> and <SRC.TARG.NAME>'s Engagement Ring
+		   SRC.ACT.MORE2=02
+		   SRC.TITLE=<SRC.TARG.NAME>'s Fiance
+		   SRC.TARG.TITLE=<SRC.NAME>'s Fiance
+		   SERV.NEWITEM i_ring_engagement, 1, <SRC.TARG.FINDLAYER.LAYER_PACK.UID>
+		   NEW.NAME <SRC.NAME> and <SRC.TARG.NAME>'s Engagement Ring
+		   NEW.MORE2=02
+   		   SERV.LOG <SRC.NAME> and <SRC.TARG.NAME> Got Engaged.
+			// add tags for the rings uids to remove them when divorced
+   		   RETURN 1
+   	ENDIF
+   	SRC.SYSMESSAGE Bigamy is a crime!
+   RETURN 1
+   ELSE
+   SRC.SYSMESSAGE Bigamy is a crime!
+   RETURN 1
+   ENDIF
+
+
+
+//********************************************************************//
+//                         DIVORCE PAPERS                             //
+//      	ALLOWS TWO PLAYERS TO GET DIVORCED		      //
+//********************************************************************//
+
+
+[ITEMDEF i_divorce_papers]
+ID = i_book_open_two_blue
+TYPE = t_script
+NAME = Divorce Papers
+VALUE= 95000
+WEIGHT=1
+
+CATEGORY=Imperial uo	
+SUBSECTION=Engagement System
+DESCRIPTION=Divorce Papers
+
+ON=@Create
+ATTR = attr_newbie
+
+ON=@DCLICK
+   IF (<SRC.TAG.ENGAGED>==)
+   	SRC.SYSMESSAGE You are not in a relationship.
+   RETURN 1
+   ELSE
+   TARGET Who do you desire to divorce?
+   RETURN 1
+   ENDIF
+   
+ON=@TARGON_CHAR
+   IF (<SRC.TARG.UID>==<SRC.UID>
+   	SRC.SYSMESSAGE You cannot divorce yourself!
+   	RETURN 1
+   ENDIF
+   
+   IF (<SRC.TARG.TAG.ENGAGED>==<SRC.NAME>)
+      	SRC.SYSMESSAGE They are not in a relationship.
+      	RETURN 1
+      	
+   ENDIF
+   IF (<SRC.TARG.TAG.ENGAGED>==<SRC.NAME>)
+   	IF (<SRC.TAG.ENGAGED>==<SRC.TARG.NAME>)
+      		   SRC.EMOTE divorce <SRC.TARG.NAME>
+      		   SRC.TARG.EMOTE gets upset and begins to cry
+		   SRC.TAG.ENGAGED=
+		   SRC.TARG.TAG.ENGAGED=
+			// remove the targets ring get the uid of the ring from player tag
+		   SRC.ACT.REMOVE
+			// check title for fiance or wife text before clearing it
+		   SRC.TITLE=
+		   SRC.TARG.TITLE=
+   		   SERV.LOG <SRC.NAME> and <SRC.TARG.NAME> Got Divorced.
+   		   RETURN 1
+   	ENDIF
+   	SRC.SYSMESSAGE You cannot divorce someone you are not in a relationship with!
+   RETURN 1
+   ELSE
+   SRC.SYSMESSAGE You cannot divorce someone you are not in a relationship with!
+   RETURN 1
+   ENDIF
+   
+
+[itemdef i_bank_Stone]
+Name= Bank Stone
+ID=i_gravestone_17
+Type=t_bankstone
+
+CATEGORY=Imperial uo	
+SUBSECTION=Engagement System
+DESCRIPTION=Bank Stone
+
+On=@Create
+color=0798
+
+
+[ITEMDEF i_bookcase_secret]
+ID = 0a99
+TYPE = t_script
+NAME = bookcase
+WEIGHT=1
+
+CATEGORY=Imperial uo	
+SUBSECTION=Engagement System
+DESCRIPTION=bookcase
+
+ON=@CREATE
+   MORE2=01
+
+
+ON=@DCLICK
+   IF (<MORE2>=01)
+   SRC.TARG.MORE2=02
+   SRC.TARG.MOVE S 1
+   SRC.TARG.DISPID = i_bookcase_full
+   SRC.TARG.UPDATE
+   RETURN 1
+   ENDIF
+   IF (<MORE2>=02)
+   SRC.TARG.MORE2=01
+   SRC.TARG.MOVE N 1
+   SRC.TARG.DISPID = 0a99
+   SRC.TARG.UPDATE
+   RETURN 1
+   ENDIF
+   ELSE
+   SRC.SYSMESSAGE The bookcase wont seem to budge!
+   RETURN 1
+   
+   
+   [eof]

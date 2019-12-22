@@ -1,0 +1,2255 @@
+//Labyrinth Automated Quest for MPZ UO Shard
+//By Warman - sarmag@hotmail.com
+
+//SEPT 6
+
+  
+///////////////
+ //Quest Items//
+///////////////
+
+
+[ITEMDEF i_dractile]
+  
+ID=i_floor_marble_2
+  
+Type=T_DRACTILE
+  
+DISPID=i_floor_marble_2
+  
+NAME=odd looking marble floor
+
+  
+
+CATEGORY=Imperial uo Labyrinth Quest
+  
+SUBSECTION=Tiles
+  
+DESCRIPTION=Labyrinth Quest Tile
+
+
+
+ON=@CREATE
+     
+TIMER = -1
+     
+ATTR  = 08000
+     
+MORE2 = 1
+     
+
+//Customizable part
+       
+
+DISPID=i_floor_marble_2
+       
+COLOR=025
+       
+NAME=odd looking marble floor
+
+
+
+[ITEMDEF i_dracpad]
+  
+ID=i_floor_marble_2
+  
+Type=T_DRACPAD
+  
+DISPID=i_floor_marble_2
+  
+NAME=sloted marble floor
+
+  
+
+CATEGORY=Imperial uo Labyrinth Quest
+  
+SUBSECTION=Tiles
+  
+DESCRIPTION=Labyrinth Quest Port Tile
+
+
+
+ON=@CREATE
+     
+TIMER = -1
+     
+ATTR  = 08000
+     
+MOREX = 6
+     
+
+//Customizable part
+       
+
+DISPID=i_floor_marble_2
+       
+COLOR=025
+       
+NAME=sloted marble floor
+
+
+
+[ITEMDEF i_dracactive]
+  
+ID=i_pet_dragon
+  
+DISPID=i_pet_dragon
+  
+NAME=queer red figurine
+  
+TYPE=T_DRACTILE_ACTIVATOR
+
+ 
+ 
+CATEGORY=Imperial uo Labyrinth Quest
+  
+SUBSECTION=Dracpad Activators
+  
+DESCRIPTION=Labyrinth quest tile activator Generic
+
+
+
+ON=@CREATE
+    
+//customizable part
+       
+DISPID=i_pet_dragon
+       
+COLOR=colors_red_drag
+       
+NAME=queer red figurine
+
+
+
+[ITEMDEF i_dracactive_e]
+  
+ID=i_pet_dragon
+  
+DISPID=i_pet_dragon
+  
+TYPE=T_DRACTILE_ACTIVATOR
+  
+NAME=odd looking marble floor
+
+  
+
+CATEGORY=Imperial uo Labyrinth Quest
+  
+SUBSECTION=Dracpad Activators
+  
+DESCRIPTION=Labyrinth quest tile activator east
+
+
+
+ON=@CREATE
+     //customizable part
+       
+DISPID=i_pet_dragon
+       //HARD VERSION - ORDER 1 (East)
+         
+MORE2=1
+       
+
+//Match step 1 color (East)
+         
+
+COLOR=025
+       
+NAME=queer red figurine
+
+
+
+[ITEMDEF i_dracactive_w]
+  
+ID=i_pet_dragon
+  
+DISPID=i_pet_dragon
+  
+TYPE=T_DRACTILE_ACTIVATOR
+  
+NAME=odd looking marble floor
+
+  
+
+CATEGORY=Imperial uo Labyrinth Quest
+  
+SUBSECTION=Dracpad Activators
+  
+DESCRIPTION=Labyrinth quest tile activator west
+
+
+
+ON=@CREATE
+     //customizable part
+       
+DISPID=i_pet_dragon
+       //HARD VERSION - ORDER 2 (West)
+        
+MORE2=2
+       
+//Match step 2 color (West)
+         
+COLOR=026
+       
+NAME=queer red figurine
+
+
+
+[ITEMDEF i_dracactive_n]
+  
+ID=i_pet_dragon
+  
+DISPID=i_pet_dragon
+  
+TYPE=T_DRACTILE_ACTIVATOR
+  
+NAME=odd looking marble floor
+
+  
+
+CATEGORY=Imperial uo Labyrinth Quest
+  
+SUBSECTION=Dracpad Activators
+  
+DESCRIPTION=Labyrinth quest tile activator north
+
+
+
+ON=@CREATE
+     //customizable part
+       
+DISPID=i_pet_dragon
+       //HARD VERSION - ORDER 3 (North)
+        
+MORE2=3
+       //Match step 2 color (North)
+         
+COLOR=027
+       
+NAME=queer red figurine
+
+
+
+[ITEMDEF i_dracactive_s]
+  
+ID=i_pet_dragon
+  
+DISPID=i_pet_dragon
+  
+TYPE=T_DRACTILE_ACTIVATOR
+  
+NAME=odd loooking marble floor
+
+  
+
+CATEGORY=Imperial uo Labyrinth Quest
+  
+SUBSECTION=Dracpad Activators
+  
+DESCRIPTION=Labyrinth quest tile activator south
+
+
+
+ON=@CREATE
+     //customizable part
+       
+DISPID=i_pet_dragon
+       //HARD VERSION - ORDER 4 (South)
+         
+MORE2=4
+       //Match step 2 color (South)
+         
+COLOR=026
+       
+NAME=queer red figurine
+
+
+
+[ITEMDEF i_chest_lab_quest]
+  
+ID=i_chest_metal_brass
+  
+DISPID=i_chest_metal_brass
+  
+NAME=odd looking red chest
+  
+TYPE=t_container
+  
+TDATA2=042
+  
+FLIP=1
+  
+WEIGHT=20
+  
+DUPELIST=0e40,0e41
+
+  
+
+CATEGORY=Imperial uo Labyrinth Quest
+  
+SUBSECTION=Quest Items
+  
+DESCRIPTION=Labyrinth Quest Chest
+
+
+
+ON=@Click
+   
+MESSAGE <NAME>
+   
+return 1
+
+
+
+ON=@CREATE
+     
+ATTR		= 08000
+     
+MOREZ=0
+     
+TIMER	= -1
+     //Customizable part
+       
+DISPID=i_chest_metal_brass
+       
+NAME=odd looking red chest
+
+
+
+ON=@DClick // open
+  
+if ( <MOREZ> == 0 )
+     
+src.sysmessage The chest doesn't budge.
+     
+return 1
+  
+endif
+
+  
+if ( <TIMER> != -1 )	// not ready yet
+     
+return 0
+  
+endif
+
+  
+if ( <MORE2> != 0 )	// has been spawned
+     
+SRC.ACT	= <FINDID(<MORE2>).uid>
+     
+if ( <SRC.ACT.UID> == <MORE2> )
+        
+SRC.ACT.remove
+     
+endif
+  
+endif
+
+  //Function to decide spawn
+    //East
+      
+
+IF ( <MOREZ> == 01)
+          
+SRC.NEWITEM tp_lab_quest_bag_e
+      
+ENDIF
+    //West
+      
+
+IF ( <MOREZ> == 02)
+          
+SRC.NEWITEM tp_lab_quest_bag_w
+      
+ENDIF
+    //North
+      
+
+IF ( <MOREZ> == 03)
+          
+SRC.NEWITEM tp_lab_quest_bag_n
+      
+ENDIF
+    //South
+      
+
+IF ( <MOREZ> == 04)
+          
+SRC.NEWITEM tp_lab_quest_bag_s
+      
+ENDIF
+    //Final
+      
+
+IF ( <MOREZ> == 05)
+          
+SRC.NEWITEM tp_lab_quest_bag_final_reward
+      
+ENDIF
+  
+SRC.ACT.CONT	= <UID>	// place inside the container
+  
+MORE2		= <SRC.ACT.UID> // link it
+  
+TIMER		= 86400	// set our timer
+  
+RETURN 1
+
+
+
+ON=@TIMER
+    
+TYPE=t_container_supalocked
+    
+RETURN 1
+
+
+
+[ITEMDEF i_lab_quest_trophy]
+  
+ID=0139b
+  
+NAME=glowing statuete
+  
+WEIGHT=5
+  
+DUPELIST=0139a,0139c,0139d
+
+
+
+ON=@Create
+  
+COLOR=0486
+
+  //Maintain
+  
+
+CATEGORY=Imperial uo Labyrinth Quest
+  
+SUBSECTION=Quest Items
+  
+DESCRIPTION=Trophy
+
+  
+
+//////////
+ //Effect//
+//////////
+
+
+
+[ITEMDEF i_lab_quest_fx_sparkle_gd]
+  
+ID = i_fx_sparkle
+  
+NAME = benign energy
+  
+TYPE=t_spell
+  
+DUPELIST=0375b,0375c,0375d,0375e,0375f,03760,03761,03762,03763,03764,03765,03766,03767,03768,03769
+
+
+
+ON=@Create
+  
+TIMER= 4
+  
+ATTR= 012
+  
+COLOR=0484
+
+  
+CATEGORY=Imperial uo Labyrinth Quest
+  
+SUBSECTION=Effects
+  
+DESCRIPTION=Benign Energy
+
+
+
+[ITEMDEF i_lab_quest_fx_sparkle_bd]
+  
+ID = i_fx_sparkle
+  
+NAME = malign energy
+  
+TYPE=t_spell
+  
+DUPELIST=0375b,0375c,0375d,0375e,0375f,03760,03761,03762,03763,03764,03765,03766,03767,03768,03769
+
+
+
+ON=@Create
+  
+TIMER= 4
+  
+ATTR= 012
+  
+COLOR=01
+
+  
+
+CATEGORY=Imperial uo Labyrinth Quest
+  
+SUBSECTION=Effects
+  
+DESCRIPTION=Malign Energy
+
+
+  
+
+/////////////
+ //Rune Keys//
+/////////////
+
+
+
+[ITEMDEF i_lab_quest_rune_key_e]
+  
+ID=i_rune_marker
+  
+DUPELIST=01f15,01f16,01f17
+  
+TYPE=T_LAB_QUEST_KEY
+  
+WEIGHT=1
+  //Customizable name
+  
+
+NAME=red dragon rune
+
+
+ON=@CREATE
+     //East is 1
+       
+MOREX=1
+     //Customizable color - Match East
+       
+COLOR=025
+
+  
+
+CATEGORY=Imperial uo Labyrinth Quest
+  
+SUBSECTION=Rune Keys
+  
+DESCRIPTION=East Chest Key
+
+
+
+
+[ITEMDEF i_lab_quest_rune_key_w]
+  
+ID=i_rune_marker
+  
+DUPELIST=01f15,01f16,01f17
+  
+TYPE=T_LAB_QUEST_KEY
+  
+WEIGHT=1
+  //Customizable name
+  
+NAME=red dragon rune
+
+
+
+ON=@CREATE
+     //West is 2
+       
+MOREX=2
+     //Customizable color - Match West
+       
+COLOR=026
+
+  
+
+CATEGORY=Imperial uo Labyrinth Quest
+  
+SUBSECTION=Rune Keys
+  
+DESCRIPTION=West Chest Key
+
+
+
+[ITEMDEF i_lab_quest_rune_key_n]
+  
+ID=i_rune_marker
+  
+DUPELIST=01f15,01f16,01f17
+  
+TYPE=T_LAB_QUEST_KEY
+  
+WEIGHT=1
+  //Customizable name
+  
+
+NAME=red dragon rune
+
+
+
+ON=@CREATE
+     //North is 3
+       
+MOREX=3
+     //Customizable color - Match North
+      
+COLOR=027
+
+  
+
+CATEGORY=Imperial uo Labyrinth Quest
+  
+SUBSECTION=Rune Keys
+  
+DESCRIPTION=North Chest Key
+
+
+
+[ITEMDEF i_lab_quest_rune_key_s]
+  
+ID=i_rune_marker
+  
+DUPELIST=01f15,01f16,01f17
+  
+TYPE=T_LAB_QUEST_KEY
+  
+WEIGHT=1
+  
+
+//Customizable name
+  
+
+NAME=red dragon rune
+  
+
+//Customizable color - Match South
+
+  
+
+CATEGORY=Imperial uo Labyrinth Quest
+  
+SUBSECTION=Rune Keys
+  
+DESCRIPTION=South Chest Key
+
+
+
+ON=@CREATE
+     //South is 4
+       
+MOREX=4
+     //Customizable color - Match South
+       
+COLOR=028
+
+
+
+[ITEMDEF i_lab_quest_rune_key_final]
+  
+ID=i_rune_marker
+  
+DUPELIST=01f15,01f16,01f17
+  
+TYPE=T_LAB_QUEST_KEY
+  
+WEIGHT=1
+  //Customizable name
+    
+NAME=imperial dragon rune
+
+  
+
+CATEGORY=Imperial uo Labyrinth Quest
+  
+SUBSECTION=Rune Keys
+  
+DESCRIPTION=Final Chest Key
+
+ON=@CREATE
+     //Final is 5
+      
+ MOREX=5
+     //Customizable color - Match Final
+       
+COLOR=0486
+
+
+
+[ITEMDEF i_lab_quest_rune_key_port]
+  
+ID=i_rune_marker
+  
+DUPELIST=01f15,01f16,01f17
+  
+TYPE=T_LAB_QUEST_KEY
+  
+WEIGHT=1
+  //Customizable name
+    
+
+NAME=red dragon rune
+
+
+
+ON=@CREATE
+     //Telepad is 6
+       
+MOREX=6
+     //Customizable color - Match Final
+       
+COLOR=0486
+       
+NAME=red dragon rune
+
+  
+
+CATEGORY=Imperial uo Labyrinth Quest
+  
+SUBSECTION=Rune Keys
+  
+DESCRIPTION=Telepad Key
+
+  
+
+/////////////////////
+ //Guardian Monsters//
+/////////////////////
+
+
+
+
+[CHARDEF c_m_lab_quest_guardian_e]
+  //Insert desired monster here
+    
+NAME=lizardman guardian
+  
+ID=c_lizardman_spear
+  
+SOUND=snd_MONSTER_LZRDMN1
+  
+ANIM=078c7f
+  
+DAM=15,30
+  
+ARMOR=25
+  
+CAN=MT_WALK|MT_RUN|MT_USEHANDS|MT_FIRE_IMMUNE
+  
+TEVENTS=e_teleporter
+  
+  
+DESIRES=i_gold,c_lizardman
+  
+AVERSIONS=e_carnivores3
+
+
+
+ON=@Create
+  //Match East color
+  //
+COLOR=025
+
+  
+NPC=brain_monster
+ 
+FAME={500 1000}
+  
+KARMA={-2000 -2999}
+
+  
+STR={400 600}
+  
+DEX={100 150}
+  
+INT={50 60}
+
+ 
+FENCING={100.0 150.0}
+  
+PARRYING={55.0 75.0}
+  
+MAGICRESISTANCE={35.0 60.0}
+  
+TACTICS={75.0 100.0}
+  
+ANATOMY={75.0 100.0}
+  
+WRESTLING={50.0 70.0}
+  
+MAGERY = {90.0 100.0}
+  
+ITEMNEWBIE=i_spear
+
+
+
+ON=@NPCRestock
+  //Maintain - Rune Key ( can be swapped for increased dificulty )
+    
+ITEM=i_lab_quest_rune_key_e
+
+
+ON=@DEATH
+  
+y_region_loot_death
+  
+y_region_loot_calculator
+  
+loot_LIZARDMAN_SPEAR
+
+  //Maintain
+  
+
+CATEGORY=Imperial uo Labyrinth Quest
+  
+SUBSECTION=Foes
+  
+DESCRIPTION=East Guardian
+
+
+
+
+[CHARDEF c_m_lab_quest_guardian_w]
+  //Insert desired monster here
+    
+NAME=liche guardian
+    
+ID=c_Liche
+
+    
+DAM=10,25
+    
+ARMOR=20
+
+    
+CAN=MT_WALK|MT_FIRE_IMMUNE
+    
+TEVENTS=e_teleporter
+    
+    
+TEVENTS=e_undead
+    
+DESIRES=t_bone,i_gold,t_wand,t_reagent,e_undead
+
+
+
+ON=@Create
+    //Match West color
+    //
+COLOR=026
+    
+NPC=brain_undead
+    
+STR={400 600}
+    
+DEX={96 115}
+    
+INT={565 655}
+
+    
+PARRYING={55.0 65.0}
+    
+MAGICRESISTANCE={90.0 100.0}
+    
+TACTICS={50.0 70.0}
+    
+ANATOMY={100.0 150.0}
+    
+WRESTLING={100.0 150.0}
+   
+MAGERY = { 90.0 100.0}
+
+    
+FAME={100 2000}
+    
+KARMA={-5000 -5999}
+
+
+
+ON=@NPCRestock
+    //Maintain - Rune Key ( can be swapped for increased dificulty )
+      
+ITEM=i_lab_quest_rune_key_w
+	  
+
+ON=@Death
+loot_LICH_LORD
+
+  //Maintain
+ 
+ 
+CATEGORY=Imperial uo Labyrinth Quest
+  
+SUBSECTION=Foes
+  
+DESCRIPTION=West Guardian
+
+
+
+
+[CHARDEF c_m_lab_quest_guardian_n]
+  //Insert desired monster here
+    
+ID=c_CYCLOPS
+    
+NAME=Cyclops Guardian
+    
+SOUND=snd_MONSTER_CYCLOPS1
+    
+DAM=6,30
+    
+ARMOR=28
+    
+RESOURCES=30 i_ribs_raw
+    
+FOODTYPE=15 t_meat_raw
+    
+CAN=MT_WALK|MT_RUN|MT_FIRE_IMMUNE
+    
+TEVENTS=e_teleporter
+    
+ //ALIGNMENT=EVIL
+
+
+
+ON=@Create
+    
+STR={600 1000}
+    
+DEX={95 115}
+    
+INT={37 58}
+
+    
+PARRYING={80.0 90.0}
+   
+MAGICRESISTANCE={80.0 90.0}
+    
+TACTICS={80.0 90.0}
+    
+WRESTLING={100.0 150.0}
+    
+ANATOMY={80.0 90.0}
+    
+MAGERY = { 90.0 100.0}
+    
+NPC=BRAIN_MONSTER
+
+    
+FAME=5000
+    
+KARMA={-2000 -2999}
+
+
+ON=@NPCRestock
+    //Maintain - Rune Key ( can be swapped for increased dificulty )
+      
+
+ITEM=i_lab_quest_rune_key_n
+
+
+ON=@Death
+   
+loot_DRAGON
+   
+loot_dragonrares_Med
+
+  //Maintain
+  
+
+CATEGORY=Imperial uo Labyrinth Quest
+  
+SUBSECTION=Foes
+  
+DESCRIPTION=North Guardian
+
+
+
+
+[CHARDEF c_m_lab_quest_guardian_s]
+  //Insert desired monster here
+    
+NAME=giant spider guardian
+    
+ID=c_spider_giant
+    
+SOUND=snd_MONSTER_GISPIDR1
+    
+ANIM=078c7f
+    
+DAM=3,15
+    
+ARMOR=8
+   
+CAN=MT_WALK|MT_RUN|MT_FIRE_IMMUNE
+    
+TEVENTS=e_teleporter
+    
+
+
+
+ON=@Create
+    //Match South color
+    //
+COLOR=028
+    
+NPC=brain_monster
+    
+FAME={3000 9000}
+    
+KARMA={-5000 -5999}
+
+    
+STR={400 600}
+    
+DEX={100 150}
+    
+INT={36 60}
+
+    
+PARRYING={80.0 90.0}
+   
+MAGICRESISTANCE={80.0 90.0}
+    
+TACTICS={80.0 90.0}
+    
+WRESTLING={100.0 150.0}
+    
+ANATOMY={80.0 90.0}
+    
+POISONING={200.0 300.0}
+    
+MAGERY = { 90.0 100.0}
+
+
+
+ON=@NPCRestock
+    
+ITEM=i_backpack
+    
+ITEM={i_reag_spider_silk 1 0 1},{3 6}
+    //Maintain - Rune Key ( can be swapped for increased dificulty )
+      
+ITEM=i_lab_quest_rune_key_s
+    
+CONTAINER=i_pouch
+        
+ITEM={ random_jewel 1 0 1 }
+        
+ITEM={ random_jewel 1 0 1 }
+        
+ITEM={ random_jewel 1 0 1 }
+        
+ITEM={ random_jewel 1 0 1 }
+
+
+
+ON=@Death
+   
+loot_DRAGON
+   
+loot_dragonrares_Med
+
+    //Maintain
+    
+
+CATEGORY=Imperial uo Labyrinth Quest
+    
+SUBSECTION=Foes
+    
+DESCRIPTION=South Guardian
+
+
+
+
+[CHARDEF c_m_lab_quest_guardian_final]
+  //Insert desired monster here
+
+  
+ID=C_MAN
+  
+NAME=#NAMES_DRAGON the Guardian
+  
+SOUND=snd_HUMAN_M_DIE_01
+  
+DAM=25,50
+  
+ARMOR=45
+  
+CAN=MT_WALK|MT_RUN|MT_USEHANDS|MT_FIRE_IMMUNE
+  
+AVERSIONS=t_spell,t_TRAP,t_eerie_stuff
+  
+TEVENTS=e_teleporter
+  
+  
+TSPEECH=jobMageEvil
+
+  
+CATEGORY=Imperial uo Labyrinth Quest
+  
+SUBSECTION=Foes
+  
+DESCRIPTION=Final Guardian
+
+
+
+ON=@Create
+      
+COLOR=colors_skin
+      
+STR={1000 1500}
+      
+DEX={250 500}
+      
+INT={1000 1500}
+      
+WRESTLING={150.0 200.0}
+      
+MAGICRESISTANCE=20
+      
+MAGERY = {200.0 300.0}
+      
+TACTICS={100.0 150.0}
+      
+ANATOMY={100.0 150.0}
+      
+POISONING={200.0 300.0}
+      
+DETECTION={90.0 100.0}
+      
+NPC=brain_monster
+      
+FAME=9999
+      
+KARMA=-9999
+
+      
+ITEMNEWBIE=random_male_hair
+      
+
+COLOR=colors_hair
+      
+ITEMNEWBIE=random_facial_hair
+      
+COLOR=match_hair
+      
+ITEM=m_posdef_army
+      
+ITEMNEWBIE=i_platemail_gloves_bloodrock
+      
+ITEMNEWBIE=i_platemail_helm_bloodrock
+      
+ITEMNEWBIE=i_platemail_arms_bloodrock
+      
+ITEMNEWBIE=i_platemail_chest_bloodrock
+      
+ITEMNEWBIE=i_platemail_gorget_bloodrock
+      
+ITEMNEWBIE=i_platemail_leggings_bloodrock
+      
+ITEMNEWBIE=i_CAPE
+      
+COLOR=colors_red_drag
+      
+ITEMNEWBIE=i_SASH
+
+
+
+ON=@NPCRestock
+      //Maintain - Final Rune Key
+        
+ITEM=i_lab_quest_rune_key_final
+
+    
+CONTAINER=i_pouch
+        
+ITEM={ random_jewel 1 0 1 }
+        
+ITEM={ random_jewel 1 0 1 }
+        
+ITEM={ random_jewel 1 0 1 }
+        
+ITEM={ random_jewel 1 0 1 }
+        
+ITEM={ random_jewel 1 0 1 }
+        
+ITEM={ random_jewel 1 0 1 }
+        
+ITEM={ random_jewel 1 0 1 }
+        
+ITEM={ random_jewel 1 0 1 }
+        
+ITEM={ random_jewel 1 0 1 }
+        
+ITEM={ random_jewel 1 0 1 }
+        
+ITEM={ random_jewel 1 0 1 }
+        
+ITEM={ random_jewel 1 0 1 }
+
+  //Maintain
+  
+
+CATEGORY=Imperial uo Labyrinth Quest
+  
+SUBSECTION=Foes
+  
+DESCRIPTION=Final Guardian
+
+
+  
+
+//////////
+ //Chests//
+//////////
+
+
+
+[TEMPLATE tp_lab_quest_chest_e]
+  
+CATEGORY=Imperial uo Labyrinth Quest
+  
+SUBSECTION=Chest Templates
+  
+DESCRIPTION=East Chest Template
+
+  
+
+CONTAINER=i_chest_lab_quest
+       
+ATTR=08000
+       
+MOREZ=0
+      
+TYPE=t_container_supalocked
+       //East is 1
+         //Key marker
+           
+MOREX=1
+         //Spawn Marker
+           
+MOREZ=01
+       
+       //Customizable part
+         
+DISPID=i_chest_metal_brass
+         
+NAME=odd looking red chest
+         //Match East Color
+           
+
+COLOR=025
+
+
+
+[TEMPLATE tp_lab_quest_bag_e]
+  
+CATEGORY=Imperial uo Labyrinth Quest
+  
+SUBSECTION=Bag Templates
+  
+DESCRIPTION=East Chest Template
+
+  
+
+CONTAINER=i_bag
+         //activator for central piece
+           
+ITEM=i_dracactive_e
+         
+ITEM=random_jewel
+         
+ITEM=random_jewel
+         
+CONTAINER=i_bag
+              
+ITEM=random_potion
+             
+ITEM=random_potion
+              
+ITEM=random_potion
+              
+ITEM=random_potion
+
+
+
+[TEMPLATE tp_lab_quest_chest_w]
+  
+CATEGORY=Imperial uo Labyrinth Quest
+  
+SUBSECTION=Chest Templates
+  
+DESCRIPTION=West Chest Template
+
+  
+
+CONTAINER=i_chest_lab_quest
+       
+ATTR=08000
+       
+TYPE=t_container_supalocked
+       //West is 2
+         //Key marker
+           
+MOREX=2
+         //Spawn Marker
+           
+MOREZ=02 
+       //Customizable part
+         
+DISPID=i_chest_metal_brass
+         
+NAME=odd looking red chest
+         //Match West Color
+           
+COLOR=026
+
+
+
+[TEMPLATE tp_lab_quest_bag_w]
+  
+CATEGORY=Imperial uo Labyrinth Quest
+  
+SUBSECTION=Bag Templates
+  
+DESCRIPTION=West Chest Template
+
+  
+
+CONTAINER=i_bag
+         //activator for central piece
+           
+ITEM=i_dracactive_w
+         
+ITEM=random_jewel
+         
+CONTAINER=i_bag
+              
+ITEM=random_potion
+              
+ITEM=random_potion
+              
+ITEM=random_potion
+              
+ITEM=random_potion
+              
+ITEM=random_potion
+              
+ITEM=random_potion
+
+
+
+[TEMPLATE tp_lab_quest_chest_n]
+  
+CATEGORY=Imperial uo Labyrinth Quest
+  
+SUBSECTION=Chest Templates
+  
+DESCRIPTION=North Chest Template
+
+  
+CONTAINER=i_chest_lab_quest
+       
+
+ATTR=08000
+       
+TYPE=t_container_supalocked
+       //North is 3
+         //Key marker
+           
+MOREX=3
+         //Spawn Marker
+           
+MOREZ=03 
+       //Customizable part
+         
+DISPID=i_chest_metal_brass
+         
+NAME=odd looking red chest
+         //Match North Color
+           
+COLOR=027
+
+
+
+[TEMPLATE tp_lab_quest_bag_n]
+  
+CATEGORY=Imperial uo Labyrinth Quest
+  
+SUBSECTION=Bag Templates
+  
+DESCRIPTION=North Chest Template
+
+  
+
+CONTAINER=i_bag
+         //activator for central piece
+           
+ITEM=i_dracactive_n
+         
+ITEM=random_jewel
+         
+CONTAINER=i_bag
+              
+ITEM=random_potion
+              
+ITEM=random_potion
+              
+ITEM=random_potion
+              
+ITEM=random_potion
+
+
+
+
+[TEMPLATE tp_lab_quest_chest_s]
+  
+CATEGORY=Imperial uo Labyrinth Quest
+  
+SUBSECTION=Chest Templates
+  
+DESCRIPTION=South Chest Template
+
+  
+CONTAINER=i_chest_lab_quest
+       
+
+ATTR=08000
+       //South is 4
+         //Key marker
+           
+MOREX=4
+         //Spawn Marker
+           
+MOREZ=04 
+       
+TYPE=t_container_supalocked
+       //Customizable part
+         
+DISPID=i_chest_metal_brass
+         
+NAME=odd looking red chest
+         //Match South Color
+           
+COLOR=028
+
+
+
+[TEMPLATE tp_lab_quest_bag_s]
+  
+CATEGORY=Imperial uo Labyrinth Quest
+  
+SUBSECTION=Bag Templates
+  
+DESCRIPTION=South Chest Template
+
+  
+
+CONTAINER=i_bag
+         //activator for central piece
+           
+ITEM=i_dracactive_s
+         
+ITEM=random_jewel
+         
+CONTAINER=i_bag
+              
+ITEM=random_potion
+              
+ITEM=random_potion
+              
+ITEM=random_potion
+              
+ITEM=random_potion
+              
+ITEM=random_potion
+              
+ITEM=random_potion
+
+
+
+
+[TEMPLATE tp_lab_quest_final_reward]
+  
+CATEGORY=Imperial uo Labyrinth Quest
+  
+SUBSECTION=Chest Templates
+  
+DESCRIPTION=Final Reward
+
+  
+
+CONTAINER=i_chest_lab_quest
+      
+TIMER=-1
+       
+ATTR=08000
+       
+TYPE=t_container_supalocked
+       //Final is 5
+         //Key marker
+           
+MOREX=5
+         //Spawn Marker
+           
+MOREZ=05 
+       //Customizable part
+         
+
+DISPID=i_chest_metal_brass
+         
+NAME=glowing red chest
+         //Match Final Color
+           
+COLOR=0486
+
+
+
+[TEMPLATE tp_lab_quest_bag_final_reward]
+  
+
+CATEGORY=Imperial uo Labyrinth Quest
+  
+SUBSECTION=Bag Templates
+  
+DESCRIPTION=Final Reward
+
+  
+
+CONTAINER=i_backpack
+         
+ITEM=tp_lab_quest_bag_final_reward_p1
+         
+ITEM=tp_lab_quest_bag_final_reward_p2
+         
+ITEM=tp_studded_leather_qst
+         
+CONTAINER=i_pouch
+              
+COLOR=025
+              
+ITEM=random_jewel
+              
+ITEM=random_jewel
+              
+ITEM=random_jewel
+              
+ITEM=random_jewel
+              
+ITEM=random_jewel
+              
+ITEM=random_jewel
+              
+ITEM=random_jewel
+              
+ITEM=random_jewel
+              
+ITEM=random_jewel
+              
+ITEM=random_jewel
+
+
+
+[TEMPLATE tp_lab_quest_bag_final_reward_p1]
+   
+
+CONTAINER=i_bag
+       
+COLOR=0486
+        
+ITEM=i_lab_quest_trophy
+
+
+
+[TEMPLATE tp_lab_quest_bag_final_reward_p2]
+   
+CONTAINER=i_pouch
+        
+ITEM=i_gold
+      
+AMOUNT=30000
+
+
+
+[TEMPLATE tp_studded_leather_qst]
+  
+CATEGORY=Imperial uo Labyrinth Quest
+  
+SUBSECTION=Bag Templates
+  
+DESCRIPTION=Studded Leather Armour
+  
+CONTAINER=i_BACKPACK
+      
+COLOR=0486
+      
+ITEM=i_gorget_ranger_leather
+      
+ITEM=i_gloves_ranger_leather      
+ITEM=i_arms_ranger_leather    
+ITEM=i_leggings_ranger_leather     
+ITEM=i_tunic_ranger_leather    
+ITEM=i_female_ranger_leather  
+
+////////////////////
+ //Type Definitions//
+////////////////////
+
+
+
+[TYPEDEF t_container_supalocked]
+
+
+ON=@DCLICK
+     
+SRC.SYSMESSAGE This container is locked
+     
+return 1
+
+
+
+ON=@TIMER
+   
+RETURN 1
+
+
+
+[TYPEDEF T_LAB_QUEST_KEY]
+
+ON=@DCLICK
+     
+TARGET What would you like to use this on?
+     
+return 1
+
+
+
+ON=@TARGON_ITEM
+   //Telepad Key Event
+     
+IF ( <SRC.TARG.BASEID> == i_dracpad )
+     //Right Key?
+       
+IF !( <SRC.TARG.MOREX> == <MOREX> )
+          
+SRC.SYSMESSAGE It does not seem to fit in the lock slot.
+          
+RETURN 1
+       
+ENDIF
+        //Preventing further unlocks while active
+          
+
+IF !( <SRC.TARG.MOREY> == 0 )
+             
+SRC.SYSMESSAGE Nothing happens
+             
+RETURN 1
+         
+ENDIF
+        //Customizable part
+          
+
+SRC.TARG.COLOR = 0486
+          
+SRC.TARG.SOUND = 0104
+          
+SRC.TARG.MOREY = 1
+          
+SRC.TARG.EMOTE glowing
+          
+SRC.TARG.NAME glowing red marble
+          //Limited time of activity
+            
+SRC.TARG.TIMER = 300
+        
+REMOVE
+        
+RETURN 1
+     
+ENDIF
+   //Quest Chest Event
+     
+
+IF !( <SRC.TARG.BASEID> == i_chest_lab_quest )
+       
+SRC.SYSMESSAGE You cant use it on that.
+        
+RETURN 1
+     
+ENDIF
+     
+IF ( <SRC.TARG.TYPE> == t_container)
+        
+SRC.SYSMESSAGE It has already been unlocked.
+        
+RETURN 1
+     
+ENDIF
+     
+IF !( <SRC.TARG.MOREX> == <MOREX> )
+        
+SRC.SYSMESSAGE It does not seem to fit in the lock slot.
+        
+RETURN 1
+     
+ENDIF
+   //Customizable Sound
+   
+SRC.TARG.SOUND = 01ff
+   
+SRC.TARG.TYPE = t_container
+   
+SRC.SYSMESSAGE You unlock the container
+   //Winning flavor
+     
+
+IF ( <SRC.TARG.MOREX> == 5 )
+        
+SRC.MUSIC 22
+        
+SRC.MESSAGE You have sucessfully solved the Hedge Maze Labyrinth.
+        
+SERV.ALLCLIENTS SYSMESSAGE Words of the deeds of <SRC.NAME> (<SRC.TITLE>) are being told throughout the land...
+        
+SRC.FAME = <EVAL( <SRC.FAME> + (500))>
+   
+ENDIF
+   
+REMOVE
+   
+RETURN 1
+
+
+
+[TYPEDEF T_DRACTILE_ACTIVATOR]
+
+
+
+ON=@DCLICK
+     
+TARGET What would you like to use this on?
+     
+return 1
+  
+
+
+ON=@TARGON_ITEM
+     //Test if correct object
+     
+IF !( <SRC.TARG.BASEID> == i_dractile )
+       
+ SRC.SYSMESSAGE You cant use it on that.
+        
+RETURN 1
+     
+ENDIF
+
+     //Test if exausted
+       
+IF ( <SRC.TARG.MOREX> == 7 )
+          
+SRC.SYSMESSAGE Nothing Happens.
+          
+RETURN 1
+       
+ENDIF
+
+     //Test if in use
+     
+
+IF ( <SRC.TARG.MOREZ> == 1 )
+        
+RETURN 1
+    
+ENDIF
+
+     //Test if right order (HARD VERSION)
+       
+
+IF ( <SRC.TARG.MOREX> < 4 )
+         
+IF !( <SRC.TARG.MORE2> == <MORE2> )
+            
+SRC.SYSMESSAGE Nothing Happens.
+            
+RETURN 1
+         
+ENDIF
+       
+ENDIF
+
+     
+
+SRC.TARG.MOREX = <EVAL( <SRC.TARG.MOREX> + (1))>
+     
+SRC.SYSMESSAGE The strange red figurine melts with the marble
+     //Sequence needed (HARD VERSION)
+       
+SRC.TARG.MORE2=<EVAL( <SRC.TARG.MORE2> + (1))>
+     //Activation resets limited time flag
+       
+IF ( <SRC.TARG.MOREY> == 1 )
+          
+SRC.TARG.MOREY = 0
+       
+ENDIF
+     
+IF ( <SRC.TARG.MOREX> == 4 )
+        
+SRC.NEWITEM i_lab_quest_rune_key_port
+        
+SRC.ACT.P = <SRC.TARG.P>
+        
+SRC.TARG.TIMER = 1
+        //In use flag
+          
+SRC.TARG.MOREZ = 1
+        //RESET ORDER/SEQUENCE
+          
+SRC.TARG.MORE2 = 1
+        //Customizable part
+          
+SRC.TARG.COLOR = 0486
+          
+SRC.TARG.SOUND = 0243
+          
+SRC.SYSMESSAGE
+          
+SRC.SYSMESSAGE GAME MUSIC SHOULD BE TURNED ON AT THIS POINT   
+       
+REMOVE
+        
+RETURN 1
+     
+ENDIF
+     
+
+IF ( <SRC.TARG.MOREX> < 4  )
+        
+SRC.TARG.TIMER = 1
+        //In use flag
+          
+SRC.TARG.MOREZ = 1
+        //Customizable part
+          
+SRC.TARG.COLOR = 0486
+          
+SRC.TARG.EMOTE glowing
+          
+SRC.TARG.NAME glowing red marble
+          
+SRC.SOUND = snd_SPELL_MARK
+        
+REMOVE
+        
+RETURN 1
+     
+ENDIF
+     
+IF ( <SRC.TARG.MOREX> == 5 )
+       //5th use created a good karma gate
+         //Customizable part
+           
+SRC.TARG.COLOR = 0484
+          
+SRC.TARG.EMOTE turn bright white
+           
+SRC.TARG.NAME bright white tile
+           
+SRC.SOUND = 00ff
+           //Remains active for 5 minutes
+             
+SRC.TARG.TIMER = 300
+         
+REMOVE
+       
+RETURN 1   
+     
+ENDIF
+     
+
+IF ( <SRC.TARG.MOREX> == 6 )
+       //6th use created a bad karma gate
+         //Customizable part
+           
+SRC.TARG.COLOR =01
+           
+SRC.TARG.EMOTE turn black
+           
+SRC.TARG.NAME pitch black tile
+           
+SRC.SOUND = 0245
+           //Remains active for 5 minutes
+             
+SRC.TARG.TIMER = 300
+         
+REMOVE
+       
+RETURN 1   
+     
+ENDIF
+     //Overuse causes deactivation for a limited time
+       //Deactivation time
+         
+SRC.TARG.TIMER = 350
+       //Customizable part
+         
+SRC.TARG.COLOR = 00
+         
+SRC.TARG.EMOTE fading
+         
+SRC.TARG.NAME marble floor
+         
+SRC.SOUND = 01d6
+       
+REMOVE
+    
+RETURN 1 
+     
+
+
+
+[TYPEDEF T_DRACTILE]
+
+
+ON=@TIMER
+     
+TIMER=-1
+     
+MOREZ = 0
+     //Limited time to activate next (HARD VERSION)
+       
+IF ( <MOREY> == 1 )
+           //Flavour effect
+            
+SOUND = 0203
+             
+COLOR = 0484
+             
+TIMER = 1
+             
+MOREZ = 1
+            
+MOREY = 0
+             
+MOREX = 0
+             
+MORE1 = 1
+           
+RETURN 1
+       
+ENDIF
+     
+
+IF ( <MOREX> == 1 )
+        //Customizable part
+          
+NAME=melted floor
+          //Color match West - Step 2
+            
+COLOR=026
+        //Limited time to activate next (HARD VERSION)
+          
+MOREY=1
+          //15 Minutes to active next
+            
+TIMER=900
+        
+RETURN 1
+     
+ENDIF
+     
+
+IF ( <MOREX> == 2 )
+        //Customizable part
+          
+NAME=melted floor
+            //Color match North - Step 3
+              
+COLOR=027
+        //Limited time to activate next (HARD VERSION)
+          
+MOREY=1
+          //15 Minutes to active next
+            
+TIMER=900
+        
+RETURN 1
+     
+ENDIF
+     
+
+IF ( <MOREX> == 3 )
+        //Customizable part
+          
+NAME=melted floor
+            //Color match South - Step 4
+              
+COLOR=028
+        //Limited time to activate next (HARD VERSION)
+          
+MOREY=1
+          //15 Minutes to active next
+            
+TIMER=900
+        
+RETURN 1
+     
+ENDIF
+     
+
+IF ( <MOREX> == 4 )
+        //Customizable part
+          
+COLOR=0483        
+          
+NAME=flickering Floor
+        //Limited telepad active time
+          
+MOREY=1
+          //5 Minutes open (one way)
+            
+TIMER=900
+        
+RETURN 1
+    
+ ENDIF
+     //Reset Dractile
+       
+
+IF ( <MORE1> == 1 )
+          
+MOREX = 0
+          
+MORE1 = 0
+          
+MORE2 = 1
+          
+NAME=odd looking marble floor
+          
+COLOR = 025
+          
+RETURN 1
+       
+ENDIF
+       //Flavour effect
+         
+
+SOUND = 0203
+         
+COLOR = 0484
+         
+TIMER = 1
+         
+MOREZ = 1
+         
+MORE1 = 1
+         
+RETURN 1
+
+
+
+ON=@STEP
+     //Test if still in use
+     
+IF ( <MOREZ> == 1 )
+        
+RETURN 1
+    
+ ENDIF
+     //Good Karma Setting
+     
+
+IF ( <MOREX> == 5 )
+       
+IF ( <SRC.HITS> == 0 )
+           
+IF ( <SRC.KARMA> > 5000 )
+              
+SOUND=01e9
+              
+SRC.RESURRECT
+              
+RETURN 1
+            
+ENDIF
+            
+RETURN 1
+         
+ENDIF
+        
+IF ( <SRC.KARMA> > 5000 )
+           //While not at full hits, heal 1 HP per second
+             
+IF !(<SRC.HITS> > <SRC.STR>)
+                
+SRC.EMOTE being revigorated
+                
+SRC.HITS = <EVAL(<SRC.HITS>+(5))>
+                
+SRC.NEWITEM i_lab_quest_fx_sparkle_gd
+                
+SRC.ACT.P = <SRC.P>
+                
+SRC.ACT.FIX
+                
+SRC.UPDATE
+                
+SRC.SOUND = 00f7
+             
+ENDIF
+           
+RETURN 1
+        
+ENDIF
+        
+IF ( <SRC.KARMA> > 0 )
+          
+SRC.SYSMESSAGE You feel peace of mind
+          
+RETURN 1
+        
+ENDIF
+        
+SRC.EMOTE being drawn to the Light
+        
+SRC.NEWITEM i_lab_quest_fx_sparkle_gd
+        
+SRC.ACT.P = <SRC.P>
+        
+SRC.ACT.FIX
+        
+SRC.UPDATE
+        
+SRC.SOUND 0210
+        
+SRC.DAMAGE={40 120}
+        
+RETURN 1
+     
+ENDIF
+     //Bad Karma Setting
+     
+IF ( <MOREX> == 6 )
+        
+IF ( <SRC.HITS> == 0 )
+          
+ IF ( <SRC.KARMA> < -5000 )
+              
+SRC.RESURRECT
+              
+SRC.SOUND=024a
+              
+RETURN 1
+            
+ENDIF
+            
+RETURN 1
+         
+ENDIF
+        
+IF ( <SRC.KARMA> < -5000 )
+           //While not at full hits, heal 1 HP per second
+             
+IF !(<SRC.HITS> > <SRC.STR>)
+                
+SRC.EMOTE being revigorated
+                
+SRC.NEWITEM i_lab_quest_fx_sparkle_bd
+                
+SRC.ACT.P = <SRC.P>
+                
+SRC.ACT.FIX
+                
+SRC.UPDATE
+                
+SRC.HITS = <EVAL(<SRC.HITS>+(5))>
+                
+SRC.SOUND = 00f8
+             
+ENDIF
+           
+RETURN 1
+        
+ENDIF
+        
+IF ( <SRC.KARMA> < 0 )
+           
+SRC.SYSMESSAGE You feel superior
+           
+RETURN 1
+        
+ENDIF
+        
+SRC.EMOTE being drawn to the darkness
+        
+SRC.NEWITEM i_lab_quest_fx_sparkle_bd
+        
+SRC.ACT.P = <SRC.P>
+        
+SRC.ACT.FIX
+        
+SRC.UPDATE
+        
+SRC.SOUND 0210
+        
+SRC.DAMAGE={40 120}
+        
+RETURN 1
+     
+ENDIF
+     
+RETURN 1
+
+
+
+[TYPEDEF T_DRACPAD]
+
+
+ON=@TIMER
+     //Changing aspect
+       
+IF ( <MOREY> == 1 )
+           //Flavour effect
+             
+SOUND = 0203
+             
+COLOR = 0484
+             
+TIMER = 1
+             
+MOREY = 2
+           
+RETURN 1
+       
+ENDIF
+     //Reset Dracpad on time over
+       
+NAME=sloted marble floor
+       
+COLOR = 025
+       
+MOREY = 0
+       
+RETURN 1
+
+
+
+ON=@STEP
+     
+IF ( <MOREY> == 1 )
+        
+SRC.GO 1164,2207,20
+        
+SRC.MUSIC = 1a
+        
+RETURN 1
+     
+ENDIF
+     
+RETURN 1
+
+
+[EOF]

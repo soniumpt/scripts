@@ -1,0 +1,46 @@
+// check for a resistence. Needs VAR.SKILL and VAR.CIRCLE
+[FUNCTION f_resist_check]
+   if ( (<src.isgm> && <SRC.ISINVIS>) || (0<src.tag.fix.irresistable>) )
+      return 0
+   endif
+
+   LOCAL.MINRES	= <eval (<var.res>/6)> 
+   LOCAL.RESIST	= <eval (((<var.skill> - 150)/ 5) + (50*<var.circle>))>
+   if ( <var.res> > <LOCAL.RESIST> )
+      LOCAL.RESIST	= <eval (<var.res> - <LOCAL.RESIST>)>
+   else
+      LOCAL.RESIST	= 0
+   endif
+   if ( <LOCAL.RESIST> < <LOCAL.MINRES> )
+      LOCAL.RESIST	= <LOCAL.MINRES>
+   endif
+
+   if ( <NPC> )		// NPCs resist less adjustment
+      LOCAL.RESIST	= <eval ((<LOCAL.RESIST>*7)/10)>
+   else
+      LOCAL.RESIST	= <eval ((<LOCAL.RESIST>*8)/10)>
+   endif
+
+   //SRC.sysmessage <eval <LOCAL.RESIST>> [ <eval <var.skill>> vs <eval <var.res>> ]
+   if ( rand(1250) < <LOCAL.RESIST> )
+      if ( <SRC.ISINVIS> )
+         emote resist the spell
+      else
+         emote resist <src.name>'s spell
+      endif
+      
+      if <ISEVENT.e_bandage_interrupt>
+         band_heal_remove
+         band_res_remove
+         EVENTS -e_bandage_interrupt
+      endif
+      
+      if ( <NPC> && !<REGION.GUARDED> )
+         ATTACK
+      endif
+      return 1
+   else
+      return 0
+   endif
+
+[EOF]

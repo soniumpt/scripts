@@ -1,0 +1,160 @@
+//Zaks Mid-level quest - V1.0
+
+[CHARDEF c_h_clarissa]
+   Name=Clarissa
+   ID=c_woman
+   TSPEECH=spk_human_default
+   TSPEECH=spk_quest_priestess
+
+ON=@CLICK
+MESSAGE @0AFE [Quest NPC]   
+   
+ON=@NPCSeeNewPlayer
+   SAY Say <src.name>, you look like a worthy adventurer, can you please help me?
+   SAY Im sure you will be able to handle this little problem of mine...
+
+TEVENTS=e_npc_quest
+ON=@Create
+   NPC=Brain_Human
+   Color=colors_skin
+
+   STR={80 90}
+   INT={50 60}
+   DEX={80 90}
+
+   Wrestling=80.0
+   Swordsmanship=80.0
+   Tactics=80.0
+   Parrying=50.0
+   Magery=50.0
+   ITEMNEWBIE=i_dress_full
+      color=086
+   ITEMNEWBIE=i_hat_wizards
+      color=012
+   ITEMNEWBIE=random_shoes
+      color=colors_neutral
+
+ON=@NPCRestock
+   ITEM=i_candle
+   ITEM=random_shoes
+      color=colors_neutral
+   ITEM=i_lantern
+   ITEM=random_coin_purse
+
+CATEGORY=Imperial uo
+SUBSECTION=Clarissa Quest
+DESCRIPTION=Clarissa
+
+
+[SPEECH spk_quest_priestess]
+ON=*help*
+ON=*Quest*
+ON=*problem*
+	IF ( 0<SRC.TAG.NPC_QUEST_START> & NPCQ_Clarissa )
+	   SAY Im greatful that you are helping me, please return with proof that the my brother rests in peace.
+	ELSE
+	   SRC.TAG.NPC_QUEST_START = <eval ( 0<SRC.TAG.NPC_QUEST_START> | NPCQ_Clarissa )>
+	   SAY My brothers spirit is wandering this land. I sense he is troubled and tormented. Please put him to rest once and for-all. Please return with proof that he is finally at rest.
+        ENDIF
+ON=*accept*
+	IF ( 0<SRC.TAG.NPC_QUEST_START> & NPCQ_Clarissa )
+	   Say My Brothers spirit walks at the rest-place of the dead, near Cove. Please return some evidence that he is finally at peace.
+	   EMOTE=breakdown and cry
+	ENDIF
+
+ON=*reward*
+	IF !( 0<SRC.TAG.NPC_QUEST_START> & NPCQ_Clarissa )
+	   SAY You must agree to help me to get the information <SRC.SEX milord/milady>
+	ELSEIF (( 0<SRC.TAG.NPC_QUEST_START> & NPCQ_Clarissa ) && !<SRC.RESTEST 1 i_robe_brother>)
+	   SAY Return my brothers death-robe <SRC.SEX milord/milady> , that is all I ask.
+	ELSEIF <SRC.RESTEST 1 i_robe_brother>
+	   SRC.SYSMESSAGE <NAME> wipes a falling tear from her face and thanks you. She is forever in your debt.
+	   SRC.CONSUME 1 i_robe_brother
+	   SRC.NEWITEM=i_gold 
+           SRC.ACT.AMOUNT=10000
+           SRC.ACT.BOUNCE 
+           SOUND=01FC 
+           SRC.SYSMESSAGE=You are now 10000 gps richer. 
+	   SRC.TAG.NPC_QUEST_START = <eval ( 0<SRC.TAG.NPC_QUEST_START> &~ NPCQ_Clarissa )>
+	   SRC.TAG.NPC_QUEST_DONE = <eval ( 0<SRC.TAG.NPC_QUEST_DONE> | NPCQ_Clarissa )>	   
+	   REMOVE
+	   ANNOUNCE <SRC.NAME> has finally put Clarissa's brother's spirit at rest.
+	   RETURN 0
+   	ENDIF
+	RETURN 1
+	
+ON=*hi*
+SAY If you would like to help me out say "Quest"
+	
+	
+[ITEMDEF i_robe_brother]
+   ID=i_robe
+   Name=Clarissa's Brothers robe
+
+
+[CHARDEF c_m_brother]
+   Name=Clarissa's Brother
+   ID=c_grim_reaper
+   DAM={100 120}
+
+ON=@NPCSeeNewPlayer
+   SAY I shall devour your soul for desturbing me!
+
+ON=@Create
+   NPC=Brain_Monster
+
+   STR={80 90}
+   INT={50 60}
+   DEX={80 90}
+
+   Karma={-5000 -6000}
+   Fame={3000 4000}
+
+   Wrestling=75.0
+   Tactics=75.0
+   Magery=85.0
+   Parrying=50.0
+
+   ITEMNEWBIE=i_spellbook
+	AddSpell=s_feeblemind
+	AddSpell=s_heal
+	AddSpell=s_magic_arrow
+	AddSpell=s_night_sight
+	AddSpell=s_reactive_armor
+	AddSpell=s_weaken
+	AddSpell=s_Agility
+	AddSpell=s_cunning
+	AddSpell=s_cure
+	AddSpell=s_harm
+	AddSpell=s_protection
+	AddSpell=s_strength
+	AddSpell=s_bless
+	AddSpell=s_fireball
+	AddSpell=s_curse
+	AddSpell=s_greater_heal
+	AddSpell=s_lightning
+	AddSpell=s_mana_drain
+	AddSpell=s_magic_reflection
+	AddSpell=s_dispel
+	AddSpell=s_energy_bolt
+	AddSpell=s_explosion
+	AddSpell=s_flamestrike
+   ITEMNEWBIE=i_reag_black_pearl,{25}
+   ITEMNEWBIE=i_reag_spider_silk,{25}
+   ITEMNEWBIE=i_reag_ginseng,{25}
+   ITEMNEWBIE=i_reag_blood_moss,{25}
+   ITEMNEWBIE=i_reag_garlic,{25}
+   ITEMNEWBIE=i_reag_nightshade,{25}
+   ITEMNEWBIE=i_reag_mandrake_root,{25}
+   ITEMNEWBIE=i_reag_sulfur_ash,{25}
+
+ON=@NPCRestock
+   ITEM=i_robe_brother
+   ITEM=i_gold,{450,500}
+
+CATEGORY=Imperial uo
+SUBSECTION=Clarissa Quest
+DESCRIPTION=Clarissa's Brother
+
+
+[EOF]

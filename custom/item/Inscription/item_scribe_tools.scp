@@ -1,0 +1,247 @@
+// Wren Oct 17 '03 - Added/Modified Steed Book Craftability
+// drop the mortar to reset it
+// Wren Jan 15 '04 - Lowered requirements to dupe books and removed the eating of pen & ink
+// Wren Feb 06 '04 - Lowered animal lore req on steed books
+// Boo Oct 06 06 - Moved Item deeds over to scribe tools to make
+
+[TYPEDEF t_scribe_tools]
+  
+
+[ITEMDEF 0fbf]	//pen and ink
+DEFNAME		= i_pen_and_ink
+NAME		= pen and ink
+VALUE		= 150
+TYPE		= t_script
+RESOURCES	= 1 i_FEATHER, 1 i_INK_POT
+WEIGHT		= 2
+DUPELIST	= 0fc0
+CATEGORY	= Items by Professions
+SUBSECTION	= Artists
+DESCRIPTION	= Pen & Ink (W)
+
+ON = @Create
+  TYPE		= t_scribe_tools
+  MORE1		= 1
+
+ON = @DClick
+  if ( <MORE1> == 0 )
+     SRC.NEWITEM	i_pen_and_ink
+     SRC.ACT.BOUNCE
+     REMOVE
+     SRC.ACT.USE
+     return 1
+  endif
+
+  TARGET What scrolls do you want to scribe in? Or what book do you want to copy? Or for which steed do you want to make a book?
+  return 1
+
+ON = @Targon_Item
+  //BRING UP INSCRIPTION GUMP
+  if ( <SRC.TARG.BASEID> == i_scroll_blank )
+     if ( <SRC.TARG.TOPOBJ.UID> != <SRC.UID> )
+        src.sysmessage That has to be in your pack.
+     else
+        SRC.TARG.DCLICK
+     endif
+     return 1
+  endif
+
+
+  //DUPLICATE BOOK
+  if ( <SRC.TARG.TYPE> == t_book )
+     if ( <SRC.INSCRIPTION> < 65.0 )
+        SRC.SYSMESSAGE You are not skilled enough to copy a full book yet.
+        return 1
+     endif
+
+     VAR.PAGES	= <eval (10 + (<SRC.TARG.PAGES>/4))>
+     
+     if !( <SRC.RESTEST <VAR.PAGES> i_scroll_blank> )
+        SRC.SYSMESSAGE You need <eval <var.pages>> blank scrolls.
+        return 1
+     endif
+
+     if !( <src.restest 1 i_hide, 1 i_thread> )
+        SRC.SYSMESSAGE You need a piece of leather and a spool of thread.
+        return 1
+     endif
+
+     SRC.CONSUME 1 i_hide, 1 i_thread, <var.pages> i_scroll_blank
+
+     SRC.TARG.DUPE
+     SRC.TARG.P	= <SRC.P>
+     SRC.TARG.BOUNCE
+     TAG.MAKEITEM.LEVEL	= 65.0
+     SRC.SKILLCHECK_RUN Skill_Inscription
+     SRC.SYSMESSAGE You make a brand new copy of "<SRC.TARG.NAME>".
+     return 1
+  endif
+  
+
+  //MAKE STEED BOOKS
+  IF ( <SRC.TARG.TYPE> == t_figurine )
+     
+     IF !( <SRC.RESTEST 10 i_scroll_blank, 1 i_hide, 1 i_thread> )
+        SRC.SYSMESSAGE You need 10 blank scrolls, a piece of leather, and a spool of thread.
+        RETURN 1
+     ENDIF
+
+     IF ( <SRC.INSCRIPTION> < 75.0 )
+        SRC.SYSMESSAGE You are not skilled enough to make a steed book.
+        RETURN 1
+     ELSEIF (<SRC.ANIMALLORE> < 40.0)
+        SRC.SYSMESSAGE You do not know enough about steeds to create a book for them.
+        RETURN 1
+     ENDIF
+ 
+     IF <SRC.TARG.BASEID> = i_pet_llama
+        SRC.NEWITEM i_book_steed
+        SRC.ACT.MOREX = 8438
+
+     ELSEIF <SRC.TARG.BASEID> = i_pet_llama_pack
+        SRC.NEWITEM i_book_steed
+        SRC.ACT.MOREX = 8487
+
+     ELSEIF <SRC.TARG.BASEID> = i_pet_ostard_desert
+        SRC.NEWITEM i_book_steed
+        SRC.ACT.MOREX = 8501
+
+     ELSEIF <SRC.TARG.BASEID> = i_pet_ostard_zostrich
+        SRC.NEWITEM i_book_steed
+        SRC.ACT.MOREX = 8502
+
+     ELSEIF <SRC.TARG.BASEID> = i_pet_ostard_forest
+        SRC.NEWITEM i_book_steed
+        SRC.ACT.MOREX = 8503
+
+     ELSEIF <SRC.TARG.BASEID> = i_pet_horse_pack
+        SRC.NEWITEM i_book_steed
+        SRC.ACT.MOREX = 8486
+
+     ELSEIF <SRC.TARG.BASEID> = i_pet_horse_gray
+        SRC.NEWITEM i_book_steed
+        SRC.ACT.MOREX = 8479
+
+     ELSEIF <SRC.TARG.BASEID> = i_pet_horse_tan
+        SRC.NEWITEM i_book_steed
+        SRC.ACT.MOREX = 8484
+
+     ELSEIF <SRC.TARG.BASEID> = i_pet_horse_brown_dk
+        SRC.NEWITEM i_book_steed
+        SRC.ACT.MOREX = 8481
+
+     ELSEIF <SRC.TARG.BASEID> = i_pet_horse_brown_lt
+        SRC.NEWITEM i_book_steed
+        SRC.ACT.MOREX = 8480
+
+     ELSE
+        SRC.SYSMESSAGE That is not a steed.
+        RETURN 1
+     ENDIF
+
+
+     IF ( RAND(1000) > (2800+<SRC.INSCRIPTION>)/4 )
+        SRC.CONSUME 5 i_scroll_blank
+        SRC.SYSMESSAGE You fail to make the steed book.
+        RETURN 1
+     ELSE
+        SRC.ACT.BOUNCE
+        SRC.ACT.MORE1 = <SRC.TARG.MORE1>
+        SRC.ACT.TAG.STEED_ID = <SRC.TARG.MORE1>
+        SRC.ACT.COLOR = <SRC.TARG.COLOR>
+        SRC.ACT.get_steed_name
+
+        SRC.CONSUME 1 i_hide, 1 i_thread, 10 i_scroll_blank
+
+        TAG.MAKEITEM.LEVEL	= 75.0
+        SRC.SKILLCHECK_RUN Skill_Inscription
+
+        RETURN 1
+     ENDIF
+
+  ENDIF
+
+  SRC.SYSMESSAGE That is neither a book or a blank scroll.
+  return 1
+
+
+[ITEMDEF 0fc0]	//pen and ink
+DUPEITEM=0fbf
+CATEGORY=Items by Professions
+SUBSECTION=Artists
+DESCRIPTION=Pen & Ink (N)
+
+
+[ITEMDEF i_scribe_powder_make]
+ID		= 0eef
+NAME		= scribe powder
+TYPE		= t_normal
+VALUE		= 10
+RESOURCES	= 2 i_coal, 1 i_reag_spider_silk
+SKILLMAKE	= ALCHEMY 30.0, t_mortar
+
+ON = @Create
+   ID		= i_scribe_powder
+   AMOUNT	= 2
+   COLOR	= 03d7
+
+[ITEMDEF i_scribe_powder]
+ID		= 0eef
+NAME		= scribe powder
+TYPE		= t_normal
+VALUE		= 8
+
+ON = @Create
+  COLOR	= 03d7
+
+ON = @DClick
+  TARGET What would you like to apply the powder to?
+  return 1
+
+ON = @Targon_item
+  if ( <SRC.TARG.BASEID> == i_scroll_blank )
+	IF !( <SRC.RESTEST i_scroll_blank, 5 i_scribe_powder, 15 i_reag_garlic, 15 i_reag_mandrake_root> )
+        	SRC.SYSMESSAGE You dont have the required resources.
+        	RETURN 1
+     	ENDIF
+     IF ( RAND(1600) > (2800+<SRC.INSCRIPTION>)/4 )
+        SRC.CONSUME i_scroll_blank, 3 i_scribe_powder, 10 i_reag_garlic, 10 i_reag_mandrake_root
+        SRC.SYSMESSAGE You fail to make the item deed.
+        RETURN 1
+     ELSE
+     	SRC.NEWITEM	i_item_deed
+     	SRC.ACT.BOUNCE        
+        SRC.CONSUME i_scroll_blank, 5 i_scribe_powder, 15 i_reag_garlic, 15 i_reag_mandrake_root
+        TAG.MAKEITEM.LEVEL	= 60.0
+        SRC.SKILLCHECK_RUN Skill_Inscription
+        RETURN 1
+     ENDIF
+  ENDIF
+  if ( <SRC.TARG.TYPE> == t_book )
+     if ( <SRC.INSCRIPTION> < 65.0 )
+        src.sysmessage You lack the necessary skill to do that.
+	return 1
+     endif
+
+     if !( <SRC.TARG.TOPOBJ.UID> == <SRC.UID> )
+        src.sysmessage The book must be in your backpack.
+	return 1
+     endif
+
+     if ( <SRC.TARG.MORE1> )
+        src.sysmessage The book is already finished.
+	return 1
+     endif
+
+     SRC.TARG.MORE1 = 1
+     src.sysmessage You apply the powder on the book.
+     src.sysmessage The book is now no longer writeable.
+     CONSUMEONE
+     return 1
+  endif
+
+  SRC.SYSMESSAGE There's nothing you can do with that.
+  return 1
+
+  
+[EOF]

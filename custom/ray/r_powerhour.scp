@@ -1,0 +1,260 @@
+[ITEMDEF i_powerhour_automatic_control]
+NAME=Power Hour [Do Not Remove]
+ID=i_gravestone
+TYPE=t_eq_script
+
+ON=@CREATE
+ATTR=08010
+COLOR=079b
+TIMER=30
+
+ON=@TIMER
+powerhour_control
+RETURN 1
+
+
+[FUNCTION powerhour_control]
+
+TIMER=30
+
+//IF (<SERV.RTIME.FORMAT %M>==0)
+	IF (<SERV.RTIME.FORMAT %H> == 16) && !(<EVAL <TAG0.POWER16>> == 1)
+		TAG.POWER0=
+		TAG.POWER04=
+		TAG.POWER08=
+		TAG.POWER12=
+		TAG.POWER16=1
+		TAG.POWER20=
+		f_powerhour_turnon125a
+	ELSEIF (<SERV.RTIME.FORMAT %H> == 20) && !(<EVAL <TAG0.POWER20>> == 1)
+		TAG.POWER0=
+		TAG.POWER04=
+		TAG.POWER08=
+		TAG.POWER12=
+		TAG.POWER16=
+		TAG.POWER20=1
+		f_powerhour_turnon125a
+	ELSEIF (<SERV.RTIME.FORMAT %H> == 00) && !(<EVAL <TAG0.POWER0>> == 1)
+		TAG.POWER0=1
+		TAG.POWER04=
+		TAG.POWER08=
+		TAG.POWER12=
+		TAG.POWER16=
+		TAG.POWER20=
+		f_powerhour_turnon125a
+	ELSEIF (<SERV.RTIME.FORMAT %H> == 04) && !(<EVAL <TAG0.POWER04>> == 1)
+		TAG.POWER0=
+		TAG.POWER04=1
+		TAG.POWER08=
+		TAG.POWER12=
+		TAG.POWER16=
+		TAG.POWER20=
+		f_powerhour_turnon125a
+	ELSEIF (<SERV.RTIME.FORMAT %H> == 08) && !(<EVAL <TAG0.POWER08>> == 1)
+		TAG.POWER0=
+		TAG.POWER04=
+		TAG.POWER08=1
+		TAG.POWER12=
+		TAG.POWER16=
+		TAG.POWER20=
+		f_powerhour_turnon125a
+	ELSEIF (<SERV.RTIME.FORMAT %H> == 12) && !(<EVAL <TAG0.POWER12>> == 1)
+		TAG.POWER0=
+		TAG.POWER04=
+		TAG.POWER08=
+		TAG.POWER12=1
+		TAG.POWER16=
+		TAG.POWER20=
+		f_powerhour_turnon125a
+	ENDIF
+//ENDIF
+
+[PLEVEL 0]
+power
+
+[FUNCTION f_powerhour_turnoff125a]
+VAR.POWERHOUR=
+SERV.B @0864 Power Hour command is now closed!
+RETURN 1
+
+
+[FUNCTION f_powerhour_turnon125a]
+VAR.POWERHOUR=1
+TIMERF 600, f_powerhour_turnoff125a
+SERV.LOG A power hour started.
+TAG.lastpowerhourtime=<SERV.RTIME>
+
+DORAND 100
+
+VAR.POWERPASSWORD=power hour
+VAR.POWERPASSWORD=hour power
+VAR.POWERPASSWORD=skillroll
+VAR.POWERPASSWORD=skillrolls
+VAR.POWERPASSWORD=rollskills
+VAR.POWERPASSWORD=hour
+VAR.POWERPASSWORD=power
+VAR.POWERPASSWORD=skill
+VAR.POWERPASSWORD=skills
+VAR.POWERPASSWORD=roll
+
+VAR.POWERPASSWORD=rolls
+VAR.POWERPASSWORD=power skill
+VAR.POWERPASSWORD=power rolls
+VAR.POWERPASSWORD=skill power
+VAR.POWERPASSWORD=skill rolls
+VAR.POWERPASSWORD=Imperial uo
+VAR.POWERPASSWORD=more skills
+VAR.POWERPASSWORD=more rolls
+VAR.POWERPASSWORD=rolling
+VAR.POWERPASSWORD=not rolling
+
+VAR.POWERPASSWORD=fast
+VAR.POWERPASSWORD=faster
+VAR.POWERPASSWORD=incredible
+VAR.POWERPASSWORD=lucky
+VAR.POWERPASSWORD=own
+VAR.POWERPASSWORD=ownz
+VAR.POWERPASSWORD=owns
+VAR.POWERPASSWORD=traders
+VAR.POWERPASSWORD=warriors
+VAR.POWERPASSWORD=server
+
+VAR.POWERPASSWORD=mining
+VAR.POWERPASSWORD=lumbering
+VAR.POWERPASSWORD=alchemy
+VAR.POWERPASSWORD=blacksmithing
+VAR.POWERPASSWORD=cooking
+VAR.POWERPASSWORD=carpentry
+VAR.POWERPASSWORD=cartography
+VAR.POWERPASSWORD=necromancy
+VAR.POWERPASSWORD=poisoning
+VAR.POWERPASSWORD=masonry
+
+VAR.POWERPASSWORD=tracking
+VAR.POWERPASSWORD=detection
+VAR.POWERPASSWORD=hiding
+VAR.POWERPASSWORD=magery
+VAR.POWERPASSWORD=stealth
+VAR.POWERPASSWORD=tracking
+VAR.POWERPASSWORD=taming
+VAR.POWERPASSWORD=bowery
+VAR.POWERPASSWORD=itemlore
+VAR.POWERPASSWORD=tactics
+
+VAR.POWERPASSWORD=swordsmanship
+VAR.POWERPASSWORD=macefighting
+VAR.POWERPASSWORD=fencing
+VAR.POWERPASSWORD=wrestling
+VAR.POWERPASSWORD=archery
+VAR.POWERPASSWORD=dragons
+VAR.POWERPASSWORD=balrons
+VAR.POWERPASSWORD=balron
+VAR.POWERPASSWORD=dragon
+VAR.POWERPASSWORD=drake
+
+VAR.POWERPASSWORD=fire
+VAR.POWERPASSWORD=destard
+VAR.POWERPASSWORD=despise
+VAR.POWERPASSWORD=deceit
+VAR.POWERPASSWORD=hythloth
+VAR.POWERPASSWORD=avatar
+VAR.POWERPASSWORD=newbie
+VAR.POWERPASSWORD=event
+VAR.POWERPASSWORD=grandmaster
+VAR.POWERPASSWORD=expert
+
+VAR.POWERPASSWORD=apprentice
+VAR.POWERPASSWORD=novice
+VAR.POWERPASSWORD=adept
+VAR.POWERPASSWORD=master
+VAR.POWERPASSWORD=legendary
+VAR.POWERPASSWORD=arcanist
+VAR.POWERPASSWORD=portugal
+VAR.POWERPASSWORD=italy
+VAR.POWERPASSWORD=sweden
+VAR.POWERPASSWORD=usa
+
+VAR.POWERPASSWORD=canada
+VAR.POWERPASSWORD=africa
+VAR.POWERPASSWORD=madrid
+VAR.POWERPASSWORD=barcelona
+VAR.POWERPASSWORD=world
+VAR.POWERPASSWORD=champion
+VAR.POWERPASSWORD=cup
+VAR.POWERPASSWORD=china
+VAR.POWERPASSWORD=america
+VAR.POWERPASSWORD=obama
+
+VAR.POWERPASSWORD=clinton
+VAR.POWERPASSWORD=bill
+VAR.POWERPASSWORD=gates
+VAR.POWERPASSWORD=jobs
+VAR.POWERPASSWORD=steve
+VAR.POWERPASSWORD=finger
+VAR.POWERPASSWORD=hand
+VAR.POWERPASSWORD=arm
+VAR.POWERPASSWORD=neck
+VAR.POWERPASSWORD=bracelet
+
+ENDDO
+
+SERV.B @07b5 A skill power hour has started. To start it type within the next 10 minutes .power <VAR.POWERPASSWORD>
+RETURN 1
+
+
+[FUNCTION power]
+IF (<VAR0.POWERHOUR> == 01) && !(<SRC.FINDID.i_memory_donatorskills.UID>)
+	IF ( STRCMPI( "<ARGS>", "<VAR0.POWERPASSWORD>" ) )
+		SRC.SYSMESSAGE That is not the correct power hour password. Please type .power <var.powerpassword>
+		RETURN 1
+	ELSE
+		SERV.NEWITEM i_memory_donatorskills
+		NEW.TIMER=3600
+		NEW.MORE2=10
+		NEW.EQUIP <SRC.UID>
+		SRC.SYSMESSAGE @22 The power hour takes effect on you. You have increased the chances of gaining skills by 20.
+		RETURN 1		
+	ENDIF
+ELSE
+	SRC.SYSMESSAGE @55 The power hour is not available at this moment or you have already used the command.
+ENDIF
+RETURN 1
+
+
+
+//////////////////////////////////////////// Old trigger function and stone ///////////////////////////////
+
+//removal of i_memory_donator_skills @ k_main_events
+
+
+[ITEMDEF i_powerhour_control]
+NAME=Power Hour [Do Not Remove]
+ID=i_gravestone
+TYPE=t_eq_script
+
+ON=@CREATE
+ATTR=08010
+COLOR=079b
+TIMERF 60, powerhour_random
+
+[FUNCTION powerhour_random]
+//IF (<EVAL RAND(2)> == 01) && (<VAR0.POWERHOUR> < 01)
+//	f_powerhour_turnon125a
+//	TIMERF 600, f_powerhour_turnoff125a
+//	TIMERF 7200, powerhour_random
+//	SERV.LOG A power hour started.
+//	SERV.LOG <SRC.UID> started a power hour.
+//	TRY UID.0438c24ab.tag0.lastpowerhourtime=<SERV.RTIME>
+//	RETURN 1
+//ELSE
+//	TIMERF 7200, powerhour_random
+//	RETURN 1
+//ENDIF
+//RETURN 1
+	f_powerhour_turnon125a
+	TIMERF 600, f_powerhour_turnoff125a
+	TIMERF 10800, powerhour_random
+	SERV.LOG A power hour started.
+	TRY UID.0438c24ab.tag0.lastpowerhourtime=<SERV.RTIME>
+	RETURN 1
+

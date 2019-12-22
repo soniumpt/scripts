@@ -1,0 +1,727 @@
+// CHANGELOG
+// =========
+//
+// 18/08/18 - Wigifer - Removed references to e_all_npc 
+//
+
+//**********************************************
+//*         Cataclysm: The Remnants            *
+//**********************************************
+
+//*** Names ***
+
+[NAMES NAMES_REMNANTS_ALL]
+38
+Alan
+Alana
+Betty
+Brad
+Charlie
+Christine
+David
+Davina
+Eric
+Erica
+Frank
+Fran
+Georgia
+Gerry
+Hannah
+Harry
+Irene
+Ian
+James
+Kira
+Karl
+Lucy
+Liam
+Mike
+Mary
+Nerys
+Nigel
+Paul
+Prissy
+Ralph
+Rowena
+Sarah
+Shawn
+Tim
+Trina
+William
+
+[NAMES NAMES_REMNANTS_MALE_ADVENTURERS]
+24
+Alkazar
+Panleus
+Renegade
+Jak
+Soul Beggar
+SoulFly
+Kell
+Warman
+Kida
+Nanae
+RedOne
+RedTwo
+Zaknefein
+MightyMike
+Slash
+Fatteh
+Rolypoly
+Wild Stallion
+Felix
+Pavement Fridge
+JiN II
+Sephiroth
+Maugrim
+Mearl
+
+[NAMES NAMES_REMNANTS_FEMALE_ADVENTURERS]
+8
+Storm
+Wren
+Tiffany
+Akhara
+Nong
+Nanae
+Rainbow Child
+Shimmy
+
+//*** NPC's ***
+
+[CHARDEF c_remnant_town_zombie]
+NAME = #NAMES_REMNANTS_ALL
+ID = c_ZOMBIE
+SOUND = snd_MONSTER_GHOST1
+ICON = i_pet_ZOMBIE
+DAM = 8,15
+ARMOR = 30
+CAN = MT_WALK
+TEVENTS	= e_undead
+TSPEECH = s_remnanttown
+
+ON=@CREATE
+  COLOR = 0333
+  NPC = brain_undead
+  NPC = brain_monster
+  KARMA = {-3000 -3999}
+  FAME = {1000 3000}
+  HITS = {800 900}
+  STR = {345 370}
+  DEX = {100 135}
+  INT = {200 300}
+  PARRYING = {40.0 70.0}
+  MAGICRESISTANCE = {90.0 100.0}
+  TACTICS = {85.0 90.0}
+  WRESTLING = {80.0 95.0}
+  MEDITATION = {60.0 80.0}
+
+ON=@NPCRestock
+  ITEM=i_gold,{500 1000}
+  //ITEM=i_reward_ticket,{250 625}
+  
+ON=@Death
+  IF ( rand(200) = 1)
+     SERV.NEWITEM i_book_remnant_diary
+     NEW.BOUNCE
+  ENDIF
+
+ON=@GETHIT
+   IF (<SRC.OBODY> == c_vortex)
+      IF (<EVAL (RAND(10))> < 9)
+         EMOTE growl as <SRC.NAME>'s attack is absorbed into its darkness...
+         RETURN 1
+      ENDIF
+   ENDIF
+
+ON=@SPELLEFFECT
+   IF ((<argn> == 20) || (<argn> == 39))
+      IF (<EVAL (RAND(10))> < 9)
+         EMOTE growl as it absorbs the poison into its darkness...
+         RETURN 1
+      ENDIF
+   ENDIF
+         
+      
+
+CATEGORY=Cataclysm
+SUBSECTION=The Remnants
+DESCRIPTION=Remnant Town Zombie
+
+[CHARDEF c_remnant_town_adventurer_m]
+NAME = #NAMES_REMNANTS_MALE_ADVENTURERS
+ID = c_man
+SOUND = snd_MONSTER_GHOST1
+TEVENTS	= e_undead
+TSPEECH = s_remnanttown
+
+ON=@CREATE
+  COLOR = 0333
+  NPC = brain_undead
+  NPC = brain_monster
+  KARMA = {-5000 -5999}
+  FAME = {1000 5000}
+  HITS = {1500 1700}
+  STR = {800 900}
+  DEX = {100 120}
+  INT = {200 300}
+  PARRYING = {80.0 100.0}
+  MAGICRESISTANCE = {100.0 120.0}
+  TACTICS = 100.0
+  WRESTLING = 100.0
+  MACEFIGHTING = 100.0
+  FENCING = 100.0
+  SWORDSMANSHIP = 100.0
+  
+  ITEMNEWBIE = i_platemail_chest_titanium
+  COLOR = 0333
+  ITEMNEWBIE = i_platemail_gloves_titanium
+  COLOR = 0333
+  ITEMNEWBIE = i_platemail_leggings_titanium
+  COLOR = 0333
+  ITEMNEWBIE = i_platemail_arms_titanium
+  COLOR = 0333  
+  ITEMNEWBIE = i_platemail_gorget_titanium
+  COLOR = 0333
+  ITEMNEWBIE = i_staff_quarter_cherry
+  COLOR = 0333
+  ITEMNEWBIE = random_male_hair
+  COLOR = 0333
+  
+ON=@NPCRestock
+  ITEM=i_gold,{750 1500}
+  //ITEM=i_reward_ticket,{250 625}
+
+ON=@GETHIT
+   IF (<SRC.OBODY> == c_vortex)
+      IF (<EVAL (RAND(10))> < 9)
+         EMOTE growl as <SRC.NAME>'s attack is absorbed into its darkness...
+         RETURN 1
+      ENDIF
+   ENDIF
+
+ON=@SPELLEFFECT
+   IF ((<argn> == 20) || (<argn> == 39))
+      IF (<EVAL (RAND(10))> < 9)
+         EMOTE growl as it absorbs the poison into its darkness...
+         RETURN 1
+      ENDIF
+   ENDIF
+  
+CATEGORY=Cataclysm
+SUBSECTION=The Remnants
+DESCRIPTION=Remnant Town Male Adventurer
+
+[CHARDEF c_remnant_town_adventurer_f]
+NAME = #NAMES_REMNANTS_FEMALE_ADVENTURERS
+ID = c_woman
+SOUND = snd_MONSTER_GHOST1
+TEVENTS	= e_undead
+TSPEECH = s_remnanttown
+
+ON=@CREATE
+  COLOR = 0333
+  NPC = brain_undead
+  NPC = brain_monster
+  KARMA = {-5000 -5999}
+  FAME = {1000 5000}
+  HITS = {1500 1700}
+  STR = {800 900}
+  DEX = {100 120}
+  INT = {200 300}
+  PARRYING = {80.0 100.0}
+  MAGICRESISTANCE = {100.0 120.0}
+  TACTICS = 100.0
+  WRESTLING = 100.0
+  MACEFIGHTING = 100.0
+  FENCING = 100.0
+  SWORDSMANSHIP = 100.0
+  
+  ITEMNEWBIE = i_armor_female_plate_titanium
+  COLOR = 0333
+  ITEMNEWBIE = i_platemail_gloves_titanium
+  COLOR = 0333
+  ITEMNEWBIE = i_platemail_leggings_titanium
+  COLOR = 0333
+  ITEMNEWBIE = i_platemail_arms_titanium
+  COLOR = 0333  
+  ITEMNEWBIE = i_platemail_gorget_titanium
+  COLOR = 0333
+  ITEMNEWBIE = i_staff_quarter_cherry
+  COLOR = 0333
+  ITEMNEWBIE = random_female_hair
+  COLOR = 0333
+  
+ON=@NPCRestock
+  ITEM=i_gold,{750 1500}
+  //ITEM=i_reward_ticket,{250 625}
+
+ON=@GETHIT
+   IF (<SRC.OBODY> == c_vortex)
+      IF (<EVAL (RAND(10))> < 9)
+         EMOTE growl as <SRC.NAME>'s attack is absorbed into its darkness...
+         RETURN 1
+      ENDIF
+   ENDIF
+
+ON=@SPELLEFFECT
+   IF ((<argn> == 20) || (<argn> == 39))
+      IF (<EVAL (RAND(10))> < 9)
+         EMOTE growl as it absorbs the poison into its darkness...
+         RETURN 1
+      ENDIF
+   ENDIF
+
+CATEGORY=Cataclysm
+SUBSECTION=The Remnants
+DESCRIPTION=Remnant Town Female Adventurer
+
+
+[CHARDEF c_remnant_town_sephiroth]
+NAME = Sephiroth
+ID = c_daemon_w_sword
+SOUND = snd_MONSTER_GHOST1
+TEVENTS	= e_undead
+TSPEECH = s_remnanttown
+ARMOR = 20
+DAM = 3, 15
+
+ON=@CLICK
+  MESSAGE [Polymorph]
+  RETURN 0
+
+ON=@CREATE
+  COLOR = 0333
+  NPC = brain_undead
+  NPC = brain_monster
+  KARMA = {-5000 -5999}
+  FAME = {1000 5000}
+  HITS = {2500 3500}
+  STR = {200 400}
+  DEX = {100 120}
+  INT = {300 500}
+  PARRYING = 100.0
+  MAGICRESISTANCE = 1000.0
+  TACTICS = 100.0
+  WRESTLING = 100.0
+  MACEFIGHTING = 100.0
+  FENCING = 100.0
+  SWORDSMANSHIP = 100.0
+  
+  ITEM=i_book_remnant_finalthoughts
+ 
+ON=@NPCRestock
+  ITEM=i_gold,{750 1500}
+  //ITEM=i_reward_ticket,{250 625}
+
+ON=@NPCSeeNewPlayer
+  SAY ...time...come...lights...end...
+
+ON=@GETHIT
+   IF (<SRC.OBODY> == c_vortex)
+      IF (<EVAL (RAND(10))> < 9)
+         EMOTE growl as <SRC.NAME>'s attack is absorbed into its darkness...
+         RETURN 1
+      ENDIF
+   ENDIF
+
+ON=@SPELLEFFECT
+   IF ((<argn> == 20) || (<argn> == 39))
+      IF (<EVAL (RAND(10))> < 9)
+         EMOTE growl as it absorbs the poison into its darkness...
+         RETURN 1
+      ENDIF
+   ENDIF
+
+CATEGORY=Cataclysm
+SUBSECTION=The Remnants
+DESCRIPTION=Remnant Sephiroth
+
+
+
+//*** Items ***
+
+
+[ITEMDEF i_book_remnant_diary]
+NAME=Diary
+ID=i_BOOK_OPEN
+
+CATEGORY=Cataclysm
+SUBSECTION=The Remnants
+DESCRIPTION=Memoirs - Town Remnant
+
+ON=@Create
+MORE=b_remnant_diary
+
+ON=@CLICK
+MORE=b_remnant_diary
+
+ON=@DCLICK
+MORE=b_remnant_diary
+
+[BOOK b_remnant_diary]
+PAGES=15
+TITLE=Diary
+AUTHOR=Unknown
+
+[BOOK b_remnant_diary 1]
+Day 1
+I'm starting this diary
+because they say that
+something is going to
+happen. Something awful.
+They say we'll be lucky
+if we survive. Have
+they not noticed that
+we're barely surviving
+
+[BOOK b_remnant_diary 2]
+anyway? All the
+adventurers are long
+gone, and now all we
+have left are warring
+factions. The shadows
+are overrunning the
+land, the Emperor
+leading the charge...
+
+[BOOK b_remnant_diary 3]
+The Knights aren't
+being very holy either,
+if you've seen a
+Shadow they're killing
+you for being tainted.
+Order and Chaos have
+combusted and totally
+eradicated each other.
+
+[BOOK b_remnant_diary 4]
+They say with a lot
+of the magic drained
+as adventuring has
+gone by the wayside,
+nothing is keeping
+any of these powers
+in check...
+
+[BOOK b_remnant_diary 5]
+Day 3
+Paul came back to the
+town today, having
+visited Britain. He says
+the mages want us to
+remain within the
+city borders until
+further notice.
+
+[BOOK b_remnant_diary 6]
+Not like that's much
+of an option anyhow,
+the only reason he
+risked it was because
+we were running out
+of flour and he's a
+lot braver than the rest
+of us...
+
+[BOOK b_remnant_diary 7]
+Day 4
+We're already down to
+about 9 guards whom
+can function. The
+magic of these lands
+seems to be leaving us
+whilst the Knights
+and Shadows get stronger.
+
+[BOOK b_remnant_diary 8]
+Even the town guards
+are losing their
+blessed status. One
+actually fell to a
+shadow and became
+tainted before he could
+be resurrected. This
+war is getting crazy.
+
+[BOOK b_remnant_diary 9]
+Day 6
+So Paul died yesterday.
+Blight. Apparently
+he must have come
+across a Shadow on
+his travels. He was
+swiftly executed...
+Before he turned...
+
+[BOOK b_remnant_diary 10]
+Day 7
+Still can't get over
+the fact that they
+executed him while
+he was still a
+Britannian... He was
+still him... What
+have we become?
+
+[BOOK b_remnant_diary 11]
+Day 9
+The mages contacted
+the town today. They've
+lost track of all the
+old powers... As
+if they're preparing
+for something... Where
+are the adventurers?
+
+[BOOK b_remnant_diary 12]
+Why aren't they here
+to help us? Have they
+all been killed? Are
+they scared? Do they
+not care? Why will
+no-one save us...
+
+[BOOK b_remnant_diary 13]
+Day 10
+There's a great battle
+going on in Britain.
+There's bloodshed 
+everywhere. They're
+all killing Britannians
+just for getting in
+the way...
+
+[BOOK b_remnant_diary 14]
+Is this really the
+way everything is
+going to end? I'm
+hiding before they
+kill me too... I'm
+just... So scared...
+I don't want to die.
+Someone help...
+
+[BOOK b_remnant_diary 15]
+Please... Someone...
+Help me... Come back...
+Save us... Hear my
+cries... I don't
+want to die...
+
+
+
+
+[ITEMDEF i_book_remnant_finalthoughts]
+NAME=Final Thoughts
+ID=i_BOOK_OPEN
+
+CATEGORY=Cataclysm
+SUBSECTION=The Remnants
+DESCRIPTION=Final Thoughts
+
+ON=@Create
+MORE=b_remnant_finalthoughts
+
+ON=@CLICK
+MORE=b_remnant_finalthoughts
+
+ON=@DCLICK
+MORE=b_remnant_finalthoughts
+
+[BOOK b_remnant_finalthoughts]
+PAGES=8
+TITLE=Some Final Thoughts...
+AUTHOR=Sephiroth
+
+[BOOK b_remnant_finalthoughts 1]
+It would appear that I'm
+the last one left.
+Where everyone else
+has gone... Well, it
+doesn't look like
+they're coming back
+any time soon...
+I've pretty much lost
+
+[BOOK b_remnant_finalthoughts 2]
+everyone and everything
+that was dear to me.
+So really all I can do
+is go out and try to
+stop this chaos before
+everythign is lost.
+The mages seem to
+believe that the
+
+[BOOK b_remnant_finalthoughts 3]
+origins of both ancient
+factions actually stems
+from two types of light.
+Seems rather quaint if
+you ask me, but
+apparently if the two
+collide then we're
+pretty much stuffed.
+
+[BOOK b_remnant_finalthoughts 4]
+What's perhaps more
+interesting is that the
+obelisk everyone has
+been seeing is
+completely unrelated to
+the whole thing. Whilst
+it stays out of everything,
+perhaps it's important to
+
+[BOOK b_remnant_finalthoughts 5]
+focus on the towns.
+Both sides fought in
+Trinsic the other day.
+They pretty much
+massacred everyone...
+Not surprising after
+the Battle of Nujel'm
+though. The Knights just
+
+[BOOK b_remnant_finalthoughts 6]
+murder now...
+The old Knights would
+have been horrified to
+have seen this new 
+incarnation. I'm being
+targetted myself just
+for having formerly
+served in their number
+
+[BOOK b_remnant_finalthoughts 7]
+many moons ago...
+No doubt someone will
+find out where I've been
+hiding. Fortunately I
+know fate is at least
+kind to my writings, 
+and someone might at
+least read these last
+
+[BOOK b_remnant_finalthoughts 8]
+memories. Odds are
+one way or another
+I'm dead... Might as
+well go out in a
+blaze of glory and
+get to West Bridge
+for one last fight...
+I never win fights...
+
+
+//*** Speech ***
+
+
+[SPEECH s_remnanttown] 
+ON=*hi*
+ON=*hello*
+ON=*hail*
+ON=*sawat dee*
+ON=*greetings*
+   DORAND 3
+      SAY ...light...hell...
+      SAY ...save...anyone...
+      SAY ...massacre...stop...
+   ENDDO
+   
+ON=*bye*
+ON=*farewell*
+ON=*see ya*
+ON=*hasta l*
+ON=*see you *
+   DORAND 3
+      SAY ...go...run...
+      SAY ...coming...save...
+      SAY ...please...help...
+   ENDDO
+   
+ON=*holy knight*
+ON=*HK*
+   DORAND 3
+      SAY ...murderers...
+      SAY ...massacre...
+      SAY ...evil...
+   ENDDO
+
+ON=*dark knight*
+ON=*DK*
+ON=*shadow*
+   DORAND 3
+      SAY ...overrun...
+      SAY ...control...
+      SAY ...help...
+   ENDDO
+   
+ON=*order*
+ON=*chaos*
+   DORAND 3
+      SAY ...over...
+      SAY ...mutual...destruction...
+      SAY ...death...
+   ENDDO
+   
+ON=*magic*
+   DORAND 3
+      SAY ...reliant...
+      SAY ...twisted...
+      SAY ...faded...
+   ENDDO
+  
+ON=*cataclysm*
+ON=*apocalypse*
+   DORAND 3
+      SAY ...fate...
+      SAY ...inevitable...
+      SAY ...needed...
+   ENDDO
+   
+ON=*adventurer*
+ON=*player*
+   DORAND 3
+      SAY ...left...
+      SAY ...caused...
+      SAY ...fault...
+   ENDDO
+   
+ON=*cabal*
+   SAY ...catalyst...planned...tool...planet...
+   
+ON=*wigifer*
+ON=*wig*
+   SAY ...allowed...death...deliberate...
+   
+ON=*battle of west bridge*
+   SAY ...destroyed...cataclysm...all...died...lights...clashed...
+   
+ON=*holy light*
+ON=*dark light*
+   SAY ...collided...destroyed...reset...
+   
+ON=*obelisk*
+   SAY ...
+  
+ON=*battle of Nujel'm*
+   SAY ...holy...purge...all...
+   
+ON=*rise of the emperor*
+ON=*trinsic*
+ON=*massacre*
+   SAY ...trinsic...lost...dark...massacre...
+   
+ON=*damned*
+ON=*remnant*
+   DORAND 3
+      SAY ...accident...should...unintended...
+      SAY ...freedom...denied...
+      SAY ...cleanse...blight...
+   ENDDO
+
+
+// *** Friendly Quest Types ***   
+

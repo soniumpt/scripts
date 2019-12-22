@@ -1,0 +1,4787 @@
+[FUNCTION ISBROTHERHOOD]
+IF STRMATCH( "<TAG0.ALIGNMENT>", "alignment_brotherhood" )
+RETURN 1
+ENDIF
+RETURN 0
+
+[FUNCTION ISMERCENARY]
+IF STRMATCH( "<TAG0.ALIGNMENT>", "alignment_mercenary" )
+RETURN 1
+ENDIF
+RETURN 0
+
+[FUNCTION ISSYNDICATE]
+IF STRMATCH( "<TAG0.ALIGNMENT>", "alignment_syndicate" )
+RETURN 1
+ENDIF
+RETURN 0
+
+[FUNCTION ISACADEMY]
+IF ((<TAG0.ACADEMY> == 01) || (<TAG0.ACADEMY> == 02))
+RETURN 1
+ENDIF
+RETURN 0
+
+[FUNCTION ISMILITANT]
+IF ((<TAG0.MILITANT> == 01) || (<TAG0.MILITANT> == 02))
+RETURN 1
+ENDIF
+RETURN 0
+
+///////////////////////
+///FACTION CLEAN-UP///
+/////////////////////
+
+[FUNCTION faction_cleanup]
+
+//brotherhoood
+
+TAG.BROTHERHOODRANK=
+TAG.CURRENTBRANK=
+
+
+//syndicate
+
+TAG.SYNDICATERANK=
+TAG.CURRENTSRANK=
+
+
+//mercenary
+
+TAG.MERCENARYRANK=
+TAG.CURRENTMRANK=
+
+
+// order and chaos
+
+TAG.CHARISCHAOS=
+TAG.CHARISORDER=
+TAG.OCCLAIMED=
+
+// Use for all the above
+
+TAG.ALIGNMENT=
+TAG.REP.ALIGNMENT=
+TAG.ALIGNMENT.SHOWTITLE=
+TAG.NAME.SUFFIX=
+//TAG.NAME.HUE=
+
+
+
+// academy
+
+TAG.ACADEMY=
+TAG.CURRENTARANK=
+TAG.ACADEMY.SHOWTITLE=
+TAG.CLAIMEDACADEMYRANKPRIZE=
+TAG.ACADEMYRANK=
+TAG.CAT_USING=
+TITLE=
+
+
+
+
+
+/////////////////////////
+//Used by all factions//
+///////////////////////
+[PLEVEL 1]
+f
+
+[FUNCTION f]
+IF (<SRC.ISBROTHERHOOD>)
+SERV.ALLCLIENTS chatsendb <args>
+ELSEIF (<SRC.ISSYNDICATE>) 
+SERV.ALLCLIENTS chatsends <args>
+ELSEIF (<SRC.ISMERCENARY>) 
+SERV.ALLCLIENTS chatsendm <args>
+ELSEIF (<SRC.ISCHAOS>) 
+SERV.ALLCLIENTS chatsendc <args>
+ELSEIF (<SRC.ISORDER>) 
+SERV.ALLCLIENTS chatsendo <args>
+ELSE
+SRC.SYSMESSAGE @021 You are not part of any faction to have access to this chat.
+ENDIF
+RETURN 1
+
+[FUNCTION chatsendb]
+
+IF (<ISBROTHERHOOD>)
+SYSMESSAGE @0770 [Brotherhood Chat]:(<SRC.NAME>): <args>
+ENDIF
+
+[FUNCTION chatsends]
+
+IF (<ISSYNDICATE>)
+SYSMESSAGE @07d1 [Syndicate Chat]:(<SRC.NAME>): <args>
+ENDIF
+
+[FUNCTION chatsendm]
+
+IF (<ISMERCENARY>)
+SYSMESSAGE @0846 [Mercenary Chat]:(<SRC.NAME>): <args>
+ENDIF
+
+[FUNCTION chatsendc]
+
+IF (<ISCHAOS>)
+SYSMESSAGE @015d [Chaos Chat]:(<SRC.NAME>): <args>
+ENDIF
+
+[FUNCTION chatsendo]
+IF (<ISORDER>)
+SYSMESSAGE @005a [Order Chat]:(<SRC.NAME>): <args>
+ENDIF
+
+
+[ITEMDEF i_resurrect_stone_brotherhood]
+ID=0ed6
+NAME=Brotherhood Resurrection Stone
+
+ON=@CREATE
+   ATTR=010
+   COLOR=0770
+
+ON=@DClick
+   IF (<SRC.ISBROTHERHOOD>)
+      IF (<SRC.ISDEAD>)
+          SRC.RESURRECT
+          SRC.SYSMESSAGE @0770 The ways of brotherhood flow through you once more...
+	  ELSE
+		  SRC.SYSMESSAGE @0770 Check again, you are not dead!
+      ENDIF
+   ELSE
+      SRC.SYSMESSAGE @0770 Only members of Brotherhood can use this stone.
+   ENDIF
+   RETURN 1
+   
+   
+[PLEVEL 1]
+factionhome
+
+[FUNCTION factionhome]
+
+IF (<SRC.ISSYNDICATE>) && (<EVAL <SRC.TAG0.REP.ALIGNMENT>> < 2000)
+SYSMESSAGE @07d1 You are not yet worthy of using such powers.
+RETURN 1
+ENDIF
+
+IF (<SRC.ISBROTHERHOOD>) && (<EVAL <SRC.TAG0.REP.ALIGNMENT>> < 2000)
+SYSMESSAGE @0770 You are not yet worthy of using such powers.
+RETURN 1
+ENDIF
+
+IF (<SRC.ISMERCENARY>) && (<EVAL <SRC.TAG0.REP.ALIGNMENT>> < 2000)
+SYSMESSAGE @0846 You are not yet worthy of using such powers.
+RETURN 1
+ENDIF
+
+IF (<ISORDER>) && (<EVAL <SRC.TAG0.REP.ALIGNMENT>> < 2000)
+ORDERSAY You are not yet worthy of using such powers.
+RETURN 1
+ENDIF
+
+IF (<ISCHAOS>) && (<EVAL <SRC.TAG0.REP.ALIGNMENT>> < 2000)
+CHAOSSAY You are not yet worthy using such powers.
+RETURN 1
+ENDIF
+
+IF !(<SRC.ISSYNDICATE>) && !(<SRC.ISBROTHERHOOD>) && !(<SRC.ISMERCENARY>) && !(<SRC.ISORDER>) && !(<SRC.ISCHAOS>)
+SRC.SYSMESSAGE You can't use this command.
+RETURN 1
+ENDIF
+
+IF (<SRC.ISDEAD>)
+SYSMESSAGE @021 You can't do that while dead.
+RETURN 1
+ELSEIF ( <REGION_SKARGARD> )
+SYSMESSAGE @021 You can't do that from here.
+RETURN 1
+ELSEIF ( <FLAGS> & statf_freeze ) 
+SYSMESSAGE @021 You can't do that in your current state.
+RETURN 1
+ELSEIF ( <FLAGS> & statf_war ) 
+SYSMESSAGE @021 You can't do that when in warmode.       
+RETURN 1
+ELSEIF ( <FLAGS> & statf_stone ) 
+SYSMESSAGE @021 You can't do that in your current state.
+RETURN 1
+ELSEIF ( <REGION.FLAGS> & region_antimagic_all )
+SYSMESSAGE @021 You can't do that from here.
+RETURN 1
+ELSEIF (<REGION.FLAGS> & region_antimagic_recall_out)
+SYSMESSAGE @021 You can't do that from here.
+RETURN 1
+//ELSEIF ( ( (<MEMORYFINDTYPE(memory_fight).uid>) && ( <UID.<MEMORYFINDTYPE(memory_fight).LINK>.NPC> = 0 ) ) || ( (<MEMORYFINDTYPE(MEMORY_IAGGRESSOR).uid>) && ( <UID.<MEMORYFINDTYPE(MEMORY_IAGGRESSOR).LINK>.NPC> = 0 ) ) )
+//SYSMESSAGE @021 You are too busy fighting to do that right now.
+//RETURN 1
+//ELSEIF ( (<MEMORYFINDTYPE(memory_harmedby).uid>) && ( <UID.<MEMORYFINDTYPE(memory_harmedby).LINK>.NPC> = 0 ) )
+//SYSMESSAGE @021 You are too busy defending yourself to do that right now.
+//RETURN 1
+ENDIF
+   
+IF (<SRC.ISORDER>)
+NEWITEM Memory_FactionHome_Order
+EQUIP <ACT>
+ELSEIF (<SRC.ISCHAOS>)
+NEWITEM Memory_FactionHome_Chaos
+EQUIP <ACT>
+ELSEIF (<SRC.ISBROTHERHOOD>)
+NEWITEM Memory_FactionHome_Brotherhood
+EQUIP <ACT>
+ELSEIF (<SRC.ISSYNDICATE>)
+NEWITEM Memory_FactionHome_Syndicate
+EQUIP <ACT>
+ELSEIF (<SRC.ISMERCENARY>)
+NEWITEM Memory_FactionHome_Mercenary
+EQUIP <ACT>
+ENDIF
+ELSE
+SYSMESSAGE You are already transporting.
+ENDIF
+RETURN 1
+
+
+
+
+
+[ITEMDEF Memory_FactionHome_Brotherhood]
+ID=i_memory
+NAME=Faction Home
+TYPE=t_eq_script
+
+ON=@Create
+TIMER=1
+MORE1=1
+   
+ON=@Equip
+SRC.SAY @0770 Kal Ort Por
+   
+ON=@Timer
+
+IF (<MORE1> > 7)
+CONT.GO 2219,1133
+REMOVE
+RETURN 1
+
+ELSEIF ( <CONT.REGION_SKARGARD> )
+CONT.SYSMESSAGE You can't do that from here.
+REMOVE
+RETURN 1
+
+ELSEIF ( <CONT.FLAGS> & statf_freeze ) 
+CONT.SYSMESSAGE You can't do that in your current state.
+REMOVE
+RETURN 1
+
+ELSEIF ( <CONT.FLAGS> & statf_war ) 
+CONT.SYSMESSAGE You can't do that when in warmode.
+REMOVE
+RETURN 1
+
+ELSEIF ( <CONT.FLAGS> & statf_stone ) 
+CONT.SYSMESSAGE You can't do that in your current state.
+REMOVE
+RETURN 1
+
+ELSEIF ( <CONT.REGION.FLAGS> & region_antimagic_all )
+CONT.SYSMESSAGE You can't do that from here.
+REMOVE
+RETURN 1
+
+ELSEIF (<CONT.REGION.FLAGS> & region_antimagic_recall_out)
+CONT.SYSMESSAGE You can't do that from here.
+REMOVE
+RETURN 1
+
+//ELSEIF ( ( (<CONT.MEMORYFINDTYPE(memory_fight).uid>) ) || ( (<CONT.MEMORYFINDTYPE(MEMORY_IAGGRESSOR).uid>) ) )
+//CONT.SYSMESSAGE You are too busy fighting to do that right now.
+//REMOVE
+//RETURN 1
+
+//ELSEIF ( (<CONT.MEMORYFINDTYPE(memory_harmedby).uid>) )
+//CONT.SYSMESSAGE You are too busy defending yourself to do that right now.
+//REMOVE
+//RETURN 1
+
+ELSEIF (<UID.<CONT.REGION.UID>.TYPE> = T_MULTI)
+CONT.SYSMESSAGE You can't use this command from a house.
+REMOVE
+RETURN 1
+
+ELSEIF (<CONT.ISBROTHERHOOD>)
+CONT.EFFECT=3,i_fx_sparkle,0,22,0,079b
+MORE1=<MORE1>+1
+TIMER=1
+RETURN 1
+
+//////////////////////////////////
+//Bounty System and Brotherhood//
+////////////////////////////////
+
+[ITEMDEF i_brotherhood_bindstone_public]
+DEFNAME=i_brotherhood_bindstone_public
+ID=0ed6
+NAME=Brotherhood Public Bind Stone
+TYPE=t_normal
+
+ON=@CREATE
+COLOR=0455
+
+on=@CLICK
+MESSAGE @0770 To bind your spirit to the stone double click it.
+
+on=@DCLICK
+IF (<SRC.ISBROTHERHOOD>) && (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 2999)
+SRC.TAG.MERCHOME=<SRC.P>
+MESSAGE @0770 Your spirit is now bound to this stone. To recall your spirit back use .bindback.
+ELSE
+SRC.MESSAGE @0770 You need at least 3000 Brotherhood Points to use this stone.
+ENDIF
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Brotherhood Faction Items
+DESCRIPTION=Brotherhood Public Bind Stone
+
+
+[ITEMDEF i_brotherhood_travel]
+ID=0ed6
+NAME=Brotherhood Travel Stone
+TYPE=T_NORMAL
+DEFNAME=i_brotherhood_travel
+
+ON=@CREATE
+COLOR=0455
+
+ON=@DCLICK
+IF (<SRC.FINDID.i_delivery_memory.UID>)
+SRC.SYSMESSAGE You can't travel by magic, it ruins deliveries!
+RETURN 1
+
+ELSEIF (<SRC.ISBROTHERHOOD>) && (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 5999)
+DIALOG d_playertravel
+
+ELSE
+SRC.MESSAGE @0770 You can not use this stone.
+ENDIF
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Brotherhood Faction Items
+DESCRIPTION=Brotherhood Travel Stone
+
+
+// Name Event Disabled
+
+[EVENTS e_brotherhood_name]
+
+ON=@CLICK
+IF ((<MEMORYFINDTYPE.memory_guild.UID>) && !(<FINDID.i_rune_incognito.uid>))
+      OBJ=<MEMORYFINDTYPE.MEMORY_GUILD.LINK.UID>
+      FOR 0 <EVAL <OBJ.MEMBER.COUNT>-1>
+         IF (<OBJ.MEMBER.<EVAL <LOCAL._FOR>>.UID> == <UID>)
+            TRY OBJ.MEMBER.<EVAL <LOCAL._FOR>>.SHOWABBREV=0
+         ENDIF
+      ENDFOR
+      IF (0<TAG.GUILDABBREVIATION>)
+         TRY MESSAGE @<f_guildabbreviation_color> [<UID.<memoryfindtype.memory_guild.LINK>.ABBREV>]
+      ENDIF
+   ENDIF
+   
+IF (<TAG0.BROTHERHOOD.SHOWTITLE> == 0) && !(<ISMURDERER>) && !(<ISKARMAEVIL>) && !(<ISKARMANEUTRAL>) && !(<FLAGS> & statf_criminal)
+MESSAGE = @0770 <NAME> [B]
+ELSEIF (<TAG0.BROTHERHOOD.SHOWTITLE> == 0) && (<ISMURDERER>) || (<ISKARMAEVIL>)
+MESSAGE = @021 <NAME> [B]
+ELSEIF (<TAG0.BROTHERHOOD.SHOWTITLE> == 0) && (<ISKARMANEUTRAL>) && (<FLAGS> & statf_criminal)
+MESSAGE = <NAME> [B] [criminal]
+ELSEIF (<TAG0.BROTHERHOOD.SHOWTITLE> == 0) && (<ISKARMANEUTRAL>)
+MESSAGE = <NAME> [B]
+ELSEIF (<TAG0.BROTHERHOOD.SHOWTITLE> == 0) && (<FLAGS> & statf_criminal)
+MESSAGE = <NAME> [B] [criminal]
+ELSEIF (<TAG0.BROTHERHOOD.SHOWTITLE> == 0) && (<FLAGS> & statf_criminal) && (<ISMURDERER>) || (<ISKARMAEVIL>)
+MESSAGE = @021 <NAME> [B]
+ENDIF
+
+IF (<TAG0.BROTHERHOOD.SHOWTITLE> == 1) && !(<ISMURDERER>) && !(<ISKARMAEVIL>) && !(<ISKARMANEUTRAL>) && !(<FLAGS> & statf_criminal)
+MESSAGE = @0770 <NAME>, <TAG.CURRENTBRANK>
+ELSEIF (<TAG0.BROTHERHOOD.SHOWTITLE> == 1) && (<ISMURDERER>) || (<ISKARMAEVIL>)
+MESSAGE = @021 <NAME>, <TAG.CURRENTBRANK>
+ELSEIF (<TAG0.BROTHERHOOD.SHOWTITLE> == 1) && (<ISKARMANEUTRAL>) && (<FLAGS> & statf_criminal)
+MESSAGE = <NAME>, <TAG.CURRENTBRANK> [criminal]
+ELSEIF (<TAG0.BROTHERHOOD.SHOWTITLE> == 1) && (<ISKARMANEUTRAL>)
+MESSAGE = <NAME>, <TAG.CURRENTBRANK>
+ELSEIF (<TAG0.BROTHERHOOD.SHOWTITLE> == 1) && (<FLAGS> & statf_criminal)
+MESSAGE = <NAME>, <TAG.CURRENTBRANK> [criminal]
+ELSEIF (<TAG0.BROTHERHOOD.SHOWTITLE> == 1) && (<FLAGS> & statf_criminal) && (<ISMURDERER>) || (<ISKARMAEVIL>)
+MESSAGE = @021 <NAME>, <TAG.CURRENTBRANK>
+ENDIF
+RETURN 1
+
+//Dagger
+
+[ITEMDEF i_dagger_brotherhood]
+ID=0f51
+NAME=Brotherhood Dagger
+TYPE=T_WEAPON_FENCE
+TDATA1=mat_copper
+FLIP=1
+DAM=2, 8
+SKILL=Fencing
+REQSTR=10
+WEIGHT=3
+CATEGORY=Imperial uo
+SUBSECTION=Brotherhood Faction Items
+DESCRIPTION=Brotherhood Dagger
+DUPELIST=0f52
+
+ON=@Create
+ATTR=attr_newbie
+HITPOINTS=32
+COLOR=0455
+
+ON=@DClick
+RETURN = <wpn_dclick_bladed>
+
+ON=@Targon_ground
+RETURN = <wpn_targon_ground_bladed>
+
+ON=@Targon_char
+RETURN = <wpn_targon_char_bladed>
+
+ON=@Targon_item
+RETURN = <wpn_targon_item_bladed>
+
+ON=@Equip
+IF !(<SRC.ISBROTHERHOOD>)
+SRC.SYSMESSAGE @0770 Only members of Brotherhood can use it.
+UNEQUIP
+ENDIF
+RETURN 1
+
+// Horse
+
+[ITEMDEF i_brotherhood_horse_deed]
+DEFNAME= i_brotherhood_horse_deed
+ID=i_deed
+NAME=Brotherhood Horse Deed
+
+CATEGORY=Imperial uo
+SUBSECTION=Brotherhood Faction Items
+DESCRIPTION=Brotherhood Horse (Deed)
+
+ON=@CREATE
+COLOR=0455
+
+ON=@DCLICK
+IF ( (<SRC.TARG.ATTR> & attr_move_never)
+SRC.SYSMESSAGE You can't unshrink that.
+RETURN 1
+
+ENDIF 
+IF <SRC.RESTEST i_brotherhood_horse_deed>
+SERV.NEWNPC c_brotherhood_horse
+LOCAL.NPC=<NEW.UID>
+SERV.NEWITEM i_memory
+NEW.COLOR=042
+NEW.LINK=<SRC.UID>
+NEW.CONT=<LOCAL.NPC>
+TRY UID.<LOCAL.NPC>.update
+SRC.CONSUME i_brotherhood_horse_deed 1
+ENDIF
+RETURN 1
+
+[CHARDEF c_brotherhood_horse]
+DEFNAME=c_brotherhood_horse
+ID=c_horse_gray
+NAME=Brotherhood Horse
+SOUND=snd_ANIMALS_HORSE1
+ICON=i_pet_horse_gray
+CAN=MT_WALK|MT_RUN
+RESOURCES=15 i_ribs_raw, 8 i_hide
+FOODTYPE=55 t_crops,55 t_fruit,55 t_grain, 64 t_grass
+DAM=10,20
+ARMOR=20
+
+ON=@Create
+COLOR=0455
+NPC=BRAIN_ANIMAL
+FAME=0
+STR={150 200}
+DEX={100 120}
+INT={10 50}
+
+PARRYING={40.0 55.0}
+MAGICRESISTANCE={60.0 80.0}
+TACTICS={50.0 60.0}
+WRESTLING={40.0 60.0}
+ARMSLORE=70.0
+
+CATEGORY=Imperial uo
+SUBSECTION=Brotherhood Faction Items
+DESCRIPTION=Brotherhood Horse
+
+//Robe of Protection
+
+[ITEMDEF i_brotherhood_protection]
+NAME=Brotherhood Robe of Protection
+ID=i_robe
+WEIGHT=3
+VALUE=5000
+TYPE=T_ARMOR
+DYE=0
+ARMOR=6
+DUPELIST=01f04
+
+CATEGORY=Imperial uo
+SUBSECTION=Brotherhood Faction Items
+DESCRIPTION=Brotherhood Robe of Protection
+
+ON=@CREATE
+QUALITY=200
+ATTR=05
+HITPOINTS={1000 1300}
+COLOR=0455
+
+ON=@DCLICK
+TYPE=T_ARMOR
+
+ON=@EQUIP 
+IF (<SRC.ISBROTHERHOOD>) && (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 6999)
+SRC.MESSAGE @0770 As you wear the robe, you feel more protected.
+RETURN 0
+ELSE
+SRC.MESSAGE @0770 You can't equip this robe.
+UNEQUIP
+RETURN 1
+ENDIF
+
+// Personal Bind Stone
+
+[ITEMDEF i_brotherhood_bindstone_deed]
+DEFNAME= i_brotherhood_bindstone_deed
+NAME=Personal Brotherhood Bind Stone Deed
+ID=i_deed
+RESOURCES=i_deed,i_brotherhood_bindstone
+
+CATEGORY=Imperial uo
+SUBSECTION=Brotherhood Faction Items
+DESCRIPTION=Brotherhood Personal Bind Stone (Deed)
+
+ON=@Create
+COLOR=0455
+MORE=i_brotherhood_bindstone
+ATTR=attr_newbie
+
+[ITEMDEF i_brotherhood_bindstone]
+DEFNAME=i_brotherhood_bindstone
+ID=0ed6
+NAME=Personal Brotherhood Bind Stone
+TYPE=t_normal
+
+ON=@CREATE
+COLOR=0455
+
+ON=@CLICK
+MESSAGE @0770 To bind your spirit to the stone double click it.
+
+ON=@DCLICK 
+IF (<MORE>!=1)
+NAME=<SRC.NAME>'s Bind Stone
+MORE=1 
+MORE2=<SRC.UID>
+SRC.SYSMESSAGE @0770 This stone has been linked to you. 
+SRC.SYSMESSAGE @0770 No-one but you can use it. 
+ELSEIF ( (<MORE>==1) && (<MORE2>==<SRC.UID>) && (<EVAL <SRC.TAG.REP.ALIGNMENT>> > 7999)) 
+SRC.TAG.MERCHOME=<SRC.P>
+MESSAGE @0770 Your spirit is now bound to this stone. To recall your spirit back use .bindback
+ELSE 
+SRC.SYSMESSAGE @0770 You can not use the stone.  
+ENDIF 
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Brotherhood Faction Items
+DESCRIPTION=Brotherhood Personal Bind Stone
+
+
+//Personal Resurrection Stone
+
+
+[ITEMDEF i_brotherhood_ress_deed]
+DEFNAME=i_brotherhood_ress_deed
+NAME=Personal Resurrection Deed
+ID=i_deed
+RESOURCES=i_deed,i_brotherhood_ress_stone
+
+CATEGORY=Imperial uo
+SUBSECTION=Brotherhood Faction Items
+DESCRIPTION=Brotherhood Resurrection Deed
+
+ON=@CREATE
+MORE=i_brotherhood_ress_stone
+ATTR=attr_newbie
+
+[ITEMDEF i_brotherhood_ress_stone]
+DEFNAME=i_brotherhood_ress_stone
+ID=0ed6
+NAME=Personal Brotherhood Resurrection Stone
+TYPE=t_normal
+
+ON=@CREATE
+COLOR=00
+NAME=<SRC.NAME>'s Resurrection Stone
+MORE=1
+MORE2=<SRC.UID>
+SRC.SYSMESSAGE @0770 This stone has been linked to you. 
+SRC.SYSMESSAGE @0770 No-one but you can use it.
+
+ON=@CLICK
+MESSAGE @0770 The stone seems to glow.
+
+IF ((<MORE>==1) && (<MORE2>==<SRC.UID>) && (<EVAL <SRC.TAG.REP.ALIGNMENT>> > 8999)) 
+SRC.RESURRECT
+MESSAGE @0770 Your spirit has now re-joined your body.
+ELSE 
+SRC.SYSMESSAGE @0770 You can not use the stone.
+ENDIF
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Brotherhood Faction Items
+DESCRIPTION=Brotherhood Resurrection Stone
+
+
+[ITEMDEF i_brotherhood_elite_shroud]
+ID=i_hooded_shroud
+NAME=Brotherhood Elite Shroud
+TYPE=T_CLOTHING
+ARMOR=5
+DYE=0
+VALUE=500000
+
+CATEGORY=Imperial uo
+SUBSECTION=Brotherhood Faction Items
+DESCRIPTION=Brotherhood Elite Shroud
+
+ON=@Create
+HITPOINTS=150
+COLOR=0455
+ATTR=05
+
+ON=@Equip
+IF !(<SRC.ISBROTHERHOOD>)
+MESSAGE @0770 You are not a member of The Brotherhood.
+UNEQUIP
+ELSEIF (<EVAL <SRC.TAG0.REP.ALIGNMENT>> < 10000)
+MESSAGE @0770 You need at least 10000 Brotherhood Points to wear this!
+UNEQUIP
+ELSE
+MESSAGE @0770 You pull on the robe and pull the hood over your head.
+ENDIF
+RETURN 1
+
+ON=@CLICK
+Message=@07a1 [Newbied]
+
+////////////////
+//Brotherhood//
+//////////////
+
+[DIALOG d_brotherhood]
+0,0
+page 0
+gumppic 129 93 3607
+gumppic 122 396 3601
+gumppic 116 109 3603
+gumppic 368 396 3601
+gumppic 116 395 3606
+gumppic 614 395 3608
+gumppic 614 103 3605
+gumppic 491 94 3601
+gumppic 492 93 3607
+gumppic 614 93 3602
+gumppic 116 93 3600
+gumppic 252 93 3607
+gumppic 245 395 3607
+gumppic 491 395 3607
+gumppic 126 108 3604
+gumppic 251 108 3604
+gumppic 361 108 3604
+gumppic 126 240 3604
+gumppic 372 194 3604
+gumppic 486 178 3604
+gumppic 131 156 3604
+gumppic 250 149 3604
+gumppic 251 240 3604
+gumppic 379 240 3604
+gumppic 126 273 3604
+gumppic 251 273 3604
+gumppic 379 273 3604
+gumppic 486 108 3604
+gumppic 486 239 3604
+gumppic 100 87 12
+gumppic 486 273 3604
+gumppic 100 86 50529 1907
+gumppic 596 82 10410 1907
+gumppic 101 86 50524 1907
+gumppic 99 87 60970 1907
+text 323 121 1935 0
+text 257 165 1935 1
+text 257 198 1935 2
+text 257 232 1935 3
+text 257 265 1935 4
+tilepic 566 282 15494
+text 461 334 1935 5
+button 429 331 2472 2473 1 0 1 // Points info
+button 272 331 2472 2473 1 0 2 // Remove Title
+text 306 335 1935 6
+button 272 367 2472 2473 1 0 3 // Add Title
+text 306 370 1935 7
+button 135 331 2472 2473 1 0 4 // Next Rank
+button 135 367 2472 2473 1 0 5 // Add/Remove Title
+dtext 170 370 1935 Name Title
+text 170 335 1935 8
+gumppic 370 93 3607
+gumppic 116 107 3603
+
+[DIALOG d_brotherhood text]
+The Brotherhood
+You currently have <EVAL <SRC.TAG0.REP.ALIGNMENT>> Brotherhood points.
+You have completed a total of <EVAL <SRC.TAG0.BOUNTYCOMPLETED>> bounties.
+You have a total of <EVAL <SRC.TAG0.RATINGPVPK>> PvP kills.
+You have a total of <EVAL <SRC.TAG0.RATINGPVPD>> PvP Deaths.
+Ranks & Points
+Remove Title
+Add Title
+Next Rank
+
+[DIALOG d_brotherhood button]
+
+ON=1
+DIALOG d_brotherhood_ranks
+
+ON=2
+IF (<SRC.ISBROTHERHOOD>)
+SRC.TAG.NAME.SUFFIX=
+SRC.SYSMESSAGE @0770 Title Removed.
+ENDIF
+RETURN 1
+
+ON=3
+IF (<SRC.ISBROTHERHOOD>)
+SRC.TAG.NAME.SUFFIX=, <SRC.TAG.CURRENTBRANK>
+SRC.SYSMESSAGE @0770 Title Added.
+ELSEIF
+SRC.SYSMESSAGE @0770 You are not a member of The Brotherhood.
+ENDIF
+RETURN 1
+
+ON=4
+IF (<EVAL <SRC.TAG.BROTHERHOODRANK>> == 0) && (<EVAL <SRC.TAG.REP.ALIGNMENT>> > 999))
+SRC.TAG.BROTHERHOODRANK=1
+SRC.TAG.CURRENTBRANK=Brotherhood Initiate
+SRC.TAG.NAME.SUFFIX=, Brotherhood Initiate
+SRC.SYSMESSAGE @0770 Congratulations! You have advanced to Brotherhood Initiate.
+SRC.SYSMESSAGE @0770 You got a Brotherhood Dagger as a prize in your bank!
+SRC.NEWITEM=i_dagger_brotherhood 
+SRC.ACT.CONT=<SRC.findlayer(layer_bankbox).uid>
+
+ELSEIF (<EVAL <SRC.TAG.BROTHERHOODRANK>> == 01) && (<EVAL <SRC.TAG.REP.ALIGNMENT>> > 1999))
+SRC.TAG.BROTHERHOODRANK=2
+SRC.TAG.CURRENTBRANK=Brotherhood Apprentice
+SRC.TAG.NAME.SUFFIX=, Brotherhood Apprentice
+SRC.SYSMESSAGE @0770 Congratulations! You have advanced to Brotherhood Apprentice.
+SRC.SYSMESSAGE @0770 You can now use The Brotherhood Recall Magic. Use .factionhome to start using it.
+
+
+ELSEIF (<EVAL <SRC.TAG.BROTHERHOODRANK>> == 02) && (<EVAL <SRC.TAG.REP.ALIGNMENT>> > 2999))
+SRC.TAG.BROTHERHOODRANK=3
+SRC.TAG.CURRENTBRANK=Brotherhood Novice
+SRC.TAG.NAME.SUFFIX=, Brotherhood Novice
+SRC.SYSMESSAGE @0770 Congratulations! You have advanced to Brotherhood Novice.
+SRC.SYSMESSAGE @0770 You can now use the public Brotherhood Bind Stone.
+
+ELSEIF (<EVAL <SRC.TAG.BROTHERHOODRANK>> == 03) && (<EVAL <SRC.TAG.REP.ALIGNMENT>> > 3999))
+SRC.TAG.BROTHERHOODRANK=4
+SRC.TAG.CURRENTBRANK=Brotherhood Servant
+SRC.TAG.NAME.SUFFIX=, Brotherhood Servant
+SRC.SYSMESSAGE @0770 Congratulations! You have advanced to Brotherhood Servant.
+SRC.SYSMESSAGE @0770 You got a Brotherhood Hair and Backpack Dye Tub as a prize in your back pack!
+SERV.NEWITEM=i_hair_tub
+NEW.NAME=Brotherhood Hair Dye Tub
+NEW.ATTR=ATTR_NEWBIE
+NEW.COLOR=0455
+NEW.MOREX=1
+NEW.BOUNCE
+SERV.NEWITEM=i_dye_tub_backpack
+NEW.NAME=Brotherhood Backpack Dye Tub
+NEW.ATTR=ATTR_NEWBIE
+NEW.COLOR=0455
+NEW.MOREX=1
+NEW.BOUNCE
+
+ELSEIF (<EVAL <SRC.TAG.BROTHERHOODRANK>> == 04) && (<EVAL <SRC.TAG.REP.ALIGNMENT>> > 4999))
+SRC.TAG.BROTHERHOODRANK=5
+SRC.TAG.CURRENTBRANK=Brotherhood Warrior
+SRC.TAG.NAME.SUFFIX=, Brotherhood Warrior
+SRC.SYSMESSAGE @0770 Congratulations! You have advanced to Brotherhood Warrior.
+SRC.SYSMESSAGE @0770 You got a Brotherhood Horse as a prize in your bank! 
+SRC.NEWITEM=i_brotherhood_horse_deed
+SRC.ACT.CONT=<SRC.findlayer(layer_bankbox).uid>
+
+
+ELSEIF (<EVAL <SRC.TAG.BROTHERHOODRANK>> == 05) && (<EVAL <SRC.TAG.REP.ALIGNMENT>> > 5999))
+SRC.TAG.BROTHERHOODRANK=6
+SRC.TAG.CURRENTBRANK=Brotherhood Disciple
+SRC.TAG.NAME.SUFFIX=, Brotherhood Disciple
+SRC.SYSMESSAGE @0770 Congratulations! You have advanced to Brotherhood Disciple.
+SRC.SYSMESSAGE @0770 You can now use The Brotherhood Travel Stone. It is located in Cove and Moonglow. It teleports you to the main map places.
+
+
+ELSEIF (<EVAL <SRC.TAG.BROTHERHOODRANK>> == 06) && (<EVAL <SRC.TAG.REP.ALIGNMENT>> > 6999))
+SRC.TAG.BROTHERHOODRANK=7
+SRC.TAG.CURRENTBRANK=Brotherhood Knight
+SRC.TAG.NAME.SUFFIX=, Brotherhood Knight
+SRC.SYSMESSAGE @0770 Congratulations! You have advanced to Brotherhood Knight.
+SRC.SYSMESSAGE @0770 You got a Brotherhood Robe of Protection as a prize in your bank!
+SRC.NEWITEM=i_brotherhood_protection
+SRC.ACT.CONT=<SRC.findlayer(layer_bankbox).uid>
+
+
+ELSEIF (<EVAL <SRC.TAG.BROTHERHOODRANK>> == 07) && (<EVAL <SRC.TAG.REP.ALIGNMENT>> > 7999))
+SRC.TAG.BROTHERHOODRANK=8
+SRC.TAG.CURRENTBRANK=Brotherhood Soldier
+SRC.TAG.NAME.SUFFIX=, Brotherhood Soldier
+SRC.SYSMESSAGE @0770 Congratulations! You have advanced to Brotherhood Soldier.
+SRC.SYSMESSAGE @0770 You got a Personal Bind Stone in your bank!
+SRC.NEWITEM i_brotherhood_bindstone_deed
+SRC.ACT.CONT=<SRC.findlayer(layer_bankbox).uid>
+
+ELSEIF (<EVAL <SRC.TAG.BROTHERHOODRANK>> == 08) && (<EVAL <SRC.TAG.REP.ALIGNMENT>> > 8999))
+SRC.TAG.BROTHERHOODRANK=9
+SRC.TAG.CURRENTBRANK=Brotherhood Veteran
+SRC.TAG.NAME.SUFFIX=, Brotherhood Veteran
+SRC.SYSMESSAGE @0770 Congratulations! You have advanced to Brotherhood Veteran.
+SRC.SYSMESSAGE @0770 You got a Personal Resurrection Stone in your bank!
+SRC.NEWITEM i_brotherhood_ress_deed
+SRC.ACT.CONT=<SRC.findlayer(layer_bankbox).uid>
+
+ELSEIF (<EVAL <SRC.TAG.BROTHERHOODRANK>> == 09) && (<EVAL <SRC.TAG.REP.ALIGNMENT>> > 9999))
+SRC.TAG.BROTHERHOODRANK=10
+SRC.TAG.CURRENTBRANK=Brotherhood Elite
+SRC.TAG.NAME.SUFFIX=, Brotherhood Elite
+SRC.SYSMESSAGE @0770 Congratulations! You have advanced to Brotherhood Elite.
+SRC.SYSMESSAGE @0770 You got a Brotherhood Elite Shroud in your bank!
+SRC.NEWITEM i_brotherhood_elite_shroud
+SRC.ACT.CONT=<SRC.findlayer(layer_bankbox).uid>
+
+
+ELSEIF (<EVAL <SRC.TAG.BROTHERHOODRANK>> == 10) && (<EVAL <SRC.TAG.REP.ALIGNMENT>> > 10999))
+SRC.TAG.BROTHERHOODRANK=11
+SRC.TAG.CURRENTBRANK=Brotherhood Master
+SRC.TAG.NAME.SUFFIX=, Brotherhood Master
+SRC.SYSMESSAGE @0770 Congratulations! You have advanced to Brotherhood Master.
+SRC.SYSMESSAGE @0770 You got 210k of gold in your bank!
+SRC.NEWITEM i_bag_Faction1100bro
+SRC.ACT.CONT=<SRC.findlayer(layer_bankbox).uid>
+
+
+ELSEIF (<EVAL <SRC.TAG.BROTHERHOODRANK>> == 11) && (<EVAL <SRC.TAG.REP.ALIGNMENT>> > 11999))
+SRC.TAG.BROTHERHOODRANK=12
+SRC.TAG.CURRENTBRANK=Brotherhood Master Assassin
+SRC.TAG.NAME.SUFFIX=, Brotherhood Master Assassin
+SRC.SYSMESSAGE @0770 Congratulations! You have advanced to Brotherhood Master Assassin.
+SRC.SYSMESSAGE @0770 You got a Newbied Brotherhood Elite Steed in your bank!
+SRC.NEWITEM i_brotherhood_elite_steed
+SRC.ACT.CONT=<SRC.findlayer(layer_bankbox).uid>
+SERV.B @0455 Congratulations <SRC.NAME> for reaching the last Brotherhood Rank. <SRC.NAME>'s the newest Brotherhood Master Assassin!
+
+ELSE
+SRC.SYSMESSAGE @0770 You have not fulfilled enough certificates/bounties to progress through the ranks.
+ENDIF
+RETURN 1
+
+ON=5
+IF (<SRC.TAG0.ALIGNMENT.SHOWTITLE> == 01)
+SRC.TAG.ALIGNMENT.SHOWTITLE=0
+SRC.SYSMESSAGE @0770 Title removed from your name.
+ELSEIF (<SRC.TAG0.ALIGNMENT.SHOWTITLE> == 0)
+SRC.TAG.ALIGNMENT.SHOWTITLE=1
+SRC.SYSMESSAGE @0770 Title added to your name.
+ELSE
+SRC.SYSMESSAGE @0770 You are not a Brotherhood Member.
+ENDIF
+ENDIF
+
+[DIALOG d_brotherhood_ranks]
+0,0
+page 0
+
+gumppic 129 93 3607
+gumppic 122 396 3601
+gumppic 116 109 3603
+gumppic 368 396 3601
+gumppic 116 395 3606
+gumppic 614 395 3608
+gumppic 614 103 3605
+gumppic 491 94 3601
+gumppic 492 93 3607
+gumppic 614 93 3602
+gumppic 116 93 3600
+gumppic 252 93 3607
+gumppic 245 395 3607
+gumppic 491 395 3607
+gumppic 126 108 3604
+gumppic 251 108 3604
+gumppic 361 108 3604
+gumppic 126 240 3604
+gumppic 372 194 3604
+gumppic 486 178 3604
+gumppic 131 156 3604
+gumppic 250 149 3604
+gumppic 251 240 3604
+gumppic 379 240 3604
+gumppic 126 273 3604
+gumppic 251 273 3604
+gumppic 379 273 3604
+gumppic 486 108 3604
+gumppic 486 239 3604
+gumppic 100 87 12
+gumppic 486 273 3604
+gumppic 100 86 50529 1907
+gumppic 596 82 10410 1907
+gumppic 101 86 50524 1907
+gumppic 99 87 60970 1907
+tilepic 566 282 15494
+gumppic 370 93 3607
+gumppic 116 107 3603
+text 461 354 1935 0
+button 429 330 2472 2473 1 0 1
+text 465 333 1935 1
+text 227 121 1935 2
+text 243 150 1935 3
+text 242 170 57 4
+text 243 189 57 5
+text 243 208 57 6
+text 243 227 4 7
+text 243 246 4 8
+text 243 266 4 9
+text 243 286 242 10
+text 136 305 242 11
+text 135 324 242 12
+text 137 343 31 13
+text 135 362 31 14
+text 405 120 1935 15
+text 135 380 31 16
+
+
+[DIALOG d_brotherhood_ranks text]
+Information
+Character
+Your Currently Rank: <EVAL <SRC.TAG0.BROTHERHOODRANK>>
+1) Brotherhood Recruit (0 Points)
+2) Brotherhood Initiate (1000 Points)
+3) Brotherhood Apprentice (2000 Points)
+4) Brotherhood Novice (3000 Points)
+5) Brotherhood Servant (4000 Points)
+6) Brotherhood Warrior (5000 Points)
+7) Brotherhood Disciple (6000 Points)
+8) Brotherhood Knight (7000 Points)
+9) Brotherhood Soldier (8000 Points)
+10) Brotherhood Veteran (9000 Points)
+11) Brotherhood Elite (10000 Points)
+12) Brotherhood Master (11000 Points)
+Your Currently Points: <EVAL <SRC.TAG0.REP.ALIGNMENT>>
+13) Brotherhood Master Assassin (12000 Points)
+
+[DIALOG d_brotherhood_ranks button]
+
+ON=1
+DIALOG d_brotherhood
+
+[DIALOG d_brotherhood_join]
+0,0
+page 0
+gumppic 123 396 3601
+gumppic 116 109 3603
+gumppic 116 395 3606
+gumppic 369 395 3608
+gumppic 369 103 3605
+gumppic 129 96 3607
+gumppic 369 96 3602
+gumppic 116 96 3600
+gumppic 252 96 3607
+gumppic 243 111 3604
+gumppic 126 125 3604
+gumppic 246 395 3607
+gumppic 126 111 3604
+gumppic 126 240 3604
+gumppic 126 273 3604
+text 193 125 1935 0
+gumppic 243 273 3604
+button 230 343 2472 2473 1 0 0
+button 229 303 2472 2473 1 0 1
+gumppic 243 155 3604
+gumppic 351 81 10410 1907
+text 127 157 1935 1
+text 128 180 1935 2
+text 129 203 1935 3
+text 129 225 1935 4
+text 129 246 1935 5
+text 129 267 1935 6
+tilepic 147 358 4650
+tilepic 157 290 14168
+tilepichue 174 297 9920 1907
+tilepic 128 299 15590
+tilepic 152 324 15589
+tilepic 131 341 15719
+text 261 305 1935 7
+text 261 345 1935 8
+
+[DIALOG d_brotherhood_join text]
+The Brotherhood
+To join The Brotherhood you must have
+at least 500.0 skill.
+By joining, you'll give your character's
+soul to The Brotherhood, meaning you
+can never leave. Do you wish to start
+the challenge now?
+Yes, I am ready.
+No, I'm not ready.
+
+[DIALOG d_brotherhood_join button]
+
+ON=1
+IF (<SRC.TAG0.BROTHERHOODINQUEST> == 01)
+SRC.SYSMESSAGE @0770 You have already accepted this challenge.
+ELSE
+DIALOG brotherhood_challenge
+ENDIF
+RETURN 1
+
+[DIALOG brotherhood_challenge]
+0,0
+page 0
+gumppic 123 396 3601
+gumppic 116 109 3603
+gumppic 116 395 3606
+gumppic 369 395 3608
+gumppic 369 103 3605
+gumppic 129 96 3607
+gumppic 369 96 3602
+gumppic 116 96 3600
+gumppic 252 96 3607
+gumppic 243 111 3604
+gumppic 246 395 3607
+gumppic 126 111 3604
+gumppic 126 273 3604
+gumppic 126 164 3604
+text 193 116 1935 0
+gumppic 243 273 3604
+button 230 343 2472 2473 1 0 0
+button 230 303 2472 2473 1 0 1
+gumppic 243 155 3604
+gumppic 350 82 10410 1907
+text 127 157 1935 1
+text 128 180 1935 2
+text 129 203 1935 3
+text 129 225 1935 4
+text 129 246 1935 5
+text 129 267 1935 6
+tilepic 126 360 4650
+tilepic 128 299 15590
+tilepic 152 324 15589
+text 261 305 1935 7
+text 261 345 1935 8
+text 199 131 1935 9
+tilepic 126 360 7393
+
+[DIALOG brotherhood_challenge text]
+The Brotherhood
+To prove your worthiness, you must
+complete this challenge. In Vesper
+lives Arcadia. Find her and kill her
+with no mercy. Cut her down and bring
+me her head. Prove yourself and I'll let
+you in. Do you wish to start it now?
+Yes, I am ready.
+No, I'm not ready.
+First Challenge
+
+[DIALOG brotherhood_challenge button]
+
+ON=1
+SRC.TAG.BROTHERHOODINQUEST=1
+SRC.SYSMESSAGE @0770 Once you have killed Arcadia, cut down her head and bring it to Charles. Say "CHALLENGE" to complete the challenge.
+RETURN 1
+
+
+[CHARDEF c_h_brotherhood_recruit] 
+DEFNAME= c_h_brotherhood_recruit
+NAME=Charles, Leader of The Brotherhood
+ID=C_MAN 
+DAM=25,45 
+ARMOR=60
+
+TSPEECH=brotherhood_recruiter
+
+CATEGORY=Imperial uo
+SUBSECTION=Brotherhood Faction NPCs
+DESCRIPTION=The Brotherhood Recruiter
+
+ON=@Create
+NPC=brain_human
+TITLE=The Brotherhood Recruiter 
+COLOR=colors_skin 
+STR={10000 20000} 
+DEX={151 165} 
+INT={151 165}
+TAG.NAME.HUE=0770
+
+FENCING={90.0 100.0} 
+PARRYING={90.0 100.0} 
+SWORDSMANSHIP={90.0 100.0} 
+WRESTLING={90.0 100.0} 
+MACEFIGHTING={90.0 100.0} 
+MAGICRESISTANCE={90.0 100.0} 
+TACTICS={90.0 100.0} 
+ANIMALLORE={90.0 100.0}
+
+ITEMNEWBIE=random_male_hair 
+COLOR=1 
+ITEMNEWBIE=random_facial_hair 
+COLOR=1
+
+ON=@NPCRestock
+ITEMNEWBIE=i_hooded_shroud
+COLOR=0455
+ITEMNEWBIE=i_platemail_chest_blackrock 
+ITEMNEWBIE=i_platemail_leggings_blackrock 
+ITEMNEWBIE=i_platemail_arms_blackrock
+ITEMNEWBIE=i_platemail_gloves_blackrock
+ITEMNEWBIE=i_platemail_gorget_blackrock
+ITEMNEWBIE=i_shield_heater_verminard
+ITEMNEWBIE=i_kryss_verminard
+
+ON=@NPCRefuseItem 
+SAY I cannot be bribed. Be gone. 
+RETURN 1
+
+[SPEECH brotherhood_recruiter]
+
+ON=*rank*
+IF (<SRC.ISMILITANT>)
+SAY @0770 A Militia Member? I would rather not mess with you at this moment.
+RETURN 1
+ENDIF
+
+IF (<SRC.ISBROTHERHOOD>)
+DIALOG d_brotherhood
+ENDIF
+
+ON=*hi* 
+ON=*hello*
+ON=*hail*
+ON=*Greetings*
+SAY @0770 Welcome to the Brotherhood Temple.
+SAY @0770 If you want to try to join our family, say "join".
+SAY @0770 If you want to know more information about your character, say "rank".
+
+ON=*join*
+
+IF (<SRC.ISMILITANT>)
+SAY @0770 A Militia Member? I would rather not mess with you at this moment.
+RETURN 1
+ENDIF
+
+IF (<SRC.ISBROTHERHOOD>)
+SAY @0770 You already belong to our family.
+RETURN 1
+
+ELSEIF (<SRC.ISACADEMY>)
+SAY @0770 You still belong to the Academy, kid. Go back to school!
+RETURN 1
+
+ELSEIF (<SRC.ISSYNDICATE>)
+SAY @0770 You already belong to the Syndicate Faction. Get out.
+RETURN 1
+
+ELSEIF (<SRC.ISORDER>)
+SAY @0770 You already belong to the Order Faction. Get out.
+RETURN 1
+
+ELSEIF (<SRC.ISCHAOS>)
+SAY @0770 You already belong to the Chaos Faction. Get out.
+RETURN 1
+
+ELSEIF (<SRC.ISMERCENARY>)
+SAY @0770 You already belong to the Mercenary Faction. Get out.
+RETURN 1
+
+ELSEIF !(<SRC.ISBROTHERHOOD>) && (<SRC.SKILLTOTAL> > 5000) //&& (<SRC.TAG.RATINGPVPK> > 19)
+DIALOG d_brotherhood_join
+ELSE
+SAY @0770 Such a baby-boy like you can't join the almighty Brotherhood Family.
+ENDIF
+RETURN 1
+
+ON=*challenge*
+
+IF (<SRC.ISMILITANT>)
+SAY @0770 A Milita Member? I would rather not mess with you at this moment.
+RETURN 1
+ENDIF
+
+IF (<SRC.ISBROTHERHOOD>)
+SAY @0770 You already belong to our family.
+
+ELSEIF (<SRC.TAG.BROTHERHOODINQUEST> == 0)
+SAY @0770 You haven't accepted the challenge yet. Don't try to fool me.
+
+ELSEIF (<SRC.TAG.BROTHERHOODINQUEST> == 01) && (<SRC.RESTEST i_head_arcadia>)
+SRC.TAG.BROTHERHOODINQUEST=
+SRC.TAG.ALIGNMENT=alignment_brotherhood
+SRC.TAG.REP.ALIGNMENT=1
+SRC.TAG.BROTHERHOODRANK=0
+SRC.TAG.CURRENTBRANK=Brotherhood Recruit
+SRC.TAG.ALIGNMENT.SHOWTITLE=1
+SRC.TAG.NAME.SUFFIX=, Brotherhood Recruit
+SRC.SYSMESSAGE @0770 Good Job. Your soul now belongs to The Brotherhood.
+SRC.SYSMESSAGE @0770 You now have access to the Brotherhood Faction Chat by typing .f 
+SRC.CONSUME 1 i_head_arcadia
+ef_spirits
+DIALOG d_brotherhood_introduction
+
+ELSE
+SAY @0770 You haven't killed Arcadia yet? What have you been doing all this time?
+
+ENDIF
+RETURN 1
+
+[DIALOG d_brotherhood_introduction]
+0,0
+page 0
+resizepic 105 57 9200 474 332
+text 305 72 0 0
+text 242 88 0 1
+text 143 156 0 2
+text 114 175 0 3
+text 125 195 0 4
+text 246 131 0 5
+text 122 240 0 6
+text 127 262 0 7
+text 302 214 0 8
+text 164 301 0 9
+text 234 321 0 10
+button 311 357 247 248 1 0 0
+gumppic 101 41 30077
+gumppic 179 41 30077
+gumppic 258 41 30077
+gumppic 336 41 30077
+gumppic 414 41 30077
+gumppic 492 41 30077
+
+[DIALOG d_brotherhood_introduction text]
+Imperial UO
+Introduction to the Brotherhood
+The Brotherhood is one of the 5 factions existent in Britannia.
+They do not have an official enemy. The members are famous and dangerous
+assassins, seeking prizes for completing Bounties and killing for the
+Welcome to your New Faction!
+For completing a requested bounty, you will get 150 Brotherhood Points.
+For fullfilling a death certification, you'll get 100 Brotherhood Points.
+certifications.
+To get the information about your character, say "rank"
+to Charles, Leader of Brotherhood.
+
+//Arcadia
+
+[CHARDEF c_brotherhood_arcadia]
+DEFNAME=c_brotherhood_arcadia
+NAME=Arcadia
+ID=C_WOMAN
+DAM=20,30
+ARMOR=60
+
+CATEGORY=Imperial uo
+SUBSECTION=Brotherhood Faction NPCs
+DESCRIPTION=Arcadia
+
+ON=@Create
+NPC=brain_human
+COLOR=colors_skin
+KARMA=-4000
+STR={500 700}
+DEX={120 150}
+INT={100 300}
+
+ALLSKILLS=1000
+
+ITEMNEWBIE=random_female_hair
+COLOR=colors_hair
+ITEMNEWBIE={i_ringmail_gloves_valorite 1 i_platemail_gloves_valorite 1}
+ITEMNEWBIE={i_chainmail_coif_valorite 1 i_platemail_helm_valorite 1}
+ITEMNEWBIE={i_ringmail_sleeves_valorite 1 i_platemail_arms_valorite 1}
+ITEMNEWBIE=i_platemail_gorget_valorite
+ITEMNEWBIE={i_chainmail_tunic_valorite 1 i_platemail_chest_valorite 1}
+ITEMNEWBIE={i_chainmail_leggings_valorite 1 i_platemail_leggings_valorite 1}
+ITEMNEWBIE={i_sword_long_b_valorite 1  i_mace_war_valorite 1 i_katana_valorite 1 i_halberd_valorite 1}
+ITEMNEWBIE={i_shield_round_valorite 1  i_shield_heater_valorite 1}
+ITEMNEWBIE=i_surcoat_army
+color=1
+ITEMNEWBIE=i_cape
+color=1
+ITEMNEWBIE=i_boots_calf
+
+ON=@NPCRestock
+ITEM=random_coin_purse
+ITEM=i_head_arcadia
+
+[ITEMDEF i_head_arcadia] 
+ID=I_FLESH_HEAD2 
+NAME=Head of Arcadia
+TYPE=T_NORMAL 
+WEIGHT=5 
+
+[CHARDEF c_brotherhood_archer]
+DEFNAME=c_brotherhood_archer
+NAME=#NAMES_HUMANMALE, Brotherhood Soldier
+ID=C_MAN
+DAM=50,80
+ARMOR=200
+
+CAN=MT_EQUIP|MT_RUN|MT_USEHANDS|MT_WALK
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_brotherhood_greeting
+
+CATEGORY=Imperial uo
+SUBSECTION=Brotherhood Faction NPCs
+DESCRIPTION=Brotherhood Guard - Archer
+
+ON=@Create
+
+TITLE=A Town Guard of Brotherhood
+
+
+TAG.NAME.SUFFIX= , Brotherhood Soldier
+
+NPC=brain_human
+COLOR=colors_skin
+TAG.NAME.HUE=0770
+STR={1400 2400}
+DEX={3000 5000}
+INT={900 1000}
+
+ARCHERY=1000
+TACTICS=1000
+ANATOMY=1000
+
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+
+ON=@NPCRestock
+ITEMNEWBIE=i_cap_leather
+COLOR=0455
+ITEMNEWBIE=i_gloves_leather
+COLOR=0455
+ITEMNEWBIE=i_gorget_leather
+COLOR=0455
+ITEMNEWBIE=i_leggings_leather
+COLOR=0455
+ITEMNEWBIE=i_tunic_leather
+COLOR=0455
+ITEMNEWBIE=i_crossbow_myst
+ITEMNEWBIE=i_boots_calf
+COLOR=079b
+ITEMNEWBIE=i_cape
+COLOR=079b
+
+[CHARDEF c_guard_brotherhood_mount]
+DEFNAME=c_guard_brotherhood_mount
+NAME=#NAMES_HUMANMALE, Brotherhood Warrior
+ID=C_MAN
+DAM=50,80
+ARMOR=200
+
+CAN=MT_EQUIP|MT_RUN|MT_USEHANDS|MT_WALK
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_brotherhood_greeting
+
+CATEGORY=Imperial uo
+SUBSECTION=Brotherhood Faction NPCs
+DESCRIPTION=Brotherhood Guard - Mounted
+
+ON=@Create
+
+TITLE=A Town Guard of Brotherhood
+
+TAG.NAME.SUFFIX= , Brotherhood Warrior
+
+NPC=brain_human
+COLOR=colors_skin
+TAG.NAME.HUE=0770
+STR={1400 2400}
+DEX={3000 5000}
+INT={900 1000}
+
+ALLSKILLS=1000
+NECROMANCY=0
+POISONING=0
+MAGERY=0
+
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+ITEMNEWBIE={i_ringmail_gloves_blackrock 1 i_platemail_gloves_blackrock 1}
+ITEMNEWBIE={i_chainmail_coif_blackrock 1 i_platemail_helm_blackrock 1}
+ITEMNEWBIE={i_ringmail_sleeves_blackrock 1 i_platemail_arms_blackrock 1}
+ITEMNEWBIE=i_platemail_gorget_blackrock
+ITEMNEWBIE={i_chainmail_tunic_blackrock 1 i_platemail_chest_blackrock 1}
+ITEMNEWBIE={i_chainmail_leggings_blackrock 1 i_platemail_leggings_blackrock 1}
+ITEMNEWBIE={i_sword_long_b_blackrock 1 i_mace_war_blackrock 1}
+ITEMNEWBIE={i_shield_round_blackrock 1 i_shield_heater_blackrock 1}
+ITEMNEWBIE=i_surcoat_army
+color=079b
+ITEMNEWBIE=i_cape
+color=079b
+ITEMNEWBIE=i_boots_calf
+
+ON=@NPCRestock
+ITEM=random_coin_purse
+ITEM=i_mt_horse_gray
+
+ON=@NPCRefuseItem
+SAY I cannot be bribed. be gone.
+RETURN 1
+
+
+[CHARDEF c_brotherhood_trinsic]
+DEFNAME=c_brotherhood_trinsic
+NAME=#NAMES_HUMANMALE
+ID=C_MAN
+DAM=50,80
+ARMOR=200
+
+
+CAN=MT_EQUIP|MT_RUN|MT_USEHANDS|MT_WALK
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_brotherhood_greeting
+
+
+CATEGORY=Imperial uo
+SUBSECTION=Brotherhood Faction NPCs
+DESCRIPTION=Brotherhood Guard
+
+ON=@Create
+
+TITLE=A Town Guard of Brotherhood
+
+TAG.NAME.SUFFIX= , Brotherhood Soldier
+
+NPC=brain_human
+COLOR=colors_skin
+TAG.NAME.HUE=0770
+STR={1400 2400}
+DEX={3000 5000}
+INT={900 1000}
+
+ALLSKILLS=1000
+NECROMANCY=0
+POISONING=0
+MAGERY=0
+
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+ITEMNEWBIE={i_ringmail_gloves_blackrock 1 i_platemail_gloves_blackrock 1}
+ITEMNEWBIE={i_chainmail_coif_blackrock 1 i_platemail_helm_blackrock 1}
+ITEMNEWBIE={i_ringmail_sleeves_blackrock 1 i_platemail_arms_blackrock 1}
+ITEMNEWBIE=i_platemail_gorget_blackrock
+ITEMNEWBIE={i_chainmail_tunic_blackrock 1 i_platemail_chest_blackrock 1}
+ITEMNEWBIE={i_chainmail_leggings_blackrock 1 i_platemail_leggings_blackrock 1}
+ITEMNEWBIE={i_sword_long_b_blackrock 1 i_mace_war_blackrock 1 i_katana_blackrock 1 i_halberd_blackrock 1}
+ITEMNEWBIE={i_shield_round_blackrock 1 i_shield_heater_blackrock 1}
+ITEMNEWBIE=i_surcoat_army
+color=079b
+ITEMNEWBIE=i_cape
+color=079b
+ITEMNEWBIE=i_boots_calf
+
+ON=@NPCRestock
+ITEM=random_coin_purse
+
+ON=@NPCRefuseItem
+SAY I cannot be bribed. be gone.
+RETURN 1
+
+[SPEECH spk_brotherhood_greeting]
+ON=*hello*
+ON=*hi*
+ON=*lo*
+ON=*sup*
+ON=*yo*
+IF !(<SRC.ISBROTHERHOOD>)
+DORAND 3
+SAY I'll do away with ye if ye should step closer!
+SAY Out with ye! I care not for those who follow false paths!
+SAY Ye make me sick!
+ENDDO
+RETURN 1
+ELSE
+DORAND 3
+SAY Hello, <SRC.NAME>
+SAY How goes it, <SRC.NAME>?
+SAY Anything I can do to help ye?
+ENDDO
+RETURN 1
+ENDIF
+
+//////////////////
+//Bounty System//
+////////////////
+
+[plevel 1]
+bounty
+
+[plevel 3]
+bountyban
+
+
+[defname bounty_setup]
+bountycontaineruid=043f5804e
+bountyboarduid=043f4db26
+
+
+[itemdef i_bounty_system]
+id=i_bulletin_board
+type=t_eq_script
+name=Bounty Board
+
+
+on=@dclick
+if (<eval <src.tag.bountyban>> == 1 )
+src.sysmessage=You can no longer participate in the bounty system...
+return 1
+endif
+dialog d_bounty_system_start_1
+src.sysmessage=Click the scrolls for more information...
+sfx=256
+return 1
+
+on=@create
+attr=attr_static|00010
+
+tag.bounty.1=Empty
+tag.bountuid.1=
+tag.bountyrewarduid.1=
+tag.bountyplacedby.1=
+
+tag.bounty.2=Empty
+tag.bountyuid.2=
+tag.bountyrewarduid.2=
+tag.bountyplacedby.2=
+
+tag.bounty.3=Empty
+tag.bountyuid.3=
+tag.bountyrewarduid.3=
+tag.bountyplacedby.3=
+
+tag.bounty.4=Empty
+tag.bountyuid.4=
+tag.bountyrewarduid.4=
+tag.bountyplacedby.4=
+
+tag.bounty.5=Empty
+tag.bountyuid.5=
+tag.bountyrewarduid.5=
+tag.bountyplacedby.5=
+
+tag.bounty.6=Empty
+tag.bountyuid.6=
+tag.bountyrewarduid.6=
+tag.bountyplacedby.6=
+
+tag.bounty.7=Empty
+tag.bountyuid.7=
+tag.bountyrewarduid.7=
+tag.bountyplacedby.7=
+
+tag.bounty.8=Empty
+tag.bountyuid.8=
+tag.bountyrewarduid.8=
+tag.bountyplacedby.8=
+
+tag.bounty.9=Empty
+tag.bountyuid.9=
+tag.bountyrewarduid.9=
+tag.bountyplacedby.9=
+
+tag.bounty.10=Empty
+tag.bountyuid.10=
+tag.bountyrewarduid.10=
+tag.bountyplacedby.10=
+
+
+/////////
+//11-20//
+/////////
+
+
+tag.bounty.11=Empty
+tag.bountuid.11=
+tag.bountyrewarduid.11=
+tag.bountyplacedby.11=
+
+tag.bounty.12=Empty
+tag.bountyuid.12=
+tag.bountyrewarduid.12=
+tag.bountyplacedby.12=
+
+tag.bounty.13=Empty
+tag.bountyuid.13=
+tag.bountyrewarduid.13=
+tag.bountyplacedby.13=
+
+tag.bounty.14=Empty
+tag.bountyuid.14=
+tag.bountyrewarduid.14=
+tag.bountyplacedby.14=
+
+tag.bounty.15=Empty
+tag.bountyuid.15=
+tag.bountyrewarduid.15=
+tag.bountyplacedby.15=
+
+tag.bounty.16=Empty
+tag.bountyuid.16=
+tag.bountyrewarduid.16=
+tag.bountyplacedby.16=
+
+tag.bounty.17=Empty
+tag.bountyuid.17=
+tag.bountyrewarduid.17=
+tag.bountyplacedby.17=
+
+tag.bounty.18=Empty
+tag.bountyuid.18=
+tag.bountyrewarduid.18=
+tag.bountyplacedby.18=
+
+tag.bounty.19=Empty
+tag.bountyuid.19=
+tag.bountyrewarduid.19=
+tag.bountyplacedby.1=
+
+tag.bounty.20=Empty
+tag.bountyuid.20=
+tag.bountyrewarduid.20=
+tag.bountyplacedby.20=
+
+
+
+
+/////////
+//21-30//
+/////////
+
+
+
+tag.bounty.21=Empty
+tag.bountuid.21=
+tag.bountyrewarduid.21=
+tag.bountyplacedby.21=
+
+tag.bounty.22=Empty
+tag.bountyuid.22=
+tag.bountyrewarduid.22=
+tag.bountyplacedby.22=
+
+tag.bounty.23=Empty
+tag.bountyuid.23=
+tag.bountyrewarduid.23=
+tag.bountyplacedby.23=
+
+tag.bounty.24=Empty
+tag.bountyuid.24=
+tag.bountyrewarduid.24=
+tag.bountyplacedby.24=
+
+tag.bounty.25=Empty
+tag.bountyuid.25=
+tag.bountyrewarduid.25=
+tag.bountyplacedby.25=
+
+tag.bounty.26=Empty
+tag.bountyuid.26=
+tag.bountyrewarduid.26=
+tag.bountyplacedby.26=
+
+tag.bounty.27=Empty
+tag.bountyuid.27=
+tag.bountyrewarduid.27=
+tag.bountyplacedby.27=
+
+tag.bounty.28=Empty
+tag.bountyuid.28=
+tag.bountyrewarduid.28=
+tag.bountyplacedby.28=
+
+tag.bounty.29=Empty
+tag.bountyuid.29=
+tag.bountyrewarduid.29=
+tag.bountyplacedby.29=
+
+tag.bounty.30=Empty
+tag.bountyuid.30=
+tag.bountyrewarduid.30=
+tag.bountyplacedby.30=
+
+
+
+/////////
+//31-40//
+/////////
+
+
+
+tag.bounty.31=Empty
+tag.bountuid.31=
+tag.bountyrewarduid.31=
+tag.bountyplacedby.31=
+
+tag.bounty.32=Empty
+tag.bountyuid.32=
+tag.bountyrewarduid.32=
+tag.bountyplacedby.32=
+
+tag.bounty.33=Empty
+tag.bountyuid.33=
+tag.bountyrewarduid.33=
+tag.bountyplacedby.33=
+
+tag.bounty.34=Empty
+tag.bountyuid.34=
+tag.bountyrewarduid.34=
+tag.bountyplacedby.34=
+
+tag.bounty.35=Empty
+tag.bountyuid.35=
+tag.bountyrewarduid.35=
+tag.bountyplacedby.35=
+
+tag.bounty.36=Empty
+tag.bountyuid.36=
+tag.bountyrewarduid.36=
+tag.bountyplacedby.36=
+
+tag.bounty.37=Empty
+tag.bountyuid.37=
+tag.bountyrewarduid.37=
+tag.bountyplacedby.37=
+
+tag.bounty.38=Empty
+tag.bountyuid.38=
+tag.bountyrewarduid.38=
+tag.bountyplacedby.38=
+
+tag.bounty.39=Empty
+tag.bountyuid.39=
+tag.bountyrewarduid.39=
+tag.bountyplacedby.39=
+
+tag.bounty.40=Empty
+tag.bountyuid.40=
+tag.bountyrewarduid.40=
+tag.bountyplacedby.40=
+
+
+
+/////////
+//41-50//
+/////////
+
+
+
+tag.bounty.41=Empty
+tag.bountuid.41=
+tag.bountyrewarduid.41=
+tag.bountyplacedby.41=
+
+tag.bounty.42=Empty
+tag.bountyuid.42=
+tag.bountyrewarduid.42=
+tag.bountyplacedby.42=
+
+tag.bounty.43=Empty
+tag.bountyuid.43=
+tag.bountyrewarduid.43=
+tag.bountyplacedby.43=
+
+tag.bounty.44=Empty
+tag.bountyuid.44=
+tag.bountyrewarduid.44=
+tag.bountyplacedby.44=
+
+tag.bounty.45=Empty
+tag.bountyuid.45=
+tag.bountyrewarduid.45=
+tag.bountyplacedby.45=
+
+tag.bounty.46=Empty
+tag.bountyuid.46=
+tag.bountyrewarduid.46=
+tag.bountyplacedby.46=
+
+tag.bounty.47=Empty
+tag.bountyuid.47=
+tag.bountyrewarduid.47=
+tag.bountyplacedby.47=
+
+tag.bounty.48=Empty
+tag.bountyuid.48=
+tag.bountyrewarduid.48=
+tag.bountyplacedby.48=
+
+tag.bounty.49=Empty
+tag.bountyuid.49=
+tag.bountyrewarduid.49=
+tag.bountyplacedby.49=
+
+tag.bounty.50=Empty
+tag.bountyuid.50=
+tag.bountyrewarduid.50=
+tag.bountyplacedby.50=
+
+
+
+on=@targon_item
+
+if !(<eval <src.targ.baseid>> == i_bounty_certificate )
+src.sysmessage=You must target a Death Certificate...
+return 1
+endif
+
+if (<src.memoryfindtype.memory_guild>)&&(<src.targ.link.memoryfindtype.memory_guild>)&&(<src.targ.link.memoryfindtype.memory_guild.link.uid> == <src.memoryfindtype.memory_guild.link.uid> )
+src.sysmessage=You cannot claim the bounty of fellow guildmembers...
+return 1
+endif
+
+//if (strmatch(<src.targ.link.account.name>,<src.account.name>))
+//src.sysmessage=You cannot claim your own bounty...
+//return 1
+//endif
+
+if (strmatch(<src.targ.link.uid>,<src.uid>))
+src.sysmessage=You cannot claim your own bounty...
+return 1
+endif
+
+if (<src.targ.link.uid> == <tag.bountyuid.<eval <src.tag.bnum>>>)
+var.claimprizeuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+src.bounce <eval <var.claimprizeuid>>
+IF (<SRC.ISBROTHERHOOD>)
+
+IF (<EVAL <SRC.TAG0.REP.ALIGNMENT>> < 7000)
+SERV.LOG :FACTION POINTS: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> has <EVAL <SRC.TAG.REP.ALIGNMENT>> <SRC.TAG.ALIGNMENT> points.
+SRC.TAG0.REP.ALIGNMENT = <EVAL <SRC.TAG0.REP.ALIGNMENT> + 200>
+SERV.LOG :FACTION POINTS: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> now have <EVAL <SRC.TAG.REP.ALIGNMENT>> <SRC.TAG.ALIGNMENT> points.
+SRC.SYSMESSAGE You have gained 200 Faction Points for your efforts.
+Else
+SERV.LOG :FACTION POINTS: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> has <EVAL <SRC.TAG.REP.ALIGNMENT>> <SRC.TAG.ALIGNMENT> points.
+SRC.TAG0.REP.ALIGNMENT = <EVAL <SRC.TAG0.REP.ALIGNMENT> + 40>
+SERV.LOG :FACTION POINTS: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> now have <EVAL <SRC.TAG.REP.ALIGNMENT>> <SRC.TAG.ALIGNMENT> points.
+SRC.SYSMESSAGE You have gained 40 Faction Points for your efforts.
+ENDIF
+
+ENDIF
+SRC.TAG0.BOUNTYCOMPLETED= <EVAL <SRC.TAG0.BOUNTYCOMPLETED> +1>
+serv.b <src.name> has completed a bounty for <tag.bounty.<eval <src.tag.bnum>>>.
+try tag.bounty.<eval <src.tag.bnum>>=Empty
+var.claimprizeuid=
+src.serv.allclients sfx snd_spell_cunning
+src.targ.remove
+return 1
+else
+src.sysmessage=That is not the Death Certificate for <tag.bounty.<eval <src.tag.bnum>>>...
+return 1
+endif
+
+
+
+[itemdef i_bounty_placement]
+id=i_memory
+type=t_eq_script
+name=Bounty Placement Memory
+
+
+on=@create
+attr=attr_decay
+timer=20
+tag.bountyboarduid=<eval bountyboarduid>
+tag.itemtoreward=None
+
+
+on=@equip
+src.events +e_bounty_hit_cancel
+return 0
+
+on=@unequip
+src.events -e_bounty_hit_cancel
+return 0
+
+
+on=@timer
+remove
+return 1
+
+
+on=@targon_item
+if !(<eval <src.targ.type>> == t_container )
+src.sysmessage=You must place the reward into a container before you can do this...
+remove
+return 1
+endif
+
+if (<src.targ.rescount> == 0 )
+src.sysmessage=There is nothing in that container...
+remove
+return 1
+endif
+
+if (!<src.targ.rescount> == 1 )
+src.sysmessage=You must have only 1 single item, or 1 pile of stackables in this container for a valid reward...
+remove
+return 1
+endif
+
+if (<src.targ.rescount> > 1 )
+src.sysmessage=You must have only 1 single item, or 1 pile of stackables in this container for a valid reward...
+remove
+return 1
+endif
+
+if (<src.targ.cont.uid> == <src.findlayer(21).uid>) && !(<SRC.RESTEST m_brotherhood_cooldown>)
+link=<eval bountyboarduid>
+tag.itemtoreward=<src.targ.uid>
+src.act=<src.targ.uid>
+target Now select the player you wish to bounty...
+return 1
+else
+src.sysmessage=You must target an item that is in your backpack...
+remove
+return 1
+endif
+
+
+on=@targon_char
+if (<src.targ.isgm> == 1 )
+src.sysmessage=You cannot place a bounty on a staff member...
+remove
+return 1
+endif
+
+if (<eval <src.targ.tag.bountyban>> == 1 )
+src.sysmessage=<src.targ.name> has been banned from participating in the bounty system...
+remove
+return 1
+endif
+
+//Add Extra 'Default' Comments Here. [<src> is The One Making The Bounty] [<src.targ> is The One Getting Bountied]
+dorand 10
+tag.comment=<src.targ.name> was bountied at <src.targ.region.name> by <src.name>. Noone knows the reason for the bounty, but we will know soon enough once we are informed by <src.name>. <src.targ.name> might be armed and dangerous, so if you see this person, kill <src.targ.sex him/her>, get the Death Certificate, bring it back and claim your reward.
+tag.comment=There is a bounty for <src.targ.name>, the bounty was started in <src.targ.region.name> by <src.name>, but it is unclear why <src.name> wants <src.targ.sex him/her> dead, so either keep a safe distance from <src.targ.name>, or kill <src.targ.sex him/her> on sight, Good Luck!
+tag.comment=Be on the lookout for this <src.targ.sex man/woman>, there will be a reward if you can bring back the Death Certificate of <src.targ.name>, which prooves that <src.targ.name> was killed, but do not take <src.targ.name> lightly, as <src.targ.sex he/she> is known to have a few tricks up <src.targ.sex his/her> sleeve...
+tag.comment=KILL <src.targ.sex HIM/HER> ON SIGHT!!
+tag.comment=If you see this <src.targ.sex man/woman> leave the area immediately, this person was bountied for unknown reasons by <src.name>, but that is still grounds for defensive actions. If you see this <src.targ.sex man/woman>, do not hesistate to kill <src.targ.name>, for the Death Certificate of this <src.targ.sex man/woman> will reward you greatly...
+tag.comment=There is no current information on the bounty of this <src.targ.sex man/woman>, if you see this <src.targ.sex man/woman> report to the nearest guard or bounty hunter...
+tag.comment=This <src.targ.sex man/woman> was spotted at <src.targ.region.name> causing trouble among its residents, there is a reward for the Death Certificate of this <src.targ.sex man/woman>, so if you can complete this bounty, a great burden with be lifted off the shoulders of the lands.
+tag.comment=A <src.sex man/woman> named <src.name> has place this bounty on <src.targ.name> for personal reasons, so the local authorities do not endorse this bounty. But as always, anyone that is bountied must be considered a risk to the safety of our citizens, which means you must do whatever you think is neccesary when you see this <src.targ.sex man/woman>.
+tag.comment=There is a reward if you can bring back the Death Certificate of this <src.targ.sex man/woman>, ask <src.name> for details as <src.sex he/she> is one who posted the bounty for this <src.targ.sex man/woman>. Remember, everyone that is bountied must always be considered armed and dangerous.
+tag.comment=Attention! If you see this <src.targ.sex man/woman>, run! There is a great chance that this <src.targ.sex man/woman> will kill you on sight, but if you think you can take down this nemesis, then by all means do it. There is a great reward for the Death Certificate of <src.targ.name>, please rid the lands of this ruthless tyrant!
+tag.comment=<src.name> has issued a bounty on <src.targ.name> for the sole purpose of having him hunted, therfore the authorities do not endorse this bounty. <src.name> has posted a reward for the Death Certificate of this <src.targ.sex man/woman>, like always if you see this <src.targ.sex man/woman>, proceed with caution.
+enddo
+
+if (strmatch(<tag.itemtoreward>,None))
+src.sysmessage=You must target the reward you wish to give before targeting the character...
+remove
+return 1
+endif
+
+if (<src.targ.uid> == <src.uid>)
+src.sysmessage=You cannot place a bounty on yourself...
+remove
+return 1
+endif
+
+if (<src.targ.npc>)
+src.sysmessage=You cannot place a bounty on an NPC...
+remove
+return 1
+endif
+
+if (<link.bountyisfull> == 1 )
+src.sysmessage=Sorry, the bounty board is full at the moment, try again when some are removed/completed...
+remove
+return 1
+endif
+
+
+
+if (strmatch(<link.tag.bounty.1>,Empty ))
+link.tag.bounty.1=<src.targ.name>
+link.tag.bountyuid.1=<src.targ.uid>
+link.tag.bountyrewarduid.1=<tag.itemtoreward>
+link.tag.bountyplacedby.1=<src.name>
+link.tag.itemtorewardname.1=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.1=<src.uid>
+link.tag.bountycomment.1=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+
+if (strmatch(<link.tag.bounty.2>,Empty ))
+link.tag.bounty.2=<src.targ.name>
+link.tag.bountyuid.2=<src.targ.uid>
+link.tag.bountyrewarduid.2=<tag.itemtoreward>
+link.tag.bountyplacedby.2=<src.name>
+link.tag.itemtorewardname.2=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.2=<src.uid>
+link.tag.bountycomment.2=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+
+if (strmatch(<link.tag.bounty.3>,Empty ))
+link.tag.bounty.3=<src.targ.name>
+link.tag.bountyuid.3=<src.targ.uid>
+link.tag.bountyrewarduid.3=<tag.itemtoreward>
+link.tag.bountyplacedby.3=<src.name>
+link.tag.itemtorewardname.3=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.3=<src.uid>
+link.tag.bountycomment.3=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+
+if (strmatch(<link.tag.bounty.4>,Empty ))
+link.tag.bounty.4=<src.targ.name>
+link.tag.bountyuid.4=<src.targ.uid>
+link.tag.bountyrewarduid.4=<tag.itemtoreward>
+link.tag.bountyplacedby.4=<src.name>
+link.tag.itemtorewardname.4=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.4=<src.uid>
+link.tag.bountycomment.4=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+
+if (strmatch(<link.tag.bounty.5>,Empty ))
+link.tag.bounty.5=<src.targ.name>
+link.tag.bountyuid.5=<src.targ.uid>
+link.tag.bountyrewarduid.5=<tag.itemtoreward>
+link.tag.bountyplacedby.5=<src.name>
+link.tag.itemtorewardname.5=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.5=<src.uid>
+link.tag.bountycomment.5=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+
+if (strmatch(<link.tag.bounty.6>,Empty ))
+link.tag.bounty.6=<src.targ.name>
+link.tag.bountyuid.6=<src.targ.uid>
+link.tag.bountyrewarduid.6=<tag.itemtoreward>
+link.tag.bountyplacedby.6=<src.name>
+link.tag.itemtorewardname.6=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.6=<src.uid>
+link.tag.bountycomment.6=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+
+if (strmatch(<link.tag.bounty.7>,Empty ))
+link.tag.bounty.7=<src.targ.name>
+link.tag.bountyuid.7=<src.targ.uid>
+link.tag.bountyrewarduid.7=<tag.itemtoreward>
+link.tag.bountyplacedby.7=<src.name>
+link.tag.itemtorewardname.7=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.7=<src.uid>
+link.tag.bountycomment.7=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+
+if (strmatch(<link.tag.bounty.8>,Empty ))
+link.tag.bounty.8=<src.targ.name>
+link.tag.bountyuid.8=<src.targ.uid>
+link.tag.bountyrewarduid.8=<tag.itemtoreward>
+link.tag.bountyplacedby.8=<src.name>
+link.tag.itemtorewardname.8=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.8=<src.uid>
+link.tag.bountycomment.8=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+
+if (strmatch(<link.tag.bounty.9>,Empty ))
+link.tag.bounty.9=<src.targ.name>
+link.tag.bountyuid.9=<src.targ.uid>
+link.tag.bountyrewarduid.9=<tag.itemtoreward>
+link.tag.bountyplacedby.9=<src.name>
+link.tag.itemtorewardname.9=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.9=<src.uid>
+link.tag.bountycomment.9=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+
+if (strmatch(<link.tag.bounty.10>,Empty ))
+link.tag.bounty.10=<src.targ.name>
+link.tag.bountyuid.10=<src.targ.uid>
+link.tag.bountyrewarduid.10=<tag.itemtoreward>
+link.tag.bountyplacedby.10=<src.name>
+link.tag.itemtorewardname.10=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.10=<src.uid>
+link.tag.bountycomment.10=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+/////////
+//11-20//
+/////////
+
+if (strmatch(<link.tag.bounty.11>,Empty ))
+link.tag.bounty.11=<src.targ.name>
+link.tag.bountyuid.11=<src.targ.uid>
+link.tag.bountyrewarduid.11=<tag.itemtoreward>
+link.tag.bountyplacedby.11=<src.name>
+link.tag.itemtorewardname.11=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.11=<src.uid>
+link.tag.bountycomment.11=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+
+if (strmatch(<link.tag.bounty.12>,Empty ))
+link.tag.bounty.12=<src.targ.name>
+link.tag.bountyuid.12=<src.targ.uid>
+link.tag.bountyrewarduid.12=<tag.itemtoreward>
+link.tag.bountyplacedby.12=<src.name>
+link.tag.itemtorewardname.12=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.12=<src.uid>
+link.tag.bountycomment.12=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+
+if (strmatch(<link.tag.bounty.13>,Empty ))
+link.tag.bounty.13=<src.targ.name>
+link.tag.bountyuid.13=<src.targ.uid>
+link.tag.bountyrewarduid.13=<tag.itemtoreward>
+link.tag.bountyplacedby.13=<src.name>
+link.tag.itemtorewardname.13=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.13=<src.uid>
+link.tag.bountycomment.13=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+
+if (strmatch(<link.tag.bounty.14>,Empty ))
+link.tag.bounty.14=<src.targ.name>
+link.tag.bountyuid.14=<src.targ.uid>
+link.tag.bountyrewarduid.14=<tag.itemtoreward>
+link.tag.bountyplacedby.14=<src.name>
+link.tag.itemtorewardname.14=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.14=<src.uid>
+link.tag.bountycomment.14=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+
+if (strmatch(<link.tag.bounty.15>,Empty ))
+link.tag.bounty.15=<src.targ.name>
+link.tag.bountyuid.15=<src.targ.uid>
+link.tag.bountyrewarduid.15=<tag.itemtoreward>
+link.tag.bountyplacedby.15=<src.name>
+link.tag.itemtorewardname.15=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.15=<src.uid>
+link.tag.bountycomment.15=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+
+if (strmatch(<link.tag.bounty.16>,Empty ))
+link.tag.bounty.16=<src.targ.name>
+link.tag.bountyuid.16=<src.targ.uid>
+link.tag.bountyrewarduid.16=<tag.itemtoreward>
+link.tag.bountyplacedby.16=<src.name>
+link.tag.itemtorewardname.16=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.16=<src.uid>
+link.tag.bountycomment.16=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+
+if (strmatch(<link.tag.bounty.17>,Empty ))
+link.tag.bounty.17=<src.targ.name>
+link.tag.bountyuid.17=<src.targ.uid>
+link.tag.bountyrewarduid.17=<tag.itemtoreward>
+link.tag.bountyplacedby.17=<src.name>
+link.tag.itemtorewardname.17=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.17=<src.uid>
+link.tag.bountycomment.17=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+
+if (strmatch(<link.tag.bounty.18>,Empty ))
+link.tag.bounty.18=<src.targ.name>
+link.tag.bountyuid.18=<src.targ.uid>
+link.tag.bountyrewarduid.18=<tag.itemtoreward>
+link.tag.bountyplacedby.18=<src.name>
+link.tag.itemtorewardname.18=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.18=<src.uid>
+link.tag.bountycomment.18=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+
+if (strmatch(<link.tag.bounty.19>,Empty ))
+link.tag.bounty.19=<src.targ.name>
+link.tag.bountyuid.19=<src.targ.uid>
+link.tag.bountyrewarduid.19=<tag.itemtoreward>
+link.tag.bountyplacedby.19=<src.name>
+link.tag.itemtorewardname.19=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.19=<src.uid>
+link.tag.bountycomment.19=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+
+if (strmatch(<link.tag.bounty.20>,Empty ))
+link.tag.bounty.20=<src.targ.name>
+link.tag.bountyuid.20=<src.targ.uid>
+link.tag.bountyrewarduid.20=<tag.itemtoreward>
+link.tag.bountyplacedby.20=<src.name>
+link.tag.itemtorewardname.20=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.20=<src.uid>
+link.tag.bountycomment.20=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+
+
+/////////
+//21-30//
+/////////
+
+
+
+if (strmatch(<link.tag.bounty.21>,Empty ))
+link.tag.bounty.21=<src.targ.name>
+link.tag.bountyuid.21=<src.targ.uid>
+link.tag.bountyrewarduid.21=<tag.itemtoreward>
+link.tag.bountyplacedby.21=<src.name>
+link.tag.itemtorewardname.21=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.21=<src.uid>
+link.tag.bountycomment.21=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+
+if (strmatch(<link.tag.bounty.22>,Empty ))
+link.tag.bounty.22=<src.targ.name>
+link.tag.bountyuid.22=<src.targ.uid>
+link.tag.bountyrewarduid.22=<tag.itemtoreward>
+link.tag.bountyplacedby.22=<src.name>
+link.tag.itemtorewardname.22=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.22=<src.uid>
+link.tag.bountycomment.22=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+
+if (strmatch(<link.tag.bounty.23>,Empty ))
+link.tag.bounty.23=<src.targ.name>
+link.tag.bountyuid.23=<src.targ.uid>
+link.tag.bountyrewarduid.23=<tag.itemtoreward>
+link.tag.bountyplacedby.23=<src.name>
+link.tag.itemtorewardname.23=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.23=<src.uid>
+link.tag.bountycomment.23=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+
+if (strmatch(<link.tag.bounty.24>,Empty ))
+link.tag.bounty.24=<src.targ.name>
+link.tag.bountyuid.24=<src.targ.uid>
+link.tag.bountyrewarduid.24=<tag.itemtoreward>
+link.tag.bountyplacedby.24=<src.name>
+link.tag.itemtorewardname.24=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.24=<src.uid>
+link.tag.bountycomment.24=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+
+if (strmatch(<link.tag.bounty.25>,Empty ))
+link.tag.bounty.25=<src.targ.name>
+link.tag.bountyuid.25=<src.targ.uid>
+link.tag.bountyrewarduid.25=<tag.itemtoreward>
+link.tag.bountyplacedby.25=<src.name>
+link.tag.itemtorewardname.25=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.25=<src.uid>
+link.tag.bountycomment.25=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+
+if (strmatch(<link.tag.bounty.26>,Empty ))
+link.tag.bounty.26=<src.targ.name>
+link.tag.bountyuid.26=<src.targ.uid>
+link.tag.bountyrewarduid.26=<tag.itemtoreward>
+link.tag.bountyplacedby.26=<src.name>
+link.tag.itemtorewardname.26=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.26=<src.uid>
+link.tag.bountycomment.26=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+
+if (strmatch(<link.tag.bounty.27>,Empty ))
+link.tag.bounty.27=<src.targ.name>
+link.tag.bountyuid.27=<src.targ.uid>
+link.tag.bountyrewarduid.27=<tag.itemtoreward>
+link.tag.bountyplacedby.27=<src.name>
+link.tag.itemtorewardname.27=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.27=<src.uid>
+link.tag.bountycomment.27=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+
+if (strmatch(<link.tag.bounty.28>,Empty ))
+link.tag.bounty.28=<src.targ.name>
+link.tag.bountyuid.28=<src.targ.uid>
+link.tag.bountyrewarduid.28=<tag.itemtoreward>
+link.tag.bountyplacedby.28=<src.name>
+link.tag.itemtorewardname.28=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.28=<src.uid>
+link.tag.bountycomment.28=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+
+if (strmatch(<link.tag.bounty.29>,Empty ))
+link.tag.bounty.29=<src.targ.name>
+link.tag.bountyuid.29=<src.targ.uid>
+link.tag.bountyrewarduid.29=<tag.itemtoreward>
+link.tag.bountyplacedby.29=<src.name>
+link.tag.itemtorewardname.29=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.29=<src.uid>
+link.tag.bountycomment.29=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+
+if (strmatch(<link.tag.bounty.30>,Empty ))
+link.tag.bounty.30=<src.targ.name>
+link.tag.bountyuid.30=<src.targ.uid>
+link.tag.bountyrewarduid.30=<tag.itemtoreward>
+link.tag.bountyplacedby.30=<src.name>
+link.tag.itemtorewardname.30=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.30=<src.uid>
+link.tag.bountycomment.30=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+/////////
+//31-40//
+/////////
+
+if (strmatch(<link.tag.bounty.31>,Empty ))
+link.tag.bounty.31=<src.targ.name>
+link.tag.bountyuid.31=<src.targ.uid>
+link.tag.bountyrewarduid.31=<tag.itemtoreward>
+link.tag.bountyplacedby.31=<src.name>
+link.tag.itemtorewardname.31=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.31=<src.uid>
+link.tag.bountycomment.31=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+
+if (strmatch(<link.tag.bounty.32>,Empty ))
+link.tag.bounty.32=<src.targ.name>
+link.tag.bountyuid.32=<src.targ.uid>
+link.tag.bountyrewarduid.32=<tag.itemtoreward>
+link.tag.bountyplacedby.32=<src.name>
+link.tag.itemtorewardname.32=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.32=<src.uid>
+link.tag.bountycomment.32=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+
+if (strmatch(<link.tag.bounty.33>,Empty ))
+link.tag.bounty.33=<src.targ.name>
+link.tag.bountyuid.33=<src.targ.uid>
+link.tag.bountyrewarduid.33=<tag.itemtoreward>
+link.tag.bountyplacedby.33=<src.name>
+link.tag.itemtorewardname.33=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.33=<src.uid>
+link.tag.bountycomment.33=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+
+if (strmatch(<link.tag.bounty.34>,Empty ))
+link.tag.bounty.34=<src.targ.name>
+link.tag.bountyuid.34=<src.targ.uid>
+link.tag.bountyrewarduid.34=<tag.itemtoreward>
+link.tag.bountyplacedby.34=<src.name>
+link.tag.itemtorewardname.34=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.34=<src.uid>
+link.tag.bountycomment.34=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+
+if (strmatch(<link.tag.bounty.35>,Empty ))
+link.tag.bounty.35=<src.targ.name>
+link.tag.bountyuid.35=<src.targ.uid>
+link.tag.bountyrewarduid.35=<tag.itemtoreward>
+link.tag.bountyplacedby.35=<src.name>
+link.tag.itemtorewardname.35=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.35=<src.uid>
+link.tag.bountycomment.35=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+
+if (strmatch(<link.tag.bounty.36>,Empty ))
+link.tag.bounty.36=<src.targ.name>
+link.tag.bountyuid.36=<src.targ.uid>
+link.tag.bountyrewarduid.36=<tag.itemtoreward>
+link.tag.bountyplacedby.36=<src.name>
+link.tag.itemtorewardname.36=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.36=<src.uid>
+link.tag.bountycomment.36=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+
+if (strmatch(<link.tag.bounty.37>,Empty ))
+link.tag.bounty.37=<src.targ.name>
+link.tag.bountyuid.37=<src.targ.uid>
+link.tag.bountyrewarduid.37=<tag.itemtoreward>
+link.tag.bountyplacedby.37=<src.name>
+link.tag.itemtorewardname.37=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.37=<src.uid>
+link.tag.bountycomment.37=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+
+if (strmatch(<link.tag.bounty.38>,Empty ))
+link.tag.bounty.38=<src.targ.name>
+link.tag.bountyuid.38=<src.targ.uid>
+link.tag.bountyrewarduid.38=<tag.itemtoreward>
+link.tag.bountyplacedby.38=<src.name>
+link.tag.itemtorewardname.38=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.38=<src.uid>
+link.tag.bountycomment.38=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+
+if (strmatch(<link.tag.bounty.39>,Empty ))
+link.tag.bounty.39=<src.targ.name>
+link.tag.bountyuid.39=<src.targ.uid>
+link.tag.bountyrewarduid.39=<tag.itemtoreward>
+link.tag.bountyplacedby.39=<src.name>
+link.tag.itemtorewardname.39=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.39=<src.uid>
+link.tag.bountycomment.39=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+
+if (strmatch(<link.tag.bounty.40>,Empty ))
+link.tag.bounty.40=<src.targ.name>
+link.tag.bountyuid.40=<src.targ.uid>
+link.tag.bountyrewarduid.40=<tag.itemtoreward>
+link.tag.bountyplacedby.40=<src.name>
+link.tag.itemtorewardname.40=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.40=<src.uid>
+link.tag.bountycomment.40=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+///////////
+//41-50///
+/////////
+
+if (strmatch(<link.tag.bounty.41>,Empty ))
+link.tag.bounty.41=<src.targ.name>
+link.tag.bountyuid.41=<src.targ.uid>
+link.tag.bountyrewarduid.41=<tag.itemtoreward>
+link.tag.bountyplacedby.41=<src.name>
+link.tag.itemtorewardname.41=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.41=<src.uid>
+link.tag.bountycomment.41=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+
+if (strmatch(<link.tag.bounty.42>,Empty ))
+link.tag.bounty.42=<src.targ.name>
+link.tag.bountyuid.42=<src.targ.uid>
+link.tag.bountyrewarduid.42=<tag.itemtoreward>
+link.tag.bountyplacedby.42=<src.name>
+link.tag.itemtorewardname.42=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.42=<src.uid>
+link.tag.bountycomment.42=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+
+if (strmatch(<link.tag.bounty.43>,Empty ))
+link.tag.bounty.43=<src.targ.name>
+link.tag.bountyuid.43=<src.targ.uid>
+link.tag.bountyrewarduid.43=<tag.itemtoreward>
+link.tag.bountyplacedby.43=<src.name>
+link.tag.itemtorewardname.43=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.43=<src.uid>
+link.tag.bountycomment.43=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+
+if (strmatch(<link.tag.bounty.44>,Empty ))
+link.tag.bounty.44=<src.targ.name>
+link.tag.bountyuid.44=<src.targ.uid>
+link.tag.bountyrewarduid.44=<tag.itemtoreward>
+link.tag.bountyplacedby.44=<src.name>
+link.tag.itemtorewardname.44=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.44=<src.uid>
+link.tag.bountycomment.44=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+
+if (strmatch(<link.tag.bounty.45>,Empty ))
+link.tag.bounty.45=<src.targ.name>
+link.tag.bountyuid.45=<src.targ.uid>
+link.tag.bountyrewarduid.45=<tag.itemtoreward>
+link.tag.bountyplacedby.45=<src.name>
+link.tag.itemtorewardname.45=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.45=<src.uid>
+link.tag.bountycomment.45=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+
+if (strmatch(<link.tag.bounty.46>,Empty ))
+link.tag.bounty.46=<src.targ.name>
+link.tag.bountyuid.46=<src.targ.uid>
+link.tag.bountyrewarduid.46=<tag.itemtoreward>
+link.tag.bountyplacedby.46=<src.name>
+link.tag.itemtorewardname.46=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.46=<src.uid>
+link.tag.bountycomment.46=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+
+if (strmatch(<link.tag.bounty.47>,Empty ))
+link.tag.bounty.47=<src.targ.name>
+link.tag.bountyuid.47=<src.targ.uid>
+link.tag.bountyrewarduid.47=<tag.itemtoreward>
+link.tag.bountyplacedby.47=<src.name>
+link.tag.itemtorewardname.47=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.47=<src.uid>
+link.tag.bountycomment.47=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+
+if (strmatch(<link.tag.bounty.48>,Empty ))
+link.tag.bounty.48=<src.targ.name>
+link.tag.bountyuid.48=<src.targ.uid>
+link.tag.bountyrewarduid.48=<tag.itemtoreward>
+link.tag.bountyplacedby.48=<src.name>
+link.tag.itemtorewardname.48=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.48=<src.uid>
+link.tag.bountycomment.48=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+
+if (strmatch(<link.tag.bounty.49>,Empty ))
+link.tag.bounty.49=<src.targ.name>
+link.tag.bountyuid.49=<src.targ.uid>
+link.tag.bountyrewarduid.49=<tag.itemtoreward>
+link.tag.bountyplacedby.49=<src.name>
+link.tag.itemtorewardname.49=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.49=<src.uid>
+link.tag.bountycomment.49=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+
+if (strmatch(<link.tag.bounty.50>,Empty ))
+link.tag.bounty.50=<src.targ.name>
+link.tag.bountyuid.50=<src.targ.uid>
+link.tag.bountyrewarduid.50=<tag.itemtoreward>
+link.tag.bountyplacedby.50=<src.name>
+link.tag.itemtorewardname.50=<eval <src.act.findcont(0).amount>> <src.act.findcont(0).name>
+link.tag.bountyplacedbyuid.50=<src.uid>
+link.tag.bountycomment.50=<tag.comment>
+link=<tag.itemtoreward>
+link.cont=<eval bountycontaineruid>
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=1800
+src.sysmessage=You have just placed a bounty on <src.targ.name>, check the board to update...
+remove
+return 1
+endif
+
+
+[function bountyisfull]
+if !(strmatch(<tag.bounty.1>,Empty ))&&!(strmatch(<tag.bounty.2>,Empty ))&&!(strmatch(<tag.bounty.3>,Empty ))&&!(strmatch(<tag.bounty.4>,Empty ))&&!(strmatch(<tag.bounty.5>,Empty ))&&!(strmatch(<tag.bounty.6>,Empty ))&&!(strmatch(<tag.bounty.7>,Empty ))&&!(strmatch(<tag.bounty.8>,Empty ))&&!(strmatch(<tag.bounty.9>,Empty ))&&!(strmatch(<tag.bounty.10>,Empty ))&&!(strmatch(<tag.bounty.11>,Empty ))&&!(strmatch(<tag.bounty.12>,Empty ))&&!(strmatch(<tag.bounty.13>,Empty ))&&!(strmatch(<tag.bounty.14>,Empty ))&&!(strmatch(<tag.bounty.15>,Empty ))&&!(strmatch(<tag.bounty.16>,Empty ))&&!(strmatch(<tag.bounty.17>,Empty ))&&!(strmatch(<tag.bounty.18>,Empty ))&&!(strmatch(<tag.bounty.19>,Empty ))&&!(strmatch(<tag.bounty.20>,Empty ))&&!(strmatch(<tag.bounty.21>,Empty ))&&!(strmatch(<tag.bounty.22>,Empty ))&&!(strmatch(<tag.bounty.23>,Empty ))&&!(strmatch(<tag.bounty.24>,Empty ))&&!(strmatch(<tag.bounty.25>,Empty ))&&!(strmatch(<tag.bounty.26>,Empty ))&&!(strmatch(<tag.bounty.27>,Empty ))&&!(strmatch(<tag.bounty.28>,Empty ))&&!(strmatch(<tag.bounty.29>,Empty ))&&!(strmatch(<tag.bounty.30>,Empty ))&&!(strmatch(<tag.bounty.31>,Empty ))&&!(strmatch(<tag.bounty.32>,Empty ))&&!(strmatch(<tag.bounty.33>,Empty ))&&!(strmatch(<tag.bounty.34>,Empty ))&&!(strmatch(<tag.bounty.35>,Empty ))&&!(strmatch(<tag.bounty.36>,Empty ))&&!(strmatch(<tag.bounty.37>,Empty ))&&!(strmatch(<tag.bounty.38>,Empty ))&&!(strmatch(<tag.bounty.39>,Empty ))&&!(strmatch(<tag.bounty.40>,Empty ))&&!(strmatch(<tag.bounty.41>,Empty ))&&!(strmatch(<tag.bounty.42>,Empty ))&&!(strmatch(<tag.bounty.43>,Empty ))&&!(strmatch(<tag.bounty.44>,Empty ))&&!(strmatch(<tag.bounty.45>,Empty ))&&!(strmatch(<tag.bounty.46>,Empty ))&&!(strmatch(<tag.bounty.47>,Empty ))&&!(strmatch(<tag.bounty.48>,Empty ))&&!(strmatch(<tag.bounty.49>,Empty ))&&!(strmatch(<tag.bounty.50>,Empty ))
+return 1
+else
+return 0
+endif
+
+
+///////////////////////////////
+//DIALOGS - DIALOGS - DIALOGS//
+///////////////////////////////
+
+
+
+[DIALOG d_bounty_system]
+0, 0
+PAGE 0
+resizepic 63 10 9200 390 59
+resizepic 63 380 9200 390 59
+resizepic 63 36 3600 390 370
+resizepic 85 60 2600 130 130
+resizepic 225 57 2520 210 220
+//resizepic 87 284 5054 340 100
+text 146 15 1153 0
+text 272 65 32 1
+text 252 90 1101 2
+text 252 108 1101 3
+text 252 126 31 4
+text 252 144 270 5
+text 283 162 102 6
+text 270 246 95 7
+gumppic 128 102 <eval 000008e2>
+tilepic 289 189 <eval <src.uid.<var.itemdisplayuid>.findcont(0).dispiddec>>
+text 92 194 455 8
+button 70 405 <eval 00000fc5> <eval 00000fc4> 1 0 1
+text 103 412 301 9
+button 271 410 <eval 00000fb4> <eval 00000fb5> 1 0 2
+text 304 412 0543 10
+htmlgump 105 284 300 100 11 1 1
+text 92 210 0641 12 //PvP Kills
+text 92 225 0641 13 //PvP Deaths
+text 105 265 685 14 //Comment
+text 92 240 0581 15 //Online?
+
+[DIALOG d_bounty_system TEXT]
+Bounty From <tag.bountyplacedby.<eval <src.tag.bnum>>>
+- <src.uid.<var.bountyuid>.name> -
+Karma: <src.uid.<var.bountyuid>.karma>
+Fame: <src.uid.<var.bountyuid>.fame>
+Murders: <src.uid.<var.bountyuid>.kills>
+Total Rating: <eval <src.uid.<var.bountyuid>.tag.totalrating>>
+- Reward -
+<tag.itemtorewardname.<eval <src.tag.bnum>>>
+Skill: <src.uid.<var.bountyuid>.tag.skilltitle> 
+Claim Bounty
+Remove Bounty
+<tag.bountycomment.<eval <src.tag.bnum>>>
+PvP Kills: <eval <src.uid.<var.bountyuid>.tag.ratingpvpk>>
+PvP Deaths: <eval <src.uid.<var.bountyuid>.tag.ratingpvpd>>
+Comment:
+Online: <src.uid.<var.bountyuid>.tag.isonline>
+
+[DIALOG d_bounty_system BUTTON]
+on=0
+if (<tag.bountyplacedbyuid.<eval <src.tag.bnum>>> == <src.uid> )||(<src.isgm> == 1 )
+menu m_change_comment
+return 1
+else
+dialog d_bounty_system_start_1
+return 1
+endif
+
+
+on=1
+Target Target the Death Certificate of <tag.bounty.<eval <src.tag.bnum>>> to claim the reward...
+return 1
+
+
+on=2
+if (<tag.bountyplacedbyuid.<eval <src.tag.bnum>>> == <src.uid> )||(<src.isgm> == 1 )
+var.removedprizeuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+src.bounce <eval <var.removedprizeuid>>
+var.oldp=<src.p>
+src.p=<p>
+try tag.bounty.<eval <src.tag.bnum>>=Empty
+src.p=<var.oldp>
+var.oldp=
+src.sysmessage=You have removed the bounty...
+var.removedprizeuid=
+return 1
+else
+src.sysmessage=You cannot remove a bounty you did not create...
+return 1
+endif
+
+
+[menu m_change_comment]
+Would you like to update the comment for this bounty?
+
+on=0 Yes
+dialog d_comment_change
+return 1
+
+on=0 No
+dialog d_bounty_system_start_1
+return 1
+
+
+//////////////////////////////////
+//BOUNTY MENU START 1           //
+//////////////////////////////////
+
+
+[DIALOG d_bounty_system_start_1]
+0, 0
+PAGE 0
+resizepic 36 36 3600 410 360
+resizepic 50 52 3500 380 330
+button 75 72 <eval 00000fc0> <eval 00000fc1> 1 0 1
+button 75 93 <eval 00000fc0> <eval 00000fc1> 1 0 2
+button 75 117 <eval 00000fc0> <eval 00000fc1> 1 0 3
+button 75 138 <eval 00000fc0> <eval 00000fc1> 1 0 4
+button 75 162 <eval 00000fc0> <eval 00000fc1> 1 0 5
+button 75 183 <eval 00000fc0> <eval 00000fc1> 1 0 6
+button 75 207 <eval 00000fc0> <eval 00000fc1> 1 0 7
+button 75 228 <eval 00000fc0> <eval 00000fc1> 1 0 8
+button 75 252 <eval 00000fc0> <eval 00000fc1> 1 0 9
+button 75 273 <eval 00000fc0> <eval 00000fc1> 1 0 10
+button 75 297 <eval 00000fc0> <eval 00000fc1> 1 0 11
+button 75 318 <eval 00000fc0> <eval 00000fc1> 1 0 12
+button 75 342 <eval 00000fc0> <eval 00000fc1> 1 0 13
+button 237 72 <eval 00000fc0> <eval 00000fc1> 1 0 14
+button 237 93 <eval 00000fc0> <eval 00000fc1> 1 0 15
+button 237 117 <eval 00000fc0> <eval 00000fc1> 1 0 16
+button 237 138 <eval 00000fc0> <eval 00000fc1> 1 0 17
+button 237 162 <eval 00000fc0> <eval 00000fc1> 1 0 18
+button 237 183 <eval 00000fc0> <eval 00000fc1> 1 0 19
+button 237 207 <eval 00000fc0> <eval 00000fc1> 1 0 20
+button 237 228 <eval 00000fc0> <eval 00000fc1> 1 0 21
+button 237 252 <eval 00000fc0> <eval 00000fc1> 1 0 22
+button 237 273 <eval 00000fc0> <eval 00000fc1> 1 0 23
+button 237 297 <eval 00000fc0> <eval 00000fc1> 1 0 24
+button 237 318 <eval 00000fc0> <eval 00000fc1> 1 0 25
+text 99 69 <QVAL (<src.uid.<tag0.bountyuid.1>.ismurderer> == 1 ) ? 32 : 02> 0
+text 99 90 <QVAL (<src.uid.<tag0.bountyuid.2>.ismurderer> == 1 ) ? 32 : 02> 1
+text 99 114 <QVAL (<src.uid.<tag0.bountyuid.3>.ismurderer> == 1 ) ? 32 : 02> 2
+text 99 135 <QVAL (<src.uid.<tag0.bountyuid.4>.ismurderer> == 1 ) ? 32 : 02> 3
+text 99 159 <QVAL (<src.uid.<tag0.bountyuid.5>.ismurderer> == 1 ) ? 32 : 02> 4
+text 99 180 <QVAL (<src.uid.<tag0.bountyuid.6>.ismurderer> == 1 ) ? 32 : 02> 5
+text 99 204 <QVAL (<src.uid.<tag0.bountyuid.7>.ismurderer> == 1 ) ? 32 : 02> 6
+text 99 225 <QVAL (<src.uid.<tag0.bountyuid.8>.ismurderer> == 1 ) ? 32 : 02> 7
+text 99 249 <QVAL (<src.uid.<tag0.bountyuid.9>.ismurderer> == 1 ) ? 32 : 02> 8
+text 99 270 <QVAL (<src.uid.<tag0.bountyuid.10>.ismurderer> == 1 ) ? 32 : 02> 9
+text 99 294 <QVAL (<src.uid.<tag0.bountyuid.11>.ismurderer> == 1 ) ? 32 : 02> 10
+text 99 315 <QVAL (<src.uid.<tag0.bountyuid.12>.ismurderer> == 1 ) ? 32 : 02> 11
+text 99 339 <QVAL (<src.uid.<tag0.bountyuid.13>.ismurderer> == 1 ) ? 32 : 02> 12
+text 261 69 <QVAL (<src.uid.<tag0.bountyuid.14>.ismurderer> == 1 ) ? 32 : 02> 13
+text 261 90 <QVAL (<src.uid.<tag0.bountyuid.15>.ismurderer> == 1 ) ? 32 : 02> 14
+text 261 114 <QVAL (<src.uid.<tag0.bountyuid.16>.ismurderer> == 1 ) ? 32 : 02> 15
+text 261 135 <QVAL (<src.uid.<tag0.bountyuid.17>.ismurderer> == 1 ) ? 32 : 02> 16
+text 261 159 <QVAL (<src.uid.<tag0.bountyuid.18>.ismurderer> == 1 ) ? 32 : 02> 17
+text 261 180 <QVAL (<src.uid.<tag0.bountyuid.19>.ismurderer> == 1 ) ? 32 : 02> 18
+text 261 204 <QVAL (<src.uid.<tag0.bountyuid.20>.ismurderer> == 1 ) ? 32 : 02> 19
+text 261 225 <QVAL (<src.uid.<tag0.bountyuid.21>.ismurderer> == 1 ) ? 32 : 02> 20
+text 261 249 <QVAL (<src.uid.<tag0.bountyuid.22>.ismurderer> == 1 ) ? 32 : 02> 21
+text 261 270 <QVAL (<src.uid.<tag0.bountyuid.23>.ismurderer> == 1 ) ? 32 : 02> 22
+text 261 294 <QVAL (<src.uid.<tag0.bountyuid.24>.ismurderer> == 1 ) ? 32 : 02> 23
+text 261 315 <QVAL (<src.uid.<tag0.bountyuid.25>.ismurderer> == 1 ) ? 32 : 02> 24
+text 182 15 95 25
+button 385 345 <eval 000015a4> <eval 000015a5> 1 0 26
+text 294 353 1101 26
+
+[DIALOG d_bounty_system_start_1 TEXT]
+<tag.bounty.1>
+<tag.bounty.2>
+<tag.bounty.3>
+<tag.bounty.4>
+<tag.bounty.5>
+<tag.bounty.6>
+<tag.bounty.7>
+<tag.bounty.8>
+<tag.bounty.9>
+<tag.bounty.10>
+<tag.bounty.11>
+<tag.bounty.12>
+<tag.bounty.13>
+<tag.bounty.14>
+<tag.bounty.15>
+<tag.bounty.16>
+<tag.bounty.17>
+<tag.bounty.18>
+<tag.bounty.19>
+<tag.bounty.20>
+<tag.bounty.21>
+<tag.bounty.22>
+<tag.bounty.23>
+<tag.bounty.24>
+<tag.bounty.25>
+Bounty Board
+
+[DIALOG d_bounty_system_start_1 BUTTON]
+on=1
+src.tag.bnum=1
+
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+
+on=2
+src.tag.bnum=2
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+on=3
+src.tag.bnum=3
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+on=4
+src.tag.bnum=4
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+on=5
+src.tag.bnum=5
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+on=6
+src.tag.bnum=6
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+on=7
+src.tag.bnum=7
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+on=8
+src.tag.bnum=8
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+on=9
+src.tag.bnum=9
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+on=10
+src.tag.bnum=10
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+on=11
+src.tag.bnum=11
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+on=12
+src.tag.bnum=12
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+on=13
+src.tag.bnum=13
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+on=14
+src.tag.bnum=14
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+on=15
+src.tag.bnum=15
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+on=16
+src.tag.bnum=16
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+on=17
+src.tag.bnum=17
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+on=18
+src.tag.bnum=18
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+on=19
+src.tag.bnum=19
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+on=20
+src.tag.bnum=20
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+on=21
+src.tag.bnum=21
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+on=22
+src.tag.bnum=22
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+on=23
+src.tag.bnum=23
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+on=24
+src.tag.bnum=24
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+on=25
+src.tag.bnum=25
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+on=26
+dialog d_bounty_system_start_2
+return 1
+
+on=0
+src.sysmessage=To place a bounty, type: .bounty
+
+
+//////////////////////////////////
+//BOUNTY MENU START 2           //
+//////////////////////////////////
+
+
+
+[DIALOG d_bounty_system_start_2]
+0, 0
+PAGE 0
+resizepic 36 36 3600 410 360
+resizepic 50 52 3500 380 330
+button 75 72 <eval 00000fc0> <eval 00000fc1> 1 0 1
+button 75 93 <eval 00000fc0> <eval 00000fc1> 1 0 2
+button 75 117 <eval 00000fc0> <eval 00000fc1> 1 0 3
+button 75 138 <eval 00000fc0> <eval 00000fc1> 1 0 4
+button 75 162 <eval 00000fc0> <eval 00000fc1> 1 0 5
+button 75 183 <eval 00000fc0> <eval 00000fc1> 1 0 6
+button 75 207 <eval 00000fc0> <eval 00000fc1> 1 0 7
+button 75 228 <eval 00000fc0> <eval 00000fc1> 1 0 8
+button 75 252 <eval 00000fc0> <eval 00000fc1> 1 0 9
+button 75 273 <eval 00000fc0> <eval 00000fc1> 1 0 10
+button 75 297 <eval 00000fc0> <eval 00000fc1> 1 0 11
+button 75 318 <eval 00000fc0> <eval 00000fc1> 1 0 12
+button 75 342 <eval 00000fc0> <eval 00000fc1> 1 0 13
+button 237 72 <eval 00000fc0> <eval 00000fc1> 1 0 14
+button 237 93 <eval 00000fc0> <eval 00000fc1> 1 0 15
+button 237 117 <eval 00000fc0> <eval 00000fc1> 1 0 16
+button 237 138 <eval 00000fc0> <eval 00000fc1> 1 0 17
+button 237 162 <eval 00000fc0> <eval 00000fc1> 1 0 18
+button 237 183 <eval 00000fc0> <eval 00000fc1> 1 0 19
+button 237 207 <eval 00000fc0> <eval 00000fc1> 1 0 20
+button 237 228 <eval 00000fc0> <eval 00000fc1> 1 0 21
+button 237 252 <eval 00000fc0> <eval 00000fc1> 1 0 22
+button 237 273 <eval 00000fc0> <eval 00000fc1> 1 0 23
+button 237 297 <eval 00000fc0> <eval 00000fc1> 1 0 24
+button 237 318 <eval 00000fc0> <eval 00000fc1> 1 0 25
+text 99 69 <QVAL (<src.uid.<tag0.bountyuid.26>.ismurderer> == 1 ) ? 32 : 02> 0
+text 99 90 <QVAL (<src.uid.<tag0.bountyuid.27>.ismurderer> == 1 ) ? 32 : 02> 1
+text 99 114 <QVAL (<src.uid.<tag0.bountyuid.28>.ismurderer> == 1 ) ? 32 : 02> 2
+text 99 135 <QVAL (<src.uid.<tag0.bountyuid.29>.ismurderer> == 1 ) ? 32 : 02> 3
+text 99 159 <QVAL (<src.uid.<tag0.bountyuid.30>.ismurderer> == 1 ) ? 32 : 02> 4
+text 99 180 <QVAL (<src.uid.<tag0.bountyuid.31>.ismurderer> == 1 ) ? 32 : 02> 5
+text 99 204 <QVAL (<src.uid.<tag0.bountyuid.32>.ismurderer> == 1 ) ? 32 : 02> 6
+text 99 225 <QVAL (<src.uid.<tag0.bountyuid.33>.ismurderer> == 1 ) ? 32 : 02> 7
+text 99 249 <QVAL (<src.uid.<tag0.bountyuid.34>.ismurderer> == 1 ) ? 32 : 02> 8
+text 99 270 <QVAL (<src.uid.<tag0.bountyuid.35>.ismurderer> == 1 ) ? 32 : 02> 9
+text 99 294 <QVAL (<src.uid.<tag0.bountyuid.36>.ismurderer> == 1 ) ? 32 : 02> 10
+text 99 315 <QVAL (<src.uid.<tag0.bountyuid.37>.ismurderer> == 1 ) ? 32 : 02> 11
+text 99 339 <QVAL (<src.uid.<tag0.bountyuid.38>.ismurderer> == 1 ) ? 32 : 02> 12
+text 261 69 <QVAL (<src.uid.<tag0.bountyuid.39>.ismurderer> == 1 ) ? 32 : 02> 13
+text 261 90 <QVAL (<src.uid.<tag0.bountyuid.40>.ismurderer> == 1 ) ? 32 : 02> 14
+text 261 114 <QVAL (<src.uid.<tag0.bountyuid.41>.ismurderer> == 1 ) ? 32 : 02> 15
+text 261 135 <QVAL (<src.uid.<tag0.bountyuid.42>.ismurderer> == 1 ) ? 32 : 02> 16
+text 261 159 <QVAL (<src.uid.<tag0.bountyuid.43>.ismurderer> == 1 ) ? 32 : 02> 17
+text 261 180 <QVAL (<src.uid.<tag0.bountyuid.44>.ismurderer> == 1 ) ? 32 : 02> 18
+text 261 204 <QVAL (<src.uid.<tag0.bountyuid.45>.ismurderer> == 1 ) ? 32 : 02> 19
+text 261 225 <QVAL (<src.uid.<tag0.bountyuid.46>.ismurderer> == 1 ) ? 32 : 02> 20
+text 261 249 <QVAL (<src.uid.<tag0.bountyuid.47>.ismurderer> == 1 ) ? 32 : 02> 21
+text 261 270 <QVAL (<src.uid.<tag0.bountyuid.48>.ismurderer> == 1 ) ? 32 : 02> 22
+text 261 294 <QVAL (<src.uid.<tag0.bountyuid.49>.ismurderer> == 1 ) ? 32 : 02> 23
+text 261 315 <QVAL (<src.uid.<tag0.bountyuid.50>.ismurderer> == 1 ) ? 32 : 02> 24
+text 182 15 95 25
+button 385 345 <eval 000015a1> <eval 000015a2> 1 0 26
+text 294 353 1101 26
+
+[DIALOG d_bounty_system_start_2 TEXT]
+<tag.bounty.26>
+<tag.bounty.27>
+<tag.bounty.28>
+<tag.bounty.29>
+<tag.bounty.30>
+<tag.bounty.31>
+<tag.bounty.32>
+<tag.bounty.33>
+<tag.bounty.34>
+<tag.bounty.35>
+<tag.bounty.36>
+<tag.bounty.37>
+<tag.bounty.38>
+<tag.bounty.39>
+<tag.bounty.40>
+<tag.bounty.41>
+<tag.bounty.42>
+<tag.bounty.43>
+<tag.bounty.44>
+<tag.bounty.45>
+<tag.bounty.46>
+<tag.bounty.47>
+<tag.bounty.48>
+<tag.bounty.49>
+<tag.bounty.50>
+Bounty Board
+
+
+[DIALOG d_bounty_system_start_2 BUTTON]
+on=1
+src.tag.bnum=26
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+
+on=2
+src.tag.bnum=27
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+on=3
+src.tag.bnum=28
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+on=4
+src.tag.bnum=29
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+on=5
+src.tag.bnum=30
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+on=6
+src.tag.bnum=31
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+on=7
+src.tag.bnum=32
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+on=8
+src.tag.bnum=33
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+on=9
+src.tag.bnum=34
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+on=10
+src.tag.bnum=35
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+on=11
+src.tag.bnum=36
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+on=12
+src.tag.bnum=37
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+on=13
+src.tag.bnum=38
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+on=14
+src.tag.bnum=39
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+on=15
+src.tag.bnum=40
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+on=16
+src.tag.bnum=41
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+on=17
+src.tag.bnum=42
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+on=18
+src.tag.bnum=43
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+on=19
+src.tag.bnum=44
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+on=20
+src.tag.bnum=45
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+on=21
+src.tag.bnum=46
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+on=22
+src.tag.bnum=47
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+on=23
+src.tag.bnum=48
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+on=24
+src.tag.bnum=49
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+on=25
+src.tag.bnum=50
+if (strmatch(<tag.bounty.<eval <src.tag.bnum>>>,Empty ))
+src.sysmessage=There is no bounty available in that slot...
+return 1
+endif
+var.bountyuid=<tag.bountyuid.<eval <src.tag.bnum>>>
+var.itemdisplayuid=<tag.bountyrewarduid.<eval <src.tag.bnum>>>
+dialog d_bounty_system
+var.bountyuid=
+var.itemdisplayuid=
+
+on=26
+dialog d_bounty_system_start_1
+return 1
+
+on=0
+src.sysmessage=To place a bounty, type: .bounty
+
+
+[DIALOG d_comment_change]
+0,0
+nomove
+resizepic 220 185 3600 315 130
+resizepic 243 245 3000 270 22
+text 237 200 1104 0
+text 277 275 31 1
+button 245 275 4005 4006 1 0 1
+text 467 275 31 2
+button 435 275 4005 4006 1 0 0
+textentry 245 244 253 25 0 0 3
+
+[DIALOG d_comment_change TEXT]
+What will you update the comment to?
+Update
+Cancel
+No Comment
+
+[DIALOG d_comment_change BUTTON]
+ON=0
+SRC.MESSAGE Comment Change Canceled
+return 0
+
+ON=1
+var.oldp=<src.p>
+src.p=<p>
+try tag.bountycomment.<eval <src.tag.bnum>>=Bounty Update: <ARGTXT[0]>
+src.sysmessage=The comment of the bounty has been updated...
+src.p=<var.oldp>
+var.oldp=
+return 0
+
+
+[ITEMDEF i_bounty_certificate]
+ID=i_deed
+TYPE=t_eq_script
+NAME=Death Certificate
+
+ON=@CREATE
+ATTR=attr_newbie|attr_decay
+COLOR=0411
+TIMERF 600,remove_me
+
+ON=@CLICK
+MESSAGE [<link.name>]
+RETURN 0
+
+ON=@DCLICK
+IF (<SRC.ISBROTHERHOOD>) && !(<SRC.RESTEST m_brotherhood_cooldown>) 
+
+SERV.LOG :FACTION POINTS: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> has <EVAL <SRC.TAG.REP.ALIGNMENT>> <SRC.TAG.ALIGNMENT> points.
+SRC.TAG0.REP.ALIGNMENT = <EVAL <SRC.TAG0.REP.ALIGNMENT> + 100>
+SERV.LOG :FACTION POINTS: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> now have <EVAL <SRC.TAG.REP.ALIGNMENT>> <SRC.TAG.ALIGNMENT> points.
+SERV.LOG :FACTION POINTS: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> claimed a Death Certificate of <LINK.ACCOUNT> <LINK.UID> <LINK.NAME> 
+SRC.SYSMESSAGE You have gained 100 Faction Points for your efforts.
+SRC.SYSMESSAGE @0770 You have successfully claimed the Death Certificate. 
+SERV.NEWITEM m_brotherhood_cooldown
+NEW.NAME=<LINK.NAME>
+NEW.EQUIP <SRC.UID>
+NEW.TIMER=900
+REMOVE
+
+
+ELSE
+SRC.SYSMESSAGE This is proof of <link.name>'s death...
+ENDIF
+RETURN 1
+
+ON=@TIMER
+REMOVE
+RETURN 1
+
+
+[ITEMDEF i_bounty_certificate_brotherhood]
+ID=i_deed
+TYPE=t_eq_script
+NAME=Death Certificate
+
+ON=@CREATE
+ATTR=attr_newbie|attr_decay
+COLOR=0770
+TIMERF 600,remove_me
+
+ON=@CLICK
+MESSAGE [<link.name>]
+RETURN 0
+
+ON=@DCLICK
+IF (<SRC.ISBROTHERHOOD>)
+SRC.SYSMESSAGE @0770 A brave Brotherhood warrior was killed. You don't want to claim this certification, do you?
+ELSE
+SRC.SYSMESSAGE This is proof of <link.name>'s death...
+ENDIF
+RETURN 1
+
+ON=@TIMER
+REMOVE
+RETURN 1
+
+
+[FUNCTION remove_me]
+REMOVE
+//IF (<SRC.RESTEST i_bounty_certificate>)
+//SRC.CONSUME 1 i_bounty_certificate
+//ENDIF
+//RETURN 1
+
+
+[ITEMDEF m_brotherhood_cooldown]
+ID=i_memory
+TYPE=t_eq_script
+NAME=Brotherhood Cooldown
+
+ON=@TIMER
+CONT.SYSMESSAGE @030 You may now claim another bounty or death certificate.
+REMOVE
+RETURN 1
+
+
+[function bounty]
+if (<eval <tag.bountyban>> == 1 )
+sysmessage=You can no longer participate in the bounty system...
+return 1
+endif
+
+if (<hits> < 1 )
+sysmessage=You cannot make a bounty while dead...
+return 1
+endif
+
+if (<flags> & statf_war )
+sysmessage=You must not be in warmode while initiating a bounty...
+return 1
+endif
+newitem=i_bounty_placement
+act.equip
+act.target Target the reward you will give for this bounty...
+act.timer=30
+return 1
+
+
+[events e_bounty_hit_cancel]
+on=@gethit
+consume=2 i_bounty_placement
+sysmessage=You were hit while placing your bounty, therefore it was canceled...
+events -e_bounty_hit_cancel
+return 0
+
+on=@hit
+consume=2 i_bounty_placement
+sysmessage=You were attacking while placing your bounty, therefore it was canceled...
+events -e_bounty_hit_cancel
+return 0
+
+
+[itemdef i_life_essence]
+id=i_fx_sparkle
+type=t_eq_script
+name=Life Essence
+
+on=@click
+message=Life Essence Of <link.name>
+return 1
+
+
+on=@dclick
+src.sysmessage=You must walk into this to absorb <link.name>'s life essence...
+return 1
+
+on=@step
+if (<src.npc>)
+return 1
+endif
+
+IF (<SRC.ISGM>)
+RETURN 1
+ENDIF
+
+if (<src.hits> < 1 )||(<eval <tag.hasbeenused>> == 1 )
+return 1
+endif
+
+if (<src.uid> == <link.uid> )
+src.sysmessage=You cannot absorb your own life essence...
+return 1
+endif
+
+if (<link.isbrotherhood>)
+src.newitem=i_bounty_certificate_brotherhood
+src.act.bounce
+var.certificate=<src.act.uid>
+src.act.link=<link.uid>
+//src.hits=<src.str>
+src.mana=<src.int>
+src.stamina=<src.dex>
+src.sayu=*absorbs the life essence*
+src.sfx=258
+link=<src.uid>
+link.newitem=i_fx_sparkle_2
+link.act.p=<link.p>
+link.act.timer=2
+link.act.attr=attr_static|attr_decay
+link.act.type=t_normal
+link.act.move=n 1
+link.newitem=i_fx_sparkle_2
+link.act.p=<link.p>
+link.act.timer=2
+link.act.attr=attr_static|attr_decay
+link.act.type=t_normal
+link.act.move=ne 1
+link.newitem=i_fx_sparkle_2
+link.act.p=<link.p>
+link.act.timer=2
+link.act.attr=attr_static|attr_decay
+link.act.type=t_normal
+link.act.move=e 1
+link.newitem=i_fx_sparkle_2
+link.act.p=<link.p>
+link.act.timer=2
+link.act.attr=attr_static|attr_decay
+link.act.type=t_normal
+link.act.move=nw 1
+link.newitem=i_fx_sparkle_2
+link.act.p=<link.p>
+link.act.timer=2
+link.act.attr=attr_static|attr_decay
+link.act.type=t_normal
+link.act.move=s 1
+link.newitem=i_fx_sparkle_2
+link.act.p=<link.p>
+link.act.timer=2
+link.act.attr=attr_static|attr_decay
+link.act.type=t_normal
+link.act.move=se 1
+link.newitem=i_fx_sparkle_2
+link.act.p=<link.p>
+link.act.timer=2
+link.act.attr=attr_static|attr_decay
+link.act.type=t_normal
+link.act.move=sw 1
+link.newitem=i_fx_sparkle_2
+link.act.p=<link.p>
+link.act.timer=2
+link.act.attr=attr_static|attr_decay
+link.act.type=t_normal
+link.act.move=w 1
+link=<var.certificate>
+p=545,555 //moves it out of view
+update
+updatex
+src.anim=17
+tag.hasbeenused=1
+timer=10*60 //10 Minutes
+var.certificate=
+return 1
+else
+src.newitem=i_bounty_certificate
+src.act.bounce
+var.certificate=<src.act.uid>
+src.act.link=<link.uid>
+//src.hits=<src.str>
+src.mana=<src.int>
+src.stamina=<src.dex>
+src.sayu=*absorbs the life essence*
+src.sfx=258
+link=<src.uid>
+link.newitem=i_fx_sparkle_2
+link.act.p=<link.p>
+link.act.timer=2
+link.act.attr=attr_static|attr_decay
+link.act.type=t_normal
+link.act.move=n 1
+link.newitem=i_fx_sparkle_2
+link.act.p=<link.p>
+link.act.timer=2
+link.act.attr=attr_static|attr_decay
+link.act.type=t_normal
+link.act.move=ne 1
+link.newitem=i_fx_sparkle_2
+link.act.p=<link.p>
+link.act.timer=2
+link.act.attr=attr_static|attr_decay
+link.act.type=t_normal
+link.act.move=e 1
+link.newitem=i_fx_sparkle_2
+link.act.p=<link.p>
+link.act.timer=2
+link.act.attr=attr_static|attr_decay
+link.act.type=t_normal
+link.act.move=nw 1
+link.newitem=i_fx_sparkle_2
+link.act.p=<link.p>
+link.act.timer=2
+link.act.attr=attr_static|attr_decay
+link.act.type=t_normal
+link.act.move=s 1
+link.newitem=i_fx_sparkle_2
+link.act.p=<link.p>
+link.act.timer=2
+link.act.attr=attr_static|attr_decay
+link.act.type=t_normal
+link.act.move=se 1
+link.newitem=i_fx_sparkle_2
+link.act.p=<link.p>
+link.act.timer=2
+link.act.attr=attr_static|attr_decay
+link.act.type=t_normal
+link.act.move=sw 1
+link.newitem=i_fx_sparkle_2
+link.act.p=<link.p>
+link.act.timer=2
+link.act.attr=attr_static|attr_decay
+link.act.type=t_normal
+link.act.move=w 1
+link=<var.certificate>
+p=545,555 //moves it out of view
+update
+updatex
+src.anim=17
+tag.hasbeenused=1
+timer=10*60 //10 Minutes
+var.certificate=
+return 1
+
+
+
+on=@timer
+if (<link.ischar>)
+remove
+return 1
+else
+link.remove
+remove
+return 1
+endif
+
+[function bountyban]
+if (<eval <tag.bountyban>> == 0 )
+tag.bountyban=1
+sysmessage=You have been banned from using the bounty system...
+return 1
+else
+src.sysmessage=You can now participate in the bounty system...
+tag.bountyban=
+return 1
+endif
+
+
+
+//************************************************************
+//PART 2 - PART 2 - PART 2 - PART 2 - PART 2 - PART 2 - PART 2
+//************************************************************
+
+
+//[plevel 1]
+//checkrating
+
+[EVENTS e_rating_system]
+
+ON=@DEATH
+
+if (!<act.isitem>)&&(!<act.ischar>)
+return 0
+endif
+
+IF STRMATCH( "Newbie Dungeon", "<SRC.REGION.NAME>" )
+return 0
+endif
+
+IF (<SRC.TAG0.statsstored> == 1)
+RETURN 0
+ENDIF
+
+if (<brain> == 0 )
+var.act=<act.uid>
+newitem=i_life_essence
+act.p=<p>
+act.color=<qval (<ismurderer> == 1 ) ? 066d : 052c>
+act.attr=attr_static|attr_decay
+act.link=<uid>
+act.timer=30
+act.sayu=[Life Essence]
+act=<var.act>
+var.act=
+endif
+
+if (<flags> & statf_conjured )
+return 0
+endif
+
+//if (<npc>)
+//act.sayu=Rating +<eval <str>/10>
+//act.tag.totalrating=<eval <act.tag.totalrating>>+<eval <str>/10>
+//if (<eval <act.tag.totalrating>> > 9999 )
+//act.tag.totalrating=10000
+//endif
+//return 0
+//endif
+
+if (<eval <act.uid>> == <eval <uid>> )||(<act.isitem> == 1 )
+return 0
+endif
+
+//if (<act.brain> == 0 )
+//act.sayu=Rating +<eval <tag0.totalrating>/8>
+//act.tag0.totalrating=<eval <act.tag0.totalrating>>+<eval <tag0.totalrating>/8>
+//tag0.totalrating=<eval <tag0.totalrating>>+-<eval <tag0.totalrating>/6>
+//if (<eval <tag0.totalrating>> > 9999 )
+//tag0.totalrating=10000
+//endif
+//if (<eval <act.tag0.totalrating>> > 9999 )
+//act.tag0.totalrating=10000
+//endif
+act.tag.lastpk=<name>
+tag.lastdeath=<act.name>
+act.tag.ratingpvpk=<eval <act.tag.ratingpvpk>>+1
+tag.ratingpvpd=<eval <tag.ratingpvpd>>+1
+return 0
+endif
+
+if (<eval <act.brain>> > 0 )
+tag.ratingpvmd=<eval <tag.ratingpvmd>>+1
+tag.lastdeath=<act.name>
+endif
+
+return 0
+
+
+
+
+[DIALOG d_rating_system]
+0, 0
+PAGE 0
+resizepic 36 27 3600 250 250
+text 54 45 1152 0
+text 54 63 1153 1
+text 54 81 1101 2
+text 54 99 102 3
+text 54 117 32 4
+text 54 135 162 5
+text 100 162 455 6
+text 125 182 1345 7
+text 36 6 1152 8
+text 177 275 0 9
+tilepic 130 213 3936
+
+[DIALOG d_rating_system TEXT]
+PvP Kills - <eval <src.targ.tag.ratingpvpk>>
+PvP Deaths - <eval <src.targ.tag.ratingpvpd>>
+PvM Deaths - <eval <src.targ.tag.ratingpvmd>>
+Last Kill: <src.targ.tag.lastpk>
+Last Death: <src.targ.tag.lastdeath>
+Total Rating: <eval <src.targ.tag.totalrating>>
+- Skill Title -
+<src.targ.tag.skilltitle>
+<src.targ.name>
+
+
+[DIALOG d_rating_system BUTTON]
+on=0
+sysmessage=The higher your rating, the more the players will fear you!
+
+
+[function checkrating]
+newitem=i_check_rating
+act.equip
+act.target Target the player whom you wish to check...
+act.attr=attr_decay
+act.timer=20
+
+[itemdef i_check_rating]
+id=i_memory
+type=t_eq_script
+name=Rating Check Memory
+
+on=@targon_char
+if (<src.targ.npc>)
+src.sysmessage=You cannot do this on NPCs...
+remove
+return 1
+else
+if (<eval <src.targ.tag.totalrating>> < 1000 )
+src.targ.tag.skilltitle=Amateur
+elseif (<eval <src.targ.tag.totalrating>> > 999 )&&(<eval <src.targ.tag.totalrating>> < 1999 )
+src.targ.tag.skilltitle=Novice
+elseif (<eval <src.targ.tag.totalrating>> > 1999 )&&(<eval <src.targ.tag.totalrating>> < 2999 )
+src.targ.tag.skilltitle=Expert
+elseif (<eval <src.targ.tag.totalrating>> > 2999 )&&(<eval <src.targ.tag.totalrating>> < 3999 )
+src.targ.tag.skilltitle=Gladiator
+elseif (<eval <src.targ.tag.totalrating>> > 3999 )&&(<eval <src.targ.tag.totalrating>> < 4999 )
+src.targ.tag.skilltitle=Master
+elseif (<eval <src.targ.tag.totalrating>> > 4999 )&&(<eval <src.targ.tag.totalrating>> < 5999 )
+src.targ.tag.skilltitle=Grandmaster
+elseif (<eval <src.targ.tag.totalrating>> > 5999 )&&(<eval <src.targ.tag.totalrating>> < 6999 )
+src.targ.tag.skilltitle=Guru
+elseif (<eval <src.targ.tag.totalrating>> > 6999 )&&(<eval <src.targ.tag.totalrating>> < 7999 )
+src.targ.tag.skilltitle=Warlord
+elseif (<eval <src.targ.tag.totalrating>> > 7999 )&&(<eval <src.targ.tag.totalrating>> < 8999 )
+src.targ.tag.skilltitle=Legendary
+elseif (<eval <src.targ.tag.totalrating>> > 8999 )&&(<eval <src.targ.tag.totalrating>> < 9999 )
+src.targ.tag.skilltitle=Immortal
+elseif (<eval <src.targ.tag.totalrating>> > 9999 )
+src.targ.tag.skilltitle=Omnipotent
+endif
+if (<src.uid> == <src.targ.uid>)||(<src.isgm> == 1 )
+else
+src.sayu=*Checks <src.targ.name>'s rating*
+endif
+src.dialog d_rating_system
+var.skilltitle=
+remove
+return 1
+endif
+
+
+on=@targon_item
+src.sysmessage=You cannot do this on item...
+remove
+return 1
+
+
+on=@timer
+remove
+return 1
+
+
+[itemdef i_bounty_linker]
+id=i_custom_wantedpost
+type=t_eq_script
+name=Bounty Papers
+
+on=@create
+attr=attr_static|00010
+link=<eval bountyboarduid>
+
+on=@dclick
+if (<eval <src.tag.bountyban>> == 1 )
+src.sysmessage=You can no longer participate in the bounty system...
+return 1
+endif
+link.dialog d_bounty_system_start_1
+sfx=256
+return 1
+
+//Steed
+
+[DEFNAME ethy_settings]
+mount_delay     1
+
+[EVENTS e_mount_brotherhood]
+
+ON=@DISMOUNT
+if <argo.tag0.mount_brotherhood>
+serv.newitem <argo.tag0.mount_brotherhood>
+new.bounce
+new.color=<argo.tag0.mount_brotherhood_color>
+new.tag.uid=<argo.tag0.mount_brotherhood_owner>
+src.tag.lastdonarshrink = <new.uid>
+src.tag.ondonarmount
+argo.remove
+src.findlayer.25.remove
+SERV.LOG <SRC.NAME> dismounted their Brotherhood Steed <new.uid>
+SRC.EVENTS -e_mount_brotherhood
+RETURN 1
+ENDIF
+
+[ITEMDEF i_brotherhood_elite_steed]
+NAME=Brotherhood Elite Steed
+ID=i_pet_horse
+TYPE=t_brotherhood_statuette
+TDATA1=c_horse_tan
+WEIGHT=1
+
+ON=@CREATE
+ATTR=04
+COLOR=0455
+
+CATEGORY=Imperial uo
+SUBSECTION=Brotherhood Faction NPCs
+DESCRIPTION=Brotherhood Elite Steed
+
+[TYPEDEF t_brotherhood_statuette]
+
+ON=@CLICK
+IF !(STRCMP(0<TAG.UID>,0) == 0)
+SRC.SYSMESSAGE @25 This steed is linked to an account already.
+ELSE
+SRC.SYSMESSAGE @25 This steed is not owned by anyone.
+ENDIF
+
+ON=@DCLICK
+IF (STRCMP(0<TAG.UID>,0) == 0)
+TAG.UID = <SRC.NAME>
+SRC.SYSMESSAGE @25 Owner Set
+ENDIF
+IF <cant_mount_brotherhood>
+RETURN 1
+ELSE
+mount_brotherhood <TDATA1>
+SRC.EVENTS +e_mount_brotherhood
+RETURN 1
+ENDIF
+
+[function mount_brotherhood]
+if <cant_mount_brotherhood>
+return 1
+else
+src.tag.ondonarmount = 1
+serv.newnpc <args>
+ref1=<new.uid>
+serv.newitem i_memory
+new.color=memory_ipet
+new.link=<src.uid>
+new.cont=<ref1.uid>
+src.events -e_mount_brotherhood
+ref1.food=999
+ref1.color=<color>
+ref1.tag0.mount_brotherhood=<baseid>
+ref1.tag0.mount_brotherhood_color=<color>
+ref1.tag0.mount_brotherhood_owner=<tag.uid>
+ref1.mount <src>
+consume
+endif
+
+[function cant_mount_brotherhood]
+if (<topobj.isplayer>)
+if (<topobj.uid>!=<src.uid>)
+src.sysmessage This is not yours to use.
+RETURN 1
+elseif !(STRCMP(<tag.uid>,<src.name>) == 0)
+src.sysmessage This is not yours to use.
+RETURN 1
+elseif (<src.flags>&statf_dead)
+src.sysmessage You can't use that right now.
+RETURN 1
+elseif (<src.flags>&statf_polymorph)
+src.sysmessage You can't use that while polymorphed.
+RETURN 1
+elseif ((<SRC.BODY> != C_MAN) && (<SRC.BODY> != C_WOMAN))
+src.sysmessage You can't use that while polymorphed.
+RETURN 1
+elseif (<src.findlayer.25.uid>)
+src.sysmessage You are already on a mount.
+RETURN 1
+ELSEIF (<SRC.TAG0.BROTHERHOODRANK>) < 12)
+SRC.SYSMESSAGE @0770 You are not worthy enough to ride the <NAME>.
+RETURN 1
+else
+return 0
+endif
+else
+src.sysmessage You cannot use this where it is.
+return 1
+endif
+
+[function loop_anim]
+if <argv[1]>>1
+for <eval (<argv[1]>-1)>
+timerf <eval (<local._for>*<argv[2]>)>,anim <eval <argv[0]>>
+endfor
+endif
+anim <argv[0]>
+
+
+//----------------------BROTHERHOOD---------------------//
+
+// -- NPC
+
+[CHARDEF c_faction_vendor_brotherhood]
+NAME=Cleopatra, The Brotherhood Trader
+ID=C_MAN
+DESIRES=i_gold,e_notoriety
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_trainer
+TSPEECH=spk_needs
+TSPEECH=spk_rehello
+TSPEECH=spk_human_default
+TSPEECH=spk_brotherhood_vendor
+
+
+TEVENTS=e_Human_HearUnk
+TEVENTS=e_Human_Needs
+TEVENTS=e_Human_ConvInit
+TEVENTS=e_Human_Greet
+TEVENTS=e_Human_Space
+TEVENTS=e_Human_Refuse
+TEVENTS=e_Human_Environ
+
+ON=@Create
+TAG.NAME.HUE=0770
+NPC=brain_vendor
+COLOR=colors_skin
+STR={16 30}
+DEX={26 40}
+INT={31 45}
+
+EVALUATINGINTEL={45.0 68.0}
+WRESTLING={15.0 38.0}
+MAGICRESISTANCE={15.0 38.0}
+TACTICS={15.0 38.0}
+INSCRIPTION={50.0 70.0}
+
+ITEMNEWBIE=random_female_hair
+COLOR=colors_hair
+
+ON=@NPCRestock
+ITEM=RANDOM_LIGHT
+ITEMNEWBIE=i_brotherhood_elite_shroud
+ITEM=random_shoes
+COLOR=colors_neutral
+
+SELL=FACTION_VENDOR_BROTHERHOOD_SELL
+BUY=FACTION_VENDOR_BROTHERHOOD_BUY
+
+CATEGORY=Imperial uo
+SUBSECTION=Brotherhood Faction NPCs
+DESCRIPTION=Brotherhood Vendor
+
+[TEMPLATE FACTION_VENDOR_BROTHERHOOD_SELL]
+DEFNAME=FACTION_VENDOR_BROTHERHOOD_SELL
+
+CATEGORY=Imperial uo
+SUBSECTION=Brotherhood Faction Templates
+DESCRIPTION=Brotherhood Vendor Sell
+
+SELL=i_robe_brotherhood,{3 5}
+SELL=i_dress_brotherhood,{3 5}
+SELL=i_cape_brotherhood,{3 5}
+SELL=i_mount_tub_brotherhood,{2 4}
+SELL=i_potion_refresh,{51 100}
+SELL=i_potion_nightsight,{51 100}
+SELL=i_potion_heal,{51 100}
+SELL=i_potion_cure,{51 100}
+SELL=i_reag_black_pearl,{500 500}
+SELL=i_reag_blood_moss,{500 500}
+SELL=i_reag_garlic,{500 500}
+SELL=i_reag_ginseng,{500 500}
+SELL=i_reag_mandrake_root,{500 500}
+SELL=i_reag_nightshade,{500 500}
+SELL=i_reag_sulfur_ash,{500 500}
+SELL=i_reag_spider_silk,{500 500}
+SELL=i_xbolt,{250 500}
+SELL=i_arrow,{250 500}
+SELL=i_bandage,{100 150}
+
+[TEMPLATE FACTION_VENDOR_BROTHERHOOD_BUY]
+DEFNAME=FACTION_VENDOR_BROTHERHOOD_BUY
+
+CATEGORY=Imperial uo
+SUBSECTION=Brotherhood Faction Templates
+DESCRIPTION=Brotherhood Vendor Buy
+
+BUY=i_bandage,{100 150}
+
+[SPEECH spk_brotherhood_vendor]
+ON=*buy*
+   IF (<SRC.FLAGS> & statf_dead)
+      SRC.SYSMESSAGE @025 The dead cannot make transactions, friend...
+      RETURN 1
+   ENDIF
+   IF (<SRC.ISBROTHERHOOD>)
+SAY It is a pleasure to serve thee...
+BUY
+ELSE
+SAY I only serve members of the Brotherhood!
+return 1
+ENDIF
+
+
+// -- BROTHERHOOD MOUNT DYE TUB
+
+[ITEMDEF i_mount_tub_brotherhood]
+ID = 0fab
+NAME = Mount Dying Pigment
+VALUE = 75000
+ON=@Create
+COLOR = 0455
+
+ON=@DClick
+if ( !<SRC.findlayer(layer_horse).uid> )
+src.sysmessage You are not mounted.
+return 1
+endif
+if !(<SRC.ISBROTHERHOOD>)
+SRC.MESSAGE Only members of brotherhood may use this!
+return 1
+endif
+SRC.ACT = <SRC.findlayer(layer_horse).uid>
+SRC.ACT.COLOR = <COLOR>
+SRC.ACT = <SRC.ACT.MORE2>
+SRC.ACT.COLOR = <COLOR>
+SRC.ACT.TAG.COLOR = <COLOR>
+src.act.events +e_dyed
+src.sysmessage You spread the pigment over the <SRC.ACT.NAME>.
+if ( !<SRC.ISGM> )
+REMOVE
+endif
+return 1
+
+// -- BROTHERHOOD ROBE
+
+[ITEMDEF i_robe_brotherhood]
+ID=i_robe
+NAME=Brotherhood Robe
+TYPE=T_CLOTHING
+VALUE=5000
+DYE=0
+
+ON=@CREATE
+HITPOINTS=100
+COLOR=0455
+
+ON=@EQUIP
+IF (<SRC.ISBROTHERHOOD>)
+SRC.SYSMESSAGE You equip the Brotherhood Robe.
+ELSE
+SRC.SYSMESSAGE You can not wear the Brotherhood Robe. You are not a member of the Brotherhood.
+UNEQUIP
+ENDIF
+RETURN 1
+
+// -- BROTHERHOOD DRESS
+
+[ITEMDEF i_dress_brotherhood]
+ID=i_dress_full
+NAME=Brotherhood Dress
+TYPE=T_CLOTHING
+VALUE=5000
+DYE=0
+
+ON=@CREATE
+HITPOINTS=100
+COLOR=0455
+
+ON=@EQUIP
+IF (<SRC.ISBROTHERHOOD>)
+SRC.SYSMESSAGE You equip the Brotherhood Dress.
+ELSE
+SRC.SYSMESSAGE You can not wear the Brotherhood Dress. You are not a member of the Brotherhood.
+UNEQUIP
+ENDIF
+RETURN 1
+
+// -- BROTHERHOOD CLOAK
+
+[ITEMDEF i_cape_brotherhood]
+ID=i_cape
+NAME=Brotherhood Cloak
+TYPE=T_CLOTHING
+VALUE=5000
+DYE=0
+
+ON=@CREATE
+HITPOINTS=100
+COLOR=0455
+
+ON=@EQUIP
+IF (<SRC.ISBROTHERHOOD>)
+SRC.SYSMESSAGE You equip the Brotherhood Cloak.
+ELSE
+SRC.SYSMESSAGE You can not wear the Brotherhood Dress. You are not a member of the Brotherhood.
+UNEQUIP
+ENDIF
+RETURN 1
+
+
+
+[EOF]

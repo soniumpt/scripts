@@ -1,0 +1,615 @@
+
+// Vesper Roast Chicken
+// --------------------
+//
+// Version 0.1
+//
+// CHANGELOG
+// ---------
+// 
+// Version 0.1, 17th June 2006:  Added The Tryout
+//                               Added Delivery Boy
+//                               Added The Suspect Package
+//
+// CONTENTS
+// --------
+//
+// Contained within is:
+// - The Tryout (Pre-employment mission)
+// - Delivery Boy (Delivery Mission)
+// - The Suspect Package
+//
+// IMPORTANT NOTES
+// ---------------
+//
+// - All exclusive items are prefixed with "vrc" in the ITEMDEF or CHARDEF
+//
+
+
+//------------------------------
+//-            Base            -
+//------------------------------
+
+// Premise
+// -------
+// 
+// This section contains the default NPC's of the company.
+// Above each will be a mini-profile should anyone wish to add to the system.
+// 
+
+// NAME: Lady Marie
+// POSITION: Company CEO
+// AGE: 29
+// ALIGNMENT: Lawful Good
+// LIKES: Religion, Order, Well cooked chicken, Milk
+// DISLIKES: Chaos, Turkey, Beer
+// ATTITUDE: Forthright, Non-Street Wise, Views things in black and white (No shades of grey)
+
+[CHARDEF c_h_vrc_lady_marie]
+ID=c_woman
+NAME=Lady Marie
+DAM=5,12 
+ARMOR=200
+
+DESIRES=i_gold,e_notoriety,t_magic
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+TSPEECH=vrcladymarie
+TSPEECH=spk_human_default
+
+
+TEVENTS=e_Human_HearUnk
+TEVENTS=e_Human_Needs
+TEVENTS=e_Human_Refuse
+TEVENTS=e_Human_Environ
+
+CATEGORY=Company Core
+SUBSECTION=Vesper Roast Chicken
+DESCRIPTION=Lady Marie
+
+ON=@CREATE
+   NPC=brain_human
+   COLOR=0401
+   STR=900
+   INT=300
+   DEX=100
+   WRESTLING=1000
+   TACTICS=1000
+   MAGERY=1000
+   NECROMANCY=1000
+   EVALUATINGINTEL=1000
+   MAGICRESISTANCE=1000
+   ITEMNEWBIE=i_armor_female_bustier_studded
+   ATTR=05
+   COLOR=07a1
+   ITEMNEWBIE=i_armor_female_shorts
+   ATTR=05
+   COLOR=07a1
+   ITEMNEWBIE=i_boots_calf
+   COLOR=07a1
+   ITEMNEWBIE=i_cape
+   COLOR=07a1
+   ITEMNEWBIE=i_hair_elven_long4
+   TIMER=-1
+   COLOR=07a1
+   
+   
+[SPEECH vrcladymarie]
+ON=*delivery*
+ON=*retrieval*
+ON=*job*
+   SAY Those and other jobs you can find on the Job Notice Board beside me!
+   
+ON=*employment*
+ON=*employed*
+   IF (<SRC.TAG.HASBEENSACKEDBY> & NPCE_VespRoastChick)
+      SAY Sorry, but we aren't looking to re-employ bad staff...
+   ELSEIF (<SRC.TAG.NPC_QUEST_DONE_2> & NPCQ_VRCEmployQuest1 )
+      SAY Sorry, but you've already been through the employment test once...
+   ELSEIF !(<SRC.TAG.NPC_QUEST_START_2> & NPCQ_VRCEmployQuest1 )
+      IF (<SRC.KILLS> > 4)
+         SAY Vesper Roast Chicken won't give work to murderers!
+      ELSEIF (<SRC.KARMA> < 0)
+         SAY Vesper Roast Chicken does not employ those with less than balanced karma!
+      ELSE
+         f_thetryout_part_1
+      ENDIF
+   ELSEIF (<SRC.TAG.NPC_QUEST_START_2> & NPCQ_VRCEmployQuest1 )
+      f_thetryout_part_1_undo
+   ELSE
+      SAY *CONGRATULATIONS* You found a variable Wig didn't think of adding. Page immediately so he can fix it...
+   ENDIF
+      
+ON=*hen*ridin spinnaz*
+   SAY Also cockerels.
+   
+ON=*wig*ridin spinnaz*
+   SAY Also easter eggs.
+   
+ON=*wren*ridin spinnaz*
+   SAY Also gumps.
+   
+ON=*NEDM*
+   EMOTE look at <SRC.NAME> as if <SRC.NAME> set fire to a cat...
+
+
+
+
+// NAME: Martin
+// POSITION: Employee
+// AGE: 19
+// ALIGNMENT: Lawful Good
+// LIKES: Games, Fast Food, Beer
+// DISLIKES: Work, Grease getting on his face, all-chicken diets
+// ATTITUDE: Street Wise, but very young and ignorant
+
+[CHARDEF c_h_vrc_martin]
+ID=c_man
+NAME=Martin
+DAM=5,12 
+ARMOR=200
+
+DESIRES=i_gold,e_notoriety,t_magic
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+TSPEECH=vrcmartin
+TSPEECH=spk_human_default
+
+
+TEVENTS=e_Human_HearUnk
+TEVENTS=e_Human_Needs
+TEVENTS=e_Human_Refuse
+TEVENTS=e_Human_Environ
+
+CATEGORY=Company Core
+SUBSECTION=Vesper Roast Chicken
+DESCRIPTION=Martin
+
+ON=@CREATE
+   NPC=brain_vendor
+   COLOR=0401
+   STR=900
+   INT=300
+   DEX=100
+   WRESTLING=1000
+   TACTICS=1000
+   MAGERY=1000
+   NECROMANCY=1000
+   EVALUATINGINTEL=1000
+   MAGICRESISTANCE=1000
+   ITEMNEWBIE=i_shirt_fancy
+   ATTR=05
+   COLOR=07a1
+   ITEMNEWBIE=i_pants_long
+   ATTR=05
+   COLOR=07a1
+   ITEMNEWBIE=i_boots_calf
+   COLOR=07a1
+   ITEMNEWBIE=i_hair_elven_spike
+   TIMER=-1
+   COLOR=07a1
+
+ON=@NPCRESTOCK   
+   SELL=VENDOR_S_VRC_VESPER
+   
+[SPEECH vrcmartin]
+ON=*delivery*
+ON=*retrieval*
+ON=*job*
+   SAY Speak to the boss about that... I just sell the chicken!
+   
+ON=*employment*
+ON=*employed*
+   SAY Speak to the boss about that... I just sell the chicken!
+
+ON=*buy*
+ON=*supplies*
+ON=*wares*
+   IF (<SRC.FLAGS> & statf_dead)
+      SRC.SYSMESSAGE @025 The dead cannot make transactions, friend...
+      RETURN 1
+   ENDIF
+   IF (0<VAR.VENDOR_ESTOP>=1)
+     IF (<SRC.ACCOUNT.PLEVEL> <= 1)
+        SAY Temporarily Closed due to command of Lord British.
+        RETURN 1
+     ENDIF
+   ENDIF
+
+  if ( <vendor_restock> )
+     return 1
+  endif
+  vendor_reprice
+  
+  IF <FINDLAYER.27.UID>
+     f_vendorhack_container_dupe <FINDLAYER.27.UID>
+  ENDIF
+  
+  BUY
+
+
+ON=*sell*
+ON=*thou*purchase*
+ON=*you*purchase*
+ON=*you*buy*
+ON=*I*sale*
+ON=*refund*
+ON=*money back*
+   IF (<SRC.FLAGS> & statf_dead)
+      SRC.SYSMESSAGE @025 The dead cannot make transactions, friend...
+      RETURN 1
+   ENDIF
+   SAY Sorry <SRC.SEX sir/madam>, but we don't do refunds.
+
+
+
+
+//------------------------------
+//-       Items For Sale       -
+//------------------------------
+
+[ITEMDEF i_vrc_milkshake_vanilla]
+ID=i_bottle_ale
+NAME=Maries Vanilla Milkshake
+TYPE=t_food
+WEIGHT=0.1
+VALUE=25
+
+CATEGORY=Company Retail Items
+SUBSECTION=Vesper Roast Chicken
+DESCRIPTION=Maries Vanilla Milkshake
+
+ON=@CREATE
+   TAG.ISDRINK=1
+   COLOR=0ac9
+
+
+[ITEMDEF i_vrc_milkshake_chocolate]
+ID=i_bottle_ale
+NAME=Maries Chocolate Milkshake
+TYPE=t_food
+WEIGHT=0.1
+VALUE=25
+
+CATEGORY=Company Retail Items
+SUBSECTION=Vesper Roast Chicken
+DESCRIPTION=Maries Chocolate Milkshake
+
+ON=@CREATE
+   TAG.ISDRINK=1
+   COLOR=0971
+   
+   
+[ITEMDEF i_vrc_roastchickenleg]
+ID=i_chicken_leg
+NAME=roast chicken leg
+TYPE=t_food
+WEIGHT=0.2
+VALUE=45
+
+CATEGORY=Company Retail Items
+SUBSECTION=Vesper Roast Chicken
+DESCRIPTION=Roast Chicken Leg
+
+ON=@CREATE
+   COLOR=0971
+
+
+[ITEMDEF i_vrc_breadedchickenbreast]
+ID=i_bird_cooked
+NAME=Breadcrumbed Marie Speciality Chicken Breast
+TYPE=t_food
+WEIGHT=0.3
+VALUE=65
+
+CATEGORY=Company Retail Items
+SUBSECTION=Vesper Roast Chicken
+DESCRIPTION=Breaded Chicken Breast
+
+ON=@CREATE
+   COLOR=0971
+
+
+[ITEMDEF i_vrc_breadedchickenbreast_omgwtfbbq]
+ID=i_bird_cooked
+NAME=Chicken Breast Coated in -OMGWTF- BBQ Sauce
+TYPE=t_food
+WEIGHT=0.5
+VALUE=125
+
+CATEGORY=Company Retail Items
+SUBSECTION=Vesper Roast Chicken
+DESCRIPTION=BBQ Chicken Breast
+
+ON=@CREATE
+   COLOR=08a6
+
+
+[ITEMDEF i_vrc_fries_medium]
+ID=012ac
+NAME=Maries Box of Fries (Medium)
+TYPE=t_food
+WEIGHT=0.3
+VALUE=55
+
+CATEGORY=Company Retail Items
+SUBSECTION=Vesper Roast Chicken
+DESCRIPTION=Medium Fries
+
+ON=@CREATE
+   COLOR=0793
+
+
+[ITEMDEF i_vrc_fries_large]
+ID=i_pouch
+NAME=Maries Box of Fries (Large)
+TYPE=t_food
+WEIGHT=0.4
+VALUE=85
+
+CATEGORY=Company Retail Items
+SUBSECTION=Vesper Roast Chicken
+DESCRIPTION=Large Fries
+
+ON=@CREATE
+   COLOR=084d
+
+
+[TEMPLATE VENDOR_S_VRC_VESPER]
+CATEGORY	= Vendor Templates
+SUBSECTION	= Sell Templates
+DESCRIPTION	= VRC Vesper
+
+SELL=i_vrc_milkshake_vanilla,{8,20}
+SELL=i_vrc_milkshake_chocolate,{8,20}
+SELL=i_vrc_roastchickenleg,{8,20}
+SELL=i_vrc_breadedchickenbreast,{8,20}
+SELL=i_vrc_breadedchickenbreast_omgwtfbbq,{8,20}
+SELL=i_vrc_fries_medium,{8,20}
+SELL=i_vrc_fries_large,{8,20}
+
+
+//------------------------------
+//-   Basic Employment Board   -
+//------------------------------
+   
+   
+[ITEMDEF i_job_board_vrc]
+ID=i_bulletin_board
+NAME=Vesper Roast Chicken
+TYPE=t_container
+
+ON=@CREATE
+   TIMER=60
+
+ON=@CLICK
+   MESSAGE <NAME> Job Notice Board (<RESCOUNT> jobs)
+   RETURN 1
+   
+ON=@DCLICK
+   IF (0<SRC.TAG.HASBEENSACKEDBY> & NPCE_VespRoastChick)
+      SRC.MESSAGE You can no longer take jobs for Vesper Roast Chicken due to your being sacked...
+      RETURN 1
+   ELSEIF !(0<SRC.TAG.COMPANIESEMPLOYEDBY> & NPCE_VespRoastChick)
+      SRC.MESSAGE You are not currently employed by Vesper Roast Chicken!
+      RETURN 1
+   ELSEIF (0<SRC.TAG.COMPANIESEMPLOYEDBY> & NPCE_HonJoeFreshLamb)
+      SRC.MESSAGE Lady Marie won't accept delivery jobs if you work for Joe...
+      RETURN 1      
+   ELSEIF (0<SRC.TAG.NPCE_VespRoastChick.REP> > 0)
+      IF (<SRC.KILLS> > 4)
+         SRC.SYSMESSAGE Vesper Roast Chicken won't give work to murderers!
+      ELSEIF (<SRC.KARMA> < 0)
+         SRC.SYSMESSAGE Vesper Roast Chicken does not employ those with less than balanced karma!
+      ELSE
+         DIALOG d_job_notice_board
+            RETURN 1
+      ENDIF
+   ELSE
+      SRC.MESSAGE Upon inspecting the board, you notice that you are not high enough ranked for jobs yet...
+      RETURN 1
+   ENDIF
+   
+ON=@TIMER
+   IF (<RESCOUNT> >= 9)
+      TIMER=60
+      RETURN 1
+   ENDIF
+   SERV.NEWITEM i_job_vrc
+   IF (0<VAR.REMOVEJOB>)
+      NEW.REMOVE
+      VAR.REMOVEJOB=
+   ELSE
+      NEW.CONT <UID>
+   ENDIF
+   TIMER=60
+   RETURN 1
+
+
+[ITEMDEF i_job_vrc]
+ID=i_giftbox
+TYPE=t_normal
+WEIGHT=1
+NAME=VRC Job (Delivery)
+
+ON=@CREATE
+   VAR.KARMAMIN=0
+   VAR.KARMAMAX=10000
+   VAR.GUARDED=1
+   VAR.UNGUARDED=0
+   VAR.JOBITEM=<UID>
+   F_JOB_TARGET
+   TAG.DELIVERYITEM=i_vrc_delivery
+   TAG.COMPANY=NPCE_VespRoastChick
+   TAG.JOBTYPE=Delivery
+
+ON=@TIMER
+   REMOVE
+   RETURN 1
+   
+   
+[ITEMDEF i_vrc_delivery]
+ID=i_pouch
+TYPE=t_delivery_company
+ 
+ON=@CREATE
+   COLOR=07a1
+   TAG.ISFOOD=1
+   DORAND 8
+      NAME Lady Maries Special
+      NAME 2 chicken wings and a small milkshake
+      NAME 3 chicken wings and a medium milkshake
+      NAME 2 chicken wings, medium fries, and a medium milkshake
+      NAME VRC Family Feast
+      NAME VRC Value Pouch
+      NAME 3 chicken legs, large fries, and a large milkshake
+      NAME 2 chicken legs, medium fries, and a medium milkshake
+   ENDDO
+   
+ON=@CLICK
+   MESSAGE Delivery from Vesper Roast Chicken (<NAME>)
+   RETURN 1
+   
+
+
+//------------------------------
+//-        The Tryout          -
+//------------------------------
+
+
+   
+[FUNCTION f_thetryout_part_1]
+   VAR.QUESTHASOPTIONS=
+   VAR.QUESTOPTION1=
+   VAR.QUESTOPTION2=
+   TAG.QUESTOPTION1.SELECTION=
+   TAG.QUESTOPTION2.SELECTION=
+   TAG.QUESTCONFIRM.SELECTION=f_thetryout_part_1_confirmed
+   VAR.QUESTTITLE=The Tryout
+   VAR.QUESTPICTURE=2488
+   VAR.QUESTLINE1=So you want to be employed eh? Well we could do with the new staff
+   VAR.QUESTLINE2=so... I'll tell you what sweetie, if you can run to Vlad Tepes and
+   VAR.QUESTLINE3=deliver this to him, I'll take you on.
+   VAR.QUESTLINE4=He'll be easy to find, he's in Cove. Just be wary of Zombies...
+   VAR.QUESTLINE5=Oh and one more thing, he expects courtesy, so you'll have to say...
+   VAR.QUESTLINE6=
+   VAR.QUESTLINE7=I have your chicken sir
+   VAR.QUESTLINE8=
+   VAR.QUESTLINE9=If you don't, he'll go mute... Don't worry, there's no time limit for now...
+   VAR.QUESTLINE10=
+   VAR.QUESTLINE11=
+   VAR.QUESTCONFIRMSECTION=You can count on me!
+   DIALOG d_quest_standard   
+
+
+[FUNCTION f_thetryout_part_1_confirmed]
+IF (0<SRC.TAG.COMPANIESEMPLOYEDBY> & NPCE_HonJoeFreshLamb)
+   SRC.MESSAGE You go to accept the job, but Marie notices your Honest Joes employment badge...
+   RETURN 1
+ENDIF
+SRC.TAG.NPC_QUEST_START_2 = <eval ( <SRC.TAG.NPC_QUEST_START_2> | NPCQ_VRCEmployQuest1 )>
+SERV.NEWITEM i_vrc_delivery_thetryout
+NEW.BOUNCE <SRC.UID>
+SRC.TAG.TEMP_DELIVERY=<NEW.UID>
+
+[FUNCTION f_thetryout_part_1_undo]
+   VAR.QUESTHASOPTIONS=1
+   VAR.QUESTOPTION1=I no longer wish to do this delivery!
+   VAR.QUESTOPTION2=I'll deliver it, don't you worry!
+   TAG.QUESTOPTION1.SELECTION=f_thetryout_part_1_undo_confirmed
+   TAG.QUESTOPTION2.SELECTION=f_thetryout_part_1_undo_cancelled
+   TAG.QUESTCONFIRM.SELECTION=
+   VAR.QUESTTITLE=The Tryout
+   VAR.QUESTPICTURE=2488
+   VAR.QUESTLINE1=Remember, you have to say to him...
+   VAR.QUESTLINE2=
+   VAR.QUESTLINE3=I have your chicken sir
+   VAR.QUESTLINE4=
+   VAR.QUESTLINE5=If you want to give up for now, I can cancel the tryout and
+   VAR.QUESTLINE6=find someone else to deliver this for now...
+   VAR.QUESTLINE7=You can always retry later.
+   VAR.QUESTLINE8=
+   VAR.QUESTLINE9=
+   VAR.QUESTLINE10=
+   VAR.QUESTLINE11=
+   VAR.QUESTCONFIRMSECTION=
+   DIALOG d_quest_standard   
+
+
+[FUNCTION f_thetryout_part_1_undo_confirmed]
+SRC.TAG.NPC_QUEST_START_2 = <eval ( <SRC.TAG.NPC_QUEST_START_2> &~ NPCQ_VRCEmployQuest1 )>
+IF (<UID.<SRC.TAG.TEMP_DELIVERY>.BASEID> == i_vrc_delivery_thetryout)
+   TRY UID.<SRC.TAG.TEMP_DELIVERY>.REMOVE
+   SRC.TAG.TEMP_DELIVERY=
+ENDIF
+SRC.SYSMESSAGE @32 You are no longer doing The Tryout...
+
+[FUNCTION f_thetryout_part_1_undo_cancelled]
+SRC.MESSAGE I can do this...
+
+
+
+
+[ITEMDEF i_vrc_delivery_thetryout]
+ID=i_pouch
+TYPE=t_normal
+ 
+ON=@CREATE
+   COLOR=07a1
+   DORAND 8
+      NAME Lady Maries Special
+      NAME 2 chicken wings and a small milkshake
+      NAME 3 chicken wings and a medium milkshake
+      NAME 2 chicken wings, medium fries, and a medium milkshake
+      NAME VRC Family Feast
+      NAME VRC Value Pouch
+      NAME 3 chicken legs, large fries, and a large milkshake
+      NAME 2 chicken legs, medium fries, and a medium milkshake
+   ENDDO
+   
+ON=@CLICK
+   MESSAGE Delivery from Vesper Roast Chicken (<NAME>)
+   RETURN 1
+
+
+
+//------------------------------
+//-         The Sting          -
+//------------------------------
+
+
+   
+[FUNCTION f_thesting_part_1]
+   VAR.QUESTHASOPTIONS=
+   VAR.QUESTOPTION1=
+   VAR.QUESTOPTION2=
+   TAG.QUESTOPTION1.SELECTION=
+   TAG.QUESTOPTION2.SELECTION=
+   TAG.QUESTCONFIRM.SELECTION=f_thesting_part_1_confirmed
+   VAR.QUESTTITLE=The Sting
+   VAR.QUESTPICTURE=2488
+   VAR.QUESTLINE1=Hey hun, I'm sorry to throw this one at you but this is important...
+   VAR.QUESTLINE2=I've got word from one of my old friends, an ex-Holy Knight, that
+   VAR.QUESTLINE3=one of our delivery boys is secretly a plant from Honest Joe...
+   VAR.QUESTLINE4=Now I don't like to believe this, but Joes been sneaky since he
+   VAR.QUESTLINE5=started competing with us for trade. I want you to speak with
+   VAR.QUESTLINE6=Vlad Tepes in Cove... He sent a message saying he made a recent burial which may
+   VAR.QUESTLINE7=be of interest to us...
+   VAR.QUESTLINE8=
+   VAR.QUESTLINE9=
+   VAR.QUESTLINE10=
+   VAR.QUESTLINE11=
+   VAR.QUESTCONFIRMSECTION=You can count on me!
+   DIALOG d_quest_standard   
+
+
+[FUNCTION f_thesting_part_1_confirmed]
+IF (0<SRC.TAG.COMPANIESEMPLOYEDBY> & NPCE_HonJoeFreshLamb)
+   SRC.MESSAGE You go to accept the job, but Marie notices your Honest Joes employment badge...
+   RETURN 1
+ENDIF
+SRC.TAG.NPC_QUEST_START_2 = <eval ( <SRC.TAG.NPC_QUEST_START_2> | NPCQ_VRCTheSting )>
+
+
+   
+[EOF]

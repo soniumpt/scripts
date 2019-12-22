@@ -1,0 +1,2963 @@
+//Changelog
+//---------
+//08/07/2003 - Wigifer - Alignments added - Tested
+//16/07/2003 - Wigifer - Alignments rep test command added - Tested
+//16/07/2003 - Wigifer - Lucky colour command added - Tested
+//08/09/2003 - Tiffany - Tag.rep.alignment fixed? - Tested (hopefully it works, if not|have back-up)
+//08/09/2003 - Wren - Fixed Sparring spelling....
+//21/12/2003 - Karl - Changed mentions of MPZ UO in Travel Papers into Universal UO
+//25/02/2004 - Wren - Reorganized script and Reworked the Papers Gump
+//20/03/2004 - Wigifer - Changed stat system a lot for new flux system
+//02/10/2004 - Wren - Added Guildstone function (thanks to Raist for script)
+//08/08/2005 - Wren - Revamped/Cleaned Papers moving some other commands into papers and removing commands
+//08/08/2005 - Wren - Combined k_cmd_other with k_main_status and renamed to k_cmd_player
+//07/06/2013 - Ray - .stats added for players, 200 gp lower stat fee removed. .commands added.
+//16/03/2014 - Ray - Re-made .ore —> whoever “rhide, erikgallneby@gmail.com” is, fuck you. Your .ore script is the worst thing I’ve ever seen on my entire life.
+//02/06/2018 - Wigifer - d_stat_control now has a required ON=0 (Close) to fire j_newbie_quest Quest 1 Part 4
+//17/08/2018 - Wigifer - Added the WigDebugMode stuff you need
+//18/08/2018 - Wigifer - Added the .Discord command to invite a player to our discord
+//30/08/2018 - Wigifer - Updated [FUNCTION stats] to account for the new Character Manager
+//31/08/2018 - Wigifer - Added a catch-all stat manager error under [FUNCTION stats]
+// 25/11/2019 - Wigifer - Updated all remaining <TIME> to <SERV.TIME> (56d update issue)
+
+//********************************************************************//
+//                        PLAYER COMMAND LIST                         //
+//             SETS FUNCTIONS TO BE AVAILABLE TO PLAYERS              //
+//********************************************************************//
+[PLEVEL 1]
+status
+regs
+regscontrol
+skillrolls
+DAMROLLS
+papers
+eq
+donation
+sparring
+luckycolour
+accept
+craftmark
+//kickball
+//shootball
+AOSFEATURES
+rp
+rename
+//focustoggle
+where
+//Dismountshandra
+housecount
+factionpoints
+changecolor
+newoptout
+occhat
+o
+c
+cli
+//skill2006
+//claimskill
+REGEMAIL
+SHOWEMAIL
+pvp2
+ochome
+ore
+res
+chat
+stats
+commands
+WigDebugMode
+Discord
+
+//********************************************************************//
+//                               DISCORD                              //
+//            INVITES AND LOADS A DISCORD LINK TO OUR SERVER          //
+//********************************************************************//
+
+[FUNCTION Discord]
+SRC.WEBLINK discord.gg/WTrfW73
+
+
+//********************************************************************//
+//                          PLAYERDEBUGMODE                           //
+//       DISPLAYS DEBUG INFORMATION USING THE WIGDEBUG FORMAT         //
+//********************************************************************//
+//                                                                    //
+// NOTE: All WigDebugMode applicable debug messages can be found in   //
+//       files by searching for [WIG DEBUG].                          //
+//                                                                    //
+//********************************************************************//
+
+[FUNCTION PlayerDebugMode]
+IF (<SRC.TAG0.WIGDEBUG>) 
+   SERV.B WE NAILED IT!
+   IF (<SRC.TAG0.WIGDEBUG>==0)
+      SRC.SYSMESSAGE @07a0 [WIGIFER'S DEBUG MODE ENABLED]
+      SRC.SYSMESSAGE @07a0 :: Use this mode only to identify for a GM page where a fault may exist ::
+      SRC.TAG.WIGDEBUG=1
+   ELSE
+      SRC.SYSMESSAGE @07a0 [WIGIFER'S DEBUG MODE DISABLED]
+      SRC.TAG.WIGDEBUG=0
+   ENDIF
+ELSE
+   SRC.SYSMESSAGE @07a0 [WIGIFER'S DEBUG MODE ENABLED]
+   SRC.SYSMESSAGE @07a0 :: Use this mode only to identify for a GM page where a fault may exist ::
+   SRC.TAG.WIGDEBUG=1
+ENDIF
+
+[FUNCTION PlayerDebugSay]
+//IF (<TAG0.WIGDEBUG>)
+//   SYSMESSAGE @07a0 [PLAYER DEBUG] <ARGS>
+//ENDIF
+
+[FUNCTION commands]
+DIALOG d_papers_game
+//DIALOG d_uCommands
+RETURN 1
+
+
+[FUNCTION ACCOUNTINFO]
+SYSMESSAGE You started playing on Sonium's Server at <account.firstconnectdate> and you have been playing for a total of <account.totalconnecttime> minutes.
+
+[PLEVEL 2]
+//playersonline
+
+[FUNCTION donation]
+SRC.SYSMESSAGE Disabled
+RETURN 1
+
+if ( <DB.connected> )
+    DB.QUERY "SELECT * FROM donations WHERE account_name='<SRC.ACCOUNT.NAME>' AND payment_status='Completed' AND claimed=0"
+    if (<DB.ROW.NUMROWS> > 0)
+        for R 0 <eval <DB.ROW.NUMROWS>-1>
+            f_give_donation <DB.ROW.<eval <LOCAL.R>>.itemID>, <DB.ROW.<eval <LOCAL.R>>.data1>, <DB.ROW.<eval <LOCAL.R>>.data2>
+            DB.EXECUTE "UPDATE donations SET claimed='1' WHERE tupID='<DB.ROW.<eval <LOCAL.R>>.tupID>'"
+        end
+		f_fireworks125a
+	else
+		SRC.SYSMESSAGE @45 You have not donated. Please visit our site to donate to us.
+    endif
+endif
+
+
+[FUNCTION f_give_donation]
+LOCAL.ID = <ARGV[0]>
+LOCAL.D1 = <ARGV[1]>
+LOCAL.D2 = <ARGV[2]>
+
+// Dyed Spellbook
+IF (<LOCAL.ID> == 1)
+   SERV.NEWITEM i_spellbook
+   NEW.MORE1=0fffffffd
+   NEW.MORE2=0ffffffff
+   NEW.COLOR=<LOCAL.D1>
+   NEW.BOUNCE <SRC.UID>
+   SRC.SYSMESSAGE @45 You have been rewarded with a Dyed Spellbook. It has been placed in your bag.
+
+// Dyed Spellbook with Name
+ELSEIF (<LOCAL.ID> == 2)
+   SERV.NEWITEM i_spellbook
+   NEW.MORE1=0fffffffd
+   NEW.MORE2=0ffffffff
+   NEW.COLOR=<LOCAL.D1>
+   NEW.NAME=<LOCAL.D2>
+   NEW.BOUNCE <SRC.UID>
+   SRC.SYSMESSAGE @45 You have been rewarded with a Dyed Spellbook named <LOCAL.D2>. It has been placed in your bag.
+   
+//  48 hour skill roll scroll
+ELSEIF (<LOCAL.ID> == 3)
+   SRC.donatorskillscroll 48
+   
+//  72 hour skill roll scroll
+ELSEIF (<LOCAL.ID> == 4)
+   SRC.donatorskillscroll 72
+
+   // Name Change
+ELSEIF (<LOCAL.ID> == 5)
+   SERV.NEWITEM i_rename_voucher
+   NEW.BOUNCE <SRC.UID>
+   SRC.SYSMESSAGE @45 You have been rewarded with a Rename Voucher (Blue scroll). It has been placed in your bag.
+   
+   // Sex Change
+ELSEIF (<LOCAL.ID> == 6)
+   SERV.NEWITEM i_sex_change_voucher
+   NEW.BOUNCE <SRC.UID>
+   SRC.SYSMESSAGE @45 You have been rewarded with a Sex Change Voucher (Pink scroll). It has been placed in your bag.
+   
+   
+      // Donator Robe
+ELSEIF (<LOCAL.ID> == 7)
+   SERV.NEWITEM i_robe_donator
+   NEW.LINK=<SRC.UID>
+   NEW.TAG.ORIGINALOWNER=<SRC.NAME>
+   NEW.TAG.ACCOUNTOWNER=<SRC.ACCOUNT>
+   NEW.NAME=<LOCAL.D2>
+   NEW.COLOR=<LOCAL.D1>
+   NEW.BOUNCE <SRC.UID>
+   SRC.SYSMESSAGE @45 You have been rewarded with a Donator Robe called <LOCAL.D2>. It has been placed in your bag.
+   
+   
+ // Donator Horse
+ELSEIF (<LOCAL.ID> == 8)
+   SERV.NEWITEM i_donator_horse
+   NEW.BOUNCE <SRC.UID>
+   SRC.SYSMESSAGE @45 You have been rewarded with a Donator Horse. It has been placed in your bag. Use .changecolor to change the colour of it.
+   
+    // Donator Llama
+ELSEIF (<LOCAL.ID> == 9)
+   SERV.NEWITEM i_donator_llama
+   NEW.BOUNCE <SRC.UID>
+   SRC.SYSMESSAGE @45 You have been rewarded with a Donator Llama. It has been placed in your bag. Use .changecolor to change the colour of it.
+   
+       // Donator Orn
+ELSEIF (<LOCAL.ID> == 10)
+   SERV.NEWITEM i_donator_orn
+   NEW.BOUNCE <SRC.UID>
+   SRC.SYSMESSAGE @45 You have been rewarded with a Donator Orn. It has been placed in your bag. Use .changecolor to change the colour of it.
+   
+   
+          // Donator Oclock
+ELSEIF (<LOCAL.ID> == 11)
+   SERV.NEWITEM i_donator_ostard
+   NEW.BOUNCE <SRC.UID>
+   SRC.SYSMESSAGE @45 You have been rewarded with a Donator Oclock. It has been placed in your bag. Use .changecolor to change the colour of it.
+   
+             // Donator Zost
+ELSEIF (<LOCAL.ID> == 12)
+   SERV.NEWITEM i_donator_zostrich
+   NEW.BOUNCE <SRC.UID>
+   SRC.SYSMESSAGE @45 You have been rewarded with a Donator Zostrich. It has been placed in your bag. Use .changecolor to change the colour of it.
+   
+             // Donator Cake
+ELSEIF (<LOCAL.ID> == 13)
+   SERV.NEWITEM i_donator_cake
+   NEW.COLOR = <LOCAL.D1>
+   NEW.LINK=<SRC.ACCOUNT.NAME>
+   NEW.BOUNCE <SRC.UID>
+   SRC.SYSMESSAGE @45 You have been rewarded with a Donator Cake. It has been placed in your bag. Click it to dye your skin for 4 hours.
+             // Donator Polar
+ELSEIF (<LOCAL.ID> == 14)
+   SERV.NEWITEM i_donator_polarbear
+   NEW.BOUNCE <SRC.UID>
+   SRC.SYSMESSAGE @45 You have been rewarded with a Donator Polar Bear. It has been placed in your bag. Use .changecolor to change the colour of it.
+  
+//  Genirosity.
+ELSEIF (<LOCAL.ID> == 0)
+   SERV.ALLCLIENTS SYSMESSAGE @45 Out of the good in their heart, <SRC.NAME> has donated to Imperial UO without asking for anything in return. Thank You!
+   
+   
+ELSE
+	SRC.SYSMESSAGE @45 You cannot claim this donation using this command. Please page.
+ENDIF
+SERV.LOG '<SRC.ACCOUNT.NAME>' is claiming a donation item ID: <LOCAL.ID> / UID: <NEW.UID>.
+
+
+//********************************************************************//
+//                                 CLI                                //
+//                      TOGGLES RESDISP ON CLIENTS                    //
+//********************************************************************//
+
+[FUNCTION CLI]
+   IF strmatch("<SRC.CLIENTVERSION>","2.0.0")
+      SRC.ACCOUNT.RESDISP=1
+   ELSEIF strmatch("2*","<SRC.CLIENTVERSION>")
+      SRC.ACCOUNT.RESDISP=1
+   ELSEIF strmatch("4.0.11","<SRC.CLIENTVERSION>")
+      SRC.ACCOUNT.RESDISP=7
+   ELSEIF strmatch("5*","<SRC.CLIENTVERSION>")
+      SRC.ACCOUNT.RESDISP=7
+   ELSEIF strmatch("6*","<SRC.CLIENTVERSION>")
+      SRC.ACCOUNT.RESDISP=7      
+   ELSEIF strmatch("2*","<SRC.REPORTEDCLIVER>")
+      SRC.ACCOUNT.RESDISP=1
+   ELSEIF strmatch("4*","<SRC.REPORTEDCLIVER>")
+     SRC.ACCOUNT.RESDISP=7
+   ELSEIF strmatch("5*","<SRC.REPORTEDCLIVER>")
+      SRC.ACCOUNT.RESDISP=7
+   ELSEIF strmatch("6*","<SRC.REPORTEDCLIVER>")
+      SRC.ACCOUNT.RESDISP=7
+   ENDIF
+   SRC.SYSMESSAGE @07a1 The appropriate animation level has been set on your account. Please restart your client to see the changes.
+   RETURN 1
+
+//********************************************************************//
+//                           PLAYERSONLINE                            //
+//             DETAILED LIST OF ALL THE PLAYERS ONLINE                //
+//********************************************************************//
+
+//List of players online, their titles, guildnames, alignment (red/blue)
+//29.03.2007, Scripted by Yin for BFUO. Based on original Sphereadmin.scp script.
+
+[FUNCTION playersonline]
+    ctag.po_numplayers=0
+    ctag.po_page=1
+    serv.allclients playersonline_getplayers
+    ctag.po_numpages=<eval (((<ctag0.po_numplayers>-1) / 15) + 1)> // 15 players per page
+    dialog d_playersonline
+
+[FUNCTION playersonline_getplayers]
+// List players in CTAGs on the caller
+    if ((<account.plevel> > <src.account.plevel>) && (<flags> & statf_insubstantial) && (<def0.admin_hidehighpriv>))
+        return
+    else
+        src.ctag0.po_numplayers += 1
+        try src.ctag.po_p<eval (<src.ctag0.po_numplayers>)>=<uid>
+    endif
+
+[FUNCTION po_getplayers_test]
+// Function I used to test page system
+for x 1 50
+    try ctag.po_p<eval <local.x>>=01
+end
+ctag.po_numplayers=50
+
+[DIALOG d_playersonline]
+0,21
+src.dialogclose d_playersonline
+local.oldobj=<obj>
+page 0 // Basic layout
+resizepic 0 0 2620 650 397 // Background
+gumppictiled 5 5 640 385 2604
+gumppictiled 5 5 640 25 2624
+gumppictiled 5 370 640 22 2624
+gumppictiled 5 35 640 330 2624
+checkertrans 5 5 640 387
+dtext 10 7 0c1 Imperial UO Shard - Avatars Online: <eval <ctag0.po_numplayers>>
+button 615 5 4017 4018 1 0 0
+page 1 // Player data
+dtext 60 35 450 Avatars Name
+dtext 200 35 450 Title
+dtext 340 35 450 Guild
+dtext 450 35 450 Status
+playersonline_renderdialog
+obj=<local.oldobj>
+if (<ctag0.po_page> > 1)
+    // Back button
+    button 5 370 4014 4015 1 0 1
+endif
+if (<ctag0.po_page> < <ctag0.po_numpages>)
+    // Forward button
+    button 615 370 4005 4006 1 0 2
+endif
+dtext 275 370 0c1 Page <eval <ctag0.po_page>> / <eval <ctag0.po_numpages>>
+
+[FUNCTION playersonline_renderdialog]
+local.y=55
+for x=<eval ((<ctag0.po_page> - 1) * 15) + 1> <eval (<ctag0.po_page> * 15)>
+    if (<local.x> > <ctag0.po_numplayers>)
+        return 1
+    endif
+    obj=<ctag0.po_p<eval <local.x>>>
+    if (<obj.kills> <= 3 )
+        local.hue=4
+    else
+        local.hue=025
+    endif
+    local.combat_skills = <eval <obj.1>+<obj.5>+<obj.16>+<obj.17>+<obj.22>+<obj.25>+<obj.26>+<obj.27>+<obj.30>+<obj.31>+<obj.40>+<obj.41>+<obj.42>+<obj.43>+<obj.49>>
+    local.trading_skills = <eval <obj.0>+<obj.3>+<obj.4>+<obj.7>+<obj.8>+<obj.11>+<obj.23>+<obj.34>+<obj.35>+<obj.37>+<obj.44>+<obj.45>>
+
+    local.adventure_skills = <eval <obj.2>+<obj.6>+<obj.9>+<obj.10>+<obj.12>+<obj.13>+<obj.14>+<obj.15>+<obj.18>+<obj.19>+<obj.20>+<obj.21>+<obj.24>+<obj.28>+<obj.29>+<obj.32>+<obj.33>+<obj.36>+<obj.38>+<obj.39>+<obj.46>+<obj.47>+<obj.48>>
+    local.total_skills = <eval <local.combat_skills> + <local.trading_skills> +<local.adventure_skills>>
+    If  (<local.total_skills> < 4000)
+        if (<obj.kills> <= 3)
+            local.status = "Newbie"
+        else
+            local.status = "Natural Born Killer"
+        endif
+    elseif (<local.combat_skills> > <local.trading_skills>)
+        if (<obj.kills> <= 3)
+            local.status = "Warrior"
+        elseif (<obj.kills> >= 500)
+            local.status = "Maniac Killer"
+        elseif (<obj.kills> >= 100)
+            local.status = "Mass Murderer"
+        else
+            local.status = "Murderer"
+        endif
+    elseif (<local.trading_skills> > <local.adventure_skills>)
+        if (<obj.kills> <= 3)
+            local.status = "Trader"
+        else
+            local.status = "Black Market Trader"
+        endif
+    else
+        if (<obj.kills> <= 3)
+            local.status = "Adventurer"
+        elseif (<obj.kills> >= 500)
+            local.status = "Death Incarnate"
+        elseif (<obj.kills> >= 100)
+            local.status = "Assassin"
+        else
+            local.status = "Rogue"
+        endif
+    endif
+    dtext 205 <local.y> 480 <QVAL <OBJ.FINDID.i_rune_incognito.UID> ? <OBJ.FINDID.i_rune_incognito.TITLE> : <obj.title>> // Title
+    dtext 65 <local.y> <local.hue> <QVAL <OBJ.FINDID.i_rune_incognito.UID> ? <OBJ.FINDID.i_rune_incognito.NAME> : <obj.name>> // character name
+    dtext 345 <local.y> 480 <QVAL <OBJ.FINDID.i_rune_incognito.UID> ? <OBJ.FINDID.i_rune_incognito.GUILD.NAME> : <obj.guild.name>> // Guild
+    dtext 455 <local.y> 480 <local.status>
+
+end
+
+[DIALOG d_playersonline BUTTON]
+on=1 // Back button
+ctag.po_page -= 1
+if (<ctag0.po_page> < 1)
+    // Bad! And shouldnt happen
+    sysmessage Error: po_page value went too low, please report (<ctag0.po_page> / <ctag0.po_numpages>)
+    ctag.po_page=1
+endif
+dialog d_playersonline
+on=2 // Forward button
+ctag.po_page += 1
+if (<ctag0.po_page> > <ctag0.po_numpages>)
+    // Bad! Should also not happen
+    sysmessage Error: po_page value went too high, please report (<ctag0.po_page> / <ctag0.po_numpages>)
+    ctag.po_page=<ctag0.po_numpages>
+endif
+dialog d_playersonline
+
+[FUNCTION changecolor]
+IF (<SRC.ACCOUNT.TAG.DONARSTEEDOWNER> == 1)
+  IF (<SRC.FINDTYPE.t_donator_statuette.uid>)
+	SRC.DIALOG d_donar_color
+  ELSE
+        src.sysmessage You dont have a steed in your pack.
+  ENDIF
+ELSE
+	src.sysmessage You dont appear to have donated.
+ENDIF
+
+
+
+//[FUNCTION stuck]
+//SERV.LOG <src.name> is attempting to use .stuck at <p>
+//SRC.f_close_trade
+//SRC.f_drop_skargard
+//IF (<SRC.ISSTUCK> = 1)
+//   if ( <SRC.ACT.TYPE> == t_multi )
+//      src.sysmessage You cannot use this in a house.
+//      return 1
+//   endif
+//   if (<SRC.MEMORYFINDTYPE.memory_fight> )
+//   src.sysmessage You cannot use this whilst fighting.
+//      return 1
+//   endif
+//   IF ( <SRC.FLAGS> & statf_stone ) 
+//   src.sysmessage You cannot use this whilst stoned.
+//   return 1
+//   ENDIF
+//   IF (<SRC.ACCOUNT.JAIL>=1)
+//   src.sysmessage You cannot use this whilst in jail.
+//   RETURN 1
+//   ENDIF
+//   IF (<SRC.FLAGS> & statf_war)    
+//   src.sysmessage You cannot use this in war mode.
+//    RETURN 1
+//	ENDIF
+//	IF (<SRC.FLAGS> & statf_criminal)    
+//	   src.sysmessage You cannot use this whilst criminal.
+//    RETURN 1
+//	ENDIF
+//	IF (<SRC.UNDERGROUND>)    
+//	   src.sysmessage You cannot use this underground.
+//    RETURN 1
+//	ENDIF
+//	IF (<SRC.INDOORS>)    
+//	   src.sysmessage You cannot use this indoors.
+//    RETURN 1
+//	ENDIF
+//	if !(<SRC.FINDID.b_stuck_timer.UID>)
+//	   SERV.NEWITEM b_stuck_timer
+//	   NEW.EQUIP <SRC.UID>
+//	   SRC.EMOTE look stuck.
+//	ELSE
+//		   SRC.SYSMESSAGE You already have a stuck request pending.
+//	endif
+//ELSE
+//	src.sysmessage You do not appear to be stuck, if this is incorrect please page.
+//ENDIF
+
+[ITEMDEF b_stuck_timer]
+ID=01f29
+NAME=Stuck Timer
+TYPE=t_eq_script
+
+ON=@CREATE
+COLOR=1935
+ATTR=attr_decay
+
+ON=@EQUIP
+   TIMER=10
+   TAG.TIMESLEFT = 20
+   CONT.SYSMESSAGE You will be teleported in 30 seconds, please wait.
+
+ON=@TIMER
+//    IF (<CONT.ISSTUCK> = 1)
+   if ( <CONT.ACT.TYPE> == t_multi )
+      CONT.sysmessage You cannot use this in a house.
+      return 1
+   endif
+   if (<CONT.MEMORYFINDTYPE.memory_fight> )
+   CONT.sysmessage You cannot use this whilst fighting.
+      return 1
+   endif
+   IF ( <CONT.FLAGS> & statf_stone ) 
+   CONT.sysmessage You cannot use this whilst stoned.
+   return 1
+   ENDIF
+   IF (<CONT.ACCOUNT.JAIL>=1)
+   CONT.sysmessage You cannot use this whilst in jail.
+   RETURN 1
+   ENDIF
+   IF (<CONT.FLAGS> & statf_war)    
+   CONT.sysmessage You cannot use this in war mode.
+   RETURN 1
+   ENDIF
+	IF (<CONT.FLAGS> & statf_criminal)    
+	   CONT.sysmessage You cannot use this whilst criminal.
+    RETURN 1
+	ENDIF
+	IF (<CONT.UNDERGROUND>)    
+	   CONT.sysmessage You cannot use this underground.
+    RETURN 1
+	ENDIF
+	IF (<CONT.INDOORS>)    
+	   CONT.sysmessage You cannot use this indoors.
+    RETURN 1
+	ENDIF
+	IF (<TAG.TIMESLEFT> < 10 )
+    CONT.GO <cont.region.name>
+	CONT.SYSMESSAGE Unstucking. . .
+	ELSE
+	CONT.SYSMESSAGE  You will be teleported in <eval(<tag.timesleft>)> seconds
+	CONT.EMOTE look stuck
+	TAG.TIMESLEFT = <eval(<tag.timesleft> - 10)>
+	TIMER=10
+	RETURN 1
+	ENDIF
+//ELSE
+//	CONT.sysmessage You do not appear to be stuck, if this is incorrect please page.
+//ENDIF
+    REMOVE
+    RETURN 1
+
+[FUNCTION newoptout]
+IF (<SRC.ISNEWBIE>)
+  src.tag.newbieout = 1
+    SRC.SYSMESSAGE @0793 You have now opted out of the new player system
+    SRC.EVENTS -e_newbie
+ELSE
+	src.sysmessage You are not a new player.
+ENDIF
+
+//********************************************************************//
+//                                 EMAIL                              //
+//             SETS THE EMAIL ADDY AN ACCOUNT IS TIED TO              //
+//********************************************************************//
+[FUNCTION where]
+serv.log <name> <account> used where at <p>
+
+[FUNCTION SHOWEMAIL]
+   SRC.SYSMESSAGE This account is registered to <SRC.ACCOUNT.TAG.EMAIL>.
+   RETURN 1
+
+[FUNCTION REGEMAIL]
+   IF 0<ARGS> = 0
+      SRC.SYSMESSAGE Invalid Set - You must provide your e-mail address after this command
+      RETURN 1
+   ELSE
+   
+      //Must have '@' & '.'
+      IF ( <strpos 1 64 <args>> <= 0 )
+          SRC.SYSMESSAGE You must provide your full e-mail address
+          return 1
+      elseif ( <strpos 1 46 <args>> <= 0 )
+          SRC.SYSMESSAGE You must provide your full e-mail address
+          return 1
+          
+      //Cannot have
+      elseif ( <strpos 1 42 <args>> > 0 )
+          src.sysmessage You cannot use '*' in your email address
+          return 1
+      elseif ( <strpos 1 60 <args>> > 0 )
+          src.sysmessage You cannot use '<' in your email address
+          return 1
+      elseif ( <strpos 1 62 <args>> > 0 )
+          src.sysmessage You cannot use '>' in your email address
+          return 1
+      elseif ( <strpos 1 63 <args>> > 0 )
+          src.sysmessage You cannot use '?' in your email address
+          return 1
+      elseif ( <strpos 1 91 <args>> > 0 )
+          src.sysmessage You cannot use '[' in your email address
+          return 1
+      elseif ( <strpos 1 93 <args>> > 0 )
+          src.sysmessage You cannot use ']' in your email address
+          return 1
+      elseif ( <strpos 1 32 <args>> > 0 )
+          src.sysmessage You cannot use spaces in your email address
+          return 1
+      elseif ( <strpos 1 61 <args>> > 0 )
+          src.sysmessage You cannot use '=' in your email address
+          return 1
+      elseif ( <strpos 1 92 <args>> > 0 )
+          src.sysmessage You cannot use '\' in your email address
+          return 1
+      elseif ( <strpos 1 47 <args>> > 0 )
+          src.sysmessage You cannot use '/' in your email address
+          return 1
+      elseif ( <strpos 1 123 <args>> > 0 )
+          src.sysmessage You cannot use '{' in your email address
+          return 1
+      elseif ( <strpos 1 125 <args>> > 0 )
+          src.sysmessage You cannot use '}' in your email address
+          return 1
+      elseif ( <strpos 1 124 <args>> > 0 )
+          src.sysmessage You cannot use '|' in your email address
+          return 1
+      elseif ( <strpos 1 33 <args>> > 0 )
+          src.sysmessage You cannot use '!' in your email address
+          return 1
+      elseif ( <strpos 1 34 <args>> > 0 )
+          src.sysmessage You cannot use '"' in your email address
+          return 1
+      elseif ( <strpos 1 35 <args>> > 0 )
+          src.sysmessage You cannot use '#' in your email address
+          return 1
+      elseif ( <strpos 1 36 <args>> > 0 )
+          src.sysmessage You cannot use '$' in your email address
+          return 1
+      elseif ( <strpos 1 37 <args>> > 0 )
+          src.sysmessage You cannot use '%' in your email address
+          return 1
+      elseif ( <strpos 1 38 <args>> > 0 )
+          src.sysmessage You cannot use '&' in your email address
+          return 1
+      elseif ( <strpos 1 39 <args>> > 0 )
+          src.sysmessage You cannot use ''' in your email address
+          return 1
+      elseif ( <strpos 1 40 <args>> > 0 )
+          src.sysmessage You cannot use '(' in your email address
+          return 1
+      elseif ( <strpos 1 41 <args>> > 0 )
+          src.sysmessage You cannot use ')' in your email address
+          return 1
+      elseif ( <strpos 1 43 <args>> > 0 )
+          src.sysmessage You cannot use '+' in your email address
+          return 1
+      elseif ( <strpos 1 44 <args>> > 0 )
+          src.sysmessage You cannot use ',' in your email address
+          return 1
+      else
+          src.sysmessage Your account has been registered to <args>
+          serv.log EMAIL CHANGE: <src.account> has been registered from <SRC.ACCOUNT.TAG.EMAIL> to <args>
+          SRC.ACCOUNT.TAG.EMAIL=<ARGS>
+      endif
+
+   ENDIF
+
+//********************************************************************//
+//                                  RP                                //
+//       SIMPLY DISPLAYS THE WORD ROLEPLAYING ABOVE THEIR NAME        //
+//********************************************************************//
+[Function rp]
+  IF STRMATCH( "<SRC.TAG.MODESET>", "Roleplaying" ) 
+     SRC.TAG.MODESET	= 
+  ELSE
+     SRC.TAG.MODESET	= Roleplaying
+  ENDIF
+  RETURN 1
+  
+
+//********************************************************************//
+//                               PEACE                                //
+//     ALLOWS A PLAYER TO REQUEST FORGIVENESS FROM ANOTHER PLAYER     //
+//   THIS KEEPS THE ATTACKER FROM BEING CHARGED IF THE FORGIVER DIES  //
+//********************************************************************//
+[ITEMDEF m_forgive]
+ID	= i_memory
+TYPE	= t_eq_script
+NAME	= forgive
+LAYER	= layer_special
+
+ON=@Timer
+   REMOVE
+   return 1
+   
+ON=@Create
+   ATTR		= attr_decay
+   TIMER	= 20
+
+
+[ITEMDEF m_peace_target]
+ID	= i_memory
+TYPE	= t_eq_script
+NAME	= target
+LAYER	= layer_special
+
+ON=@Timer
+   REMOVE
+   return 1
+   
+ON=@Create
+   ATTR		= attr_decay
+   TIMER	= 20
+   
+ON=@Targon_char
+   if ( <src.uid> == <src.targ.uid> )
+      src.sysmessage You are at peace with yourself.
+      return 1
+   elseif ( <src.targ.npc>)
+      src.sysmessage They are not interested in making peace with you.
+      return 1
+   endif
+   
+   SRC.TARG.NEWITEM M_FORGIVE
+   SRC.TARG.ACT.MORE1=<SRC.UID>
+   SRC.TARG.EQUIP <SRC.TARG.ACT>
+     
+   SRC.SAY I am requesting peace with <SRC.TARG.NAME>.
+   SRC.TARG.SYSMESSAGE type .accept within 20 seconds to forgive <SRC.NAME>
+   return 1
+
+
+[FUNCTION peace]
+  SRC.NEWITEM		m_peace_target
+  SRC.ACT.TARGET	Who do you want to make peace with?
+
+   
+[FUNCTION f_peace]
+  if !( <UID.<args>.COLOR> & (MEMORY_harmedby|memory_irritatedby|memory_aggreived|MEMORY_fight) )
+     return 0
+  endif
+ 
+  if !( <UID.<args>.LINK.uid> == <VAR.FORGIVER> )
+     return 0
+  endif
+  
+  VAR.FOUND	= 1
+  TRY SRC.UID.<args>.REMOVE
+  RETURN 1
+
+
+[FUNCTION f_accept]  
+  if !( <UID.<args>.COLOR> & (MEMORY_harmedby|memory_irritatedby|memory_aggreived|MEMORY_fight ) )
+     return 0
+  endif
+    
+  if !( <UID.<args>.LINK.uid> == <VAR.FORGIVING> )
+     return 0
+  endif
+  
+  VAR.FOUND	= 1
+  TRY SRC.UID.<args>.REMOVE
+  RETURN 1
+  
+
+[FUNCTION accept]
+  IF <FINDID.m_forgive.uid>
+  
+     VAR.FORGIVE=<FINDID.m_forgive.UID>
+     VAR.FORGIVING=<UID.<VAR.FORGIVE>.MORE1>
+     VAR.FORGIVER=<UID.<VAR.FORGIVE>.CONT.UID>
+     
+     VAR.FOUND	= 0
+     TRY UID.<VAR.FORGIVING>.FOR_MEMORY f_peace
+     SRC.FOR_MEMORY f_accept
+
+     if ( <VAR.FOUND> == 0 )
+        TRY UID.<VAR.FORGIVING>.SYSMESSAGE You are not aggrieved with them.
+        src.sysmessage You are not aggrieved with them.
+     endif
+   
+     SAY I've accepted peace with <UID.<VAR.FORGIVING>.NAME>
+     TRY UID.<VAR.FORGIVE>.REMOVE
+     
+  ELSE
+     SYSMESSAGE There is no one making peace with you.
+  ENDIF
+  RETURN 1
+
+
+//********************************************************************//
+//                             CRAFTMARK                              //
+//       ALLOWS A PLAYER TO REMOVE THEIR CRAFTMARK FROM AN ITEM       //
+//********************************************************************//
+[ITEMDEF m_crafter_target]
+ID	= i_memory
+NAME	= target
+LAYER	= layer_special
+
+ON=@Timer
+   REMOVE
+   return 1
+ON=@Create
+   ATTR		= attr_decay
+   TIMER	= 30
+   
+ON=@Targon_item
+   VAR.PREV_NAME	= <SRC.TARG.NAME>
+   SRC.TARG.NAME	= // clear name
+   VAR.ORIG_NAME	= <SRC.TARG.NAME>
+
+   if ( !strcmp( "<VAR.PREV_NAME>", "<VAR.ORIG_NAME> crafted by <SRC.NAME>" )
+      src.sysmessage You remove the crafter mark from <SRC.TARG.NAME>.
+   elseif ( !strcmp( "<VAR.PREV_NAME>", "jeweled <VAR.ORIG_NAME> crafted by <SRC.NAME>" )
+      src.sysmessage You remove the crafter mark from <SRC.TARG.NAME>.
+      SRC.TARG.NAME	= jeweled <VAR.ORIG_NAME>
+   else
+      src.sysmessage You are not the crafter of that <SRC.TARG.NAME>.
+      SRC.TARG.NAME	= <VAR.PREV_NAME>
+   endif
+   return 1
+
+
+[FUNCTION craftmark]
+  if ( <<SKILLBEST>> < 100.0 )
+     SRC.SYSMESSAGE You aren't skilled enough to have anything crafted.
+     return 1
+  endif
+  SRC.SYSMESSAGE OK...
+  SRC.NEWITEM		m_crafter_target
+  SRC.ACT.TARGET	What item do you want to remove the crafter's mark from?
+
+
+//********************************************************************//
+//                             ORDERCHAT                              //
+//         ALLOWS MEMBERS OF ORDER TO CHAT WITH EACH OTHER            //
+//********************************************************************//
+//[Function o]
+//IF (0<SRC.TAG.OCCHAT>=01)
+   //IF (<SRC.ISALIGNMENT_ORDER>)
+      //VAR.LASTMSG=<ARGS>
+      //VAR.LASTPERSON=<SRC.NAME>
+     // SERV.ALLCLIENTS OTALKPROCESS <ISALIGNMENT_ORDER> 
+   //ELSE	
+     // SRC.SYSMESSAGE You are not part of Order!
+   //ENDIF
+//ELSE
+  // SRC.SYSMESSAGE You currently have O/C Chat disabled.  To enable it, type .OCCHAT
+//ENDIF
+//RETURN 1
+
+
+//[Function OTALKPROCESS]
+//IF ((0<ARGS> == 0<ISALIGNMENT_ORDER>) && (0<TAG.OCCHAT>=01))
+  // SYSMESSAGE @005a [ <VAR.LASTPERSON> ] <VAR.LASTMSG>
+//END IF
+//RETURN 1
+
+
+//********************************************************************//
+//                             CHAOSCHAT                              //
+//         ALLOWS MEMBERS OF CHAOS TO CHAT WITH EACH OTHER            //
+//********************************************************************//
+//[Function c]
+//IF (0<SRC.TAG.OCCHAT>=01)
+  // IF (<SRC.ISALIGNMENT_CHAOS>)
+    //  VAR.LASTMSG=<ARGS>
+      //VAR.LASTPERSON=<SRC.NAME>
+      //SERV.ALLCLIENTS CTALKPROCESS <ISALIGNMENT_CHAOS> 
+   //ELSE	
+    //  SRC.SYSMESSAGE You are not part of Chaos!
+   //ENDIF
+//ELSE
+  // SRC.SYSMESSAGE You currently have O/C Chat disabled.  To enable it, type .OCCHAT
+//ENDIF
+//RETURN 1
+
+
+//[Function cTALKPROCESS]
+//IF ((0<ARGS> == 0<ISALIGNMENT_CHAOS>) && (0<TAG.OCCHAT>=01))
+  // SYSMESSAGE @015d [ <VAR.LASTPERSON> ] <VAR.LASTMSG>
+//END IF
+//RETURN 1
+
+
+//********************************************************************//
+//                             FACTIONCHAT                            //
+//                     TOGGLES FACTION CHAT ON/OFF                    //
+//********************************************************************//
+//[Function occhat]
+//IF (0<SRC.TAG.OCCHAT>=01)
+  // SRC.TAG.OCCHAT=
+   //SRC.SYSMESSAGE O/C Chat has been toggled off.
+//ELSE	
+  // SRC.TAG.OCCHAT=1
+   //SRC.SYSMESSAGE O/C Chat has been toggled on.
+//ENDIF
+//RETURN 1
+
+
+//********************************************************************//
+//                             GUILDCHAT                              //
+//         ALLOWS MEMBERS OF A GUILD TO CHAT WITH EACH OTHER          //
+//********************************************************************//
+[Function g]
+IF (<SRC.MEMORYFINDTYPE.MEMORY_GUILD.LINK.UID> < 1)
+   SRC.SYSMESSAGE You are not part of a guild!
+ELSE	
+   OBJ = <SRC.MEMORYFINDTYPE.MEMORY_GUILD.LINK.UID>
+   
+   IF STRLEN(<ARGS>) >= 3
+      LOCAL.FIRSTTHREE = <STRSUB 0 3 <ARGS>>
+   ELSE
+      LOCAL.FIRSTTHREE =
+   ENDIF
+
+   IF strmatch("#[0123456789][0123456789]","<LOCAL.FIRSTTHREE>")
+      LOCAL.MEMBER_NUM = <STRSUB 1 2 <LOCAL.FIRSTTHREE>>
+      SRC.SYSMESSAGE @43 [ <SRC.NAME> - <SRC.P> ] <STRSUB 4 <EVAL (STRLEN(<ARGS>) - 4)> <ARGS>>
+      //TRY OBJ.MEMBER.<HVAL <EVAL <LOCAL.MEMBER_NUM>>>.SYSMESSAGE @43 [ <SRC.NAME> - <SRC.P> ] <STRSUB 4 <EVAL (STRLEN(<ARGS>) - 4)> <ARGS>>
+      TRY UID.<OBJ.MEMBER.<HVAL <EVAL <LOCAL.MEMBER_NUM>>>.UID>.SYSMESSAGE @43 [ <SRC.NAME> - <SRC.P> ] <STRSUB 4 <EVAL (STRLEN(<ARGS>) - 4)> <ARGS>>
+   ELSE
+      FOR 0 <EVAL ( <OBJ.MEMBER.COUNT> - 1 )>
+         IF <OBJ.MEMBER.<EVAL <LOCAL._FOR>>.ISONLINE> = 1
+            //TRY OBJ.MEMBER.<EVAL <LOCAL._FOR>>.SYSMESSAGE @90 [ <SRC.NAME> - <SRC.P> ] <ARGS>
+            TRY UID.<OBJ.MEMBER.<EVAL <LOCAL._FOR>>.UID>.SYSMESSAGE @90 [ <SRC.NAME> - <SRC.P> ] <ARGS>
+         ENDIF
+      ENDFOR
+   ENDIF
+ENDIF
+RETURN 1
+
+//********************************************************************//
+//                             LISTGUILD                              //
+//        LISTS MEMBERS OF THE PLAYER'S GUILD THAT ARE ONLINE         //
+//********************************************************************//
+[function isguildcandidate]
+OBJ = <src.MEMORYFINDTYPE.MEMORY_GUILD.LINK.UID>
+If (<obj.memberfromuid.<src.uid>.ISCANDIDATE>)
+RETURN 1
+ELSE
+RETURN 0
+ENDIF
+
+[FUNCTION listguild]
+IF (<SRC.MEMORYFINDTYPE.MEMORY_GUILD.LINK.UID> < 1)
+   SRC.SYSMESSAGE You are not part of a guild!
+ELSE
+   OBJ = <SRC.MEMORYFINDTYPE.MEMORY_GUILD.LINK.UID>
+   FOR 0 <EVAL ( <OBJ.MEMBER.COUNT> - 1 )>
+      IF <OBJ.MEMBER.<EVAL <LOCAL._FOR>>.ISONLINE> = 1
+	   
+         SRC.SYSMESSAGE @80 <EVAL <LOCAL._FOR>> - <OBJ.MEMBER.<EVAL <LOCAL._FOR>>.NAME> [<OBJ.ABBREV>]: <OBJ.MEMBER.<EVAL <LOCAL._FOR>>.REGION.NAME>
+      ENDIF
+   ENDFOR
+ENDIF
+RETURN 1
+
+
+//********************************************************************//
+//                            LUCKYCOLOUR                             //
+//               RETURNS A RANDOM COLOR - JUST FOR FUN                //
+//********************************************************************//
+[FUNCTION luckycolour]
+   SRC.TAG.LUCKYCOLOUR=<eval rand(8)>
+   IF (0<SRC.TAG.LUCKYCOLOUR>=1)
+      SRC.SYSMESSAGE Your lucky colour for today is purple!
+   ELSEIF (0<SRC.TAG.LUCKYCOLOUR>=2)
+      SRC.SYSMESSAGE Your lucky colour for today is red!
+   ELSEIF (0<SRC.TAG.LUCKYCOLOUR>=3)
+      SRC.SYSMESSAGE Your lucky colour for today is blue!
+   ELSEIF (0<SRC.TAG.LUCKYCOLOUR>=4)
+      SRC.SYSMESSAGE Your lucky colour for today is green!
+   ELSEIF (0<SRC.TAG.LUCKYCOLOUR>=5)
+      SRC.SYSMESSAGE Your lucky colour for today is yellow!
+   ELSEIF (0<SRC.TAG.LUCKYCOLOUR>=6)
+      SRC.SYSMESSAGE Your lucky colour for today is brown!
+   ELSEIF (0<SRC.TAG.LUCKYCOLOUR>=7)
+      SRC.SYSMESSAGE Your lucky colour for today is white!
+   ELSEIF (0<SRC.TAG.LUCKYCOLOUR>=8)
+      SRC.SYSMESSAGE Your lucky colour for today is black!
+   ENDIF
+
+
+//********************************************************************//
+//                            SKILLROLLS                              //
+//                   TOGGLES THE SKILLROLL MESSAGES                   //
+//********************************************************************//
+[FUNCTION SKILLROLLS]
+  if ( 0<TAG.SHOW.SKILLROLLS> )
+     TAG.SHOW.SKILLROLLS	= 0
+     SYSMESSAGE Skill progress rolls are now disabled.
+  else
+     TAG.SHOW.SKILLROLLS	= 1
+     SYSMESSAGE Skill progress rolls are now enabled.
+  endif
+
+
+//********************************************************************//
+//                              STATUS                                //
+//   RETURNS INFO ABOUT A CHARACTER'S COMBAT AND MAGIC CAPABILITIES   //
+//********************************************************************//
+[FUNCTION status]
+  if ( <SRC.ISDEAD> )
+     src.sysmessage You're dead.
+     return 1
+  endif
+  status_armour
+  src.sysmessage You feel <VAR.STR1> in combat <VAR.STR0> your magical prowess looks <VAR.STR2>.
+  src.sysmessage You are <status_hunger>.
+  
+
+//********************************************************************//
+//                             DAMROLLS                               //
+//             TOGGLES WHETHER DAMAGE ROLLS ARE DISPLAYED             //
+//********************************************************************//
+[FUNCTION DAMROLLS]
+  if ( 0<TAG.SHOW.DAMROLLS> )
+     TAG.SHOW.DAMROLLS	= 0
+     SYSMESSAGE Damage rolls are now disabled.
+  else
+     if ( (<TACTICS> < 0) && (<ANATOMY> < 0) )
+        SYSMESSAGE You need 30.0% Tactics or Assessment skill to enable this option.
+        return 1
+     endif
+     TAG.SHOW.DAMROLLS	= 1
+     SYSMESSAGE Damage rolls are now enabled.
+  endif
+
+
+//********************************************************************//
+//                             SPARRING                               //
+//      TOGGLES WHETHER DEATH IN COMBAT WILL PENALYZE THE KILLER      //
+//********************************************************************//
+[FUNCTION SPARRING]
+  if ( 0<TAG.SPARING> == 0 )
+     TAG.SPARING	= 1
+     SYSMESSAGE Sparring mode is now enabled. If you're killed, the killer will not get a crime count.
+  elseif ( 0<TAG.SPARING> == 02 )
+     SYSMESSAGE You can't disable sparring mode while in duel.
+  else
+     TAG.SPARING	= 
+     SYSMESSAGE Sparring mode is now disabled.
+  endif
+
+
+//********************************************************************//
+//                      PAPERS FUNCTIONS & DEFS                       //
+//              ADVANCED PLAYER INFORMATION AND OPTIONS               //
+//********************************************************************//
+[DEFNAME travel_paper_flags]
+tp_btup		0837	// 0d7
+tp_btdn		0838	// 0d8
+tp_karma	0001
+tp_fame		0002
+tp_kills	0004
+tp_rep		0010
+tp_dam		0020
+tp_comb		0040
+tp_spec		0080
+tp_res		0100
+tp_misc		0200
+
+//********************************************************************//
+[FUNCTION PAPERS2]
+IF ( <EVAL <SRC.TAG.MAP>> = 1)
+   src.tag.tempmap 1
+   DIALOG_travel_papers 1
+   src.tag.map 0
+//ELSEIF (<SRC.CARTOGRAPHY> < 45.1) 
+//   src.tag.tempmap 0
+//   DIALOG_travel_papers 1
+//ELSE
+  src.tag.tempmap 1
+  DIALOG_travel_papers 1
+ src.tag.map 0
+ENDIF
+RETURN 1
+
+//********************************************************************//
+[FUNCTION DIALOG_travel_papers]
+   if ( 0<SRC.TAG.TPFLAGS> == 0 )
+      SRC.TAG.TPFLAGS	= 0
+   endif
+
+   if ( <SRC.TAG.TPFLAGS> & tp_karma )
+      VAR.INFO.KARMA	= Your karma is around <eval ((<SRC.KARMA>/25)*25)>.
+      VAR.GUMP.KARMA	= 185 25 <eval tp_btdn> <eval tp_btup> 1 0 0
+   else
+      VAR.INFO.KARMA	= "  karma information unavailable."
+      VAR.GUMP.KARMA	= 185 190 <eval tp_btup> <eval tp_btdn> 1 0 11
+   endif
+   
+
+   if ( <SRC.TAG.TPFLAGS> & tp_fame )
+      VAR.INFO.FAME	= Your fame is about <eval ((<SRC.FAME>/25)*25)>.
+      VAR.GUMP.FAME	= 185 25 <eval tp_btdn> <eval tp_btup> 1 0 0
+   else
+      VAR.INFO.FAME	= "  fame information unavailable."
+      VAR.GUMP.FAME	= 185 205 <eval tp_btup> <eval tp_btdn> 1 0 12
+   endif
+   
+   if ( <SRC.TAG.TPFLAGS> & tp_kills )
+      if ( <SRC.KILLS> == 0 )
+         VAR.INFO.KILLS = Your criminal record seems clean.
+         VAR.INFO.KILLTIME=
+      else
+         VAR.INFO.KILLS	= You are charged for <eval (<SRC.KILLS>)> murders.
+         IF (<SRC.FINDID.b_kill_decayer.UID>)
+            IF (<SRC.FINDID.b_kill_decayer.TIMER><0)
+               SRC.FINDID.b_kill_decayer.TIMER = 7200
+               SERV.LOG <SRC.NAME>[<SRC.ACCOUNT>]'s kill timer was reset to two hours because it appeared to have stopped.
+            ENDIF
+            VAR.KILLHOURS = <eval ( (<SRC.FINDID.b_kill_decayer.TIMER> / 60) / 60)>
+            VAR.KILLMINS = <eval (<SRC.FINDID.b_kill_decayer.TIMER> / 60)>
+            IF ( <EVAl (<VAR.KILLMINS> > <VAR.KILLHOURS>)>
+               VAR.KILLMINS = <EVAL (<VAR.KILLMINS> - <EVAL (<VAR.KILLHOURS>*60)>)>
+            ENDIF
+            VAR.INFO.KILLTIME = <EVAL <VAR.KILLHOURS>> hours and <EVAL <VAR.KILLMINS>> minutes to the next kill loss.
+         ENDIF  
+      endif
+      VAR.INFO.LASTKILLER = You were last killed by <SRC.TAG.LASTKILLER>.      
+      VAR.INFO.LASTVICTIM = Your last victim was <SRC.TAG.LASTVICTIM>.
+      VAR.GUMP.KILLS	= 185 25 <eval tp_btdn> <eval tp_btup> 1 0 0
+   else
+      VAR.INFO.KILLS	= "  criminal record unavailable."
+      VAR.INFO.KILLTIME =
+      VAR.INFO.LASTKILLER = 
+      VAR.INFO.LASTVICTIM = 
+      VAR.GUMP.KILLS	= 185 220 <eval tp_btup> <eval tp_btdn> 1 0 13
+   endif
+   
+//   if ( <SRC.TAG.TPFLAGS> & tp_rep )
+      VAR.GUMP.REP	= 185 25 <eval tp_btdn> <eval tp_btup> 1 0 0
+//      VAR.INFO.REP	=  Detailed reputation information is available below.      
+      
+      IF <SRC.memoryfindtype.memory_guild.uid>
+         VAR.INFO.GUILD = Guild: <SRC.memoryfindtype.memory_guild.NAME> [<EVAL ( <EVAL ( <EVAL ( <UID.<SRC.memoryfindtype.memory_guild.link>.TIMER>/60 )> /60 )> /24 )> days dues paid]
+         VAR.INFO.GUILDSTONE = Based at: [<UID.<SRC.memoryfindtype.memory_guild.link>.P>] <UID.<SRC.memoryfindtype.memory_guild.link>.REGION.NAME>.  
+         
+         IF strmatch("<SRC.memoryfindtype.memory_guild.link.TAG0.GUILD_MSG>", "00")
+            VAR.INFO.GUILDMSG1 = 
+            VAR.INFO.GUILDMSG2 = 
+         ELSE
+            IF ( STRLEN(<SRC.memoryfindtype.memory_guild.link.TAG0.GUILD_MSG>) < 55 )
+               VAR.INFO.GUILDMSG1 = <SRC.memoryfindtype.memory_guild.link.TAG0.GUILD_MSG>
+               VAR.INFO.GUILDMSG2 = 
+            ELSE
+
+               LOCAL.SPACE = <STRPOS 45 32 <SRC.memoryfindtype.memory_guild.link.TAG0.GUILD_MSG>>
+               IF <LOCAL.SPACE> = 0ffffffff
+                  VAR.INFO.GUILDMSG1 = <STRSUB 0 55 <SRC.memoryfindtype.memory_guild.link.TAG0.GUILD_MSG>>
+                  VAR.INFO.GUILDMSG2 = <STRSUB 56 55 <SRC.memoryfindtype.memory_guild.link.TAG0.GUILD_MSG>>
+               ELSE
+                  VAR.INFO.GUILDMSG1 = <STRSUB 0 <EVAL <LOCAL.SPACE>> <SRC.memoryfindtype.memory_guild.link.TAG0.GUILD_MSG>>
+      	          VAR.INFO.GUILDMSG2 = <STRSUB <EVAL (<LOCAL.SPACE>+1)> 55 <SRC.memoryfindtype.memory_guild.link.TAG0.GUILD_MSG>>
+               ENDIF
+            ENDIF
+         ENDIF
+         
+      ELSE
+         VAR.INFO.GUILD = You have not chosen a guild.
+         VAR.INFO.GUILDSTONE =
+         VAR.INFO.GUILDMSG1 =
+         VAR.INFO.GUILDMSG2 =
+      ENDIF
+
+   
+      IF <SRC.ISALIGNMENT_order>
+         VAR.INFO.OC	   = Order [ <SRC.order_TITLE> ]:
+         VAR.INFO.OCREP    = <eval (<SRC.TAG0.REP.ALIGNMENT>)> faction points. //[faction has <EVAL <var.order_points>> points]
+      ELSEIF <SRC.ISALIGNMENT_chaos>
+         VAR.INFO.OC	   = Chaos [ <SRC.chaos_TITLE> ]:
+         VAR.INFO.OCREP    = <eval (<SRC.TAG0.REP.ALIGNMENT>)> faction points. //[faction has <EVAL <var.chaos_points>> points]    
+	  ELSEIF <SRC.ISSYNDICATE>
+         VAR.INFO.OC	   = Syndicate [ <SRC.tag0.currentsrank> ]:
+         VAR.INFO.OCREP    = <eval (<SRC.TAG0.REP.ALIGNMENT>)> faction points. //[faction has <EVAL <var.chaos_points>> points]    
+	   ELSEIF <SRC.ISBROTHERHOOD>
+         VAR.INFO.OC	   = Brotherhood [ <SRC.tag0.currentbrank> ]:
+         VAR.INFO.OCREP    = <eval (<SRC.TAG0.REP.ALIGNMENT>)> faction points. //[faction has <EVAL <var.chaos_points>> points]    
+	   ELSEIF <SRC.ISMERCENARY>
+         VAR.INFO.OC	   = Mercenary [ <SRC.tag0.currentmrank> ]:
+         VAR.INFO.OCREP    = <eval (<SRC.TAG0.REP.ALIGNMENT>)> faction points. //[faction has <EVAL <var.chaos_points>> points]    
+      ELSE
+         VAR.INFO.OC       = You have not chosen an alignment.
+         VAR.INFO.OCREP    = 
+      ENDIF
+      
+//   else
+//      VAR.GUMP.REP	= 160 253 <eval tp_btup> <eval tp_btdn> 1 0 14
+//      VAR.INFO.REP	= "  detailed reputation information unavailable."
+//   endif
+
+   VAR.TP.COMB	= 0
+   VAR.TP.SPEC	= 0
+   VAR.TP.RES	= 0
+   VAR.TP.MISC	= 0
+ 
+   VAR.TP.DAM	= 0
+   if ( <SRC.TAG.TPFLAGS> & tp_dam )
+      VAR.TP.DAM	= 1
+   elseif ( <SRC.ARMSLORE> > 24.9 )
+      VAR.TP.DAM	= 1
+      SRC.SYSMESSAGE You receive detailed damage information on your travel papers due to your Arms lore skill.
+   elseif ( <SRC.ITEMID> > 29.9 )
+      VAR.TP.DAM	= 1
+      SRC.SYSMESSAGE You receive detailed damage information on your travel papers due to your Item lore skill.
+   endif
+
+   if ( <VAR.TP.DAM> )
+      VAR.GUMP.DAM	= 185 25 <eval tp_btdn> <eval tp_btup> 1 0 0
+   else
+      VAR.GUMP.DAM	= 160 83 <eval tp_btup> <eval tp_btdn> 1 0 30
+   endif
+
+   if ( <SRC.TAG.TPFLAGS> & tp_comb )
+      VAR.TP.COMB	= 1
+      VAR.GUMP.COMB	= 185 25 <eval tp_btdn> <eval tp_btup> 1 0 0
+   else
+      VAR.TP.COMB	= 0
+      VAR.GUMP.COMB	= 160 228 <eval tp_btup> <eval tp_btdn> 1 0 31
+   endif
+
+   VAR.TP.SPEC	= 0
+   if ( <SRC.TAG.TPFLAGS> & tp_spec )
+      VAR.TP.SPEC	= 1
+   elseif ( <SRC.ARMSLORE> > 34.9 )
+      VAR.TP.SPEC	= 1
+   elseif ( <SRC.ITEMID> > 39.9 )
+      VAR.TP.SPEC	= 1
+   endif
+
+   if ( <VAR.TP.SPEC> )
+      VAR.GUMP.SPEC	= 185 25 <eval tp_btdn> <eval tp_btup> 1 0 0
+   else
+      VAR.GUMP.SPEC	= 160 333 <eval tp_btup> <eval tp_btdn> 1 0 32
+   endif
+
+   if ( <SRC.TAG.TPFLAGS> & tp_res )
+      VAR.TP.RES	= 1
+      VAR.GUMP.RES	= 185 25 <eval tp_btdn> <eval tp_btup> 1 0 0
+   else
+      VAR.TP.RES	= 0
+      VAR.GUMP.RES	= 385 83 <eval tp_btup> <eval tp_btdn> 1 0 33
+   endif
+
+   if ( <SRC.TAG.TPFLAGS> & tp_misc )
+      VAR.TP.MISC	= 1
+      VAR.GUMP.MISC	= 185 25 <eval tp_btdn> <eval tp_btup> 1 0 0
+   else
+      VAR.TP.MISC	= 0
+      VAR.GUMP.MISC	= 385 243 <eval tp_btup> <eval tp_btdn> 1 0 34
+   endif
+
+   if ( 0<SRC.TAG.SHOW.SKILLROLLS> )
+      VAR.GUMP.SKILLROLLS	= <eval 0d8> <eval 0d7>
+   else
+      VAR.GUMP.SKILLROLLS	= <eval 0d7> <eval 0d8>
+   endif
+
+   if ( <SRC.TAG0.SHOW.DAMROLLS> )
+      VAR.GUMP.DAMROLLS	= <eval 0d8> <eval 0d7>
+   else
+      VAR.GUMP.DAMROLLS	= <eval 0d7> <eval 0d8>
+   endif
+
+   if ( <SRC.TAG0.SHOW.PAPERS> )
+      VAR.GUMP.PAPERS	= <eval 0d8> <eval 0d7>
+   elseif ( !strcmp( "<SRC.TAG.SHOW.PAPERS>", "" ) )
+      VAR.GUMP.PAPERS	= <eval 0d8> <eval 0d7>
+   else
+      VAR.GUMP.PAPERS	= <eval 0d7> <eval 0d8>
+   endif
+
+   if ( <SRC.TAG0.SHOW.SHARDVOTE> )
+      VAR.GUMP.SHARDVOTE	= <eval 0d8> <eval 0d7>
+   else
+      VAR.GUMP.SHARDVOTE	= <eval 0d7> <eval 0d8>
+   endif
+
+   if ( <SRC.TAG0.SPARING> == 0 )
+      VAR.GUMP.SPARING		= <eval 0d7> <eval 0d8>
+   elseif ( 0<SRC.TAG.SPARING> == 02 )
+      VAR.GUMP.SPARING		= <eval 0d8> <eval 0d8>
+   else
+      VAR.GUMP.SPARING		= <eval 0d8> <eval 0d7>
+   endif
+
+   if ( <SRC.TAG0.ALIGNMENT.SHOWTITLE> == 0 )
+      VAR.GUMP.OCTITLE		= <eval 0d7> <eval 0d8>
+   else
+      VAR.GUMP.OCTITLE		= <eval 0d8> <eval 0d7>
+   endif
+
+   if ( <SRC.TAG0.NOPLAYERCHAT> = 1 )
+      VAR.GUMP.COMCHAT		= <eval 0d7> <eval 0d8>
+   else
+      VAR.GUMP.COMCHAT		= <eval 0d8> <eval 0d7>
+   endif
+   
+   SRC.status_armour
+   VAR.STATUS.1	= <VAR.STR1>
+   VAR.STATUS.2	= <VAR.STR0>
+   VAR.STATUS.3	= <VAR.STR2>
+   VAR.STATUS.4	= <SRC.status_hunger>
+
+   SRC.UPDATE_VISITED
+
+   // DAMAGE
+   SRC.f_weapon_calc_dam
+   SRC.f_weapon_effect
+
+   VAR.PARRY			= 0
+   VAR.EFFECT.WEAPON_BLOCK	= <SRC.TAG0.ARM.EFFECT.WEAPON_BLOCK>
+   if ( <SRC.FLAGS> & statf_hasshield )
+     VAR.EFFECT.WEAPON_BLOCK	= <eval (<VAR.EFFECT.WEAPON_BLOCK> / 2)>
+     SRC.f_shield_calc
+   endif
+   if ( <SRC.NPC> )
+      VAR.EFFECT.WEAPON_BLOCK	= <eval ((<VAR.EFFECT.WEAPON_BLOCK> * <SRC.TACTICS>) / 70)>
+   else
+      VAR.EFFECT.WEAPON_BLOCK	= <eval ((<VAR.EFFECT.WEAPON_BLOCK> * <SRC.TACTICS>) / 85)>
+   endif
+
+
+   DIALOG d_travel_papers_<EVAL <argn>>
+
+//********************************************************************//
+[FUNCTION f_total_bonus]
+return <eval (<var.wpn.bonus> + <VAR.EFFECT.FIRE> + <VAR.EFFECT.COLD> + <VAR.EFFECT.ENERGY> + <VAR.EFFECT.ACID> + <VAR.EFFECT.SHADOW>)>
+
+//********************************************************************//
+[FUNCTION f_res_color]
+   if !( <var.tp.res> )
+      var.f_res_color	= 0
+   elseif ( 0<<args>> == 0 )
+      var.f_res_color	= 0
+   elseif ( <<args>> < -75 )
+      var.f_res_color	= 36
+   elseif ( <<args>> < -50 )
+      var.f_res_color	= 37
+   elseif ( <<args>> < -25 )
+      var.f_res_color	= 38
+   elseif ( <<args>> <  0 )
+      var.f_res_color	= 39
+   elseif ( <<args>> <  25 )
+      var.f_res_color	= 56
+   elseif ( <<args>> <  50 )
+      var.f_res_color	= 61
+   elseif ( <<args>> <  75 )
+      var.f_res_color	= 62
+   elseif ( <<args>> <  100 )
+      var.f_res_color	= 70
+   else 
+      var.f_res_color	= 80
+   endif
+
+[FUNCTION f_res_color_global]
+   f_res_color SRC.TAG.ARM.EFFECT.RES_ALL
+   return <var.f_res_color>
+
+[FUNCTION f_res_color_fire]
+   f_res_color SRC.TAG.ARM.EFFECT.RES_FIRE
+   return <var.f_res_color>
+
+[FUNCTION f_res_color_cold]
+   f_res_color SRC.TAG.ARM.EFFECT.RES_COLD
+   return <var.f_res_color>
+
+[FUNCTION f_res_color_energy]
+   f_res_color SRC.TAG.ARM.EFFECT.RES_ENERGY
+   return <var.f_res_color>
+
+[FUNCTION f_res_color_acid]
+   f_res_color SRC.TAG.ARM.EFFECT.RES_ACID
+   return <var.f_res_color>
+
+[FUNCTION f_res_color_shadow]
+   f_res_color SRC.TAG.ARM.EFFECT.RES_SHADOW
+   return <var.f_res_color>
+
+[FUNCTION f_res_color_good]
+   f_res_color SRC.TAG.ARM.EFFECT.RES_GOOD
+   return <var.f_res_color>
+
+[FUNCTION f_res_color_evil]
+   f_res_color SRC.TAG.ARM.EFFECT.RES_EVIL
+   return <var.f_res_color>
+
+//********************************************************************//
+[FUNCTION status_hunger]
+   if ( 0 )
+   elseif ( <FOOD> < 2 )
+      LOCAL.STR1	= starving
+   elseif ( <FOOD> < 4 )
+      LOCAL.STR1	= very hungry
+   elseif ( <FOOD> < 6 )
+      LOCAL.STR1	= hungry
+   elseif ( <FOOD> < 8 )
+      LOCAL.STR1	= a little hungry
+   elseif ( <FOOD> < 10 )
+      LOCAL.STR1	= contently fed
+   elseif ( <FOOD> < 12 )
+      LOCAL.STR1	= fed
+   elseif ( <FOOD> < 14 )
+      LOCAL.STR1	= well fed
+   else
+      LOCAL.STR1	= stuffed
+   endif
+   RETURN <LOCAL.STR1>
+   
+//********************************************************************//
+[FUNCTION status_armour]
+   findlayer(layer_k_control).f_ap_recalc
+   f_armour_effect_update 0
+   VAR.AP_MAGERY	= <findlayer(layer_k_control).tag.ap_magery>
+   VAR.AP_COMBAT	= <findlayer(layer_k_control).tag.ap_combat>
+
+   if ( 0 )
+   elseif ( <VAR.AP_COMBAT> <  2.0 )
+      VAR.OK1	= 1
+      VAR.str1	= at total ease
+   elseif ( <VAR.AP_COMBAT> <  6.0 )
+      VAR.OK1	= 2
+      VAR.str1	= quite at ease
+   elseif ( <VAR.AP_COMBAT> < 10.0 )
+      VAR.OK1	= 3
+      VAR.str1	= at ease
+   elseif ( <VAR.AP_COMBAT> < 20.0 )
+      VAR.OK1	= 4
+      VAR.str1	= a little restricted
+   elseif ( <VAR.AP_COMBAT> < 30.0 )
+      VAR.OK1	= 5
+      VAR.str1	= quite restricted
+   elseif ( <VAR.AP_COMBAT> < 40.0 )
+      VAR.OK1	= 6
+      VAR.str1	= burdened
+   else
+      VAR.OK1	= 7
+      VAR.str1	= quite burdened
+   endif
+
+   if ( 0 )
+   elseif ( <VAR.AP_MAGERY> <  2.0 )
+      VAR.OK2	= 1
+      VAR.str2	= normal // <VAR.AP_MAGERY>
+   elseif ( <VAR.AP_MAGERY> <  6.0 )
+      VAR.OK2	= 2
+      VAR.str2	= barely normal
+   elseif ( <VAR.AP_MAGERY> < 10.0 )
+      VAR.OK2	= 3
+      VAR.str2	= a little diminished
+   elseif ( <VAR.AP_MAGERY> < 20.0 )
+      VAR.OK2	= 4
+      VAR.str2	= quite diminished
+   elseif ( <VAR.AP_MAGERY> < 30.0 )
+      VAR.OK2	= 5
+      VAR.str2	= perturbed
+   elseif ( <VAR.AP_MAGERY> < 40.0 )
+      VAR.OK2	= 6
+      VAR.str2	= quite perturbed
+   else
+      VAR.OK2	= 7
+      VAR.str2	= really perturbed
+   endif
+
+   if ( 0 )
+   elseif ( (<VAR.OK1> <= 3) && (<VAR.OK2> <= 2) )
+      VAR.STR0	= and
+   elseif ( (<VAR.OK1> >= 3) && (<VAR.OK2> >= 2) )
+      VAR.STR0	= and
+   else
+      VAR.STR0	= but
+   endif
+
+   RETURN 1
+
+//********************************************************************//
+[FUNCTION SHOWPAPERS]
+  if ( !strcmp( "<TAG.SHOW.PAPERS>", "" ) )
+     TAG.SHOW.PAPERS	= 0
+     SYSMESSAGE Travel papers will no longer open with the paperdoll. To consult your travel papers use the ".papers" command.
+  elseif ( 0<TAG.SHOW.PAPERS> )
+     TAG.SHOW.PAPERS	= 0
+     SYSMESSAGE Travel papers will no longer open with the paperdoll. To consult your travel papers use the ".papers" command.
+  else
+     TAG.SHOW.PAPERS	= 1
+     SYSMESSAGE Travel papers will now open with the paperdoll.
+  endif
+
+//********************************************************************//
+[FUNCTION SHOWVOTE]
+  if ( !strcmp( "<TAG.SHOW.SHARDVOTE>", "" ) )
+     TAG.SHOW.SHARDVOTE	= 0
+     SYSMESSAGE The webpage for shard voting will not be shown.
+  elseif ( 0<TAG.SHOW.SHARDVOTE> )
+     TAG.SHOW.SHARDVOTE	= 0
+     SYSMESSAGE The webpage for shard voting will not be shown.
+  else
+     TAG.SHOW.SHARDVOTE	= 1
+     SYSMESSAGE The webpage for shard voting will open every 2 days.
+  endif
+
+
+//********************************************************************//
+[FUNCTION mappos]
+  SAY <eval (20+<mappos_x>)> <eval (60+<mappos_y>)>
+
+
+[FUNCTION mappos_x]
+  if ( (<src.p.x> < 4861) && (<src.p.y> < 4051) )
+     VAR.MAPPOS	= <EVAL (164+((<SRC.P.X>*100)/1360))>
+  else
+     VAR.MAPPOS	= 155
+  endif
+  return <var.mappos>
+
+
+[FUNCTION mappos_y]
+  if ( (<src.p.x> < 4861) && (<src.p.y> < 4051) )
+     VAR.MAPPOS	= <EVAL (35+((<SRC.P.Y>*100)/1085))>
+  else
+     VAR.MAPPOS	= 70
+  endif
+  return <var.mappos>
+
+
+//********************************************************************//
+[FUNCTION UPDATE_VISITED_ONE]
+   if ( !strmatch( "<args>*", "<region.name>" )
+      return 1
+   endif
+
+   VAR.VISITED	= 1
+   if ( 0<TAG.VISITED.<args>> )
+      return 1
+   endif
+
+   SYSMESSAGE @70 You mark down the location of <args> in  your travel map.
+   TRY TAG.VISITED.<args>	= <SERV.TIME>
+
+
+[FUNCTION UPDATE_VISITED]
+   VAR.VISITED	= 0
+   UPDATE_VISITED_ONE Britain
+   UPDATE_VISITED_ONE Minoc
+   UPDATE_VISITED_ONE Vesper
+   UPDATE_VISITED_ONE Yew
+   UPDATE_VISITED_ONE Trinsic
+   UPDATE_VISITED_ONE Moonglow
+   UPDATE_VISITED_ONE Cove
+
+   if ( <VAR.VISITED> )
+      return 0
+   endif
+
+   if ( !strmatch( "Ocllo*", "<region.name>" )
+      return 1
+   endif
+
+   //if ( <CARTOGRAPHY> < 45.1 )
+    //  SYSMESSAGE @30 Your Cartography skill is not enough as to locate yourself in the map.
+     // return 0
+   //endif
+
+
+//********************************************************************//
+//                          PAPERS DIALOG                             //
+//              ADVANCED PLAYER INFORMATION AND OPTIONS               //
+//********************************************************************//
+[FUNCTION TravelPapersBase]
+resizepic 0 0 2600 580 474 // Curved Grey background 
+gumppic  120    0 <eval   0a28>		// left 2
+gumppic  120   44 <eval   0a2b>
+gumppic  120  124 <eval   0a2b>
+gumppic  120  430 <eval   0a2e>
+
+//button    40   50 <eval 015d3> <eval 015d4> 1 0 1		// stat
+//button    40  120 <eval 015b5> <eval 015b6> 1 0 2		// bonus & modifiers
+//button    40  190 <eval 015bb> <eval 015bc> 1 0 3		// stats & options
+//button    40  260 <eval 015a9> <eval 015aa> 1 0 4		// map
+//button    40  330 <eval 015c3> <eval 015c4> 1 0 5		// companies
+
+dtext    35  40	0	Imperial UO
+dtext    52  55	0	Shard
+dtext    35  70	0	Imperial UO
+dtext    52  85	0	Shard
+dtext    35  100	0	Imperial UO
+dtext    52  115	0	Shard
+dtext    35  130	0	Imperial UO
+dtext    52  145	0	Shard
+dtext    35  160	0	Imperial UO
+dtext    52  175	0	Shard
+dtext    35  190	0	Imperial UO
+dtext    52  205	0	Shard
+dtext    35  220	0	Imperial UO
+dtext    52  235	0	Shard
+dtext    35  250	0	Imperial UO
+dtext    52  265	0	Shard
+dtext    35  280	0	Imperial UO
+dtext    52  295	0	Shard
+dtext    35  310	0	Imperial UO
+dtext    52  325	0	Shard
+dtext    35  340	0	Imperial UO
+dtext    52  355	0	Shard
+
+dtext    30  400	0	Type .map to
+dtext    20  415	0    refresh the map.
+
+//********************************************************************//
+[DIALOG d_travel_papers_1]
+100, 40
+
+TravelPapersBase
+
+dtext    160  80 	0 	* Character Status:		
+dtext    185 100	0	- You feel <VAR.STATUS.1> in combat <VAR.STATUS.2> your
+dtext    200 115	0	  magic prowess appears to be <VAR.STATUS.3>.
+dtext    185 130	0	- You are <VAR.STATUS.4>.
+
+dtext    160 165 	0 	* Character Reputation:		
+dtext    205 185	0	<VAR.INFO.karma>
+dtext    205 200	0	<VAR.INFO.fame>
+dtext    205 215	0	<VAR.INFO.kills>
+dtext    205 230        0       <VAR.INFO.KILLTIME>
+dtext    205 245	0	<VAR.INFO.LASTKILLER>
+dtext    205 260	0	<VAR.INFO.LASTVICTIM>
+
+button <VAR.GUMP.KARMA>
+button <VAR.GUMP.FAME>
+button <VAR.GUMP.KILLS>
+
+dtext    160 295 	0 	* Character Guild and Faction Information: 	
+dtext    160 310        0       <VAR.INFO.GUILD> 
+dtext    160 325        0	<VAR.INFO.GUILDSTONE>
+dtext    160 340        0       Guild Message:
+dcroppedtext    160 355 405 30    0       <VAR.INFO.GUILDMSG1>
+dcroppedtext    160 370 405 30    0       <VAR.INFO.GUILDMSG2>
+dtext    160 400        0       <VAR.INFO.OC> <VAR.INFO.OCREP>
+
+//button <VAR.GUMP.REP>
+
+resizepic 168 25 5100 369 25					// title background
+dtext    213  27	0	PERSONAL & SOCIAL STATUS
+
+
+[DIALOG d_travel_papers_1 BUTTON]
+ONBUTTON=1 5
+   DIALOG_travel_papers <EVAL <ARGN1>>
+ON=11
+  SRC.TAG.MENU.TEXT	= "details about your Karma"
+  SRC.TAG.MENU.FLAG	= tp_karma
+  SRC.TAG.MENU.COST	= 20000
+  SRC.MENU mnu_papers
+ON=12
+  SRC.TAG.MENU.TEXT	"details about your Fame"
+  SRC.TAG.MENU.FLAG	= tp_fame
+  SRC.TAG.MENU.COST	= 20000
+  SRC.MENU mnu_papers
+ON=13
+  SRC.TAG.MENU.TEXT	"your criminal record"
+  SRC.TAG.MENU.FLAG	= tp_kills
+  SRC.TAG.MENU.COST	= 20000
+  SRC.MENU mnu_papers
+//ON=14
+//  SRC.TAG.MENU.TEXT	"details about your reputation"
+//  SRC.TAG.MENU.FLAG	= tp_rep
+//  SRC.TAG.MENU.COST	= 20000
+//  SRC.MENU mnu_papers
+
+//********************************************************************//
+[DIALOG d_travel_papers_2]
+100, 40
+
+TravelPapersBase
+
+dtext 160  80 0 * Damage
+button <var.gump.dam>
+dtext 160 100 0 Range
+dtext 280 100 0 <qval <var.tp.dam> ? <eval ((<var.wpn.MIN>*<f_total_bonus>)/100)>[<eval ((<var.wpn.MIN>*<VAR.WPN.BONUS>)/100)>] to <eval ((<var.wpn.MAX>*<f_total_bonus>)/100)>[<eval ((<var.wpn.MAX>*<VAR.WPN.BONUS>)/100)>] : ???>
+dtext 160 115 0 Modifier
+dtext 280 115 0 <qval <var.tp.dam> ? <eval (<f_total_bonus>-100)>% [<eval (<VAR.WPN.BONUS>-100)>%] : ???>
+dtext 160 130 0 Fire
+dtext 280 130 0 <eval <VAR.EFFECT.FIRE>>%
+//dtext 280 130 0 <qval <var.tp.dam> ? <eval <VAR.EFFECT.FIRE>>% : ???>
+dtext 160 145 0 Cold
+dtext 280 145 0 <qval <var.tp.dam> ? <eval <VAR.EFFECT.COLD>>% : ???>
+dtext 160 160 0 Energy
+dtext 280 160 0 <qval <var.tp.dam> ? <eval <VAR.EFFECT.ENERGY>>% : ???>
+dtext 160 175 0 Acid
+dtext 280 175 0 <qval <var.tp.dam> ? <eval <VAR.EFFECT.ACID>>% : ???>
+dtext 160 190 0 Shadow
+dtext 280 190 0 <qval <var.tp.dam> ? <eval <VAR.EFFECT.SHADOW>>% : ???>
+
+
+dtext 160 225 0 * Combat statistics
+button <var.gump.comb>
+dtext 160 245 0 Dodge
+dtext 280 245 0 <qval <var.tp.comb> ? <eval <VAR.RIDE.DODGE>>.0% : ???>
+dtext 160 260 0 Shield parry
+dtext 280 260 0 <qval <var.tp.comb> ? <eval (<var.parry>/10)>.<eval (<var.parry> - ((<var.parry>/10)*10))>% : ???>
+dtext 160 275 0 Weapon parry 
+dtext 280 275 0 <qval <var.tp.comb> ? <eval (<var.effect.weapon_block>/10)>.<eval (<var.effect.weapon_block> - ((<var.effect.weapon_block>/10)*10))>% : ???>
+dtext 160 290 0 Armour pierce
+dtext 280 290 0 <qval <var.tp.comb> ? <eval (<SRC.f_weapon_critical>/10)>.<eval (<SRC.f_weapon_critical> - ((<SRC.f_weapon_critical>/10)*10))>% : ???>
+
+
+dtext 160 330 0 * Specific combat modifiers
+button <var.gump.spec>
+dtext 160 350 0 Undead slaying
+dtext 280 350 0 <qval <var.tp.spec> ? <eval <var.effect.anti_undead>>% : ???>
+dtext 160 365 0 Daemon slaying
+dtext 280 365 0 <qval <var.tp.spec> ? <eval <var.effect.anti_daemon>>% : ???>
+dtext 160 380 0 Dragon slaying
+dtext 280 380 0 <qval <var.tp.spec> ? <eval <var.effect.anti_dragon>>% : ???>
+dtext 160 395 0 Giant slaying
+dtext 280 395 0 <qval <var.tp.spec> ? <eval <var.effect.anti_giant>>% : ???>
+dtext 160 410 0 Shadow bane
+dtext 280 410 0 <qval <var.tp.spec> ? <eval <var.effect.anti_shadow>>% : ???>
+
+
+dtext 386  80 0 * Resistances
+button <var.gump.res>
+dtext 380 100 0 Global
+dtext 480 100 0 			<qval <var.tp.res> ? <eval <SRC.TAG.ARM.EFFECT.RES_GLOBAL>>% : ???>
+dtext 380 115 0 Fire
+dtext 480 115 <f_res_color_fire> 	<qval <var.tp.res> ? <eval <SRC.TAG.ARM.EFFECT.RES_FIRE>>% : ???>
+dtext 380 130 0 Cold
+dtext 480 130 <f_res_color_cold>  	<qval <var.tp.res> ? <eval <SRC.TAG.ARM.EFFECT.RES_COLD>>% : ???>
+dtext 380 145 0 Energy
+dtext 480 145 <f_res_color_energy>  	<qval <var.tp.res> ? <eval <SRC.TAG.ARM.EFFECT.RES_ENERGY>>% : ???>
+dtext 380 160 0 Acid
+dtext 480 160 <f_res_color_acid>  	<qval <var.tp.res> ? <eval <SRC.TAG.ARM.EFFECT.RES_ACID>>% : ???>
+dtext 380 175 0 Shadow
+dtext 480 175 <f_res_color_shadow>  	<qval <var.tp.res> ? <eval <SRC.TAG.ARM.EFFECT.RES_SHADOW>>% : ???>
+dtext 380 190 0 Good
+dtext 480 190 <f_res_color_good>  	<qval <var.tp.res> ? <eval ( 0<SRC.TAG.shadow>*2)> % : ???>
+dtext 380 205 0 Evil
+dtext 480 205 <f_res_color_evil>  	<qval <var.tp.res> ? <eval <SRC.TAG.ARM.EFFECT.RES_EVIL>>% : ???>
+
+
+dtext 386 240 0 * Miscellaneous
+button <var.gump.misc>
+dtext 380 260 0 Rebirth 
+dtext 480 260 0 <qval <var.tp.misc> ? <eval <SRC.GET_REBIRTH>>% : ???>
+dtext 380 275 0 Phasing 
+dtext 480 275 0 <qval <var.tp.misc> ? <eval <SRC.TAG.ARM.EFFECT.INVIS>>% : ???>
+dtext 380 290 0 Retribution
+dtext 480 290 0 <qval <var.tp.misc> ? <eval <SRC.TAG.ARM.EFFECT.STRONGHOLD>>% : ???>
+dtext 380 305 0 Vengeance
+dtext 480 305 0 <qval <var.tp.misc> ? <eval <SRC.TAG.ARM.EFFECT.VERMINARD>>% : ???>
+dtext 380 320 0 Min Hits 
+dtext 480 320 0 <qval <var.tp.misc> ? <eval <SRC.TAG.ARM.EFFECT.HITS>> : ???>
+dtext 380 335 0 Min Stam
+dtext 480 335 0 <qval <var.tp.misc> ? <eval <SRC.TAG.ARM.EFFECT.STAM>> : ???>
+dtext 380 350 0 Min Mana
+dtext 480 350 0 <qval <var.tp.misc> ? <eval <SRC.TAG.ARM.EFFECT.MANA>> : ???>
+
+resizepic 168 25 5100 369 25					// title background
+dtext    195  27	0	BONUS, MODIFIERS & STATISTICS
+
+
+[DIALOG d_travel_papers_2 BUTTON]
+ONBUTTON=1 5
+   DIALOG_travel_papers <EVAL <ARGN1>>
+ON=30
+  SRC.TAG.MENU.TEXT	"details about your combat damage"
+  SRC.TAG.MENU.FLAG	= tp_dam
+  SRC.TAG.MENU.COST	= 10000
+  SRC.MENU mnu_papers
+ON=31
+  SRC.TAG.MENU.TEXT	= "details about your combat abilities"
+  SRC.TAG.MENU.FLAG	= tp_comb
+  SRC.TAG.MENU.COST	= 10000
+  SRC.MENU mnu_papers
+ON=32
+  SRC.TAG.MENU.TEXT	= "details about your specific combat modifiers"
+  SRC.TAG.MENU.FLAG	= tp_spec
+  SRC.TAG.MENU.COST	= 5000
+  SRC.MENU mnu_papers
+ON=33
+  SRC.TAG.MENU.TEXT	= "details about your resistances"
+  SRC.TAG.MENU.FLAG	= tp_res
+  SRC.TAG.MENU.COST	= 5000
+  SRC.MENU mnu_papers
+ON=34
+  SRC.TAG.MENU.TEXT	= "miscellaneous combat information"
+  SRC.TAG.MENU.FLAG	= tp_misc
+  SRC.TAG.MENU.COST	= 5000
+  SRC.MENU mnu_papers
+
+//********************************************************************//
+[DIALOG d_travel_papers_3]
+100, 40
+
+TravelPapersBase
+ 
+dtext    170  77	0		Here you can select your optimal stats:
+dtext    170  94	0		Strength; Intelligence; Dexterity.
+dtext    170 111	0		Bear in mind that every time you want
+dtext    170 128	0		to decrease a stat by 1 you will have 
+dtext    170 145	0		to pay 200 gps, so choose wisely!
+dtext    170 162	0		You can also access this option by
+dtext    170 179	0		typing .stats
+
+button  460 100 <eval 015bb> <eval 015bc> 1 0 15		// stats
+
+dtext 170 218 0 INFO:	
+dtext 170 298 0 OPTIONS:	
+
+button 195 243 <eval tp_btup> <eval tp_btdn> 1 0 6		// Regs
+dtext  215 239 0 List reagents in backpack (.regs)
+
+button 195 262 <eval tp_btup> <eval tp_btdn> 1 0 7
+dtext  215 258 0 List equiped items (.eq)
+
+button 195 281 <eval tp_btup> <eval tp_btdn> 1 0 16
+dtext  215 277 0 Claim allocated skill points (.claimskill)
+
+button 195 326 <VAR.GUMP.PAPERS> 1 0 8
+dtext  215 322 0 Open travel papers with paperdoll
+
+button 195 345 <VAR.GUMP.SHARDVOTE> 1 0 9
+dtext  215 341 0 Open shard voting webpage every 2 days
+
+button 195 364 <VAR.GUMP.SKILLROLLS> 1 0 10
+dtext  215 360 0 Show skill progress rolls (.skillrolls)
+
+button 195 383 <VAR.GUMP.DAMROLLS> 1 0 11
+dtext  215 379 0 Show combat damage rolls
+
+button 195 402 <VAR.GUMP.SPARING> 1 0 12
+dtext  215 398 0 Sparring mode (not a crime when killed)
+
+button 195 421 <VAR.GUMP.OCTITLE> 1 0 13
+dtext  215 417 0 Show Faction Long Title
+
+button 195 440 <VAR.GUMP.COMCHAT> 1 0 14
+dtext  215 436 0 Enable Comchat On Login (.comchat)
+
+resizepic 168 25 5100 369 25					// title background
+dtext    265  27	0	STATS & OPTIONS
+
+
+[DIALOG d_travel_papers_3 BUTTON]
+ONBUTTON=1 5
+   DIALOG_travel_papers <EVAL <ARGN1>>
+ONBUTTON=6
+  SRC.REGS
+ONBUTTON=7
+  SRC.DIALOG_eq_list
+ONBUTTON=8
+  SRC.SHOWPAPERS  
+ONBUTTON=9
+  SRC.SHOWVOTE 
+ONBUTTON=10
+  SRC.SKILLROLLS
+ONBUTTON=11
+  SRC.DAMROLLS
+ONBUTTON=12
+   SRC.SPARRING
+ONBUTTON=13
+   IF ( (<SRC.ISCHAOS>) || (<SRC.ISORDER>))
+      IF (<SRC.TAG0.ALIGNMENT.SHOWTITLE>==1) 
+         SRC.SYSMESSAGE @463 You turn off your full title.
+         SRC.TAG.ALIGNMENT.SHOWTITLE=0
+      ELSE
+         SRC.SYSMESSAGE @463 You turn on your full title.
+         SRC.TAG.ALIGNMENT.SHOWTITLE=1
+      ENDIF
+   ELSEIF (<SRC.ISSYNDICATE>)
+	  IF (<SRC.TAG0.ALIGNMENT.SHOWTITLE>==1) 
+		SRC.SYSMESSAGE @463 You turn off your full title.
+		SRC.TAG.ALIGNMENT.SHOWTITLE=0
+	  ELSE
+		SRC.SYSMESSAGE @463 You turn on your full title.
+		SRC.TAG.ALIGNMENT.SHOWTITLE=1
+	  ENDIF
+    ELSEIF (<SRC.ISMERCENARY>)
+	  IF (<SRC.TAG0.ALIGNMENT.SHOWTITLE>==1) 
+		SRC.SYSMESSAGE @463 You turn off your full title.
+		SRC.TAG.ALIGNMENT.SHOWTITLE=0
+	  ELSE
+		SRC.SYSMESSAGE @463 You turn on your full title.
+		SRC.TAG.ALIGNMENT.SHOWTITLE=1
+	  ENDIF
+	ELSEIF (<SRC.ISBROTHERHOOD>)
+	  IF (<SRC.TAG0.ALIGNMENT.SHOWTITLE>==1) 
+		SRC.SYSMESSAGE @463 You turn off your full title.
+		SRC.TAG.ALIGNMENT.SHOWTITLE=0
+	  ELSE
+		SRC.SYSMESSAGE @463 You turn on your full title.
+		SRC.TAG.ALIGNMENT.SHOWTITLE=1
+	  ENDIF	  
+   ELSE
+      SRC.SYSMESSAGE This command can only be used by faction members
+   ENDIF
+   RETURN 1
+   
+ONBUTTON=14
+   IF <SRC.TAG0.NOPLAYERCHAT> = 0
+      SRC.TAG.NOPLAYERCHAT=1
+   ELSE
+      SRC.TAG.NOPLAYERCHAT=
+   ENDIF
+ONBUTTON=15
+  SRC.stats   
+ONBUTTON=16
+  SRC.CLAIMSKILL
+   
+//********************************************************************//
+[DIALOG d_travel_papers_4]
+100, 40
+
+TravelPapersBase
+
+gumppic 160 65 <qval 0<src.tag.tempmap> ? 5528 : 474>  				// map
+gumppic <MAPPOS_x> <MAPPOS_y> <qval 0<src.tag.tempmap> ? <eval 01199> : 474>  	// arrow
+
+text    280 <qval 0<src.tag.visited.Britain>	? 219 : 25> 90 <qval 0<src.tag.tempmap> ? 3 : 0>
+gumppic 276 <qval 0<src.tag.tempmap> ? <qval 0<src.tag.visited.Britain> ? 224 : 25> : 25> 2104		// Britain 
+
+text    357 <qval 0<src.tag.visited.Minoc>	? 115 : 25> 95 <qval 0<src.tag.tempmap> ? 4 : 0>
+gumppic 353 <qval 0<src.tag.tempmap> ? <qval 0<src.tag.visited.Minoc>	? 120 : 25> : 25> 2104		// Minoc 
+
+text    310 <qval 0<src.tag.visited.Trinsic>	? 321 : 25> 95 <qval 0<src.tag.tempmap> ? 5 : 0>
+gumppic 306 <qval 0<src.tag.tempmap> ? <qval 0<src.tag.visited.Trinsic> ? 326 : 25> : 25> 2104		// Trinsic 
+
+text    384 <qval 0<src.tag.visited.Vesper>	? 130 : 25> 95 <qval 0<src.tag.tempmap> ? 6 : 0>
+gumppic 380 <qval 0<src.tag.tempmap> ? <qval 0<src.tag.visited.Vesper> ? 135 : 25> : 25> 2104		// Vesper 
+
+text    208 <qval 0<src.tag.visited.Yew>	? 155 : 25> 95 <qval 0<src.tag.tempmap> ? 7 : 0>
+gumppic 204 <qval 0<src.tag.tempmap> ? <qval 0<src.tag.visited.Yew> ? 160 : 25> : 25> 2104		// Yew 
+
+text    416 <qval 0<src.tag.visited.Moonglow>	? 170 : 25> 95 <qval 0<src.tag.tempmap> ? 8 : 0>
+gumppic 497 <qval 0<src.tag.tempmap> ? <qval 0<src.tag.visited.Moonglow> ? 175 : 25> : 25> 2104		// Moonglow
+  
+text    339 <qval 0<src.tag.visited.Cove>	? 177 : 25> 95 <qval 0<src.tag.tempmap> ? 9 : 0>
+gumppic 335 <qval 0<src.tag.tempmap> ? <qval 0<src.tag.visited.Cove> ? 182 : 25> : 25> 2104		// Cove
+  
+gumppic 155 70 <qval 0<src.tag.tempmap> ? <eval 01199> : 474>
+gumppic 155 70 <qval 0<src.tag.tempmap> ? <eval 01198> : 474>
+gumppic 155 70 <qval 0<src.tag.tempmap> ? <eval 01197> : 474>
+gumppic 159 65 <qval 0<src.tag.tempmap> ? <eval 09e1> : 474>		// cross
+
+resizepic 168 25 5100 369 25						// title background
+text 180 27 0 <qval 0<src.tag.tempmap> ? 2 : 1>			//Change title based on map availibility
+
+
+[DIALOG d_travel_papers_4 TEXT]
+<VAR.BLANKLINE>
+No Map? 45% cartography or papers map needed
+You are in <SRC.REGION.NAME>.
+ Britain
+ Minoc
+ Trinsic
+ Vesper
+ Yew
+ Moonglow
+ Cove	
+
+
+[DIALOG d_travel_papers_4 BUTTON]
+ONBUTTON=1 5
+   DIALOG_travel_papers <EVAL <ARGN1>>
+
+   
+//********************************************************************//
+
+[DIALOG d_travel_papers_5]
+100, 40
+
+TravelPapersBase
+
+resizepic 168 25 5100 369 25
+dtext 180 27 0 EMPLOYMENT RECORD
+
+dtext 140 60 0 - Your employment status with Britannian companies is listed below -
+
+CompanyTravelPapers
+
+dtext 140 390 50 - Please note: To join a company, ask its boss about "employment".
+dtext 140 410 50 -           After that. for details on jobs, ask about "jobs".
+
+[DIALOG d_travel_papers_5 TEXT]
+
+
+[DIALOG d_travel_papers_5 BUTTON]
+ONBUTTON=1 5
+   DIALOG_travel_papers <EVAL <ARGN1>>   
+
+//********************************************************************//
+[MENU mnu_papers]
+This one-time option adds <SRC.TAG.MENU.TEXT> to the Travel Papers. Would you like to permanently add this information for a fee of <eval <SRC.TAG.MENU.COST>>?
+
+ON=0 Yes, I agree (pay <eval <SRC.TAG.MENU.COST>>gp).
+  if ( <SRC.TAG.TPFLAGS> & <SRC.TAG.MENU.FLAG> )
+     src.sysmessage That information is already in the travel papers.
+     return 1
+  endif
+  src.consumegold_everywhere <SRC.TAG.MENU.COST>
+  if ( <var.consumegold> > 0 )
+     src.sysmessage You are <eval <var.consumegold>>gp short in your account.
+     return 0
+  endif
+  SRC.TAG.TPFLAGS	= <eval (<SRC.TAG.TPFLAGS> | <SRC.TAG.MENU.FLAG>)>
+  SRC.SYSMESSAGE Details added to the Travel Papers.
+  return 1
+
+
+//********************************************************************//
+//                         EQUIPMENT LIST                             //
+//  DISPLAYS A LIST OF EVERYTHING EQUIPPED & OFFERS BASIC FUNCTIONS.  //
+//********************************************************************//
+[FUNCTION eq]
+  SRC.DIALOG_eq_list
+
+
+[FUNCTION DIALOG_eq_list]
+  if ( <SRC.ISDEAD> )
+     src.sysmessage You can't do this while dead.
+     return 1
+  endif
+
+  TAG.EQ.LAYER	= 0
+  VAR.PAGE1	= 2
+  VAR.PAGE2	= 1
+
+  if ( strcmp( "<args>", "" ) )
+     if ( <src.findlayer(<args>).uid> )
+        TAG.EQ.LAYER	= <args>
+        VAR.PAGE1	= 0
+        VAR.PAGE2	= 1
+     endif
+  endif
+  DIALOG D_eq_list
+
+[FUNCTION eq_layer_select]
+   if !( <src.findlayer(<args>).uid> )
+      SRC.DIALOG_EQ_LIST
+   else
+      SRC.DIALOG_EQ_LIST <args>
+   endif
+
+[FUNCTION eq_layer_color]
+  if ( <eval <args>> == <eval <SRC.TAG.EQ.LAYER>> )
+     var.eq_layer_color	= 52
+  else
+     var.eq_layer_color	= 0
+  endif
+  return <var.eq_layer_color>
+
+
+//********************************************************************//
+[DIALOG d_eq_list]
+100, 40
+NOMOVE
+
+page <VAR.PAGE1>
+  resizepic  370 324 2600 340 160 // item detail
+  dtext   220  27  0 Equipment
+  
+  dtext   520 410  0 Unequip
+  gumppic 522 351  <eval 0db>
+  button  520 350  <eval 0db> <eval 0102> 1 0 50
+
+  dtext   450 445  0 Use
+  gumppic 442 381  <eval 0ec>
+  button  440 380  <eval 0ec> <eval 0102> 1 0 51
+
+  dtext    610 445 0 Look
+  gumppic 602 381 <eval 0e3>
+  button  600 380 <eval 0e3> <eval 0102> 1 0 52
+
+page <VAR.PAGE2>
+  resizepic 0 0 2600 420 484 // Curved Grey background 
+
+  dtext   20 60 46 Head
+  dtext   100 60 <eval <eq_layer_color 6>> <qval <src.findlayer(6).uid> ? <src.findlayer(6).name> : <VAR.BLANKLINE>>
+  button  85 <qval <src.findlayer(6).uid> ? 63 : 25> <eval tp_btup> <eval tp_btdn> 1 0 6
+
+  dtext   20 78 46 Ears
+  dtext   100 78 <eval <eq_layer_color 18>> <qval <src.findlayer(18).uid> ? <src.findlayer(18).name> : <VAR.BLANKLINE>>
+  button  85 <qval <src.findlayer(18).uid> ? 81 : 25> <eval tp_btup> <eval tp_btdn> 1 0 18
+
+  dtext   20 96 46 Neck
+  dtext   100 96 <eval <eq_layer_color 10>> <qval <src.findlayer(10).uid> ? <src.findlayer(10).name> : <VAR.BLANKLINE>>
+  button  85 <qval <src.findlayer(10).uid> ? 99 : 25> <eval tp_btup> <eval tp_btdn> 1 0 10
+
+  dtext   20 114 46 Arms
+  dtext   100 114 <eval <eq_layer_color 19>> <qval <src.findlayer(19).uid> ? <src.findlayer(19).name> : <VAR.BLANKLINE>>
+  button  85 <qval <src.findlayer(19).uid> ? 117 : 25> <eval tp_btup> <eval tp_btdn> 1 0 19
+
+  dtext   20 132 46 Hands
+  dtext   100 132 <eval <eq_layer_color 7>> <qval <src.findlayer(7).uid> ? <src.findlayer(7).name> : <VAR.BLANKLINE>>
+  button  85 <qval <src.findlayer(7).uid> ? 135 : 25> <eval tp_btup> <eval tp_btdn> 1 0 7
+
+  dtext   20 150 46 Wrist
+  dtext   100 150 <eval <eq_layer_color 14>> <qval <src.findlayer(14).uid> ? <src.findlayer(14).name> : <VAR.BLANKLINE>>
+  button  85 <qval <src.findlayer(14).uid> ? 153 : 25> <eval tp_btup> <eval tp_btdn> 1 0 14
+
+  dtext   20 168 46 Finger
+  dtext   100 168 <eval <eq_layer_color 8>> <qval <src.findlayer(8).uid> ? <src.findlayer(8).name> : <VAR.BLANKLINE>>
+  button  85 <qval <src.findlayer(8).uid> ? 171 : 25> <eval tp_btup> <eval tp_btdn> 1 0 8
+
+  dtext   20 186 46 Chest
+  dtext   100 186 <eval <eq_layer_color 5>> <qval <src.findlayer(5).uid> ? <src.findlayer(5).name> : <VAR.BLANKLINE>>
+  button  85 <qval <src.findlayer(5).uid> ? 189 : 25> <eval tp_btup> <eval tp_btdn> 1 0 5
+  dtext   100 201 <eval <eq_layer_color 13>> <qval <src.findlayer(13).uid> ? <src.findlayer(13).name> : <VAR.BLANKLINE>>
+  button  85 <qval <src.findlayer(13).uid> ? 204 : 25> <eval tp_btup> <eval tp_btdn> 1 0 13
+
+  dtext   20 222 46 Waist
+  dtext   100 222 <eval <eq_layer_color 12>> <qval <src.findlayer(12).uid> ? <src.findlayer(12).name> : <VAR.BLANKLINE>>
+  button  85 <qval <src.findlayer(12).uid> ? 225 : 25> <eval tp_btup> <eval tp_btdn> 1 0 12
+
+  dtext   20 240 46 Legs
+  dtext   100 240 <eval <eq_layer_color 4>> <qval <src.findlayer(4).uid> ? <src.findlayer(4).name> : <VAR.BLANKLINE>>
+  button  85 <qval <src.findlayer(4).uid> ? 243 : 25> <eval tp_btup> <eval tp_btdn> 1 0 4
+  dtext   100 255 <eval <eq_layer_color 24>> <qval <src.findlayer(24).uid> ? <src.findlayer(24).name> : <VAR.BLANKLINE>>
+  button  85 <qval <src.findlayer(24).uid> ? 248 : 25> <eval tp_btup> <eval tp_btdn> 1 0 24
+  dtext   100 270 <eval <eq_layer_color 23>> <qval <src.findlayer(23).uid> ? <src.findlayer(23).name> : <VAR.BLANKLINE>>
+  button  85 <qval <src.findlayer(23).uid> ? 273 : 25> <eval tp_btup> <eval tp_btdn> 1 0 23
+
+  dtext   20 294 46 Feet
+  dtext   100 294 <eval <eq_layer_color 3>> <qval <src.findlayer(3).uid> ? <src.findlayer(3).name> : <VAR.BLANKLINE>>
+  button  85 <qval <src.findlayer(3).uid> ? 297 : 25> <eval tp_btup> <eval tp_btdn> 1 0 3
+
+  dtext   20 312 46 Tunic
+  dtext   100 312 <eval <eq_layer_color 17>> <qval <src.findlayer(17).uid> ? <src.findlayer(17).name> : <VAR.BLANKLINE>>
+  button  85 <qval <src.findlayer(17).uid> ? 315 : 25> <eval tp_btup> <eval tp_btdn> 1 0 17
+
+  dtext   20 330 46 Cape
+  dtext   100 330 <eval <eq_layer_color 20>> <qval <src.findlayer(20).uid> ? <src.findlayer(20).name> : <VAR.BLANKLINE>>
+  button  85 <qval <src.findlayer(20).uid> ? 333 : 25> <eval tp_btup> <eval tp_btdn> 1 0 20
+
+  dtext   20 348 46 Robe
+  dtext   100 348 <eval <eq_layer_color 22>> <qval <src.findlayer(22).uid> ? <src.findlayer(22).name> : <VAR.BLANKLINE>>
+  button  85 <qval <src.findlayer(22).uid> ? 351 : 25> <eval tp_btup> <eval tp_btdn> 1 0 22
+
+  dtext   20 366 46 Holding
+  dtext   100 366 <eval <eq_layer_color 1>> <qval <src.findlayer(1).uid> ? <src.findlayer(1).name> : <VAR.BLANKLINE>>
+  button  85 <qval <src.findlayer(1).uid> ? 369 : 25> <eval tp_btup> <eval tp_btdn> 1 0 1
+  dtext   100 381 <eval <eq_layer_color 2>> <qval <src.findlayer(2).uid> ? <src.findlayer(2).name> : <VAR.BLANKLINE>>
+  button  85 <qval <src.findlayer(2).uid> ? 384 : 25> <eval tp_btup> <eval tp_btdn> 1 0 2
+
+  dtext  120 421 0 Open the Travel Papers
+  button 100 424 <eval 0d8> <eval 0d7> 1 0 60
+
+  dtext  120 438 0 List reagents in backpack
+  button 100 441 <eval 0d8> <eval 0d7> 1 0 61
+  
+  dtext  120 455 0 Claim allocated skill points
+  button 100 458 <eval 0d8> <eval 0d7> 1 0 62
+  
+  resizepic 52  25 5100 319 25		// title background
+  resizepic 57 410 5100 319 5		// border
+  dtext    185 27 0 Equipment
+
+
+[DIALOG d_eq_list BUTTON]
+ONBUTTON = 1 26
+   SRC.EQ_LAYER_SELECT <EVAL <ARGN1>>
+ONBUTTON = 50
+   SRC.ACT	= <SRC.findlayer(<src.tag.eq.layer>).uid>
+   SRC.ACT.UNEQUIP
+   SRC.DIALOG_eq_list
+ONBUTTON = 51
+   SRC.ACT	= <SRC.findlayer(<src.tag.eq.layer>).uid>
+   SRC.ACT.DCLICK
+ONBUTTON = 52
+   SRC.ACT	= <SRC.findlayer(<src.tag.eq.layer>).uid>
+   SRC.ACT.TRIGGER @Click
+   SRC.DIALOG_eq_list <src.tag.eq.layer>
+ONBUTTON = 60
+   SRC.PAPERS
+ONBUTTON = 61
+   SRC.REGS
+ONBUTTON = 62
+   SRC.CLAIMSKILL
+
+
+//********************************************************************//
+//                          REAGENT LIST                              //
+//       DISPLAYS A LIST OF REGS A PLAYER HAS IN THEIR BACKPACK       //
+//********************************************************************//
+[FUNCTION status_reg_amtcolor]
+  LOCAL.CNT	= <eval <rescount i_reag_<args>>>
+  if ( 0 )
+  elseif ( <LOCAL.CNT> <  10 )
+     RETURN 025
+  elseif ( <LOCAL.CNT> <  20 )
+     RETURN 025
+  else
+     RETURN 0
+  endif
+
+[FUNCTION status_reg_namecolor]
+  LOCAL.CNT	= <eval <rescount i_reag_<args>>>
+  if ( 0 )
+  elseif ( <LOCAL.CNT> <  10 )
+     RETURN 025
+  elseif ( <LOCAL.CNT> <  20 )
+     RETURN 0
+  else
+     RETURN 0
+  endif
+
+[FUNCTION status_reg_itemnum]
+  RETURN <eval <serv.itemdef(i_reag_<args>).id>>
+
+[FUNCTION regs]
+  if ( <SRC.ISDEAD> )
+     src.sysmessage You're dead.
+     return 1
+  endif
+  If <ARGN1> = 1
+     DIALOG d_reagents 1
+  ELSEIF <ARGN1> = 2 
+     DIALOG d_reagents 2
+  ELSEIF <ARGN1> = 3
+     DIALOG d_reagents 3
+  ELSE
+     DIALOG d_reagents
+  ENDIF
+  
+//********************************************************************//
+[DIALOG d_reagents]
+0, 0
+   gumppic -8   0	<eval 097e>
+   gumppic -8  90	<eval 097e>
+   gumppic -8 180	<eval 097e>
+   
+PAGE 1
+   tilepic   0   4	<eval <status_reg_itemnum spider_silk>>
+   dtext      7  12	<eval <status_reg_amtcolor spider_silk>>	<eval <rescount i_reag_spider_silk>>
+   dtext     45   8	<eval <status_reg_namecolor spider_silk>>	Spider's Silk
+
+   tilepic   0  34	<eval <status_reg_itemnum sulfur_ash>>
+   dtext      7  42	<eval <status_reg_amtcolor sulfur_ash>>		<eval <rescount i_reag_sulfur_ash>>
+   dtext     45  38	<eval <status_reg_namecolor sulfur_ash>>	Sulfurous Ash
+
+   tilepic   0  64	<eval <status_reg_itemnum nightshade>>
+   dtext      7  72	<eval <status_reg_amtcolor nightshade>>		<eval <rescount i_reag_nightshade>>
+   dtext     45  68	<eval <status_reg_namecolor nightshade>>	Nightshade
+
+   tilepic   0  94	<eval <status_reg_itemnum blood_moss>>
+   dtext      7 102	<eval <status_reg_amtcolor blood_moss>>		<eval <rescount i_reag_blood_moss>>
+   dtext     45  98	<eval <status_reg_namecolor blood_moss>>	Blood Moss
+
+   tilepic   0 125	<eval <status_reg_itemnum ginseng>>
+   dtext      7 132	<eval <status_reg_amtcolor ginseng>>		<eval <rescount i_reag_ginseng>>
+   dtext     45 128	<eval <status_reg_namecolor ginseng>>		Ginseng
+
+   tilepic   0 155	<eval <status_reg_itemnum garlic>>
+   dtext      7 162	<eval <status_reg_amtcolor garlic>>		<eval <rescount i_reag_garlic>>
+   dtext     45 158	<eval <status_reg_namecolor garlic>>		Garlic
+
+   tilepic   0 185	<eval <status_reg_itemnum mandrake_root>>
+   dtext      7 192	<eval <status_reg_amtcolor mandrake_root>>	<eval <rescount i_reag_mandrake_root>>
+   dtext     45 188	<eval <status_reg_namecolor mandrake_root>>	Mandrake Root
+
+   tilepic   0 215	<eval <status_reg_itemnum black_pearl>>
+   dtext      7 222	<eval <status_reg_amtcolor black_pearl>>	<eval <rescount i_reag_black_pearl>>
+   dtext     45 218	<eval <status_reg_namecolor black_pearl>>	Black Pearls
+
+   button   65 252	<eval 09cd> <eval 09cd> 0 2 0
+   button   97 252	<eval 085F> <eval 085E> 1 0 0
+
+PAGE 2
+   tilepic   0   4	<eval <status_reg_itemnum blood_vial>>
+   dtext      7  12	<eval <status_reg_amtcolor blood_vial>>		<eval <rescount i_reag_blood_vial>>
+   dtext     45   8	<eval <status_reg_namecolor blood_vial>>	Blood Vials
+
+   tilepic   0  34	<eval <status_reg_itemnum volcanic_ash>>
+   dtext      7  42	<eval <status_reg_amtcolor volcanic_ash>>	<eval <rescount i_reag_volcanic_ash>>
+   dtext     45  38	<eval <status_reg_namecolor volcanic_ash>>	Volcanic Ash
+
+   tilepic   0  64	<eval <status_reg_itemnum Dragons_heart>>
+   dtext      7  72	<eval <status_reg_amtcolor Dragons_heart>>	<eval <rescount i_reag_Dragons_heart>>
+   dtext     45  68	<eval <status_reg_namecolor Dragons_heart>>	Dragon's Hearts
+
+   tilepic   0  94	<eval <status_reg_itemnum bone>>
+   dtext      7 102	<eval <status_reg_amtcolor bone>>		<eval <rescount i_reag_bone>>
+   dtext     45  98	<eval <status_reg_namecolor bone>>		Bone
+
+   tilepic   0 125	<eval <status_reg_itemnum pumice>>
+   dtext      7 132	<eval <status_reg_amtcolor pumice>>		<eval <rescount i_reag_pumice>>
+   dtext     45 128	<eval <status_reg_namecolor pumice>>		Pumice
+
+   tilepic   0 155	<eval <status_reg_itemnum worm_heart>>
+   dtext      7 162	<eval <status_reg_amtcolor worm_heart>>		<eval <rescount i_reag_worm_heart>>
+   dtext     45 158	<eval <status_reg_namecolor worm_heart>>	Wyrm's Hearts
+
+   tilepic   0 185	<eval <status_reg_itemnum fertile_dirt>>
+   dtext      7 192	<eval <status_reg_amtcolor fertile_dirt>>	<eval <rescount i_reag_fertile_dirt>>
+   dtext     45 188	<eval <status_reg_namecolor fertile_dirt>>	Fertile Dirt
+
+   tilepic   0 215	<eval <status_reg_itemnum brimstone>>
+   dtext      7 222	<eval <status_reg_amtcolor brimstone>>		<eval <rescount i_reag_brimstone>>
+   dtext     45 218	<eval <status_reg_namecolor brimstone>>		Brimstone
+
+   button    5 252	<eval 09cc> <eval 09cc> 0 1 0
+   button   65 252	<eval 09cd> <eval 09cd> 0 3 0
+   button   97 252	<eval 085F> <eval 085E> 1 0 0
+
+PAGE 3
+   tilepic   0   4	<eval <status_reg_itemnum ectoplasm_vial>>
+   dtext      7  12	<eval <status_reg_amtcolor ectoplasm_vial>>	<eval <rescount i_reag_ectoplasm_vial>>
+   dtext     45   8	<eval <status_reg_namecolor ectoplasm_vial>>	Ectoplasm Vials
+
+   tilepic   0  34	<eval <status_reg_itemnum heart_zombie>>
+   dtext      7  42	<eval <status_reg_amtcolor heart_zombie>>	<eval <rescount i_reag_heart_zombie>>
+   dtext     45  38	<eval <status_reg_namecolor heart_zombie>>	Zombie Hearts
+
+
+   button    5 252	<eval 09cc> <eval 09cc> 0 2 0
+   button   97 252	<eval 085F> <eval 085E> 1 0 0
+
+//********************************************************************//
+//                               ORE LIST                             //
+//        DISPLAYS A LIST OF REGS A PLAYER HAS IN THEIR BACKPACK      //
+//********************************************************************//
+
+[FUNCTION ore]
+SDIALOG d_ore
+
+[DIALOG d_ore]
+0,0
+page 0
+
+gumppic 202 116 2432
+gumppic 202 208 2432
+gumppic 202 300 2432
+gumppic 202 392 2432
+dtext 255 117 0 Coal
+dtext 218 117 0 <EVAL <RESCOUNT i_coal>>
+
+dtext 255 135 0 Copper
+dtext 218 135 0 <EVAL <RESCOUNT i_ore_copper>>
+
+dtext 255 153 0 Iron
+dtext 218 153 0 <EVAL <RESCOUNT i_ore_iron>>
+
+dtext 255 171 0 Tin
+dtext 218 171 0 <EVAL <RESCOUNT i_ore_tin>>
+
+dtext 255 189 0 Silver
+dtext 218 189 0 <EVAL <RESCOUNT i_ore_silver>>
+
+dtext 255 207 0 Gold
+dtext 218 207 0 <EVAL <RESCOUNT i_ore_gold>>
+
+dtext 255 225 0 Titanium
+dtext 218 225 0 <EVAL <RESCOUNT i_ore_titanium>>
+
+dtext 255 243 0 Terathane
+dtext 218 243 0 <EVAL <RESCOUNT i_ore_terathane>>
+
+dtext 255 261 0 Shadow
+dtext 218 261 0 <EVAL <RESCOUNT i_ore_shadow>>
+
+dtext 255 279 0 Agapite
+dtext 218 279 0 <EVAL <RESCOUNT i_ore_agapite>>
+
+dtext 255 299 0 Verite
+dtext 218 299 0 <EVAL <RESCOUNT i_ore_verite>>
+
+dtext 255 317 0 Valorite
+dtext 218 317 0 <EVAL <RESCOUNT i_ore_valorite>>
+
+dtext 255 335 0 Skargard
+dtext 218 335 0 <EVAL <RESCOUNT i_ore_skargard>>
+
+dtext 255 353 0 Blackrock
+dtext 218 353 0 <EVAL <RESCOUNT i_ore_blackrock>>
+
+dtext 255 393 0 Stone
+dtext 218 393 0 <EVAL <RESCOUNT i_resource_stone>>
+
+dtext 255 411 0 Sandstone
+dtext 218 411 0 <EVAL <RESCOUNT i_resource_sandstone>>
+
+dtext 255 429 0 Gypsum
+dtext 218 429 0 <EVAL <RESCOUNT i_resource_gypsum>>
+
+dtext 255 447 0 Granite
+dtext 218 447 0 <EVAL <RESCOUNT i_resource_granite>>
+
+tilepic 315 120 6585
+tilepichue 323 389 7140 929
+
+//********************************************************************//
+//                      STAT CONTROL FUNCTIONS                        //
+//             DIALOG AND FUNCTIONS THAT SET STAT CAPS                //
+//********************************************************************//
+[FUNCTION stats]
+   ACT	= <FINDID(m_character_manager).UID>
+   ACT.STAT_UPDATE STR
+   ACT.STAT_UPDATE INT
+   ACT.STAT_UPDATE DEX
+   TAG.RESET.STATS		=
+   IF ((<ACT.TAG.CAPSTR> <= 10) && (<ACT.TAG.CAPINT> <= 10) && (<ACT.TAG.CAPDEX> <= 10)
+      ACT.TAG.CAPSTR = 100
+      ACT.TAG.CAPDEX = 100
+      ACT.TAG.CAPINT = 75
+      SYSMESSAGE @025 Your Stat Caps were not set for some reason. This has been logged, please page for a GM and fix your stats.
+      SERV.LOG ::ERROR:: <ACCOUNT>::<NAME>::<UID> did not have stat caps set. This has been temporarily auto-fixed.
+   ENDIF
+   ACT.TAG.STR_TMP		= <ACT.TAG.CAPSTR>
+   ACT.TAG.INT_TMP		= <ACT.TAG.CAPINT>
+   ACT.TAG.DEX_TMP		= <ACT.TAG.CAPDEX>
+   ACT.DIALOG_stat_control
+   RETURN 1
+
+[FUNCTION f_calc_temp_stats]
+  RETURN <EVAL ((0<SRC.TAG.FLUX>+275)-(0<TAG.STR_TMP>+0<TAG.DEX_TMP>+0<TAG.INT_TMP>))>
+
+[FUNCTION f_stat_move]  
+  LOCAL.MVDIR=<STRARG <args>>
+  LOCAL.MVSTAT=<STREAT <args>>
+    
+  if (0<SRC.TAG.FLUX> > 0)
+     if ( ( <tag.<LOCAL.MVSTAT>_tmp> + <EVAL <LOCAL.MVDIR>> ) > 140 )
+        DIALOG_STAT_CONTROL
+        return 0
+     endif
+  elseif ( ( <tag.<LOCAL.MVSTAT>_tmp> + <EVAL <LOCAL.MVDIR>> ) > 120 )
+     DIALOG_STAT_CONTROL
+     return 0
+  endif
+
+  IF ( <EVAL <LOCAL.MVDIR>> = 1 )
+     IF (<f_calc_temp_stats> > 0)
+        TRY tag.<LOCAL.MVSTAT>_tmp = <eval (<tag.<LOCAL.MVSTAT>_tmp> + 1)>
+        DIALOG_STAT_CONTROL
+     ELSE
+        SRC.SYSMESSAGE @25 You must lower another skill before you can raise this one.
+        DIALOG_STAT_CONTROL
+     ENDIF
+  ELSE
+     IF (<TAG.<LOCAL.MVSTAT>_tmp> > <SRC.O<LOCAL.MVSTAT>>)
+        TRY tag.<LOCAL.MVSTAT>_tmp = <eval (<tag.<LOCAL.MVSTAT>_tmp> - 1)>
+        DIALOG_STAT_CONTROL
+     ELSE
+        if ( <SRC.<LOCAL.MVSTAT>> < 30 )
+           SRC.SYSMESSAGE You cannot lower <LOCAL.MVSTAT> to below 30.
+           return 1
+        endif
+        SRC.TAG.MVSTAT=<LOCAL.MVSTAT>
+        SRC.MENU mnu_redstats
+     ENDIF
+  ENDIF
+  RETURN 1
+
+//********************************************************************//
+[FUNCTION DIALOG_stat_control]
+  
+   //************Update Original Stats************
+   TAG.OSTR=<SRC.OSTR>
+   TAG.ODEX=<SRC.ODEX>
+   TAG.OINT=<SRC.OINT>
+   
+
+   //*******(Choose Font Color for numbers********
+   VAR.STR_CLR	= 0
+   VAR.INT_CLR	= 0
+   VAR.DEX_CLR	= 0
+
+   if ( <TAG.OSTR> > <TAG.STR_TMP> )
+      VAR.STR_CLR	= 021
+   endif
+   if ( <TAG.OINT> > <TAG.INT_TMP> )
+      VAR.INT_CLR	= 021
+   endif
+   if ( <TAG.ODEX> > <TAG.DEX_TMP> )
+      VAR.DEX_CLR	= 021
+   endif
+  
+   
+   //******Update Fluxes From Old Flux Style******
+   IF (0<SRC.TAG.FLUX.STR>>0)
+      SRC.TAG.FLUX = <eval (<SRC.TAG0.FLUX>+<SRC.TAG0.FLUX.STR>)>
+      SRC.TAG.FLUX.BACKUPSTR = 
+      SRC.TAG.FLUX.STR =
+   ENDIF
+   IF (0<SRC.TAG.FLUX.INT>>0)
+      SRC.TAG.FLUX = <eval (<SRC.TAG0.FLUX>+<SRC.TAG0.FLUX.INT>)>
+      SRC.TAG.FLUX.BACKUPINT = 
+      SRC.TAG.FLUX.INT =
+   ENDIF
+   IF (0<SRC.TAG.FLUX.DEX>>0)
+      SRC.TAG.FLUX = <eval (<SRC.TAG0.FLUX>+<SRC.TAG0.FLUX.DEX>)>
+      SRC.TAG.FLUX.BACKUPDEX = 
+      SRC.TAG.FLUX.DEX =
+   ENDIF
+      
+   
+   //*******All Done, Open the Stat Dialog********
+   DIALOG d_stat_control
+
+
+[DIALOG d_stat_control]
+200,200
+NODISPOSE
+gumppic     0   0 1140
+gumppic    63  15 1142
+dtext     130  16    4 Personal objectives
+
+dtext     122  47    0 Total Fluxes
+gumppic   220  45 2443
+dtext     245  47    0 <eval <SRC.TAG.FLUX>>
+
+dtext     100  72    0 Un-alloted stats
+gumppic   220  70 2443
+dtext     245  72    0 <eval <f_calc_temp_stats>>
+
+dtext     48  121    0 Original	
+dtext     55  147    0 Desired	
+
+dtext     125 100    0    Str
+dtext     205 100    0    Dex
+dtext     286 100    0    Int
+
+gumppic   105 120 2443				
+gumppic   105 145 2444				
+dtext     128 121    <eval <VAR.STR_CLR>>   <eval <TAG.OSTR>>
+dtext     128 146    0   <eval <TAG.STR_TMP>>
+button    169 144 2435  2436 1 0 1
+button    169 156 2437  2438 1 0 4
+ 
+gumppic   188 120 2443				// original dex
+gumppic   188 145 2444				// desired dex
+dtext     211 121    <eval <VAR.DEX_CLR>>   <eval <TAG.ODEX>>
+dtext     211 146    0   <eval <TAG.DEX_TMP>>
+button    253 144 2435  2436 1 0 3
+button    253 156 2437  2438 1 0 6
+
+gumppic   267 120 2443				// original int
+gumppic   267 145 2444				// desired int
+dtext     287 121    <eval <VAR.INT_CLR>>   <eval <TAG.OINT>>
+dtext     287 146    0   <eval <TAG.INT_TMP>>
+button    332 144 2435  2436 1 0 2
+button    332 156 2437  2438 1 0 5
+
+button     80 195  243 243 1 0 0		// cancel
+button    160 195  246 244 1 0 10		// default
+button    245 195  249 248 1 0 11		// yes
+
+[DIALOG d_stat_control BUTTON]
+ON=0
+   // --Begin Newbie Quest stuff --
+      IF ((<SRC.TAG0.NPC_QUEST_START_3> & NPCQ_NewbieQuest_1) && (<SRC.TAG0.NEWBIEQUESTPHASE>=4))
+         f_newbie_introduction_1_part4_done
+      ENDIF
+   // --End Newbie Quest stuff --
+  SRC.PAPERS
+  
+ON=1
+  f_stat_move 1 str
+
+ON=2
+  f_stat_move 1 int
+
+ON=3
+  f_stat_move 1 dex
+
+ON=4
+  f_stat_move -1 str
+
+ON=5
+  f_stat_move -1 int
+
+ON=6
+  f_stat_move -1 dex
+
+ON=10
+  if (0<TAG.FLUX>)
+  elseif ( ( <TAG.CAPSTR> + <TAG.CAPINT> + <TAG.CAPDEX> ) != 275 )
+     TAG.STR_TMP = 95
+     TAG.INT_TMP = 90
+     TAG.DEX_TMP = 90
+  else
+     TAG.STR_TMP = <TAG.CAPSTR>
+     TAG.INT_TMP = <TAG.CAPINT>
+     TAG.DEX_TMP = <TAG.CAPDEX>
+  endif
+  DIALOG_STAT_CONTROL
+
+ON=11
+  TAG.CAPSTR = <TAG.STR_TMP>
+  TAG.CAPINT = <TAG.INT_TMP>
+  TAG.CAPDEX = <TAG.DEX_TMP>
+  SRC.PAPERS  
+  RETURN 1
+
+
+[MENU mnu_redstats]
+You have selected to lower your <SRC.TAG.MVSTAT> lower than its current value.  Selecting Yes will immediately lower <SRC.TAG.MVSTAT> by 1.  Do you want to continue?
+
+ON=0 Yes, I agree.
+//src.consumegold_everywhere 200
+//if ( <var.consumegold> > 0 )
+//src.sysmessage You are <eval <var.consumegold>>gp short in your account.
+//SRC.findlayer(layer_k_control).DIALOG_STAT_CONTROL
+//return 0
+//endif
+  TRY SRC.O<SRC.TAG.MVSTAT> = <eval (<SRC.O<SRC.TAG.MVSTAT>> - 1)>
+  SRC.ACT=<SRC.findlayer(layer_k_control).UID>
+  TRY SRC.ACT.TAG.O<SRC.TAG.MVSTAT> = <SRC.O<SRC.TAG.MVSTAT>>
+  TRY SRC.ACT.TAG.<SRC.TAG.MVSTAT>_TMP = <SRC.O<SRC.TAG.MVSTAT>>
+  SRC.TAG.MVSTAT=
+  SRC.ACT.DIALOG_STAT_CONTROL
+  return 1
+  
+ON=0 No
+  SRC.TAG.MVSTAT=
+  SRC.findlayer(layer_k_control).DIALOG_STAT_CONTROL
+  return 1
+
+//********************************************************************//
+//                             AOSFEATURES                            //
+//                     TOGGLES TOOLTIPS ON CLIENTS                    //
+//********************************************************************//
+
+// --NOTE-- This is currently disabled, and only here should anyone later wish to use tooltips...
+
+[FUNCTION AOSFEATURES]
+IF (<SRC.ACCOUNT.TAG.TOOLTIPS>==1)
+   SRC.ACCOUNT.TAG.TOOLTIPS=
+   SRC.SYSMESSAGE @73 You have turned off AoS Tooltips and Buff manager. Please restart your client to see the changes.
+ELSE
+   SRC.ACCOUNT.TAG.TOOLTIPS=1
+   SRC.SYSMESSAGE @73 You have turned on AoS Tooltips and Buff manager. Please restart your client to see the changes.
+ENDIF
+
+
+//********************************************************************//
+//                                CHAT                                //
+//               THE WORLD CHAT MENU AND FUNCTIONS LIST               //
+//********************************************************************//
+
+[ITEMDEF i_memory_mute]
+DEFNAME=i_memory_mute
+NAME=Mute Memory Item
+ID=i_memory
+TYPE=t_eq_script
+
+ON=@CREATE
+
+
+ON=@TIMER
+CONT.TAG.WORLDCHAT.MUTE=
+CONT.SYSMESSAGE=You are no longer muted. Please do not abuse the chat system again!
+REMOVE
+RETURN 1
+
+
+[FUNCTION mute]
+	IF (<FINDID.i_memory_mute.UID>)
+		FINDID.i_memory_mute.REMOVE
+	ENDIF
+    IF (<isnum <ARGS>>)
+         NEWITEM i_memory_mute
+         ACT.TIMER=<EVAL <ARGS>*3600>
+         ACT.CONT=<UID>
+		 TAG.WORLDCHAT.MUTE=1
+         SYSMESSAGE You have been muted for <ARGS> hours.
+         SRC.SYSMESSAGE <name> has been muted for <ARGS> hours.
+    ENDIF
+    IF !(<isnum <ARGS>>)
+       SRC.SYSMESSAGE Invalid arguments.
+    ENDIF
+RETURN 1
+
+
+[FUNCTION chat]
+DIALOG d_chat_menu
+
+[DIALOG d_chat_menu]
+20,20
+
+resizepic 0 0 2620 250 300 // Background
+
+dtext 60 30 060 Chat Options Menu
+dtext 15 75 010 World Chat:
+IF (<TAG0.WORLDCHAT.MAIN>=1)
+   dtext 90 75 025 Disabled
+   button 200 70 2640 2641 1 0 1
+ELSE
+   dtext 90 75 045 Enabled
+   button 200 70 2640 2641 1 0 2
+ENDIF
+
+
+dtext 15 100 010 Trade Chat:
+IF (<TAG0.WORLDCHAT.TRADE>=1)
+   dtext 90 100 025 Disabled
+   button 200 95 2640 2641 1 0 3
+ELSE
+   dtext 90 100 045 Enabled
+   button 200 95 2640 2641 1 0 4
+ENDIF
+
+dtext 15 150 010 Chat Colour:
+IF !(<TAG0.WORLDCHAT.MAIN.COLOUR>)
+   dtext 90 150 07a0 Stronghold
+ELSEIF (<TAG0.WORLDCHAT.MAIN.COLOUR>=1)
+   dtext 90 150 07a0 Midnight
+ELSEIF (<TAG0.WORLDCHAT.MAIN.COLOUR>=2)
+   dtext 90 150 07a0 Peppermint
+ELSEIF (<TAG0.WORLDCHAT.MAIN.COLOUR>=3)   
+   dtext 90 150 07a0 Cardinal
+ENDIF
+button 200 145 2640 2641 1 0 5
+
+dtext 15 175 010 WTB Colour:
+IF !(<TAG0.WORLDCHAT.WTB.COLOUR>)
+   dtext 90 175 07a0 Stronghold
+ELSEIF (<TAG0.WORLDCHAT.WTB.COLOUR>=1)
+   dtext 90 175 07a0 Midnight
+ELSEIF (<TAG0.WORLDCHAT.WTB.COLOUR>=2)
+   dtext 90 175 07a0 Peppermint
+ELSEIF (<TAG0.WORLDCHAT.WTB.COLOUR>=3)   
+   dtext 90 175 07a0 Cardinal
+ENDIF
+button 200 170 2640 2641 1 0 6
+
+
+[DIALOG d_chat_menu BUTTON]
+ON=1
+   TAG.WORLDCHAT.MAIN=
+
+ON=2
+   TAG.WORLDCHAT.MAIN=1
+   
+ON=3
+   TAG.WORLDCHAT.TRADE=
+   
+ON=4
+   TAG.WORLDCHAT.TRADE=1
+
+ON=5
+   IF !(<TAG0.WORLDCHAT.MAIN.COLOUR>)
+      TAG.WORLDCHAT.MAIN.COLOUR=1
+   ELSEIF (<TAG0.WORLDCHAT.MAIN.COLOUR>=1)
+      TAG.WORLDCHAT.MAIN.COLOUR=2
+   ELSEIF (<TAG0.WORLDCHAT.MAIN.COLOUR>=2)
+      TAG.WORLDCHAT.MAIN.COLOUR=3
+   ELSEIF (<TAG0.WORLDCHAT.MAIN.COLOUR>=3)
+      TAG.WORLDCHAT.MAIN.COLOUR=
+   ENDIF
+
+ON=6
+   IF !(<TAG0.WORLDCHAT.WTB.COLOUR>)
+      TAG.WORLDCHAT.WTB.COLOUR=1
+   ELSEIF (<TAG0.WORLDCHAT.WTB.COLOUR>=1)
+      TAG.WORLDCHAT.WTB.COLOUR=2
+   ELSEIF (<TAG0.WORLDCHAT.WTB.COLOUR>=2)
+      TAG.WORLDCHAT.WTB.COLOUR=3
+   ELSEIF (<TAG0.WORLDCHAT.WTB.COLOUR>=3)
+      TAG.WORLDCHAT.WTB.COLOUR=
+   ENDIF      
+      
+
+[DIALOG d_chat_menu TEXT]
+
+[FUNCTION chat_world]
+IF (<TAG0.WORLDCHAT.MAIN>=1)
+   RETURN 1
+ELSE
+   IF !(<TAG0.WORLDCHAT.MAIN.COLOUR>)
+      SYSMESSAGE @07a1 [Player: World Chat] <SRC.NAME>: <ARGS>
+   ELSEIF (<TAG0.WORLDCHAT.MAIN.COLOUR>=1)
+      SYSMESSAGE @0054 [Player: World Chat] <SRC.NAME>: <ARGS>
+   ELSEIF (<TAG0.WORLDCHAT.MAIN.COLOUR>=2)
+      SYSMESSAGE @0b8a [Player: World Chat] <SRC.NAME>: <ARGS>
+   ELSEIF (<TAG0.WORLDCHAT.MAIN.COLOUR>=3)
+      SYSMESSAGE @0af1 [Player: World Chat] <SRC.NAME>: <ARGS>
+   ENDIF
+ENDIF
+
+[function blood_pent]
+serv.newitem 01d09
+NEW.P=<p>
+NEW.MOVE -1 0 0
+serv.newitem 01cfa
+NEW.P=<p>
+NEW.MOVE -1 -1 0
+serv.newitem 01d0a
+NEW.P=<p>
+NEW.MOVE 0 -1 0
+serv.newitem 01d08
+NEW.P=<p>
+NEW.MOVE -1 1 0
+serv.newitem 01d0b
+NEW.P=<p>
+NEW.MOVE 1 -1 0
+serv.newitem 01d12
+NEW.P=<p>
+NEW.MOVE 1 0 0
+serv.newitem 01d0f
+NEW.P=<p>
+NEW.MOVE 1 1 0
+serv.newitem 01d07
+NEW.P=<p>
+NEW.MOVE -1 2 0
+serv.newitem 01d10
+NEW.P=<p>
+NEW.MOVE 0 1 0
+serv.newitem 01cf9
+NEW.P=<p>
+NEW.MOVE -1 -2 0
+serv.newitem 01cfc
+NEW.P=<p>
+NEW.MOVE 0 -2 0
+serv.newitem 01cfd
+NEW.P=<p>
+NEW.MOVE 1 -2 0
+serv.newitem 01cfe
+NEW.P=<p>
+NEW.MOVE 2 -2 0
+serv.newitem 01cff
+NEW.P=<p>
+NEW.MOVE 3 -2 0
+serv.newitem 01cf9
+NEW.P=<p>
+NEW.MOVE -2 -1 0
+serv.newitem 01d0c
+NEW.P=<p>
+NEW.MOVE 2 -1 0
+serv.newitem 01d00
+NEW.P=<p>
+NEW.MOVE 3 -1 0
+serv.newitem 01cf8
+NEW.P=<p>
+NEW.MOVE -2 0 0
+serv.newitem 01d0d
+NEW.P=<p>
+NEW.MOVE 2 0 0
+serv.newitem 01d01
+NEW.P=<p>
+NEW.MOVE 3 0 0
+serv.newitem 01cf7
+NEW.P=<p>
+NEW.MOVE -2 1 0
+serv.newitem 01d0e
+NEW.P=<p>
+NEW.MOVE 2 1 0
+serv.newitem 01d02
+NEW.P=<p>
+NEW.MOVE 3 1 0
+serv.newitem 01cf6 
+NEW.P=<p>
+NEW.MOVE -2 2 0
+serv.newitem 01d06
+NEW.P=<p>
+NEW.MOVE 0 2 0
+serv.newitem 01d05
+NEW.P=<p>
+NEW.MOVE 1 2 0
+serv.newitem 01d04
+NEW.P=<p>
+NEW.MOVE 2 2 0
+serv.newitem 01d03
+NEW.P=<p>
+NEW.MOVE 3 2 0
+serv.newitem 01cf5
+NEW.P=<p>
+NEW.MOVE -2 3 0
+serv.newitem 01cf4
+NEW.P=<p>
+NEW.MOVE -1 3 0
+serv.newitem 01cf3
+NEW.P=<p>
+NEW.MOVE 0 3 0
+serv.newitem 01cf2
+NEW.P=<p>
+NEW.MOVE 1 3 0
+serv.newitem 01cf1
+NEW.P=<p>
+NEW.MOVE 2 3 0
+
+[FUNCTION chat_world_staff]
+
+//IF (<TAG0.WORLDCHAT.MAIN>=1)
+//   RETURN 1
+//ELSE
+
+IF	(<SRC.account.plevel>==2)
+	SYSMESSAGE @07a1 [Counsellor: World Chat] <SRC.NAME>: <ARGS> 
+
+ELSEIF (<SRC.account.plevel>==3)
+	SYSMESSAGE @07a1 [Seer: World Chat] <SRC.NAME>: <ARGS> 
+
+ELSEIF (<SRC.account.plevel>==4)
+	SYSMESSAGE @07a1 [Game Master: World Chat] <SRC.NAME>: <ARGS> 
+
+ELSEIF (<src.account.plevel>==5)
+	SYSMESSAGE @07a1 [Head GM: World Chat] <SRC.NAME>: <ARGS> 
+	
+ELSEIF (<src.account.plevel>==6)
+	SYSMESSAGE @07a1 [Admin: World Chat] <SRC.NAME>: <ARGS> 
+
+ELSEIF (<src.account.plevel>==7)
+	SYSMESSAGE @07a1 [Head Admin: World Chat] <SRC.NAME>: <ARGS>
+
+ELSEIF (<SRC.ISCOMPANION>)
+	SYSMESSAGE @0798 [Companion: World Chat] <SRC.NAME>: <ARGS>
+ENDIF
+
+  // SYSMESSAGE @07a1 [Staff:] <SRC.NAME>: <ARGS>
+//ENDIF
+
+[FUNCTION chat_wtb]
+
+IF (<TAG0.WORLDCHAT.WTB>=1)
+   RETURN 1
+ELSE
+   IF !(<TAG0.WORLDCHAT.WTB.COLOUR>)
+      SYSMESSAGE @0af1 [WTB] <SRC.NAME>: <ARGS>
+   ELSEIF (<TAG0.WORLDCHAT.WTB.COLOUR>=1)
+      SYSMESSAGE @07a0 [Player: World Chat] <SRC.NAME>: <ARGS>
+   ELSEIF (<TAG0.WORLDCHAT.WTB.COLOUR>=2)
+      SYSMESSAGE @0b8a [Player: World Chat] <SRC.NAME>: <ARGS>
+   ELSEIF (<TAG0.WORLDCHAT.WTB.COLOUR>=3)
+      SYSMESSAGE @0af1 [Player: World Chat] <SRC.NAME>: <ARGS>
+   ENDIF
+ENDIF
+
+
+[FUNCTION chat_wtb_staff]
+//IF (<TAG0.WORLDCHAT.WTB>=1)
+//   RETURN 1
+//ELSE
+   SYSMESSAGE @07a1 [Staff:] <SRC.NAME>: <ARGS>
+//ENDIF
+
+[FUNCTION kickball]
+IF (<SRC.tag.kick> == 0)
+src.sysmessage @0491 You prepare to kick the ball
+src.tag.kick = 1
+ELSEIF (<SRC.tag.kick> == 1)
+src.sysmessage @0491 You cancel trying to kick the ball
+src.tag.kick = 0
+ELSEIF (<SRC.tag.kick> == 2)
+src.sysmessage @0491 You prepare to kick the ball
+src.tag.kick = 1
+ENDIF
+
+[FUNCTION shootball]
+IF (0<SRC.tag.kick> == 0)
+src.sysmessage @0b42 You prepare to shoot the ball
+src.tag.kick = 2
+ELSEIF (0<SRC.tag.kick> == 1)
+src.sysmessage @0b42 You prepare to shoot the ball
+src.tag.kick = 2
+ELSEIF (0<SRC.tag.kick> == 2)
+src.sysmessage @0b42 You cancel trying to Shoot the ball
+src.tag.kick = 0
+ENDIF
+
+[FUNCTION FOCUStoggle]
+IF (<SRC.SKILLLOCK.50> == 0)
+src.sysmessage @0491 Focus Skill set to decrease
+src.skilllock.50 = 1
+ELSEIF (<SRC.SKILLLOCK.50> == 1)
+src.sysmessage @0491 Focus Skill set to locked
+src.skilllock.50 = 2
+ELSEIF (<SRC.SKILLLOCK.50> == 2)
+src.sysmessage @0491 Focus Skill set to increase
+src.skilllock.50 = 0
+ENDIF
+      
+[EOF]

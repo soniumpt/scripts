@@ -1,0 +1,1775 @@
+//-Last update 25th April 2003 by Wigifer - Do NOT change without permission!!!                   -
+
+[CHARDEF C_academy_quest_recorder] 
+NAME=Arlin
+ID=C_man 
+DAM=20,40 
+ARMOR=40 
+
+TEVENTS=e_all_npc
+
+CAN=MT_WALK|MT_RUN|MT_EQUIP|MT_USEHANDS 
+
+TSPEECH=jobjrecorder
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Quests - Arlin
+DESCRIPTION=Arlin the Britannian Record Holder
+
+ON=@Create 
+TITLE=Britannian Record Holder
+COLOR		= colors_skin
+NPC=brain_human 
+KARMA=3000 
+STR=100 
+DEX=100 
+INT=100 
+ITEMNEWBIE=i_pants_long
+COLOR=01
+ITEMNEWBIE=i_tunic
+COLOR=025
+ITEMNEWBIE=i_goggles
+ITEMNEWBIE=i_hair_short
+ITEMNEWBIE=i_shoes_plain
+
+ON=@NPCRestock
+ITEM=i_gold,{200 500} 
+
+On=@NPCSeeNewPlayer 
+say Curses, I shall never finish this record...
+
+[SPEECH jobjrecorder] 
+on=hi 
+on=hello
+on=hail
+on=sawat dee
+on=Greetings
+IF (0<SRC.TAG.ACADEMY> ==1)
+say Ah <SRC.SEX Sir/Lady> maybe you can be of use to me... Say "Quest" for more information.
+ELSE
+SAY Hail <SRC.SEX sir\m'lady>, I need help but I think that maybe one of your level wouldst not want to trifle thyself with such problems as mine...
+ENDIF
+on=*quest*
+IF (0<SRC.TAG.ACADEMY> ==1)
+SAY I'm making a record for the academy, it covers all kinds of items. Problem is... I forgot to get a few things... Ask "What" and I shall tell you more...
+else
+SAY
+ON=how 
+ON=what
+ON=help
+ON=quest
+on=pid 
+on=Choau
+IF (0<SRC.TAG.ACADEMY> ==1)
+SAY Just roam the realm and fetch me a few items... If you "Agree" I will tell you what you need to know...
+ENDIF
+ON=agree 
+on=hen duaw
+IF (0<SRC.TAG.academy_explore>=2)
+SAY Oh, wait, you've already got me what I need. How silly of me...
+return1
+ELSE 
+IF (0<SRC.TAG.ACADEMY> ==1)
+IF (0<SRC.TAG.academy_explore>=1)
+SAY You have already agreed to help me <SRC.SEX sir\m'lady>. Are you as forgetful as me?
+EMOTE laugh 
+return1
+ELSE 
+IF (0<SRC.TAG.ACADEMY> ==1)
+SAY I thank thee <SRC.SEX sir\m'lady>. I need the following items in this book... Say reward when you have them.
+SRC.NEWITEM=i_book_academy_explore
+SRC.ACT.BOUNCE
+SRC.TAG.academy_explore=1 
+return 1 
+endif 
+on=sa soam
+on=reward
+on=rangval
+//Bit after this needs changing
+IF (0<SRC.TAG.academy_explore>=1)
+IF <SRC.RESTEST i_book_academy_trader_bible>
+IF <SRC.RESTEST i_book_academy_explore_hk>
+IF <SRC.RESTEST i_academy_painting_dk>
+IF <SRC.RESTEST i_academy_orb_paperweight>
+IF <SRC.RESTEST i_academy_ptf_statue>
+IF <SRC.RESTEST i_academy_void_statue>
+IF <SRC.RESTEST i_academy_lb_statue>
+IF <SRC.RESTEST i_academy_evil_record>
+IF <SRC.RESTEST i_academy_flower_ria>
+SAY Ah, I thank thee <SRC.SEX sir/m'lady>. This is a great help.
+SAY If you want, when you graduate, you can pick the items up for yourself from me. Just say collect when you do.
+SRC.CONSUME 1 i_book_academy_trader_bible
+SRC.CONSUME 1 i_book_academy_explore_hk
+SRC.CONSUME 1 i_academy_painting_dk
+SRC.CONSUME 1 i_academy_orb_paperweight
+SRC.CONSUME 1 i_academy_ptf_statue
+SRC.CONSUME 1 i_academy_void_statue
+SRC.CONSUME 1 i_academy_lb_statue
+SRC.CONSUME 1 i_academy_evil_record
+SRC.CONSUME i_academy_flower_ria
+SRC.NEWITEM=i_GOLD 
+SRC.ACT.AMOUNT=5000
+SRC.ACT.BOUNCE 
+SRC.TAG.academy_explore=2
+ANNOUNCE <SRC.NAME> has aided the Record Keeper with his journal for the Academy
+remove
+RETURN 1
+ENDIF
+ON=*collect*
+IF (0<SRC.TAG.academy_explore>=2)
+IF (0<SRC.TAG.ACADEMY> ==2)
+SAY Ah, welcome back! I see you've made a fine graduate. Here, let me give these back to you.
+SRC.NEWITEM i_academy_flower_ria
+SRC.NEWITEM i_book_academy_trader_bible
+SRC.NEWITEM i_book_academy_explore_hk
+SRC.NEWITEM i_academy_painting_dk
+SRC.NEWITEM i_academy_orb_paperweight
+SRC.NEWITEM i_academy_ptf_statue
+SRC.NEWITEM i_academy_void_statue
+SRC.NEWITEM i_academy_lb_statue
+SRC.NEWITEM i_academy_evil_record
+EMOTE hand over the items you had collected for him long ago.
+SAY I hope you do well in whatever you do <SRC.SEX m'lord\m'lady>
+SRC.TAG.academy_explore=3
+RETURN 1
+ELSEIF <SRC.TAG.academy_explore>=2
+IF <SRC.TAG.ACADEMY> ==1
+SAY You have not graduated yet and I have not finished with these yet...
+RETURN 1
+ELSE
+SAY You have nothing to collect from me <SRC.SEX sir\ma'am>.
+RETURN 1
+ENDIF
+RETURN 1
+
+// Quest Book
+
+[ITEMDEF i_book_academy_explore]
+NAME=Arlins List of Items
+ID=i_BOOK_OPEN
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Quests - Arlin
+DESCRIPTION=Arlins List of Items
+
+ON=@Create
+MORE=b_academy_explore
+
+[BOOK b_academy_explore]
+PAGES=53
+TITLE=List of Items
+AUTHOR=Arlin
+
+[BOOK b_academy_explore 1]    
+This is a list of
+items I need, and a
+little history behind
+each item.
+
+[BOOK b_academy_explore 2]    
+Item:
+Journal of a Holy
+Knight
+
+Era:
+Holy Knight Reprisals
+
+[BOOK b_academy_explore 3]    
+The journal records
+a guard of the HK
+church's experience
+during the destruction
+at the hands of the
+Fallen Arch-Angels...
+
+[BOOK b_academy_explore 4]
+The Dark Knights
+made a small alliance
+with the Fallen Ones
+to recieve a potion
+effective enough to
+negate the holy orders
+power.
+
+[BOOK b_academy_explore 5]
+However the DK never
+met them. Rumours
+since say that a
+corrupted member of
+the Order had set it
+up.
+
+[BOOK b_academy_explore 6]
+Item:
+Portrait of Delucia
+Under the Shadows
+
+Era:
+End of the DK
+
+[BOOK b_academy_explore 7]
+A portrait of Delucia
+under the power of
+the shadows, which
+destroyed the last of
+the Dark Knights in
+a mass attack...
+
+[BOOK b_academy_explore 8]
+The Emperor of DK
+had died long before.
+However, his magic
+still emitted from
+his grave. Alas,
+his death resulted
+in the end of loyalty...
+
+[BOOK b_academy_explore 9]
+Delucia's Dark Knights
+bravely fought back,
+but not enough arrived
+to save the town. Lord
+British has since
+allowed the Ex-DK
+to live in his lands...
+
+[BOOK b_academy_explore 10]
+Item:
+Orb of Fire
+Paperweight
+
+Era:
+The Great Depression
+
+[BOOK b_academy_explore 11]
+The most famous of
+the orbs, this was
+one of a set to
+open a portal to
+the Void... Lord Brit
+lost a great deal
+so this was made
+
+[BOOK b_academy_explore 12]
+to sell in various
+merchendise shops
+across the realm in
+an attempt to fund
+the cost of guards
+in Brit. However,
+when this failed
+
+[BOOK b_academy_explore 13]
+the shops all over
+Brit were released
+for a time to the
+traders of the
+realm. This is now
+referred to as the
+"Great Depression".
+
+[BOOK b_academy_explore 14]
+Item:
+Statue of the Void
+
+Era:
+The Void Invasion
+
+[BOOK b_academy_explore 15]
+This item dates to
+a time just before
+"Endangered Trade".
+The void had taken
+over Britain in a
+massive invasion.
+Many a brave
+
+[BOOK b_academy_explore 16]
+warrior died to
+the greatest Void
+monster, the "Void
+Daemon". Not one
+person could survive
+a battle without
+help from above...
+
+[BOOK b_academy_explore 17]
+This statue was
+crafted by a great
+craftsman whose shop
+had been overrun by
+these monsters...
+
+[BOOK b_academy_explore 18]
+Item:
+PTF Honorary
+Statue
+
+Era:
+The early days
+
+[BOOK b_academy_explore 19]
+Not much to say about
+this item... This is
+from the days first
+recorded. PTF were
+the first guild. An
+evil one too...
+
+[BOOK b_academy_explore 20]
+Item:
+LB Honorary Statue
+
+Era:
+Modern Days
+
+[BOOK b_academy_explore 21]
+This statue is to
+commemmorate LB
+as the most famous
+anti-PK guild in
+the realm. It's not
+sold well among
+Murderers...
+
+[BOOK b_academy_explore 22]
+Item:
+Rias Flower
+
+Era:
+The Siege of Skara
+
+[BOOK b_academy_explore 23]
+A dark story this
+has behind it. Ria
+was the daughter of
+Du Karn, Lord of
+Skara. His arch
+nemesis, Lord Blight,
+attempted a hostile
+
+[BOOK b_academy_explore 24]
+takeover of Skara.
+Many perils befell
+Skara, but a brave
+warrior named Tim
+O Fee helped and
+ended up asking
+Ria to marry him.
+
+[BOOK b_academy_explore 25]
+However, the wedding
+party was ambushed
+and killed, as was
+Ria. Tim O Fee
+turned into a
+rampant killer. This
+is to remember her...
+
+[BOOK b_academy_explore 26]
+Item:
+Evil Record Book
+
+Era:
+Age of Murder
+
+[BOOK b_academy_explore 27]
+This book is from
+after the Void
+Invasion and the
+Great Depression.
+Murderers were rife
+and many warriors of
+good were slain,
+
+[BOOK b_academy_explore 28]
+many more corrupted
+by the residue evil.
+The lands were more
+and more unsafe than
+ever before. However
+during those times
+the HK began
+
+[BOOK b_academy_explore 29]
+to increase in
+power. Among these
+was a pure defender
+of the land who
+slayed much of the
+evil, rumoured to
+now be in LB...
+
+[BOOK b_academy_explore 30]
+Item:
+The Traders Handbook
+
+Era:
+Pre-Void Invasion
+
+[BOOK b_academy_explore 31]
+This was the
+"Bible" of arguably
+the largest ever
+trade federation,
+Wigifer Trade
+Incorporated.
+
+[BOOK b_academy_explore 32]
+--------------
+
+     Item
+   Location
+
+--------------
+
+[BOOK b_academy_explore 33]
+This section tells
+you roughly where
+to get the items,
+from my
+knowledge...
+
+[BOOK b_academy_explore 34]
+Journal of a Holy
+Knight
+
+Find the gate to the
+city of Nujel'm
+South of Ice near
+Compassion...
+
+[BOOK b_academy_explore 35]
+Find the retired
+guard at the inn
+and ask him for
+his "Journal"...
+
+[BOOK b_academy_explore 36]
+Portrait of Delucia
+Under the Shadows
+
+Venture to T2A and
+near Papua.
+
+[BOOK b_academy_explore 37]
+In a small house
+nearby, the artist
+lives. Ask him for
+this "Portrait".
+WARNING: T2A is
+VERY dangerous.
+Be careful.
+
+[BOOK b_academy_explore 38]
+Orb of Fire
+Paperweight
+
+Try going to the
+small village in
+the swamps where
+the Orb was...
+
+[BOOK b_academy_explore 39]
+It is in the Swamps
+South of Skara. Ask
+the warrior for the
+"Orb". WARNING:
+Nextdoor is a
+PK player town.
+
+[BOOK b_academy_explore 40]
+Statue of the Void
+
+This one is nice
+and safe, held in
+East Britain by
+someone staying in
+an Inn.
+
+[BOOK b_academy_explore 41]
+Find the man in the
+inn and ask him for
+the "Statue". However,
+this man does like his
+riddles...
+
+[BOOK b_academy_explore 42]
+PTF Honorary Statue
+
+Venture to Vesper
+first to gather your
+bearings.
+
+[BOOK b_academy_explore 43]
+From Vesper's
+northernmost
+bridge, head directly
+North to a nice tower.
+Here you have to earn
+the statue in combat...
+
+[BOOK b_academy_explore 44]
+LB Honorary Statue
+
+Venture to LB town
+North of Trinsic. It
+occupys a large area.
+
+[BOOK b_academy_explore 45]
+When you get there,
+you will find a woman
+who is a little, um,
+forgetful...
+
+[BOOK b_academy_explore 46]
+Rias Flower
+
+Venture to Skara
+Brae, then find Rias
+grave.
+
+[BOOK b_academy_explore 47]
+A mysterious lone
+mourner hangs around...
+Maybe they know of the
+"Flower" I need...
+
+[BOOK b_academy_explore 48]
+Evil Record Book
+
+Well... I dunno how
+to say this... But I
+don't know where to
+look. But...
+
+[BOOK b_academy_explore 49]
+"Look for a place
+where only a virtue
+of nobility in
+combat is praised".
+Then look for a man
+in black and ask
+for the "Records".
+
+[BOOK b_academy_explore 50]
+The Traders Handbook
+
+Check around the
+area of Minoc,
+where Wig Inc began.
+
+[BOOK b_academy_explore 51]
+I know the book isn't
+there but I know a
+woman who knows where.
+Look for a lady in
+a red dress...
+
+[BOOK b_academy_explore 52]
+
+[BOOK b_academy_explore 53]
+I know it's been a
+long read, but I do
+really appreciate
+your help. Hope you
+learnt something
+about this realm too.
+
+
+
+// Holy Knight
+
+[CHARDEF c_h_academyhk]
+ID=C_MAN
+NAME=Zack The Retired Holy Knight
+SOUND=snd_HUMAN_M_DIE_01
+DAM=10,20
+ARMOR=30
+AVERSIONS=t_TRAP,t_eerie_stuff
+TEVENTS=e_all_npc
+TSPEECH=jobacademyhk
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Quests - Arlin
+DESCRIPTION=HK Retired Guard
+
+ON=@Create
+  TAG.HK.RANK	= 1
+  COLOR		= colors_skin
+  STR		= {100 150}
+  DEX		= {80 95}
+  INT		= {71 85}
+  NPC		= brain_monster
+  SWORDSMANSHIP	= {60.0 70.0}
+  WRESTLING	= {67.0 90.0}
+  MAGICRESISTANCE={65.0 88.0}
+  TACTICS	= {60.0 80.0}
+  POISONING	= {90.0 100.0}
+  DETECTION	={40.0 50.0}
+  ANATOMY       = {40.0 50.0}
+  FAME		= 3000
+     KARMA	= 2000
+
+  ITEMNEWBIE=random_male_hair
+  COLOR=07a1
+  ITEMNEWBIE=random_facial_hair
+  COLOR=07a1
+
+  ITEM=m_posdef_army
+
+  ITEMNEWBIE=i_platemail_gloves_stronghold
+  ITEMNEWBIE=i_platemail_arms_stronghold
+  ITEMNEWBIE=i_platemail_gorget_stronghold
+  ITEMNEWBIE=i_platemail_chest_stronghold
+  ITEMNEWBIE=i_platemail_leggings_stronghold
+  ITEMNEWBIE=i_halberd_stronghold
+  ITEMNEWBIE=i_CAPE
+  COLOR=07a1
+  ITEMNEWBIE=i_SASH
+  COLOR=07a1
+
+  ITEM= i_gold,{300 400}
+
+[SPEECH jobacademyhk] 
+on=hi 
+on=hello
+on=hail
+on=sawat dee
+on=Greetings
+IF (0<SRC.TAG.academy_explore>=1)
+say Ah <SRC.SEX Sir/Lady>, Arlin sent you here did he not? What do you need?
+ELSE
+SAY Go away! Let a retired man drink in peace!
+ENDIF
+on=*journal*
+IF (0<SRC.TAG.academy_explore_hk>=1)
+SAY But I already gave you it...
+return 1
+ELSEIF (0<SRC.TAG.academy_explore>=1)
+SAY Ah... He wants my journal again, eh? Well here you go...
+SRC.NEWITEM=i_book_academy_explore_hk
+SRC.ACT.BOUNCE
+SRC.TAG.academy_explore_hk=1
+ENDIF
+return1
+
+// HK Journal
+
+[ITEMDEF i_book_academy_explore_hk]
+NAME=Zacks Journal
+ID=i_BOOK_OPEN
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Quests - Arlin
+DESCRIPTION=Zacks Journal
+
+ON=@Create
+MORE=b_academy_explore_hk
+
+[BOOK b_academy_explore_hk]
+PAGES=10
+TITLE=Journal
+AUTHOR=Zack
+
+[BOOK b_academy_explore_hk 1]    
+Day 217
+
+The Holy Knights left
+for The Lost Lands to
+stop the Fallen Ones.
+Heaven knows what
+they
+
+[BOOK b_academy_explore_hk 2]    
+will find there. In
+some respects I am
+glad I am not higher
+in the order. I hate
+fighting monsters...
+
+[BOOK b_academy_explore_hk 3]    
+Day 222
+
+5 days have passed
+and I did not write
+in here. For good
+reason. Nujel'm has
+been under siege by
+
+[BOOK b_academy_explore_hk 4]    
+the fallen ones. It
+would appear that
+maybe we were
+decieved. We have
+taken heavy losses
+and one of the High
+Order, higher than
+
+[BOOK b_academy_explore_hk 5]    
+even the council, is
+dead. They have
+relented for now,
+so we're regrouping.
+I hope our champion
+warrior returns
+among those
+
+[BOOK b_academy_explore_hk 6]    
+who have gone to stop
+the Fallen and the
+Dark Knights...
+
+[BOOK b_academy_explore_hk 7]    
+Day 229
+
+After days we have
+both won and lost...
+We have eliminated
+the Fallen Ones
+invasion force,
+
+[BOOK b_academy_explore_hk 8]    
+but the Holy Knights
+lie in absolute ruin.
+The High Order were
+eliminated, and the
+council know not how
+to react.
+
+[BOOK b_academy_explore_hk 9]    
+Maybe the Holy
+Knights will live
+on in memory. Those
+who guard the town
+have agreed to stay.
+Llarana will organise
+rebuilding. Still...
+
+[BOOK b_academy_explore_hk 10]    
+With no real Order
+left I have decided
+to retire. It is
+time for this to
+end for me... The
+death I saw was
+horrendous...
+
+
+// DK Portrait
+
+[SPEECH jobacademydk] 
+on=hi 
+on=hello
+on=hail
+on=sawat dee
+on=Greetings
+IF (0<SRC.TAG.academy_explore>=1)
+say Ah <SRC.SEX Sir/Lady>, Arlin sent you here did he not? What do you need?
+ELSE
+SAY Go away! An artist needs peace to create!
+ENDIF
+on=*painting*
+on=*portrait*
+IF (0<SRC.TAG.academy_explore_dk>=1)
+SAY Thou art should stop bothering me, as I hast given thou a painting already...
+return 1
+ELSEIF (0<SRC.TAG.academy_explore>=1)
+SAY So you wish for my work, eh? Very well...
+SRC.NEWITEM=i_academy_painting_dk
+SRC.ACT.BOUNCE
+SRC.TAG.academy_explore_dk=1
+ENDIF
+return1
+
+// DK Portrait
+
+[ITEMDEF i_academy_painting_dk]
+NAME=Portrait of Delucia Under the Shadows
+ID=i_deed
+
+ON=@CREATE
+ATTR=04
+
+ON=@DCLICK
+SRC.MESSAGE You see a painting of pure black monsters decimating an army of warriors in green.
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Quests - Arlin
+DESCRIPTION=Delucia Portrait
+
+// Artist
+
+[CHARDEF c_h_academydk]
+ID=C_MAN
+NAME=Owen the Artist
+SOUND=snd_HUMAN_M_DIE_01
+DAM=10,20
+ARMOR=30
+AVERSIONS=t_TRAP,t_eerie_stuff
+TEVENTS=e_all_npc
+TSPEECH=jobacademydk
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Quests - Arlin
+DESCRIPTION=T2A Artist
+
+ON=@Create
+  COLOR		= colors_skin
+  STR		= {100 150}
+  DEX		= {80 95}
+  INT		= {71 85}
+  SWORDSMANSHIP	= {60.0 70.0}
+  WRESTLING	= {67.0 90.0}
+  MAGICRESISTANCE={65.0 88.0}
+  TACTICS	= {60.0 80.0}
+  POISONING	= {90.0 100.0}
+  DETECTION	={40.0 50.0}
+  ANATOMY       = {40.0 50.0}
+  FAME		= 3000
+     KARMA	= 2000
+
+  ITEMNEWBIE=i_pants_long
+  ITEMNEWBIE=i_shirt_fancy
+  ITEMNEWBIE=i_boots_thigh
+  ITEMNEWBIE=i_hat_floppy
+
+  ITEM= i_gold,{300 400}
+
+// Warrior in swamps
+
+[CHARDEF c_h_academyorb]
+ID=C_MAN
+NAME=Morris the Swamp Guardian
+SOUND=snd_HUMAN_M_DIE_01
+DAM=10,20
+ARMOR=30
+AVERSIONS=t_TRAP,t_eerie_stuff
+TEVENTS=e_all_npc
+TSPEECH=jobacademyorb
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Quests - Arlin
+DESCRIPTION=Orb Paperweight Holder
+
+ON=@Create
+  COLOR		= colors_skin
+  STR		= {100 150}
+  DEX		= {80 95}
+  INT		= {71 85}
+  NPC		= brain_monster
+  SWORDSMANSHIP	= {60.0 70.0}
+  WRESTLING	= {67.0 90.0}
+  MAGICRESISTANCE={65.0 88.0}
+  TACTICS	= {60.0 80.0}
+  POISONING	= {90.0 100.0}
+  DETECTION	={40.0 50.0}
+  ANATOMY       = {40.0 50.0}
+  FAME		= 3000
+     KARMA	= 2000
+
+  ITEMNEWBIE=random_male_hair
+  COLOR=07a1
+  ITEMNEWBIE=random_facial_hair
+  COLOR=07a1
+
+  ITEM=m_posdef_army
+
+  ITEMNEWBIE=i_platemail_gloves_titanium
+  ITEMNEWBIE=i_platemail_arms_titanium
+  ITEMNEWBIE=i_platemail_gorget_titanium
+  ITEMNEWBIE=i_platemail_chest_titanium
+  ITEMNEWBIE=i_platemail_leggings_titanium
+  ITEMNEWBIE=i_halberd_titanium
+
+  ITEM= i_gold,{300 400}
+
+[SPEECH jobacademyorb] 
+on=hi 
+on=hello
+on=hail
+on=sawat dee
+on=Greetings
+IF (0<SRC.TAG.academy_explore>=1)
+say Morning <SRC.SEX m'lord/m'lady>, by that look in your eye you want something of me.
+ELSE
+SAY Morning <SRC.SEX m'lord/m'lady>.
+ENDIF
+on=*orb*
+IF (0<SRC.TAG.academy_explore_orb>=1)
+SAY But I already gave you it...
+return 1
+ELSEIF (0<SRC.TAG.academy_explore>=1)
+SAY Here you are. Careful though! It's hot.
+EMOTE laugh 
+SRC.NEWITEM=i_academy_orb_paperweight
+SRC.ACT.BOUNCE
+SRC.TAG.academy_explore_orb=1
+ENDIF
+return1
+
+[ITEMDEF i_academy_orb_paperweight]
+NAME=Orb of Fire Paperweight
+ID=i_crystal_ball
+
+ON=@CREATE
+COLOR=02b
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Quests - Arlin
+DESCRIPTION=Orb of Fire Paperweight
+
+// Void
+
+[SPEECH jobacademyvoid] 
+on=hi 
+on=hello
+on=hail
+on=sawat dee
+on=Greetings
+IF (0<SRC.TAG.academy_explore>=1)
+say Morning <SRC.SEX m'lord/m'lady>, what will always take but never give back? A collector of course!
+ELSE
+SAY Morning <SRC.SEX m'lord/m'lady>.
+ENDIF
+on=*statue*
+IF (0<SRC.TAG.academy_explore_void>=1)
+SAY Ah, you have it. If you want another riddle you'll have to wait a long time though, I'm too tired.
+return 1
+ELSEIF (0<SRC.TAG.academy_explore>=1)
+SAY Here's a riddle for it...
+SAY Four of us there are, and we are the world. Without us there would be nothing yet we can destroy everything.
+SAY What are we?
+return 1
+ENDIF
+on=*element* 
+on=*elements*
+IF (0<SRC.TAG.academy_explore_void>=1)
+SAY You already solved that...
+return 1
+ELSE
+SAY Well done. Here you go, you deserve it.
+SRC.NEWITEM=i_academy_void_statue
+SRC.ACT.BOUNCE
+SRC.TAG.academy_explore_void=1
+ENDIF
+return1
+
+[ITEMDEF i_academy_void_statue]
+NAME=Statue of the Void Daemon
+TYPE=t_normal
+ID=i_pet_daemon
+
+ON=@CREATE
+COLOR=01
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Quests - Arlin
+DESCRIPTION=Void Statue
+
+[CHARDEF C_academy_quest_void] 
+NAME=Carlos
+ID=C_man 
+DAM=20,40 
+ARMOR=40 
+
+TEVENTS=e_all_npc
+
+CAN=MT_WALK|MT_RUN|MT_EQUIP|MT_USEHANDS 
+
+TSPEECH=jobacademyvoid
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Quests - Arlin
+DESCRIPTION=Carlos the Riddler
+
+ON=@Create 
+COLOR		= colors_skin
+TITLE=Riddler
+NPC=brain_human 
+KARMA=3000 
+STR=100 
+DEX=100 
+INT=100 
+ITEMNEWBIE=i_pants_long
+COLOR=01
+ITEMNEWBIE=i_tunic
+COLOR=0147
+ITEMNEWBIE=i_hair_short
+ITEMNEWBIE=i_shoes_plain
+
+ON=@NPCRestock
+ITEM=i_gold,{200 500}
+
+// PTF Statue
+
+[ITEMDEF i_academy_ptf_statue]
+NAME=PTF Honorary Statue
+ID=01225
+
+ON=@CREATE
+COLOR=025
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Quests - Arlin
+DESCRIPTION=PTF Honorary Statue
+
+[CHARDEF C_academy_quest_ptf] 
+NAME=Demios
+ID=C_man 
+DAM=6,10 
+ARMOR=45 
+
+TEVENTS=e_all_npc
+
+CAN=MT_WALK|MT_RUN|MT_EQUIP|MT_USEHANDS 
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Quests - Arlin
+DESCRIPTION=PTF Guardian
+
+ON=@Create 
+NPC=brain_human 
+KARMA=-4000 
+STR=150 
+DEX=100 
+INT=25
+  SWORDSMANSHIP	= {60.0 70.0}
+  WRESTLING	= {67.0 90.0}
+  MAGICRESISTANCE= {35.0 48.0}
+  TACTICS	= {60.0 80.0}
+  POISONING	= {90.0 100.0}
+  DETECTION	= {40.0 50.0}
+  ANATOMY       = {40.0 50.0}
+ITEMNEWBIE=i_shirt_fancy
+COLOR=01
+ITEMNEWBIE=i_pants_long
+COLOR=01
+ITEMNEWBIE=i_tunic
+COLOR=0147
+ITEMNEWBIE=i_hair_short
+ITEMNEWBIE=i_shoes_plain
+ITEMNEWBIE=i_sword_long_steel
+  NPC		= brain_monster
+ITEM=i_academy_ptf_statue
+
+ON=@NPCRestock
+ITEM=i_gold,{200 500}
+
+// LB Statue
+
+[ITEMDEF i_academy_lb_statue]
+NAME=LB Honorary Statue
+ID=01225
+
+ON=@CREATE
+COLOR=04
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Quests - Arlin
+DESCRIPTION=LB Honorary Statue
+
+[CHARDEF c_h_academylb]
+ID=C_WOMAN
+NAME=Julie
+SOUND=snd_HUMAN_M_DIE_01
+DAM=10,20
+ARMOR=30
+AVERSIONS=t_TRAP,t_eerie_stuff
+TEVENTS=e_all_npc
+TSPEECH=jobacademylb
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Quests - Arlin
+DESCRIPTION=Forgetful LB Lady
+
+ON=@Create
+  COLOR		= colors_skin
+  STR		= {100 150}
+  DEX		= {80 95}
+  INT		= {71 85}
+  NPC		= brain_monster
+  SWORDSMANSHIP	= {60.0 70.0}
+  WRESTLING	= {67.0 90.0}
+  MAGICRESISTANCE={65.0 88.0}
+  TACTICS	= {60.0 80.0}
+  POISONING	= {90.0 100.0}
+  DETECTION	={40.0 50.0}
+  ANATOMY       = {40.0 50.0}
+  FAME		= 3000
+     KARMA	= 2000
+
+  ITEMNEWBIE=i_hair_long
+  COLOR=06d0
+
+  ITEM=m_posdef_army
+
+  ITEMNEWBIE=i_dress_full
+  COLOR=04
+  ITEMNEWBIE=i_boots_thigh
+  COLOR=01
+
+  ITEM= i_gold,{300 400}
+
+[SPEECH jobacademylb] 
+on=hi 
+on=hello
+on=hail
+on=sawat dee
+on=Greetings
+say Hi... Um... Whoever you are...
+on=*statue*
+IF (0<SRC.TAG.academy_explore_lb>=1)
+SAY Ah, now that I do remember giving you.
+return 1
+ELSEIF (0<SRC.TAG.academy_explore>=1)
+SAY Um... Will do... But I need help. Who was the guildmaster before Gonads An Strife and Durin teamed up?
+return 1
+on=*Karl*
+IF (0<SRC.TAG.academy_explore_lb>=1)
+SAY Yes yes, I know now...
+return 1
+ELSEIF (0<SRC.TAG.academy_explore>=1)
+SAY Ah! Yes, that's it! Thanks! Here you go.
+SRC.NEWITEM=i_academy_lb_statue
+SRC.ACT.BOUNCE
+SRC.TAG.academy_explore_lb=1
+return 1
+ENDIF
+return1
+
+// Rias Flower
+
+[ITEMDEF i_academy_flower_ria]
+DEFNAME=i_academy_flower_ria
+NAME=Ria's Flower
+ID=i_crop_ginseng
+type=0
+
+ON=@DCLICK
+SRC.MESSAGE A beautiful, yet sad rose...
+RETURN 1
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Quests - Arlin
+DESCRIPTION=Rias Flower
+
+[CHARDEF c_h_academyria]
+ID=C_WOMAN
+NAME=Lone Mourner
+SOUND=snd_HUMAN_M_DIE_01
+DAM=10,20
+ARMOR=30
+AVERSIONS=t_TRAP,t_eerie_stuff
+TEVENTS=e_all_npc
+TSPEECH=jobacademyria
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Quests - Arlin
+DESCRIPTION=Mourner
+
+ON=@Create
+  COLOR		= colors_skin
+  STR		= {100 150}
+  DEX		= {80 95}
+  INT		= {71 85}
+  NPC		= brain_monster
+  SWORDSMANSHIP	= {60.0 70.0}
+  WRESTLING	= {67.0 90.0}
+  MAGICRESISTANCE={65.0 88.0}
+  TACTICS	= {60.0 80.0}
+  POISONING	= {90.0 100.0}
+  DETECTION	={40.0 50.0}
+  ANATOMY       = {40.0 50.0}
+  FAME		= 3000
+     KARMA	= 2000
+
+  ITEMNEWBIE=i_hair_long
+  COLOR=01
+
+  ITEM=m_posdef_army
+
+  ITEMNEWBIE=i_bonnet
+  COLOR=01
+  ITEMNEWBIE=i_dress_full
+  COLOR=01
+  ITEMNEWBIE=i_boots_thigh
+  COLOR=01
+
+  ITEM= i_gold,{300 400}
+
+[SPEECH jobacademyria] 
+on=hi 
+on=hello
+on=hail
+on=sawat dee
+on=Greetings
+say Hello.
+on=*flower*
+IF (0<SRC.TAG.academy_explore_ria>=1)
+SAY Please, leave me to mourn in peace now.
+return 1
+ELSEIF (0<SRC.TAG.academy_explore>=1)
+SAY Oh, Arlin wants it. He used to know Ria... Well, here you go.
+SRC.NEWITEM=i_academy_flower_ria
+SRC.ACT.BOUNCE
+SRC.TAG.academy_explore_ria=1
+return 1
+ENDIF
+return1
+
+// Evil Record Book
+
+[ITEMDEF i_academy_evil_record]
+NAME=Evil Record Book
+ID=i_BOOK_OPEN
+
+ON=@CREATE
+COLOR=025
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Quests - Arlin
+DESCRIPTION=Evil Record Book
+
+ON=@DCLICK
+SRC.MESSAGE The book is covered in too much blood for you to read it...
+
+[CHARDEF c_h_academyevil]
+ID=C_MAN
+NAME=Mysterious Wanderer
+SOUND=snd_HUMAN_M_DIE_01
+DAM=10,20
+ARMOR=30
+AVERSIONS=t_TRAP,t_eerie_stuff
+TEVENTS=e_all_npc
+TSPEECH=jobacademyevil
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Quests - Arlin
+DESCRIPTION=Mysterious Wanderer
+
+ON=@Create
+  COLOR		= colors_skin
+  STR		= {800 900}
+  DEX		= {250 300}
+  INT		= {71 85}
+  NPC		= brain_monster
+  SWORDSMANSHIP	= {60.0 70.0}
+  WRESTLING	= {200.0 210.0}
+  MAGICRESISTANCE={500.0 550.0}
+  TACTICS	= {300.0 310.0}
+  POISONING	= {90.0 100.0}
+  DETECTION	={40.0 50.0}
+  ANATOMY       = {250.0 260.0}
+  FAME		= 3000
+     KARMA	= 2000
+
+  ITEMNEWBIE=i_hair_long
+  COLOR=01
+
+  ITEM=m_posdef_army
+
+  ITEMNEWBIE=i_deathshroud
+  COLOR=01
+  ITEMNEWBIE=i_boots_thigh
+  COLOR=01
+
+  ITEM= i_gold,{300 400}
+
+[SPEECH jobacademyevil] 
+on=hi 
+on=hello
+on=hail
+on=sawat dee
+on=Greetings
+emote mumble
+on=*record*
+on=*records*
+IF (0<SRC.TAG.academy_explore_evil>=1)
+emote mumble
+return 1
+ELSEIF (0<SRC.TAG.academy_explore>=1)
+emote shuffle around in his pocket and hand you a book
+SRC.NEWITEM=i_academy_evil_record
+SRC.ACT.BOUNCE
+SRC.TAG.academy_explore_evil=1
+return 1
+ENDIF
+return 1
+
+// Traders Bible
+
+[CHARDEF c_h_academywig]
+ID=C_WOMAN
+NAME=Janine
+SOUND=snd_HUMAN_M_DIE_01
+DAM=10,20
+ARMOR=30
+AVERSIONS=t_TRAP,t_eerie_stuff
+TEVENTS=e_all_npc
+TSPEECH=jobacademywig
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Quests - Arlin
+DESCRIPTION=Ex-Trader
+
+ON=@Create
+  TITLE         = Ex-Wig Inc Trader
+  COLOR		= colors_skin
+  STR		= {100 150}
+  DEX		= {80 95}
+  INT		= {71 85}
+  NPC		= brain_monster
+  SWORDSMANSHIP	= {60.0 70.0}
+  WRESTLING	= {67.0 90.0}
+  MAGICRESISTANCE={65.0 88.0}
+  TACTICS	= {60.0 80.0}
+  POISONING	= {90.0 100.0}
+  DETECTION	={40.0 50.0}
+  ANATOMY       = {40.0 50.0}
+  FAME		= 3000
+     KARMA	= 2000
+
+  ITEMNEWBIE=i_hair_long
+  COLOR=01
+
+  ITEM=m_posdef_army
+
+  ITEMNEWBIE=i_hat_floppy
+  COLOR=025
+  ITEMNEWBIE=i_dress_full
+  COLOR=025
+  ITEMNEWBIE=i_boots_thigh
+  COLOR=01
+
+  ITEM= i_gold,{300 400}
+
+[SPEECH jobacademywig] 
+on=hi 
+on=hello
+on=hail
+on=sawat dee
+on=Greetings
+say Morning <SRC.SEX sir/madam>, can I interest you in some of our "Magnifique" books?
+on=*book*
+on=*bible*
+IF (0<SRC.TAG.academy_explore_wig>=1)
+SAY Ah, we just sold out. Sorry <SRC.SEX sir/madam>.
+return 1
+ELSEIF (0<SRC.TAG.academy_explore>=1)
+SAY Ah, Arlin already paid for it in advance. Here you go. Have a nice day!
+SRC.NEWITEM=i_book_academy_trader_bible
+SRC.ACT.BOUNCE
+SRC.TAG.academy_explore_wig=1
+return 1
+ENDIF
+return1
+
+[ITEMDEF i_book_academy_trader_bible]
+NAME=The Traders Handbook
+ID=i_BOOK_OPEN
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Quests - Arlin
+DESCRIPTION=The Traders Handbook
+
+ON=@Create
+MORE=b_academy_trader_bible
+
+[BOOK b_academy_trader_bible]
+PAGES=
+TITLE=The Traders Handbook
+AUTHOR=Wigifer
+
+[BOOK b_academy_trader_bible 1]
+If you're reading
+this then you must
+be one of our new
+recruits. Welcome
+to what will be
+your most
+profitable time.
+
+[BOOK b_academy_trader_bible 2]
+Chapter 1
+
+Getting your own
+trade started.
+
+[BOOK b_academy_trader_bible 2]
+Lets cover the
+basics of this.
+You've just started
+out as a trader.
+You've got a few
+items, but not
+that much.
+
+[BOOK b_academy_trader_bible 3]
+Consider what 
+trade you're doing
+then go and get
+some raw materials.
+Why you ask?
+Well why waste
+cash on the
+
+[BOOK b_academy_trader_bible 4]
+things you need
+when you can
+get it for free
+eh? Make sure
+you have quite
+a lot, you'll
+need as much as
+
+[BOOK b_academy_trader_bible 5]
+you can get...
+
+Next of all,
+make as many
+items of nearly
+the highest level
+as you can.
+
+[BOOK b_academy_trader_bible 6]
+You're asking why
+not stretch
+yourself to the
+limit, aren't
+you? Well...
+Think a second.
+You'll fail a lot
+
+[BOOK b_academy_trader_bible 7]
+at making the
+hardest item of
+your ability, thus
+not really learn
+much. You learn
+more perfecting
+your technique
+
+[BOOK b_academy_trader_bible 8]
+at making an
+item which will
+stretch you but
+you're less
+likely to mess
+up with. Hmm,
+you have no idea
+what I mean.
+
+[BOOK b_academy_trader_bible 9]
+Well you will
+when you begin
+to experiment.
+
+Anyhow, next,
+lets get you
+some cash.
+
+[BOOK b_academy_trader_bible 10]
+You have two
+viable options.
+1] Sell to an
+unexperienced
+warrior. The
+experienced ones
+will probably
+
+[BOOK b_academy_trader_bible 11]
+already what you
+have, if not
+better. You are
+not assured
+money, but at
+least you can
+try and make some
+
+[BOOK b_academy_trader_bible 12]
+good money from
+convincing your
+goods are the
+best (See chapter
+number 2)
+
+[BOOK b_academy_trader_bible 13]
+3] Sell to one of
+the Brittanian
+vendors. These
+guys and girls
+won't always give
+you lots, often
+not as much as
+
+[BOOK b_academy_trader_bible 14]
+convince a mere
+warrior to, but
+you're always
+assured of a sale
+on lower ended
+items. However,
+for higher end
+
+[BOOK b_academy_trader_bible 15]
+items, they often
+just aren't able
+to buy them due to
+their lack of
+funding for nice
+items, so you
+won't even get
+
+[BOOK b_academy_trader_bible 16]
+the option.
+
+Now just repeat,
+and eventually
+you will have
+enough cash to
+play around with.
+
+[BOOK b_academy_trader_bible 17]
+Chapter 2
+
+The convincing
+sell.
+
+[BOOK b_academy_trader_bible 18]
+By now you will
+want to try and
+sell to a
+warrior or two.
+how you go about
+selling depends
+on your honesty.
+
+[BOOK b_academy_trader_bible 19]
+If you're so
+extremely dis-
+honest you would
+say you're an
+alien to earn 2
+gold coins then
+it's easy.
+
+[BOOK b_academy_trader_bible 20]
+You can argue
+that what you're
+selling is rare
+and uncommon to
+a new player. 
+I've seen people
+sell a fire-dyed
+
+[BOOK b_academy_trader_bible 21]
+robe to a new
+player for over
+5000 gold. It's
+actually worth
+nearer 1000 at
+the time this is
+written...
+
+[BOOK b_academy_trader_bible 22]
+The honest way
+is a little hard
+but about the
+same in principle.
+Barter. Start
+ludicrously high,
+then when they
+
+[BOOK b_academy_trader_bible 22]
+refuse you can
+say they can offer
+a price they would
+pay. Never drop
+your price by more
+than around 3% at
+most if you can.
+
+[BOOK b_academy_trader_bible 23]
+The idea is to
+make money, not
+give handouts.
+
+Another method
+is a bit costly
+but useful with
+
+[BOOK b_academy_trader_bible 24]
+bulk orders.
+Offer a free
+gift on orders
+over x amount,
+e.g. A free
+robe\weapon on
+orders over
+
+[BOOK b_academy_trader_bible 25]
+10000 gold.
+Never give an
+item too good,
+except in high
+price orders
+where you can
+afford to.
+
+[BOOK b_academy_trader_bible 26]
+For example,
+you wouldn't give
+a titanium sword
+on an order of
+5000 gold, but
+on an order of
+50000 you could
+
+[BOOK b_academy_trader_bible 27]
+probably afford
+to. Or maybe a
+discount on the
+next order.
+Whatever you 
+want as your offer
+really.
+
+[BOOK b_academy_trader_bible 28]
+Chapter 3
+
+Alliances with
+other traders.
+
+[BOOK b_academy_trader_bible 29]
+This is by far
+the most important
+section. You will
+need this whether
+you stay in Wig
+Inc or leave.
+
+[BOOK b_academy_trader_bible 30]
+Alliances and a
+few friends of
+the same trade is
+important. This
+lets your group
+all but control
+trade prices.
+
+[BOOK b_academy_trader_bible 31]
+For example, if
+you all fought on
+prices of pies,
+the price might
+end up falling to
+2gp more than it
+costs to make.
+
+[BOOK b_academy_trader_bible 32]
+However, if you
+all agree on a
+price, you're all
+making the same
+cash from an item
+so in theory you
+could make prices
+
+[BOOK b_academy_trader_bible 33]
+skyrocket to a
+ridiculous amount
+which everyone
+would pay... Or
+just learn the
+trade themselves.
+That is the risk.
+
+[BOOK b_academy_trader_bible 34]
+A balance needs
+to be made between
+your personal
+profit margin and
+what others are
+willing to pay.
+However, if you
+
+[BOOK b_academy_trader_bible 35]
+between you hold
+back items, you
+could force the
+market to increase
+the price. A good
+example is holding
+back titanium.
+
+[BOOK b_academy_trader_bible 36]
+This would make
+it far more rare,
+and the price for
+each suit go up by
+maybe 20-30% if
+you're skilled.
+Alliances are
+
+[BOOK b_academy_trader_bible 37]
+ESSENTIAL to your
+trade. Without
+them you are
+bankrupt.
+
+[BOOK b_academy_trader_bible 38]
+Chapter 4
+
+Pricing
+
+[BOOK b_academy_trader_bible 39]
+Almost as
+important as
+alliances, your
+trade requires
+pricing. Simple
+method really.
+
+[BOOK b_academy_trader_bible 40]
+(Price per item
+used) + (Skill
+required to make
+multiplied by
+2 if below 50%,
+5 if below 70%,
+10 if below 90%,
+
+[BOOK b_academy_trader_bible 41]
+20 if over) +
+(10% of items
+used if normal
+quality, 20% if
+superb, 40% if
+exceptional)
+= Price of item.
+
+[BOOK b_academy_trader_bible 42]
+Of course, this
+formula is always
+up for review,
+depending on the
+market. 
+
+[BOOK b_academy_trader_bible 43]
+Well thats it for
+now... I'm always
+more than happy
+to advise direct
+however, never
+hesitate to come
+to me for help.
+
+[BOOK b_academy_trader_bible 44]
+
+Signed,
+
+James "Wigifer"
+Sephiroth
+
+[EOF]

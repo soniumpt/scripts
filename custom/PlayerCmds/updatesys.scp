@@ -1,0 +1,135 @@
+//MAIN PAGE
+
+[DIALOG news_page]
+310, 30
+PAGE 1
+resizepic 50 50 3500 500 400
+CHECKERTRANS 50 50 500 400
+tilepichue 200 30 7775 1947
+dtext 250 70 01f4 Latest Updates
+dhtmlgump 75 100 450 290 1 1 <DEF.BFONT_BLUE>1- <VAR.NOTICIA1><DEF.BR><DEF.BR>2- <VAR.NOTICIA2><DEF.BRE><DEF.BR><DEF.BR>3- <VAR.NOTICIA3><DEF.BRE><DEF.BR><DEF.BR>4- <VAR.NOTICIA4><DEF.BRE><DEF.BR><DEF.BR>5- <VAR.NOTICIA5><DEF.BRE><DEF.BR><DEF.BR>6- <VAR.NOTICIA6><DEF.BRE><DEF.BR><DEF.BR>7- <VAR.NOTICIA7><DEF.BRE><DEF.BR><DEF.BR>8- <VAR.NOTICIA8><DEF.BRE><DEF.BR><DEF.BR>9- <VAR.NOTICIA9><DEF.BRE><DEF.BR><DEF.BR>10- <VAR.NOTICIA10><DEF.BRE>
+dtext 290 415 01f4 Server Day/Time: <serv.rtime>
+button 90 390 4005 4006 1 0 10
+dtext 125 390 01f4 Visit Our Forums
+button 90 415 4005 4006 1 0 11
+dtext 125 415 01f4 Latest Events
+button 290 390 4005 4006 1 0 12
+dtext 325 390 01f4 New To Us?
+
+//Staff Area Page
+
+PAGE 2
+IF (<ISGM>) || (<ISCOUNS>)
+resizepic 50 50 3500 300 300
+CHECKERTRANS 50 50 300 300
+dtext 130 70 2010 Staff Area
+tilepichue 150 100 7774 <eval 0ad>
+dtext 105 210 88 Add Update
+button 70 210 4005 4006 0 3 1
+dtext 105 250 88 Edit Update n:
+dtextentry 205 250 20 25 45 1 1
+button 70 250 4005 4006 1 0 2
+ENDIF
+
+//New Update Page
+
+PAGE 3
+resizepic 50 50 3500 300 300
+CHECKERTRANS 50 50 300 300
+dtext 105 70 88 Type down the
+dtext 95 90 88 update:
+resizepic 70 130 3500 250 110
+dtextentry 85 150 230 65 45 0 New Update
+button 70 250 4005 4006 1 0 3
+dtext 105 250 88 OK
+button 70 280 4016 4015 0 2 4
+dtext 105 280 88 Back
+
+//Edit Update Page
+
+PAGE 4
+resizepic 50 50 3500 300 300
+CHECKERTRANS 50 50 300 300
+dtext 105 70 88 Type down the new
+dtext 95 90 88 update below:
+resizepic 70 130 3500 250 110
+dtextentry 85 150 230 65 45 2 Type here
+button 70 250 4005 4006 1 0 5
+dtext 105 250 88 OK
+button 70 280 4016 4015 0 2 4
+dtext 105 280 88 Back
+
+[DIALOG news_page BUTTON]
+
+ON=2
+IF (<ISEMPTY <VAR.NOTICIA<EVAL <ARGTXT[1]>>>>)
+SYSMESSAGE @0480 There is no update in this slot.
+SDIALOG news_page 2
+ELSE
+CTAG.HEHE=<ARGTXT[1]>
+SDIALOG news_page 4
+ENDIF
+
+ON=3
+FOR 10 2
+IF !(<ISEMPTY <VAR.NOTICIA<EVAL <LOCAL._FOR>-1>>>)
+TRY VAR.NOTICIA<EVAL <LOCAL._FOR>>=<VAR.NOTICIA<EVAL <LOCAL._FOR>-1>>
+ENDIF
+ENDFOR
+VAR.NOTICIA1=<ARGTXT[0]>
+SDIALOG news_page 1
+
+ON=5
+TRY VAR.NOTICIA<EVAL <CTAG.HEHE>>=<ARGTXT[2]>
+CTAG.HEHE
+SDIALOG news_page 1
+
+ON=10
+SRC.WEBLINK www.Imperialuo.com/forums/
+
+ON=11
+SDIALOG news_events
+
+ON=12
+SRC.WEBLINK www.Imperialuo.com/forums/
+
+[DIALOG news_events]
+310, 30
+PAGE 1
+resizepic 50 50 3500 500 400
+CHECKERTRANS 50 50 500 400
+tilepichue 200 30 7775 1947
+dtext 250 70 01f4 Latest Events
+dhtmlgump 75 100 450 290 1 1 <DEF.BFONT_BLUE>1- <UID.043c282b3.TAG.eventlog<eval <UID.043c282b3.More2>>><DEF.BR><DEF.BR>2- <UID.043c282b3.TAG.eventlog<eval (<UID.043c282b3.More2>-1)>><DEF.BRE><DEF.BR><DEF.BR>3- <UID.043c282b3.TAG.eventlog<eval (<UID.043c282b3.More2>-2)>><DEF.BRE><DEF.BR><DEF.BR>4- <UID.043c282b3.TAG.eventlog<eval (<UID.043c282b3.More2>-3)>><DEF.BRE><DEF.BR><DEF.BR>5- <UID.043c282b3.TAG.eventlog<eval (<UID.043c282b3.More2>-4)>><DEF.BRE><DEF.BR><DEF.BR>6- <UID.043c282b3.TAG.eventlog<eval (<UID.043c282b3.More2>-5)>><DEF.BRE>
+dtext 290 415 01f4 Server Day/Time: <serv.rtime>
+button 90 390 4005 4006 1 0 10
+dtext 125 390 01f4 Visit Our Forums
+button 90 415 4005 4006 1 0 11
+dtext 125 415 01f4 Latest Updates
+button 290 390 4005 4006 1 0 12
+dtext 325 390 01f4 New To Us?
+
+[DIALOG news_events BUTTON]
+ON=10
+SRC.WEBLINK www.Imperialuo.com/forums/
+
+ON=11
+SRC.UPDATES125a
+
+ON=12
+SRC.WEBLINK www.Imperialuo.com/forums
+
+
+//FUNCTION AND PLEVEL
+
+[PLEVEL 1]
+updates125a
+
+[FUNCTION updates125a]
+IF !(<ISGM>) && !(<ISCOUNS>)
+SDIALOG news_page 1
+ELSE
+SDIALOG news_page 2
+ENDIF
+
+[EOF]

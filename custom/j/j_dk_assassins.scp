@@ -1,0 +1,299 @@
+//-------------------------------------------------------------------------------------------------
+//-                                                                                               -
+//-------------------------------------Dark Knight Assassins---------------------------------------
+//-                                                                                               -
+//-----------------------------------Written By James Timbrell-------------------------------------
+//-                                                                                               -
+//---------------------------------For use on Burstfire UO alone-----------------------------------
+//-                                                                                               -
+//-------------------------------------------------------------------------------------------------
+
+// CHANGELOG
+// =========
+//
+// 18/08/18 - Wigifer - Removed references to e_all_npc 
+//
+
+[EVENTS e_darkonian_assassin]
+ON = @Click
+   KARMA	= -100
+   
+ON = @NPCSeeNewPlayer
+   if (0<SRC.TAG.ASSASSINKILLS> == 5 )
+      SAY Die, scum!
+      ATTACK
+   endif
+   
+ON = @DEATH
+   if !(0<ACT.TAG.ASSASSINKILLS>)
+       ACT.TAG.ASSASSINKILLS=1
+   elseif (0<ACT.TAG.ASSASSINKILLS> < 5)
+       ACT.TAG.ASSASSINKILLS=(<ACT.TAG.ASSASSINKILLS> + 1)
+   endif
+
+ON=@NPCLOOKATCHAR
+   EVENTS +e_darkonian_assassin
+   if (<SRC.ISEVENT.e_darkonian>)
+      IF (rand(30) = 1)
+         SAY Die tainted scum!
+      ENDIF
+      SAY Die tainted scum!
+      attack
+      return 1
+   endif
+   IF (<SRC.ISEVENT.e_shadow>)
+      IF (rand(100) = 1)
+         SAY For the vengeance of the emperor!
+      ENDIF
+      attack
+      return 1
+   endif
+   
+   
+
+[CHARDEF c_h_darkknight_assassin_sais]
+ID=C_MAN
+NAME=#NAMES_DREAD_LORD the Dark Knight Assassin
+SOUND=snd_HUMAN_M_DIE_01
+DAM=15,45
+ARMOR=50
+AVERSIONS=t_TRAP,t_eerie_stuff
+TEVENTS	= e_darkonian_assassin
+
+CATEGORY=Darkonians
+SUBSECTION=Dark Knight Assassins
+DESCRIPTION=Darkonian Assassin (Sais)
+
+
+ON=@Create
+  COLOR=colors_skin
+  STR={600 775}
+  DEX={110 120}
+  INT={300 350}
+  NPC=brain_monster
+  ANATOMY=100.0
+  PARRYING=100.0
+  SWORDSMANSHIP=100.0
+  WRESTLING=100.0
+  FENCING=100.0
+  MAGICRESISTANCE=100.0
+  TACTICS=100.0
+  POISONING=100.0
+  DETECTION=100.0
+  FAME=9999
+  KARMA	= -100
+
+  ITEMNEWBIE=random_male_hair
+  COLOR=colors_hair
+  ITEMNEWBIE=random_facial_hair
+  COLOR=match_hair
+
+  ITEM=m_posdef_army
+
+  ITEMNEWBIE=i_leather_ninja_hood
+  COLOR=0487
+  ITEMNEWBIE=i_leather_ninja_jacket
+  COLOR=0487
+  ITEMNEWBIE=i_leather_ninja_pants
+  COLOR=0487
+  ITEMNEWBIE=i_leather_ninja_mitts
+  COLOR=0487
+  ITEMNEWBIE=i_studded_mempo
+  COLOR=0487
+  ITEMNEWBIE=i_leather_ninja_belt
+  COLOR=0487
+  ITEMNEWBIE=i_tabi_ninja_dark
+  COLOR=0487
+  ITEMNEWBIE=i_sais_dk
+
+  ITEM=i_gold,{300 600}
+
+[ITEMDEF i_sais_dk]
+ID=i_sai
+NAME = Dark Knight Assassins Sais
+TYPE = T_WEAPON_FENCE
+TDATA1 = mat_verminard
+FLIP = 1
+DAM = 5, 26
+SKILL = Fencing
+REQSTR = 5
+TWOHANDS = Y
+WEIGHT = 3
+DUPELIST = 03DAB
+ON = @Create
+HITPOINTS = 84
+COLOR = color_o_verminard
+ON = @DClick
+return = <wpn_dclick_pole>
+ON = @Targon_ground
+return = <wpn_targon_ground_pole>
+ON = @Targon_char
+return = <wpn_targon_char_pole>
+ON = @Targon_item
+return = <wpn_targon_item_pole>
+
+
+
+[CHARDEF c_h_darkknight_assassin_daisho]
+ID=C_MAN
+NAME=#NAMES_DREAD_LORD the Dark Knight Assassin
+SOUND=snd_HUMAN_M_DIE_01
+DAM=15,45
+ARMOR=50
+AVERSIONS=t_TRAP,t_eerie_stuff
+TEVENTS	= e_darkonian_assassin
+
+CATEGORY=Darkonians
+SUBSECTION=Dark Knight Assassins
+DESCRIPTION=Darkonian Assassin (Daisho)
+
+
+ON=@Create
+  COLOR=colors_skin
+  STR={600 775}
+  DEX={110 120}
+  INT={300 350}
+  NPC=brain_monster
+  ANATOMY=100.0
+  PARRYING=100.0
+  SWORDSMANSHIP=100.0
+  WRESTLING=100.0
+  FENCING=100.0
+  MAGICRESISTANCE=100.0
+  TACTICS=100.0
+  POISONING=100.0
+  DETECTION=100.0
+  FAME=9999
+  KARMA	= -100
+
+  ITEMNEWBIE=random_male_hair
+  COLOR=colors_hair
+  ITEMNEWBIE=random_facial_hair
+  COLOR=match_hair
+
+  ITEM=m_posdef_army
+
+  ITEMNEWBIE=i_leather_ninja_hood
+  COLOR=0487
+  ITEMNEWBIE=i_leather_ninja_jacket
+  COLOR=0487
+  ITEMNEWBIE=i_leather_ninja_pants
+  COLOR=0487
+  ITEMNEWBIE=i_leather_ninja_mitts
+  COLOR=0487
+  ITEMNEWBIE=i_studded_mempo
+  COLOR=0487
+  ITEMNEWBIE=i_leather_ninja_belt
+  COLOR=0487
+  ITEMNEWBIE=i_tabi_ninja_dark
+  COLOR=0487
+  ITEMNEWBIE=i_daisho_dk
+
+  ITEM=i_gold,{300 600}
+
+[ITEMDEF i_daisho_dk]
+ID=i_daisho
+NAME = Dark Knight Assassins Daisho
+TYPE = T_WEAPON_SWORD
+TDATA1 = mat_verminard
+FLIP = 1
+DAM = 5, 26
+SKILL = Swordsmanship
+REQSTR = 5
+TWOHANDS = Y
+WEIGHT = 3
+DUPELIST = 03D95
+ON = @Create
+HITPOINTS = 84
+COLOR = color_o_verminard
+ON = @DClick
+return = <wpn_dclick_pole>
+ON = @Targon_ground
+return = <wpn_targon_ground_pole>
+ON = @Targon_char
+return = <wpn_targon_char_pole>
+ON = @Targon_item
+return = <wpn_targon_item_pole>
+
+
+
+[CHARDEF c_h_darkknight_assassin_claws]
+ID=C_MAN
+NAME=#NAMES_DREAD_LORD the Dark Knight Assassin
+SOUND=snd_HUMAN_M_DIE_01
+DAM=15,45
+ARMOR=50
+AVERSIONS=t_TRAP,t_eerie_stuff
+TEVENTS	= e_darkonian_assassin
+
+CATEGORY=Darkonians
+SUBSECTION=Dark Knight Assassins
+DESCRIPTION=Darkonian Assassin (Claws)
+
+
+ON=@Create
+  COLOR=colors_skin
+  STR={600 775}
+  DEX={110 120}
+  INT={300 350}
+  NPC=brain_monster
+  ANATOMY=100.0
+  PARRYING=100.0
+  SWORDSMANSHIP=100.0
+  WRESTLING=100.0
+  FENCING=100.0
+  MAGICRESISTANCE=100.0
+  TACTICS=100.0
+  POISONING=100.0
+  DETECTION=100.0
+  FAME=9999
+  KARMA	= -100
+
+  ITEMNEWBIE=random_male_hair
+  COLOR=colors_hair
+  ITEMNEWBIE=random_facial_hair
+  COLOR=match_hair
+
+  ITEM=m_posdef_army
+
+  ITEMNEWBIE=i_leather_ninja_hood
+  COLOR=0487
+  ITEMNEWBIE=i_leather_ninja_jacket
+  COLOR=0487
+  ITEMNEWBIE=i_leather_ninja_pants
+  COLOR=0487
+  ITEMNEWBIE=i_leather_ninja_mitts
+  COLOR=0487
+  ITEMNEWBIE=i_studded_mempo
+  COLOR=0487
+  ITEMNEWBIE=i_leather_ninja_belt
+  COLOR=0487
+  ITEMNEWBIE=i_tabi_ninja_dark
+  COLOR=0487
+  ITEMNEWBIE=i_claws_dk
+
+  ITEM=i_gold,{300 600}
+
+[ITEMDEF i_claws_dk]
+ID=i_tekagi
+NAME = Dark Knight Assassins Claws
+TYPE = T_WEAPON_FENCE
+TDATA1 = mat_verminard
+FLIP = 1
+DAM = 5, 26
+SKILL = Fencing
+REQSTR = 5
+TWOHANDS = Y
+WEIGHT = 3r
+DUPELIST = 03DA7
+ON = @Create
+HITPOINTS = 84
+COLOR = color_o_verminard
+ON = @DClick
+return = <wpn_dclick_pole>
+ON = @Targon_ground
+return = <wpn_targon_ground_pole>
+ON = @Targon_char
+return = <wpn_targon_char_pole>
+ON = @Targon_item
+return = <wpn_targon_item_pole>

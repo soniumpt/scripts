@@ -1,0 +1,40 @@
+[ITEMDEF b_kill_decayer]	
+ID	= 0bbf
+LAYER	= layer_special
+NAME	= kill decayer
+WEIGHT	= 0
+ON = @Create
+   TYPE		= t_eq_script
+
+ON = @Equip
+   ATTR		= attr_newbie | attr_move_never
+   TIMER	= 28800
+
+ON = @Timer
+  IF strmatch("<CONT.REGION.NAME>","Jail")
+     timer = 57600
+     cont.sysmessage You wont lose kills here
+     RETURN 1
+  ENDIF
+   // * decay kills
+   if ( <CONT.KILLS> > 0 )
+           if ( <EVAL <CONT.KILLS>> < 4 )
+                  cont.kills =  <eval ( <cont.kills> - 1 )>
+                  cont.tag.kills.backup = <cont.kills>
+                  timer = 57600
+                  cont.sysmessage the world forgets about one of your kills
+           elseif ( <EVAL <CONT.KILLS>> < 40 )
+                  cont.kills =  <eval ( <cont.kills> - 1 )>
+                  cont.tag.kills.backup = <cont.kills>
+                  timer = 28800
+                  cont.sysmessage the world forgets about one of your kills
+           else
+                  cont.kills =  <eval ( <cont.kills> - 1 )>
+                  cont.tag.kills.backup = <cont.kills>
+                  timer = 14400
+                  cont.sysmessage the world forgets about one of your kills
+           endif
+   endif
+   return 1
+   
+[EOF]

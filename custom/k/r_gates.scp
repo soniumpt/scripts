@@ -1,0 +1,239 @@
+//Changelog
+//13-09-03 - Wren - Added Return 1 on line 78
+//05 Dec 03 - Wren Changed Newbie Dungeon Entrance to just look at combat skills
+//18 Jan 04 - Wren Added Parrying to the list
+//02 Oct 04 - Wren Added a gump for the announcer stone
+
+[ITEMDEF i_dungeon_gate]
+Name=Dark Hole
+ID=i_hole
+
+CATEGORY=Imperial uo
+SUBSECTION=Newbie Dungeon
+DESCRIPTION=Enterance Hole
+ON=@CREATE
+ATTR=010
+
+ON=@STEP
+IF (<SRC.MAGERY> > 700)
+   src.message Your magical prowess is too strong to enter.
+   src.move s 1
+   return 1
+ELSE
+   src.go 5128,1290,11
+   src.message You fall down a deep hole!
+   return 0
+ENDIF
+
+
+[ITEMDEF i_dungeon_gate_minoc]
+Name=Dark Hole
+ID=i_hole
+
+CATEGORY=Imperial uo
+SUBSECTION=Newbie Dungeon
+DESCRIPTION=Enterance Hole
+ON=@CREATE
+ATTR=010
+
+ON=@STEP
+src.emote feel a chill rise from the Dark Hole
+src.move n 1
+return 1
+IF (<SRC.MAGERY> > 700)
+   src.message Your magical prowess is too strong to enter.
+   src.move s 1
+   return 1
+ELSE
+   src.go 5331,1382,1
+   src.message You fall down a deep hole!
+   return 0
+ENDIF
+
+
+
+[ITEMDEF i_announce_stone]
+ID=01174
+NAME=Announcer(dont remove)
+TYPE=T_SCRIPT
+
+ON=@CREATE
+COLOR=000BD
+TIMER=7200
+TAG.MESSAGE01=0
+TAG.MESSAGE02=0
+TAG.MESSAGE03=0
+TAG.MESSAGE04=0
+TAG.ACTIVEMESSAGE=0
+TAG.TOTALMESSAGES=0
+
+
+ON=@TIMER
+IF (<TAG.ACTIVEMESSAGE> == 0)
+TIMER=3600
+return 1
+ENDIF
+ 
+TAG.ACTIVEMESSAGE2 = (<TAG.ACTIVEMESSAGE> +1)
+
+IF (<TAG.ACTIVEMESSAGE> < <TAG.TOTALMESSAGES>)
+SERV.ALLCLIENTS SYSMESSAGE @24 <TAG.MESSAGE<TAG.ACTIVEMESSAGE>> <TAG.MESSAGE<TAG.ACTIVEMESSAGE2>>
+TIMER=3600
+TAG.ACTIVEMESSAGE= (<TAG.ACTIVEMESSAGE> +2)
+ENDIF
+
+IF (<TAG.ACTIVEMESSAGE> >= <TAG.TOTALMESSAGES>)
+TAG.ACTIVEMESSAGE = 1
+TIMER=1550
+ENDIF
+
+RETURN 1
+
+ON=@DCLICK
+DIALOG d_announcer
+RETURN 1
+
+
+
+
+
+[DIALOG d_announcer]
+0,0 
+nodispose 
+resizepic 190 65 5054 515 600 
+resizepic 200 75 3000 495 580 
+
+resizepic 220 105 3000 460 22 
+resizepic 220 130 3000 460 22 
+resizepic 220 155 3000 460 22 
+resizepic 220 180 3000 460 22 
+resizepic 220 205 3000 460 22 
+resizepic 220 230 3000 460 22 
+resizepic 220 255 3000 460 22 
+resizepic 220 280 3000 460 22 
+resizepic 220 305 3000 460 22 
+resizepic 220 330 3000 460 22
+resizepic 220 355 3000 460 22 
+resizepic 220 380 3000 460 22 
+resizepic 220 405 3000 460 22 
+resizepic 220 430 3000 460 22 
+resizepic 220 455 3000 460 22 
+resizepic 220 480 3000 460 22 
+resizepic 220 505 3000 460 22 
+resizepic 220 530 3000 460 22 
+resizepic 220 555 3000 460 22 
+resizepic 220 580 3000 460 22 
+
+dtext 215 80 995 Enter the news below (2 lines each): 
+
+textentry 225 107 440 25 0 0 0 
+textentry 225 132 440 25 0 1 1 
+textentry 225 157 440 25 0 2 2 
+textentry 225 182 440 25 0 3 3 
+textentry 225 207 440 25 0 4 4 
+textentry 225 232 440 25 0 5 5 
+textentry 225 257 440 25 0 6 6 
+textentry 225 282 440 25 0 7 7 
+textentry 225 307 440 25 0 8 8 
+textentry 225 332 440 25 0 9 9 
+textentry 225 357 440 25 0 10 10 
+textentry 225 382 440 25 0 11 11 
+textentry 225 407 440 25 0 12 12 
+textentry 225 432 440 25 0 13 13 
+textentry 225 457 440 25 0 14 14 
+textentry 225 482 440 25 0 15 15 
+textentry 225 507 440 25 0 16 16 
+textentry 225 532 440 25 0 17 17 
+textentry 225 557 440 25 0 18 18 
+textentry 225 582 440 25 0 19 19 
+
+dtext  305 620 0000 Accept 
+button 270 620 4005 4006 1 0 1 
+dtext  485 620 0000 Cancel 
+button 450 620 4005 4006 1 0 0 
+
+
+[DIALOG d_announcer TEXT]
+<TAG.MESSAGE01> 
+<TAG.MESSAGE02>
+<TAG.MESSAGE03>
+<TAG.MESSAGE04>
+<TAG.MESSAGE05>
+<TAG.MESSAGE06>
+<TAG.MESSAGE07>
+<TAG.MESSAGE08>
+<TAG.MESSAGE09>
+<TAG.MESSAGE0a>
+<TAG.MESSAGE0b>
+<TAG.MESSAGE0c>
+<TAG.MESSAGE0d>
+<TAG.MESSAGE0e>
+<TAG.MESSAGE0f>
+<TAG.MESSAGE010>
+<TAG.MESSAGE011>
+<TAG.MESSAGE012>
+<TAG.MESSAGE013>
+<TAG.MESSAGE014>
+
+[DIALOG d_announcer BUTTON]
+ON=0 
+   SRC.SYSMESSAGE News Entry Aborted 
+   RETURN 1
+   
+ON=1 
+   SRC.SYSMESSAGE News Updated
+   
+   TAG.MESSAGE01=<ARGTXT[0]>
+   TAG.MESSAGE02=<ARGTXT[1]>
+   TAG.MESSAGE03=<ARGTXT[2]>
+   TAG.MESSAGE04=<ARGTXT[3]>
+   TAG.MESSAGE05=<ARGTXT[4]>
+   TAG.MESSAGE06=<ARGTXT[5]>
+   TAG.MESSAGE07=<ARGTXT[6]>
+   TAG.MESSAGE08=<ARGTXT[7]>
+   TAG.MESSAGE09=<ARGTXT[8]>
+   TAG.MESSAGE0a=<ARGTXT[9]>
+   TAG.MESSAGE0b=<ARGTXT[10]>
+   TAG.MESSAGE0c=<ARGTXT[11]>
+   TAG.MESSAGE0d=<ARGTXT[12]>
+   TAG.MESSAGE0e=<ARGTXT[13]>
+   TAG.MESSAGE0f=<ARGTXT[14]>
+   TAG.MESSAGE010=<ARGTXT[15]>
+   TAG.MESSAGE011=<ARGTXT[16]>
+   TAG.MESSAGE012=<ARGTXT[17]>
+   TAG.MESSAGE013=<ARGTXT[18]>      
+   TAG.MESSAGE014=<ARGTXT[19]>
+   
+   IF !(0<TAG.MESSAGE01>=0)
+      TAG.TOTALMESSAGES=2
+   ENDIF
+   IF !(0<TAG.MESSAGE03>=0)
+      TAG.TOTALMESSAGES=4
+   ENDIF
+   IF !(0<TAG.MESSAGE05>=0)
+     TAG.TOTALMESSAGES=6
+   ENDIF
+   IF !(0<TAG.MESSAGE07>=0)
+      TAG.TOTALMESSAGES=8
+   ENDIF
+   IF !(0<TAG.MESSAGE09>=0)
+      TAG.TOTALMESSAGES=10
+   ENDIF
+   IF !(0<TAG.MESSAGE0b>=0)
+      TAG.TOTALMESSAGES=12
+   ENDIF
+   IF !(0<TAG.MESSAGE0d>=0)
+      TAG.TOTALMESSAGES=14
+   ENDIF
+   IF !(0<TAG.MESSAGEf>=0)
+      TAG.TOTALMESSAGES=16
+   ENDIF
+   IF !(0<TAG.MESSAGE011>=0)
+      TAG.TOTALMESSAGES=18
+   ENDIF
+   IF !(0<TAG.MESSAGE013>=0)
+      TAG.TOTALMESSAGES=20
+   ENDIF
+   RETURN 1 
+
+[EOF]

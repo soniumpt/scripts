@@ -1,0 +1,492 @@
+//-------------------------------------------------------------------------------------------------
+//-                                                                                               -
+//------------------------------------Burstfire Master v1.00---------------------------------------
+//-                                                                                               -
+//-----------------------------------------Gump Design---------------------------------------------
+//-                                                                                               -
+//-----------------------------------Written By James Timbrell-------------------------------------
+//-                                                                                               -
+//---------------------------------For use on Burstfire UO alone-----------------------------------
+
+
+//-------------------------------------Creature Card Design----------------------------------------
+
+[DIALOG d_BFMaster_Creature]
+150, 50
+NODISPOSE
+
+  //Background Dimensions:
+  gumppic    0   0 2620	//Top Left Corner
+  gumppic   10   0 2621 //Top Border
+  gumppic   80   0 2621 //Top Border
+  gumppic  350   0 2622 //Top Right Corner
+
+  gumppic    0  10 2623 //Left Border
+  gumppic   15  10 2624 //Middle
+  gumppic   85  10 2624 //Middle
+  gumppic  348  10 2625 //Right Border
+
+  gumppic    0 200 2623 //Left Border
+  gumppic   15 200 2624 //Middle
+  gumppic   85 200 2624 //Middle
+  gumppic  348 200 2625 //Right Border
+
+  gumppic    0 405 2626 //Bottom Left Corner
+  gumppic   10 405 2627 //Bottom Border
+  gumppic   80 405 2627 //Bottom Border
+  gumppic  350 405 2628 //Bottom Right Corner
+
+  gumppic   30  35 2480 // Picture Box
+  gumppic   30  45 2481 // Picture Box
+  gumppic   30  55 2482 // Picture Box
+  gumppic   30  65 2483 // Picture Box
+  gumppic   30  75 2481 // Picture Box
+  gumppic   30  85 2482 // Picture Box
+  gumppic   30  95 2483 // Picture Box
+  gumppic   30 105 2481 // Picture Box
+  gumppic   30 115 2482 // Picture Box
+  gumppic   30 125 2483 // Picture Box
+  gumppic   30 135 2484 // Picture Box
+
+  f_bfmaster_creature_picture
+
+  gumppic   15 160 2627 //Vertical Splitter
+  gumppic   85 160 2627 //Vertical Splitter
+
+  text 160   30   22  1 //Card Name
+  text 160   50   49  2 //Card Type
+
+  text 160   90   22  3 //Hits Label
+  text 220   90   49  4 //Hits
+  text 160  110   22  5 //Mana Label
+  text 220  110   49  6 //Mana
+  text 160  130   22  7 //Dex Label
+  text 220  130   49  8 //Dex
+
+  text  15  200   30  9 //Card Desc Line 1
+  text  15  220   30 10 //Card Desc Line 2
+  text  15  240   30 11 //Card Desc Line 3
+
+  text  15  285   22 12 //Skill 1
+  text 150  285   49 13 //Skill 1 Type
+  text  15  305   22 14 //Skill 2
+  text 150  305   49 15 //Skill 2 Type
+  text  15  325   22 16 //Skill 3
+  text 150  325   49 17 //Skill 3 Type
+  text  15  345   22 18 //Skill 4
+  text 150  345   49 19 //Skill 4 Type
+
+  text  15  390   80 20 //Card No.
+  text  150 390   60 21 //Card Set.
+
+[DIALOG d_BFMaster_Creature BUTTON]
+//No buttons
+
+[DIALOG d_BFMaster_Creature TEXT]
+<VAR.BLANKLINE>
+<VAR.CARDNAME> 
+<VAR.CARDTYPE>
+Hits
+<eval <VAR.HITS>>
+Mana
+<eval <VAR.MANA>>
+Dex
+<eval <VAR.DEX>>
+<VAR.CARDDESCRIPTION1>
+<VAR.CARDDESCRIPTION2>
+<VAR.CARDDESCRIPTION3>
+<VAR.SKILL1>
+<VAR.SKILL1TYPE>
+<VAR.SKILL2>
+<VAR.SKILL2TYPE>
+<VAR.SKILL3>
+<VAR.SKILL3TYPE>
+<VAR.SKILL4>
+<VAR.SKILL4TYPE>
+<eval <VAR.CARDNO>>
+<VAR.CARDSET>
+
+
+[FUNCTION f_bfmaster_creature_picture]
+IF (0<VAR.CREATURE>)
+  tilepic   65  70 <VAR.CREATURE> //Picture if Item
+ELSE
+  gumppic   38  43 <VAR.CREATURETWO> //Picture if Gump
+ENDIF
+
+//----------------------------------------Item Card Design-----------------------------------------
+
+
+[DIALOG d_BFMaster_item]
+150, 50
+NODISPOSE
+
+  //Background Dimensions:
+  gumppic    0   0 2620	//Top Left Corner
+  gumppic   10   0 2621 //Top Border
+  gumppic   80   0 2621 //Top Border
+  gumppic  350   0 2622 //Top Right Corner
+
+  gumppic    0  10 2623 //Left Border
+  gumppic   15  10 2624 //Middle
+  gumppic   85  10 2624 //Middle
+  gumppic  348  10 2625 //Right Border
+
+  gumppic    0 200 2623 //Left Border
+  gumppic   15 200 2624 //Middle
+  gumppic   85 200 2624 //Middle
+  gumppic  348 200 2625 //Right Border
+
+  gumppic    0 405 2626 //Bottom Left Corner
+  gumppic   10 405 2627 //Bottom Border
+  gumppic   80 405 2627 //Bottom Border
+  gumppic  350 405 2628 //Bottom Right Corner
+
+  gumppic   30  35 2480 // Picture Box
+  gumppic   30  45 2481 // Picture Box
+  gumppic   30  55 2482 // Picture Box
+  gumppic   30  65 2483 // Picture Box
+  gumppic   30  75 2481 // Picture Box
+  gumppic   30  85 2482 // Picture Box
+  gumppic   30  95 2483 // Picture Box
+  gumppic   30 105 2481 // Picture Box
+  gumppic   30 115 2482 // Picture Box
+  gumppic   30 125 2483 // Picture Box
+  gumppic   30 135 2484 // Picture Box
+  tilepic   65  70 <eval <VAR.ITEM>> //Picture
+
+  gumppic   15 160 2627 //Vertical Splitter
+  gumppic   85 160 2627 //Vertical Splitter
+
+  text 160   30   22  1 //Card Name
+  text 160   50   49  2 //Card Type
+
+  text 160   90   22  3 //Regen Hits Label
+  text 220   90   49  4 //Hits
+  text 160  110   22  5 //Regen Mana Label
+  text 220  110   49  6 //Mana
+  text 160  130   22  7 //Regen Dex Label
+  text 220  130   49  8 //Dex
+
+  text  15  200   30  9 //Card Desc Line 1
+  text  15  220   30 10 //Card Desc Line 2
+  text  15  240   30 11 //Card Desc Line 3
+
+  text  15  285   22 12 //Effect 1
+  text 150  285   49 13 //Effect 1 Type
+  text  15  305   22 14 //Effect 2
+  text 150  305   49 15 //Effect 2 Type
+  text  15  325   22 16 //Effect 3
+  text 150  325   49 17 //Effect 3 Type
+  text  15  345   22 18 //Effect 4
+  text 150  345   49 19 //Effect 4 Type
+
+  text  15  390   110 20 //Card No.
+
+[DIALOG d_BFMaster_item BUTTON]
+//No buttons
+
+[DIALOG d_BFMaster_item TEXT]
+<VAR.BLANKLINE>
+<VAR.CARDNAME> 
+<VAR.CARDTYPE>
++Hits
+<eval <VAR.HITPLUS>>
++Mana
+<eval <VAR.MANAPLUS>>
++Stam
+<eval <VAR.DEXPLUS>>
+<VAR.CARDDESCRIPTION1>
+<VAR.CARDDESCRIPTION2>
+<VAR.CARDDESCRIPTION3>
+<VAR.EFFECT1>
+<VAR.EFFECT1TYPE>
+<VAR.EFFECT2>
+<VAR.EFFECT2TYPE>
+<VAR.EFFECT3>
+<VAR.EFFECT3TYPE>
+<VAR.EFFECT4>
+<VAR.EFFECT4TYPE>
+<eval <VAR.CARDNO>>
+
+
+//-------------------------------------Equipment Card Design---------------------------------------
+
+
+[DIALOG d_BFMaster_equip]
+150, 50
+NODISPOSE
+
+  //Background Dimensions:
+  gumppic    0   0 2620	//Top Left Corner
+  gumppic   10   0 2621 //Top Border
+  gumppic   80   0 2621 //Top Border
+  gumppic  350   0 2622 //Top Right Corner
+
+  gumppic    0  10 2623 //Left Border
+  gumppic   15  10 2624 //Middle
+  gumppic   85  10 2624 //Middle
+  gumppic  348  10 2625 //Right Border
+
+  gumppic    0 200 2623 //Left Border
+  gumppic   15 200 2624 //Middle
+  gumppic   85 200 2624 //Middle
+  gumppic  348 200 2625 //Right Border
+
+  gumppic    0 405 2626 //Bottom Left Corner
+  gumppic   10 405 2627 //Bottom Border
+  gumppic   80 405 2627 //Bottom Border
+  gumppic  350 405 2628 //Bottom Right Corner
+
+  gumppic   30  35 2480 // Picture Box
+  gumppic   30  45 2481 // Picture Box
+  gumppic   30  55 2482 // Picture Box
+  gumppic   30  65 2483 // Picture Box
+  gumppic   30  75 2481 // Picture Box
+  gumppic   30  85 2482 // Picture Box
+  gumppic   30  95 2483 // Picture Box
+  gumppic   30 105 2481 // Picture Box
+  gumppic   30 115 2482 // Picture Box
+  gumppic   30 125 2483 // Picture Box
+  gumppic   30 135 2484 // Picture Box
+  tilepic   65  70 <eval <VAR.ITEM>> //Picture
+
+  gumppic   15 160 2627 //Vertical Splitter
+  gumppic   85 160 2627 //Vertical Splitter
+
+  text 160   30   22  1 //Card Name
+  text 160   50   49  2 //Card Type
+
+  text 160   90   22  3 //Armour Label
+  text 240   90   49  4 //Armour
+  text 160  110   22  5 //Strength Label
+  text 240  110   49  6 //Strength
+  text 160  130   22  7 //Weakness Label
+  text 240  130   49  8 //Weakness
+
+  text  15  200   30  9 //Card Desc Line 1
+  text  15  220   30 10 //Card Desc Line 2
+  text  15  240   30 11 //Card Desc Line 3
+
+  text  15  285   22 12 //Effect 1
+  text 150  285   49 13 //Effect 1 Type
+  text  15  305   22 14 //Effect 2
+  text 150  305   49 15 //Effect 2 Type
+  text  15  325   22 16 //Effect 3
+  text 150  325   49 17 //Effect 3 Type
+  text  15  345   22 18 //Effect 4
+  text 150  345   49 19 //Effect 4 Type
+
+  text  15  390   110 20 //Card No.
+
+[DIALOG d_BFMaster_equip BUTTON]
+//No buttons
+
+[DIALOG d_BFMaster_equip TEXT]
+<VAR.BLANKLINE>
+<VAR.CARDNAME> 
+<VAR.CARDTYPE>
+Armour
+<eval <VAR.ARMOUR>>
+Strength
+<VAR.STRENGTH>
+Weakness
+<VAR.WEAKNESS>
+<VAR.CARDDESCRIPTION1>
+<VAR.CARDDESCRIPTION2>
+<VAR.CARDDESCRIPTION3>
+<VAR.EFFECT1>
+<eval <VAR.EFFECT1TYPE>>
+<VAR.EFFECT2>
+<eval <VAR.EFFECT2TYPE>>
+<VAR.EFFECT3>
+<eval <VAR.EFFECT3TYPE>>
+<VAR.EFFECT4>
+<eval <VAR.EFFECT4TYPE>>
+<eval <VAR.CARDNO>>
+
+
+//--------------------------------------Weapon Card Design-----------------------------------------
+
+
+[DIALOG d_BFMaster_weapon]
+150, 50
+NODISPOSE
+
+  //Background Dimensions:
+  gumppic    0   0 2620	//Top Left Corner
+  gumppic   10   0 2621 //Top Border
+  gumppic   80   0 2621 //Top Border
+  gumppic  350   0 2622 //Top Right Corner
+
+  gumppic    0  10 2623 //Left Border
+  gumppic   15  10 2624 //Middle
+  gumppic   85  10 2624 //Middle
+  gumppic  348  10 2625 //Right Border
+
+  gumppic    0 200 2623 //Left Border
+  gumppic   15 200 2624 //Middle
+  gumppic   85 200 2624 //Middle
+  gumppic  348 200 2625 //Right Border
+
+  gumppic    0 405 2626 //Bottom Left Corner
+  gumppic   10 405 2627 //Bottom Border
+  gumppic   80 405 2627 //Bottom Border
+  gumppic  350 405 2628 //Bottom Right Corner
+
+  gumppic   30  35 2480 // Picture Box
+  gumppic   30  45 2481 // Picture Box
+  gumppic   30  55 2482 // Picture Box
+  gumppic   30  65 2483 // Picture Box
+  gumppic   30  75 2481 // Picture Box
+  gumppic   30  85 2482 // Picture Box
+  gumppic   30  95 2483 // Picture Box
+  gumppic   30 105 2481 // Picture Box
+  gumppic   30 115 2482 // Picture Box
+  gumppic   30 125 2483 // Picture Box
+  gumppic   30 135 2484 // Picture Box
+  tilepic   65  70 <eval <VAR.ITEM>> //Picture
+
+  gumppic   15 160 2627 //Vertical Splitter
+  gumppic   85 160 2627 //Vertical Splitter
+
+  text 160   30   22  1 //Card Name
+  text 160   50   49  2 //Card Type
+
+  text 160   90   22  3 //Attack Label
+  text 240   90   49  4 //Attack
+  text 160  110   22  5 //Type Label
+  text 240  110   49  6 //Type
+  text 160  130   22  7 //Metal Label
+  text 240  130   49  8 //Metal
+
+  text  15  200   30  9 //Card Desc Line 1
+  text  15  220   30 10 //Card Desc Line 2
+  text  15  240   30 11 //Card Desc Line 3
+
+  text  15  285   22 12 //Effect 1
+  text 150  285   49 13 //Effect 1 Type
+  text  15  305   22 14 //Effect 2
+  text 150  305   49 15 //Effect 2 Type
+  text  15  325   22 16 //Effect 3
+  text 150  325   49 17 //Effect 3 Type
+  text  15  345   22 18 //Effect 4
+  text 150  345   49 19 //Effect 4 Type
+
+  text  15  390   110 20 //Card No.
+
+[DIALOG d_BFMaster_weapon BUTTON]
+//No buttons
+
+[DIALOG d_BFMaster_weapon TEXT]
+<VAR.BLANKLINE>
+<VAR.CARDNAME> 
+<VAR.CARDTYPE>
+Attack
+<eval <VAR.ATTACK>>
+Type
+<VAR.TYPE>
+Metal
+<VAR.METAL>
+<VAR.CARDDESCRIPTION1>
+<VAR.CARDDESCRIPTION2>
+<VAR.CARDDESCRIPTION3>
+<VAR.EFFECT1>
+<VAR.EFFECT1TYPE>
+<VAR.EFFECT2>
+<VAR.EFFECT2TYPE>
+<VAR.EFFECT3>
+<VAR.EFFECT3TYPE>
+<VAR.EFFECT4>
+<VAR.EFFECT4TYPE>
+<eval <VAR.CARDNO>>
+
+
+//-----------------------------------Skara Brae Control Stone--------------------------------------
+
+
+[DIALOG d_bfmaster_control_skara]
+0,0
+NODISPOSE
+   
+   gumppic   0   0  0F23C
+   gumppic   35  35 0F230
+   
+PAGE 0
+   dtext 280 45 0486 Welcome to the Skara Brae Arena.
+   dtext 280 60 0486 If you wish to partake in a battle,
+   dtext 280 75 0486 please click the duel button.
+//   gumppic 60 267 0145E
+   dtext 79 263 025 Join
+   button 65 200 015B9 015BA 1 0 1
+
+[DIALOG d_bfmaster_control_skara BUTTON]
+
+ONBUTTON=1
+   IF (0<TAG.PLAYER>=2)
+      SRC.SYSMESSAGE @486 Sorry but there is no space to play at this time...
+   ELSE
+      TAG.PLAYER=(0<TAG.PLAYER> + 1)
+      IF <eval ( 0<TAG.PLAYER> = 1)>
+         SRC.GO 699,2258,13
+      ELSE
+         SRC.GO 688,2258,13
+      ENDIF
+   ENDIF
+
+
+[DIALOG d_bfmaster_control_skara TEXT]
+
+//-----------------------------------Skara Brae Card Holders---------------------------------------
+
+
+[DIALOG d_bfmaster_box_red_skara]
+0,0
+NODISPOSE
+   
+   gumppic   0   0  0F241
+   button  180 140 0F242 0F243 1 0 1
+   
+[DIALOG d_bfmaster_box_red_skara BUTTON]
+
+ONBUTTON=1
+   IF !(0<TAG.READY>=1)
+      TARGET Please select the deck you wish to add:
+   ELSE
+      SRC.SYSMESSAGE @32 Please wait until an opponent has selected a deck.
+   ENDIF
+
+[DIALOG d_bfmaster_box_red_skara TEXT]
+
+[DIALOG d_bfmaster_box_blue_skara]
+0,0
+NODISPOSE
+   
+   gumppic   0   0  0F241
+   button  180 140 0F242 0F243 1 0 1
+   
+[DIALOG d_bfmaster_box_blue_skara BUTTON]
+
+ONBUTTON=1
+   IF !(0<TAG.READY>=1)
+      TARGET Please select the deck you wish to add:
+   ELSE
+      SRC.SYSMESSAGE @32 Please wait until an opponent has selected a deck.
+   ENDIF
+
+[DIALOG d_bfmaster_box_blue_skara TEXT]
+
+//------------------------------------------Game Start---------------------------------------------
+
+[DIALOG d_first_or_second]
+120,120
+NODISPOSE
+NOCLOSE
+
+   resizepic 0 0 9200 150 250
+   
+[DIALOG d_first_or_second BUTTON]
+
+[DIALOG d_first_or_second TEXT]
+
+//------------------------------------------Main Game----------------------------------------------

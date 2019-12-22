@@ -1,0 +1,2910 @@
+//Changelog
+//---------
+//02/06/2018 - Wigifer - Added Part 2 and Part 3 for j_newbie_quest Quest 1
+                       - Was this seriously never changelogged? RAY!
+
+
+[PLEVEL 2]
+papers2
+
+[FUNCTION papers]
+//SRC.TAG.TPFLAGS=839
+   // --Begin Newbie Quest stuff --
+      IF ((<SRC.TAG0.NPC_QUEST_START_3> & NPCQ_NewbieQuest_1) && (<SRC.TAG0.NEWBIEQUESTPHASE>=2))
+         f_newbie_introduction_1_part2_done
+      ENDIF
+   // --End Newbie Quest stuff --
+SRC.DIALOG d_papers_account
+RETURN 1
+
+////////////
+//Account//
+//////////
+
+[DIALOG d_papers_account]
+0,0
+page 0
+gumppic 130 35 2601
+gumppic 99 35 2601
+gumppic 131 35 2600
+gumppic 175 395 2607
+gumppic 253 35 2601
+gumppic 100 395 2607
+gumppic 254 395 2607
+gumppic 603 36 2602
+gumppic 131 79 2603
+gumppic 602 79 2605
+gumppic 131 395 2606
+gumppic 603 395 2608
+gumppic 175 79 2604
+gumppic 175 79 2604
+gumppic 268 79 2604
+gumppic 603 79 2605
+gumppic 87 79 2604
+gumppic 131 79 2603
+gumppic 680 35 2602
+gumppic 681 395 2608
+gumppic 681 79 2605
+gumppic 55 395 2606
+gumppic 56 395 2606
+gumppic 55 36 2600
+gumppic 55 79 2603
+dtext 76 108 0 Account
+dtext 84 124 0 Info.
+dtext 67 182 0 Character
+dtext 83 204 0 Info.
+dtext 84 268 0 Guild
+dtext 85 285 0 Info.
+dtext 652 364 0 System
+dtext 81 347 0 Bonus
+dtext 85 364 0 Info.
+dtext 654 108 0 Player
+dtext 657 124 0 Ranks.
+// dtext 655 182 0 Battle
+// dtext 654 204 0 Grounds
+dtext 648 285 0 Commands
+dtext 661 268 0 Game
+dtext 653 347 0 Loyalty
+button 86 82 1154 1153 1 0 1
+button 86 154 1154 1153 1 0 2
+button 86 237 1154 1153 1 0 3
+button 86 321 1154 1153 1 0 4
+button 661 82 1154 1153 1 0 5
+// button 661 154 1154 1153 1 0 6
+button 661 237 1154 1153 1 0 7
+button 661 321 1154 1153 1 0 8
+resizepic 239 59 9200 297 24
+resizepic 239 321 9200 297 24
+dtext 322 60 085 Account Information
+dtext 322 322 085 Website Information
+
+dtext 201 360 01f4 Website
+button 180 360 2117 2118 1 0 9
+dtext 340 360 01f4 Forums
+button 320 360 2117 2118 1 0 10
+dtext 480 360 01f4 Skill Guides
+button 460 360 2117 2118 1 0 11
+dtext 201 390 01f4 New To Us?
+button 180 390 2117 2118 1 0 12
+
+IF (<SRC.ACCOUNT.CHARS>==1)
+dtext 181 115 01f4 Total Account Characters: 1
+ELSEIF (<SRC.ACCOUNT.CHARS>==2)
+dtext 181 115 01f4 Total Account Characters: 2
+ELSEIF (<SRC.ACCOUNT.CHARS>==3)
+dtext 181 115 01f4 Total Account Characters: 3
+ELSEIF (<SRC.ACCOUNT.CHARS>==4)
+dtext 181 115 01f4 Total Account Characters: 4
+ELSEIF (<SRC.ACCOUNT.CHARS>==5)
+dtext 181 115 01f4 Total Account Characters: 5
+ENDIF
+
+dtext 181 150 01f4 Total Houses: You have <EVAL <SRC.HOUSE_COUNT>> house(s).
+dtext 181 185 01f4 First Connect Day: You started playing on <ACCOUNT.FIRSTCONNECTDATE>.
+dtext 181 220 01f4 Total Online Time: You have been playing for a total of <ACCOUNT.TOTALCONNECTTIME> minutes.
+dtext 181 255 01f4 Total Account Notes: <EVAL <SRC.ACCOUNT.TAG.NUMNOTES>>
+dtext 181 290 01f4 Loyalty Points: You currently have <EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS>> loyalty points.
+tilepichue 543 52 5021 1953
+tilepichue 192 55 4648 1953
+
+
+[DIALOG d_papers_account button]
+
+ON=1
+SRC.DIALOG d_papers_account
+RETURN 1
+
+ON=2
+SRC.DIALOG d_papers_character
+RETURN 1
+
+ON=3
+IF (<SRC.memoryfindtype.memory_guild>)
+SRC.DIALOG d_papers_guild
+ELSE
+SRC.SYSMESSAGE You are not part of any guild.
+ENDIF
+RETURN 1
+
+ON=4
+SRC.f_weapon_calc_dam
+SRC.f_weapon_effect
+SRC.status_armour
+SRC.f_shield_calc
+SRC.DIALOG d_papers_bonus
+RETURN 1
+
+ON=5
+SRC.DIALOG d_papers_rankings1
+RETURN 1
+
+ON=6
+SRC.SYSMESSAGE Coming soon. . .
+SRC.DIALOG d_papers_account
+RETURN 1
+
+ON=7
+SRC.DIALOG d_papers_game
+RETURN 1
+
+ON=8
+SRC.DIALOG d_papers_loyalty
+RETURN 1
+
+ON=9
+WEBLINK www.dreamersuo.com
+
+ON=10
+WEBLINK www.dreamersuo.com/forums
+
+ON=11
+WEBLINK www.dreamersuo.com/guides.php
+
+ON=12
+WEBLINK www.dreamersuo.com/forums/index.php?/forum/39-new-to-us/
+
+
+//////////////////////////
+//Character Information//
+////////////////////////
+
+[DIALOG d_papers_character]
+0,0
+page 0
+gumppic 130 35 2601
+gumppic 99 35 2601
+gumppic 131 35 2600
+gumppic 175 395 2607
+gumppic 253 35 2601
+gumppic 100 395 2607
+gumppic 254 395 2607
+gumppic 603 36 2602
+gumppic 131 79 2603
+gumppic 602 79 2605
+gumppic 131 395 2606
+gumppic 603 395 2608
+gumppic 175 79 2604
+gumppic 175 79 2604
+gumppic 268 79 2604
+gumppic 603 79 2605
+gumppic 87 79 2604
+gumppic 131 79 2603
+gumppic 680 35 2602
+gumppic 681 395 2608
+gumppic 681 79 2605
+gumppic 55 395 2606
+gumppic 56 395 2606
+gumppic 55 36 2600
+gumppic 55 79 2603
+dtext 76 108 0 Account
+dtext 84 124 0 Info.
+dtext 67 182 0 Character
+dtext 83 204 0 Info.
+dtext 84 268 0 Guild
+dtext 85 285 0 Info.
+dtext 652 364 0 System
+dtext 81 347 0 Bonus
+dtext 85 364 0 Info.
+dtext 654 108 0 Player
+dtext 657 124 0 Ranks.
+// dtext 655 182 0 Battle
+// dtext 654 204 0 Grounds
+dtext 648 285 0 Commands
+dtext 661 268 0 Game
+dtext 653 347 0 Loyalty
+button 86 82 1154 1153 1 0 1
+button 86 154 1154 1153 1 0 2
+button 86 237 1154 1153 1 0 3
+button 86 321 1154 1153 1 0 4
+button 661 82 1154 1153 1 0 5
+// button 661 154 1154 1153 1 0 6
+button 661 237 1154 1153 1 0 7
+button 661 321 1154 1153 1 0 8
+resizepic 239 59 9200 297 24
+dtext 317 60 085 Character Information
+dtext 181 115 01f4 Name: <SRC.NAME>
+dtext 181 150 01f4 Total Skill: <EVAL <SRC.SKILLTOTAL>/10>
+button 160 187 2117 2118 1 0 11
+dtext 181 185 01f4 Total Stats: <EVAL <SRC.STR> + <SRC.DEX> + <SRC.INT>>
+
+IF (<SRC.memoryfindtype.memory_guild>)
+dtext 181 220 01f4 Guild: <SRC.memoryfindtype.memory_guild.NAME> [<EVAL ( <EVAL ( <EVAL ( <UID.<SRC.memoryfindtype.memory_guild.link>.TIMER>/60 )> /60 )> /24 )> days paid]
+ELSE
+dtext 181 220 01f4 Guild: You are not part of any guild.
+ENDIF
+
+
+IF (<SRC.ISBROTHERHOOD>)
+dtext 181 255 01f4 Faction: Brotherhood 
+dtext 181 276 01f4 Rank: <SRC.tag0.currentbrank>
+dtext 181 297 01f4 Points: <EVAL <SRC.TAG0.REP.ALIGNMENT>> points 
+ELSEIF (<SRC.ISSYNDICATE>)
+dtext 181 255 01f4 Faction: Syndicate 
+dtext 181 276 01f4 Rank: <SRC.tag0.currentsrank>
+dtext 181 297 01f4 Points: <EVAL <SRC.TAG0.REP.ALIGNMENT>> points
+ELSEIF (<SRC.ISMERCENARY>)
+dtext 181 255 01f4 Faction: Mercenaries 
+dtext 181 276 01f4 Rank: <SRC.tag0.currentmrank>
+dtext 181 297 01f4 Points: <EVAL <SRC.TAG0.REP.ALIGNMENT>> points
+ELSEIF (<SRC.ISCHAOS>)
+dtext 181 255 01f4 Faction: Chaos 
+dtext 181 276 01f4 Rank: <SRC.chaos_TITLE>
+dtext 181 297 01f4 Points: <EVAL <SRC.TAG0.REP.ALIGNMENT>> points
+ELSEIF (<SRC.ISORDER>)
+dtext 181 255 01f4 Faction: Order [<SRC.order_TITLE>] [<EVAL <SRC.TAG0.REP.ALIGNMENT>> points]
+dtext 181 276 01f4 Rank: <SRC.order_TITLE>
+dtext 181 297 01f4 Points: <EVAL <SRC.TAG0.REP.ALIGNMENT>> points
+ELSEIF (<SRC.ISACADEMY>)
+dtext 181 255 01f4 Faction: Academy 
+dtext 181 276 01f4 Rank: <SRC.tag0.currentarank>
+ELSE
+dtext 181 255 01f4 Faction: You have not chosen a faction.
+ENDIF
+
+dtext 181 332 0bc Fame: Your fame is about <eval ((<SRC.FAME>/25)*25)>.
+dtext 181 353 0bc Karma: Your karma is around <eval ((<SRC.KARMA>/25)*25)>.
+
+IF (<SRC.KILLS>==0)
+    dtext 181 374 0bc Kills: Your criminal record seems clean.
+ELSE
+    dtext 181 374 0bc Kills: You are charged for <SRC.KILLS> murders.
+
+    IF (<SRC.FINDID.b_kill_decayer.UID>)
+        IF (<SRC.FINDID.b_kill_decayer.TIMER><0)
+            SRC.FINDID.b_kill_decayer.TIMER = 7200
+            SERV.LOG <SRC.NAME>[<SRC.ACCOUNT>]'s kill timer was reset to two hours because it appeared to have stopped.
+        ENDIF
+        VAR.KILLHOURS = <eval ( (<SRC.FINDID.b_kill_decayer.TIMER> / 60) / 60)>
+        VAR.KILLMINS = <eval (<SRC.FINDID.b_kill_decayer.TIMER> / 60)>
+        IF ( <EVAl (<VAR.KILLMINS> > <VAR.KILLHOURS>)>
+            VAR.KILLMINS = <EVAL (<VAR.KILLMINS> - <EVAL (<VAR.KILLHOURS>*60)>)>
+            VAR.INFO.KILLTIME = <EVAL <VAR.KILLHOURS>> hours and <EVAL <VAR.KILLMINS>> minutes to the next kill loss.
+        ENDIF       
+    ENDIF
+
+dtext 181 394 01f4 Kill Loss: <VAR.INFO.KILLTIME>
+
+ENDIF
+
+dtext 460 115 01f4 PvP Kills: <EVAL <SRC.TAG.RATINGPVPK>>
+dtext 460 150 01f4 PvP Deaths: <EVAL <SRC.TAG.RATINGPVPD>>
+dtext 460 185 01f4 Last Killer: <SRC.TAG.LASTKILLER>
+dtext 460 220 01f4 Last Victim: <SRC.TAG.LASTVICTIM>
+dtext 460 255 01f4 Equipment List
+button 439 259 2117 2118 1 0 9
+dtext 460 290 01f4 Reagent List
+button 439 293 2117 2118 1 0 10
+//dtext 460 325 01f4 Claimskill
+//button 439 328 2117 2118 1 0 12
+//dtext 460 360 01f4 Reduce Skills
+//button 439 363 2117 2118 1 0 13
+tilepic 207 54 8397
+tilepic 547 54 8398
+
+
+[DIALOG d_papers_character button]
+
+ON=1
+SRC.DIALOG d_papers_account
+RETURN 1
+
+ON=2
+SRC.DIALOG d_papers_character
+RETURN 1
+
+ON=3
+IF (<SRC.memoryfindtype.memory_guild>)
+SRC.DIALOG d_papers_guild
+ELSE
+SRC.SYSMESSAGE You are not part of any guild.
+ENDIF
+RETURN 1
+
+ON=4
+SRC.f_weapon_calc_dam
+SRC.f_weapon_effect
+SRC.status_armour
+SRC.f_shield_calc
+SRC.DIALOG d_papers_bonus
+RETURN 1
+
+ON=5
+SRC.DIALOG d_papers_rankings1
+RETURN 1
+
+ON=6
+SRC.SYSMESSAGE Coming soon. . .
+SRC.DIALOG d_papers_character
+RETURN 1
+
+ON=7
+SRC.DIALOG d_papers_game
+RETURN 1
+
+ON=8
+SRC.DIALOG d_papers_loyalty
+RETURN 1
+
+ON=9
+SRC.eq
+RETURN 1
+
+ON=10
+SRC.regs
+RETURN 1
+
+ON=11
+   // --Begin Newbie Quest stuff --
+      IF ((<SRC.TAG0.NPC_QUEST_START_3> & NPCQ_NewbieQuest_1) && (<SRC.TAG0.NEWBIEQUESTPHASE>=3))
+         f_newbie_introduction_1_part3_done
+      ENDIF
+   // --End Newbie Quest stuff --
+SRC.STATS
+RETURN 1
+
+ON=12
+SRC.CLAIMSKILL
+RETURN 1
+
+ON=13
+SRC.DIALOG d_skill_removal
+RETURN 1
+
+
+//////////
+//Guild//
+////////
+
+[DIALOG d_papers_guild]
+0,0
+page 0
+gumppic 130 35 2601
+gumppic 99 35 2601
+gumppic 131 35 2600
+gumppic 175 395 2607
+gumppic 253 35 2601
+gumppic 100 395 2607
+gumppic 254 395 2607
+gumppic 603 36 2602
+gumppic 131 79 2603
+gumppic 602 79 2605
+gumppic 131 395 2606
+gumppic 603 395 2608
+gumppic 175 79 2604
+gumppic 175 79 2604
+gumppic 268 79 2604
+gumppic 603 79 2605
+gumppic 87 79 2604
+gumppic 131 79 2603
+gumppic 680 35 2602
+gumppic 681 395 2608
+gumppic 681 79 2605
+gumppic 55 395 2606
+gumppic 56 395 2606
+gumppic 55 36 2600
+gumppic 55 79 2603
+dtext 76 108 0 Account
+dtext 84 124 0 Info.
+dtext 67 182 0 Character
+dtext 83 204 0 Info.
+dtext 84 268 0 Guild
+dtext 85 285 0 Info.
+dtext 652 364 0 System
+dtext 81 347 0 Bonus
+dtext 85 364 0 Info.
+dtext 654 108 0 Player
+dtext 657 124 0 Ranks.
+// dtext 655 182 0 Battle
+// dtext 654 204 0 Grounds
+dtext 648 285 0 Commands
+dtext 661 268 0 Game
+dtext 653 347 0 Loyalty
+button 86 82 1154 1153 1 0 1
+button 86 154 1154 1153 1 0 2
+button 86 237 1154 1153 1 0 3
+button 86 321 1154 1153 1 0 4
+button 661 82 1154 1153 1 0 5
+// button 661 154 1154 1153 1 0 6
+button 661 237 1154 1153 1 0 7
+button 661 321 1154 1153 1 0 8
+resizepic 239 59 9200 297 24
+dtext 330 60 085 Guild Information
+
+dtext 175 165 01f4 Leader: <UID.<memoryfindtype.memory_guild.LINK.masteruid>.name>
+dtext 175 200 01f4 Location: [<UID.<SRC.memoryfindtype.memory_guild.link>.P>] <UID.<SRC.memoryfindtype.memory_guild.link>.REGION.NAME>. 
+dtext 175 95 01f4 Name: <SRC.memoryfindtype.memory_guild.NAME> [<EVAL ( <EVAL ( <EVAL ( <UID.<SRC.memoryfindtype.memory_guild.link>.TIMER>/60 )> /60 )> /24 )> days paid]
+//resizepic 397 88 9200 211 333
+
+dtext 455 165 01f4 Guild Online List
+button 430 165 2117 2118 1 0 10
+dtext 455 110 0
+button 217 392 2117 2118 1 0 9
+
+dtext 175 130 01f4 Abbreviation: <UID.<memoryfindtype.memory_guild.LINK>.ABBREV>
+dtext 175 235 01f4 Total Guild Members: 
+dtext 237 392 023 Leave Guild
+tilepic 223 245 14144
+tilepic 238 268 3805
+
+[DIALOG d_papers_guild button]
+
+ON=1
+SRC.DIALOG d_papers_account
+RETURN 1
+
+ON=2
+SRC.DIALOG d_papers_character
+RETURN 1
+
+ON=3
+IF (<SRC.memoryfindtype.memory_guild>)
+SRC.DIALOG d_papers_guild
+ELSE
+SRC.SYSMESSAGE You are not part of any guild.
+ENDIF
+RETURN 1
+
+ON=4
+SRC.f_weapon_calc_dam
+SRC.f_weapon_effect
+SRC.status_armour
+SRC.f_shield_calc
+SRC.DIALOG d_papers_bonus
+RETURN 1
+
+ON=5
+SRC.DIALOG d_papers_rankings1
+RETURN 1
+
+ON=6
+SRC.SYSMESSAGE Coming soon. . .
+SRC.DIALOG d_papers_guild
+RETURN 1
+
+ON=7
+SRC.DIALOG d_papers_game
+RETURN 1
+
+ON=8
+SRC.DIALOG d_papers_loyalty
+RETURN 1
+
+ON=9
+SRC.GUILDRESIGN
+RETURN 1
+
+ON=10
+SRC.LISTGUILD
+RETURN 1
+
+
+//////////
+//Bonus//
+////////
+
+[DIALOG d_papers_bonus]
+0,0
+page 0
+gumppic 130 35 2601
+gumppic 99 35 2601
+gumppic 131 35 2600
+gumppic 175 395 2607
+gumppic 253 35 2601
+gumppic 100 395 2607
+gumppic 254 395 2607
+gumppic 603 36 2602
+gumppic 131 79 2603
+gumppic 602 79 2605
+gumppic 131 395 2606
+gumppic 603 395 2608
+gumppic 175 79 2604
+gumppic 175 79 2604
+gumppic 268 79 2604
+gumppic 603 79 2605
+gumppic 87 79 2604
+gumppic 131 79 2603
+gumppic 680 35 2602
+gumppic 681 395 2608
+gumppic 681 79 2605
+gumppic 55 395 2606
+gumppic 56 395 2606
+gumppic 55 36 2600
+gumppic 55 79 2603
+dtext 76 108 0 Account
+dtext 84 124 0 Info.
+dtext 67 182 0 Character
+dtext 83 204 0 Info.
+dtext 84 268 0 Guild
+dtext 85 285 0 Info.
+dtext 652 364 0 System
+dtext 81 347 0 Bonus
+dtext 85 364 0 Info.
+dtext 654 108 0 Player
+dtext 657 124 0 Ranks.
+// dtext 655 182 0 Battle
+// dtext 654 204 0 Grounds
+dtext 648 285 0 Commands
+dtext 661 268 0 Game
+dtext 653 347 0 Loyalty
+button 86 82 1154 1153 1 0 1
+button 86 154 1154 1153 1 0 2
+button 86 237 1154 1153 1 0 3
+button 86 321 1154 1153 1 0 4
+button 661 82 1154 1153 1 0 5
+// button 661 154 1154 1153 1 0 6
+button 661 237 1154 1153 1 0 7
+button 661 321 1154 1153 1 0 8
+resizepic 239 59 9200 297 24
+dtext 292 60 085 Bonus, Modifiers and Statistics
+resizepic 181 116 9200 168 24
+dtext 242 116 085 Damage
+resizepic 424 116 9200 168 24
+dtext 471 116 085 Resistances
+tilepic 193 60 3915
+tilepic 534 54 5142
+resizepic 181 297 9200 179 24
+dtext 215 297 085 Combat Statistics
+button 649 396 4005 4006 1 0 9 //Next Page
+
+dtext 453 149 0 Global 
+dtext 513 149 0 - 
+dtext 543 149 0 <eval <SRC.TAG.ARM.EFFECT.RES_GLOBAL>>% 
+dtext 453 169 0 Cold
+dtext 513 169 0 - 
+dtext 543 169 0 <eval <SRC.TAG.ARM.EFFECT.RES_COLD>>% 
+dtext 453 189 0 Fire 
+dtext 513 189 0 - 
+dtext 543 189 0 <eval <SRC.TAG.ARM.EFFECT.RES_FIRE>>% 
+dtext 453 209 0 Acid 
+dtext 513 209 0 - 
+dtext 543 209 0 <eval <SRC.TAG.ARM.EFFECT.RES_ACID>>%
+dtext 453 229 0 Energy
+dtext 513 229 0 - 
+dtext 543 229 0 <eval <SRC.TAG.ARM.EFFECT.RES_ENERGY>>%
+dtext 453 249 0 Shadow 
+dtext 513 249 0 - 
+dtext 543 249 0 <eval <SRC.TAG.ARM.EFFECT.RES_SHADOW>>% 
+dtext 453 269 0 Good
+dtext 513 269 0 - 
+dtext 543 269 0 <eval ( 0<SRC.TAG.shadow>*2)>%  
+dtext 453 289 0 Evil 
+dtext 513 289 0 - 
+dtext 543 289 0 <eval <SRC.TAG.ARM.EFFECT.RES_EVIL>>%
+
+dtext 187 149 0 Range
+dtext 247 149 0 - 
+dtext 277 149 0 <eval ((<var.wpn.MIN>*<f_total_bonus>)/100)> to <eval ((<var.wpn.MAX>*<f_total_bonus>)/100)>
+dtext 187 169 0 Modifier
+dtext 247 169 0 -
+dtext 277 169 0 <eval (<f_total_bonus>-100)>%
+dtext 187 189 0 Fire
+dtext 247 189 0 -
+dtext 277 189 0 <eval <VAR.EFFECT.FIRE>>%
+dtext 187 209 0 Cold
+dtext 247 209 0 -
+dtext 277 209 0 <eval <VAR.EFFECT.COLD>>%
+dtext 187 229 0 Energy
+dtext 247 229 0 -
+dtext 277 229 0 <eval <VAR.EFFECT.ENERGY>>%
+dtext 187 249 0 Acid
+dtext 247 249 0 -
+dtext 277 249 0 <eval <VAR.EFFECT.ACID>>%
+dtext 187 269 0 Shadow
+dtext 247 269 0 -
+dtext 277 269 0 <eval <VAR.EFFECT.SHADOW>>%
+
+dtext 187 325 0 Dodge
+dtext 282 325 0 - 
+dtext 307 325 0 <qval <var.tp.comb> ? <eval <VAR.RIDE.DODGE>>.0% : ???>
+dtext 187 345 0 Parry
+dtext 282 345 0 -
+dtext 307 345 0 <eval (<var.parry>/10)>.<eval (<var.parry> - ((<var.parry>/10)*10))>%
+dtext 187 365 0 Parry Bonus 
+dtext 282 365 0 -
+dtext 307 365 0 <eval (<var.effect.weapon_block>)>.<eval (<var.effect.weapon_block> - ((<var.effect.weapon_block>/10)*10))>%
+// dtext 187 385 0 Armour pierce
+// dtext 282 385 0 -
+// dtext 307 385 0 <eval (<SRC.f_weapon_critical>)>%//.<eval (<SRC.f_weapon_critical> - ((<SRC.f_weapon_critical>/10)*10))>%
+
+[DIALOG d_papers_bonus button]
+
+ON=1
+SRC.DIALOG d_papers_account
+RETURN 1
+
+ON=2
+SRC.DIALOG d_papers_character
+RETURN 1
+
+ON=3
+IF (<SRC.memoryfindtype.memory_guild>)
+SRC.DIALOG d_papers_guild
+ELSE
+SRC.SYSMESSAGE You are not part of any guild.
+ENDIF
+RETURN 1
+
+ON=4
+SRC.f_weapon_calc_dam
+SRC.f_weapon_effect
+SRC.status_armour
+SRC.f_shield_calc
+SRC.DIALOG d_papers_bonus
+RETURN 1
+
+ON=5
+SRC.DIALOG d_papers_rankings1
+RETURN 1
+
+ON=6
+SRC.SYSMESSAGE Coming soon. . .
+SRC.DIALOG d_papers_bonus
+RETURN 1
+
+ON=7
+SRC.DIALOG d_papers_game
+RETURN 1
+
+ON=8
+SRC.DIALOG d_papers_loyalty
+RETURN 1
+
+ON=9
+SRC.f_weapon_calc_dam
+SRC.f_weapon_effect
+SRC.status_armour
+SRC.f_shield_calc
+SRC.DIALOG d_papers_bonus2
+RETURN 1
+
+[DIALOG d_papers_bonus2]
+0,0
+page 0
+gumppic 130 35 2601
+gumppic 99 35 2601
+gumppic 131 35 2600
+gumppic 175 395 2607
+gumppic 253 35 2601
+gumppic 100 395 2607
+gumppic 254 395 2607
+gumppic 603 36 2602
+gumppic 131 79 2603
+gumppic 602 79 2605
+gumppic 131 395 2606
+gumppic 603 395 2608
+gumppic 175 79 2604
+gumppic 175 79 2604
+gumppic 268 79 2604
+gumppic 603 79 2605
+gumppic 87 79 2604
+gumppic 131 79 2603
+gumppic 680 35 2602
+gumppic 681 395 2608
+gumppic 681 79 2605
+gumppic 55 395 2606
+gumppic 56 395 2606
+gumppic 55 36 2600
+gumppic 55 79 2603
+dtext 76 108 0 Account
+dtext 84 124 0 Info.
+dtext 67 182 0 Character
+dtext 83 204 0 Info.
+dtext 84 268 0 Guild
+dtext 85 285 0 Info.
+dtext 652 364 0 System
+dtext 81 347 0 Bonus
+dtext 85 364 0 Info.
+dtext 654 108 0 Player
+dtext 657 124 0 Ranks.
+// dtext 655 182 0 Battle
+// dtext 654 204 0 Grounds
+dtext 648 285 0 Commands
+dtext 661 268 0 Game
+dtext 653 347 0 Loyalty
+button 86 82 1154 1153 1 0 1
+button 86 154 1154 1153 1 0 2
+button 86 237 1154 1153 1 0 3
+button 86 321 1154 1153 1 0 4
+button 661 82 1154 1153 1 0 5
+// button 661 154 1154 1153 1 0 6
+button 661 237 1154 1153 1 0 7
+button 661 321 1154 1153 1 0 8
+resizepic 239 59 9200 297 24
+dtext 292 60 085 Bonus, Modifiers and Statistics
+resizepic 181 116 9200 168 24
+resizepic 424 116 9200 168 24
+dtext 430 116 085 Specific Combat Modifiers
+dtext 232 116 085 Miscellaneous
+tilepic 193 60 3915
+tilepic 534 54 5142
+button 97 397 4014 4015 1 0 9 // Previous Page
+
+dtext 187 149 0 Rebirth
+dtext 268 149 0 - 
+dtext 303 149 0 <eval <SRC.GET_REBIRTH>>%
+dtext 187 169 0 Phasing
+dtext 268 169 0 - 
+dtext 303 169 0 <eval <SRC.TAG.ARM.EFFECT.INVIS>>%
+dtext 187 189 0 Retribution
+dtext 268 189 0 - 
+dtext 303 189 0 <eval <SRC.TAG.ARM.EFFECT.STRONGHOLD>>%
+dtext 187 209 0 Vengeance
+dtext 268 209 0 - 
+dtext 303 209 0 <eval <SRC.TAG.ARM.EFFECT.VERMINARD>>%
+dtext 187 229 0 Min Hits
+dtext 268 229 0 - 
+dtext 303 229 0 <eval <SRC.TAG.ARM.EFFECT.HITS>>
+dtext 187 249 0 Min Stam
+dtext 268 249 0 - 
+dtext 303 249 0 <eval <SRC.TAG.ARM.EFFECT.STAM>>
+dtext 187 269 0 Min Mana
+dtext 268 269 0 - 
+dtext 303 269 0 <eval <SRC.TAG.ARM.EFFECT.MANA>> 
+
+dtext 433 149 0 Undead Slaying
+dtext 538 149 0 - 
+dtext 563 149 0 <eval <var.effect.anti_undead>>%
+dtext 433 169 0 Daemon Slaying
+dtext 538 169 0 -
+dtext 563 169 0 <eval <var.effect.anti_daemon>>%
+dtext 433 189 0 Dragon Slaying
+dtext 538 189 0 -
+dtext 563 189 0 <eval <var.effect.anti_dragon>>%
+dtext 433 209 0 Giant Slaying
+dtext 538 209 0 -
+dtext 563 209 0 <eval <var.effect.anti_giant>>%
+dtext 433 229 0 Shadow Bane
+dtext 538 229 0 -
+dtext 563 229 0 <eval <var.effect.anti_shadow>>%
+
+[DIALOG d_papers_bonus2 button]
+
+ON=1
+SRC.DIALOG d_papers_account
+RETURN 1
+
+ON=2
+SRC.DIALOG d_papers_character
+RETURN 1
+
+ON=3
+IF (<SRC.memoryfindtype.memory_guild>)
+SRC.DIALOG d_papers_guild
+ELSE
+SRC.SYSMESSAGE You are not part of any guild.
+ENDIF
+RETURN 1
+
+ON=4
+SRC.f_weapon_calc_dam
+SRC.f_weapon_effect
+SRC.status_armour
+SRC.f_shield_calc
+SRC.DIALOG d_papers_bonus
+RETURN 1
+
+ON=5
+SRC.DIALOG d_papers_rankings1
+RETURN 1
+
+ON=6
+SRC.SYSMESSAGE Coming soon. . .
+SRC.DIALOG d_papers_bonus
+RETURN 1
+
+ON=7
+SRC.DIALOG d_papers_game
+RETURN 1
+
+ON=8
+SRC.DIALOG d_papers_loyalty
+RETURN 1
+
+ON=9
+SRC.DIALOG d_papers_bonus
+RETURN 1
+
+/////////////
+//Factions//
+///////////
+
+[DIALOG d_papers_factions]
+0,0
+page 0
+gumppic 130 35 2601
+gumppic 99 35 2601
+gumppic 131 35 2600
+gumppic 175 395 2607
+gumppic 253 35 2601
+gumppic 100 395 2607
+gumppic 254 395 2607
+gumppic 603 36 2602
+gumppic 131 79 2603
+gumppic 602 79 2605
+gumppic 131 395 2606
+gumppic 603 395 2608
+gumppic 175 79 2604
+gumppic 175 79 2604
+gumppic 268 79 2604
+gumppic 603 79 2605
+gumppic 87 79 2604
+gumppic 131 79 2603
+gumppic 680 35 2602
+gumppic 681 395 2608
+gumppic 681 79 2605
+gumppic 55 395 2606
+gumppic 56 395 2606
+gumppic 55 36 2600
+gumppic 55 79 2603
+
+text 76 108 0 0
+text 84 124 0 1
+text 67 182 0 2
+text 83 204 0 3
+text 84 268 0 4
+text 85 285 0 5
+text 652 364 0 6
+text 81 347 0 7
+text 85 364 0 8
+text 654 108 0 9
+text 657 124 0 10
+text 655 182 0 11
+text 654 204 0 12
+text 648 285 0 13
+text 661 268 0 14
+dtext 653 347 0 Loyalty
+button 86 82 1154 1153 1 0 1
+button 86 154 1154 1153 1 0 2
+button 86 237 1154 1153 1 0 3
+button 86 321 1154 1153 1 0 4
+button 661 82 1154 1153 1 0 5
+// button 661 154 1154 1153 1 0 6
+button 661 237 1154 1153 1 0 7
+button 661 321 1154 1153 1 0 8
+
+resizepic 239 59 9200 297 24
+resizepic 181 218 9200 168 24
+resizepic 181 322 9200 168 24
+
+dtext 339 60 085 Faction Ranks
+
+dtext 212 220 085 The Brotherhood
+
+dtext 212 323 085 The Syndicate
+
+resizepic 181 96 9200 168 24
+dtext 245 97 085 Order
+
+resizepic 424 96 9200 168 24
+dtext 487 97 085 Chaos
+
+//order
+
+dtext 180 119 0 1st - <EVAL <UID.043e5dd74.TAG0.ORDER.RECORD1>> Points, by <UID.043e5dd74.TAG0.ORDER.RECORD1NAME>
+dtext 180 139 0 2nd - <EVAL <UID.043e5dd74.TAG0.ORDER.RECORD2>> Points, by <UID.043e5dd74.TAG0.ORDER.RECORD2NAME>
+dtext 180 159 0 3rd - <EVAL <UID.043e5dd74.TAG0.ORDER.RECORD3>> Points, by <UID.043e5dd74.TAG0.ORDER.RECORD3NAME>
+dtext 180 179 0 4th - <EVAL <UID.043e5dd74.TAG0.ORDER.RECORD4>> Points, by <UID.043e5dd74.TAG0.ORDER.RECORD4NAME>
+dtext 180 199 0 5th - <EVAL <UID.043e5dd74.TAG0.ORDER.RECORD5>> Points, by <UID.043e5dd74.TAG0.ORDER.RECORD5NAME>
+
+dtext 180 244 0 1st - <EVAL <UID.043e5dd74.TAG0.BROTHERHOOD.RECORD1>> Points, by <UID.043e5dd74.TAG0.BROTHERHOOD.RECORD1NAME>
+dtext 180 259 0 2nd - <EVAL <UID.043e5dd74.TAG0.BROTHERHOOD.RECORD2>> Points, by <UID.043e5dd74.TAG0.BROTHERHOOD.RECORD2NAME>
+dtext 180 274 0 3rd - <EVAL <UID.043e5dd74.TAG0.BROTHERHOOD.RECORD3>> Points, by <UID.043e5dd74.TAG0.BROTHERHOOD.RECORD3NAME>
+dtext 180 289 0 4th - <EVAL <UID.043e5dd74.TAG0.BROTHERHOOD.RECORD4>> Points, by <UID.043e5dd74.TAG0.BROTHERHOOD.RECORD4NAME>
+dtext 180 304 0 5th - <EVAL <UID.043e5dd74.TAG0.BROTHERHOOD.RECORD5>> Points, by <UID.043e5dd74.TAG0.BROTHERHOOD.RECORD5NAME>
+
+
+dtext 180 347 0 1st - <EVAL <UID.043e5dd74.TAG0.SYND.RECORD1>> Points, by <UID.043e5dd74.TAG0.SYND.RECORD1NAME>
+dtext 180 362 0 2nd - <EVAL <UID.043e5dd74.TAG0.SYND.RECORD2>> Points, by <UID.043e5dd74.TAG0.SYND.RECORD2NAME>
+dtext 180 377 0 3rd - <EVAL <UID.043e5dd74.TAG0.SYND.RECORD3>> Points, by <UID.043e5dd74.TAG0.SYND.RECORD3NAME>
+dtext 180 392 0 4th - <EVAL <UID.043e5dd74.TAG0.SYND.RECORD4>> Points, by <UID.043e5dd74.TAG0.SYND.RECORD4NAME>
+dtext 180 407 0 5th - <EVAL <UID.043e5dd74.TAG0.SYND.RECORD5>> Points, by <UID.043e5dd74.TAG0.SYND.RECORD5NAME>
+
+resizepic 424 218 9200 168 24
+
+//chaos
+
+dtext 422 119 0 1st - <EVAL <UID.043e5dd74.TAG0.CHAOS.RECORD1>> Points, by <UID.043e5dd74.TAG0.CHAOS.RECORD1NAME>
+dtext 422 139 0 2nd - <EVAL <UID.043e5dd74.TAG0.CHAOS.RECORD2>> Points, by <UID.043e5dd74.TAG0.CHAOS.RECORD2NAME>
+dtext 422 159 0 3rd - <EVAL <UID.043e5dd74.TAG0.CHAOS.RECORD3>> Points, by <UID.043e5dd74.TAG0.CHAOS.RECORD3NAME>
+dtext 422 179 0 4th - <EVAL <UID.043e5dd74.TAG0.CHAOS.RECORD4>> Points, by <UID.043e5dd74.TAG0.CHAOS.RECORD4NAME>
+dtext 422 199 0 5th - <EVAL <UID.043e5dd74.TAG0.CHAOS.RECORD5>> Points, by <UID.043e5dd74.TAG0.CHAOS.RECORD5NAME>
+
+
+dtext 477 220 085 Mercenary
+tilepic 192 54 7108
+tilepic 532 61 7107
+dtext 422 242 0 1st - <EVAL <UID.043e5dd74.TAG0.MERC.RECORD1>> Points, by <UID.043e5dd74.TAG0.MERC.RECORD1NAME>
+dtext 422 257 0 2nd - <EVAL <UID.043e5dd74.TAG0.MERC.RECORD2>> Points, by <UID.043e5dd74.TAG0.MERC.RECORD2NAME>
+dtext 422 272 0 3rd - <EVAL <UID.043e5dd74.TAG0.MERC.RECORD3>> Points, by <UID.043e5dd74.TAG0.MERC.RECORD3NAME>
+dtext 422 287 0 4th - <EVAL <UID.043e5dd74.TAG0.MERC.RECORD4>> Points, by <UID.043e5dd74.TAG0.MERC.RECORD4NAME>
+dtext 422 302 0 5th - <EVAL <UID.043e5dd74.TAG0.MERC.RECORD5>> Points, by <UID.043e5dd74.TAG0.MERC.RECORD5NAME>
+
+[DIALOG d_papers_factions text]
+Account
+Info.
+Character
+Info.
+Guild
+Info.
+System
+Bonus
+Info.
+Player
+Ranks.
+// Battle
+// Grounds
+Commands
+Game
+
+
+[DIALOG d_papers_factions button]
+
+ON=1
+SRC.DIALOG d_papers_account
+RETURN 1
+
+ON=2
+SRC.DIALOG d_papers_character
+RETURN 1
+
+ON=3
+IF (<SRC.memoryfindtype.memory_guild>)
+SRC.DIALOG d_papers_guild
+ELSE
+SRC.SYSMESSAGE You are not part of any guild.
+ENDIF
+RETURN 1
+
+ON=4
+SRC.f_weapon_calc_dam
+SRC.f_weapon_effect
+SRC.status_armour
+SRC.f_shield_calc
+SRC.DIALOG d_papers_bonus
+RETURN 1
+
+ON=5
+SRC.DIALOG d_papers_rankings1
+RETURN 1
+
+ON=6
+SRC.SYSMESSAGE Coming soon. . .
+SRC.DIALOG d_papers_rankings1
+RETURN 1
+
+ON=7
+SRC.DIALOG d_papers_game
+RETURN 1
+
+ON=8
+SRC.DIALOG d_papers_loyalty
+RETURN 1
+
+
+
+//////////////////
+//Player Ranks//
+////////////////
+
+
+[DIALOG d_papers_rankings]
+0,0
+page 0
+gumppic 130 35 2601
+gumppic 99 35 2601
+gumppic 131 35 2600
+gumppic 175 395 2607
+gumppic 253 35 2601
+gumppic 100 395 2607
+gumppic 254 395 2607
+gumppic 603 36 2602
+gumppic 131 79 2603
+gumppic 602 79 2605
+gumppic 131 395 2606
+gumppic 603 395 2608
+gumppic 175 79 2604
+gumppic 175 79 2604
+gumppic 268 79 2604
+gumppic 603 79 2605
+gumppic 87 79 2604
+gumppic 131 79 2603
+gumppic 680 35 2602
+gumppic 681 395 2608
+gumppic 681 79 2605
+gumppic 55 395 2606
+gumppic 56 395 2606
+gumppic 55 36 2600
+gumppic 55 79 2603
+
+
+dtext 76 108 0 Account
+dtext 84 124 0 Info.
+dtext 67 182 0 Character
+dtext 83 204 0 Info.
+dtext 84 268 0 Guild
+dtext 85 285 0 Info.
+dtext 652 364 0 System
+dtext 81 347 0 Bonus
+dtext 85 364 0 Info.
+dtext 654 108 0 Player
+dtext 657 124 0 Ranks.
+// dtext 655 182 0 Battle
+// dtext 654 204 0 Grounds
+dtext 648 285 0 Commands
+dtext 661 268 0 Game
+dtext 653 347 0 Loyalty
+
+button 86 82 1154 1153 1 0 1
+button 86 154 1154 1153 1 0 2
+button 86 237 1154 1153 1 0 3
+button 86 321 1154 1153 1 0 4
+button 661 82 1154 1153 1 0 5
+// button 661 154 1154 1153 1 0 6
+button 661 237 1154 1153 1 0 7
+button 661 321 1154 1153 1 0 8
+
+
+resizepic 239 59 9200 297 24
+dtext 349 60 085 Event Ranks
+
+
+resizepic 181 116 9200 188 24
+dtext 245 117 085 Team PvP
+
+dtext 187 144 01f4 Rank
+dtext 187 164 0 1
+dtext 187 184 0 2
+dtext 187 204 0 3
+dtext 187 224 0 4
+dtext 187 244 0 5
+dtext 232 144 01f4 Player Name
+dtext 232 164 0 <UID.0439c6b38.tag0.teampvprating1name>
+dtext 232 184 0 <UID.0439c6b38.tag0.teampvprating2name>
+dtext 232 204 0 <UID.0439c6b38.tag0.teampvprating3name>
+dtext 232 224 0 <UID.0439c6b38.tag0.teampvprating4name>
+dtext 232 244 0 <UID.0439c6b38.tag0.teampvprating5name>
+dtext 337 144 01f4 Wins
+dtext 347 164 0 <eval <UID.0439c6b38.tag0.teampvprating1>>
+dtext 347 184 0 <eval <UID.0439c6b38.tag0.teampvprating2>>
+dtext 347 204 0 <eval <UID.0439c6b38.tag0.teampvprating3>>
+dtext 347 224 0 <eval <UID.0439c6b38.tag0.teampvprating4>>
+dtext 347 244 0 <eval <UID.0439c6b38.tag0.teampvprating5>>
+
+resizepic 404 116 9200 188 24
+dtext 467 117 085 1vs1 PvP
+
+dtext 408 144 01f4 Rank
+dtext 408 164 0 1
+dtext 408 184 0 2
+dtext 408 204 0 3
+dtext 408 224 0 4
+dtext 408 244 0 5
+dtext 453 144 01f4 Player Name
+dtext 453 164 0 <UID.0439c6b38.tag0.1vs1rating1name>
+dtext 453 184 0 <UID.0439c6b38.tag0.1vs1rating2name>
+dtext 453 204 0 <UID.0439c6b38.tag0.1vs1rating3name>
+dtext 453 224 0 <UID.0439c6b38.tag0.1vs1rating4name>
+dtext 453 244 0 <UID.0439c6b38.tag0.1vs1rating5name>
+dtext 558 144 01f4 Wins
+dtext 568 164 0 <eval <UID.0439c6b38.tag0.1vs1rating1>>
+dtext 568 184 0 <eval <UID.0439c6b38.tag0.1vs1rating2>>
+dtext 568 204 0 <eval <UID.0439c6b38.tag0.1vs1rating3>>
+dtext 568 224 0 <eval <UID.0439c6b38.tag0.1vs1rating4>>
+dtext 568 244 0 <eval <UID.0439c6b38.tag0.1vs1rating5>>
+
+
+resizepic 181 269 9200 188 24
+dtext 245 270 085 X-Pot PvP
+
+dtext 187 297 01f4 Rank
+dtext 187 317 0 1
+dtext 187 337 0 2
+dtext 187 357 0 3
+dtext 187 377 0 4
+dtext 187 397 0 5
+dtext 232 297 01f4 Player Name
+dtext 232 317 0 <UID.0439c6b38.tag0.xpotrating1name>
+dtext 232 337 0 <UID.0439c6b38.tag0.xpotrating2name>
+dtext 232 357 0 <UID.0439c6b38.tag0.xpotrating3name>
+dtext 232 377 0 <UID.0439c6b38.tag0.xpotrating4name>
+dtext 232 397 0 <UID.0439c6b38.tag0.xpotrating5name>
+dtext 337 297 01f4 Wins
+dtext 347 317 0 <eval <UID.0439c6b38.tag0.xpotrating1>>
+dtext 347 337 0 <eval <UID.0439c6b38.tag0.xpotrating2>>
+dtext 347 357 0 <eval <UID.0439c6b38.tag0.xpotrating3>>
+dtext 347 377 0 <eval <UID.0439c6b38.tag0.xpotrating4>>
+dtext 347 397 0 <eval <UID.0439c6b38.tag0.xpotrating5>>
+
+resizepic 404 269 9200 188 24
+dtext 467 270 085 FFA PvP
+
+dtext 408 297 01f4 Rank
+dtext 408 317 0 1
+dtext 408 337 0 2
+dtext 408 357 0 3
+dtext 408 377 0 4
+dtext 408 397 0 5
+dtext 453 297 01f4 Player Name
+dtext 453 317 0 <UID.0439c6b38.tag0.ffarating1name>
+dtext 453 337 0 <UID.0439c6b38.tag0.ffarating2name>
+dtext 453 357 0 <UID.0439c6b38.tag0.ffarating3name>
+dtext 453 377 0 <UID.0439c6b38.tag0.ffarating4name>
+dtext 453 397 0 <UID.0439c6b38.tag0.ffarating5name>
+dtext 558 297 01f4 Wins
+dtext 568 317 0 <eval <UID.0439c6b38.tag0.ffarating1>>
+dtext 568 337 0 <eval <UID.0439c6b38.tag0.ffarating2>>
+dtext 568 357 0 <eval <UID.0439c6b38.tag0.ffarating3>>
+dtext 568 377 0 <eval <UID.0439c6b38.tag0.ffarating4>>
+dtext 568 397 0 <eval <UID.0439c6b38.tag0.ffarating5>>
+
+button 649 396 4005 4006 1 0 9 // Next Page
+
+
+tilepichue 192 61 3636 099
+tilepichue 537 61 3636 099
+
+
+[DIALOG d_papers_rankings button]
+
+ON=1
+SRC.DIALOG d_papers_account
+RETURN 1
+
+ON=2
+SRC.DIALOG d_papers_character
+RETURN 1
+
+ON=3
+IF (<SRC.memoryfindtype.memory_guild>)
+SRC.DIALOG d_papers_guild
+ELSE
+SRC.SYSMESSAGE You are not part of any guild.
+ENDIF
+RETURN 1
+
+ON=4
+SRC.f_weapon_calc_dam
+SRC.f_weapon_effect
+SRC.status_armour
+SRC.f_shield_calc
+SRC.DIALOG d_papers_bonus
+RETURN 1
+
+ON=5
+SRC.DIALOG d_papers_rankings1
+RETURN 1
+
+ON=6
+SRC.SYSMESSAGE Coming soon. . .
+SRC.DIALOG d_papers_rankings1
+RETURN 1
+
+ON=7
+SRC.DIALOG d_papers_game
+RETURN 1
+
+ON=8
+SRC.DIALOG d_papers_loyalty
+RETURN 1
+
+ON=9
+SRC.DIALOG d_papers_rankings2
+RETURN 1
+
+
+[DIALOG d_papers_rankings1]
+0,0
+page 0
+gumppic 130 35 2601
+gumppic 99 35 2601
+gumppic 131 35 2600
+gumppic 175 395 2607
+gumppic 253 35 2601
+gumppic 100 395 2607
+gumppic 254 395 2607
+gumppic 603 36 2602
+gumppic 131 79 2603
+gumppic 602 79 2605
+gumppic 131 395 2606
+gumppic 603 395 2608
+gumppic 175 79 2604
+gumppic 175 79 2604
+gumppic 268 79 2604
+gumppic 603 79 2605
+gumppic 87 79 2604
+gumppic 131 79 2603
+gumppic 680 35 2602
+gumppic 681 395 2608
+gumppic 681 79 2605
+gumppic 55 395 2606
+gumppic 56 395 2606
+gumppic 55 36 2600
+gumppic 55 79 2603
+
+
+dtext 76 108 0 Account
+dtext 84 124 0 Info.
+dtext 67 182 0 Character
+dtext 83 204 0 Info.
+dtext 84 268 0 Guild
+dtext 85 285 0 Info.
+dtext 652 364 0 System
+dtext 81 347 0 Bonus
+dtext 85 364 0 Info.
+dtext 654 108 0 Player
+dtext 657 124 0 Ranks.
+// dtext 655 182 0 Battle
+// dtext 654 204 0 Grounds
+dtext 648 285 0 Commands
+dtext 661 268 0 Game
+dtext 653 347 0 Loyalty
+
+button 86 82 1154 1153 1 0 1
+button 86 154 1154 1153 1 0 2
+button 86 237 1154 1153 1 0 3
+button 86 321 1154 1153 1 0 4
+button 661 82 1154 1153 1 0 5
+// button 661 154 1154 1153 1 0 6
+button 661 237 1154 1153 1 0 7
+button 661 321 1154 1153 1 0 8
+
+
+resizepic 239 59 9200 297 24
+dtext 349 60 085 Player Ranks
+
+
+
+
+button   365  200 <eval 01581> <eval 01582> 1 0 10
+dtext 355 260 01f4 Faction Ranks
+
+
+
+tilepichue 192 61 3636 099
+tilepichue 537 61 3636 099
+
+
+[DIALOG d_papers_rankings1 button]
+
+ON=1
+SRC.DIALOG d_papers_account
+RETURN 1
+
+ON=2
+SRC.DIALOG d_papers_character
+RETURN 1
+
+ON=3
+IF (<SRC.memoryfindtype.memory_guild>)
+SRC.DIALOG d_papers_guild
+ELSE
+SRC.SYSMESSAGE You are not part of any guild.
+ENDIF
+RETURN 1
+
+ON=4
+SRC.f_weapon_calc_dam
+SRC.f_weapon_effect
+SRC.status_armour
+SRC.f_shield_calc
+SRC.DIALOG d_papers_bonus
+RETURN 1
+
+ON=5
+SRC.DIALOG d_papers_rankings1
+RETURN 1
+
+ON=6
+SRC.SYSMESSAGE Coming soon. . .
+SRC.DIALOG d_papers_rankings1
+RETURN 1
+
+ON=7
+SRC.DIALOG d_papers_game
+RETURN 1
+
+ON=8
+SRC.DIALOG d_papers_loyalty
+RETURN 1
+
+ON=9
+SRC.DIALOG d_papers_rankings
+RETURN 1
+
+ON=10
+SRC.DIALOG d_papers_factions
+RETURN 1
+
+[DIALOG d_papers_rankings2]
+0,0
+page 0
+gumppic 130 35 2601
+gumppic 99 35 2601
+gumppic 131 35 2600
+gumppic 175 395 2607
+gumppic 253 35 2601
+gumppic 100 395 2607
+gumppic 254 395 2607
+gumppic 603 36 2602
+gumppic 131 79 2603
+gumppic 602 79 2605
+gumppic 131 395 2606
+gumppic 603 395 2608
+gumppic 175 79 2604
+gumppic 175 79 2604
+gumppic 268 79 2604
+gumppic 603 79 2605
+gumppic 87 79 2604
+gumppic 131 79 2603
+gumppic 680 35 2602
+gumppic 681 395 2608
+gumppic 681 79 2605
+gumppic 55 395 2606
+gumppic 56 395 2606
+gumppic 55 36 2600
+gumppic 55 79 2603
+
+
+dtext 76 108 0 Account
+dtext 84 124 0 Info.
+dtext 67 182 0 Character
+dtext 83 204 0 Info.
+dtext 84 268 0 Guild
+dtext 85 285 0 Info.
+dtext 652 364 0 System
+dtext 81 347 0 Bonus
+dtext 85 364 0 Info.
+dtext 654 108 0 Player
+dtext 657 124 0 Ranks.
+// dtext 655 182 0 Battle
+// dtext 654 204 0 Grounds
+dtext 648 285 0 Commands
+dtext 661 268 0 Game
+dtext 653 347 0 Loyalty
+
+button 86 82 1154 1153 1 0 1
+button 86 154 1154 1153 1 0 2
+button 86 237 1154 1153 1 0 3
+button 86 321 1154 1153 1 0 4
+button 661 82 1154 1153 1 0 5
+// button 661 154 1154 1153 1 0 6
+button 661 237 1154 1153 1 0 7
+button 661 321 1154 1153 1 0 8
+
+
+resizepic 239 59 9200 297 24
+dtext 349 60 085 Event Ranks
+
+
+resizepic 181 116 9200 188 24
+dtext 245 117 085 Llama Race
+
+dtext 187 144 01f4 Rank
+dtext 187 164 0 1
+dtext 187 184 0 2
+dtext 187 204 0 3
+dtext 187 224 0 4
+dtext 187 244 0 5
+dtext 232 144 01f4 Player Name
+dtext 232 164 0 <UID.0439c6b38.tag0.llamaracerating1name>
+dtext 232 184 0 <UID.0439c6b38.tag0.llamaracerating2name>
+dtext 232 204 0 <UID.0439c6b38.tag0.llamaracerating3name>
+dtext 232 224 0 <UID.0439c6b38.tag0.llamaracerating4name>
+dtext 232 244 0 <UID.0439c6b38.tag0.llamaracerating5name>
+dtext 337 144 01f4 Wins
+dtext 347 164 0 <eval <UID.0439c6b38.tag0.llamaracerating1>>
+dtext 347 184 0 <eval <UID.0439c6b38.tag0.llamaracerating2>>
+dtext 347 204 0 <eval <UID.0439c6b38.tag0.llamaracerating3>>
+dtext 347 224 0 <eval <UID.0439c6b38.tag0.llamaracerating4>>
+dtext 347 244 0 <eval <UID.0439c6b38.tag0.llamaracerating5>>
+
+resizepic 404 116 9200 188 24
+dtext 467 117 085 Trader Event
+
+dtext 408 144 01f4 Rank
+dtext 408 164 0 1
+dtext 408 184 0 2
+dtext 408 204 0 3
+dtext 408 224 0 4
+dtext 408 244 0 5
+dtext 453 144 01f4 Player Name
+dtext 453 164 0 <UID.0439c6b38.tag0.traderrating1name>
+dtext 453 184 0 <UID.0439c6b38.tag0.traderrating2name>
+dtext 453 204 0 <UID.0439c6b38.tag0.traderrating3name>
+dtext 453 224 0 <UID.0439c6b38.tag0.traderrating4name>
+dtext 453 244 0 <UID.0439c6b38.tag0.traderrating5name>
+dtext 558 144 01f4 Wins
+dtext 568 164 0 <eval <UID.0439c6b38.tag0.traderrating1>>
+dtext 568 184 0 <eval <UID.0439c6b38.tag0.traderrating2>>
+dtext 568 204 0 <eval <UID.0439c6b38.tag0.traderrating3>>
+dtext 568 224 0 <eval <UID.0439c6b38.tag0.traderrating4>>
+dtext 568 244 0 <eval <UID.0439c6b38.tag0.traderrating5>>
+
+
+resizepic 181 269 9200 188 24
+dtext 205 270 085 Llama Race Best Times
+
+dtext 187 297 01f4 Rank
+dtext 187 317 0 1
+dtext 187 337 0 2
+dtext 187 357 0 3
+dtext 187 377 0 4
+dtext 187 397 0 5
+dtext 232 297 01f4 Player Name
+dtext 232 317 0 <UID.03a3d745.tag0.playerrecord1name>
+dtext 232 337 0 <UID.03a3d745.tag0.playerrecord2name>
+dtext 232 357 0 <UID.03a3d745.tag0.playerrecord3name>
+dtext 232 377 0 <UID.03a3d745.tag0.playerrecord4name>
+dtext 232 397 0 <UID.03a3d745.tag0.playerrecord5name>
+dtext 337 297 01f4 Secs
+dtext 337 317 0 <eval <UID.03a3d745.tag0.playerrecord1>>
+dtext 337 337 0 <eval <UID.03a3d745.tag0.playerrecord2>>
+dtext 337 357 0 <eval <UID.03a3d745.tag0.playerrecord3>>
+dtext 337 377 0 <eval <UID.03a3d745.tag0.playerrecord4>>
+dtext 337 397 0 <eval <UID.03a3d745.tag0.playerrecord5>>
+
+resizepic 404 269 9200 188 24
+dtext 467 270 085 Monster Bash
+
+dtext 408 297 01f4 Rank
+dtext 408 317 0 1
+dtext 408 337 0 2
+dtext 408 357 0 3
+dtext 408 377 0 4
+dtext 408 397 0 5
+dtext 453 297 01f4 Player Name
+dtext 453 317 0 <UID.0439c6b38.tag0.monsterbashrating1name>
+dtext 453 337 0 <UID.0439c6b38.tag0.monsterbashrating2name>
+dtext 453 357 0 <UID.0439c6b38.tag0.monsterbashrating3name>
+dtext 453 377 0 <UID.0439c6b38.tag0.monsterbashrating4name>
+dtext 453 397 0 <UID.0439c6b38.tag0.monsterbashrating5name>
+dtext 558 297 01f4 Wins
+dtext 568 317 0 <eval <UID.0439c6b38.tag0.monsterbashrating1>>
+dtext 568 337 0 <eval <UID.0439c6b38.tag0.monsterbashrating2>>
+dtext 568 357 0 <eval <UID.0439c6b38.tag0.monsterbashrating3>>
+dtext 568 377 0 <eval <UID.0439c6b38.tag0.monsterbashrating4>>
+dtext 568 397 0 <eval <UID.0439c6b38.tag0.monsterbashrating5>>
+
+
+button 97 397 4014 4015 1 0 9 // Previous Page
+
+tilepichue 192 61 3636 099
+tilepichue 537 61 3636 099
+
+
+[DIALOG d_papers_rankings2 button]
+
+ON=1
+SRC.DIALOG d_papers_account
+RETURN 1
+
+ON=2
+SRC.DIALOG d_papers_character
+RETURN 1
+
+ON=3
+IF (<SRC.memoryfindtype.memory_guild>)
+SRC.DIALOG d_papers_guild
+ELSE
+SRC.SYSMESSAGE You are not part of any guild.
+ENDIF
+RETURN 1
+
+ON=4
+SRC.f_weapon_calc_dam
+SRC.f_weapon_effect
+SRC.status_armour
+SRC.f_shield_calc
+SRC.DIALOG d_papers_bonus
+RETURN 1
+
+ON=5
+SRC.DIALOG d_papers_rankings1
+RETURN 1
+
+ON=6
+SRC.SYSMESSAGE Coming soon. . .
+SRC.DIALOG d_papers_rankings1
+RETURN 1
+
+ON=7
+SRC.DIALOG d_papers_game
+RETURN 1
+
+ON=8
+SRC.DIALOG d_papers_loyalty
+RETURN 1
+
+ON=9
+SRC.DIALOG d_papers_rankings
+RETURN 1
+
+
+
+
+//////////////////
+//Game Commands//
+////////////////
+
+[DIALOG d_papers_game]
+0,0
+page 0
+gumppic 130 35 2601
+gumppic 99 35 2601
+gumppic 131 35 2600
+gumppic 175 395 2607
+gumppic 253 35 2601
+gumppic 100 395 2607
+gumppic 254 395 2607
+gumppic 603 36 2602
+gumppic 131 79 2603
+gumppic 602 79 2605
+gumppic 131 395 2606
+gumppic 603 395 2608
+gumppic 175 79 2604
+gumppic 175 79 2604
+gumppic 268 79 2604
+gumppic 603 79 2605
+gumppic 87 79 2604
+gumppic 131 79 2603
+gumppic 680 35 2602
+gumppic 681 395 2608
+gumppic 681 79 2605
+gumppic 55 395 2606
+gumppic 56 395 2606
+gumppic 55 36 2600
+gumppic 55 79 2603
+dtext 76 108 0 Account
+dtext 84 124 0 Info.
+dtext 67 182 0 Character
+dtext 83 204 0 Info.
+dtext 84 268 0 Guild
+dtext 85 285 0 Info.
+dtext 652 364 0 System
+dtext 81 347 0 Bonus
+dtext 85 364 0 Info.
+dtext 654 108 0 Player
+dtext 657 124 0 Ranks.
+// dtext 655 182 0 Battle
+// dtext 654 204 0 Grounds
+dtext 648 285 0 Commands
+dtext 661 268 0 Game
+dtext 653 347 0 Loyalty
+button 86 82 1154 1153 1 0 1
+button 86 154 1154 1153 1 0 2
+button 86 237 1154 1153 1 0 3
+button 86 321 1154 1153 1 0 4
+button 661 82 1154 1153 1 0 5
+// button 661 154 1154 1153 1 0 6
+button 661 237 1154 1153 1 0 7
+button 661 321 1154 1153 1 0 8
+resizepic 239 59 9200 297 24
+dtext 337 60 085 Game Commands
+resizepic 181 103 9200 418 24
+dtext 368 105 0 General
+button 649 396 4005 4006 1 0 9 //Next Page
+tilepic 198 55 4811
+tilepic 535 57 5355
+
+dtext 187 144 50 !
+dtext 287 144 5 "! messagehere" for World Chat.
+button 165 167 2117 2118 1 0 10
+dtext 187 164 50 accountinfo
+dtext 287 164 5 Lists start date & hours online.
+button 165 187 2117 2118 1 0 11
+dtext 187 184 50 afk
+dtext 287 184 5 Puts "z" above you until you become active.
+button 165 207 2117 2118 1 0 12
+dtext 187 204 50 bindback
+dtext 287 204 5 Teleports you to your Faction Bind Stone.
+button 165 227 2117 2118 1 0 13
+dtext 187 224 50 commands
+dtext 287 224 5 Brings up this dialog.
+button 165 247 2117 2118 1 0 14
+dtext 187 244 50 craftmark
+dtext 287 244 5 Removes your craftmark from an item.
+button 165 267 2117 2118 1 0 15
+dtext 187 264 50 damrolls
+dtext 287 264 5 Toggles damage rolls on/off.
+button 165 287 2117 2118 1 0 16
+dtext 187 284 50 eq
+dtext 287 284 5 Shows info about what you have equipped.
+button 165 307 2117 2118 1 0 17
+dtext 187 304 50 bounty
+dtext 287 304 5 Places a bounty in the desired target.
+button 165 327 2117 2118 1 0 18
+dtext 187 324 50 housecount
+dtext 287 324 5 Number of house & boats owned by account.
+button 165 347 2117 2118 1 0 19
+dtext 187 344 50 ore
+dtext 287 344 5 List of ores currently in your backpack.
+button 165 367 2117 2118 1 0 20
+dtext 187 364 50 papers
+dtext 287 364 5 Opens your characters papers menu.
+dtext 187 384 50 password
+dtext 287 384 5 Changes your password ".password newpass".
+
+[DIALOG d_papers_game button]
+
+ON=1
+SRC.DIALOG d_papers_account
+RETURN 1
+
+ON=2
+SRC.DIALOG d_papers_character
+RETURN 1
+
+ON=3
+IF (<SRC.memoryfindtype.memory_guild>)
+SRC.DIALOG d_papers_guild
+ELSE
+SRC.SYSMESSAGE You are not part of any guild.
+ENDIF
+RETURN 1
+
+ON=4
+SRC.f_weapon_calc_dam
+SRC.f_weapon_effect
+SRC.status_armour
+SRC.f_shield_calc
+SRC.DIALOG d_papers_bonus
+RETURN 1
+
+ON=5
+SRC.DIALOG d_papers_rankings1
+RETURN 1
+
+ON=6
+SRC.SYSMESSAGE Coming soon. . .
+SRC.DIALOG d_papers_game
+RETURN 1
+
+ON=7
+SRC.DIALOG d_papers_game
+RETURN 1
+
+ON=8
+SRC.DIALOG d_papers_loyalty
+RETURN 1
+
+ON=9
+SRC.DIALOG d_papers_game2
+RETURN 1
+
+ON=10
+SRC.ACCOUNTINFO
+RETURN 1
+
+ON=11
+SRC.AFK
+RETURN 1
+
+ON=12
+SRC.BINDBACK
+RETURN 1
+
+ON=13
+SRC.COMMANDS
+RETURN 1
+
+ON=14
+SRC.CRAFTMARK
+RETURN 1
+
+ON=15
+SRC.DAMROLLS
+RETURN 1
+
+ON=16
+SRC.EQ
+RETURN 1
+
+ON=17
+SRC.BOUNTY
+RETURN 1
+
+ON=18
+SRC.HOUSECOUNT
+RETURN 1
+
+ON=19
+SRC.ORE
+RETURN 1
+
+ON=20
+SRC.PAPERS
+RETURN 1
+
+[DIALOG d_papers_game2]
+0,0
+page 0
+gumppic 130 35 2601
+gumppic 99 35 2601
+gumppic 131 35 2600
+gumppic 175 395 2607
+gumppic 253 35 2601
+gumppic 100 395 2607
+gumppic 254 395 2607
+gumppic 603 36 2602
+gumppic 131 79 2603
+gumppic 602 79 2605
+gumppic 131 395 2606
+gumppic 603 395 2608
+gumppic 175 79 2604
+gumppic 175 79 2604
+gumppic 268 79 2604
+gumppic 603 79 2605
+gumppic 87 79 2604
+gumppic 131 79 2603
+gumppic 680 35 2602
+gumppic 681 395 2608
+gumppic 681 79 2605
+gumppic 55 395 2606
+gumppic 56 395 2606
+gumppic 55 36 2600
+gumppic 55 79 2603
+dtext 76 108 0 Account
+dtext 84 124 0 Info.
+dtext 67 182 0 Character
+dtext 83 204 0 Info.
+dtext 84 268 0 Guild
+dtext 85 285 0 Info.
+dtext 652 364 0 System
+dtext 81 347 0 Bonus
+dtext 85 364 0 Info.
+dtext 654 108 0 Player
+dtext 657 124 0 Ranks.
+// dtext 655 182 0 Battle
+// dtext 654 204 0 Grounds
+dtext 648 285 0 Commands
+dtext 661 268 0 Game
+dtext 653 347 0 Loyalty
+button 86 82 1154 1153 1 0 1
+button 86 154 1154 1153 1 0 2
+button 86 237 1154 1153 1 0 3
+button 86 321 1154 1153 1 0 4
+button 661 82 1154 1153 1 0 5
+// button 661 154 1154 1153 1 0 6
+button 661 237 1154 1153 1 0 7
+button 661 321 1154 1153 1 0 8
+resizepic 239 59 9200 297 24
+dtext 337 60 0 Game Commands
+resizepic 181 103 9200 418 24
+dtext 368 105 0 General
+button 649 396 4005 4006 1 0 9 // Next Page
+button 97 397 4014 4015 1 0 10  // Previous Page
+
+button 165 147 2117 2118 1 0 11
+dtext 187 144 50 regs
+dtext 287 144 5 List of regs currently in your backpack.
+button 165 167 2117 2118 1 0 12
+dtext 187 164 50 rename
+dtext 287 164 5 Rename bags using ".rename newnamehere".
+button 165 187 2117 2118 1 0 13
+dtext 187 184 50 rp
+dtext 287 184 5 Adds a tag of roleplaying above your head.
+button 165 207 2117 2118 1 0 14
+dtext 187 204 50 skillrolls
+dtext 287 204 5 Toggles the display of skillrolls on/off.
+button 165 227 2117 2118 1 0 15
+dtext 187 224 50 sparring
+dtext 287 224 5 Toggles sparring mode.
+button 165 247 2117 2118 1 0 16
+dtext 187 244 50 stats
+dtext 287 244 5 Information about STR/DEX/INT.
+button 165 267 2117 2118 1 0 17
+dtext 187 264 50 status
+dtext 287 264 5 Basic character information.
+button 165 287 2117 2118 1 0 18
+dtext 187 284 50 stuck
+dtext 287 284 5 Teleport to one of four towns, dead or alive.
+button 165 307 2117 2118 1 0 19
+dtext 187 304 50 loyalty
+dtext 287 304 5 Opens the Loyalty/Voting Dialog.
+button 165 327 2117 2118 1 0 20
+dtext 187 324 50 where
+dtext 287 324 5 Gives info about your current location.
+button 165 347 2117 2118 1 0 21
+dtext 187 344 50 combatmessages
+dtext 287 344 5 Toggles on/off combat messages.
+dtext 187 364 50 potion
+dtext 287 364 5 Uses a potion from your backpack ".potion #"
+dtext 187 384 50 map
+dtext 287 384 5 Opens a in game map that tracks where you are.
+button 165 388 2117 2118 1 0 22
+
+[DIALOG d_papers_game2 button]
+
+ON=1
+SRC.DIALOG d_papers_account
+RETURN 1
+
+ON=2
+SRC.DIALOG d_papers_character
+RETURN 1
+
+ON=3
+IF (<SRC.memoryfindtype.memory_guild>)
+SRC.DIALOG d_papers_guild
+ELSE
+SRC.SYSMESSAGE You are not part of any guild.
+ENDIF
+RETURN 1
+
+ON=4
+SRC.f_weapon_calc_dam
+SRC.f_weapon_effect
+SRC.status_armour
+SRC.f_shield_calc
+SRC.DIALOG d_papers_bonus
+RETURN 1
+
+ON=5
+SRC.DIALOG d_papers_rankings1
+RETURN 1
+
+ON=6
+SRC.SYSMESSAGE Coming soon. . .
+SRC.DIALOG d_papers_game2
+RETURN 1
+
+ON=7
+SRC.DIALOG d_papers_game
+RETURN 1
+
+
+ON=8
+SRC.DIALOG d_papers_loyalty
+RETURN 1
+
+ON=9
+SRC.DIALOG d_papers_game3
+RETURN 1
+
+ON=10
+SRC.DIALOG d_papers_game
+RETURN 1
+
+ON=11
+SRC.REGS
+RETURN 1
+
+ON=12
+SRC.RENAME
+RETURN 1
+
+ON=13
+SRC.RP
+RETURN 1
+
+ON=14
+SRC.SKILLROLLS
+RETURN 1
+
+ON=15
+SRC.SPARRING
+RETURN 1
+
+ON=16
+SRC.STATS
+RETURN 1
+
+ON=17
+SRC.STATUS
+RETURN 1
+
+ON=18
+SRC.STUCK
+RETURN 1
+
+ON=19
+SRC.LOYALTY
+RETURN 1
+
+ON=20
+SRC.WHERE
+RETURN 1
+
+ON=21
+SRC.COMBATMESSAGES
+RETURN 1
+
+ON=22
+SRC.MAP
+RETURN 1
+
+
+[DIALOG d_papers_game3]
+0,0
+page 0
+gumppic 130 35 2601
+gumppic 99 35 2601
+gumppic 131 35 2600
+gumppic 175 395 2607
+gumppic 253 35 2601
+gumppic 100 395 2607
+gumppic 254 395 2607
+gumppic 603 36 2602
+gumppic 131 79 2603
+gumppic 602 79 2605
+gumppic 131 395 2606
+gumppic 603 395 2608
+gumppic 175 79 2604
+gumppic 175 79 2604
+gumppic 268 79 2604
+gumppic 603 79 2605
+gumppic 87 79 2604
+gumppic 131 79 2603
+gumppic 680 35 2602
+gumppic 681 395 2608
+gumppic 681 79 2605
+gumppic 55 395 2606
+gumppic 56 395 2606
+gumppic 55 36 2600
+gumppic 55 79 2603
+dtext 76 108 0 Account
+dtext 84 124 0 Info.
+dtext 67 182 0 Character
+dtext 83 204 0 Info.
+dtext 84 268 0 Guild
+dtext 85 285 0 Info.
+dtext 652 364 0 System
+dtext 81 347 0 Bonus
+dtext 85 364 0 Info.
+dtext 654 108 0 Player
+dtext 657 124 0 Ranks.
+// dtext 655 182 0 Battle
+// dtext 654 204 0 Grounds
+dtext 648 285 0 Commands
+dtext 661 268 0 Game
+dtext 653 347 0 Loyalty
+button 86 82 1154 1153 1 0 1
+button 86 154 1154 1153 1 0 2
+button 86 237 1154 1153 1 0 3
+button 86 321 1154 1153 1 0 4
+button 661 82 1154 1153 1 0 5
+// button 661 154 1154 1153 1 0 6
+button 661 237 1154 1153 1 0 7
+button 661 321 1154 1153 1 0 8
+resizepic 239 59 9200 297 24
+dtext 337 60 0 Game Commands
+resizepic 181 103 9200 418 24
+dtext 368 105 0 Guild
+button 649 396 4005 4006 1 0 9 // Next Page
+button 97 397 4014 4015 1 0 10  // Previous Page
+
+button 165 147 2117 2118 1 0 11
+dtext 187 144 50 acceptinvite
+dtext 287 144 5 Accept a guild invite.
+button 165 167 2117 2118 1 0 12
+dtext 187 164 50 declineinvite
+dtext 287 164 5 Decline a guild invite.
+dtext 187 184 50 g
+dtext 287 184 5 Guild chat using ".g messagehere".
+button 165 207 2117 2118 1 0 13
+dtext 187 204 50 guildinvite
+dtext 287 204 5 Invite someone to your guild.
+button 165 227 2117 2118 1 0 14
+dtext 187 224 50 listguild
+dtext 287 224 5 Lists online guildmates and their locations.
+
+resizepic 181 260 9200 418 24
+
+dtext 358 262 0 Messaging
+
+button 165 292 2117 2118 1 0 15
+dtext 187 289 50 friend
+dtext 287 289 5 Used to add someone to your friend list.
+button 165 312 2117 2118 1 0 16
+dtext 187 309 50 friends
+dtext 287 309 5 Shows your added friends.
+button 165 332 2117 2118 1 0 17
+dtext 187 329 50 inbox
+dtext 287 329 5 Shows the messages in your inbox.
+button 165 352 2117 2118 1 0 18
+dtext 187 349 50 online
+dtext 287 349 5 Shows players online available to chat.
+button 165 372 2117 2118 1 0 19
+dtext 187 369 50 private
+dtext 287 369 5 Turns off the message chat.
+
+
+[DIALOG d_papers_game3 button]
+
+ON=1
+SRC.DIALOG d_papers_account
+RETURN 1
+
+ON=2
+SRC.DIALOG d_papers_character
+RETURN 1
+
+ON=3
+IF (<SRC.memoryfindtype.memory_guild>)
+SRC.DIALOG d_papers_guild
+ELSE
+SRC.SYSMESSAGE You are not part of any guild.
+ENDIF
+RETURN 1
+
+ON=4
+SRC.f_weapon_calc_dam
+SRC.f_weapon_effect
+SRC.status_armour
+SRC.f_shield_calc
+SRC.DIALOG d_papers_bonus
+RETURN 1
+
+ON=5
+SRC.DIALOG d_papers_rankings1
+RETURN 1
+
+ON=6
+SRC.SYSMESSAGE Coming soon. . .
+SRC.DIALOG d_papers_game3
+RETURN 1
+
+ON=7
+SRC.DIALOG d_papers_game
+RETURN 1
+
+
+ON=8
+SRC.DIALOG d_papers_loyalty
+RETURN 1
+
+ON=9
+SRC.DIALOG d_papers_game4
+RETURN 1
+
+ON=10
+SRC.DIALOG d_papers_game2
+RETURN 1
+
+ON=11
+SRC.ACCEPTINVITE
+RETURN 1
+
+ON=12
+SRC.DECLINEINVITE
+RETURN 1
+
+ON=13
+SRC.GUILDINVITE
+RETURN 1
+
+ON=14
+SRC.LISTGUILD
+RETURN 1
+
+ON=15
+SRC.FRIEND
+RETURN 1
+
+ON=16
+SRC.FRIENDS
+RETURN 1
+
+ON=17
+SRC.INBOX
+RETURN 1
+
+ON=18
+SRC.ONLINE
+RETURN 1
+
+ON=19
+SRC.PRIVATE
+RETURN 1
+
+[DIALOG d_papers_game4]
+0,0
+page 0
+gumppic 130 35 2601
+gumppic 99 35 2601
+gumppic 131 35 2600
+gumppic 175 395 2607
+gumppic 253 35 2601
+gumppic 100 395 2607
+gumppic 254 395 2607
+gumppic 603 36 2602
+gumppic 131 79 2603
+gumppic 602 79 2605
+gumppic 131 395 2606
+gumppic 603 395 2608
+gumppic 175 79 2604
+gumppic 175 79 2604
+gumppic 268 79 2604
+gumppic 603 79 2605
+gumppic 87 79 2604
+gumppic 131 79 2603
+gumppic 680 35 2602
+gumppic 681 395 2608
+gumppic 681 79 2605
+gumppic 55 395 2606
+gumppic 56 395 2606
+gumppic 55 36 2600
+gumppic 55 79 2603
+dtext 76 108 0 Account
+dtext 84 124 0 Info.
+dtext 67 182 0 Character
+dtext 83 204 0 Info.
+dtext 84 268 0 Guild
+dtext 85 285 0 Info.
+dtext 652 364 0 System
+dtext 81 347 0 Bonus
+dtext 85 364 0 Info.
+dtext 654 108 0 Player
+dtext 657 124 0 Ranks.
+// dtext 655 182 0 Battle
+// dtext 654 204 0 Grounds
+dtext 648 285 0 Commands
+dtext 661 268 0 Game
+dtext 653 347 0 Loyalty
+button 86 82 1154 1153 1 0 1
+button 86 154 1154 1153 1 0 2
+button 86 237 1154 1153 1 0 3
+button 86 321 1154 1153 1 0 4
+button 661 82 1154 1153 1 0 5
+// button 661 154 1154 1153 1 0 6
+button 661 237 1154 1153 1 0 7
+button 661 321 1154 1153 1 0 8
+resizepic 239 59 9200 297 24
+dtext 337 60 0 Game Commands
+resizepic 181 103 9200 418 24
+dtext 368 105 0 Faction
+button 97 397 4014 4015 1 0 9 // Previous Page
+
+dtext 187 144 50 f
+dtext 287 144 5 Faction Chat ".f message"
+button 165 167 2117 2118 1 0 10
+dtext 187 164 50 factionhome
+dtext 287 164 5 Sends faction members to their faction town.
+
+resizepic 181 260 9200 418 24
+
+dtext 358 262 0 Events
+
+dtext 187 289 50 pvp2
+dtext 287 289 5 Enter PvP and events ".pvp2 password".
+dtext 187 309 50 quizz
+dtext 287 309 5 Enter Quizz ".quizz password"
+
+
+
+[DIALOG d_papers_game4 button]
+
+ON=1
+SRC.DIALOG d_papers_account
+RETURN 1
+
+ON=2
+SRC.DIALOG d_papers_character
+RETURN 1
+
+ON=3
+IF (<SRC.memoryfindtype.memory_guild>)
+SRC.DIALOG d_papers_guild
+ELSE
+SRC.SYSMESSAGE You are not part of any guild.
+ENDIF
+RETURN 1
+
+ON=4
+SRC.f_weapon_calc_dam
+SRC.f_weapon_effect
+SRC.status_armour
+SRC.f_shield_calc
+SRC.DIALOG d_papers_bonus
+RETURN 1
+
+ON=5
+SRC.DIALOG d_papers_rankings1
+RETURN 1
+
+ON=6
+SRC.SYSMESSAGE Coming soon. . .
+SRC.DIALOG d_papers_game3
+RETURN 1
+
+ON=7
+SRC.DIALOG d_papers_game
+RETURN 1
+
+
+ON=8
+SRC.DIALOG d_papers_loyalty
+RETURN 1
+
+ON=9
+SRC.DIALOG d_papers_game3
+RETURN 1
+
+ON=10
+SRC.FACTIONHOME
+RETURN 1
+
+ON=11
+SRC.ENTER
+RETURN 1
+
+ON=12
+SRC.LEVENT
+RETURN 1
+
+////////////
+//Loyalty//
+//////////
+
+[DIALOG d_papers_loyalty]
+0,0
+page 0
+gumppic 130 35 2601
+gumppic 99 35 2601
+gumppic 131 35 2600
+gumppic 175 395 2607
+gumppic 253 35 2601
+gumppic 100 395 2607
+gumppic 254 395 2607
+gumppic 603 36 2602
+gumppic 131 79 2603
+gumppic 602 79 2605
+gumppic 131 395 2606
+gumppic 603 395 2608
+gumppic 175 79 2604
+gumppic 175 79 2604
+gumppic 268 79 2604
+gumppic 603 79 2605
+gumppic 87 79 2604
+gumppic 131 79 2603
+gumppic 680 35 2602
+gumppic 681 395 2608
+gumppic 681 79 2605
+gumppic 55 395 2606
+gumppic 56 395 2606
+gumppic 55 36 2600
+gumppic 55 79 2603
+dtext 76 108 0 Account
+dtext 84 124 0 Info.
+dtext 67 182 0 Character
+dtext 83 204 0 Info.
+dtext 84 268 0 Guild
+dtext 85 285 0 Info.
+dtext 652 364 0 System
+dtext 81 347 0 Bonus
+dtext 85 364 0 Info.
+dtext 654 108 0 Player
+dtext 657 124 0 Ranks.
+// dtext 655 182 0 Battle
+// dtext 654 204 0 Grounds
+dtext 648 285 0 Commands
+dtext 661 268 0 Game
+dtext 653 347 0 Loyalty
+button 86 82 1154 1153 1 0 1
+button 86 154 1154 1153 1 0 2
+button 86 237 1154 1153 1 0 3
+button 86 321 1154 1153 1 0 4
+button 661 82 1154 1153 1 0 5
+// button 661 154 1154 1153 1 0 6
+button 661 237 1154 1153 1 0 7
+button 661 321 1154 1153 1 0 8
+resizepic 239 59 9200 297 24
+resizepic 181 218 9200 180 24
+resizepic 416 218 9200 180 24
+dtext 337 60 085 Loyalty System
+dtext 250 220 085 Vote
+dtext 485 220 085 Reward
+resizepic 181 116 9200 418 24
+dtext 363 118 085 Points
+dtext 267 144 01f4 You have <EVAL <SRC.TAG0.LOYALTIME>/600> minutes left to redeem.
+dtext 267 164 01f4 You currently have <EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS>> loyalty points.
+dtext 267 184 01f4 You spent a total of <EVAL <SRC.ACCOUNT.TAG0.WASTEDPOINTS>> loyalty points.
+
+//button 167 251 2117 2118 1 0 10
+//dtext 187 249 01f4 Join UO
+//button 167 311 2117 2118 1 0 11
+//dtext 187 309 01f4 XtremeTop 100
+//button 230 341 2117 2118 1 0 12
+//dtext 250 339 01f4 GTop 100
+//button 167 371 2117 2118 1 0 13
+//dtext 187 369 01f4 Game Sites
+//button 230 281 2117 2118 1 0 14
+//dtext 250 279 01f4 UOGateway
+
+dtext 250 320 01f4 Coming Soon
+
+//button 287 251 2117 2118 1 0 15
+//dtext 307 249 01f4 MMORPG List
+//button 287 281 2117 2118 1 0 16
+//dtext 307 279 01f4 UOTop 200
+//button 287 311 2117 2118 1 0 17
+//dtext 307 309 01f4 TOP 100 UO
+//button 287 341 2117 2118 1 0 18
+//dtext 307 339 01f4 MMORPG 200 //MMORPGTop 200
+//button 287 371 2117 2118 1 0 19
+//dtext 307 369 01f4 MMORPG Top 
+
+
+//button 435 270 2152 2154 1 0 20
+//dtext 475 275 01f4 Redeem Points
+
+//button 435 315 2152 2154 1 0 21
+//dtext 475 320 01f4 Points Shop
+
+dtext 475 320 01f4 Coming soon
+
+//button 435 360 2152 2154 1 0 22
+//dtext 475 365 01f4 Milestone Rewards
+
+//dtext 215 400 085 Note: Please don't forget to fill the captcha when voting!
+
+tilepic 204 53 9002
+tilepic 528 57 9003
+
+
+[DIALOG d_papers_loyalty button]
+
+ON=1
+SRC.DIALOG d_papers_account
+RETURN 1
+
+ON=2
+SRC.DIALOG d_papers_character
+RETURN 1
+
+ON=3
+IF (<SRC.memoryfindtype.memory_guild>)
+SRC.DIALOG d_papers_guild
+ELSE
+SRC.SYSMESSAGE You are not part of any guild.
+ENDIF
+RETURN 1
+
+ON=4
+SRC.f_weapon_calc_dam
+SRC.f_weapon_effect
+SRC.status_armour
+SRC.f_shield_calc
+SRC.DIALOG d_papers_bonus
+RETURN 1
+
+ON=5
+SRC.DIALOG d_papers_rankings1
+RETURN 1
+
+ON=6
+SRC.SYSMESSAGE Coming soon. . .
+SRC.DIALOG d_papers_loyalty
+RETURN 1
+
+ON=7
+SRC.DIALOG d_papers_game
+RETURN 1
+
+ON=8
+SRC.DIALOG d_papers_loyalty
+RETURN 1
+
+ON=10
+IF !(<SRC.ACCOUNT.TAG0.FIRSTVOTE> == 1)
+	SRC.ACCOUNT.TAG.VOTEPOINTS= <EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS> +30>
+	SRC.ACCOUNT.TAG.FIRSTVOTE=1
+	SRC.SYSMESSAGE @30 Thank you for voting for the first time. Enjoy 30 free loyalty points as a thank you gift!
+ENDIF
+
+IF !(<EVAL <SRC.ACCOUNT.TAG0.VOTEJOINUO>> == 1)
+
+	IF (<SRC.FINDID.i_mem_vote_joinuo>) 
+		SRC.FINDID.i_mem_vote_joinuo.REMOVE
+	ENDIF
+	
+	SERV.NEWITEM i_mem_vote_joinuo
+	NEW.EQUIP <SRC.UID>
+	NEW.TIMER=86400
+	
+	WEBLINK www.joinuo.com/vote/49
+	SRC.ACCOUNT.TAG0.VOTEJOINUO=1
+	VAR.TOTALVOTING = <EVAL <VAR.TOTALVOTING> +1>
+	SRC.ACCOUNT.TAG0.VOTEPOINTS = <EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS> +3>
+	SRC.SYSMESSAGE @35 Thank you for voting for us on JoinUO. You got 3 more loyalty points.
+	SRC.DIALOG d_papers_loyalty
+
+ELSE
+	IF (<SRC.FINDID.i_mem_vote_joinuo>) 
+		SRC.SYSMESSAGE @35 You already voted for JoinUO. Please wait <EVAL <SRC.FINDID.i_mem_vote_joinuo.TIMER>/60> minutes to vote again.
+	ELSE
+		SRC.SYSMESSAGE @35 You already voted for JoinUO. Please login with the last character you voted with to check the remaining time until you can vote again.
+	ENDIF
+ENDIF
+
+
+ON=11
+IF !(<SRC.ACCOUNT.TAG0.FIRSTVOTE> == 1)
+	SRC.ACCOUNT.TAG.VOTEPOINTS= <EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS> +30>
+	SRC.ACCOUNT.TAG.FIRSTVOTE=1
+	SRC.SYSMESSAGE @30 Thank you for voting for the first time. Enjoy 30 free loyalty points as a thank you gift!
+ENDIF
+
+IF !(<EVAL <SRC.ACCOUNT.TAG0.VOTEXTREMETOP>> == 1)
+
+	IF (<SRC.FINDID.i_mem_vote_xtremetop>) 
+		SRC.FINDID.i_mem_vote_xtremetop.REMOVE
+	ENDIF
+	
+	SERV.NEWITEM i_mem_vote_xtremetop
+	NEW.EQUIP <SRC.UID>
+	NEW.TIMER=86400
+	
+	WEBLINK www.Imperialuo.com/xtremetop100.php
+	SRC.ACCOUNT.TAG0.VOTEXTREMETOP=1
+	VAR.TOTALVOTING = <EVAL <VAR.TOTALVOTING> +1>
+	SRC.ACCOUNT.TAG0.VOTEPOINTS = <EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS> +3>
+	SRC.SYSMESSAGE @35 Thank you for voting for us on XtremeTop 100. You got 3 more loyalty points.
+	SRC.DIALOG d_papers_loyalty
+
+ELSE
+	IF (<SRC.FINDID.i_mem_vote_xtremetop>) 
+		SRC.SYSMESSAGE @35 You already voted for XtremeTop 100. Please wait <EVAL <SRC.FINDID.i_mem_vote_xtremetop.TIMER>/60> minutes to vote again.
+	ELSE
+		SRC.SYSMESSAGE @35 You already voted for XtremeTop 100. Please login with the last character you voted with to check the remaining time until you can vote again.
+	ENDIF
+ENDIF
+
+ON=12
+IF !(<SRC.ACCOUNT.TAG0.FIRSTVOTE> == 1)
+	SRC.ACCOUNT.TAG.VOTEPOINTS= <EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS> +30>
+	SRC.ACCOUNT.TAG.FIRSTVOTE=1
+	SRC.SYSMESSAGE @30 Thank you for voting for the first time. Enjoy 30 free loyalty points as a thank you gift!
+ENDIF
+
+IF !(<EVAL <SRC.ACCOUNT.TAG0.VOTEGTOP>> == 1)
+
+	IF (<SRC.FINDID.i_mem_vote_gtop>) 
+		SRC.FINDID.i_mem_vote_gtop.REMOVE
+	ENDIF
+	
+	SERV.NEWITEM i_mem_vote_gtop
+	NEW.EQUIP <SRC.UID>
+	NEW.TIMER=86400
+	
+	weblink www.gtop100.com/topsites/Ultima-Online/sitedetails/Imperial-UO-90452?vote=1
+	SRC.ACCOUNT.TAG0.VOTEGTOP=1
+	VAR.TOTALVOTING = <EVAL <VAR.TOTALVOTING> +1>
+	SRC.ACCOUNT.TAG0.VOTEPOINTS = <EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS> +3>
+	SRC.SYSMESSAGE @35 Thank you for voting for us on GTop 100. You got 3 more loyalty points.
+	SRC.DIALOG d_papers_loyalty
+
+ELSE
+	IF (<SRC.FINDID.i_mem_vote_gtop>) 
+		SRC.SYSMESSAGE @35 You already voted for GTop 100. Please wait <EVAL <SRC.FINDID.i_mem_vote_gtop.TIMER>/60> minutes to vote again.
+	ELSE
+		SRC.SYSMESSAGE @35 You already voted for GTop 100. Please login with the last character you voted with to check the remaining time until you can vote again.
+	ENDIF
+ENDIF
+
+ON=13
+IF !(<SRC.ACCOUNT.TAG0.FIRSTVOTE> == 1)
+	SRC.ACCOUNT.TAG.VOTEPOINTS= <EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS> +30>
+	SRC.ACCOUNT.TAG.FIRSTVOTE=1
+	SRC.SYSMESSAGE @30 Thank you for voting for the first time. Enjoy 30 free loyalty points as a thank you gift!
+ENDIF
+
+IF !(<EVAL <SRC.ACCOUNT.TAG0.VOTEGAMESITES>> == 1)
+
+	IF (<SRC.FINDID.i_mem_vote_gamesites>) 
+		SRC.FINDID.i_mem_vote_gamesites.REMOVE
+	ENDIF
+	
+	SERV.NEWITEM i_mem_vote_gamesites
+	NEW.EQUIP <SRC.UID>
+	NEW.TIMER=86400
+	
+	WEBLINK www.Imperialuo.com/topgamesites.php
+	SRC.ACCOUNT.TAG0.VOTEGAMESITES=1
+	VAR.TOTALVOTING = <EVAL <VAR.TOTALVOTING> +1>
+	SRC.ACCOUNT.TAG0.VOTEPOINTS = <EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS> +3>
+	SRC.SYSMESSAGE @35 Thank you for voting for us on Top Games Sites. You got 3 more loyalty points.
+	SRC.DIALOG d_papers_loyalty
+
+ELSE
+	IF (<SRC.FINDID.i_mem_vote_gamesites>) 
+		SRC.SYSMESSAGE @35 You already voted for Top Games Sites. Please wait <EVAL <SRC.FINDID.i_mem_vote_gamesites.TIMER>/60> minutes to vote again.
+	ELSE
+		SRC.SYSMESSAGE @35 You already voted for Top Games Sites. Please login with the last character you voted with to check the remaining time until you can vote again.
+	ENDIF
+ENDIF
+
+ON=14
+IF !(<SRC.ACCOUNT.TAG0.FIRSTVOTE> == 1)
+	SRC.ACCOUNT.TAG.VOTEPOINTS= <EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS> +30>
+	SRC.ACCOUNT.TAG.FIRSTVOTE=1
+	SRC.SYSMESSAGE @30 Thank you for voting for the first time. Enjoy 30 free loyalty points as a thank you gift!
+ENDIF
+
+IF !(<EVAL <SRC.ACCOUNT.TAG0.VOTEUOGATEWAY>> == 1)
+
+	IF (<SRC.FINDID.i_mem_vote_uogateway>) 
+		SRC.FINDID.i_mem_vote_uogateway.REMOVE
+	ENDIF
+	
+	SERV.NEWITEM i_mem_vote_uogateway
+	NEW.EQUIP <SRC.UID>
+	NEW.TIMER=86400
+	
+	WEBLINK www.uogateway.com/shard.php?id=1017&act=vote
+	SRC.ACCOUNT.TAG0.VOTEUOGATEWAY=1
+	VAR.TOTALVOTING = <EVAL <VAR.TOTALVOTING> +1>
+	SRC.ACCOUNT.TAG0.VOTEPOINTS = <EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS> +3>
+	SRC.SYSMESSAGE @35 Thank you for voting for us on UO Gateway. You got 3 more loyalty points.
+	SRC.DIALOG d_papers_loyalty
+
+ELSE
+	IF (<SRC.FINDID.i_mem_vote_uogateway>) 
+		SRC.SYSMESSAGE @35 You already voted for UO Gateway. Please wait <EVAL <SRC.FINDID.i_mem_vote_uogateway.TIMER>/60> minutes to vote again.
+	ELSE
+		SRC.SYSMESSAGE @35 You already voted for UO Gateway. Please login with the last character you voted with to check the remaining time until you can vote again.
+	ENDIF
+ENDIF
+
+
+ON=15
+IF !(<SRC.ACCOUNT.TAG0.FIRSTVOTE> == 1)
+	SRC.ACCOUNT.TAG.VOTEPOINTS= <EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS> +30>
+	SRC.ACCOUNT.TAG.FIRSTVOTE=1
+	SRC.SYSMESSAGE @30 Thank you for voting for the first time. Enjoy 30 free loyalty points as a thank you gift!
+ENDIF
+
+IF !(<EVAL <SRC.ACCOUNT.TAG0.VOTEMMORPGLIST>> == 1)
+
+	IF (<SRC.FINDID.i_mem_vote_mmorpglist>) 
+		SRC.FINDID.i_mem_vote_mmorpglist.REMOVE
+	ENDIF
+	
+	SERV.NEWITEM i_mem_vote_mmorpglist
+	NEW.EQUIP <SRC.UID>
+	NEW.TIMER=86400
+	
+	WEBLINK www.Imperialuo.com/mmorpgtoplist.php
+	SRC.ACCOUNT.TAG0.VOTEMMORPGLIST=1
+	VAR.TOTALVOTING = <EVAL <VAR.TOTALVOTING> +1>
+	SRC.ACCOUNT.TAG0.VOTEPOINTS = <EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS> +3>
+	SRC.SYSMESSAGE @35 Thank you for voting for us on MMORPG List. You got 3 more loyalty points.
+	SRC.DIALOG d_papers_loyalty
+
+ELSE
+	IF (<SRC.FINDID.i_mem_vote_mmorpglist>) 
+		SRC.SYSMESSAGE @35 You already voted for MMORPG List. Please wait <EVAL <SRC.FINDID.i_mem_vote_mmorpglist.TIMER>/60> minutes to vote again.
+	ELSE
+		SRC.SYSMESSAGE @35 You already voted for MMORPG List. Please login with the last character you voted with to check the remaining time until you can vote again.
+	ENDIF
+ENDIF
+
+ON=16
+IF !(<SRC.ACCOUNT.TAG0.FIRSTVOTE> == 1)
+	SRC.ACCOUNT.TAG.VOTEPOINTS= <EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS> +30>
+	SRC.ACCOUNT.TAG.FIRSTVOTE=1
+	SRC.SYSMESSAGE @30 Thank you for voting for the first time. Enjoy 30 free loyalty points as a thank you gift!
+ENDIF
+
+IF !(<EVAL <SRC.ACCOUNT.TAG0.VOTEUOTOP>> == 1)
+
+	IF (<SRC.FINDID.i_mem_vote_uotop>) 
+		SRC.FINDID.i_mem_vote_uotop.REMOVE
+	ENDIF
+	
+	SERV.NEWITEM i_mem_vote_uotop
+	NEW.EQUIP <SRC.UID>
+	NEW.TIMER=86400
+	
+	WEBLINK www.Imperialuo.com/gamesites200.php
+	SRC.ACCOUNT.TAG0.VOTEUOTOP=1
+	VAR.TOTALVOTING = <EVAL <VAR.TOTALVOTING> +1>
+	SRC.ACCOUNT.TAG0.VOTEPOINTS = <EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS> +3>
+	SRC.SYSMESSAGE @35 Thank you for voting for us on UO Top 200. You got 3 more loyalty points.
+	SRC.DIALOG d_papers_loyalty
+
+ELSE
+	IF (<SRC.FINDID.i_mem_vote_uotop>) 
+		SRC.SYSMESSAGE @35 You already voted for UO Top 200. Please wait <EVAL <SRC.FINDID.i_mem_vote_uotop.TIMER>/60> minutes to vote again.
+	ELSE
+		SRC.SYSMESSAGE @35 You already voted for UO Top 200. Please login with the last character you voted with to check the remaining time until you can vote again.
+	ENDIF
+ENDIF
+
+ON=17
+IF !(<SRC.ACCOUNT.TAG0.FIRSTVOTE> == 1)
+	SRC.ACCOUNT.TAG.VOTEPOINTS= <EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS> +30>
+	SRC.ACCOUNT.TAG.FIRSTVOTE=1
+	SRC.SYSMESSAGE @30 Thank you for voting for the first time. Enjoy 30 free loyalty points as a thank you gift!
+ENDIF
+
+IF !(<EVAL <SRC.ACCOUNT.TAG0.VOTETOP100UO>> == 1)
+
+	IF (<SRC.FINDID.i_mem_vote_top100uo>) 
+		SRC.FINDID.i_mem_vote_top100uo.REMOVE
+	ENDIF
+	
+	SERV.NEWITEM i_mem_vote_top100uo
+	NEW.EQUIP <SRC.UID>
+	NEW.TIMER=86400
+	
+	WEBLINK www.Imperialuo.com/gamesites100.php
+	SRC.ACCOUNT.TAG0.VOTETOP100UO=1
+	VAR.TOTALVOTING = <EVAL <VAR.TOTALVOTING> +1>
+	SRC.ACCOUNT.TAG0.VOTEPOINTS = <EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS> +3>
+	SRC.SYSMESSAGE @35 Thank you for voting for us on TOP 100 UO. You got 3 more loyalty points.
+	SRC.DIALOG d_papers_loyalty
+
+ELSE
+	IF (<SRC.FINDID.i_mem_vote_top100uo>) 
+		SRC.SYSMESSAGE @35 You already voted for TOP 100 UO. Please wait <EVAL <SRC.FINDID.i_mem_vote_top100uo.TIMER>/60> minutes to vote again.
+	ELSE
+		SRC.SYSMESSAGE @35 You already voted for TOP 100 UO. Please login with the last character you voted with to check the remaining time until you can vote again.
+	ENDIF
+ENDIF
+
+ON=18
+IF !(<SRC.ACCOUNT.TAG0.FIRSTVOTE> == 1)
+	SRC.ACCOUNT.TAG.VOTEPOINTS= <EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS> +30>
+	SRC.ACCOUNT.TAG.FIRSTVOTE=1
+	SRC.SYSMESSAGE @30 Thank you for voting for the first time. Enjoy 30 free loyalty points as a thank you gift!
+ENDIF
+
+IF !(<EVAL <SRC.ACCOUNT.TAG0.VOTETOPMMORPG>> == 1)
+
+	IF (<SRC.FINDID.i_mem_vote_topmmorpg>) 
+		SRC.FINDID.i_mem_vote_topmmorpg.REMOVE
+	ENDIF
+	
+	SERV.NEWITEM i_mem_vote_topmmorpg
+	NEW.EQUIP <SRC.UID>
+	NEW.TIMER=86400
+	
+	WEBLINK www.Imperialuo.com/mmorpgtop200.php
+	SRC.ACCOUNT.TAG0.VOTETOPMMORPG=1
+	VAR.TOTALVOTING = <EVAL <VAR.TOTALVOTING> +1>
+	SRC.ACCOUNT.TAG0.VOTEPOINTS = <EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS> +3>
+	SRC.SYSMESSAGE @35 Thank you for voting for us on MMORPG Top 200. You got 3 more loyalty points.
+	SRC.DIALOG d_papers_loyalty
+
+ELSE
+	IF (<SRC.FINDID.i_mem_vote_topmmorpg>) 
+		SRC.SYSMESSAGE @35 You already voted for MMORPG Top 200. Please wait <EVAL <SRC.FINDID.i_mem_vote_topmmorpg.TIMER>/60> minutes to vote again.
+	ELSE
+		SRC.SYSMESSAGE @35 You already voted for MMORPG Top 200. Please login with the last character you voted with to check the remaining time until you can vote again.
+	ENDIF
+ENDIF
+
+ON=19
+IF !(<SRC.ACCOUNT.TAG0.FIRSTVOTE> == 1)
+	SRC.ACCOUNT.TAG.VOTEPOINTS= <EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS> +30>
+	SRC.ACCOUNT.TAG.FIRSTVOTE=1
+	SRC.SYSMESSAGE @30 Thank you for voting for the first time. Enjoy 30 free loyalty points as a thank you gift!
+ENDIF
+
+IF !(<EVAL <SRC.ACCOUNT.TAG0.VOTEMMORPGTOP>> == 1)
+
+	IF (<SRC.FINDID.i_mem_vote_mmorpgtop>) 
+		SRC.FINDID.i_mem_vote_mmorpgtop.REMOVE
+	ENDIF
+	
+	SERV.NEWITEM i_mem_vote_mmorpgtop
+	NEW.EQUIP <SRC.UID>
+	NEW.TIMER=86400
+	
+	WEBLINK www.Imperialuo.com/topmmorpgsites.php
+	SRC.ACCOUNT.TAG0.VOTEMMORPGTOP=1
+	VAR.TOTALVOTING = <EVAL <VAR.TOTALVOTING> +1>
+	SRC.ACCOUNT.TAG0.VOTEPOINTS = <EVAL <SRC.ACCOUNT.TAG0.VOTEPOINTS> +3>
+	SRC.SYSMESSAGE @35 Thank you for voting for us on Top MMORPG Sites. You got 3 more loyalty points.
+	SRC.DIALOG d_papers_loyalty
+
+ELSE
+	IF (<SRC.FINDID.i_mem_vote_mmorpgtop>) 
+		SRC.SYSMESSAGE @35 You already voted for Top MMORPG Sites. Please wait <EVAL <SRC.FINDID.i_mem_vote_mmorpgtop.TIMER>/60> minutes to vote again.
+	ELSE
+		SRC.SYSMESSAGE @35 You already voted for Top MMORPG Sites. Please login with the last character you voted with to check the remaining time until you can vote again.
+	ENDIF
+ENDIF
+
+ON=20
+SRC.f_lowtime
+RETURN 1
+
+ON=21
+SRC.DIALOG d_loyalshop
+RETURN 1
+
+ON=22
+SRC.DIALOG d_loyalshop3
+RETURN 1
+
+
+
+
+
+
+[DIALOG d_skill_removal]
+200, 50
+NOMOVE
+NODISPOSE
+
+  gumppic    0    0 <eval   0ce>            // top
+  gumppic   44    0 <eval   0c9>
+  gumppic  471    0 <eval   0cf>
+
+  gumppic    0   44 <eval   0ca>            // middle
+  gumppic   44   44 <eval  0a2c>
+  gumppic  471   44 <eval   0cb>
+
+  gumppic    0  360 <eval   0cc>            // bottom
+  gumppic   44  360 <eval   0e9>
+  gumppic  471  360 <eval   0cd>
+
+  dtext 20 47 37 WE WILL NOT REFUND ANY LOST SKILL IN CASE YOU CHANGE YOUR MIND!
+  dtext 65 22 0 Please select a skill to DECREASE by 5% on this character.
+ button  45 90 <eval 0d2> <eval 0d3> 1 0 10
+  button  45 112 <eval 0d2> <eval 0d3> 1 0 11
+  button  45 134 <eval 0d2> <eval 0d3> 1 0 12
+  button  45 156 <eval 0d2> <eval 0d3> 1 0 13
+  button  45 178 <eval 0d2> <eval 0d3> 1 0 14
+  button  45 200 <eval 0d2> <eval 0d3> 1 0 15
+//button  55 192 <eval 0d2> <eval 0d3> 1 0 16
+  button  45 222 <eval 0d2> <eval 0d3> 1 0 26 //mystic
+  button  45 244 <eval 0d2> <eval 0d3> 1 0 17
+  button  45 266 <eval 0d2> <eval 0d3> 1 0 18 
+//  button  45 243 <eval 0d2> <eval 0d3> 1 0 19
+//  button  45 261 <eval 0d2> <eval 0d3> 1 0 20
+  button  45 288 <eval 0d2> <eval 0d3> 1 0 21 
+  button  45 310 <eval 0d2> <eval 0d3> 1 0 22 
+  button  45 332 <eval 0d2> <eval 0d3> 1 0 23 
+  button  45 354 <eval 0d2> <eval 0d3> 1 0 24 
+//  button  45 315 <eval 0d2> <eval 0d3> 1 0 25 
+  
+  button 205  90 <eval 0d2> <eval 0d3> 1 0 27
+  button 205 112 <eval 0d2> <eval 0d3> 1 0 28
+  button 205 134 <eval 0d2> <eval 0d3> 1 0 29
+  button 205 156 <eval 0d2> <eval 0d3> 1 0 30
+  button 205 178 <eval 0d2> <eval 0d3> 1 0 31
+  button 205 200 <eval 0d2> <eval 0d3> 1 0 32
+  button 205 222 <eval 0d2> <eval 0d3> 1 0 33
+//  button 205 209 <eval 0d2> <eval 0d3> 1 0 34
+  button 205 244 <eval 0d2> <eval 0d3> 1 0 35 
+  button 205 266 <eval 0d2> <eval 0d3> 1 0 36 
+  button 205 288 <eval 0d2> <eval 0d3> 1 0 37
+//  button 205 278 <eval 0d2> <eval 0d3> 1 0 38
+  button 205 310 <eval 0d2> <eval 0d3> 1 0 39
+  button 205 68 <eval 0d2> <eval 0d3> 1 0 40 // poisoning
+  button 205 332 <eval 0d2> <eval 0d3> 1 0 41
+  button 45 68 <eval 0d2> <eval 0d3> 1 0 42 //necro
+//  button 205 298 <eval 0d2> <eval 0d3> 1 0 43 //stealing
+  button 205  354 <eval 0d2> <eval 0d3> 1 0 44
+
+  button 355 90 <eval 0d2> <eval 0d3> 1 0 45
+  button 355 112 <eval 0d2> <eval 0d3> 1 0 46
+  button 355 134 <eval 0d2> <eval 0d3> 1 0 47
+  button 355 156 <eval 0d2> <eval 0d3> 1 0 48
+  button 355 178 <eval 0d2> <eval 0d3> 1 0 49
+  button 355 200 <eval 0d2> <eval 0d3> 1 0 50
+  button 355 222 <eval 0d2> <eval 0d3> 1 0 51
+  button 355 244 <eval 0d2> <eval 0d3> 1 0 52
+  button 355 266 <eval 0d2> <eval 0d3> 1 0 53
+  button 355 288 <eval 0d2> <eval 0d3> 1 0 54
+  button 355 310 <eval 0d2> <eval 0d3> 1 0 55
+  button 355 332 <eval 0d2> <eval 0d3> 1 0 56
+  button 355 354 <eval 0d2> <eval 0d3> 1 0 57
+//button 335 329 <eval 0d2> <eval 0d3> 1 0 58
+
+  dtext  65  90 0 Alchemy
+  dtext  65 112 0 Assessment
+  dtext  65 134 0 Creature lore
+  dtext  65 156 0 Item lore
+  dtext  65 178 0 Arms lore
+  dtext  65 200 0 Shieldfighting
+//dtext  75 192 0 unused
+  dtext  65 222 0 Mystic lore 
+  dtext  65 244 0 Blacksmithy 
+//  dtext  60 243 0 Songs of Peace
+//  dtext  60 261 0 Survival
+  dtext  65 266 0 Bowery 
+  dtext  65 288 0 Carpentry  
+  dtext  65 310 0 Cartography  
+  dtext  65 332 0 Cooking 
+//  dtext  60 346 0 Songs of the World
+  dtext  65 354 0 Detection
+  
+  dtext 225  90 0 Healing
+  dtext 225 112 0 Fishing
+  dtext 225 134 0 Netherworld lore
+  dtext 225 156 0 Farming/Herding
+  dtext 225 178 0 Hiding
+  dtext 225 200 0 Songs of War
+  dtext 225 222 0 Inscription
+//  dtext 220 209 0 Lockpicking/Traps
+  dtext 225 244 0 Magery 
+  dtext 225 266 0 Resist Magic 
+  dtext 225 288 0 Tactics 
+//  dtext 220 278 0 Snooping
+  dtext 225 310 0 Musicianship 
+  dtext 225 68 0 Poisoning
+  dtext 225 332 0 Archery 
+  dtext 65 68 0 Necromancy
+//  dtext 370 329 0 Stealing 
+  dtext 225  354 0 Tailoring
+  
+  dtext 375 90 0 Taming
+  dtext 375 112 0 Herbs lore
+  dtext 375 134 0 Tinkering 
+  dtext 375 156 0 Tracking 
+  dtext 375 178 0 Masonry
+  dtext 375 200 0 Blade weapons
+  dtext 375 222 0 Blunt weapons
+  dtext 375 244 0 Piercing weapons
+  dtext 375 266 0 Unarmed combat
+  dtext 375 288 0 Lumberjacking
+  dtext 375 310 0 Mining
+  dtext 375 332 0 Meditation
+  dtext 375 354 0 Stealth
+//dtext 375 364 0 Stealing
+
+//button 400 350 <eval 047b> <eval 047c> 1 0 60
+  
+[DIALOG d_skill_removal BUTTON]
+ONBUTTON=10 58
+  IF (<SRC.SKILLTOTAL> < 6500)
+     SRC.SYSMESSAGE You can only lower a skill if you have more than 650.0 Total Skill Points.
+     RETURN 1
+  ENDIF
+  
+  IF ((<SRC.FINDID.I_SKILL_BRACELET>) || (<SRC.FINDID.I_SKILL_EARRINGS>) || (<SRC.FINDID.I_SKILL_RING>) || (<SRC.FINDID.I_SKILL_NECKLACE_3>) || (<SRC.FINDID.I_SKILL_NECKLACE_2>) || (<SRC.FINDID.I_SKILL_NECKLACE_1>))
+     SRC.SYSMESSAGE You can't have any kind of skill jewelry with yourself when trying to reduce skills.
+     RETURN 1
+  ENDIF
+  
+  LOCAL.SKILL=<ARGN1>
+  f_removalskill_finish <LOCAL.SKILL>
+  
+[FUNCTION f_removalskill_finish] 
+  LOCAL.SKILL    = <eval (<args> - 10)>
+  LOCAL.SKILL = <SERV.SKILL(<LOCAL.SKILL>).KEY>
+  LOCAL.SKILLAMOUNT=<<LOCAL.SKILL>>
+  
+  IF ( <<LOCAL.SKILL>> == 0)
+     SRC.SYSMESSAGE You cant lower this skill any more.
+     RETURN 1
+  ELSEIF ( <<LOCAL.SKILL>> <= 50 )
+     SERV.LOG <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> is reducing <LOCAL.SKILL> Skill is at <LOCAL.SKILLAMOUNT> at the moment.
+     TRY <LOCAL.SKILL> = 0
+  ELSE
+     SERV.LOG <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> is reducing <LOCAL.SKILL> Skill is at <LOCAL.SKILLAMOUNT> at the moment.
+     TRY <LOCAL.SKILL>    = <LOCAL.SKILLAMOUNT> - 5.0
+  ENDIF
+  
+  SRC.SYSMESSAGE Your skill in <LOCAL.SKILL> has been decreased by 5.0.
+  SERV.LOG <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> has decresed 5.0  <LOCAL.SKILL> through the skill removal menu. Now have <eval <LOCAL.SKILLAMOUNT>-5.0>
+
+  SRC.DIALOG d_papers_character
+  
+  RETURN 1
+
+[EOF]

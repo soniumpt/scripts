@@ -1,0 +1,3688 @@
+//---------------------------------------------------------------
+//
+//By Raistilin Majere (RaistilinPk@hotmail.com)
+//Tweaked for trusts/moved events to a type & added skillmenu by Wren (Wren@uo.UOProject.net)
+//---------------------------------------------------------------
+
+
+[TYPEDEF t_scribe_table]
+ON=@DCLICK
+   IF ( (<LINK> == 04fffffff) || (<LINK.TYPE> != t_multi) || (<SRC.ISGM>) )
+      //Don't check trusts because we're not linked to a house
+   ELSE
+      IF ( <LINK.SRCHOUSE_owner> )
+      ELSEIF ( <LINK.SRCHOUSE_friend> ) 
+        IF !( <ATTR> & attr_blessed )
+           SRC.SYSMESSAGE You are not trusted enough to use this table.
+           RETURN 1
+        ENDIF
+      ELSE
+        SRC.SYSMESSAGE You are not trusted enough to use this table.
+        RETURN 1
+      ENDIF
+   ENDIF
+
+   IF ( <DISTANCE> > 1 )
+      SRC.SYSMESSAGE You are too far away
+   Else
+      DIALOG d_table_scribe
+   EndIf
+   RETURN 1    
+
+ON=@TARGON_ITEM//requires that both the scrolls and the table are in the pack
+   If ( !(<DISTANCE> > 1) && (<SRC.TARG.CONT>==<SRC.FINDLAYER.21.UID>) )  
+      ADDSCROLLS      
+   Else
+      SRC.SYSMESSAGE You must have the scrolls in your pack and be near the table.
+   EndIf
+   RETURN 1
+
+
+//same item just craftable differently with different woods
+[ITEMDEF i_table_scribe_pine]
+NAME  =Pine Scribe Writing Table
+ID    =i_table_writing
+TYPE  =t_scribe_table
+WEIGHT=90
+SKILLMAKE=CARPENTRY 65.0, t_carpentry
+RESOURCES=50 i_log_pine, 10 i_scroll_blank, 10 i_nails_iron
+CATEGORY=Items by Professions
+SUBSECTION=Scribe
+
+ON=@CREATE
+    COLOR=00
+
+
+[ITEMDEF i_table_scribe_eucalyptus]
+NAME  =Eucalyptus Scribe Writing Table
+ID    =i_table_writing
+TYPE  =t_scribe_table
+WEIGHT=85
+SKILLMAKE=CARPENTRY 68.5, t_carpentry
+RESOURCES=50 i_log_eucalyptus, 10 i_scroll_blank, 10 i_nails_iron
+CATEGORY=Items by Professions
+SUBSECTION=Scribe
+
+
+ON=@CREATE
+    COLOR=02e
+
+
+[ITEMDEF i_table_scribe_holly]
+NAME  =Holly Scribe Writing Table
+ID    =i_table_writing
+TYPE  =t_scribe_table
+WEIGHT=85
+SKILLMAKE=CARPENTRY 72.0, t_carpentry
+RESOURCES=50 i_log_holly, 10 i_scroll_blank, 10 i_nails_iron
+CATEGORY=Items by Professions
+SUBSECTION=Scribe
+
+
+ON=@CREATE
+    COLOR=0300
+
+
+[ITEMDEF i_table_scribe_rose]
+NAME  =Rose Scribe Writing Table
+ID    =i_table_writing
+TYPE  =t_scribe_table
+WEIGHT=85
+SKILLMAKE=CARPENTRY 72.0, t_carpentry
+RESOURCES=50 i_log_rose, 10 i_scroll_blank, 10 i_nails_iron
+CATEGORY=Items by Professions
+SUBSECTION=Scribe
+
+
+ON=@CREATE
+    COLOR=088
+
+
+[ITEMDEF i_table_scribe_interleaved]
+NAME  =Interleaved Scribe Writing Table
+ID    =i_table_writing
+TYPE  =t_scribe_table
+WEIGHT=80
+SKILLMAKE=CARPENTRY 77.0, t_carpentry
+RESOURCES=35 i_log_interleaved, 10 i_scroll_blank, 10 i_nails_iron
+CATEGORY=Items by Professions
+SUBSECTION=Scribe
+
+
+ON=@CREATE
+    COLOR=090
+
+
+[ITEMDEF i_table_scribe_oak]
+NAME  =Oak Scribe Writing Table
+ID    =i_table_writing
+TYPE  =t_scribe_table
+WEIGHT=80
+SKILLMAKE=CARPENTRY 77.0, t_carpentry
+RESOURCES=30 i_log_oak, 10 i_scroll_blank, 10 i_nails_iron
+CATEGORY=Items by Professions
+SUBSECTION=Scribe
+
+
+ON=@CREATE
+    COLOR=021e
+
+
+[ITEMDEF i_table_scribe_ironwood]
+NAME  =Ironwood Scribe Writing Table
+ID    =i_table_writing
+TYPE  =t_scribe_table
+WEIGHT=75
+SKILLMAKE=CARPENTRY 80.5, t_carpentry
+RESOURCES=25 i_log_ironwood, 10 i_scroll_blank, 10 i_nails_iron
+CATEGORY=Items by Professions
+SUBSECTION=Scribe
+
+
+ON=@CREATE
+    COLOR=0763
+
+
+[ITEMDEF i_table_scribe_mahogany]
+NAME  =Mahogany Scribe Writing Table
+ID    =i_table_writing
+TYPE  =t_scribe_table
+WEIGHT=75
+SKILLMAKE=CARPENTRY 90.5, t_carpentry
+RESOURCES=20 i_log_mahogany, 10 i_scroll_blank, 10 i_nails_iron
+CATEGORY=Items by Professions
+SUBSECTION=Scribe
+
+
+ON=@CREATE
+    COLOR=0608
+
+
+[ITEMDEF i_table_scribe_cherry]
+NAME  =Cherry Scribe Writing Table
+ID    =i_table_writing
+TYPE  =t_scribe_table
+WEIGHT=70
+SKILLMAKE=CARPENTRY 98.4, t_carpentry
+RESOURCES=15 i_log_cherry, 10 i_scroll_blank, 10 i_nails_iron
+CATEGORY=Items by Professions
+SUBSECTION=Scribe
+
+
+ON=@CREATE
+    COLOR=0151
+
+
+[ITEMDEF i_table_scribe_composite]
+NAME  =Composite Scribe Writing Table
+ID    =i_table_writing
+TYPE  =t_scribe_table
+WEIGHT=90
+SKILLMAKE=CARPENTRY 98.4, t_carpentry
+RESOURCES=8 i_log_composite, 10 i_scroll_blank, 10 i_nails_iron
+CATEGORY=Items by Professions
+SUBSECTION=Scribe
+
+
+ON=@CREATE
+    COLOR=0488
+
+
+[ITEMDEF i_table_scribe_imbued]
+NAME  =Imbued Cherry Scribe Writing Table
+ID    =i_table_writing
+TYPE  =t_scribe_table
+WEIGHT=90
+SKILLMAKE=CARPENTRY 100.0, t_carpentry
+RESOURCES=8 i_imbued_cherry, 10 i_scroll_blank, 10 i_nails_iron
+CATEGORY=Items by Professions
+SUBSECTION=Scribe
+
+
+ON=@CREATE
+    COLOR=0488
+
+
+[ITEMDEF i_table_scribe_myst]
+NAME  =Myst Scribe Writing Table
+ID    =i_table_writing
+TYPE  =t_scribe_table
+WEIGHT=90
+SKILLMAKE=CARPENTRY 100.0, t_carpentry
+RESOURCES=5 i_log_myst, 10 i_scroll_blank, 10 i_nails_iron
+CATEGORY=Items by Professions
+SUBSECTION=Scribe
+
+
+ON=@CREATE
+    COLOR=07a0
+
+
+//Dialogs start here and it's a looooooooong way down
+[DIALOG d_table_scribe]
+
+0,0
+page 0
+gumppic  186 266 5154//5154 is the middle picture
+gumppic  46  266 5154
+gumppic  46  156 5154
+gumppic  186 156 5154
+gumppic  186 46  5154
+gumppic  46  46  5154
+tilepic  47  47  8312//cursor with arrow pitcure
+gumppic  81  46  5154//middle picture to cut the arrows borders
+gumppic  46  91  5154//middle pitcure to cut the arrows borders
+gumppic  10  10  5150//top left border
+gumppic  336 10  5152//top right border
+gumppic  186 10  5151//middle top border
+gumppic  30  10  5151
+gumppic  10  376 5156//bottom right border
+gumppic  336 376 5158//bottom right border
+gumppic  30  376 5157//middle bottom border
+gumppic  186 376 5157
+gumppic  10  46  5153//5153 is the left border
+gumppic  336 46  5155//the right border
+gumppic  10  156 5153
+gumppic  336 156 5155
+gumppic  10  266 5153
+gumppic  336 266 5155
+
+//headings
+dtext    170 60  255 Amount
+dtext    270 60  255 Extract
+button   255 80 2104 2103 1 0 99
+dtext    270 75  255 ( <EVAL <TAG.DEFAULT_EXTRACT>> )
+
+//Add Scrolls Button
+dtext    246 356 255 Add Items
+button   332 358  55  55  1  0 100
+
+//Circle heading
+dtext    40  340 255  Circle:
+
+//Circle buttons
+dtext    50  355 255   1://Circle 1
+button   60  360 2104 2103 0 1  1
+
+dtext    95  355 255   2://Circle 2
+button   110 360 2104 2103 0 2  2
+
+dtext    145 355 255   3:
+button   160 360 2104 2103 0 3  3
+
+dtext    195 355 255   4:
+button   210 360 2104 2103 0 4  4
+
+dtext    45  375 255   5:
+button   60  380 2104 2103 0 5  5
+
+dtext    95  375 255   6:
+button   110 380 2104 2103 0 6  6
+
+dtext    145 375 255   7:
+button   160 380 2104 2103 0 7  7
+
+dtext    195 375 255   8:
+button   210 380 2104 2103 0 8  8
+
+dtext    270 375 255   9:
+button   285 380 2104 2103 0 9 99
+
+//Blank Scroll button
+dtext    40  310 255 Blank Scrolls
+dtext    190 310 255 <EVAL 0<TAG.BlankScrolls>>
+button   285 312 1210 1209 1 0  9
+
+page 1
+
+//Scrolls and corresponding buttons
+dtext    40  110 255 Clumsy
+dtext    190 110 255 <EVAL 0<TAG.Clumsy>>
+button   285 112 1210 1209 1 0 11
+
+dtext    40  135 255 Create Food
+dtext    190 135 255 <EVAL 0<TAG.Food>>
+button   285 137 1210 1209 1 0 12
+
+dtext    40  160 255 Feeblemind
+dtext    190 160 255 <EVAL 0<TAG.Feeblemind>>
+button   285 162 1210 1209 1 0 13
+
+dtext    40  185 255 Heal
+dtext    190 185 255 <EVAL 0<TAG.Heal>>
+button   285 187 1210 1209 1 0 14
+
+dtext    40  210 255 Magic Arrow
+dtext    190 210 255 <EVAL 0<TAG.Marrow>>
+button   285 212 1210 1209 1 0 15
+
+dtext    40  235 255 Night Sight
+dtext    190 235 255 <EVAL 0<TAG.Nightsight>>
+button   285 237 1210 1209 1 0 16
+
+dtext    40  260 255 Reactive Armor
+dtext    190 260 255 <EVAL 0<TAG.Rarmor>>
+button   285 262 1210 1209 1 0 17
+
+dtext    40  285 255 Weaken
+dtext    190 285 255 <EVAL 0<TAG.Weaken>>
+button   285 287 1210 1209 1 0 18
+
+page 2
+
+dtext    40  110 255 Agility
+dtext    190 110 255 <EVAL 0<TAG.Agility>>
+button   285 112 1210 1209 1 0 21
+
+dtext    40  135 255 Cunning
+dtext    190 135 255 <EVAL 0<TAG.Cunning>>
+button   285 137 1210 1209 1 0 22
+
+dtext    40  160 255 Cure
+dtext    190 160 255 <EVAL 0<TAG.Cure>>
+button   285 162 1210 1209 1 0 23
+
+dtext    40  185 255 Harm
+dtext    190 185 255 <EVAL 0<TAG.Harm>>
+button   285 187 1210 1209 1 0 24
+
+dtext    40  210 255 Magic Trap
+dtext    190 210 255 <EVAL 0<TAG.Trap>>
+button   285 212 1210 1209 1 0 25
+
+dtext    40  235 255 Magic Untrap
+dtext    190 235 255 <EVAL 0<TAG.Untrap>>
+button   285 237 1210 1209 1 0 26
+
+dtext    40  260 255 Protection
+dtext    190 260 255 <EVAL 0<TAG.Protection>>
+button   285 262 1210 1209 1 0 27
+
+dtext    40  285 255 Strength
+dtext    190 285 255 <EVAL 0<TAG.Strength>>
+button   285 287 1210 1209 1 0 28
+
+page 3
+
+dtext    40  110 255 Bless
+dtext    190 110 255 <EVAL 0<TAG.Bless>>
+button   285 112 1210 1209 1 0 31
+
+dtext    40  135 255 Fireball
+dtext    190 135 255 <EVAL 0<TAG.Fireball>>
+button   285 137 1210 1209 1 0 32
+
+dtext    40  160 255 Magic Lock
+dtext    190 160 255 <EVAL 0<TAG.Lock>>
+button   285 162 1210 1209 1 0 33
+
+dtext    40  185 255 Poison
+dtext    190 185 255 <EVAL 0<TAG.Poison>>
+button   285 187 1210 1209 1 0 34
+
+dtext    40  210 255 Telekinesis
+dtext    190 210 255 <EVAL 0<TAG.Telekinesis>>
+button   285 212 1210 1209 1 0 35
+
+dtext    40  235 255 Teleport
+dtext    190 235 255 <EVAL 0<TAG.Teleport>>
+button   285 237 1210 1209 1 0 36
+
+dtext    40  260 255 Unlock
+dtext    190 260 255 <EVAL 0<TAG.Unlock>>
+button   285 262 1210 1209 1 0 37
+
+dtext    40  285 255 Wall of Stone
+dtext    190 285 255 <EVAL 0<TAG.WallStone>>
+button   285 287 1210 1209 1 0 38
+
+page 4
+
+dtext    40  110 255 Arch Cure
+dtext    190 110 255 <EVAL 0<TAG.Acure>>
+button   285 112 1210 1209 1 0 41
+
+dtext    40  135 255 Arch Protection
+dtext    190 135 255 <EVAL 0<TAG.Aprotection>>
+button   285 137 1210 1209 1 0 42
+
+dtext    40  160 255 Curse
+dtext    190 160 255 <EVAL 0<TAG.Curse>>
+button   285 162 1210 1209 1 0 43
+
+dtext    40  185 255 Fire Field
+dtext    190 185 255 <EVAL 0<TAG.FireField>>
+button   285 187 1210 1209 1 0 44
+
+dtext    40  210 255 Greater Heal
+dtext    190 210 255 <EVAL 0<TAG.GHeal>>
+button   285 212 1210 1209 1 0 45
+
+dtext    40  235 255 Lightning
+dtext    190 235 255 <EVAL 0<TAG.Lightning>>
+button   285 237 1210 1209 1 0 46
+
+dtext    40  260 255 Mana Drain
+dtext    190 260 255 <EVAL 0<TAG.MDrain>>
+button   285 262 1210 1209 1 0 47
+
+dtext    40  285 255 Recall
+dtext    190 285 255 <EVAL 0<TAG.Recall>>
+button   285 287 1210 1209 1 0 48
+
+page 5
+
+dtext    40  110 255 Blade Spirits
+dtext    190 110 255 <EVAL 0<TAG.Spirits>>
+button   285 112 1210 1209 1 0 51
+
+dtext    40  135 255 Dispel Field
+dtext    190 135 255 <EVAL 0<TAG.Dfield>>
+button   285 137 1210 1209 1 0 52
+
+dtext    40  160 255 Incognito
+dtext    190 160 255 <EVAL 0<TAG.Incognito>>
+button   285 162 1210 1209 1 0 53
+
+dtext    40  185 255 Magic Reflection
+dtext    190 185 255 <EVAL 0<TAG.Reflection>>
+button   285 187 1210 1209 1 0 54
+
+dtext    40  210 255 Mind Blast
+dtext    190 210 255 <EVAL 0<TAG.MBlast>>
+button   285 212 1210 1209 1 0 55
+
+dtext    40  235 255 Paralyze
+dtext    190 235 255 <EVAL 0<TAG.Paralyze>>
+button   285 237 1210 1209 1 0 56
+
+dtext    40  260 255 Poison Field
+dtext    190 260 255 <EVAL 0<TAG.Pfield>>
+button   285 262 1210 1209 1 0 57
+
+dtext    40  285 255 Summon Creature
+dtext    190 285 255 <EVAL 0<TAG.Screature>>
+button   285 287 1210 1209 1 0 58
+
+page 6
+
+dtext    40  110 255 Dispel
+dtext    190 110 255 <EVAL 0<TAG.Dispel>>
+button   285 112 1210 1209 1 0 61
+
+dtext    40  135 255 Energy Bolt
+dtext    190 135 255 <EVAL 0<TAG.Ebolt>>
+button   285 137 1210 1209 1 0 62
+
+dtext    40  160 255 Explosion
+dtext    190 160 255 <EVAL 0<TAG.Explosion>>
+button   285 162 1210 1209 1 0 63
+
+dtext    40  185 255 Invisibility
+dtext    190 185 255 <EVAL 0<TAG.Invisibility>>
+button   285 187 1210 1209 1 0 64
+
+dtext    40  210 255 Mark
+dtext    190 210 255 <EVAL 0<TAG.Mark>>
+button   285 212 1210 1209 1 0 65
+
+dtext    40  235 255 Mass Curse
+dtext    190 235 255 <EVAL 0<TAG.Mcurse>>
+button   285 237 1210 1209 1 0 66
+
+dtext    40  260 255 Paralyze Field
+dtext    190 260 255 <EVAL 0<TAG.Parafield>>
+button   285 262 1210 1209 1 0 67
+
+dtext    40  285 255 Reveal
+dtext    190 285 255 <EVAL 0<TAG.Reveal>>
+button   285 287 1210 1209 1 0 68
+
+page 7
+
+dtext    40  110 255 Chain Lightning
+dtext    190 110 255 <EVAL 0<TAG.Clightning>>
+button   285 112 1210 1209 1 0 71
+
+dtext    40  135 255 Energy Field
+dtext    190 135 255 <EVAL 0<TAG.Efield>>
+button   285 137 1210 1209 1 0 72
+
+dtext    40  160 255 Flame Strike
+dtext    190 160 255 <EVAL 0<TAG.Flamestrike>>
+button   285 162 1210 1209 1 0 73
+
+dtext    40  185 255 Gate Travel
+dtext    190 185 255 <EVAL 0<TAG.Gate>>
+button   285 187 1210 1209 1 0 74
+
+dtext    40  210 255 Mana Vampire
+dtext    190 210 255 <EVAL 0<TAG.Mvampire>>
+button   285 212 1210 1209 1 0 75
+
+dtext    40  235 255 Mass Dispel
+dtext    190 235 255 <EVAL 0<TAG.Mdispel>>
+button   285 237 1210 1209 1 0 76
+
+dtext    40  260 255 Meteor Swarm
+dtext    190 260 255 <EVAL 0<TAG.Mswarm>>
+button   285 262 1210 1209 1 0 77
+
+dtext    40  285 255 Polymorph
+dtext    190 285 255 <EVAL 0<TAG.Polymorph>>
+button   285 287 1210 1209 1 0 78
+
+page 8
+
+dtext    40  110 255 Earthquake
+dtext    190 110 255 <EVAL 0<TAG.Earthquake>>
+button   285 112 1210 1209 1 0 81
+
+dtext    40  135 255 Energy Vortex
+dtext    190 135 255 <EVAL 0<TAG.Evortex>>
+button   285 137 1210 1209 1 0 82
+
+dtext    40  160 255 Resurrection
+dtext    190 160 255 <EVAL 0<TAG.Resurrection>>
+button   285 162 1210 1209 1 0 83
+
+dtext    40  185 255 Air Elemental
+dtext    190 185 255 <EVAL 0<TAG.Aelemental>>
+button   285 187 1210 1209 1 0 84
+
+dtext    40  210 255 Summon Daemon
+dtext    190 210 255 <EVAL 0<TAG.Sdaemon>>
+button   285 212 1210 1209 1 0 85
+
+dtext    40  235 255 Earth Elemental
+dtext    190 235 255 <EVAL 0<TAG.Eelemental>>
+button   285 237 1210 1209 1 0 86
+
+dtext    40  260 255 Fire Elemental
+dtext    190 260 255 <EVAL 0<TAG.Felemental>>
+button   285 262 1210 1209 1 0 87
+
+dtext    40  285 255 Water Elemental
+dtext    190 285 255 <EVAL 0<TAG.Welemental>>
+button   285 287 1210 1209 1 0 88
+
+page 9
+
+dtext    40  110 255 Pen and Ink
+dtext    190 110 255 <EVAL 0<TAG.Pen>>
+button   285 112 1210 1209 1 0 91
+
+dtext    40  135 255 Scribe Powder
+dtext    190 135 255 <EVAL 0<TAG.Powder>>
+button   285 137 1210 1209 1 0 92
+
+dtext    40  160 255 Small Book
+dtext    190 160 255 <EVAL 0<TAG.Books>>
+button   285 162 1210 1209 1 0 93
+
+dtext    40  185 255 Large Book
+dtext    190 185 255 <EVAL 0<TAG.Bookl>>
+button   285 187 1210 1209 1 0 94
+
+dtext    40  210 255 Rune
+dtext    190 210 255 <EVAL 0<TAG.Rune>>
+button   285 212 1210 1209 1 0 95
+
+dtext    50  245 137 WARNING: Books and runes that are
+dtext    50  270 137 stored in here will become blank!
+
+[DIALOG d_table_scribe BUTTON]//what each button does
+ON=0
+
+ON=9
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_blank_scroll
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.BlankScrolls> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.BlankScrolls = <EVAL (<TAG.BlankScrolls>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_blank, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 1
+      Else
+         Dialog d_blank_scroll
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF
+ON=11
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_clumsy
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Clumsy> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Clumsy = <EVAL (<TAG.Clumsy>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_clumsy, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 1
+      Else
+         Dialog d_clumsy
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF
+ON=12
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_create_food
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Food> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Food = <EVAL (<TAG.Food>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_create_food, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 1
+      Else
+         Dialog d_create_food
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF
+ON=13
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_feeblemind
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Feeblemind> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Feeblemind = <EVAL (<TAG.Feeblemind>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_Feeblemind, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 1
+      Else
+         Dialog d_feeblemind
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF
+ON=14
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_heal
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Heal> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Heal = <EVAL (<TAG.Heal>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_Heal, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 1
+      Else
+         Dialog d_heal
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF
+ON=15
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_marrow
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Marrow> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Marrow = <EVAL (<TAG.Marrow>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_magic_Arrow, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 1
+      Else
+         Dialog d_marrow
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF
+ON=16
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_nightsight
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Nightsight> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Nightsight = <EVAL (<TAG.Nightsight>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_night_sight, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 1
+      Else
+         Dialog d_nightsight
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF   
+ON=17
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_reactive_armor
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Rarmor> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Rarmor = <EVAL (<TAG.Rarmor>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_reactive_armor, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 1
+      Else
+         Dialog d_reactive_armor
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF  
+ON=18
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_weaken
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Weaken> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Weaken = <EVAL (<TAG.Weaken>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_weaken, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 2
+      Else
+         Dialog d_weaken
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF
+ON=21
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_agility
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Agility> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Agility = <EVAL (<TAG.Agility>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_agility, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 2
+      Else
+         Dialog d_agility
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF
+ON=22
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_cunning
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Cunning> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Cunning = <EVAL (<TAG.Cunning>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_cunning, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 2
+      Else
+         Dialog d_cunning
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF
+ON=23
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_cure
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Cure> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Cure = <EVAL (<TAG.Cure>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_cure, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 2
+      Else
+         Dialog d_cure
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF
+ON=24
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_harm
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Harm> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Harm = <EVAL (<TAG.Harm>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_harm, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 2
+      Else
+         Dialog d_harm
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF
+ON=25
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_trap
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Trap> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Trap = <EVAL (<TAG.Trap>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_magic_trap, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 2
+      Else
+         Dialog d_trap
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF
+ON=26
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_untrap
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Untrap> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Untrap = <EVAL (<TAG.Untrap>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_magic_untrap, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 2
+      Else
+         Dialog d_untrap
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF
+ON=27
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_protection
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Protection> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Protection = <EVAL (<TAG.Protection>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_protection, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 2
+      Else
+         Dialog d_protection
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF
+ON=28
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_strength
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Strength> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Strength = <EVAL (<TAG.Strength>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_strength, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 2
+      Else
+         Dialog d_strength
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF
+ON=31
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_bless
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Bless> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Bless = <EVAL (<TAG.Bless>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_bless, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 3
+      Else
+         Dialog d_bless
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF
+ON=32
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_fireball
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Fireball> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Fireball = <EVAL (<TAG.Fireball>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_fireball, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 3
+      Else
+         Dialog d_fireball
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF
+ON=33
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_lock
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Lock> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Lock = <EVAL (<TAG.Lock>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_magic_lock, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 3
+      Else
+         Dialog d_lock
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF
+ON=34
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_poison
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Poison> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Poison = <EVAL (<TAG.Poison>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_poison, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 3
+      Else
+         Dialog d_poison
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF
+ON=35
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_telekinesis
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Telekinesis> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Telekinesis = <EVAL (<TAG.Telekinesis>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_telekinesis, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 3
+      Else
+         Dialog d_telekinesis
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF
+ON=36
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_teleport
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Teleport> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Teleport = <EVAL (<TAG.Teleport>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_teleport, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 3
+      Else
+         Dialog d_teleport
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF
+ON=37
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_unlock
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Unlock> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Unlock = <EVAL (<TAG.Unlock>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_unlock, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 3
+      Else
+         Dialog d_unlock
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF
+ON=38
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_wallstone
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.wallstone> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.wallstone = <EVAL (<TAG.wallstone>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_wall_of_stone, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 3
+      Else
+         Dialog d_wallstone
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF
+ON=41
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_acure
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Acure> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Acure = <EVAL (<TAG.Acure>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_archcure, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 4	
+      Else
+         Dialog d_acure
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF
+ON=42
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_aprotection
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Aprotection> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Aprotection = <EVAL (<TAG.Aprotection>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_archprotection, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 4
+      Else
+         Dialog d_aprotection
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF
+ON=43
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_curse
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Curse> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Curse = <EVAL (<TAG.Curse>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_curse, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 4
+      Else
+         Dialog d_curse
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF
+ON=44
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_firefield
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Firefield> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Firefield = <EVAL (<TAG.Firefield>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_fire_field, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 4
+      Else
+         Dialog d_firefield
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF
+ON=45
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_gheal
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Gheal> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Gheal = <EVAL (<TAG.Gheal>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_greater_heal, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 4
+      Else
+         Dialog d_gheal
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF
+ON=46
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_lightning
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Lightning> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Lightning = <EVAL (<TAG.Lightning>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_lightning, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 4
+      Else
+         Dialog d_lightning
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF
+ON=47
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_mdrain
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Mdrain> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Mdrain = <EVAL (<TAG.Mdrain>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_mana_drain, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 4
+      Else
+         Dialog d_mdrain
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF
+ON=48
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_recall
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+    ELSE
+       If (<TAG.Recall> >= <TAG.DEFAULT_EXTRACT>)
+          TAG.Recall = <EVAL (<TAG.Recall>-<TAG.DEFAULT_EXTRACT>)>
+          SERV.NEWITEM i_scroll_Recall, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 4
+       Else
+          Dialog d_recall
+          SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+       EndIf   
+   ENDIF
+ON=51
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_spirits
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.spirits> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.spirits = <EVAL (<TAG.spirits>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_blade_spirits, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 5
+      Else
+         Dialog d_spirits
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF  
+ON=52
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_dfield
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Dfield> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Dfield = <EVAL (<TAG.Dfield>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_dispel_field, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 5
+      Else
+         Dialog d_dfield
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF  
+ON=53
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_incognito
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Incognito> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Incognito = <EVAL (<TAG.Incognito>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_incognito, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 5
+      Else
+         Dialog d_incognito
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF  
+ON=54
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_reflection
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Reflection> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Reflection = <EVAL (<TAG.Reflection>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_magic_reflection, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 5
+      Else
+         Dialog d_reflection
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF  
+ON=55
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_mblast
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Mblast> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Mblast = <EVAL (<TAG.Mblast>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_mind_blast, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 5
+      Else
+         Dialog d_mblast
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF  
+ON=56
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_paralyze
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Paralyze> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Paralyze = <EVAL (<TAG.Paralyze>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_paralyze, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 5
+      Else
+         Dialog d_paralyze
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF  
+ON=57
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_pfield
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Pfield> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Pfield = <EVAL (<TAG.Pfield>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_poison_field, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 5
+      Else
+         Dialog d_pfield
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF  
+ON=58
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_screature
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Screature> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Screature = <EVAL (<TAG.Screature>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_summon_creature, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 5
+      Else
+         Dialog d_screature
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF  
+ON=61
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_dispel
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Dispel> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Dispel = <EVAL (<TAG.Dispel>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_dispel, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 6
+      Else
+         Dialog d_dispel
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF  
+ON=62
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_ebolt
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Ebolt> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Ebolt = <EVAL (<TAG.Ebolt>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_energy_bolt, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 6
+      Else
+         Dialog d_ebolt
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF  
+ON=63
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_explosion
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Explosion> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Explosion = <EVAL (<TAG.Explosion>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_explosion, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 6
+      Else
+         Dialog d_explosion
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF  
+ON=64
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_invisibility
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Invisibility> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Invisibility = <EVAL (<TAG.Invisibility>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_invisibility, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 6
+      Else
+         Dialog d_invisibility
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF  
+ON=65
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_mark
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Mark> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Mark = <EVAL (<TAG.Mark>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_mark, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 6
+      Else
+         Dialog d_mark
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF  
+ON=66
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_mcurse
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Mcurse> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Mcurse = <EVAL (<TAG.Mcurse>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_mass_curse, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 6
+      Else
+         Dialog d_mcurse
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF  
+ON=67
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_parafield
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Parafield> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Parafield = <EVAL (<TAG.Parafield>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_paralyze_field, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 6
+      Else
+         Dialog d_parafield
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF  
+ON=68
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_reveal
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Reveal> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Reveal = <EVAL (<TAG.Reveal>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_reveal, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 6
+      Else
+         Dialog d_reveal
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF  
+ON=71
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_clightning
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Clightning> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Clightning = <EVAL (<TAG.Clightning>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_chain_lightning, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 7
+      Else
+         Dialog d_clightning
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF
+ON=72
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_efield
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Efield> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Efield = <EVAL (<TAG.Efield>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_energy_field, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 7
+      Else
+         Dialog d_efield
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF  
+ON=73
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_flamestrike
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Flamestrike> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Flamestrike = <EVAL (<TAG.Flamestrike>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_flamestrike, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 7
+      Else
+         Dialog d_flamestrike
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF  
+ON=74
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_gate
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Gate> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Gate = <EVAL (<TAG.Gate>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_gate_travel, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 7
+      Else
+         Dialog d_gate
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF  
+ON=75
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_mvampire
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Mvampire> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Mvampire = <EVAL (<TAG.Mvampire>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_mana_vampire, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 7
+      Else
+         Dialog d_mvampire
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF  
+ON=76
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_mdispel
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Mdispel> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Mdispel = <EVAL (<TAG.Mdispel>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_mass_dispel, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 7
+      Else
+         Dialog d_mdispel
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF 
+ON=77
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_mswarm
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Mswarm> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Mswarm = <EVAL (<TAG.Mswarm>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_meteor_swarm, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 7
+      Else
+         Dialog d_mswarm
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF 
+ON=78
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_polymorph
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Polymorph> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Polymorph = <EVAL (<TAG.Polymorph>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_polymorph, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 7
+      Else
+         Dialog d_polymorph
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF 
+ON=81
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_earthquake
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Earthquake> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Earthquake = <EVAL (<TAG.Earthquake>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_earthquake, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 8
+      Else
+         Dialog d_earthquake
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF 
+ON=82
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_evortex
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Evortex> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Evortex = <EVAL (<TAG.Evortex>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_energy_vortex, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 8
+      Else
+         Dialog d_evortex
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF 
+ON=83
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_resurrection
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Resurrection> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Resurrection = <EVAL (<TAG.Resurrection>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_resurrection, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 8
+      Else
+         Dialog d_resurrection
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF    
+ON=84
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_aelemental
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.aelemental> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.aelemental = <EVAL (<TAG.aelemental>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_summon_elem_air, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 8
+      Else
+         Dialog d_aelemental
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF
+ON=85
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_sdaemon
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Sdaemon> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Sdaemon = <EVAL (<TAG.Sdaemon>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_summon_daemon, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 8
+      Else
+         Dialog d_sdaemon
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF
+ON=86
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_eelemental
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Eelemental> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Eelemental = <EVAL (<TAG.Eelemental>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_summon_elem_earth, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 8
+      Else
+         Dialog d_eelemental
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF
+ON=87
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_felemental
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Felemental> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Felemental = <EVAL (<TAG.Felemental>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_summon_elem_fire, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 8
+      Else
+         Dialog d_felemental
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF
+ON=88
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_welemental
+      SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+   ELSE
+      If (<TAG.Welemental> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Welemental = <EVAL (<TAG.Welemental>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scroll_summon_elem_water, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 8
+      Else
+         Dialog d_welemental
+         SRC.SYSMESSAGE Choose how many scrolls you wish to extract
+      EndIf   
+   ENDIF  
+
+ON=100
+   TARGET Target the scrolls you wish to place inside the table.
+   DIALOG d_table_scribe 1
+
+ON = 99
+   DIALOG d_default_extract
+
+ON=91
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_pen
+      SRC.SYSMESSAGE Choose how many pens you wish to extract
+   ELSE
+      If ((<TAG.Pen> >= <TAG.DEFAULT_EXTRACT>) && (<TAG.DEFAULT_EXTRACT> < 25 ))
+         TAG.Pen = <EVAL (<TAG.Pen>-<TAG.DEFAULT_EXTRACT>)>
+
+         FOR <EVAL <TAG.DEFAULT_EXTRACT>>
+            SERV.NEWITEM i_pen_and_ink, 1, <SRC.FINDLAYER.21.UID>
+         ENDFOR
+         DIALOG d_table_scribe 9
+      Else
+         Dialog d_pen
+         SRC.SYSMESSAGE Choose how many pens you wish to extract
+      EndIf   
+   ENDIF         
+ON=92
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_powder
+      SRC.SYSMESSAGE Choose how much scribe powder you wish to extract
+   ELSE
+      If (<TAG.Powder> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.Powder = <EVAL (<TAG.Powder>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_scribe_powder, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_table_scribe 9
+      Else
+         Dialog d_powder
+         SRC.SYSMESSAGE Choose how much scribe powder you wish to extract
+      EndIf   
+   ENDIF 
+ON=93
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_books
+      SRC.SYSMESSAGE Choose how many books you wish to extract
+   ELSE
+      If ((<TAG.Books> >= <TAG.DEFAULT_EXTRACT>) && (<TAG.DEFAULT_EXTRACT> < 25 ))
+         TAG.Books = <EVAL (<TAG.Books>-<TAG.DEFAULT_EXTRACT>)>
+
+         FOR <EVAL <TAG.DEFAULT_EXTRACT>>
+            SERV.NEWITEM i_book_sm, 1, <SRC.FINDLAYER.21.UID>
+         ENDFOR
+         DIALOG d_table_scribe 9
+      Else
+         Dialog d_books
+         SRC.SYSMESSAGE Choose how many books you wish to extract
+      EndIf   
+   ENDIF  
+ON=94
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_bookl
+      SRC.SYSMESSAGE Choose how many books you wish to extract
+   ELSE
+      If ((<TAG.Book1> >= <TAG.DEFAULT_EXTRACT>) && (<TAG.DEFAULT_EXTRACT> < 25 ))
+         TAG.Book1 = <EVAL (<TAG.Book1>-<TAG.DEFAULT_EXTRACT>)>
+
+         FOR <EVAL <TAG.DEFAULT_EXTRACT>>
+            SERV.NEWITEM i_book_lg, 1, <SRC.FINDLAYER.21.UID>
+         ENDFOR
+         DIALOG d_table_scribe 9
+      Else
+         Dialog d_bookl
+         SRC.SYSMESSAGE Choose how many books you wish to extract
+      EndIf   
+   ENDIF  
+ON=95
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      Dialog d_rune
+      SRC.SYSMESSAGE Choose how many runes you wish to extract
+   ELSE
+      If ((<TAG.Rune> >= <TAG.DEFAULT_EXTRACT>) && (<TAG.DEFAULT_EXTRACT> < 25 ))
+         TAG.Rune = <EVAL (<TAG.Rune>-<TAG.DEFAULT_EXTRACT>)>
+
+         FOR <EVAL <TAG.DEFAULT_EXTRACT>>
+            SERV.NEWITEM i_rune_marker, 1, <SRC.FINDLAYER.21.UID>
+         ENDFOR
+         DIALOG d_table_scribe 9
+      Else
+         Dialog d_rune
+         SRC.SYSMESSAGE Choose how many runes you wish to extract
+      EndIf   
+   ENDIF
+   
+   
+[FUNCTION ADDSCROLLS]
+If (<SRC.TARG.BASEID>==i_scroll_reactive_armor)
+     TAG.Rarmor = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Rarmor>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_clumsy)
+     TAG.Clumsy = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Clumsy>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_create_food)
+     TAG.Food = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Food>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_feeblemind)
+     TAG.Feeblemind = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Feeblemind>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_heal)
+     TAG.Heal = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Heal>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_magic_arrow)
+     TAG.Marrow = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Marrow>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_night_sight)
+     TAG.Nightsight = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Nightsight>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_weaken)
+     TAG.Weaken = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Weaken>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_agility)
+     TAG.Agility = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Agility>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_cunning)
+     TAG.Cunning = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Cunning>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_cure)
+     TAG.Cure = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Cure>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_harm)
+     TAG.Harm = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Harm>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_magic_trap)
+     TAG.Trap = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Trap>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_magic_untrap)
+     TAG.Untrap = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Untrap>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_protection)
+     TAG.Protection = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Protection>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_strength)
+     TAG.Strength = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Strength>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_bless)
+     TAG.Bless = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Bless>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_fireball)
+     TAG.Fireball = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Fireball>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_magic_lock)
+     TAG.Lock = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Lock>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_poison)
+     TAG.Poison = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Poison>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_telekinesis)
+     TAG.Telekinesis = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Telekinesis>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_teleport)
+     TAG.Teleport = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Teleport>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_unlock)
+     TAG.Unlock = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Unlock>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_wall_of_stone)
+     TAG.Wallstone = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Wallstone>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_archcure)
+     TAG.Acure = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Acure>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_archprotection)
+     TAG.Aprotection = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Aprotection>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_curse)
+     TAG.Curse = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Curse>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_fire_field)
+     TAG.FireField = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.FireField>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_greater_heal)
+     TAG.Gheal = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Gheal>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_lightning)
+     TAG.lightning = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.lightning>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_mana_drain)
+     TAG.Mdrain = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Mdrain>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_recall)
+     TAG.Recall = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Recall>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_blade_spirits)
+     TAG.Spirits = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Spirits>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_dispel_field)
+     TAG.Dfield = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Dfield>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_incognito)
+     TAG.Incognito = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Incognito>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_magic_reflection)
+     TAG.Reflection = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Reflection>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_mind_blast)
+     TAG.Mblast = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Mblast>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_paralyze)
+     TAG.Paralyze = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Paralyze>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_poison_field)
+     TAG.Pfield = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Pfield>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_summon_creature)
+     TAG.Screature = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Screature>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_dispel)
+     TAG.Dispel = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Dispel>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_energy_bolt)
+     TAG.Ebolt = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Ebolt>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_explosion)
+     TAG.Explosion = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Explosion>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_invisibility)
+     TAG.Invisibility = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Invisibility>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_mark)
+     TAG.Mark = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Mark>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_mass_curse)
+     TAG.Mcurse = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Mcurse>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_paralyze_field)
+     TAG.Parafield = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Parafield>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_reveal)
+     TAG.Reveal = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Reveal>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_chain_lightning)
+     TAG.Clightning = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Clightning>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_energy_field)
+     TAG.Efield = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Efield>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_flamestrike)
+     TAG.Flamestrike = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Flamestrike>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_gate_travel)
+     TAG.Gate = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Gate>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_mana_vampire)
+     TAG.Mvampire = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Mvampire>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_mass_dispel)
+     TAG.Mdispel = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Mdispel>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_meteor_swarm)
+     TAG.Mswarm = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Mswarm>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_polymorph)
+     TAG.Polymorph = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Polymorph>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_earthquake)
+     TAG.Earthquake = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Earthquake>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_energy_vortex)
+     TAG.Evortex = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Evortex>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_resurrection)
+     TAG.Resurrection = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Resurrection>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_summon_elem_air)
+     TAG.Aelemental = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Aelemental>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_summon_daemon)
+     TAG.Sdaemon = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Sdaemon>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_summon_elem_earth)
+     TAG.Eelemental = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Eelemental>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_summon_elem_fire)
+     TAG.Felemental = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Felemental>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_summon_elem_water)
+     TAG.Welemental = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Welemental>)>
+ElseIf (<SRC.TARG.BASEID>==i_scroll_blank)
+     TAG.BlankScrolls = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.BlankScrolls>)>
+ElseIf (<SRC.TARG.BASEID>==i_pen_and_ink)
+     TAG.Pen = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Pen>)>
+ElseIf (<SRC.TARG.BASEID>==i_scribe_powder)
+     TAG.Powder = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Powder>)>
+ElseIf (<SRC.TARG.BASEID>==i_book_sm)
+     TAG.Books = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Books>)>
+ElseIf (<SRC.TARG.BASEID>==i_book_lg)
+     TAG.Bookl = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Bookl>)>
+ElseIf (<SRC.TARG.BASEID>==i_rune_marker)
+     TAG.Rune = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.Rune>)>
+Else
+    Src.Sysmessage That doesn't look like a valid item.
+    RETURN 1
+EndIf
+SRC.TARG.REMOVE
+RETURN 1
+
+[DIALOG d_blank_scroll]
+0,0
+page 0
+gumppic   20  20 35
+tilepic   38  55 3636
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_blank_scroll TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_blank_scroll BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.BlankScrolls> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0))
+         TAG.BlankScrolls = <EVAL (<TAG.BlankScrolls>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_blank, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 1
+
+[DIALOG d_reactive_armor]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2246
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_reactive_armor TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_reactive_armor BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Rarmor> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Rarmor = <EVAL (<TAG.Rarmor>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_reactive_armor, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 1
+   
+[DIALOG d_create_food]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2241
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_create_food TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_create_food BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Food> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Food = <EVAL (<TAG.Food>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_create_food, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 1
+   
+[DIALOG d_clumsy]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2240
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_clumsy TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_clumsy BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Clumsy> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Clumsy = <EVAL (<TAG.Clumsy>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_clumsy, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 1
+   
+[DIALOG d_feeblemind]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2242
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_feeblemind TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_feeblemind BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Feeblemind> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Feeblemind = <EVAL (<TAG.Feeblemind>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_Feeblemind, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 1
+   
+[DIALOG d_heal]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2243
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_heal TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_heal BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Heal> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Heal = <EVAL (<TAG.Heal>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_Heal, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 1
+   
+[DIALOG d_marrow]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2244
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_marrow TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_marrow BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Marrow> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Marrow = <EVAL (<TAG.Marrow>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_magic_Arrow, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 1
+   
+[DIALOG d_nightsight]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2245
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_nightsight TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_nightsight BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Nightsight> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Nightsight = <EVAL (<TAG.Nightsight>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_night_sight, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 1
+   
+[DIALOG d_weaken]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2247
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_weaken TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_weaken BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Weaken> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Weaken = <EVAL (<TAG.Weaken>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_weaken, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 1
+   
+[DIALOG d_agility]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2248
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_agility TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_agility BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Agility> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Agility = <EVAL (<TAG.Agility>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_agility, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 2
+   
+[DIALOG d_cunning]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2249
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_cunning TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_cunning BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Cunning> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Cunning = <EVAL (<TAG.Cunning>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_cunning, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 2   
+
+[DIALOG d_cure]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2250
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_cure TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_cure BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Cure> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Cure = <EVAL (<TAG.Cure>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_cure, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 2
+   
+[DIALOG d_harm]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2251
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_harm TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_harm BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Harm> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Harm = <EVAL (<TAG.Harm>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_harm, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 2
+   
+[DIALOG d_trap]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2252
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_trap TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_trap BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Trap> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Trap = <EVAL (<TAG.Trap>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_magic_trap, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 2
+   
+[DIALOG d_untrap]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2253
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_untrap TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_untrap BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Untrap> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Untrap = <EVAL (<TAG.Untrap>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_magic_untrap, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 2
+   
+[DIALOG d_protection]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2254
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_protection TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_protection BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Protection> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Protection = <EVAL (<TAG.Protection>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_protection, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 2
+   
+[DIALOG d_strength]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2255
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_strength TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_strength BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Strength> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Strength = <EVAL (<TAG.Strength>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_strength, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 2
+   
+[DIALOG d_bless]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2256
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_bless TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_bless BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Bless> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Bless = <EVAL (<TAG.Bless>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_bless, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 3
+   
+[DIALOG d_fireball]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2257
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_fireball TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_fireball BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Fireball> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Fireball = <EVAL (<TAG.Fireball>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_fireball, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 3
+   
+[DIALOG d_lock]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2258
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_lock TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_lock BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Lock> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Lock = <EVAL (<TAG.Lock>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_magic_lock, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 3
+   
+[DIALOG d_poison]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2259
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_poison TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_poison BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Poison> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Poison = <EVAL (<TAG.Poison>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_poison, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 3
+   
+[DIALOG d_telekinesis]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2260
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_telekinesis TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_telekinesis BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Telekinesis> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Telekinesis = <EVAL (<TAG.Telekinesis>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_telekinesis, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 3
+   
+[DIALOG d_teleport]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2261
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_teleport TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_teleport BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Teleport> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Teleport = <EVAL (<TAG.Teleport>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_teleport, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+   Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 3
+   
+[DIALOG d_unlock]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2262
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_unlock TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_unlock BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Unlock> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Unlock = <EVAL (<TAG.Unlock>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_unlock, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 3
+   
+[DIALOG d_wallstone]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2263
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_wallstone TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_wallstone BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.wallstone> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.wallstone = <EVAL (<TAG.wallstone>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_wall_of_stone, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 3
+   
+[DIALOG d_acure]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2264
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_acure TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_acure BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Acure> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Acure = <EVAL (<TAG.Acure>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_archcure, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 4
+   
+[DIALOG d_aprotection]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2265
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_aprotection TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_aprotection BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Aprotection> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Aprotection = <EVAL (<TAG.Aprotection>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_archprotection, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 4
+   
+[DIALOG d_curse]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2266
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_curse TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_curse BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Curse> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Curse = <EVAL (<TAG.Curse>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_curse, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 4
+   
+[DIALOG d_firefield]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2267
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_firefield TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_firefield BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Firefield> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Firefield = <EVAL (<TAG.Firefield>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_fire_field, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 4
+   
+[DIALOG d_Gheal]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2268
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_Gheal TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_Gheal BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Gheal> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Gheal = <EVAL (<TAG.Gheal>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_greater_heal, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 4
+   
+[DIALOG d_lightning]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2269
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_lightning TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_lightning BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Lightning> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Lightning = <EVAL (<TAG.Lightning>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_lightning, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 4
+   
+[DIALOG d_mdrain]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2270
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_mdrain TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_mdrain BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Mdrain> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Mdrain = <EVAL (<TAG.Mdrain>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_mana_drain, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 4
+   
+[DIALOG d_recall]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2271
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_recall TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_recall BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Recall> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Recall = <EVAL (<TAG.Recall>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_Recall, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndI
+   DIALOG d_table_scribe 4
+   
+[DIALOG d_spirits]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2272
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_spirits TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_spirits BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.spirits> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.spirits = <EVAL (<TAG.spirits>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_blade_spirits, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 5
+   
+[DIALOG d_dfield]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2273
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_dfield TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_dfield BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Dfield> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Dfield = <EVAL (<TAG.Dfield>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_dispel_field, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 5
+   
+[DIALOG d_incognito]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2274
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_incognito TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_incognito BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Incognito> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Incognito = <EVAL (<TAG.Incognito>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_incognito, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 5
+   
+[DIALOG d_reflection]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2275
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_reflection TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_reflection BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Reflection> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Reflection = <EVAL (<TAG.Reflection>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_magic_reflection, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 5
+   
+[DIALOG d_mblast]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2276
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_mblast TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_mblast BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Mblast> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Mblast = <EVAL (<TAG.Mblast>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_mind_blast, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 5
+   
+[DIALOG d_paralyze]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2277
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_paralyze TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_paralyze BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Paralyze> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Paralyze = <EVAL (<TAG.Paralyze>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_paralyze, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 5
+   
+[DIALOG d_pfield]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2278
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_pfield TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_pfield BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Pfield> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Pfield = <EVAL (<TAG.Pfield>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_poison_field, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 5
+   
+[DIALOG d_screature]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2279
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_screature TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_screature BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Screature> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Screature = <EVAL (<TAG.Screature>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_summon_creature, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 5
+   
+[DIALOG d_dispel]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2280
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_dispel TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_dispel BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Dispel> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Dispel = <EVAL (<TAG.Dispel>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_dispel, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 6
+   
+[DIALOG d_explosion]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2281
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_explosion TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_explosion BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Explosion> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Explosion = <EVAL (<TAG.Explosion>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_explosion, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 6
+   
+[DIALOG d_ebolt]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2282
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_ebolt TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_ebolt BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Ebolt> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Ebolt = <EVAL (<TAG.Ebolt>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_energy_bolt, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 6
+   
+[DIALOG d_invisibility]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2283
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_invisibility TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_invisibility BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Invisibility> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Invisibility = <EVAL (<TAG.Invisibility>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_invisibility, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 6
+   
+[DIALOG d_mark]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2284
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_mark TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_mark BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Mark> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Mark = <EVAL (<TAG.Mark>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_mark, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 6
+   
+[DIALOG d_mcurse]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2285
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_mcurse TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_mcurse BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Mcurse> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Mcurse = <EVAL (<TAG.Mcurse>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_mass_curse, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 6
+   
+[DIALOG d_parafield]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2286
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_parafield TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_parafield BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Parafield> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Parafield = <EVAL (<TAG.Parafield>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_paralyze_field, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 6
+   
+[DIALOG d_reveal]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2287
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_reveal TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_reveal BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Reveal> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Reveal = <EVAL (<TAG.Reveal>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_reveal, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 6
+   
+[DIALOG d_clightning]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2288
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_clightning TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_clightning BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Clightning> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Clightning = <EVAL (<TAG.Clightning>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_chain_lightning, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 7
+   
+[DIALOG d_efield]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2289
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_efield TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_efield BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Efield> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Efield = <EVAL (<TAG.Efield>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_energy_field, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 7
+   
+[DIALOG d_flamestrike]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2290
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_flamestrike TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_flamestrike BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Flamestrike> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Flamestrike = <EVAL (<TAG.Flamestrike>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_flamestrike, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 7
+   
+[DIALOG d_gate]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2291
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_gate TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_gate BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Gate> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Gate = <EVAL (<TAG.Gate>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_gate_travel, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 7
+   
+[DIALOG d_mvampire]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2292
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_mvampire TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_mvampire BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Mvampire> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Mvampire = <EVAL (<TAG.Mvampire>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_mana_vampire, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 7
+         
+[DIALOG d_mdispel]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2293
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_mdispel TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_mdispel BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Mdispel> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Mdispel = <EVAL (<TAG.Mdispel>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_mass_dispel, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 7
+   
+[DIALOG d_mswarm]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2294
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_mswarm TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_mswarm BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Mswarm> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Mswarm = <EVAL (<TAG.Mswarm>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_meteor_swarm, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 7
+
+[DIALOG d_polymorph]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2295
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_polymorph TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_polymorph BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Polymorph> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Polymorph = <EVAL (<TAG.Polymorph>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_polymorph, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 7
+
+[DIALOG d_earthquake]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2296
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_earthquake TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_earthquake BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Earthquake> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Earthquake = <EVAL (<TAG.Earthquake>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_earthquake, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 8
+
+[DIALOG d_evortex]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2297
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_evortex TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_evortex BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Evortex> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Evortex = <EVAL (<TAG.Evortex>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_energy_vortex, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 8
+
+[DIALOG d_resurrection]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2298
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_resurrection TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_resurrection BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Resurrection> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Resurrection = <EVAL (<TAG.Resurrection>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_resurrection, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 8
+
+[DIALOG d_aelemental]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2299
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_aelemental TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_aelemental BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.aelemental> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.aelemental = <EVAL (<TAG.aelemental>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_summon_elem_air, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 8
+
+[DIALOG d_sdaemon]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2300
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_sdaemon TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_sdaemon BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Sdaemon> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Sdaemon = <EVAL (<TAG.Sdaemon>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_summon_daemon, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 8
+
+[DIALOG d_eelemental]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2301
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_eelemental TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_eelemental BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Eelemental> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Eelemental = <EVAL (<TAG.Eelemental>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_summon_elem_earth, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 8
+         
+[DIALOG d_felemental]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2302
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_felemental TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_felemental BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Felemental> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Felemental = <EVAL (<TAG.Felemental>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_summon_elem_fire, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 8  
+   
+[DIALOG d_welemental]
+0,0
+page 0
+gumppic   20  20 35
+gumppic   38  40 2303
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_welemental TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_welemental BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Welemental> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Welemental = <EVAL (<TAG.Welemental>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scroll_summon_elem_water, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 8
+   
+[DIALOG d_pen]
+0,0
+page 0
+gumppic   20  20 35
+tilepic   38  52 4032
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_pen TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_pen BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Pen> >= <ARGTXT[1]>)&&(<ARGTXT[1]> < 25 ))
+         TAG.Pen = <EVAL (<TAG.Pen>-<ARGTXT[1]>)>
+
+         FOR <EVAL <ARGTXT[1]>>
+            SERV.NEWITEM i_pen_and_ink
+            NEW.CONT=<SRC.FINDLAYER.21.UID>
+         ENDFOR
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 9
+   
+[DIALOG d_powder]
+0,0
+page 0
+gumppic   20  20 35
+tilepic   38  48 3826
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_powder TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_powder BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If (<TAG.Powder> >= <ARGTXT[1]>)&&(<ARGTXT[1]> > 0 ))
+         TAG.Powder = <EVAL (<TAG.Powder>-<ARGTXT[1]>)>
+         SERV.NEWITEM i_scribe_powder, <EVAL(<ARGTXT[1]>)>, <SRC.FINDLAYER.21.UID>
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 9
+   
+[DIALOG d_books]
+0,0
+page 0
+gumppic   20  20 35
+tilepic   38  55 4081
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_books TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_books BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Books> >= <ARGTXT[1]>)&&(<ARGTXT[1]> < 25 ))
+         TAG.Books = <EVAL (<TAG.Books>-<ARGTXT[1]>)>
+         
+         FOR <EVAL <ARGTXT[1]>>
+            SERV.NEWITEM i_book_sm
+            NEW.CONT=<SRC.FINDLAYER.21.UID>
+         ENDFOR
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 9
+   
+[DIALOG d_bookl]
+0,0
+page 0
+gumppic   20  20 35
+tilepic   40  55 4082
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_bookl TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_bookl BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Bookl> >= <ARGTXT[1]>)&&(<ARGTXT[1]> < 25 ))
+         TAG.Bookl = <EVAL (<TAG.Bookl>-<ARGTXT[1]>)>
+         
+         FOR <EVAL <ARGTXT[1]>>
+            SERV.NEWITEM i_book_lg
+            NEW.CONT=<SRC.FINDLAYER.21.UID>
+         ENDFOR
+     Else
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 9
+   
+[DIALOG d_rune]
+0,0
+page 0
+gumppic   20  20 35
+tilepic   38  55 7956
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_rune TEXT]
+<VAR.BLANKLINE>
+
+[DIALOG d_rune BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   If ((<TAG.Rune> >= <ARGTXT[1]>)&&(<ARGTXT[1]> < 25 ))
+         TAG.Rune = <EVAL (<TAG.Rune>-<ARGTXT[1]>)>
+         
+         FOR <EVAL <ARGTXT[1]>>
+            SERV.NEWITEM i_rune_marker
+            NEW.CONT=<SRC.FINDLAYER.21.UID>
+         ENDFOR
+   Else
+       SRC.SYSMESSAGE <EVAL <TAG.RUNE>>, <ARGTXT[1]>
+       SRC.SYSMESSAGE The number you entered is not valid.
+   EndIf
+   DIALOG d_table_scribe 9
+   
+[DIALOG d_default_extract]
+0,0
+page 0
+gumppic   20  20 35
+dtext 34 35 0 Default
+dtext 34 50 0 Extract
+dtext 34 65 0 Amount
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_default_extract TEXT]
+<EVAL <TAG.DEFAULT_EXTRACT>>
+
+[DIALOG d_default_extract BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   IF <ARGTXT[1]> > 0 Then
+      TAG.DEFAULT_EXTRACT = <EVAL <ARGTXT[1]>>
+      SRC.SYSMESSAGE You have set the default extract value to <EVAL <TAG.DEFAULT_EXTRACT>>
+   ELSE
+      TAG.DEFAULT_EXTRACT =
+      SRC.SYSMESSAGE You have chosen to clear the default value.
+   ENDIF
+   DIALOG d_table_scribe 1
+   
+   
+   
+   
+[EOF]
+

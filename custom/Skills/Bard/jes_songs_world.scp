@@ -1,0 +1,927 @@
+//Scripted by Wren - Oct 15 '03
+
+//GUMP for SONGS OF THE WORLD BOOK-------------------------------------------------------
+
+[DIALOG d_songs_world]
+0, 0
+
+PAGE 0
+  gumppic 0 17 2200
+  dtext 230 140 0 prepare
+  dtext 220 160 0 instrument
+
+PAGE 1
+  button 294 22 <PAGE1> 2206 0 <PAGE1> 0
+
+  dtext   40 100 50 Abundance
+  button 225 70 5553 5554 1 0 1
+    
+PAGE 2
+  button  20 22 2205 2205 0 1 0
+  button 294 22 <PAGE2> 2206 0 <PAGE2> 0
+  
+  dtext   40 100 50 Enchantment
+  button 225 70 5553 5554 1 0 2
+  
+PAGE 3
+  button  20 22 2205 2205 0 2 0
+  button 294 22 <PAGE3> 2206 0 <PAGE3> 0
+  
+  dtext   40 100 50 Sonar
+  button 225 70 5553 5554 1 0 3
+
+PAGE 4
+  button  20 22 2205 2205 0 3 0
+  button 294 22 <PAGE4> 2206 0 <PAGE4> 0
+  
+  dtext   40 100 50 Journey
+  button 225 70 5553 5554 1 0 4
+
+
+PAGE 5
+  button  20 22 2205 2205 0 4 0
+  button 294 22 <PAGE5> 2206 0 <PAGE5> 0
+  
+  dtext   40 100 50 Fortify
+  button 225 70 5553 5554 1 0 5
+
+
+PAGE 6
+  button  20 22 2205 2205 0 5 0
+  button 294 22 <PAGE6> 2206 0 <PAGE6> 0
+  
+  dtext   40 100 50 Replica
+  button 225 70 5553 5554 1 0 6
+
+
+PAGE 7
+  button  20 22 2205 2205 0 6 0
+  button 294 22 <PAGE7> 2206 0 <PAGE7> 0
+  
+  dtext   40 100 50 Mimic
+  button 225 70 5553 5554 1 0 7
+
+PAGE 8
+  button  20 22 2205 2205 0 7 0
+  button 294 22 <PAGE8> 2206 0 <PAGE8> 0
+  
+  dtext   40 100 50 Deflect
+  button 225 70 5553 5554 1 0 8
+
+PAGE 9
+  button  20 22 2205 2205 0 8 0
+  button 294 22 <PAGE9> 2206 0 <PAGE9> 0
+  
+  dtext   40 100 50 Soul Searcher  
+  button 225 70 5553 5554 1 0 9
+
+PAGE 10
+  button  20 22 2205 2205 0 9 0
+  button 294 22 <PAGE10> 2206 0 <PAGE10> 0
+  
+  dtext   40 100 50 Deflect
+  dtext   40 120 50 .  & Fortify
+  button 225 70 5553 5554 1 0 10
+
+PAGE 11
+  button  20 22 2205 2205 0 10 0
+  
+  dtext   40 100 50 Energy
+  button 225 70 5553 5554 1 0 11
+
+
+
+[DIALOG d_songs_world BUTTON]
+ON = 1
+   TAG.SONG.NAME	= "Abundance"
+   song_assign song_Abundance
+
+ON = 2
+   TAG.SONG.NAME	= "Enchantment"
+   song_assign song_Enchantment
+
+ON = 3
+   TAG.SONG.NAME	= "Sonar"
+   song_assign song_Sonar
+
+ON = 4
+   TAG.SONG.NAME	= "Journey"
+   song_assign song_Journey
+
+ON = 5
+   TAG.SONG.NAME	= "Fortify"
+   song_assign song_Fortify
+
+ON = 6
+   TAG.SONG.NAME	= "Replica"
+   song_assign song_Replica
+
+ON = 7
+   TAG.SONG.NAME	= "Mimic"
+   song_assign song_Mimic
+
+ON = 8
+   TAG.SONG.NAME	= "Deflect"
+   song_assign song_Deflect
+
+ON = 9
+   TAG.SONG.NAME	= "Song of the Soul Searcher"
+   song_assign song_SoulSearcher
+
+ON = 10
+   TAG.SONG.NAME	= "Deflect & Fortify"
+   song_assign song_DefFort
+
+ON = 11
+   TAG.SONG.NAME	= "Energy"
+   song_assign song_Energy
+
+
+
+//SONG OF THE WORLD BOOK ITEM -------------------------------------------------------------------
+
+[ITEMDEF i_book_songs_world]
+NAME	= Songs of the World
+ID	= i_book_of_truth
+TYPE	= t_script
+VALUE	= 250
+
+ON = @Create
+  COLOR	= 0296
+
+ON = @DClick
+
+  //Requires at least 30 Musicianship to use songs of war
+  IF ( <SRC.MUSICIANSHIP> < 30.0 )
+     SRC.SYSMESSAGE Your Musicianship skill is too low to read any of the musics.
+     return 1
+  ENDIF
+
+  //Check Songs of War skill level and set the number of pages in the gump to display
+  IF ( <SRC.ENTICEMENT> < song_Abundance_level )
+     SRC.SYSMESSAGE You can't understand any song in this book.
+     return 1
+  ELSEIF ( <SRC.ENTICEMENT> < song_Enchantment_level )
+     MOREm	= 0
+  ELSEIF ( <SRC.ENTICEMENT> < song_Sonar_level )
+     MOREm	= 2
+  ELSEIF ( <SRC.ENTICEMENT> < song_Journey_level )
+     MOREm	= 3
+  ELSEIF ( <SRC.ENTICEMENT> < song_Fortify_level )
+     MOREm	= 4
+  ELSEIF ( <SRC.ENTICEMENT> < song_Replica_level )
+     MOREm	= 5
+  ELSEIF ( <SRC.ENTICEMENT> < song_Mimic_level )
+     MOREM 	= 6
+  ELSEIF ( <SRC.ENTICEMENT> < song_Deflect_level )
+     MOREm 	= 7
+  ELSEIF ( <SRC.ENTICEMENT> < song_SoulSearcher_level )
+     MOREm 	= 8  
+  ELSEIF ( <SRC.ENTICEMENT> < song_DefFort_level )
+     MOREm 	= 9  
+  ELSEIF ( <SRC.ENTICEMENT> < song_Energy  )
+     MOREm 	= 10  
+  ELSE
+     MOREm = 11
+  ENDIF
+
+  VAR.PAGE	= 0
+  VAR.PAGE2	= 0
+  DIALOG	d_songs_world
+  RETURN 1
+
+
+ON = @Targon_Item
+
+  //Can't assign a song to an instrument unless the instrument is in your backpack
+  IF ( <SRC.TARG.TOPOBJ.UID> != <SRC.UID> )
+     SRC.SYSMESSAGE You must have it in your backpack.
+     RETURN 1
+  ENDIF
+  
+  //Not sure....
+  IF ( <SRC.TARG.TYPE> == t_musical )
+     SRC.NEWITEM <SRC.TARG.BASEID>
+     SRC.ACT.BOUNCE
+     SRC.TARG.REMOVE
+
+  //If we target and instrument then set its reference to our book
+  ELSEIF ( <SRC.TARG.TYPE> == t_instrument )
+     SRC.ACT	= <SRC.TARG>
+
+  //Can't assign a song to anything but an instrument
+  ELSE
+     SRC.SYSMESSAGE That's not an instrument.
+     return 1
+  ENDIF
+
+  //Prepare the instrument
+  SRC.ACT.MOREz	= <MOREz>
+  SRC.ACT.TAG.SONG.NAME	= <TAG.SONG.NAME>
+  SRC.SYSMESSAGE You prepare the <SRC.ACT.NAME> for <SRC.ACT.TAG.SONG.NAME>.
+  RETURN 1
+
+
+
+//Abundance------------------------------------------------------------------------
+[ITEMDEF i_song_Abundance]
+ID	= i_lute
+TYPE	= t_eq_script
+LAYER	= layer_k_song
+NAME	= Abundance
+
+
+ON = @Equip
+   SRC.EVENTS +e_singing
+   TIMER	= 3
+   VAR.SONGCOLOR 50
+   SRC.SAY *starts singing*
+   SRC.SYSMESSAGE You start singing Abundance.
+
+ON = @UnEquip
+   SRC.EVENTS -e_singing
+   VAR.SONGCOLOR 50
+   SRC.SAY *stops singing*
+   SRC.SYSMESSAGE You stop singing.
+
+ON = @Timer   
+   SONGS_CHECKFAIL_ENT
+
+   IF ( <SONGSTATE> & 1 )
+      VAR.SONGCOLOR	= 35
+   ELSE
+      VAR.SONGCOLOR	= 34
+   ENDIF
+
+
+   IF ( 0 )
+   ELSEIF ( <SONGSTATE> ==  0 )
+       SING_SAY	= Gods of Harvest
+   ELSEIF ( <SONGSTATE> ==  1 )
+       SING_SAY	= Gods of Beast
+   ELSEIF ( <SONGSTATE> ==  2 )
+       SING_SAY	= Bless this <LINK.NAME>
+   ELSEIF ( <SONGSTATE> ==  3 )
+       SING_SAY	= Then let us feast!
+       IF <LINK.TYPE> = t_fruit
+          LINK.TYPE=t_food
+       ENDIF
+       LINK.MOREM = 5
+       LINK.NAME = Blessed <LINK.NAME>
+   ELSEIF ( <SONGSTATE> == 4 )
+      SING_SAY = *the end*
+      CONT.SKILLCHECK_RUN Skill_ENTICEMENT
+   ELSE
+      REMOVE
+      RETURN 1
+   ENDIF
+
+   SING_STATE
+   RETURN 1
+
+
+
+//Fortify-------------------------------------------------------------------
+[TYPEDEF t_fortify]
+ON=@DCLICK
+   IF <SRC.UID>=<MORE1>
+      REMOVE
+   ENDIF
+   RETURN 1
+   
+ON=@TIMER
+   REMOVE
+   RETURN 1
+
+[FUNCTION FORTIFY]
+   FOR 8
+      SERV.NEWITEM=i_plant_juniper
+      NEW.P=<P> 
+      NEW.MORE1=<UID>
+      NEW.TYPE=T_FORTIFY
+      NEW.TIMER = <EVAL <ENTICEMENT>/10>
+
+      DOSWITCH <LOCAL._FOR>
+         SERV.LOG This Should Never be 0...
+         NEW.MOVE NW 1
+         NEW.MOVE N 1
+         NEW.MOVE NE 1 
+         NEW.MOVE E 1 
+         NEW.MOVE SE 1 
+         NEW.MOVE S 1 
+         NEW.MOVE SW 1 
+         NEW.MOVE W 1 
+      END DO  
+   ENDFOR
+   RETURN 1
+
+[ITEMDEF i_song_Fortify]
+ID	= i_lute
+TYPE	= t_eq_script
+LAYER	= layer_k_song
+NAME	= Fortify
+
+ON = @Equip
+   SRC.EVENTS +e_singing
+   TIMER	= 3
+   VAR.SONGCOLOR 50
+   SRC.SAY *starts singing*
+   SRC.SYSMESSAGE You start singing Fortify.
+
+ON = @UnEquip
+   SRC.EVENTS -e_singing
+   VAR.SONGCOLOR 50
+   SRC.SAY *stops singing*
+   SRC.SYSMESSAGE You stop singing.
+
+ON = @Timer   
+   SONGS_CHECKFAIL_ENT
+
+   IF ( <SONGSTATE> & 1 )
+      VAR.SONGCOLOR	= 35
+   ELSE
+      VAR.SONGCOLOR	= 34
+   ENDIF
+
+   IF ( 0 )
+   ELSEIF ( <SONGSTATE> ==  0 )
+       SING_SAY	= Blah blah blah
+   ELSEIF ( <SONGSTATE> ==  1 )
+       SING_SAY	= Blah blah blah
+   ELSEIF ( <SONGSTATE> ==  2 )
+       SING_SAY	= Blah blah blah
+   ELSEIF ( <SONGSTATE> ==  3 )
+       SING_SAY	= Blah blah blah
+   ELSEIF ( <SONGSTATE> ==  4 )
+       SING_SAY	= Blah blah blah
+   ELSEIF ( <SONGSTATE> ==  5 )
+       SING_SAY	= Blah blah blah
+       CONT.FORTIFY
+   ELSEIF ( <SONGSTATE> ==  6 )
+      SING_SAY = *the end*
+      CONT.SKILLCHECK_RUN Skill_ENTICEMENT
+   ELSE
+      REMOVE
+      RETURN 1
+   ENDIF
+
+   SING_STATE
+   RETURN 1
+   
+   
+
+
+//Mimic------------------------------------------------------------------------
+//This is the memory object that actually starts and stops the 
+//mimic by being equipped/unequipped from the person
+[ItemDef M_SongMimic]
+id=i_memory
+Name=Song Mimic Effect
+type=t_eq_script
+
+ON=@Create
+   TIMER    = 300
+
+ON=@UNEQUIP
+   SRC.BODY = <SRC.OBODY>
+   SRC.COLOR = <SRC.OSKIN>
+   SRC.NAME = <SRC.TAG.NAMEBACK>
+
+ON=@Timer
+   Remove 
+   RETURN 1
+
+
+[ITEMDEF i_song_Mimic]
+ID	= i_lute
+TYPE	= t_eq_script
+LAYER	= layer_k_song
+NAME	= Mimic
+
+
+ON = @Equip
+   SRC.EVENTS +e_singing
+   TIMER	= 3
+   VAR.SONGCOLOR 50
+   SRC.SAY *starts singing*
+   SRC.SYSMESSAGE You start singing Mimic.
+
+ON = @UnEquip
+   SRC.EVENTS -e_singing
+   VAR.SONGCOLOR 50
+   SRC.SAY *stops singing*
+   SRC.SYSMESSAGE You stop singing.
+
+ON = @Timer   
+   SONGS_CHECKFAIL_ENT
+
+   IF ( <SONGSTATE> & 1 )
+      VAR.SONGCOLOR	= 35
+   ELSE
+      VAR.SONGCOLOR	= 34
+   ENDIF
+
+
+   IF ( 0 )
+   ELSEIF ( <SONGSTATE> ==  0 )
+       SING_SAY	= Whatever you are
+   ELSEIF ( <SONGSTATE> ==  1 )
+       SING_SAY	= Whomever you may be
+   ELSEIF ( <SONGSTATE> ==  2 )
+       SING_SAY	= My lyrics will deceive
+   ELSEIF ( <SONGSTATE> ==  3 )
+       SING_SAY	= The eyes from which you see.
+   ELSEIF ( <SONGSTATE> ==  4 )
+       SING_SAY = A whisper, a shift
+   ELSEIF ( <SONGSTATE> ==  5 )
+       SING_SAY = A trick of the light
+   ELSEIF ( <SONGSTATE> ==  6 )
+       SING_SAY = My shape becomes yours
+   ELSEIF ( <SONGSTATE> ==  7 )
+       SING_SAY = To all in sight
+
+       //PERFORM MIMIC TRANSFORMATION//
+       CONT.BODY = <LINK.BODY>
+       CONT.COLOR = <LINK.COLOR>
+
+       IF <LINK.NPC>
+          CONT.NAME = <LINK.NAME>
+       ELSE
+          CONT.NAME = .<LINK.NAME>
+       ENDIF
+
+       IF (<CONT.FINDID(M_SongMimic)>)
+          CONT.FINDID(M_SongMimic).TIMER=300
+       ELSE
+          CONT.NEWITEM M_SongMimic
+          CONT.EQUIP <CONT.ACT>
+       ENDIF
+       ///////////////////////////////
+
+   ELSEIF ( <SONGSTATE> ==  8 )
+      SING_SAY = *the end*
+      CONT.SKILLCHECK_RUN Skill_ENTICEMENT
+   ELSE
+      REMOVE
+      RETURN 1
+   ENDIF
+
+   SING_STATE
+   RETURN 1
+
+
+
+//Deflect-------------------------------------------------------------------
+[FUNCTION DEFLECT]
+IF !(<SRC.UID>=<UID>)
+   IF ((<CANSEELOS> && (<DISTANCE> < 7))
+      DOSWITCH <EVAL RAND(8)>	 
+         LOCAL.DIRECTION = N
+         LOCAL.DIRECTION = S
+         LOCAL.DIRECTION = E
+         LOCAL.DIRECTION = W
+         LOCAL.DIRECTION = NW
+         LOCAL.DIRECTION = NE
+         LOCAL.DIRECTION = SW
+         LOCAL.DIRECTION = SE
+      END DO      
+   
+      SERV.NEWITEM i_gold
+      NEW.ATTR=080
+      NEW.P=<P>
+      NEW.MOVE 5 <LOCAL.DIRECTION>
+      IF <SRC.CANSEELOS <NEW.UID>>
+         MOVE <LOCAL.DIRECTION>
+      ENDIF
+      NEW.REMOVE
+      FIX
+   ENDIF
+ENDIF
+
+[FUNCTION FOR_MEMS]
+   FORCHARMEMORYTYPE MEMORY_FIGHT
+     LINK.DEFLECT <SRC.UID>
+   ENDFOR
+
+
+[ItemDef M_SongDeflect]
+id=i_memory
+Name=Song Deflect Effect
+type=t_eq_script
+
+ON=@Create
+   TIMER    = 1
+
+ON=@UNEQUIP
+   SRC.FOR_MEMS 
+   serv.allclients DEFLECT <SRC.UID>
+   
+ON=@Timer
+   Remove 
+   RETURN 1
+
+
+[ITEMDEF i_song_Deflect]
+ID	= i_lute
+TYPE	= t_eq_script
+LAYER	= layer_k_song
+NAME	= Deflect
+
+
+ON = @Equip
+   SRC.EVENTS +e_singing
+   TIMER	= 3
+   VAR.SONGCOLOR 50
+   SRC.SAY *starts singing*
+   SRC.SYSMESSAGE You start singing Deflect.
+
+ON = @UnEquip
+   SRC.EVENTS -e_singing
+   VAR.SONGCOLOR 50
+   SRC.SAY *stops singing*
+   SRC.SYSMESSAGE You stop singing.
+
+ON = @Timer   
+   SONGS_CHECKFAIL_ENT
+
+   IF ( <SONGSTATE> & 1 )
+      VAR.SONGCOLOR	= 35
+   ELSE
+      VAR.SONGCOLOR	= 34
+   ENDIF
+
+   IF ( 0 )
+   ELSEIF ( <SONGSTATE> ==  0 )
+       SING_SAY	= Blah blah blah
+   ELSEIF ( <SONGSTATE> ==  1 )
+       SING_SAY	= Blah blah blah
+       CONT.NEWITEM M_SongDeflect
+       CONT.EQUIP <CONT.ACT>
+   ELSEIF ( <SONGSTATE> ==  2 )
+       SING_SAY	= Blah blah blah
+   ELSEIF ( <SONGSTATE> ==  3 )
+       SING_SAY	= Blah blah blah
+       CONT.NEWITEM M_SongDeflect
+       CONT.EQUIP <CONT.ACT>
+   ELSEIF ( <SONGSTATE> ==  4 )
+       SING_SAY	= Blah blah blah
+   ELSEIF ( <SONGSTATE> ==  5 )
+       SING_SAY	= Blah blah blah
+       CONT.NEWITEM M_SongDeflect
+       CONT.EQUIP <CONT.ACT>
+   ELSEIF ( <SONGSTATE> ==  6 )
+      SING_SAY = *the end*
+      CONT.SKILLCHECK_RUN Skill_ENTICEMENT
+   ELSE
+      REMOVE
+      RETURN 1
+   ENDIF
+
+   SING_STATE
+   RETURN 1
+   
+   
+
+
+//Soul Searcher-------------------------------------------------------------------
+[ITEMDEF i_song_SoulSearcher]
+ID	= i_lute
+TYPE	= t_eq_script
+LAYER	= layer_k_song
+NAME	= Soul Searcher
+
+
+ON = @Equip
+   SRC.EVENTS +e_singing
+   TIMER	= 3
+   VAR.SONGCOLOR 50
+   SRC.SAY *starts singing*
+   SRC.SYSMESSAGE You start singing Soul Searcher.
+
+ON = @UnEquip
+   SRC.EVENTS -e_singing
+   SRC.TAG.PLAYER_NAME=
+   SRC.TAG.P=
+   VAR.SONGCOLOR 50
+   SRC.SAY *stops singing*
+   SRC.SYSMESSAGE You stop singing.
+
+ON = @Timer   
+   SONGS_CHECKFAIL_ENT
+
+   IF ( <SONGSTATE> & 1 )
+      VAR.SONGCOLOR	= 35
+   ELSE
+      VAR.SONGCOLOR	= 34
+   ENDIF
+
+
+   IF ( 0 )
+   ELSEIF ( <SONGSTATE> ==  0 )
+       SING_SAY	= <CONT.TAG.PLAYER_NAME>, near or far, I seek you to come hither
+   ELSEIF ( <SONGSTATE> ==  1 )
+       SING_SAY	= For services, or for joviality, I seek you among the wind
+       CONT.EMOTE *feel the breeze blow by*
+   ELSEIF ( <SONGSTATE> ==  2 )
+       SING_SAY	= <LINK.NAME>, near or far, I hear you amongst the breeze
+   ELSEIF ( <SONGSTATE> ==  3 )
+       SING_SAY	= Your voice drawn to me like an angel in the sky
+       CONT.EMOTE *feel a light upon you*
+   ELSEIF ( <SONGSTATE> ==  4 )
+       SING_SAY = <LINK.NAME>, near or far, I sense you across the land
+   ELSEIF ( <SONGSTATE> ==  5 )
+       SING_SAY = I feel your soul into mine, I now know where you are...
+       LOCAL.PLAYER_UID=<f_findplayer <CONT.TAG.player_name>>
+       IF <LOCAL.PLAYER_UID>=0
+          CONT.SYSMESSAGE You cannot connect to <CONT.TAG.PLAYER_NAME>'s spirit at this time.
+          REMOVE
+          RETURN 1
+       ELSEIF ( <UID.<LOCAL.PLAYER_UID>.ACCOUNT.PLEVEL> > <CONT.ACCOUNT.PLEVEL> )
+          CONT.SYSMESSAGE <CONT.TAG.PLAYER_NAME>'s spirit seems to be protected from your view.
+          REMOVE
+          RETURN 1
+       ELSE
+          IF ( <CONT.DISTANCE <LOCAL.PLAYER_UID>> <= (<CONT.ENTICEMENT>))
+             CONT.EMOTE drift into a deep trance
+             CONT.SLEEP
+             CONT.flags=<CONT.flags>&~010
+             CONT.flags=<CONT.flags>|02000
+             CONT.TAG.P=<CONT.P>
+             CONT.P=<UID.<LOCAL.PLAYER_UID>.P>
+             CONT.NUDGEUP
+             CONT.NUDGEDOWN
+          ELSE
+             CONT.SYSMESSAGE <CONT.TAG.PLAYER_NAME> is to far for your soul to reach.
+             CONT.SYSMESSAGE <uid.<LOCAL.PLAYER_UID>.sex He/She> is somewhere in <UID.<LOCAL.PLAYER_UID>.REGION.NAME>.
+             SING_SAY = *the end*
+             CONT.SKILLCHECK_RUN Skill_ENTICEMENT
+             REMOVE
+             RETURN 1
+          ENDIF
+       ENDIF
+   ELSEIF ( <SONGSTATE> ==  <EVAL ((<CONT.ENTICEMENT>+<CONT.MUSICIANSHIP>)/100)> )
+      CONT.P=<CONT.TAG.P>
+      CONT.NUDGEUP
+      CONT.NUDGEDOWN
+      
+      CONT.flags=<CONT.flags>&~02000
+      CONT.flags=<CONT.flags>|010
+      SING_SAY = *the end*
+      CONT.SKILLCHECK_RUN Skill_ENTICEMENT
+   ELSEIF ( <SONGSTATE> >  <EVAL ((<CONT.ENTICEMENT>+<CONT.MUSICIANSHIP>)/100)> )
+      REMOVE
+      RETURN 1
+   ELSE
+      CONT.SYSMESSAGE <EVAL (<EVAL ((<CONT.ENTICEMENT>+<CONT.MUSICIANSHIP>)/100)> - <SONGSTATE>) > seconds left to your trance...
+   ENDIF
+
+   SING_STATE
+   RETURN 1
+   
+   
+[DIALOG d_soulsearcher] 
+0,0 
+nodispose 
+resizepic 190 175 5054 405 120 
+resizepic 200 185 3000 385 100 
+resizepic 220 215 3000 340 22 
+dtext 215 190 995 Enter the name of the soul you are seeking: 
+dtextentry 225 217 350 25 0 0 <SRC.TAG.PLAYER_NAME> 
+
+dtext 305 255 0000 Accept 
+button 270 255 4005 4006 1 0 1 
+dtext 485 255 0000 Cancel 
+button 450 255 4005 4006 1 0 0 
+
+[DIALOG d_soulsearcher BUTTON] 
+ON=1 
+   SRC.TAG.PLAYER_NAME=<ARGTXT[0]> 
+   SRC.NEWITEM i_song_SoulSearcher
+   SRC.ACT.EQUIP
+   RETURN 1 
+
+
+
+//Deflect & Fortify-----------------------------------------------------------------
+[ITEMDEF i_song_DefFort]
+ID	= i_lute
+TYPE	= t_eq_script
+LAYER	= layer_k_song
+NAME	= Deflect & Fortify
+
+ON = @Equip
+   SRC.EVENTS +e_singing
+   TIMER	= 3
+   VAR.SONGCOLOR 50
+   SRC.SAY *starts singing*
+   SRC.SYSMESSAGE You start singing Deflect & Fortify.
+
+ON = @UnEquip
+   SRC.EVENTS -e_singing
+   VAR.SONGCOLOR 50
+   SRC.SAY *stops singing*
+   SRC.SYSMESSAGE You stop singing.
+
+ON = @Timer   
+   SONGS_CHECKFAIL_ENT
+
+   IF ( <SONGSTATE> & 1 )
+      VAR.SONGCOLOR	= 35
+   ELSE
+      VAR.SONGCOLOR	= 34
+   ENDIF
+
+   IF ( 0 )
+   ELSEIF ( <SONGSTATE> ==  0 )
+       SING_SAY	= Blah blah blah
+   ELSEIF ( <SONGSTATE> ==  1 )
+       SING_SAY	= Blah blah blah
+       CONT.NEWITEM M_SongDeflect
+       CONT.EQUIP <CONT.ACT>
+   ELSEIF ( <SONGSTATE> ==  2 )
+       SING_SAY	= Blah blah blah
+   ELSEIF ( <SONGSTATE> ==  3 )
+       SING_SAY	= Blah blah blah
+       CONT.NEWITEM M_SongDeflect
+       CONT.EQUIP <CONT.ACT>
+   ELSEIF ( <SONGSTATE> ==  4 )
+       SING_SAY	= Blah blah blah
+   ELSEIF ( <SONGSTATE> ==  5 )
+       SING_SAY	= Blah blah blah
+       CONT.NEWITEM M_SongDeflect
+       CONT.EQUIP <CONT.ACT>
+       CONT.FORTIFY
+   ELSEIF ( <SONGSTATE> ==  6 )
+      SING_SAY = *the end*
+      CONT.SKILLCHECK_RUN Skill_ENTICEMENT
+   ELSE
+      REMOVE
+      RETURN 1
+   ENDIF
+
+   SING_STATE
+   RETURN 1
+   
+   
+   
+//Energy-----------------------------------------------------------------
+[PLEVEL 2]
+dismount
+
+[EVENTS E_Ascension]
+ON=@GETHIT
+   SRC.STAM=<EVAL (<SRC.STAM>-3)>
+   IF <STAM> < <EVAL (<DEX>-3)>
+      STAM=<EVAL (<STAM>+3)>
+   ENDIF
+   RETURN 1
+   
+ON=@SPELLCAST
+   RETURN 1
+
+ON=@SPELLEFFECT
+   RETURN 1
+   
+ON=@HIT
+   RETURN 1
+
+//[FUNCTION Dismountshandra] /// dismounts the player and bounces his ride
+//if (<findlayer.layer_horse.uid> ) 
+//if (0<src.tag.ondonarmount> == 1)
+//   act=<findlayer.layer_horse.more2> 
+//   dclick
+//ENDIF
+//ENDIF
+//RETURN 1
+
+[FUNCTION Dismount] /// dismounts the player and bounces his ride
+if (<SRC.findlayer.layer_horse.uid> ) 
+   SRC.act=<SRC.findlayer.layer_horse.more2> 
+   SRC.dclick
+   SRC.act.shrink
+   SRC.bounce <SRC.act.actarg1>
+   VAR.STEED= <EVAL <SRC.ACT.ACTARG1>&~0b0000000>
+   //TRY UID.<VAR.STEED>.ATTR = <UID.<VAR.STEED>.ATTR>|attr_invis
+   //TRY UID.<VAR.STEED>.REMOVEFROMVIEW
+endif
+RETURN 1
+
+[FUNCTION Remount] /// mounts the passed in ride
+IF !(<args>=0)
+   LOCAL.MOUNT= <UID.<ARGS>.MORE2>
+   if (<UID.<ARGS>.CONT>=<SRC.FINDLAYER.layer_pack.UID>) 
+      TRY UID.<ARGS>.ATTR = <UID.<ARGS>.ATTR> & ~ attr_invis
+      TRY UID.<ARGS>.DCLICK   
+      TRY UID.<LOCAL.MOUNT>.DCLICK
+   else
+      TRY UID.<ARGS>.ATTR = <UID.<ARGS>.ATTR> & ~ attr_invis
+      TRY UID.<ARGS>.DCLICK
+   endif
+ENDIF
+RETURN 1
+
+[FUNCTION record_layers]
+FOR 1 24
+   IF <SRC.FINDLAYER.<LOCAL._FOR>.UID>
+      TRY TAG.LAYER<LOCAL._FOR>=<SRC.FINDLAYER.<LOCAL._FOR>.UID>
+   ENDIF
+ENDFOR
+RETURN 1
+
+[FUNCTION equip_recorded_layers]
+FOR 1 24
+   IF ( 0<TAG.LAYER<LOCAL._FOR>> > 0 )
+      TRY UID.<TAG.LAYER<LOCAL._FOR>>.EQUIP
+      TRY TAG.LAYER<LOCAL._FOR>=
+   ENDIF
+ENDFOR
+RETURN 1
+
+[ITEMDEF M_SongEnergy]
+id=i_memory
+Name=Song Mimic Energy
+type=t_eq_script
+
+ON=@Create
+   TIMER    = 5
+
+ON=@Equip
+   RECORD_LAYERS
+   SRC.DISMOUNT
+   MORE2 = <VAR.STEED>
+   VAR.STEED =
+   SRC.BODY=C_WISP
+   SRC.EVENTS +E_ASCENSION
+   SRC.NUDGEUP
+   
+ON=@UNEQUIP
+   SRC.BODY = <SRC.OBODY>
+   SRC.NUDGEUP
+   SRC.REMOUNT <MORE2>
+   EQUIP_RECORDED_LAYERS
+   SRC.EVENTS -E_ASCENSION
+   
+ON=@Timer
+   IF ( <CONT.STAM> > 15 )
+      CONT.STAM=( CONT.STAM - 15 )
+      TIMER = 5
+   ELSE
+      Remove 
+   ENDIF
+   RETURN 1
+
+
+[ITEMDEF i_song_Energy]
+ID	= i_lute
+TYPE	= t_eq_script
+LAYER	= layer_k_song
+NAME	= Energy
+
+ON = @Equip
+   SRC.EVENTS +e_singing
+   TIMER	= 3
+   VAR.SONGCOLOR 50
+   SRC.SAY *starts singing*
+   SRC.SYSMESSAGE You start singing Energy
+
+ON = @UnEquip
+   SRC.EVENTS -e_singing
+   VAR.SONGCOLOR 50
+   SRC.SAY *stops singing*
+   SRC.SYSMESSAGE You stop singing.
+
+ON = @Timer   
+   SONGS_CHECKFAIL_ENT
+
+   IF ( <SONGSTATE> & 1 )
+      VAR.SONGCOLOR	= 35
+   ELSE
+      VAR.SONGCOLOR	= 34
+   ENDIF
+
+   IF ( 0 )
+   ELSEIF ( <SONGSTATE> ==  0 )
+       SING_SAY	= Wind take me away, turn myself to flame
+   ELSEIF ( <SONGSTATE> ==  1 )
+       SING_SAY	= Thrown away by rain, as light flows thru my veins
+   ELSEIF ( <SONGSTATE> ==  2 )
+       SING_SAY	= Let my soul be sunshine, let me be nowhere
+   ELSEIF ( <SONGSTATE> ==  3 )
+       SING_SAY	= Let my senses tremble, as my form disappears
+       CONT.NEWITEM M_SongEnergy
+       CONT.EQUIP <CONT.ACT>       
+   ELSEIF ( <SONGSTATE> ==  4 )
+      SING_SAY = *the end*
+      CONT.SKILLCHECK_RUN Skill_ENTICEMENT
+   ELSE
+      REMOVE
+      RETURN 1
+   ENDIF
+
+   SING_STATE
+   RETURN 1
+   
+   
+
+
+[EOF]

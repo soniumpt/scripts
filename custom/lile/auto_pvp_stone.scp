@@ -1,0 +1,206 @@
+[FUNCTION f_fireworks125a]
+DORAND 5 
+SRC.NEWITEM=i_fx_sparkle 
+SRC.NEWITEM=i_fx_heal_effect 
+SRC.NEWITEM=i_fx_bless_effect 
+SRC.NEWITEM=i_fx_curse 
+SRC.NEWITEM=i_fx_sparkle_2 
+ENDDO 
+src.act.p=<src.p> 
+//SRC.ACT.EFFECT=0,036e4,7 
+SRC.ACT.NAME=a fireworks display 
+SRC.SOUND=011e 
+SRC.ACT.COLOR={08fd 06 0b 010 015 01a 01f 024 029 02e 033 038 03d 042 047 04e 051 05b 060 065} 
+SRC.ACT.ATTR=attr_decay|attr_static 
+SRC.ACT.TIMER={9 4} 
+SRC.ACT.NUDGEUP={25 20 35 30} 
+DORAND 4 
+SRC.ACT.MOVE=-1,2 
+SRC.ACT.MOVE=-2,1 
+SRC.ACT.MOVE=-3,3 
+SRC.ACT.MOVE=-3,1 
+ENDDO 
+DORAND 5 
+SRC.NEWITEM=i_fx_bless_effect 
+SRC.NEWITEM=i_fx_sparkle_2 
+SRC.NEWITEM=i_fx_sparkle 
+SRC.NEWITEM=i_fx_curse 
+SRC.NEWITEM=i_fx_heal_effect 
+ENDDO 
+src.act.p=<src.p> 
+//SRC.ACT.EFFECT=0,036e4,7 
+SRC.ACT.NAME=a fireworks display 
+SRC.SOUND=011f 
+SRC.ACT.COLOR={08fd 06 0b 010 015 01a 01f 024 029 02e 033 038 03d 042 047 04e 051 05b 060 065} 
+SRC.ACT.ATTR=attr_decay|attr_static 
+SRC.ACT.TIMER={7 5} 
+SRC.ACT.NUDGEUP={15 30 35 25} 
+DORAND 4 
+SRC.ACT.MOVE=-1,-4 
+SRC.ACT.MOVE=-2,-1 
+SRC.ACT.MOVE=-3,-2 
+SRC.ACT.MOVE=-4,-1 
+ENDDO 
+DORAND 5 
+SRC.NEWITEM=i_fx_sparkle 
+SRC.NEWITEM=i_fx_heal_effect 
+SRC.NEWITEM=i_fx_curse 
+SRC.NEWITEM=i_fx_sparkle_2 
+SRC.NEWITEM=i_fx_bless_effect 
+ENDDO 
+src.act.p=<src.p> 
+//SRC.ACT.EFFECT=0,036e4,7 
+SRC.ACT.NAME=a fireworks display 
+SRC.SOUND=011e 
+SRC.ACT.COLOR={08fd 06 0b 010 015 01a 01f 024 029 02e 033 038 03d 042 047 04e 051 05b 060 065} 
+SRC.ACT.ATTR=attr_decay|attr_static 
+SRC.ACT.TIMER={6 8} 
+SRC.ACT.NUDGEUP={20 30 25 35} 
+DORAND 4 
+SRC.ACT.MOVE=-1,6 
+SRC.ACT.MOVE=-2,5 
+SRC.ACT.MOVE=2,-5 
+SRC.ACT.MOVE=-3,-1 
+ENDDO 
+
+[ITEMDEF i_shrink_stone]
+ID=i_gravestone_8
+TYPE=t_script
+NAME=Steed Shrinker
+
+on=@create
+COLOR=045
+
+ON=@ClientTooltip 
+src.addcliloc 1042971,Cost: 2000 gold
+ 
+on=@dclick
+if ( !<SRC.findlayer(layer_horse).uid> )
+SRC.SYSMESSAGE You do not appear to be mounted.
+return 1
+endif
+IF (<SRC.RESTEST 2000 i_gold>)
+SRC.DISMOUNT
+SRC.CONSUME i_gold 2000
+SRC.SYSMESSAGE You have sucessfully shrunk your steed!
+SRC.UPDATE
+return 1
+ELSE
+SRC.SYSMESSAGE You do not have enough gold to shrink your steed
+return 1
+endif
+return 1
+
+
+
+[ITEMDEF i_auto_pvp_stone]
+//set invis to gms
+ID=i_guildstone
+TYPE=t_script
+
+on=@create
+TIMER=82800 //23 hours
+say Timer Initiated
+more1=0
+more2=0
+
+// admin testing purposes
+on=@dclick
+more1=0
+timer = 10
+
+
+on=@timer
+if (<more1> = 0)
+say An Automated Team PvP Will Begin In 1 Hour.
+timer = 1800
+more1 = 1
+elif (<more1>=1)
+say An Automated Team PvP Will Begin In 30 Mins.
+timer = 900
+more1 = 2
+elif (<more1>=2)
+say An Automated Team PvP Will Begin In 15 Mins.
+timer = 600
+more1 = 3
+elif (<more1>=3)
+say An Automated Team PvP Will Begin In 5 Mins.
+timer = 300
+more1 = 4
+elif (<more1>=4)
+say An Automated Team PvP Is Now Open. You Have 5 Minutes to Enter using the command .autopvp
+more1 = 5
+timer = 300
+elif (<more1>=5)
+say The Auto PvP Entry Command is now closed.
+more1 = 6
+timer = 15
+elif (<more1>=6)
+say You now have 2  minutes to prepare before fighting commences.
+more1=7
+timer = 120
+elif(<more1>=7)
+    say 3..2..1.. go!!!
+    //remove blockades
+    more1=8
+    timer=1
+elif (<more1>=8)
+     //if red total == red deaths
+     tag.roundsred +1
+     if tag.roundsred == 2
+     	say red team wins.
+     	//teleport to required res areas.
+     	more1=0
+		timer = {70000 80000}
+     else
+        more1=9
+        timer=5
+     endif
+     //else
+     	timer=1
+    // endif
+     //if blue total == blue deaths
+     tag.roundsblue +1
+     if tag.roundsred == 2
+     	say blue wins
+     	//teleport to required res areas.
+     	more1=0
+	timer = {70000 80000}
+     else
+        more1=9
+        timer=5
+     endif
+     //else
+     	timer=1
+    // endif
+     
+elif (<more1>=9)
+   // res all dead players
+    //place blockades
+   // return to corners
+    //players use a stone to get regs bag - once per 10mins - or reg free spell books?
+    more1 = 6
+    timer = 15
+ENDIF
+
+
+//[EVENT e_autopvp]
+//on hit check for same team, if so, paralyse for 1 min
+//on logout kill and +1 to players colour team death count
+//on death as above -kill
+
+
+
+
+//[FUNCTION autopvp]
+//FINDID i_auto_pvp_stone MORE1.
+//if (findid more1 == 5)
+//send to pvp and plus 1 to tag.totalblue/red on stone
+// give a bag of items and tell player to take what they need and dump the rest
+// more1 of function? swap to deal blue/red/blue/red - give robe lock to body
+//else sysmessage there is not pvp at this time.
+//endif
+
+
+
+[eof]

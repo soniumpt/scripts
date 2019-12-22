@@ -1,0 +1,398 @@
+[FUNCTION ISNECROFAMILIAR]
+   if ( 0 )
+   elseif ( <ID> == c_familiar_horde_minion )
+   elseif ( <ID> == c_familiar_wisp_shadow )
+   elseif ( <ID> == c_familiar_dark_wolf )
+   elseif ( <ID> == c_familiar_death_adder )
+   elseif ( <ID> == c_familiar_vampire_bat )
+   else
+      return 0
+   endif
+   return 1
+
+//#################################################\\
+//#                  Horde Minion                 #\\
+//#################################################\\
+
+[chardef c_familiar_horde_minion] 
+ID=c_horde_minion
+NAME=Horde Minion
+DAM=14,20
+CAN=MT_WALK|MT_RUN|MT_USEHANDS
+MOVERATE=40
+TAG.PHYSICALDAMAGE=100
+tag.energyresist=55
+TAG.FIRERESIST=55
+TAG.POISONRESIST=30
+TAG.ENERGYRESIST=30
+
+CATEGORY=Summons
+SUBSECTION=Familiars
+DESCRIPTION=Horde Minion
+
+ON=@Create
+	EVENTS +e_familiar_horde_minion
+	NPC=brain_monster
+	STR=70
+	DEX=60
+	INT=100
+	MAXHITS=70
+	MAXSTAM=110
+	TACTICS=50.0
+	WRESTLING=75.0
+	FAME=0
+	KARMA=0
+
+[EVENTS e_familiar_horde_minion]
+ON=@ItemStep
+if !((<act.attr> & attr_static) || (<act.type> == t_corpse) || (<act.attr> & attr_move_never) || (<act.attr> & attr_invis) || (<act.attr> & attr_owned) )
+  emote pick up an item for his master
+  act.cont=<owner.findlayer.layer_pack.uid>
+endif
+
+//#################################################\\
+//#                   Shadow Wisp                 #\\
+//#################################################\\
+
+[CHARDEF c_familiar_wisp_shadow]
+ID=c_wisp
+NAME=Shadow Wisp
+DAM=2,8
+CAN=MT_WALK|MT_FLY|MT_FIRE_IMMUNE|MT_USEHANDS
+TAG.PHYSICALDAMAGE=50
+TAG.ENERGYDAMAGE=50
+tag.energyresist=15
+TAG.FIRERESIST=15
+TAG.POISONRESIST=15
+TAG.ENERGYRESIST=100
+
+CATEGORY=Summons
+SUBSECTION=Familiars
+DESCRIPTION=Shadow Wisp
+
+ON=@Create
+	EVENTS +e_familiar_shadow_wisp
+	NPC=brain_monster
+	COLOR=colors_black
+	STR=50
+	DEX=60
+	INT=100
+	TACTICS=40.0
+	WRESTLING=40.0
+	FAME=0
+	KARMA=0
+	ITEMNEWBIE=i_light_source
+	ATTR=attr_magic|attr_newbie
+	ITEMNEWBIE=i_wisp_mana_equiper
+	ITEMNEWBIE=i_wisp_mana_timer
+	ATTR=attr_magic|attr_newbie
+
+[ITEMDEF i_wisp_mana_equiper]
+ID=i_memory
+TYPE=t_eq_script
+
+CATEGORY=Memories
+SUBSECTION=Miscellaneous
+DESCRIPTION=Wisp Mana Equiper
+
+ON=@CREATE
+TIMER=1
+
+ON=@TIMER
+trysrc <cont.uid> cont.findid.i_wisp_mana_timer.trigger=@equip
+remove
+return 1
+
+[ITEMDEF i_wisp_mana_timer]
+NAME=Wisp Mana Timer
+ID=i_memory
+TYPE=t_eq_script
+
+CATEGORY=Memories
+SUBSECTION=Miscellaneous
+DESCRIPTION=Wisp Mana Timer
+
+ON=@Equip
+timer={15 25}
+	
+ON=@Timer
+if (<cont.owner.karma> < 0) && (<cont.owner.karma> > -1000)
+  cont.owner.sound snd_monster_wisp1
+  cont.owner.mana += 10
+elseif (<cont.owner.karma> < 1000) && (<cont.owner.karma> > -2500)
+  cont.owner.sound snd_monster_wisp1
+  cont.owner.mana += 20
+elseif (<cont.owner.karma> < 2500) && (<cont.owner.karma> > -5000)
+  cont.owner.sound snd_monster_wisp1
+  cont.owner.mana += 30
+elseif (<cont.owner.karma> < 5000) && (<cont.owner.karma> > -7500)
+  cont.owner.sound snd_monster_wisp1
+  cont.owner.mana += 40
+elseif (<cont.owner.karma> < 7500)
+  cont.owner.sound snd_monster_wisp1
+  cont.owner.mana += 50
+endif
+if (<cont.owner.mana> > <cont.owner.maxmana>)
+  cont.owner.mana=<cont.owner.maxmana>
+endif
+timer={15 25}
+return 1
+
+[EVENTS e_familiar_shadow_wisp]
+
+//#################################################\\
+//#                    Dark Wolf                  #\\
+//#################################################\\
+
+[CHARDEF c_familiar_dark_wolf]
+ID=c_wolf
+NAME=Dark Wolf
+DAM=15,33
+CAN=MT_WALK|MT_RUN
+TAG.PHYSICALDAMAGE=100
+tag.energyresist=45
+TAG.FIRERESIST=35
+TAG.COLDRESIST=35
+TAG.POISONRESIST=35
+TAG.ENERGYRESIST=35
+TAG.SLOTS_NEEDED=2
+
+CATEGORY=Summons
+SUBSECTION=Familiars
+DESCRIPTION=Dark Wolf
+
+ON=@Create
+	EVENTS +e_familiar_dark_wolf
+	NPC=brain_animal
+	COLOR=colors_black
+	STR=85
+	DEX=90
+	INT=90
+	MAXHITS=60
+	MAXSTAM=90
+	TACTICS=50.0
+	WRESTLING=87.5
+	FAME=0
+	KARMA=0
+	ITEMNEWBIE=i_wolf_stam_equiper
+	ITEMNEWBIE=i_wolf_stam_timer
+	ATTR=attr_magic|attr_newbie
+
+[ITEMDEF i_wolf_stam_equiper]
+ID=i_memory
+TYPE=t_eq_script
+
+CATEGORY=Memories
+SUBSECTION=Miscellaneous
+DESCRIPTION=Wolf Stamina Equiper
+
+ON=@CREATE
+TIMER=1
+
+ON=@TIMER
+trysrc <cont.uid> cont.findid.i_wolf_stam_timer.trigger=@equip
+remove
+return 1
+
+[ITEMDEF i_wolf_stam_timer]
+NAME=Wolf Stamina Timer
+ID=i_memory
+TYPE=t_eq_script
+
+CATEGORY=Memories
+SUBSECTION=Miscellaneous
+DESCRIPTION=Wolf Stamina Timer
+
+ON=@Equip
+timer=2
+	
+ON=@Timer
+cont.owner.stam += 1
+if (<cont.owner.stam> > <cont.owner.maxstam>)
+  cont.owner.stam=<cont.owner.maxstam>
+endif
+timer=2
+return 1
+
+[EVENTS e_familiar_dark_wolf]
+ON=@Dclick
+if (<ismypet>)
+  serv.newitem i_wolf_mastery
+  new.equip <src>
+  return 1
+endif
+
+[ITEMDEF i_wolf_mastery]
+ID=i_memory
+TYPE=t_eq_script
+NAME=Wolf Mastery
+
+CATEGORY=Memories
+SUBSECTION=Miscellaneous
+DESCRIPTION=Wolf Mastery
+
+ON=@Equip
+ TARGET Which wolf would you like to control
+ TIMER=15
+
+ON=@Timer
+ remove
+ return 1
+
+ON=@TargOn_Item
+ remove
+ return 1
+
+ON=@TargOn_Ground
+ remove
+ return 1
+
+ON=@TargOn_Char
+if !(strmatch("*wolf*","<cont.targ.id>"))
+  cont.sysmessage Thats not a wolf!
+  remove
+  return 1
+else
+  local.npc=<cont.targ.uid>
+  cont.targ.flags=<cont.targ.flags>|statf_pet
+  while (<cont.targ.memoryfindtype.02>)
+    cont.targ.memoryfindtype.02.remove
+  endwhile
+  serv.newitem i_memory
+  new.color=042
+  new.link=<cont.uid>
+  new.cont=<local.npc>
+  try uid.<local.npc>.update
+  cont.sysmessage The wolf will accept your orders!
+  remove
+  return 1
+endif
+
+//#################################################\\
+//#                   Death Adder                 #\\
+//#################################################\\
+
+[CHARDEF c_familiar_death_adder]
+ID=c_snake_giant
+NAME=Death Adder
+DAM=1,4
+CAN=MT_WALK|MT_RUN
+TAG.PHYSICALDAMAGE=100
+tag.energyresist=10
+TAG.POISONRESIST=100
+TAG.SLOTS_NEEDED=2
+
+CATEGORY=Summons
+SUBSECTION=Familiars
+DESCRIPTION=Death Adder
+
+ON=@Create
+	EVENTS +e_familiar_death_adder
+	NPC=brain_monster
+	COLOR=colors_snake
+	STR=70
+	DEX=110
+	INT=100
+	MAXHITS=50
+	MAXSTAM=150
+	TACTICS=50.0
+	WRESTLING=90.0
+	POISONING=110.0
+	FAME=0
+	KARMA=0
+
+[EVENTS e_familiar_death_adder] 
+ON=@Dclick
+if (<ismypet>)
+  serv.newitem i_snake_charming
+  new.equip <src>
+  return 1
+endif
+
+[ITEMDEF i_snake_charming]
+ID=i_memory
+TYPE=t_eq_script
+NAME=Snake Charming
+
+CATEGORY=Memories
+SUBSECTION=Miscellaneous
+DESCRIPTION=Snake Charming
+
+ON=@Equip
+ TARGET Which snake would you like to control
+ TIMER=15
+
+ON=@Timer
+ remove
+ return 1
+
+ON=@TargOn_Item
+ remove
+ return 1
+
+ON=@TargOn_Ground
+ remove
+ return 1
+
+ON=@TargOn_Char
+if !(strmatch("*snake*","<cont.targ.id>"))
+  cont.sysmessage Thats not a snake!
+  remove
+  return 1
+else
+  local.npc=<cont.targ.uid>
+  cont.targ.flags=<cont.targ.flags>|statf_pet
+  while (<cont.targ.memoryfindtype.02>)
+    cont.targ.memoryfindtype.02.remove
+  endwhile
+  serv.newitem i_memory
+  new.color=042
+  new.link=<cont.uid>
+  new.cont=<local.npc>
+  try uid.<local.npc>.update
+  cont.sysmessage The snake will accept your orders!
+  remove
+  return 1
+endif
+
+//#################################################\\
+//#                   Vampire Bat                 #\\
+//#################################################\\
+
+[chardef c_familiar_vampire_bat]
+ID=c_vampire_bat
+NAME=Vampire Bat
+DAM=7,21
+CAN=MT_WALK|MT_FLY
+TAG.PHYSICALDAMAGE=100
+tag.energyresist=15
+TAG.FIRERESIST=15
+TAG.COLDRESIST=15
+TAG.POISONRESIST=15
+TAG.ENERGYRESIST=15
+TAG.SLOTS_NEEDED=3
+
+CATEGORY=Summons
+SUBSECTION=Familiars
+DESCRIPTION=Vampire Bat
+
+ON=@Create 
+	EVENTS +e_familiar_vampire_bat
+	NPC=brain_monster
+	STR=100
+	DEX=80
+	INT=100
+	MAXHITS=90
+	TACTICS=50.0
+	WRESTLING=95.0
+	FAME=0 
+	KARMA=0
+
+[EVENTS e_familiar_vampire_bat]
+ON=@Hit
+owner.hits += <eval <argn1>>
+if (<owner.hits> > <owner.maxhits>)
+  owner.hits=<owner.maxhits>
+endif
+
+[EOF]

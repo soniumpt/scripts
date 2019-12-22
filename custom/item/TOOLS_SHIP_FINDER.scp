@@ -1,0 +1,82 @@
+[ITEMDEF i_ship_finder]
+NAME= Ship finding tool
+
+ID=01165
+
+ON=@CREATE
+TYPE=t_ship_finder
+COLOR=color_o_gold
+ATTR=attr_move_never
+
+[TYPEDEF t_ship_finder] 
+
+ON=@Dclick 
+IF <SRC.RESTEST 1500 i_Gold> 
+    IF (<SRC.FINDLAYER(layer_special).ID>==i_shipf_delay) 
+	return 1
+    ELSE 
+	TARGET Select Ship's Key from the Ship 
+    ENDIF 
+	return 1 
+ELSE 
+
+    src.message You do not have 1500Gp in you Pack to use this.
+
+
+endif 
+
+return 1 
+
+IF (<SRC.FINDLAYER(layer_special).ID>==i_shipf_delay) 
+return 1
+ELSE 
+TARGET Select Ship's Key from the Ship 
+ENDIF 
+return 1 
+
+ON=@Targon_item 
+LINK=<SRC.TARG.more1> 
+IF (<SRC.TARG.type>==t_key) 
+IF (<LINK.type>==t_ship) 
+IF (<LINK.MORE1>=<SRC.SERIAL>) || (<src.isgm>)
+SRC.SYSMESSAGE Your ship is found! You shall be Teleported in 10 Seconds!
+SRC.NEWITEM i_shipf_delay 
+SRC.ACT.LINK=<LINK> 
+SRC.ACT.EQUIP 
+ELSEIF (<LINK.MORE1>!=<SRC.SERIAL>) 
+SRC.SYSMESSAGE Only the Ship's owner can find The Ship !!! 
+return 1 
+ELSE 
+SRC.SYSMESSAGE Only Ship's Key can by selected !!! 
+ENDIF 
+ENDIF
+ENDIF
+return 1
+
+
+[ITEMDEF i_shipf_delay] 
+NAME=Ship Find Delay 
+ID=i_floor_marble_2 
+
+WEIGHT=0 
+LAYER=layer_special 
+
+ON=@Create 
+TYPE=T_EQ_SCRIPT 
+ATTR=attr_invis|attr_decay 
+
+ON=@Equip 
+TIMER=10 
+CONT.FLAGS=<CONT.FLAGS>&statf_freeze 
+
+ON=@Timer 
+CONT.FLAGS=<CONT.FLAGS>&~statf_freeze 
+CONT.SOUND snd_SPELL_TELEPORT 
+CONT.GOUID <LINK> 
+CONT.MOVE 1,1 
+CONT.FIX 
+ENDIF 
+REMOVE 
+return 1 
+
+[EOF]

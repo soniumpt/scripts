@@ -1,0 +1,387 @@
+// April fools prank starts here
+
+[DIALOG d_april_fool_2006]
+160,180
+
+resizepic 0 0 9270 360 170
+dtext 10 10 5 An error has been detected with your login procedure.
+dtext 10 40 5 Please ensure that all third party programs are off.
+dtext 10 70 5 To refresh your login data, please press Alt F4 now.
+dtext 10 100 5 Thank you for your co-operation,
+dtext 10 130 20 The BFUO Staff Team
+
+[DIALOG d_april_fool_2006 TEXT]
+
+[DIALOG d_april_fool_2006 BUTTON]
+
+// Ends here
+
+
+
+[COMMENT wigspecialrefunderofskill]
+IF ( strmatch("<SRC.ACCOUNT.NAME>","akihabara") ) || ( strmatch("<SRC.ACCOUNT.NAME>","ashe") ) || ( strmatch("<SRC.ACCOUNT.NAME>","Bioshadow") ) || ( strmatch("<SRC.ACCOUNT.NAME>","blueshark") ) || ( strmatch("<SRC.ACCOUNT.NAME>","bruno") ) || ( strmatch("<SRC.ACCOUNT.NAME>","carbono") ) || ( strmatch("<SRC.ACCOUNT.NAME>","coderpt") ) || ( strmatch("<SRC.ACCOUNT.NAME>","cypress_head") ) || ( strmatch("<SRC.ACCOUNT.NAME>","daniel") ) || ( strmatch("<SRC.ACCOUNT.NAME>","darkey") ) || ( strmatch("<SRC.ACCOUNT.NAME>","darkmind") ) || ( strmatch("<SRC.ACCOUNT.NAME>","demonf") ) || ( strmatch("<SRC.ACCOUNT.NAME>","diablosSRC.ACCOUNT") ) || ( strmatch("<SRC.ACCOUNT.NAME>","Eclipse") ) || ( strmatch("<SRC.ACCOUNT.NAME>","egipciano7") ) || ( strmatch("<SRC.ACCOUNT.NAME>","fdx") ) || ( strmatch("<SRC.ACCOUNT.NAME>","filipe") ) || ( strmatch("<SRC.ACCOUNT.NAME>","izildur") ) || ( strmatch("<SRC.ACCOUNT.NAME>","jorgetrd") ) || ( strmatch("<SRC.ACCOUNT.NAME>","kane") ) || ( strmatch("<SRC.ACCOUNT.NAME>","l33t") ) || ( strmatch("<SRC.ACCOUNT.NAME>","lolonkos") ) || ( strmatch("<SRC.ACCOUNT.NAME>","lolonkos") ) || ( strmatch("<SRC.ACCOUNT.NAME>","lolonlol") ) || ( strmatch("<SRC.ACCOUNT.NAME>","MCkikas") ) || ( strmatch("<SRC.ACCOUNT.NAME>","miguelsantos") ) || ( strmatch("<SRC.ACCOUNT.NAME>","nedved") ) || ( strmatch("<SRC.ACCOUNT.NAME>","onlyclick") ) || ( strmatch("<SRC.ACCOUNT.NAME>","ozoriuh") ) || ( strmatch("<SRC.ACCOUNT.NAME>","ozoriuh") ) || ( strmatch("<SRC.ACCOUNT.NAME>","pearljam") ) || ( strmatch("<SRC.ACCOUNT.NAME>","pedro") ) || ( strmatch("<SRC.ACCOUNT.NAME>","pentyadu") ) || ( strmatch("<SRC.ACCOUNT.NAME>","pipikanino5") ) || ( strmatch("<SRC.ACCOUNT.NAME>","poor_twisted_me") ) || ( strmatch("<SRC.ACCOUNT.NAME>","samsagaz") ) || ( strmatch("<SRC.ACCOUNT.NAME>","Sidhardha") ) || ( strmatch("<SRC.ACCOUNT.NAME>","sl4k") ) || ( strmatch("<SRC.ACCOUNT.NAME>","solidsnake") ) || ( strmatch("<SRC.ACCOUNT.NAME>","stryder") ) || ( strmatch("<SRC.ACCOUNT.NAME>","the_reaper") ) || ( strmatch("<SRC.ACCOUNT.NAME>","tiagoniza") ) || ( strmatch("<SRC.ACCOUNT.NAME>","WarIsHell") ) || ( strmatch("<SRC.ACCOUNT.NAME>","wigifer") ) || ( strmatch("<SRC.ACCOUNT.NAME>","wizzle") ) || ( strmatch("<SRC.ACCOUNT.NAME>","zombany") )
+   IF !(<SRC.ACCOUNT.TAG0.WIGSPECIAL1> = 1)
+      SRC.ACCOUNT.TAG.ELIGIBLEFORSKILL = 1
+      SRC.ACCOUNT.TAG.ALLOCATEDSKILL = <SRC.ACCOUNT.TAG0.ALLOCATEDSKILL> + 50
+      SERV.LOG ::CLAIMSKILL:: <NAME>:<SRC.ACCOUNT>:<UID> 50 skill refund!
+      SERV.NEWITEM i_pvptoken
+      NEW.CONT <SRC.FINDLAYER.layer_bankbox.UID>
+      SRC.SYSMESSAGE @40 You have been rewarded a bonus 50% skill and a PvP Ticket is now in your bank box!
+      SRC.ACCOUNT.TAG.WIGSPECIAL1 = 1
+   ENDIF
+ENDIF
+
+[FUNCTION claimitem]
+IF !(<ACCOUNT.TAG.ALLOCATEDITEM>)
+   SRC.SYSMESSAGE You have no item to claim at this time.
+   RETURN 1
+ENDIF
+DIALOG d_claim_item
+
+[DIALOG d_claim_item]
+0,0
+
+resizepic 0 0 2600 450 325
+
+dtext 100 40 25 This account has been allocated <EVAL <ACCOUNT.TAG.ALLOCATEDITEM>> rewards.
+dtext 100 57 25 Please select an item from the list below!
+
+tilepic 17 100 <HVAL 02767>
+dtext 65 115 50 "I Survived the February 2006 Upgrade" Statue 1
+tilepic 17 160 <HVAL 02632>
+dtext 65 172 50 "I Survived the February 2006 Upgrade" Statue 2
+tilepic 17 220 <HVAL 020D9>
+dtext 65 230 50 "I Survived the February 2006 Upgrade" Statue 3
+
+[DIALOG d_claim_item TEXT]
+
+[DIALOG d_claim_item BUTTON]
+
+
+[FUNCTION skill2006]
+IF <SRC.ACCOUNT.TAG0.ALLOCATEDSKILL> > 0
+   SRC.claimskill
+//IF (<SRC.ACCOUNT.TAG0.ELIGIBLEFORSKILL> = 0 )
+//   SRC.ACCOUNT.TAG.ELIGIBLEFORSKILL = 1
+//   SRC.ACCOUNT.TAG.ALLOCATEDSKILL = 25
+//ENDIF
+ELSE
+   SRC.SYSMESSAGE You have no skill to collect.
+ENDIF
+
+[FUNCTION skill2007]
+SRC.SYSMESSAGE You have no skill to collect.
+//IF (<SRC.ACCOUNT.TAG0.2007SKILL> = 0)
+//   SRC.ACCOUNT.TAG0.2007SKILL=1
+//   SRC.ACCOUNT.TAG.ELIGIBLEFORSKILL = 1
+//   SRC.ACCOUNT.TAG.ALLOCATEDSKILL = <SRC.ACCOUNT.TAG0.ALLOCATEDSKILL> + 50
+//   SERV.NEWITEM i_wreath_christmas2007
+//   NEW.CONT=<SRC.FINDLAYER.LAYER_BANKBOX.UID>
+//   SERV.NEWITEM i_check
+//   NEW.MORE2=50000
+//   NEW.CONT=<SRC.FINDLAYER.LAYER_BANKBOX.UID>
+//   SRC.SYSMESSAGE @54 Your account has been awarded 50% skill, a wreath, and 50k, in return for 7 days rollback.
+//   SRC.SYSMESSAGE @54 Please use the skill allocator in your Travel Papers to claim it.
+//   SERV.LOG Skill 2007 Claimed on account <SRC.ACCOUNT>: <SRC.NAME> <SRC.UID>
+//ENDIF
+
+[FUNCTION postwiperewardscheme]
+IF (<SRC.ACCOUNT.TAG0.POSTWIPE> = 0)
+   IF ( ( strmatch("2010/07*", "<src.account.firstconnectdate>")) || ( strmatch("2010/08*", "<src.account.firstconnectdate>")) )
+      SERV.LOG ::POSTWIPE REWARDS:: - <SRC.ACCOUNT> Not eligible for post-wipe rewards
+      SRC.ACCOUNT.TAG.POSTWIPE = 1
+      RETURN 1
+   ELSE
+      SRC.ACCOUNT.TAG0.POSTWIPE=1
+      IF ( strmatch("2001*", "<src.account.firstconnectdate>"))
+         SRC.SYSMESSAGE @54 Having played since 2001, the oldest account year, you are entitled to a special bonus.
+         SERV.NEWITEM i_spellbook
+         NEW.MORE1=00FFFFFD
+         NEW.MORE2=04081000
+         NEW.NAME=@29 Spellbook of the Ancients
+         NEW.COLOR=029
+         NEW.ATTR=04
+         NEW.CONT=<SRC.FINDLAYER.LAYER_PACK.UID>        
+         SRC.ACCOUNT.TAG.ELIGIBLEFORSKILL = 1
+         SRC.ACCOUNT.TAG.ALLOCATEDSKILL = <SRC.ACCOUNT.TAG0.ALLOCATEDSKILL> + 1175
+         SRC.SYSMESSAGE @54 Your account has been awarded 1175% skill. Please use the skill allocator in your Travel Papers to claim it.         
+      ELSEIF ( strmatch("2002*", "<src.account.firstconnectdate>"))
+         SRC.SYSMESSAGE @54 Having played since 2002, you are entitled to a special bonus.
+         SERV.NEWITEM i_spellbook
+         NEW.MORE1=00FFFFFD
+         NEW.MORE2=04001000
+         NEW.NAME=@29 Spellbook of Kings
+         NEW.COLOR=029
+         NEW.ATTR=04
+         NEW.CONT=<SRC.FINDLAYER.LAYER_PACK.UID>
+         SRC.ACCOUNT.TAG.ELIGIBLEFORSKILL = 1
+         SRC.ACCOUNT.TAG.ALLOCATEDSKILL = <SRC.ACCOUNT.TAG0.ALLOCATEDSKILL> + 1100
+         SRC.SYSMESSAGE @54 Your account has been awarded 1100% skill. Please use the skill allocator in your Travel Papers to claim it.         
+      ELSEIF ( strmatch("2003*", "<src.account.firstconnectdate>"))
+         SRC.SYSMESSAGE @54 Having played since 2003, you are entitled to a special bonus.
+         SERV.NEWITEM i_spellbook
+         NEW.MORE1=00FFFFFD
+         NEW.NAME=@29 Spellbook of Lords
+         NEW.COLOR=029
+         NEW.ATTR=04
+         NEW.CONT=<SRC.FINDLAYER.LAYER_PACK.UID>
+         SRC.ACCOUNT.TAG.ELIGIBLEFORSKILL = 1
+         SRC.ACCOUNT.TAG.ALLOCATEDSKILL = <SRC.ACCOUNT.TAG0.ALLOCATEDSKILL> + 1025
+         SRC.SYSMESSAGE @54 Your account has been awarded 1025% skill. Please use the skill allocator in your Travel Papers to claim it.         
+      ELSEIF ( strmatch("2004*", "<src.account.firstconnectdate>"))
+         SRC.SYSMESSAGE @54 Having played since 2004, you are entitled to a special bonus.
+         SERV.NEWITEM i_spellbook
+         NEW.MORE1=00FFFFFD
+         NEW.CONT=<SRC.FINDLAYER.LAYER_PACK.UID>
+         SRC.ACCOUNT.TAG.ELIGIBLEFORSKILL = 1
+         SRC.ACCOUNT.TAG.ALLOCATEDSKILL = <SRC.ACCOUNT.TAG0.ALLOCATEDSKILL> + 950
+         SRC.SYSMESSAGE @54 Your account has been awarded 950% skill. Please use the skill allocator in your Travel Papers to claim it.         
+      ELSEIF ( strmatch("2005*", "<src.account.firstconnectdate>"))
+         SRC.SYSMESSAGE @54 Having played since 2005, you are entitled to a special bonus.
+         SERV.NEWITEM i_spellbook
+         NEW.MORE1=0000CFFD
+         NEW.CONT=<SRC.FINDLAYER.LAYER_PACK.UID>      
+         SRC.ACCOUNT.TAG.ELIGIBLEFORSKILL = 1
+         SRC.ACCOUNT.TAG.ALLOCATEDSKILL = <SRC.ACCOUNT.TAG0.ALLOCATEDSKILL> + 875
+         SRC.SYSMESSAGE @54 Your account has been awarded 875% skill. Please use the skill allocator in your Travel Papers to claim it.         
+      ELSEIF ( strmatch("2006*", "<src.account.firstconnectdate>"))
+         SRC.SYSMESSAGE @54 Having played since 2006, you are entitled to a special bonus.
+         SERV.NEWITEM i_spellbook
+         NEW.MORE1=0000CFFD
+         NEW.CONT=<SRC.FINDLAYER.LAYER_PACK.UID>      
+         SRC.ACCOUNT.TAG.ELIGIBLEFORSKILL = 1
+         SRC.ACCOUNT.TAG.ALLOCATEDSKILL = <SRC.ACCOUNT.TAG0.ALLOCATEDSKILL> + 800
+         SRC.SYSMESSAGE @54 Your account has been awarded 800% skill. Please use the skill allocator in your Travel Papers to claim it.         
+      ELSEIF ( strmatch("2007*", "<src.account.firstconnectdate>"))
+         SRC.SYSMESSAGE @54 Having played since 2007, you are entitled to a special bonus.
+         SERV.NEWITEM i_spellbook
+         NEW.MORE1=0000C3BD
+         NEW.CONT=<SRC.FINDLAYER.LAYER_PACK.UID>      
+         SRC.ACCOUNT.TAG.ELIGIBLEFORSKILL = 1
+         SRC.ACCOUNT.TAG.ALLOCATEDSKILL = <SRC.ACCOUNT.TAG0.ALLOCATEDSKILL> + 725
+         SRC.SYSMESSAGE @54 Your account has been awarded 725% skill. Please use the skill allocator in your Travel Papers to claim it.
+      ELSEIF ( strmatch("2008*", "<src.account.firstconnectdate>"))
+         SRC.SYSMESSAGE @54 Having played since 2008, you are entitled to a special bonus.
+         SERV.NEWITEM i_spellbook
+         NEW.MORE1=0000C3BD
+         NEW.CONT=<SRC.FINDLAYER.LAYER_PACK.UID>
+         SRC.ACCOUNT.TAG.ELIGIBLEFORSKILL = 1
+         SRC.ACCOUNT.TAG.ALLOCATEDSKILL = <SRC.ACCOUNT.TAG0.ALLOCATEDSKILL> + 650
+         SRC.SYSMESSAGE @54 Your account has been awarded 650% skill. Please use the skill allocator in your Travel Papers to claim it.         
+      ELSEIF ( strmatch("2009*", "<src.account.firstconnectdate>"))
+         SRC.SYSMESSAGE @54 Having played since 2009, you are entitled to a special bonus.
+         SERV.NEWITEM i_spellbook
+         NEW.MORE1=000000BD
+         NEW.CONT=<SRC.FINDLAYER.LAYER_PACK.UID>
+         SRC.ACCOUNT.TAG.ELIGIBLEFORSKILL = 1
+         SRC.ACCOUNT.TAG.ALLOCATEDSKILL = <SRC.ACCOUNT.TAG0.ALLOCATEDSKILL> + 575
+         SRC.SYSMESSAGE @54 Your account has been awarded 575% skill. Please use the skill allocator in your Travel Papers to claim it.
+      ELSE
+         SRC.SYSMESSAGE @54 Having joined us pre-wipe, you are entitled to a special bonus.
+         SRC.ACCOUNT.TAG.ELIGIBLEFORSKILL = 1
+         SRC.ACCOUNT.TAG.ALLOCATEDSKILL = <SRC.ACCOUNT.TAG0.ALLOCATEDSKILL> + 500
+         SRC.SYSMESSAGE @54 Your account has been awarded 500% skill. Please use the skill allocator in your Travel Papers to claim it.
+      ENDIF
+      SERV.LOG ::POSTWIPE REWARDS:: <SRC.ACCOUNT>: <SRC.NAME> <SRC.UID> - Rewards claimed for playing since <SRC.ACCOUNT.FIRSTCONNECTDATE>
+   ENDIF
+ENDIF
+
+[FUNCTION skill2009]
+IF (<SRC.ACCOUNT.TAG0.2009SKILL> = 0)
+   IF ( strmatch("2009/10*", "<src.account.firstconnectdate>"))
+      SERV.LOG October - <SRC.ACCOUNT> Not eligible for skill2009
+      SRC.ACCOUNT.TAG.2009SKILL = 1
+      RETURN 1
+   ELSEIF ( strmatch("2009/09*", "<src.account.firstconnectdate>"))
+      SERV.LOG September - <SRC.ACCOUNT> Not eligible for skill2009
+      SRC.ACCOUNT.TAG.2009SKILL = 1
+      RETURN 1
+   ELSEIF ( strmatch("2009/08*", "<src.account.firstconnectdate>"))
+      SERV.LOG August - <SRC.ACCOUNT> Not eligible for skill2009
+      SRC.ACCOUNT.TAG.2009SKILL = 1
+      RETURN 1
+   ELSE
+      SRC.ACCOUNT.TAG0.2009SKILL=1
+      SRC.ACCOUNT.TAG.ELIGIBLEFORSKILL = 1
+      SRC.ACCOUNT.TAG.ALLOCATEDSKILL = <SRC.ACCOUNT.TAG0.ALLOCATEDSKILL> + 200
+      SERV.NEWITEM i_check
+      NEW.MORE2=75000
+      NEW.CONT=<SRC.FINDLAYER.LAYER_BANKBOX.UID>
+      SRC.SYSMESSAGE @54 Your account has been awarded 200% skill as thanks for your continued patronage.
+      SRC.SYSMESSAGE @54 Please use the skill allocator in your Travel Papers to claim it.
+      SERV.LOG Skill 2009 Claimed on account <SRC.ACCOUNT>: <SRC.NAME> <SRC.UID>   
+   ENDIF
+ENDIF
+
+[FUNCTION claimskill]
+IF (<SRC.ACCOUNT.TAG0.ALLOCATEDSKILL> < 5)
+   SRC.SYSMESSAGE You have not accumulated enough skill to claim at this time.
+   RETURN 1
+ELSEIF !(<SRC.ACCOUNT.TAG.ELIGIBLEFORSKILL>)
+   SRC.SYSMESSAGE You have no skill to claim at this time.
+   RETURN 1
+ENDIF
+DIALOG d_skill_bonus
+
+[DIALOG d_skill_bonus]
+200, 50
+NOMOVE
+NODISPOSE
+
+  gumppic    0    0 <eval   0ce>			// top
+  gumppic   44    0 <eval   0c9>
+  gumppic  471    0 <eval   0cf>
+
+  gumppic    0   44 <eval   0ca>			// middle
+  gumppic   44   44 <eval  0a2c>
+  gumppic  471   44 <eval   0cb>
+
+  gumppic    0  360 <eval   0cc>			// bottom
+  gumppic   44  360 <eval   0e9>
+  gumppic  471  360 <eval   0cd>
+
+  dtext 50 40 0 This account has been allocated <EVAL <ACCOUNT.TAG.ALLOCATEDSKILL>>% skill points.
+  dtext 50 57 0 Please select a skill to increase by 5% on this character.
+
+  button  45 90 <eval 0d7> <eval 0d8> 1 0 10
+  button  45 107 <eval 0d7> <eval 0d8> 1 0 11
+  button  45 124 <eval 0d7> <eval 0d8> 1 0 12
+  button  45 141 <eval 0d7> <eval 0d8> 1 0 13
+  button  45 158 <eval 0d7> <eval 0d8> 1 0 14
+  button  45 175 <eval 0d7> <eval 0d8> 1 0 15
+//button  55 192 <eval 0d7> <eval 0d8> 1 0 16
+  button  45 209 <eval 0d7> <eval 0d8> 1 0 17
+  button  45 226 <eval 0d7> <eval 0d8> 1 0 18 
+//  button  45 243 <eval 0d7> <eval 0d8> 1 0 19
+//  button  45 261 <eval 0d7> <eval 0d8> 1 0 20
+  button  45 278 <eval 0d7> <eval 0d8> 1 0 21
+  button  45 295 <eval 0d7> <eval 0d8> 1 0 22
+  button  45 312 <eval 0d7> <eval 0d8> 1 0 23
+  button  45 329 <eval 0d7> <eval 0d8> 1 0 24
+  button  45 346 <eval 0d7> <eval 0d8> 1 0 25
+  button  45 192 <eval 0d7> <eval 0d8> 1 0 26	// 364
+  
+  button 205  90 <eval 0d7> <eval 0d8> 1 0 27
+  button 205 107 <eval 0d7> <eval 0d8> 1 0 28
+//  button 205 124 <eval 0d7> <eval 0d8> 1 0 29
+  button 205 141 <eval 0d7> <eval 0d8> 1 0 30
+  button 205 158 <eval 0d7> <eval 0d8> 1 0 31
+  button 205 175 <eval 0d7> <eval 0d8> 1 0 32
+  button 205 192 <eval 0d7> <eval 0d8> 1 0 33
+//  button 205 209 <eval 0d7> <eval 0d8> 1 0 34
+  button 205 226 <eval 0d7> <eval 0d8> 1 0 35
+  button 205 243 <eval 0d7> <eval 0d8> 1 0 36
+  button 205 261 <eval 0d7> <eval 0d8> 1 0 37
+  button 205 278 <eval 0d7> <eval 0d8> 1 0 38
+  button 205 295 <eval 0d7> <eval 0d8> 1 0 39
+//  button 205 312 <eval 0d7> <eval 0d8> 1 0 40
+  button 205 329 <eval 0d7> <eval 0d8> 1 0 41
+  button 205 346 <eval 0d7> <eval 0d8> 1 0 42
+  button 355 329 <eval 0d7> <eval 0d8> 1 0 43 // 220 364
+  
+  button 355  90 <eval 0d7> <eval 0d8> 1 0 44
+  button 355 107 <eval 0d7> <eval 0d8> 1 0 45
+//  button 355 124 <eval 0d7> <eval 0d8> 1 0 46
+  button 355 141 <eval 0d7> <eval 0d8> 1 0 47
+  button 355 158 <eval 0d7> <eval 0d8> 1 0 48
+  button 355 175 <eval 0d7> <eval 0d8> 1 0 49
+  button 355 192 <eval 0d7> <eval 0d8> 1 0 50
+  button 355 209 <eval 0d7> <eval 0d8> 1 0 51
+  button 355 226 <eval 0d7> <eval 0d8> 1 0 52
+  button 355 243 <eval 0d7> <eval 0d8> 1 0 53
+  button 355 261 <eval 0d7> <eval 0d8> 1 0 54
+  button 355 278 <eval 0d7> <eval 0d8> 1 0 55
+  button 355 295 <eval 0d7> <eval 0d8> 1 0 56
+  button 355 312 <eval 0d7> <eval 0d8> 1 0 57
+//  button 355 329 <eval 0d7> <eval 0d8> 1 0 58
+
+  dtext  60  90 0 Alchemy
+  dtext  60 107 0 Assessment
+  dtext  60 124 0 Creature lore
+  dtext  60 141 0 Item lore
+  dtext  60 158 0 Arms lore
+  dtext  60 175 0 Shieldfighting
+//dtext  70 192 0 unused
+  dtext  60 209 0 Blacksmithy
+  dtext  60 226 0 Bowery
+//  dtext  60 243 0 Songs of Peace
+//  dtext  60 261 0 Survival
+  dtext  60 278 0 Carpentry
+  dtext  60 295 0 Cartography
+  dtext  60 312 0 Cooking
+  dtext  60 329 0 Detection
+  dtext  60 346 0 Songs of the World
+  dtext  60 192 0 Mystic lore	// 364
+  dtext 220  90 0 Healing
+  dtext 220 107 0 Fishing
+//  dtext 220 124 0 Netherworld lore
+  dtext 220 141 0 Farming/Herding
+  dtext 220 158 0 Hiding
+  dtext 220 175 0 Songs of War
+  dtext 220 192 0 Inscription
+//  dtext 220 209 0 Lockpicking/Traps
+  dtext 220 226 0 Magery
+  dtext 220 243 0 Resist Magic
+  dtext 220 261 0 Tactics
+  dtext 220 278 0 Snooping
+  dtext 220 295 0 Musicianship
+//  dtext 220 312 0 Poisoning
+  dtext 220 329 0 Archery
+  dtext 220 346 0 Necromancy
+  dtext 370 329 0 Stealing // 220 364
+  
+  dtext 370  90 0 Tailoring
+  dtext 370 107 0 Taming
+//  dtext 370 124 0 Herbs lore
+  dtext 370 141 0 Tinkering
+  dtext 370 158 0 Tracking
+  dtext 370 175 0 Masonry
+  dtext 370 192 0 Blade weapons
+  dtext 370 209 0 Blunt weapons
+  dtext 370 226 0 Piercing weapons
+  dtext 370 243 0 Unarmed combat
+  dtext 370 261 0 Lumberjacking
+  dtext 370 278 0 Mining
+  dtext 370 295 0 Meditation
+  dtext 370 312 0 Stealth
+//dtext 370 329 0 unused
+//dtext 370 346 0 unused
+//dtext 370 364 0 Stealing
+  
+//button 400 350 <eval 047b> <eval 047c> 1 0 60
+  
+[DIALOG d_skill_bonus TEXT]
+
+[DIALOG d_skill_bonus BUTTON]
+ONBUTTON=10 58
+  IF (0<ACCOUNT.TAG.ALLOCATEDSKILL> < 5)
+     SRC.SYSMESSAGE You have no skill to claim at this time.
+     RETURN 1
+  ELSEIF !(<ACCOUNT.TAG.ELIGIBLEFORSKILL>)
+     SRC.SYSMESSAGE You have no skill to claim at this time.
+     RETURN 1
+  ENDIF
+  LOCAL.SKILL=<ARGN1>
+  f_allocatedskill_finish <LOCAL.SKILL>
+  
+[FUNCTION f_allocatedskill_finish] 
+  LOCAL.SKILL	= <eval (<args> - 10)>
+  LOCAL.SKILL = <SERV.SKILL(<LOCAL.SKILL>).KEY>
+  LOCAL.SKILLAMOUNT=<<LOCAL.SKILL>>
+  
+  IF ( <<LOCAL.SKILL>> > 950 )
+     SYSMESSAGE You already have more than 95.0% skill in that skill. Please reduce it to 95% and try again.
+     RETURN 1
+  ELSEIF ( <SKILLTOTAL> > 9950 )
+     SYSMESSAGE You do not have enough room under the skillcap to add 5 skillpoints.
+     RETURN 1
+  ENDIF
+  SERV.LOG <NAME> has claimed +5 <LOCAL.SKILL> from the skill grant.
+  TRY <LOCAL.SKILL>	= <LOCAL.SKILLAMOUNT> + 5.0
+  SRC.ACCOUNT.TAG.ALLOCATEDSKILL=<EVAL (<SRC.ACCOUNT.TAG.ALLOCATEDSKILL> - 5)>
+  IF (0<SRC.ACCOUNT.TAG.ALLOCATEDSKILL>==0)
+     SRC.ACCOUNT.TAG.ALLOCATEDSKILL=
+  ENDIF  
+  RETURN 1
+  
+[EOF]

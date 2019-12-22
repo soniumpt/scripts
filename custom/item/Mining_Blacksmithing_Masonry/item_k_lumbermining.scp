@@ -1,0 +1,189 @@
+//Changelog:
+//==========
+// 17/08/2018 - Wigifer - Added WigDebug to Hatchet.
+
+[ITEMDEF 0f39]
+//Shovel (unique type of unequipable item)
+//LAYER=0
+DEFNAME=i_shovel
+TYPE=T_WEAPON_MACE_PICK
+FLIP=1
+WEIGHT=5
+CATEGORY=Items by Professions
+SUBSECTION=Miner
+DESCRIPTION=Shovel
+SKILLMAKE	= TINKERING 42.1,t_tinker_tools
+RESOURCES=4 i_ingot_iron,1 i_log_pine
+DUPELIST=0f3a
+Value=45
+
+ON=@Create
+  HITPOINTS={50 60}
+ON = @Timer
+  return 1
+ON = @DClick
+  //No hiding and gathering resources in destard or shame
+  IF ( ( <SRC.REGION.DEFNAME>=a_destard_5 ) || ( <SRC.REGION.DEFNAME>=a_shame_7 ) )
+     //Cancel Invisibility Spell and Potions
+     IF <SRC.FINDID.i_rune_invisibility.UID>
+        SRC.FINDID.i_rune_invisibility.REMOVE
+     ENDIF
+              
+     //Unhide people
+     IF <eval (<SRC.flags>&0800000)==0800000> 
+        SRC.SAY 
+     ENDIF  
+  ENDIF
+
+  SRC.TAG.MINESTONE = 1
+  return <resource_dclick>
+ON = @Targon_item
+  if ( <SRC.TARG.TYPE> != t_rock )
+    SRC.SYSMESSAGE You can't mine that.
+    return 1
+  endif
+  return <resource_targon_ground>
+ON = @Targon_char
+  SRC.SYSMESSAGE You can't mine that.
+  return 1
+ON = @Targon_ground
+  return <resource_targon_ground>
+
+
+[ITEMDEF 0e85]		//PickAxe
+CATEGORY	= Provisions - Weapons
+SUBSECTION	= Axes
+DESCRIPTION	= PickAxe
+DEFNAME		= i_pickaxe
+TYPE		= T_WEAPON_MACE_PICK
+FLIP		= 1
+DAM		= 1,10
+REQSTR		= 10
+TWOHANDS	= N
+WEIGHT		= 11
+SKILLMAKE	= TINKERING 42.1,t_tinker_tools
+RESOURCES	= 4 i_ingot_iron, 1 i_log_pine
+DUPELIST	= 0e86
+Value=45
+ON = @Create
+  HITPOINTS={31 60}
+ON = @Timer
+  return 1
+ON = @DClick
+  //No hiding and gathering resources in destard or shame
+  IF ( ( <SRC.REGION.DEFNAME>=a_destard_5 ) || ( <SRC.REGION.DEFNAME>=a_shame_7 ) )
+     //Cancel Invisibility Spell and Potions
+     IF <SRC.FINDID.i_rune_invisibility.UID>
+        SRC.FINDID.i_rune_invisibility.REMOVE
+     ENDIF
+              
+     //Unhide people
+     IF <eval (<SRC.flags>&0800000)==0800000> 
+        SRC.SAY 
+     ENDIF  
+  ENDIF
+
+  SRC.TAG.MINESTONE = 
+  return <resource_dclick>
+ON = @Targon_item
+  if ( <SRC.TARG.TYPE> != t_rock )
+    SRC.SYSMESSAGE You can't mine that.
+    return 1
+  endif
+  return <resource_targon_ground>
+ON = @Targon_char
+  SRC.SYSMESSAGE You can't mine that.
+  return 1
+ON=@Targon_ground
+  SRC.PLAYERDEBUGSAY ::item_k_lumbermining:: i_pickaxe is attempting to call resource_targon_ground.
+  return <resource_targon_ground>
+
+
+[ITEMDEF 0f43]		//Hatchet
+DEFNAME		= i_hatchet
+RESOURCES	= 4 i_ingot_iron
+TYPE		= T_WEAPON_AXE
+FLIP		= 1
+DAM		= 2,5
+SKILL		= Swordsmanship
+REQSTR		= 10
+TWOHANDS	= N
+WEIGHT		= 6
+CATEGORY	= Provisions - Weapons
+SUBSECTION	= Axes
+DESCRIPTION	= Hatchet
+SKILLMAKE	= TINKERING 33.9,t_tinker_tools
+DUPELIST	= 0f44
+
+ON=@Create
+HITPOINTS={31 80}
+ON = @Timer
+  return 1
+ON = @DClick
+  //No hiding and gathering resources in destard or shame
+  IF ( ( <SRC.REGION.DEFNAME>=a_destard_5 ) || ( <SRC.REGION.DEFNAME>=a_shame_7 ) )
+     //Cancel Invisibility Spell and Potions
+     IF <SRC.FINDID.i_rune_invisibility.UID>
+        SRC.FINDID.i_rune_invisibility.REMOVE
+     ENDIF
+              
+     //Unhide people
+     IF <eval (<SRC.flags>&0800000)==0800000> 
+        SRC.SAY 
+     ENDIF
+  ENDIF
+  return <resource_dclick>
+ON = @Targon_item
+  return 1
+ON = @Targon_ground
+  IF (<SRC.TAG0.WIGDEBUG>==1)
+     IF (<SERV.MAP(<SRC.TARGP.X>,<SRC.TARGP.Y>,<SRC.TARGP.M>).STATICS> > 0)
+        SRC.SAY Statics Count: <SERV.MAP(<SRC.TARGP.X>,<SRC.TARGP.Y>,<SRC.TARGP.M>).STATICS>.
+        SRC.SAY Static 0: <SERV.MAP(<SRC.TARGP.X>,<SRC.TARGP.Y>,<SRC.TARGP.M>).STATICS.0.TYPE>
+     ENDIF
+  ENDIF
+  return <resource_targon_ground>
+
+
+[ITEMDEF 0dbf]
+//Fishing Pole
+DEFNAME=i_fishing_pole
+TYPE=T_FISH_POLE
+WEIGHT=2
+CATEGORY=Items by Professions
+SUBSECTION=Fisherman
+DESCRIPTION=Fishing Pole
+RESOURCES=5 i_cloth
+SKILLMAKE=CARPENTRY 68.4, TAILORING 40.0, t_carpentry
+DUPELIST=0dc0
+ON = @Timer
+  return 1
+ON = @DClick
+  //No hiding and gathering resources in destard or shame
+  IF ( ( <SRC.REGION.DEFNAME>=a_destard_5 ) || ( <SRC.REGION.DEFNAME>=a_shame_7 ) )
+     //Cancel Invisibility Spell and Potions
+     IF <SRC.FINDID.i_rune_invisibility.UID>
+        SRC.FINDID.i_rune_invisibility.REMOVE
+     ENDIF
+              
+     //Unhide people
+     IF <eval (<SRC.flags>&0800000)==0800000> 
+        SRC.SAY 
+     ENDIF  
+  ENDIF
+  return <resource_dclick>
+ON = @Targon_item
+  SRC.SYSMESSAGE You can't fish there.
+  return 1
+ON = @Targon_char
+  SRC.SYSMESSAGE You can't fish there.
+  return 1
+ON = @Targon_ground   
+  return <resource_targon_ground>
+
+
+[ITEMDEF 0dc0]
+//fishing pole
+DUPEITEM=0dbf
+
+[EOF]

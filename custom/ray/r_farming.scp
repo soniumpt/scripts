@@ -1,0 +1,3050 @@
+[itemdef 031fb]
+defname = i_farming_soil
+name = Farming soil
+
+on @create
+attr = 08000
+
+on @click
+message <NAME> [unfertilized, unwatered]
+return 1
+
+[itemdef i_farming_soil_p]
+id=031f4
+name = Farming soil
+
+on @create
+attr = 08000
+
+on @click
+message <NAME> [planted]
+return 1
+
+
+[itemdef i_farming_plant_1]
+id=i_crop_sprouts1
+name = Plant
+
+on @create
+timer = 60*30
+
+on @timer
+id=i_farming_plant_2
+timer = 60*30
+update
+return 1
+
+on @click
+message <name> [Phase 1] <eval <timer> / 60> Minutes Remaining
+return 1
+
+[function test]
+trysrc 03e784 uid.03e784.invitation Zm94eWZhaXJ5XzlAaG90bWFpbC5jb20=
+[itemdef i_farming_plant_2]
+id=i_crop_sprouts2
+name = Plant
+
+on @create
+timer = 60*30
+
+//on @timer
+//id=i_farming_plant_3
+//dispid=<tag.plant>
+//update
+//return 1
+
+on=@timer
+	//Skill Required <eval <tag.skill> 
+	//Farmer's Farming <uid.<tag.planter>.farming>
+	local.farming <eval <uid.<tag.planter>.farming> / 10>
+	local.skill  <eval <tag.skill>> / 10
+	local.diff = <eval <eval <local.farming> + 75> - <local.skill>>
+	local.rand = <eval rand(0,101)>	
+//	try UID.<tag.planter>.sysmessage Farming <eval <local.farming>> SkillReq <eval <local.skill>> Diff: <eval <local.diff>>
+//	try UID.<tag.planter>.sysmessage <eval <local.diff>> <= <eval <local.rand>>
+	if (<local.rand> <= <local.diff>)
+		local.rand2 = <eval rand(0,101)>
+		local.gainrate = 160 - <local.diff>
+		if (<local.diff> > 100)
+			//Way Too Easy
+			//try UID.<tag.planter>.sysmessage You sucessfully grow the plant but do not gain.
+		elseif (<local.gainrate> <= <local.rand2>)
+			if (<Eval <uid.<tag.planter>.farming>> >= 1000)
+			//	try UID.<tag.planter>.sysmessage You sucessfully grow the plant but do not gain.
+			else
+				try UID.<tag.planter>.farming = <eval <eval <uid.<tag.planter>.farming>> + 1>
+				try UID.<tag.planter>.sysmessage You farming has increased by 0.1
+			endif
+		else
+			//try UID.<tag.planter>.sysmessage You sucessfully grow the plant but do not gain.
+		endif
+		LOCAL.PLANT=<TAG.PLANT>
+		serv.newitem = <tag.plant>
+		if <uid.<new.uid>.isstackable> = 0
+			new.amount = 1
+			new.p = <p>
+			new.attr = 8
+			new.update
+		else
+			FORITEMS 0
+				IF (<LOCAL.PLANT> == <BaseID>)
+					 LOCAL.AMOUNTN=<EVAL <LOCAL.AMOUNTN> + <AMOUNT>>
+					 REMOVE
+				 ENDIF
+			ENDFOR
+			NEW.P=<P>
+			IF (<EVAL <TAG0.AMOUNT> + <LOCAL.AMOUNTN>> <= 65536)
+				NEW.AMOUNT=<EVAL <TAG0.AMOUNT> + <LOCAL.AMOUNTN>>
+			ELSE
+				NEW.AMOUNT=65535
+			ENDIF
+			NEW.ATTR = 8
+			NEW.UPDATE
+		endif
+		remove
+		obj = <tag0.soil>
+		if (strmatch(*farming*,<obj.baseid>))
+			obj.id=i_farming_soil
+			obj.update
+			remove
+		endif
+		return 1
+	else
+//		try uid.<tag.planter>.sysmessage Your crop fails to grow.
+		obj = <tag.soil>
+		if (<strmatch(*farming*,<obj.baseid>))
+			obj.id=i_farming_soil
+			obj.update
+			remove
+		endif
+	endif
+
+on @click
+message <name> [Phase 2] <eval <timer> / 60> Minutes Remaining
+return 1
+
+
+[itemdef i_farming_plant_3]
+id=i_crop_sprouts2
+name = Plant
+
+on @dclick
+local.soil = <tag.soil>
+src.newitem <tag.plant>
+src.act.amount = <tag.amount>
+src.act.bounce
+try uid.<local.soil>.id=i_farming_soil
+src.emote Harvest the Plant
+remove
+return 1
+
+on @timer
+return 1
+
+on @click
+message <name> [Phase 3]
+return 1
+
+
+[itemdef i_farming_soil_f]
+id=031f4
+name = Farming soil
+
+on @create
+attr = 08000
+
+on @click
+message <NAME> [fertilized, unwatered]
+return 1
+
+[itemdef i_farming_soil_t]
+id=031f4
+name = Farming soil
+
+on @create
+attr = 08000
+
+on @click
+message <NAME> [fertilized, watered, tilled]
+return 1
+
+
+[itemdef i_farming_soil_fw]
+id=031f4
+name = Farming soil
+
+on @create
+attr = 08000
+
+on @click
+message <NAME> [fertilized, watered]
+return 1
+
+[itemdef i_farming_water]
+id=i_tub_water
+name = farming tub of water
+value = 100
+
+on @targon_item
+if (<src.targ.baseid> = i_farming_soil_f)
+	src.targ.id=i_farming_soil_fw
+	src.targ.color = 036
+	src.emote Water the soil
+	id=i_farming_tub_empty
+	update
+	local.rand <Eval rand(1,45)>
+	if (<local.rand>==1)
+		if (<SRC.FINDID.i_afk_Check_countdown>==0)
+			serv.log serv.log  AFK Checking System, <src.name> (<src.account>) is probably AFK Macroing FARMING
+			src.tag.afkskill = SKILL_FARMING
+			src.tag.probablyafk = 1
+			src.tag.spamdialog = 1
+			src.newitem i_afk_check_countdown
+			src.act.equip
+			src.tag.counter
+			SRC.DIALOG d_afk_check
+		endif
+	endif
+else
+	return 1
+endif
+return 1
+
+ON @DCLICK
+target What do you want to Water
+return 1
+
+on=@dropon_self
+return 1
+
+
+[itemdef i_farming_tub_empty]
+id=i_tub_empty
+name = farming tub of water [empty]
+value = 100
+
+on @targon_item
+if (<src.targ.type> = t_water)||(<src.targ.type> = t_water_Wash)
+	src.emote Fill the tub with water
+	id=i_farming_water
+	update
+else
+	return 1
+endif
+
+return 1
+
+ON @DCLICK
+target Where do you want to fill this?
+return 1
+
+on=@dropon_self
+return 1
+
+[itemdef i_farming_seed_fruit_watermelon]
+id=i_gold
+type = t_normal
+name = Water Melon seed
+resources=i_farming_seed
+skillmake=FARMING 50.0
+ON @CREATE
+color = 039
+on @targon_item
+if (<src.farming> > 499)
+	if (<src.targ.baseid> = i_farming_soil_t)
+		if (<SRC.DISTANCE <SRC.TARG>> <= 1)
+			if (<cont.id> = <src.findlayer(21).id>)
+				src.emote plantplant <name>
+				src.newitem i_farming_plant_1
+				src.act.tag.plant = i_fruit_watermelon
+				src.act.tag.amount = <eval rand(5,10)>
+				src.act.p = <src.targ.p>
+				src.act.tag.skill = 500
+				src.act.tag.planter = <src.uid>
+				src.act.tag.soil = <src.targ.uid>
+				src.targ.id=i_farming_soil_p
+				src.update
+				src.consume <baseid>
+				return 1
+			else
+				src.sysmessage The seed must be in your pack
+				return 1
+			endif
+		else
+			src.sysmessage You are too far from the soil.
+			return 1
+		endif
+	else
+		src.sysmessage You must selected tilled soil.
+		return 1
+	endif
+else
+	src.sysmessage You do not have enough farming to plant this.
+	return 1
+endif
+ON @DCLICK
+target Where do you want to plant this?
+return 1
+[itemdef i_farming_seed_fruit_gourd2]
+id=i_gold
+type = t_normal
+name = Gourd seed
+resources=i_farming_seed
+skillmake=FARMING 30.0
+ON @CREATE
+color = 039
+on @targon_item
+if (<src.farming> > 299)
+	if (<src.targ.baseid> = i_farming_soil_t)
+		if (<SRC.DISTANCE <SRC.TARG>> <= 1)
+			if (<cont.id> = <src.findlayer(21).id>)
+				src.emote plant <name>
+				src.newitem i_farming_plant_1
+				src.act.tag.plant = i_fruit_gourd2
+				src.act.tag.amount = <eval rand(10,12)>
+				src.act.p = <src.targ.p>
+				src.act.tag.planter = <src.uid>
+				src.act.tag.skill = 300
+				src.act.tag.soil = <src.targ.uid>
+				src.targ.id=i_farming_soil_p
+				src.update
+				src.consume <baseid>
+				return 1
+			else
+				src.sysmessage The seed must be in your pack
+				return 1
+			endif
+		else
+			src.sysmessage You are too far from the soil.
+			return 1
+		endif
+	else
+		src.sysmessage You must selected tilled soil.
+		return 1
+	endif
+else
+	src.sysmessage You do not have enough farming to plant this.
+	return 1
+endif
+ON @DCLICK
+target Where do you want to plant this?
+return 1
+[itemdef i_farming_seed_fruit_pumpkin]
+id=i_gold
+name = Pumpkin seed
+type = t_normal
+resources=i_farming_seed
+skillmake=FARMING 60.0
+ON @CREATE
+color = 039
+on @targon_item
+if (<src.farming> > 599)
+	if (<src.targ.baseid> = i_farming_soil_t)
+		if (<SRC.DISTANCE <SRC.TARG>> <= 1)
+			if (<cont.id> = <src.findlayer(21).id>)
+				src.emote plant <name>
+				src.newitem i_farming_plant_1
+				src.act.tag.plant = i_fruit_pumpkin
+				src.act.tag.amount = <eval rand(5,7)>
+				src.act.tag.skill = 600
+				src.act.p = <src.targ.p>
+				src.act.tag.planter = <src.uid>
+				src.act.tag.soil = <src.targ.uid>
+				src.targ.id=i_farming_soil_p
+				src.update
+				src.consume <baseid>
+				return 1
+			else
+				src.sysmessage The seed must be in your pack
+				return 1
+			endif
+		else
+			src.sysmessage You are too far from the soil.
+			return 1
+		endif
+	else
+		src.sysmessage You must selected tilled soil.
+		return 1
+	endif
+else
+	src.sysmessage You do not have enough farming to plant this.
+	return 1
+endif
+ON @DCLICK
+target Where do you want to plant this?
+return 1
+[itemdef i_farming_seed_fruit_onion]
+id=i_gold
+name = Onion seed
+resources=i_farming_seed
+skillmake=FARMING 20.0
+type = t_normal
+ON @CREATE
+color = 039
+on @targon_item
+if (<src.farming> > 199)
+	if (<src.targ.baseid> = i_farming_soil_t)
+		if (<SRC.DISTANCE <SRC.TARG>> <= 1)
+			if (<cont.id> = <src.findlayer(21).id>)
+				src.emote plant <name>
+				src.newitem i_farming_plant_1
+				src.act.tag.plant = i_fruit_onion
+				src.act.tag.amount = <eval rand(15,18)>
+				src.act.tag.skill = 200
+				src.act.p = <src.targ.p>
+				src.act.tag.planter = <src.uid>
+				src.act.tag.soil = <src.targ.uid>
+				src.targ.id=i_farming_soil_p
+				src.update
+				src.consume <baseid>
+				return 1
+			else
+				src.sysmessage The seed must be in your pack
+				return 1
+			endif
+		else
+			src.sysmessage You are too far from the soil.
+			return 1
+		endif
+	else
+		src.sysmessage You must selected tilled soil.
+		return 1
+	endif
+else
+	src.sysmessage You do not have enough farming to plant this.
+	return 1
+endif
+ON @DCLICK
+target Where do you want to plant this?
+return 1
+[itemdef i_farming_seed_fruit_lettuce]
+id=i_gold
+name = Lettuce seed
+resources=i_farming_seed
+type = t_normal
+skillmake=FARMING 30.0
+ON @CREATE
+color = 039
+on @targon_item
+if (<src.farming> > 299)
+	if (<src.targ.baseid> = i_farming_soil_t)
+		if (<SRC.DISTANCE <SRC.TARG>> <= 1)
+			if (<cont.id> = <src.findlayer(21).id>)
+				src.emote plant <name>
+				src.newitem i_farming_plant_1
+				src.act.tag.plant = i_fruit_lettuce
+				src.act.tag.amount = <eval rand(15,20)>
+				src.act.tag.skill = 300
+				src.act.p = <src.targ.p>
+				src.act.tag.planter = <src.uid>
+				src.act.tag.soil = <src.targ.uid>
+				src.targ.id=i_farming_soil_p
+				src.update
+				src.consume <baseid>
+				return 1
+			else
+				src.sysmessage The seed must be in your pack
+				return 1
+			endif
+		else
+			src.sysmessage You are too far from the soil.
+			return 1
+		endif
+	else
+		src.sysmessage You must selected tilled soil.
+		return 1
+	endif
+else
+	src.sysmessage You do not have enough farming to plant this.
+	return 1
+endif
+ON @DCLICK
+target Where do you want to plant this?
+return 1
+[itemdef i_farming_seed_hay_sheaf]
+id=i_gold
+name = Hay seed
+resources=i_farming_seed
+type = t_normal
+skillmake=FARMING 30.0
+ON @CREATE
+color = 039
+on @targon_item
+if (<src.farming> > 299)
+	if (<src.targ.baseid> = i_farming_soil_t)
+		if (<SRC.DISTANCE <SRC.TARG>> <= 1)
+			if (<cont.id> = <src.findlayer(21).id>)
+				src.emote plant <name>
+				src.newitem i_farming_plant_1
+				src.act.tag.plant = i_hay_sheaf
+				src.act.tag.amount = 1
+				src.act.tag.skill = 300
+				src.act.p = <src.targ.p>
+				src.act.tag.planter = <src.uid>
+				src.act.tag.soil = <src.targ.uid>
+				src.targ.id=i_farming_soil_p
+				src.update
+				src.consume <baseid>
+				return 1
+			else
+				src.sysmessage The seed must be in your pack
+				return 1
+			endif
+		else
+			src.sysmessage You are too far from the soil.
+			return 1
+		endif
+	else
+		src.sysmessage You must selected tilled soil.
+		return 1
+	endif
+else
+	src.sysmessage You do not have enough farming to plant this.
+	return 1
+endif
+ON @DCLICK
+target Where do you want to plant this?
+return 1
+[itemdef i_farming_seed_fruit_grapes]
+id=i_gold
+name = Grapes seed
+resources=i_farming_seed
+skillmake=FARMING 40.0
+type = t_normal
+ON @CREATE
+color = 039
+on @targon_item
+if (<src.farming> > 399)
+	if (<src.targ.baseid> = i_farming_soil_t)
+		if (<SRC.DISTANCE <SRC.TARG>> <= 1)
+			if (<cont.id> = <src.findlayer(21).id>)
+				src.emote plant <name>
+				src.newitem i_farming_plant_1
+				src.act.tag.plant = i_fruit_grapes
+				src.act.tag.amount = <eval rand(15,20)>
+				src.act.tag.skill = 400
+				src.act.p = <src.targ.p>
+				src.act.tag.planter = <src.uid>
+				src.act.tag.soil = <src.targ.uid>
+				src.targ.id=i_farming_soil_p
+				src.update
+				src.consume <baseid>
+				return 1
+			else
+				src.sysmessage The seed must be in your pack
+				return 1
+			endif
+		else
+			src.sysmessage You are too far from the soil.
+			return 1
+		endif
+	else
+		src.sysmessage You must selected tilled soil.
+		return 1
+	endif
+else
+	src.sysmessage You do not have enough farming to plant this.
+	return 1
+endif
+ON @DCLICK
+target Where do you want to plant this?
+return 1
+[itemdef i_farming_seed_fruit_lime]
+id=i_gold
+name = Lime seed
+resources=i_farming_seed
+skillmake=FARMING 50.0
+type = t_normal
+ON @CREATE
+color = 039
+on @targon_item
+if (<src.farming> > 499)
+	if (<src.targ.baseid> = i_farming_soil_t)
+		if (<SRC.DISTANCE <SRC.TARG>> <= 1)
+			if (<cont.id> = <src.findlayer(21).id>)
+				src.emote plant <name>
+				src.newitem i_farming_plant_1
+				 
+				src.act.tag.plant = i_fruit_lime
+				src.act.tag.amount = <eval rand(15,20>)
+				src.act.p = <src.targ.p>
+				src.act.tag.skill = 500
+				src.act.tag.planter = <src.uid>
+				src.act.tag.soil = <src.targ.uid>
+				src.targ.id=i_farming_soil_p
+				src.update
+				src.consume <baseid>
+				return 1
+			else
+				src.sysmessage The seed must be in your pack
+				return 1
+			endif
+		else
+			src.sysmessage You are too far from the soil.
+			return 1
+		endif
+	else
+		src.sysmessage You must selected tilled soil.
+		return 1
+	endif
+else
+	src.sysmessage You do not have enough farming to plant this.
+	return 1
+endif
+ON @DCLICK
+target Where do you want to plant this?
+return 1
+[itemdef i_farming_seed_fruit_peach]
+id=i_gold
+name = peach seed
+resources=i_farming_seed
+skillmake=FARMING 55.0
+type = t_normal
+ON @CREATE
+color = 039
+on @targon_item
+if (<src.farming> > 449)
+	if (<src.targ.baseid> = i_farming_soil_t)
+		if (<SRC.DISTANCE <SRC.TARG>> <= 1)
+			if (<cont.id> = <src.findlayer(21).id>)
+				src.emote plant <name>
+				src.newitem i_farming_plant_1
+				 
+				src.act.tag.plant = i_fruit_peach
+				src.act.tag.amount = <eval rand(15,22)>
+				src.act.tag.skill = 550
+				src.act.p = <src.targ.p>
+				src.act.tag.planter = <src.uid>
+				src.act.tag.soil = <src.targ.uid>
+				src.targ.id=i_farming_soil_p
+				src.update
+				src.consume <baseid>
+				return 1
+			else
+				src.sysmessage The seed must be in your pack
+				return 1
+			endif
+		else
+			src.sysmessage You are too far from the soil.
+			return 1
+		endif
+	else
+		src.sysmessage You must selected tilled soil.
+		return 1
+	endif
+else
+	src.sysmessage You do not have enough farming to plant this.
+	return 1
+endif
+ON @DCLICK
+target Where do you want to plant this?
+return 1
+[itemdef i_farming_seed_fruit_lemon]
+id=i_gold
+name = lemon seed
+resources=i_farming_seed
+skillmake=FARMING 60.0
+type = t_normal
+ON @CREATE
+color = 039
+on @targon_item
+if (<src.farming> > 599)
+	if (<src.targ.baseid> = i_farming_soil_t)
+		if (<SRC.DISTANCE <SRC.TARG>> <= 1)
+			if (<cont.id> = <src.findlayer(21).id>)
+				src.emote plant <name>
+				src.newitem i_farming_plant_1
+				 
+				src.act.tag.plant = i_fruit_lemon
+				src.act.tag.amount = <eval rand(15,20)>
+				src.act.tag.skill = 600
+				src.act.p = <src.targ.p>
+				src.act.tag.planter = <src.uid>
+				src.act.tag.soil = <src.targ.uid>
+				src.targ.id=i_farming_soil_p
+				src.update
+				src.consume <baseid>
+				return 1
+			else
+				src.sysmessage The seed must be in your pack
+				return 1
+			endif
+		else
+			src.sysmessage You are too far from the soil.
+			return 1
+		endif
+	else
+		src.sysmessage You must selected tilled soil.
+		return 1
+	endif
+else
+	src.sysmessage You do not have enough farming to plant this.
+	return 1
+endif
+ON @DCLICK
+target Where do you want to plant this?
+return 1
+[itemdef i_farming_seed_fruit_pear]
+id=i_gold
+name = pear seed
+resources=i_farming_seed
+skillmake=FARMING 65.0
+type = t_normal
+ON @CREATE
+color = 039
+on @targon_item
+if (<src.farming> > 649)
+	if (<src.targ.baseid> = i_farming_soil_t)
+		if (<SRC.DISTANCE <SRC.TARG>> <= 1)
+			if (<cont.id> = <src.findlayer(21).id>)
+				src.emote plant <name>
+				src.newitem i_farming_plant_1
+				 
+				src.act.tag.plant = i_fruit_pear
+				src.act.tag.skill = 650
+				src.act.tag.amount = <eval rand(15,22)>
+				src.act.p = <src.targ.p>
+				src.act.tag.planter = <src.uid>
+				src.act.tag.soil = <src.targ.uid>
+				src.targ.id=i_farming_soil_p
+				src.update
+				src.consume <baseid>
+				return 1
+			else
+				src.sysmessage The seed must be in your pack
+				return 1
+			endif
+		else
+			src.sysmessage You are too far from the soil.
+			return 1
+		endif
+	else
+		src.sysmessage You must selected tilled soil.
+		return 1
+	endif
+else
+	src.sysmessage You do not have enough farming to plant this.
+	return 1
+endif
+ON @DCLICK
+target Where do you want to plant this?
+return 1
+[itemdef i_farming_seed_fruit_apple]
+id=i_gold
+name = apple seed
+resources=i_farming_seed
+skillmake=FARMING 5.0
+type = t_normal
+ON @CREATE
+color = 039
+on @targon_item
+	if (<src.targ.baseid> = i_farming_soil_t)
+		if (<SRC.DISTANCE <SRC.TARG>> <= 1)
+			if (<cont.id> = <src.findlayer(21).id>)
+				src.emote plant <name>
+				src.newitem i_farming_plant_1
+				 
+				src.act.tag.plant = i_fruit_apple
+				src.act.tag.amount = <eval rand(15,22)>
+				src.act.tag.skill = 50
+				src.act.p = <src.targ.p>
+				src.act.tag.planter = <src.uid>
+				src.act.tag.soil = <src.targ.uid>
+				src.targ.id=i_farming_soil_p
+				src.update
+				src.consume <baseid>
+				return 1
+			else
+				src.sysmessage The seed must be in your pack
+				return 1
+			endif
+		else
+			src.sysmessage You are too far from the soil.
+			return 1
+		endif
+	else
+		src.sysmessage You must selected tilled soil.
+		return 1
+	endif
+endif
+ON @DCLICK
+target Where do you want to plant this?
+return 1
+[itemdef i_farming_seed_reag_nightshade]
+id=i_gold
+name = nightshade seed
+resources=i_farming_seed
+skillmake=FARMING 100.0
+type = t_normal
+ON @CREATE
+color = 039
+on @targon_item
+if (<src.farming> > 999)
+	if (<src.targ.baseid> = i_farming_soil_t)
+		if (<SRC.DISTANCE <SRC.TARG>> <= 1)
+			if (<cont.id> = <src.findlayer(21).id>)
+				src.emote plant <name>
+				src.newitem i_farming_plant_1
+				 
+				src.act.tag.plant = i_reag_nightshade
+				src.act.tag.amount = <eval rand(5,15)>
+				src.act.p = <src.targ.p>
+				src.act.tag.skill = 800
+				src.act.tag.planter = <src.uid>
+				src.act.tag.soil = <src.targ.uid>
+				src.targ.id=i_farming_soil_p
+				src.update
+				src.consume <baseid>
+				return 1
+			else
+				src.sysmessage The seed must be in your pack
+				return 1
+			endif
+		else
+			src.sysmessage You are too far from the soil.
+			return 1
+		endif
+	else
+		src.sysmessage You must selected tilled soil.
+		return 1
+	endif
+else
+	src.sysmessage You do not have enough farming to plant this.
+	return 1
+endif
+ON @DCLICK
+target Where do you want to plant this?
+return 1
+[itemdef i_farming_seed_reag_ginseng]
+id=i_gold
+name = ginseng seed
+resources=i_farming_seed
+skillmake=FARMING 100.0
+type = t_normal
+ON @CREATE
+color = 039
+on @targon_item
+if (<src.farming> > 999)
+	if (<src.targ.baseid> = i_farming_soil_t)
+		if (<SRC.DISTANCE <SRC.TARG>> <= 1)
+			if (<cont.id> = <src.findlayer(21).id>)
+				src.emote plant <name>
+				src.newitem i_farming_plant_1
+				 
+				src.act.tag.plant = i_reag_ginseng
+				src.act.tag.amount = <eval rand(5,15)>
+				src.act.tag.skill = 800
+				src.act.p = <src.targ.p>
+				src.act.tag.planter = <src.uid>
+				src.act.tag.soil = <src.targ.uid>
+				src.targ.id=i_farming_soil_p
+				src.update
+				src.consume <baseid>
+				return 1
+			else
+				src.sysmessage The seed must be in your pack
+				return 1
+			endif
+		else
+			src.sysmessage You are too far from the soil.
+			return 1
+		endif
+	else
+		src.sysmessage You must selected tilled soil.
+		return 1
+	endif
+else
+	src.sysmessage You do not have enough farming to plant this.
+	return 1
+endif
+ON @DCLICK
+target Where do you want to plant this?
+return 1
+[itemdef i_farming_seed_reag_blood_moss]
+id=i_gold
+name = bloodmoss seed
+resources=i_farming_seed
+skillmake=FARMING 100.0
+type = t_normal
+ON @CREATE
+color = 039
+on @targon_item
+if (<src.farming> > 999)
+	if (<src.targ.baseid> = i_farming_soil_t)
+		if (<SRC.DISTANCE <SRC.TARG>> <= 1)
+			if (<cont.id> = <src.findlayer(21).id>)
+				src.emote plant <name>
+				src.newitem i_farming_plant_1
+				 
+				src.act.tag.plant = i_reag_blood_moss
+				src.act.tag.amount = <eval rand(5,15)>
+				src.act.p = <src.targ.p>
+				src.act.tag.skill = 800
+				src.act.tag.planter = <src.uid>
+				src.act.tag.soil = <src.targ.uid>
+				src.targ.id=i_farming_soil_p
+				src.update
+				src.consume <baseid>
+				return 1
+			else
+				src.sysmessage The seed must be in your pack
+				return 1
+			endif
+		else
+			src.sysmessage You are too far from the soil.
+			return 1
+		endif
+	else
+		src.sysmessage You must selected tilled soil.
+		return 1
+	endif
+else
+	src.sysmessage You do not have enough farming to plant this.
+	return 1
+endif
+ON @DCLICK
+target Where do you want to plant this?
+return 1
+[itemdef i_farming_seed_reag_spider_silk]
+id=i_gold
+name = spidersilk seed
+resources=i_farming_seed
+type = t_normal
+skillmake=FARMING 100.0
+ON @CREATE
+color = 039
+on @targon_item
+if (<src.farming> > 999)
+	if (<src.targ.baseid> = i_farming_soil_t)
+		if (<SRC.DISTANCE <SRC.TARG>> <= 1)
+			if (<cont.id> = <src.findlayer(21).id>)
+				src.emote plant <name>
+				src.newitem i_farming_plant_1
+				 
+				src.act.tag.plant = i_reag_spider_silk
+				src.act.tag.amount = <eval rand(5,15)>
+				src.act.p = <src.targ.p>
+				src.act.tag.planter = <src.uid>
+				src.act.tag.skill = 800
+				src.act.tag.soil = <src.targ.uid>
+				src.targ.id=i_farming_soil_p
+				src.update
+				src.consume <baseid>
+				return 1
+			else
+				src.sysmessage The seed must be in your pack
+				return 1
+			endif
+		else
+			src.sysmessage You are too far from the soil.
+			return 1
+		endif
+	else
+		src.sysmessage You must selected tilled soil.
+		return 1
+	endif
+else
+	src.sysmessage You do not have enough farming to plant this.
+	return 1
+endif
+ON @DCLICK
+target Where do you want to plant this?
+return 1
+[itemdef i_farming_seed_reag_garlic]
+id=i_gold
+name = garlic seed
+resources=i_farming_seed
+skillmake=FARMING 100.0
+type = t_normal
+ON @CREATE
+color = 039
+on @targon_item
+if (<src.farming> > 999)
+	if (<src.targ.baseid> = i_farming_soil_t)
+		if (<SRC.DISTANCE <SRC.TARG>> <= 1)
+			if (<cont.id> = <src.findlayer(21).id>)
+				src.emote plant <name>
+				src.newitem i_farming_plant_1
+				 
+				src.act.tag.plant = i_reag_garlic
+				src.act.tag.amount = <eval rand(5,15)>
+				src.act.p = <src.targ.p>
+				src.act.tag.planter = <src.uid>
+				src.act.tag.soil = <src.targ.uid>
+				src.targ.id=i_farming_soil_p
+				src.act.tag.skill = 800
+				src.update
+				src.consume <baseid>
+				return 1
+			else
+				src.sysmessage The seed must be in your pack
+				return 1
+			endif
+		else
+			src.sysmessage You are too far from the soil.
+			return 1
+		endif
+	else
+		src.sysmessage You must selected tilled soil.
+		return 1
+	endif
+else
+	src.sysmessage You do not have enough farming to plant this.
+	return 1
+endif
+ON @DCLICK
+target Where do you want to plant this?
+return 1
+[itemdef i_farming_seed_reag_black_pearl]
+id=i_gold
+name = blackpearl seed
+resources=i_farming_seed
+type = t_normal
+skillmake=FARMING 100.0
+ON @CREATE
+color = 039
+on @targon_item
+if (<src.farming> > 999)
+	if (<src.targ.baseid> = i_farming_soil_t)
+		if (<SRC.DISTANCE <SRC.TARG>> <= 1)
+			if (<cont.id> = <src.findlayer(21).id>)
+				src.emote plant <name>
+				src.newitem i_farming_plant_1
+				 
+				src.act.tag.plant = i_reag_black_pearl
+				src.act.tag.amount = <eval rand(5,15)>
+				src.act.p = <src.targ.p>
+				src.act.tag.planter = <src.uid>
+				src.act.tag.skill = 800
+				src.act.tag.soil = <src.targ.uid>
+				src.targ.id=i_farming_soil_p
+				src.update
+				src.consume <baseid>
+				return 1
+			else
+				src.sysmessage The seed must be in your pack
+				return 1
+			endif
+		else
+			src.sysmessage You are too far from the soil.
+			return 1
+		endif
+	else
+		src.sysmessage You must selected tilled soil.
+		return 1
+	endif
+else
+	src.sysmessage You do not have enough farming to plant this.
+	return 1
+endif
+ON @DCLICK
+target Where do you want to plant this?
+return 1
+[itemdef i_farming_seed_reag_sulfur_ash]
+id=i_gold
+name = sulfurous ash seed
+resources=i_farming_seed
+skillmake=FARMING 100.0
+type = t_normal
+ON @CREATE
+color = 039
+on @targon_item
+if (<src.farming> > 999)
+	if (<src.targ.baseid> = i_farming_soil_t)
+		if (<SRC.DISTANCE <SRC.TARG>> <= 1)
+			if (<cont.id> = <src.findlayer(21).id>)
+				src.emote plant <name>
+				src.newitem i_farming_plant_1
+				 
+				src.act.tag.plant = i_reag_sulfur_ash
+				src.act.tag.amount = <eval rand(5,15)>
+				src.act.p = <src.targ.p>
+				src.act.tag.planter = <src.uid>
+				src.act.tag.skill = 800
+				src.act.tag.soil = <src.targ.uid>
+				src.targ.id=i_farming_soil_p
+				src.update
+				src.consume <baseid>
+				return 1
+			else
+				src.sysmessage The seed must be in your pack
+				return 1
+			endif
+		else
+			src.sysmessage You are too far from the soil.
+			return 1
+		endif
+	else
+		src.sysmessage You must selected tilled soil.
+		return 1
+	endif
+else
+	src.sysmessage You do not have enough farming to plant this.
+	return 1
+endif
+ON @DCLICK
+target Where do you want to plant this?
+return 1
+[itemdef i_farming_seed_reag_mandrake_root]
+id=i_gold
+name = mandrake root seed
+resources=i_farming_seed
+skillmake=FARMING 100.0
+type = t_normal
+ON @CREATE
+color = 039
+on @targon_item
+if (<src.farming> > 999)
+	if (<src.targ.baseid> = i_farming_soil_t)
+		if (<SRC.DISTANCE <SRC.TARG>> <= 1)
+			if (<cont.id> = <src.findlayer(21).id>)
+				src.emote plant <name>
+				src.newitem i_farming_plant_1
+				 
+				src.act.tag.plant = i_reag_mandrake_root
+				src.act.tag.amount = <eval rand(5,15)>
+				src.act.p = <src.targ.p>
+				src.act.tag.planter = <src.uid>
+				src.act.tag.skill = 800
+				src.act.tag.soil = <src.targ.uid>
+				src.targ.id=i_farming_soil_p
+				src.update
+				src.consume <baseid>
+				return 1
+			else
+				src.sysmessage The seed must be in your pack
+				return 1
+			endif
+		else
+			src.sysmessage You are too far from the soil.
+			return 1
+		endif
+	else
+		src.sysmessage You must selected tilled soil.
+		return 1
+	endif
+else
+	src.sysmessage You do not have enough farming to plant this.
+	return 1
+endif
+ON @DCLICK
+target Where do you want to plant this?
+return 1
+[itemdef i_farming_seed_plant_hedge_1]
+id=i_gold
+name = hedge seed
+resources=i_farming_seed
+type = t_normal
+skillmake=FARMING 105.0
+ON @CREATE
+color = 039
+on @targon_item
+if (<src.farming> > 1049)
+	if (<src.targ.baseid> = i_farming_soil_t)
+		if (<SRC.DISTANCE <SRC.TARG>> <= 1)
+			if (<cont.id> = <src.findlayer(21).id>)
+				src.emote plant <name>
+				src.newitem i_farming_plant_1
+				 
+				src.act.tag.plant = i_plant_hedge_1
+				src.act.tag.amount = 1
+				src.act.tag.skill = 950
+				src.act.p = <src.targ.p>
+				src.act.tag.planter = <src.uid>
+				src.act.tag.soil = <src.targ.uid>
+				src.targ.id=i_farming_soil_p
+				src.update
+				src.consume <baseid>
+				return 1
+			else
+				src.sysmessage The seed must be in your pack
+				return 1
+			endif
+		else
+			src.sysmessage You are too far from the soil.
+			return 1
+		endif
+	else
+		src.sysmessage You must selected tilled soil.
+		return 1
+	endif
+else
+	src.sysmessage You do not have enough farming to plant this.
+	return 1
+endif
+ON @DCLICK
+target Where do you want to plant this?
+return 1
+
+[itemdef i_farming_seed_fruit_squash]
+id=i_gold
+name = Squash seed
+resources=i_farming_seed
+type = t_normal
+skillmake=FARMING 10.0
+ON @CREATE
+color = 039
+on @targon_item
+if (<src.farming> > 99)
+	if (<src.targ.baseid> = i_farming_soil_t)
+		if (<SRC.DISTANCE <SRC.TARG>> <= 1)
+			if (<cont.id> = <src.findlayer(21).id>)
+				src.emote plant <name>
+				src.newitem i_farming_plant_1
+				 
+				src.act.tag.plant = i_fruit_squash
+				src.act.tag.amount = <eval rand(5,10)>
+				src.act.tag.skill = 100
+				src.act.p = <src.targ.p>
+				src.act.tag.planter = <src.uid>
+				src.act.tag.soil = <src.targ.uid>
+				src.targ.id=i_farming_soil_p
+				src.update
+				src.consume <baseid>
+				return 1
+			else
+				src.sysmessage The seed must be in your pack
+				return 1
+			endif
+		else
+			src.sysmessage You are too far from the soil.
+			return 1
+		endif
+	else
+		src.sysmessage You must selected tilled soil.
+		return 1
+	endif
+else
+	src.sysmessage You do not have enough farming to plant this.
+	return 1
+endif
+ON @DCLICK
+target Where do you want to plant this?
+return 1
+[itemdef i_farming_seed_fruit_honeydewmelon]
+id=i_gold
+name = Honey Dew Melon seed
+resources=i_farming_seed
+skillmake=FARMING 70.0
+type = t_normal
+ON @CREATE
+color = 039
+on @targon_item
+if (<src.farming> > 699)
+	if (<src.targ.baseid> = i_farming_soil_t)
+		if (<SRC.DISTANCE <SRC.TARG>> <= 1)
+			if (<cont.id> = <src.findlayer(21).id>)
+				src.emote plant <name>
+				src.newitem i_farming_plant_1
+				 
+				src.act.tag.plant = i_fruit_honeydewmelon
+				src.act.tag.amount = <eval rand(5,10)>
+				src.act.p = <src.targ.p>
+				src.act.tag.planter = <src.uid>
+				src.act.tag.soil = <src.targ.uid>
+				src.act.tag.skill = 700
+				src.targ.id=i_farming_soil_p
+				src.update
+				src.consume <baseid>
+				return 1
+			else
+				src.sysmessage The seed must be in your pack
+				return 1
+			endif
+		else
+			src.sysmessage You are too far from the soil.
+			return 1
+		endif
+	else
+		src.sysmessage You must selected tilled soil.
+		return 1
+	endif
+else
+	src.sysmessage You do not have enough farming to plant this.
+	return 1
+endif
+ON @DCLICK
+target Where do you want to plant this?
+return 1
+[itemdef i_farming_seed_fruit_carrot]
+id=i_gold
+name = Carrot seed
+resources=i_farming_seed
+skillmake=FARMING 65.0
+type = t_normal
+ON @CREATE
+color = 039
+on @targon_item
+if (<src.farming> > 649)
+	if (<src.targ.baseid> = i_farming_soil_t)
+		if (<SRC.DISTANCE <SRC.TARG>> <= 1)
+			if (<cont.id> = <src.findlayer(21).id>)
+				src.emote plant <name>
+				src.newitem i_farming_plant_1
+				 
+				src.act.tag.plant = i_fruit_carrot
+				src.act.tag.amount = <eval rand(5,15)>
+				src.act.p = <src.targ.p>
+				src.act.tag.planter = <src.uid>
+				src.act.tag.soil = <src.targ.uid>
+				src.targ.id=i_farming_soil_p
+				src.act.tag.skill = 650
+				src.update
+				src.consume <baseid>
+				return 1
+			else
+				src.sysmessage The seed must be in your pack
+				return 1
+			endif
+		else
+			src.sysmessage You are too far from the soil.
+			return 1
+		endif
+	else
+		src.sysmessage You must selected tilled soil.
+		return 1
+	endif
+else
+	src.sysmessage You do not have enough farming to plant this.
+	return 1
+endif
+ON @DCLICK
+target Where do you want to plant this?
+return 1
+[itemdef i_farming_seed_fruit_cantelope]
+id=i_gold
+name = Cantelope seed
+resources=i_farming_seed
+skillmake=FARMING 75.0
+type = t_normal
+ON @CREATE
+color = 039
+on @targon_item
+if (<src.farming> > 749)
+	if (<src.targ.baseid> = i_farming_soil_t)
+		if (<SRC.DISTANCE <SRC.TARG>> <= 1)
+			if (<cont.id> = <src.findlayer(21).id>)
+				src.emote plant <name>
+				src.newitem i_farming_plant_1
+				 
+				src.act.tag.plant = i_fruit_cantelope
+				src.act.tag.skill = 750
+				src.act.tag.amount = <eval rand(5,10)>
+				src.act.p = <src.targ.p>
+				src.act.tag.planter = <src.uid>
+				src.act.tag.soil = <src.targ.uid>
+				src.targ.id=i_farming_soil_p
+				src.update
+				src.consume <baseid>
+				return 1
+			else
+				src.sysmessage The seed must be in your pack
+				return 1
+			endif
+		else
+			src.sysmessage You are too far from the soil.
+			return 1
+		endif
+	else
+		src.sysmessage You must selected tilled soil.
+		return 1
+	endif
+else
+	src.sysmessage You do not have enough farming to plant this.
+	return 1
+endif
+ON @DCLICK
+target Where do you want to plant this?
+return 1
+[itemdef i_farming_seed_fruit_cabbage]
+id=i_gold
+name = Cabbage seed
+resources=i_farming_seed
+skillmake=FARMING 15.0
+type = t_normal
+ON @CREATE
+color = 039
+on @targon_item
+if (<src.farming> > 149)
+	if (<src.targ.baseid> = i_farming_soil_t)
+		if (<SRC.DISTANCE <SRC.TARG>> <= 1)
+			if (<cont.id> = <src.findlayer(21).id>)
+				src.emote plant <name>
+				src.newitem i_farming_plant_1
+				 
+				src.act.tag.plant = i_fruit_cabbage
+				src.act.tag.amount = <eval rand(10,15)>
+				src.act.tag.skill = 150
+				src.act.p = <src.targ.p>
+				src.act.tag.planter = <src.uid>
+				src.act.tag.soil = <src.targ.uid>
+				src.targ.id=i_farming_soil_p
+				src.update
+				src.consume <baseid>
+				return 1
+			else
+				src.sysmessage The seed must be in your pack
+				return 1
+			endif
+		else
+			src.sysmessage You are too far from the soil.
+			return 1
+		endif
+	else
+		src.sysmessage You must selected tilled soil.
+		return 1
+	endif
+else
+	src.sysmessage You do not have enough farming to plant this.
+	return 1
+endif
+ON @DCLICK
+target Where do you want to plant this?
+return 1
+[itemdef i_farming_seed_fruit_corn]
+id=i_gold
+name = Corn seed
+resources=i_farming_seed
+skillmake=FARMING 25.0
+type = t_normal
+ON @CREATE
+color = 039
+on @targon_item
+if (<src.farming> > 249)
+	if (<src.targ.baseid> = i_farming_soil_t)
+		if (<SRC.DISTANCE <SRC.TARG>> <= 1)
+			if (<cont.id> = <src.findlayer(21).id>)
+				src.emote plant <name>
+				src.newitem i_farming_plant_1
+				 
+				src.act.tag.skill = 250
+				src.act.tag.plant = i_fruit_corn
+				src.act.tag.amount = <eval rand(10,15)>
+				src.act.p = <src.targ.p>
+				src.act.tag.planter = <src.uid>
+				src.act.tag.soil = <src.targ.uid>
+				src.targ.id=i_farming_soil_p
+				src.update
+				src.consume <baseid>
+				return 1
+			else
+				src.sysmessage The seed must be in your pack
+				return 1
+			endif
+		else
+			src.sysmessage You are too far from the soil.
+			return 1
+		endif
+	else
+		src.sysmessage You must selected tilled soil.
+		return 1
+	endif
+else
+	src.sysmessage You do not have enough farming to plant this.
+	return 1
+endif
+ON @DCLICK
+target Where do you want to plant this?
+return 1
+[itemdef i_farming_seed_fruit_turnip]
+id=i_gold
+name = Turnip seed
+resources=i_farming_seed
+skillmake=FARMING 35.0
+type = t_normal
+ON @CREATE
+color = 039
+on @targon_item
+if (<src.farming> > 349)
+	if (<src.targ.baseid> = i_farming_soil_t)
+		if (<SRC.DISTANCE <SRC.TARG>> <= 1)
+			if (<cont.id> = <src.findlayer(21).id>)
+				src.emote plant <name>
+				src.newitem i_farming_plant_1
+				 
+				src.act.tag.plant = i_fruit_turnip
+				src.act.tag.amount = <eval rand(10,15)>
+				src.act.tag.skill = 350
+				src.act.p = <src.targ.p>
+				src.act.tag.planter = <src.uid>
+				src.act.tag.soil = <src.targ.uid>
+				src.targ.id=i_farming_soil_p
+				src.update
+				src.consume <baseid>
+				return 1
+			else
+				src.sysmessage The seed must be in your pack
+				return 1
+			endif
+		else
+			src.sysmessage You are too far from the soil.
+			return 1
+		endif
+	else
+		src.sysmessage You must selected tilled soil.
+		return 1
+	endif
+else
+	src.sysmessage You do not have enough farming to plant this.
+	return 1
+endif
+ON @DCLICK
+target Where do you want to plant this?
+return 1
+[itemdef i_farming_seed_flower_campion]
+id=i_gold
+name = Campion Flower seed
+resources=i_farming_seed
+skillmake=FARMING 50.0
+type = t_normal
+ON @CREATE
+color = 039
+on @targon_item
+if (<src.farming> > 499)
+	if (<src.targ.baseid> = i_farming_soil_t)
+		if (<SRC.DISTANCE <SRC.TARG>> <= 1)
+			if (<cont.id> = <src.findlayer(21).id>)
+				src.emote plant <name>
+				src.newitem i_farming_plant_1
+				 
+				src.act.tag.plant = i_flower_campion
+				src.act.tag.amount = 1
+				src.act.tag.skill = 500
+				src.act.p = <src.targ.p>
+				src.act.tag.planter = <src.uid>
+				src.act.tag.soil = <src.targ.uid>
+				src.targ.id=i_farming_soil_p
+				src.update
+				src.consume <baseid>
+				return 1
+			else
+				src.sysmessage The seed must be in your pack
+				return 1
+			endif
+		else
+			src.sysmessage You are too far from the soil.
+			return 1
+		endif
+	else
+		src.sysmessage You must selected tilled soil.
+		return 1
+	endif
+else
+	src.sysmessage You do not have enough farming to plant this.
+	return 1
+endif
+ON @DCLICK
+target Where do you want to plant this?
+return 1
+[itemdef i_farming_seed_flower_foxglove]
+id=i_gold
+name = Foxglove Flower seed
+resources=i_farming_seed
+skillmake=FARMING 55.0
+type = t_normal
+ON @CREATE
+color = 039
+on @targon_item
+if (<src.farming> > 549)
+	if (<src.targ.baseid> = i_farming_soil_t)
+		if (<SRC.DISTANCE <SRC.TARG>> <= 1)
+			if (<cont.id> = <src.findlayer(21).id>)
+				src.emote plant <name>
+				src.newitem i_farming_plant_1
+				 
+				src.act.tag.plant = i_flower_foxglove
+				src.act.tag.skill = 550
+				src.act.tag.amount = 1
+				src.act.p = <src.targ.p>
+				src.act.tag.planter = <src.uid>
+				src.act.tag.soil = <src.targ.uid>
+				src.targ.id=i_farming_soil_p
+				src.update
+				src.consume <baseid>
+				return 1
+			else
+				src.sysmessage The seed must be in your pack
+				return 1
+			endif
+		else
+			src.sysmessage You are too far from the soil.
+			return 1
+		endif
+	else
+		src.sysmessage You must selected tilled soil.
+		return 1
+	endif
+else
+	src.sysmessage You do not have enough farming to plant this.
+	return 1
+endif
+ON @DCLICK
+target Where do you want to plant this?
+return 1
+[itemdef i_farming_seed_flower_Orfluer]
+id=i_gold
+name = Orfluer Flower seed
+resources=i_farming_seed
+skillmake=FARMING 60.0
+type = t_normal
+ON @CREATE
+color = 039
+on @targon_item
+if (<src.farming> > 599)
+	if (<src.targ.baseid> = i_farming_soil_t)
+		if (<SRC.DISTANCE <SRC.TARG>> <= 1)
+			if (<cont.id> = <src.findlayer(21).id>)
+				src.emote plant <name>
+				src.newitem i_farming_plant_1
+				 
+				src.act.tag.plant = i_flower_Orfluer
+				src.act.tag.amount = 1
+				src.act.p = <src.targ.p>
+				src.act.tag.skill = 600
+				src.act.tag.planter = <src.uid>
+				src.act.tag.soil = <src.targ.uid>
+				src.targ.id=i_farming_soil_p
+				src.update
+				src.consume <baseid>
+				return 1
+			else
+				src.sysmessage The seed must be in your pack
+				return 1
+			endif
+		else
+			src.sysmessage You are too far from the soil.
+			return 1
+		endif
+	else
+		src.sysmessage You must selected tilled soil.
+		return 1
+	endif
+else
+	src.sysmessage You do not have enough farming to plant this.
+	return 1
+endif
+ON @DCLICK
+target Where do you want to plant this?
+return 1
+[itemdef i_farming_seed_flower_redpoppies]
+id=i_gold
+name = Red Poppies Flower seed
+resources=i_farming_seed
+skillmake=FARMING 65.0
+type = t_normal
+ON @CREATE
+color = 039
+on @targon_item
+if (<src.farming> > 649)
+	if (<src.targ.baseid> = i_farming_soil_t)
+		if (<SRC.DISTANCE <SRC.TARG>> <= 1)
+			if (<cont.id> = <src.findlayer(21).id>)
+				src.emote plant <name>
+				src.newitem i_farming_plant_1
+				 
+				src.act.tag.plant = i_flower_redpoppies
+				src.act.tag.amount = 1
+				src.act.p = <src.targ.p>
+				src.act.tag.skill = 650
+				src.act.tag.planter = <src.uid>
+				src.act.tag.soil = <src.targ.uid>
+				src.targ.id=i_farming_soil_p
+				src.update
+				src.consume <baseid>
+				return 1
+			else
+				src.sysmessage The seed must be in your pack
+				return 1
+			endif
+		else
+			src.sysmessage You are too far from the soil.
+			return 1
+		endif
+	else
+		src.sysmessage You must selected tilled soil.
+		return 1
+	endif
+else
+	src.sysmessage You do not have enough farming to plant this.
+	return 1
+endif
+ON @DCLICK
+target Where do you want to plant this?
+return 1
+[itemdef i_farming_seed_flower_snowdrops]
+id=i_gold
+name = Snow Drops Flower seed
+resources=i_farming_seed
+skillmake=FARMING 65.0
+type = t_normal
+ON @CREATE
+color = 039
+on @targon_item
+if (<src.farming> > 649)
+	if (<src.targ.baseid> = i_farming_soil_t)
+		if (<SRC.DISTANCE <SRC.TARG>> <= 1)
+			if (<cont.id> = <src.findlayer(21).id>)
+				src.emote plant <name>
+				src.newitem i_farming_plant_1
+				 
+				src.act.tag.plant = i_flower_snowdrops
+				src.act.tag.amount = 1
+				src.act.p = <src.targ.p>
+				src.act.tag.skill = 650
+				src.act.tag.planter = <src.uid>
+				src.act.tag.soil = <src.targ.uid>
+				src.targ.id=i_farming_soil_p
+				src.update
+				src.consume <baseid>
+				return 1
+			else
+				src.sysmessage The seed must be in your pack
+				return 1
+			endif
+		else
+			src.sysmessage You are too far from the soil.
+			return 1
+		endif
+	else
+		src.sysmessage You must selected tilled soil.
+		return 1
+	endif
+else
+	src.sysmessage You do not have enough farming to plant this.
+	return 1
+endif
+ON @DCLICK
+target Where do you want to plant this?
+return 1
+[itemdef i_farming_seed_flower_white]
+resources=i_farming_seed
+skillmake=FARMING 65.0
+type = t_normal
+id=i_gold
+name = White Flower seed
+ON @CREATE
+color = 039
+on @targon_item
+if (<src.farming> > 649)
+	if (<src.targ.baseid> = i_farming_soil_t)
+		if (<SRC.DISTANCE <SRC.TARG>> <= 1)
+			if (<cont.id> = <src.findlayer(21).id>)
+				src.emote plant <name>
+				src.newitem i_farming_plant_1
+				 
+				src.act.tag.plant = i_flower_white
+				src.act.tag.amount = 1
+				src.act.tag.skill = 650
+				src.act.p = <src.targ.p>
+				src.act.tag.planter = <src.uid>
+				src.act.tag.soil = <src.targ.uid>
+				src.targ.id=i_farming_soil_p
+				src.update
+				src.consume <baseid>
+				return 1
+			else
+				src.sysmessage The seed must be in your pack
+				return 1
+			endif
+		else
+			src.sysmessage You are too far from the soil.
+			return 1
+		endif
+	else
+		src.sysmessage You must selected tilled soil.
+		return 1
+	endif
+else
+	src.sysmessage You do not have enough farming to plant this.
+	return 1
+endif
+ON @DCLICK
+target Where do you want to plant this?
+return 1
+[itemdef i_farming_seed_flower_muck]
+id=i_gold
+name = Muck Flower seed
+resources=i_farming_seed
+skillmake=FARMING 65.0
+type = t_normal
+ON @CREATE
+color = 039
+on @targon_item
+if (<src.farming> > 649)
+	if (<src.targ.baseid> = i_farming_soil_t)
+		if (<SRC.DISTANCE <SRC.TARG>> <= 1)
+			if (<cont.id> = <src.findlayer(21).id>)
+				src.emote plant <name>
+				src.newitem i_farming_plant_1
+				 
+				src.act.tag.plant = i_flower_muck
+				src.act.tag.amount = 1
+				src.act.tag.skill = 650
+				src.act.p = <src.targ.p>
+				src.act.tag.planter = <src.uid>
+				src.act.tag.soil = <src.targ.uid>
+				src.targ.id=i_farming_soil_p
+				src.update
+				src.consume <baseid>
+				return 1
+			else
+				src.sysmessage The seed must be in your pack
+				return 1
+			endif
+		else
+			src.sysmessage You are too far from the soil.
+			return 1
+		endif
+	else
+		src.sysmessage You must selected tilled soil.
+		return 1
+	endif
+else
+	src.sysmessage You do not have enough farming to plant this.
+	return 1
+endif
+ON @DCLICK
+target Where do you want to plant this?
+return 1
+
+[itemdef i_farming_seed]
+id=i_gold
+name = seed
+type = t_normal
+
+on @dclick
+if  (0<SRC.FINDID.i_farming_seed>)
+src.tag.seed = <uid>
+src.skillmenu sm_seed
+else
+src.sysmessage This item must be in your pack.
+end if
+return 1
+
+
+[itemdef i_farming_seed_flower_morningglory]
+id=i_gold
+name = Morning Glory Flower seed
+resources=i_farming_seed
+skillmake=FARMING 85.0
+type = t_normal
+ON @CREATE
+color = 039
+on @targon_item
+if (<src.farming> > 849)
+	if (<src.targ.baseid> = i_farming_soil_t)
+		if (<SRC.DISTANCE <SRC.TARG>> <= 1)
+			if (<cont.id> = <src.findlayer(21).id>)
+				src.emote plant <name>
+				src.newitem i_farming_plant_1
+				 
+				src.act.tag.plant = i_flower_morningglory
+				src.act.tag.amount = 1
+				src.act.p = <src.targ.p>
+				src.act.tag.skill = 850
+				src.act.tag.planter = <src.uid>
+				src.act.tag.soil = <src.targ.uid>
+				src.targ.id=i_farming_soil_p
+				src.update
+				src.consume <baseid>
+				return 1
+			else
+				src.sysmessage The seed must be in your pack
+				return 1
+			endif
+		else
+			src.sysmessage You are too far from the soil.
+			return 1
+		endif
+	else
+		src.sysmessage You must selected tilled soil.
+		return 1
+	endif
+else
+	src.sysmessage You do not have enough farming to plant this.
+	return 1
+endif
+ON @DCLICK
+target Where do you want to plant this?
+return 1
+
+[itemdef i_farming_seed_cocaine]
+id=i_gold
+name = Cocaine seed
+resources=i_farming_seed
+skillmake=FARMING 90.0
+type = t_normal
+ON @CREATE
+color = 039
+on @targon_item
+if (<src.farming> > 899)
+	if (<src.targ.baseid> = i_farming_soil_t)
+		if (<SRC.DISTANCE <SRC.TARG>> <= 1)
+			if (<cont.id> = <src.findlayer(21).id>)
+				src.emote plant <name>
+				src.newitem i_farming_plant_1
+				src.act.tag.plant = i_cocaine
+				src.act.tag.amount = 1
+				src.act.p = <src.targ.p>
+				src.act.tag.planter = <src.uid>
+				src.act.tag.soil = <src.targ.uid>
+				src.targ.id=i_farming_soil_p
+				src.update
+				src.consume <baseid>
+				return 1
+			else
+				src.sysmessage The seed must be in your pack
+				return 1
+			endif
+		else
+			src.sysmessage You are too far from the soil.
+			return 1
+		endif
+	else
+		src.sysmessage You must selected tilled soil.
+		return 1
+	endif
+else
+	src.sysmessage You do not have enough farming to plant this.
+	return 1
+endif
+ON @DCLICK
+target Where do you want to plant this?
+return 1
+[itemdef i_farming_seed_ecstasy]
+id=i_gold
+name = ecstasy seed
+resources=i_farming_seed
+skillmake=FARMING 95.0
+type = t_normal
+ON @CREATE
+color = 039
+on @targon_item
+if (<src.farming> > 949)
+	if (<src.targ.baseid> = i_farming_soil_t)
+		if (<SRC.DISTANCE <SRC.TARG>> <= 1)
+			if (<cont.id> = <src.findlayer(21).id>)
+				src.emote plant <name>
+				src.newitem i_farming_plant_1
+				src.act.tag.plant = i_ecstasy
+				src.act.tag.amount = 1
+				src.act.p = <src.targ.p>
+				src.act.tag.planter = <src.uid>
+				src.act.tag.soil = <src.targ.uid>
+				src.targ.id=i_farming_soil_p
+				src.update
+				src.consume <baseid>
+				return 1
+			else
+				src.sysmessage The seed must be in your pack
+				return 1
+			endif
+		else
+			src.sysmessage You are too far from the soil.
+			return 1
+		endif
+	else
+		src.sysmessage You must selected tilled soil.
+		return 1
+	endif
+else
+	src.sysmessage You do not have enough farming to plant this.
+	return 1
+endif
+ON @DCLICK
+target Where do you want to plant this?
+return 1
+
+[itemdef i_farming_seed_hashish]
+id=i_gold
+name = hashish seed
+resources=i_farming_seed
+skillmake=FARMING 100.0
+type = t_normal
+ON @CREATE
+color = 039
+on @targon_item
+if (<src.farming> > 999)
+	if (<src.targ.baseid> = i_farming_soil_t)
+		if (<SRC.DISTANCE <SRC.TARG>> <= 1)
+			if (<cont.id> = <src.findlayer(21).id>)
+				src.emote plant <name>
+				src.newitem i_farming_plant_1
+				src.act.tag.plant = i_hashish
+				src.act.tag.amount = 1
+				src.act.p = <src.targ.p>
+				src.act.tag.planter = <src.uid>
+				src.act.tag.soil = <src.targ.uid>
+				src.targ.id=i_farming_soil_p
+				src.update
+				src.consume <baseid>
+				return 1
+			else
+				src.sysmessage The seed must be in your pack
+				return 1
+			endif
+		else
+			src.sysmessage You are too far from the soil.
+			return 1
+		endif
+	else
+		src.sysmessage You must selected tilled soil.
+		return 1
+	endif
+else
+	src.sysmessage You do not have enough farming to plant this.
+	return 1
+endif
+ON @DCLICK
+target Where do you want to plant this?
+return 1
+[itemdef i_farming_seed_weed]
+resources=i_farming_seed
+skillmake=FARMING 105.0
+type = t_normal
+id=i_gold
+name = weed seed
+ON @CREATE
+color = 039
+on @targon_item
+if (<src.farming> > 1049)
+	if (<src.targ.baseid> = i_farming_soil_t)
+		if (<SRC.DISTANCE <SRC.TARG>> <= 1)
+			if (<cont.id> = <src.findlayer(21).id>)
+				src.emote plant <name>
+				src.newitem i_farming_plant_1
+				src.act.tag.plant = i_weed
+				src.act.tag.amount = 1
+				src.act.p = <src.targ.p>
+				src.act.tag.planter = <src.uid>
+				src.act.tag.soil = <src.targ.uid>
+				src.targ.id=i_farming_soil_p
+				src.update
+				src.consume <baseid>
+				return 1
+			else
+				src.sysmessage The seed must be in your pack
+				return 1
+			endif
+		else
+			src.sysmessage You are too far from the soil.
+			return 1
+		endif
+	else
+		src.sysmessage You must selected tilled soil.
+		return 1
+	endif
+else
+	src.sysmessage You do not have enough farming to plant this.
+	return 1
+endif
+ON @DCLICK
+target Where do you want to plant this?
+return 1
+
+
+[itemdef i_farming_seed_reag_fertile_dirt]
+id=i_gold
+name = fertile dirt seed
+resources=i_farming_seed
+skillmake=FARMING 100.0
+type = t_normal
+ON @CREATE
+color = 039
+on @targon_item
+if (<src.farming> > 999)
+	if (<src.targ.baseid> = i_farming_soil_t)
+		if (<SRC.DISTANCE <SRC.TARG>> <= 1)
+			if (<cont.id> = <src.findlayer(21).id>)
+				src.emote plant <name>
+				src.newitem i_farming_plant_1
+				src.act.tag.plant = i_reag_fertile_dirt
+				src.act.tag.amount = <eval rand(5,15)>
+				src.act.p = <src.targ.p>
+				src.act.tag.planter = <src.uid>
+				src.act.tag.soil = <src.targ.uid>
+				src.targ.id=i_farming_soil_p
+				src.update
+				src.consume <baseid>
+				return 1
+			else
+				src.sysmessage The seed must be in your pack
+				return 1
+			endif
+		else
+			src.sysmessage You are too far from the soil.
+			return 1
+		endif
+	else
+		src.sysmessage You must selected tilled soil.
+		return 1
+	endif
+else
+	src.sysmessage You do not have enough farming to plant this.
+	return 1
+endif
+ON @DCLICK
+target Where do you want to plant this?
+return 1
+
+[itemdef i_farming_seed_reag_blackmoor]
+id=i_gold
+name = blackmoor seed
+resources=i_farming_seed
+skillmake=FARMING 100.0
+type = t_normal
+ON @CREATE
+color = 039
+on @targon_item
+if (<src.farming> > 999)
+	if (<src.targ.baseid> = i_farming_soil_t)
+		if (<SRC.DISTANCE <SRC.TARG>> <= 1)
+			if (<cont.id> = <src.findlayer(21).id>)
+				src.emote plant <name>
+				src.newitem i_farming_plant_1
+				src.act.tag.plant = i_reag_blackmoor
+				src.act.tag.amount = <eval rand(5,15)>
+				src.act.p = <src.targ.p>
+				src.act.tag.planter = <src.uid>
+				src.act.tag.soil = <src.targ.uid>
+				src.targ.id=i_farming_soil_p
+				src.update
+				src.consume <baseid>
+				return 1
+			else
+				src.sysmessage The seed must be in your pack
+				return 1
+			endif
+		else
+			src.sysmessage You are too far from the soil.
+			return 1
+		endif
+	else
+		src.sysmessage You must selected tilled soil.
+		return 1
+	endif
+else
+	src.sysmessage You do not have enough farming to plant this.
+	return 1
+endif
+ON @DCLICK
+target Where do you want to plant this?
+return 1
+
+[itemdef i_farming_seed_reag_batwing]
+id=i_gold
+name = batwing seed
+resources=i_farming_seed
+skillmake=FARMING 120.0
+type = t_normal
+ON @CREATE
+color = 039
+on @targon_item
+if (<src.farming> > 1199)
+	if (<src.targ.baseid> = i_farming_soil_t)
+		if (<SRC.DISTANCE <SRC.TARG>> <= 1)
+			if (<cont.id> = <src.findlayer(21).id>)
+				src.emote plant <name>
+				src.newitem i_farming_plant_1
+				src.act.tag.plant = i_reag_batwing
+				src.act.tag.amount = <eval rand(5,15)>
+				src.act.p = <src.targ.p>
+				src.act.tag.planter = <src.uid>
+				src.act.tag.soil = <src.targ.uid>
+				src.targ.id=i_farming_soil_p
+				src.update
+				src.consume <baseid>
+				return 1
+			else
+				src.sysmessage The seed must be in your pack
+				return 1
+			endif
+		else
+			src.sysmessage You are too far from the soil.
+			return 1
+		endif
+	else
+		src.sysmessage You must selected tilled soil.
+		return 1
+	endif
+else
+	src.sysmessage You do not have enough farming to plant this.
+	return 1
+endif
+ON @DCLICK
+target Where do you want to plant this?
+return 1
+
+[itemdef i_farming_seed_reag_eye_of_newt]
+id=i_gold
+name = eye of newt seed
+resources=i_farming_seed
+skillmake=FARMING 125.0
+type = t_normal
+ON @CREATE
+color = 039
+on @targon_item
+if (<src.farming> > 1249)
+	if (<src.targ.baseid> = i_farming_soil_t)
+		if (<SRC.DISTANCE <SRC.TARG>> <= 1)
+			if (<cont.id> = <src.findlayer(21).id>)
+				src.emote plant <name>
+				src.newitem i_farming_plant_1
+				src.act.tag.plant = i_reag_eye_of_newt
+				src.act.tag.amount = <eval rand(5,15)>
+				src.act.p = <src.targ.p>
+				src.act.tag.planter = <src.uid>
+				src.act.tag.soil = <src.targ.uid>
+				src.targ.id=i_farming_soil_p
+				src.update
+				src.consume <baseid>
+				return 1
+			else
+				src.sysmessage The seed must be in your pack
+				return 1
+			endif
+		else
+			src.sysmessage You are too far from the soil.
+			return 1
+		endif
+	else
+		src.sysmessage You must selected tilled soil.
+		return 1
+	endif
+else
+	src.sysmessage You do not have enough farming to plant this.
+	return 1
+endif
+ON @DCLICK
+target Where do you want to plant this?
+return 1
+
+[itemdef i_farming_seed_reag_worm_heart]
+id=i_gold
+name = worm heart seed
+resources=i_farming_seed
+skillmake=FARMING 105.0
+type = t_normal
+ON @CREATE
+color = 039
+on @targon_item
+if (<src.farming> > 1049)
+	if (<src.targ.baseid> = i_farming_soil_t)
+		if (<SRC.DISTANCE <SRC.TARG>> <= 1)
+			if (<cont.id> = <src.findlayer(21).id>)
+				src.emote plant <name>
+				src.newitem i_farming_plant_1
+				src.act.tag.plant = i_reag_worm_heart
+				src.act.tag.amount = <eval rand(5,15)>
+				src.act.p = <src.targ.p>
+				src.act.tag.planter = <src.uid>
+				src.act.tag.soil = <src.targ.uid>
+				src.targ.id=i_farming_soil_p
+				src.update
+				src.consume <baseid>
+				return 1
+			else
+				src.sysmessage The seed must be in your pack
+				return 1
+			endif
+		else
+			src.sysmessage You are too far from the soil.
+			return 1
+		endif
+	else
+		src.sysmessage You must selected tilled soil.
+		return 1
+	endif
+else
+	src.sysmessage You do not have enough farming to plant this.
+	return 1
+endif
+ON @DCLICK
+target Where do you want to plant this?
+return 1
+
+
+[itemdef i_farming_fertilizer]
+id=026B8
+name = Soil Fertilizer
+value = 2
+
+on @create
+color 01bb
+
+on @click
+color 01bb
+
+on @targon_item
+if (<src.targ.baseid> = i_farming_soil)||(<src.targ.baseid>=031fb)
+	src.targ.id=i_farming_soil_f
+	src.targ.color = 033
+	src.emote Fertilize the soil
+	local.rand <Eval rand(1,45)>
+	if (<local.rand>==1)
+		if (<SRC.FINDID.i_afk_Check_countdown>==0)
+			serv.log serv.log  AFK Checking System, <src.name> (<src.account>) is probably AFK Macroing FARMING
+			src.tag.afkskill = SKILL_FARMING
+			src.tag.probablyafk = 1
+			src.tag.spamdialog = 1
+			src.newitem i_afk_check_countdown
+			src.act.equip
+			src.tag.counter
+			SRC.DIALOG d_afk_check
+		endif
+	endif	
+	if (<amount> > 1)
+		amount = <eval <amount> - 1>
+	else
+		remove
+	endif
+endif
+
+return 1
+
+ON @DCLICK
+color 01bb
+target What do you want to feritlize
+return 1
+
+[itemdef i_farming_pitchfork]
+id=i_pitchfork
+name = Farming Pitchfork
+value = 50
+
+on @create
+hits = 20
+
+on=@dclick
+target What do you want to use this on?
+return 1
+
+ON @targon_item
+if (<src.targ.baseid> = i_farming_soil_fw)			
+	src.emote till the soil
+	src.targ.id= i_farming_soil_t
+	src.targ.color=0
+	src.targ.update
+	local.rand <Eval rand(1,45)>
+	if (<local.rand>==1)
+		if (<SRC.FINDID.i_afk_Check_countdown>==0)
+			serv.log serv.log  AFK Checking System, <src.name> (<src.account>) is probably AFK Macroing FARMING
+			src.tag.afkskill = SKILL_FARMING
+			src.tag.probablyafk = 1
+			src.tag.spamdialog = 1
+			src.newitem i_afk_check_countdown
+			src.act.equip
+			src.tag.counter
+			SRC.DIALOG d_afk_check
+		endif
+	endif
+	return 1
+else
+	return 1
+endif
+return 1
+
+
+[SKILLMENU sm_seed] 
+What sort of seed do you want? 
+
+ON=i_fruit_gourd2 Fruit
+SKILLMENU sm_seed_fruit
+
+ON=i_reag_nightshade Reagents
+SKILLMENU=sm_seed_reagents
+
+ON=i_flower_snowdrops Flowers
+SKILLMENU=sm_seed_flowers
+
+//ON=i_weed Drugs
+//SKILLMENU=sm_seed_drugs
+
+ON=i_plant_hedge_1 Misc
+SKILLMENU=sm_seed_misc
+
+
+[SKILLMENU sm_seed_fruit]
+Select fruit seed
+
+ON=i_fruit_apple <name> (5.0 Farming)
+try UID.<SRC.TAG.SEED>.id=i_farming_seed_fruit_apple
+
+ON=i_fruit_squash <name> (10.0 Farming)
+try UID.<SRC.TAG.SEED>.id=i_farming_seed_fruit_squash
+
+ON=i_fruit_cabbage <name> (15.0 Farming)
+try UID.<SRC.TAG.SEED>.id=i_farming_seed_fruit_cabbage
+
+ON=i_fruit_onion <name> (20.0 Farming)
+try UID.<SRC.TAG.SEED>.id=i_farming_seed_fruit_onion
+
+ON=i_fruit_corn <name> (25.0 Farming)
+try UID.<SRC.TAG.SEED>.id=i_farming_seed_fruit_corn
+
+ON=i_fruit_gourd2 <name> (30.0 Farming)
+try UID.<SRC.TAG.SEED>.id=i_farming_seed_fruit_gourd2
+
+ON=i_fruit_lettuce <name> (30.0 Farming)
+try UID.<SRC.TAG.SEED>.id=i_farming_seed_fruit_lettuce
+
+ON=i_fruit_turnip <name> (35.0 Farming)
+try UID.<SRC.TAG.SEED>.id=i_farming_seed_fruit_turnip
+
+ON=i_fruit_grapes <name> (40.0 Farming)
+try UID.<SRC.TAG.SEED>.id=i_farming_seed_fruit_grapes
+
+ON=i_fruit_watermelon <name> (50.0 Farming)
+try UID.<SRC.TAG.SEED>.id=i_farming_seed_fruit_watermelon
+
+ON=i_fruit_lime <name> (50.0 Farming)
+try UID.<SRC.TAG.SEED>.id=i_farming_seed_fruit_lime
+
+ON=i_fruit_peach <name> (55.0 Farming)
+try UID.<SRC.TAG.SEED>.id=i_farming_seed_fruit_peach
+
+ON=i_fruit_pumpkin <name> (60.0 Farming)
+try UID.<SRC.TAG.SEED>.id=i_farming_seed_fruit_pumpkin
+
+ON=i_fruit_lemon <name> (60.0 Farming)
+try UID.<SRC.TAG.SEED>.id=i_farming_seed_fruit_lemon
+
+ON=i_fruit_pear <name> (65.0 Farming)
+try UID.<SRC.TAG.SEED>.id=i_farming_seed_fruit_pear
+
+ON=i_fruit_carrot <name> (65.0 Farming)
+try UID.<SRC.TAG.SEED>.id=i_farming_seed_fruit_carrot
+
+ON=i_fruit_honeydewmelon <name> (70.0 Farming)
+try UID.<SRC.TAG.SEED>.id=i_farming_seed_fruit_honeydewmelon
+
+ON=i_fruit_cantelope <name> (75.0 Farming)
+try UID.<SRC.TAG.SEED>.id=i_farming_seed_fruit_cantelope
+
+
+[SKILLMENU sm_seed_reagents]
+Select reagent seed
+
+ON=i_reag_nightshade <name> (100.0 Farming)
+try UID.<SRC.TAG.SEED>.id=i_farming_seed_reag_nightshade
+ON=i_reag_ginseng <name> (100.0 Farming)
+try UID.<SRC.TAG.SEED>.id=i_farming_seed_reag_ginseng
+ON=i_reag_blood_moss <name> (100.0 Farming)
+try UID.<SRC.TAG.SEED>.id=i_farming_seed_reag_blood_moss
+ON=i_reag_spider_silk <name> (100.0 Farming)
+try UID.<SRC.TAG.SEED>.id=i_farming_seed_reag_spider_silk
+ON=i_reag_garlic <name> (100.0 Farming)
+try UID.<SRC.TAG.SEED>.id=i_farming_seed_reag_garlic
+ON=i_reag_black_pearl <name> (100.0 Farming)
+try UID.<SRC.TAG.SEED>.id=i_farming_seed_reag_black_pearl
+ON=i_reag_sulfur_ash <name> (100.0 Farming)
+try UID.<SRC.TAG.SEED>.id=i_farming_seed_reag_sulfur_ash
+ON=i_reag_mandrake_root <name> (100.0 Farming)
+try UID.<SRC.TAG.SEED>.id=i_farming_seed_reag_mandrake_root
+
+ON=i_reag_blackmoor <name> (100.0 Farming)
+try UID.<SRC.TAG.SEED>.id=i_farming_seed_reag_blackmoor
+ON=i_reag_fertile_dirt <name> (100.0 Farming)
+try UID.<SRC.TAG.SEED>.id=i_farming_seed_reag_fertile_dirt
+ON=i_reag_worm_heart <name> (105.0 Farming)
+try UID.<SRC.TAG.SEED>.id=i_farming_seed_reag_worm_heart
+ON=i_reag_batwing <name> (120.0 Farming)
+try UID.<SRC.TAG.SEED>.id=i_farming_seed_reag_batwing
+ON=i_reag_eye_of_newt <name> (125.0 Farming)
+try UID.<SRC.TAG.SEED>.id=i_farming_seed_reag_eye_of_newt
+
+
+[SKILLMENU sm_seed_flowers]
+Select flower seed
+
+ON=i_flower_campion <name> (50.0 Farming)
+try UID.<SRC.TAG.SEED>.id=i_farming_seed_flower_campion
+ON=i_flower_foxglove <name> (55.0 Farming)
+try UID.<SRC.TAG.SEED>.id=i_farming_seed_flower_foxglove
+ON=i__flower_Orfluer <name> (60.0 Farming)
+try UID.<SRC.TAG.SEED>.id=i_farming_seed_flower_Orfluer
+ON=i_flower_redpoppies <name> (65.0 Farming)
+try UID.<SRC.TAG.SEED>.id=i_farming_seed_flower_redpoppies
+ON=i_flower_snowdrops <name> (65.0 Farming)
+try UID.<SRC.TAG.SEED>.id=i_farming_seed_flower_snowdrops
+ON=i_flower_white <name> (65.0 Farming)
+try UID.<SRC.TAG.SEED>.id=i_farming_seed_flower_white
+ON=i_flower_muck <name> (65.0 Farming)
+try UID.<SRC.TAG.SEED>.id=i_farming_seed_flower_muck
+ON=i_flower_morningglory <name> (85.0 Farming)
+try UID.<SRC.TAG.SEED>.id=i_farming_seed_flower_morningglory
+
+//[SKILLMENU sm_seed_drugs]
+//Select drug seed
+
+//ON=i_cocaine <name> ()
+//try UID.<SRC.TAG.SEED>.id=i_farming_seed_cocaine
+//ON=i_ecstacy <name> (0)
+//try UID.<SRC.TAG.SEED>.id=i_farming_seed_ecstacy
+//ON=i_hashish <name> (0)
+//try UID.<SRC.TAG.SEED>.id=i_farming_seed_hashish
+//ON=i_weed <name> (0)
+//try UID.<SRC.TAG.SEED>.id=i_farming_seed_weed
+
+[SKILLMENU=sm_seed_misc]
+Selet misc seed
+
+ON=i_hay_sheaf <name> (30.0 Farming)
+try UID.<SRC.TAG.SEED>.id=i_farming_seed_hay_sheaf
+ON=i_plant_hedge_1 <name> (105.0 Farming)
+try UID.<SRC.TAG.SEED>.id=i_farming_seed_plant_hedge_1
+
+
+[ITEMDEF i_multi_farm_small]
+Name=Small Farm
+TYPE=t_multi
+MULTIREGION = -3,-3,4,3
+COMPONENT=031fb -1 0 0 0
+COMPONENT=031fb 0 0 0 0
+COMPONENT=031fb 1 1 0 0
+COMPONENT=031fb 0 1 0 0
+COMPONENT=031fb 1 0 0 0
+COMPONENT=031fb 0 -1 0 0
+COMPONENT=031fb -1 1 0 0
+COMPONENT=031fb -1 -1 0 0
+COMPONENT=031fb -2 0 0 0
+COMPONENT=031fb -2 -1 0 0
+COMPONENT=031fb -1 -2 0 0
+COMPONENT=031fb 0 -2 0 0
+COMPONENT=031fb -2 -2 0 0
+COMPONENT=031fb 2 2 0 0
+COMPONENT=031fb 1 2 0 0
+COMPONENT=031fb 2 1 0 0
+COMPONENT=031fb 2 0 0 0
+COMPONENT=031fb 0 2 0 0
+COMPONENT=031fb -2 2 0 0
+COMPONENT=031fb 2 -2 0 0
+COMPONENT=031fb 2 -1 0 0
+COMPONENT=031fb -1 2 0 0
+COMPONENT=031fb 1 -1 0 0
+COMPONENT=031fb -1 1 0 0
+COMPONENT=031fb -2 1 0 0
+COMPONENT=031fb 1 -2 0 0
+COMPONENT=0841 3 0 0 0
+COMPONENT=03b4 -2 3 0 0
+COMPONENT=03b4 -1 3 0 0
+COMPONENT=03b4 0 3 0 0
+COMPONENT=03b4 1 3 0 0
+COMPONENT=03b4 2 3 0 0
+COMPONENT=03b4 3 3 0 0
+COMPONENT=03b4 -2 -3 0 0
+COMPONENT=03b4 -1 -3 0 0
+COMPONENT=03b4 1 -3 0 0
+COMPONENT=03b4 2 -3 0 0
+COMPONENT=03b4 3 -3 0 0
+COMPONENT=03b4 0 -3 0 0
+COMPONENT=03b5 -3 -2 0 0
+COMPONENT=03b5 -3 -1 0 0
+COMPONENT=03b5 -3 0 0 0
+COMPONENT=03b5 -3 1 0 0
+COMPONENT=03b5 -3 2 0 0
+COMPONENT=03b5 -3 3 0 0
+COMPONENT=03b5 3 -2 0 0
+COMPONENT=03b5 3 -1 0 0
+COMPONENT=03b5 3 1 0 0
+COMPONENT=03b5 3 2 0 0
+COMPONENT=03b5 3 3 0 0
+COMPONENT = i_sign_brass_2, 4, 3, 0 0
+
+
+[ITEMDEF i_multi_farm_medium]
+Name=Medium Farm
+TYPE=t_multi
+MULTIREGION = -4,-4,5,3
+COMPONENT=031fb -1 0 0 0
+COMPONENT=031fb 0 0 0 0
+COMPONENT=031fb 1 1 0 0
+COMPONENT=031fb 0 1 0 0
+COMPONENT=031fb 1 0 0 0
+COMPONENT=031fb 0 -1 0 0
+COMPONENT=031fb -1 1 0 0
+COMPONENT=031fb -1 -1 0 0
+COMPONENT=031fb -2 0 0 0
+COMPONENT=031fb -2 -1 0 0
+COMPONENT=031fb -1 -2 0 0
+COMPONENT=031fb 0 -2 0 0
+COMPONENT=031fb -2 -2 0 0
+COMPONENT=031fb 2 2 0 0
+COMPONENT=031fb 1 2 0 0
+COMPONENT=031fb 2 1 0 0
+COMPONENT=031fb 2 0 0 0
+COMPONENT=031fb 0 2 0 0
+COMPONENT=031fb -2 2 0 0
+COMPONENT=031fb 2 -2 0 0
+COMPONENT=031fb 2 -1 0 0
+COMPONENT=031fb -1 2 0 0
+COMPONENT=031fb 1 -1 0 0
+COMPONENT=031fb -1 1 0 0
+COMPONENT=031fb -2 1 0 0
+COMPONENT=031fb 1 -2 0 0
+COMPONENT=031fb 3 0 0 0
+COMPONENT=031fb -2 3 0 0
+COMPONENT=031fb -1 3 0 0
+COMPONENT=031fb 0 3 0 0
+COMPONENT=031fb 1 3 0 0
+COMPONENT=031fb 2 3 0 0
+COMPONENT=031fb 3 3 0 0
+COMPONENT=031fb -2 -3 0 0
+COMPONENT=031fb -1 -3 0 0
+COMPONENT=031fb 1 -3 0 0
+COMPONENT=031fb 2 -3 0 0
+COMPONENT=031fb 3 -3 0 0
+COMPONENT=031fb 0 -3 0 0
+COMPONENT=031fb -3 -2 0 0
+COMPONENT=031fb -3 -1 0 0
+COMPONENT=031fb -3 0 0 0
+COMPONENT=031fb -3 1 0 0
+COMPONENT=031fb -3 2 0 0
+COMPONENT=031fb -3 3 0 0
+COMPONENT=031fb 3 -2 0 0
+COMPONENT=031fb 3 -1 0 0
+COMPONENT=031fb 3 1 0 0
+COMPONENT=031fb 3 2 0 0
+COMPONENT=031fb 3 3 0 0
+COMPONENT=031fb -3 -3 0 0
+
+COMPONENT=0841 4 0 0 0
+COMPONENT=03b4 -2 4 0 0
+COMPONENT=03b4 -1 4 0 0
+COMPONENT=03b4 0 4 0 0
+COMPONENT=03b4 1 4 0 0
+COMPONENT=03b4 2 4 0 0
+COMPONENT=03b4 3 4 0 0
+COMPONENT=03b4 -2 -4 0 0
+COMPONENT=03b4 -1 -4 0 0
+COMPONENT=03b4 1 -4 0 0
+COMPONENT=03b4 2 -4 0 0
+COMPONENT=03b4 3 -4 0 0
+COMPONENT=03b4 0 -4 0 0
+COMPONENT=03b4 4 -4 0 0
+COMPONENT=03b4 4 4 0 0
+COMPONENT=03b5 -4 -2 0 0
+COMPONENT=03b5 -4 -1 0 0
+COMPONENT=03b5 -4 0 0 0
+COMPONENT=03b5 -4 1 0 0
+COMPONENT=03b5 -4 2 0 0
+COMPONENT=03b5 -4 3 0 0
+COMPONENT=03b5 4 -2 0 0
+COMPONENT=03b5 4 -1 0 0
+COMPONENT=03b5 4 1 0 0
+COMPONENT=03b5 4 2 0 0
+COMPONENT=03b5 4 3 0 0
+COMPONENT=03b5 4 4 0 0
+COMPONENT=03b5 4 -3 0 0
+COMPONENT=03b5 -4 -3 0 0
+COMPONENT=03b4 -3 -4 0 0
+COMPONENT=03b5 -4 3 0 0
+COMPONENT=03b4 -3 4 0 0
+COMPONENT=03b5 -4 4 0 0
+COMPONENT = i_sign_brass_2, 5, 3, 0 0
+
+
+
+[ITEMDEF i_multi_farm_large]
+Name=Large Farm
+TYPE=t_multi
+MULTIREGION = -4,-4,5,3
+COMPONENT=031fb -1 0 0 0
+COMPONENT=031fb 0 0 0 0
+COMPONENT=031fb 1 1 0 0
+COMPONENT=031fb 0 1 0 0
+COMPONENT=031fb 1 0 0 0
+COMPONENT=031fb 0 -1 0 0
+COMPONENT=031fb -1 1 0 0
+COMPONENT=031fb -1 -1 0 0
+COMPONENT=031fb -2 0 0 0
+COMPONENT=031fb -2 -1 0 0
+COMPONENT=031fb -1 -2 0 0
+COMPONENT=031fb 0 -2 0 0
+COMPONENT=031fb -2 -2 0 0
+COMPONENT=031fb 2 2 0 0
+COMPONENT=031fb 1 2 0 0
+COMPONENT=031fb 2 1 0 0
+COMPONENT=031fb 2 0 0 0
+COMPONENT=031fb 0 2 0 0
+COMPONENT=031fb -2 2 0 0
+COMPONENT=031fb 2 -2 0 0
+COMPONENT=031fb 2 -1 0 0
+COMPONENT=031fb -1 2 0 0
+COMPONENT=031fb 1 -1 0 0
+COMPONENT=031fb -1 1 0 0
+COMPONENT=031fb -2 1 0 0
+COMPONENT=031fb 1 -2 0 0
+COMPONENT=031fb 3 0 0 0
+COMPONENT=031fb -2 3 0 0
+COMPONENT=031fb -1 3 0 0
+COMPONENT=031fb 0 3 0 0
+COMPONENT=031fb 1 3 0 0
+COMPONENT=031fb 2 3 0 0
+COMPONENT=031fb 3 3 0 0
+COMPONENT=031fb -2 -3 0 0
+COMPONENT=031fb -1 -3 0 0
+COMPONENT=031fb 1 -3 0 0
+COMPONENT=031fb 2 -3 0 0
+COMPONENT=031fb 3 -3 0 0
+COMPONENT=031fb 0 -3 0 0
+COMPONENT=031fb -3 -2 0 0
+COMPONENT=031fb -3 -1 0 0
+COMPONENT=031fb -3 0 0 0
+COMPONENT=031fb -3 1 0 0
+COMPONENT=031fb -3 2 0 0
+COMPONENT=031fb -3 3 0 0
+COMPONENT=031fb 3 -2 0 0
+COMPONENT=031fb 3 -1 0 0
+COMPONENT=031fb 3 1 0 0
+COMPONENT=031fb 3 2 0 0
+COMPONENT=031fb 3 3 0 0
+COMPONENT=031fb -3 -3 0 0
+
+COMPONENT=031fb 4 0 0 0
+COMPONENT=031fb -2 4 0 0
+COMPONENT=031fb -1 4 0 0
+COMPONENT=031fb 0 4 0 0
+COMPONENT=031fb 1 4 0 0
+COMPONENT=031fb 2 4 0 0
+COMPONENT=031fb 3 4 0 0
+COMPONENT=031fb -2 -4 0 0
+COMPONENT=031fb -1 -4 0 0
+COMPONENT=031fb 1 -4 0 0
+COMPONENT=031fb 2 -4 0 0
+COMPONENT=031fb 3 -4 0 0
+COMPONENT=031fb 0 -4 0 0
+COMPONENT=031fb 4 -4 0 0
+COMPONENT=031fb 4 4 0 0
+COMPONENT=031fb -4 -2 0 0
+COMPONENT=031fb -4 -1 0 0
+COMPONENT=031fb -4 0 0 0
+COMPONENT=031fb -4 1 0 0
+COMPONENT=031fb -4 2 0 0
+COMPONENT=031fb -4 3 0 0
+COMPONENT=031fb 4 -2 0 0
+COMPONENT=031fb 4 -1 0 0
+COMPONENT=031fb 4 1 0 0
+COMPONENT=031fb 4 2 0 0
+COMPONENT=031fb 4 3 0 0
+COMPONENT=031fb 4 4 0 0
+COMPONENT=031fb 4 -3 0 0
+COMPONENT=031fb -4 -3 0 0
+COMPONENT=031fb -3 -4 0 0
+COMPONENT=031fb -4 3 0 0
+COMPONENT=031fb -3 4 0 0
+COMPONENT=031fb -4 4 0 0
+COMPONENT=031fb -4 -4 0 0
+COMPONENT=031fb 4 2 0 0
+
+COMPONENT=0841 5 0 0 0
+COMPONENT=03b4 -2 5 0 0
+COMPONENT=03b4 -1 5 0 0
+COMPONENT=03b4 0 5 0 0
+COMPONENT=03b4 1 5 0 0
+COMPONENT=03b4 2 5 0 0
+COMPONENT=03b4 3 5 0 0
+COMPONENT=03b4 -2 -5 0 0
+COMPONENT=03b4 -1 -5 0 0
+COMPONENT=03b4 1 -5 0 0
+COMPONENT=03b4 2 -5 0 0
+COMPONENT=03b4 3 -5 0 0
+COMPONENT=03b4 0 -5 0 0
+COMPONENT=03b4 4 -5 0 0
+COMPONENT=03b4 5 5 0 0
+COMPONENT=03b4 5 -5 0 0
+COMPONENT=03b5 5 5 0 0
+COMPONENT=03b4 -4 -5 0 0
+COMPONENT=03b5 -5 -4 0 0
+COMPONENT=03b4 4 5 0 0
+COMPONENT=03b5 -5 4 0 0
+COMPONENT=03b4 -4 5 0 0
+
+
+COMPONENT=03b5 -5 -2 0 0
+COMPONENT=03b5 5 -4 0 0
+COMPONENT=03b5 5 4 0 0
+COMPONENT=03b5 -5 -1 0 0
+COMPONENT=03b5 -5 0 0 0
+COMPONENT=03b5 -5 1 0 0
+COMPONENT=03b5 -5 2 0 0
+COMPONENT=03b5 -5 3 0 0
+COMPONENT=03b5 5 -2 0 0
+COMPONENT=03b5 5 -1 0 0
+COMPONENT=03b5 5 1 0 0
+COMPONENT=03b5 5 2 0 0
+COMPONENT=03b5 5 3 0 0
+COMPONENT=03b5 5 4 0 0
+COMPONENT=03b5 5 -3 0 0
+COMPONENT=03b5 -5 -3 0 0
+COMPONENT=03b4 -3 -5 0 0
+COMPONENT=03b5 -5 3 0 0
+COMPONENT=03b4 -3 5 0 0
+COMPONENT=03b5 -5 5 0 0
+COMPONENT = i_sign_brass_2, 6, 3, 0 0
+
+
+[itemdef 09800]
+defname = i_deed_farm_small
+
+id=i_deed
+type = t_normal
+name = Deed to a small farm
+
+resources = 30 i_house_part, 8 i_essence_pro
+skillmake = 90.0 carpentry, t_carpentry
+
+CATEGORY=Imperial uo
+SUBSECTION=Provisions House - Deeds
+DESCRIPTION=Small Farm
+
+on=@create
+	type = t_deed
+	more = i_multi_farm_small 
+
+[itemdef 09900]
+defname = i_deed_farm_medium
+
+id=i_deed
+type = t_normal
+name = Deed to a medium farm
+
+resources = 50 i_house_part, 12 i_essence_pro
+skillmake = 100.0 carpentry, t_carpentry
+
+CATEGORY=Imperial uo
+SUBSECTION=Provisions House - Deeds
+DESCRIPTION=Medium Farm
+
+on=@create
+	type = t_deed
+	more = i_multi_farm_medium
+	
+[itemdef 09990]
+defname = i_deed_farm_large
+
+id=i_deed
+type = t_normal
+name = Deed to a large farm
+
+resources = 60 i_house_part, 18 i_essence_pro
+skillmake = 110.0 carpentry, t_carpentry
+
+CATEGORY=Imperial uo
+SUBSECTION=Provisions House - Deeds
+DESCRIPTION=Large Farm
+
+on=@create
+	type = t_deed
+	more = i_multi_farm_large
+
+
+[ITEMDEF i_cocaine]
+ID=0f3c
+NAME=Cocaine
+Value=1
+
+ON=@CREATE
+COLOR=0481
+
+ON=@DCLICK
+//IF (0<SRC.FINDID.i_drug_delay>) || (0<SRC.FINDID.i_drug_effect>)
+//SRC.SYSMESSAGE You cannot overdose, sorry!
+//ELSE
+//IF (<CONT>==<SRC.FINDLAYER.21.UID>)
+//SRC.NEWITEM i_drug_delay
+//SRc.ACT.MORE1=1
+//SRC.ACT.EQUIP
+//SRC.SYSMESSAGE The drug takes a while to take effect!
+//REMOVE
+//ELSE
+//SRC.SYSMESSAGE This needs to be in your pack!
+//ENDIF
+//ENDIF
+//RETURN 1
+SRC.SYSMESSAGE Drugs temporarily disabled will bug is being fixed.
+RETURN 1
+
+[ITEMDEF i_ecstasy]
+ID=0f7a
+NAME=Ecstasy
+Value=1
+
+ON=@CREATE
+COLOR=0793
+
+ON=@DCLICK
+//IF (0<SRC.FINDID.i_drug_delay>) || (0<SRC.FINDID.i_drug_effect>)
+//SRC.SYSMESSAGE You cannot overdose, sorry!
+//ELSE
+/IF (<CONT>==<SRC.FINDLAYER.21.UID>)
+//SRC.NEWITEM i_drug_delay
+//SRc.ACT.MORE1=2
+//SRC.ACT.EQUIP
+//SRC.SYSMESSAGE The drug takes a while to take effect!
+//REMOVE
+//ELSE
+//SRC.SYSMESSAGE This needs to be in your pack!
+//ENDIF
+//ENDIF
+//RETURN 1
+
+SRC.SYSMESSAGE Drugs temporarily disabled will bug is being fixed.
+RETURN 1
+
+[ITEMDEF i_hashish]
+ID=0f3b
+NAME=Hashish
+Value=1
+
+ON=@CREATE
+COLOR=03e6
+
+ON=@DCLICK
+//IF (0<SRC.FINDID.i_drug_delay>) || (0<SRC.FINDID.i_drug_effect>)
+//SRC.SYSMESSAGE You cannot overdose, sorry!
+//ELSE
+//IF (<CONT>==<SRC.FINDLAYER.21.UID>)
+//SRC.NEWITEM i_drug_delay
+//SRc.ACT.MORE1=3
+//SRC.ACT.EQUIP
+//SRC.SYSMESSAGE The drug takes a while to take effect!
+//REMOVE
+//ELSE
+//SRC.SYSMESSAGE This needs to be in your pack!
+//ENDIF
+//ENDIF
+//RETURN 1
+
+SRC.SYSMESSAGE Drugs temporarily disabled will bug is being fixed.
+RETURN 1
+
+[ITEMDEF i_weed]
+ID=0cac
+NAME=Weed
+Value=1
+
+ON=@CREATE
+COLOR=02a6
+
+ON=@DCLICK
+SRC.SYSMESSAGE You can only use a Bong with this!
+RETURN 1
+
+[ITEMDEF i_bong]
+ID=0e28
+NAME=Bong
+RESOURCES=200 i_log
+SKILL=95.0 tinkering, 80.0 carpentry
+Value=1
+
+ON=@CREATE
+COLOR=021f
+
+ON=@DCLICK
+//IF (0<SRC.FINDID.i_drug_delay>) || (0<SRC.FINDID.i_drug_effect>)
+//SRC.SYSMESSAGE You can not overdose sorry!
+//ELSE
+//IF (0<SRC.FINDID.i_weed>)
+//SRC.NEWITEM i_drug_delay
+//SRC.ACT.MORE1=4
+//SRC.ACT.EQUIP
+//SRC.SYSMESSAGE The drug takes a while to take effect!
+//SRC.FINDID.i_weed.remove
+//ELSE
+//SRC.SYSMESSAGE You do not have weed in your backpack!
+//ENDIF
+//ENDIF
+//RETURN 1
+SRC.SYSMESSAGE Drugs temporarily disabled will bug is being fixed.
+RETURN 1
+
+[ITEMDEF i_drug_delay]
+ID=i_memory 
+TYPE=t_eq_script 
+NAME=Drug Delay
+LAYER=layer_special
+
+ON=@EQUIP
+ATTR=attr_decay
+IF (<MORE1>==1)
+TIMER 30
+ELSEIF (<MORE1>==2)
+TIMER 20
+ELSEIF (<MORE1>==3)
+TIMER 10
+ELSEIF (<MORE1>==4)
+TIMER 1
+ENDIF
+
+ON=@TIMER
+CONT.NEWITEM i_drug_effect
+IF (<MORE1>==1)
+CONT.ACT.MORE1 1
+ELSEIF (<MORE1>==2)
+CONT.ACT.MORE1 2
+ELSEIF (<MORE1>==3)
+CONT.ACT.MORE1 3
+ELSEIF (<MORE1>==4)
+CONT.ACT.MORE1 4
+ENDIF
+CONT.ACT.CONT=<CONT>
+CONT.SYSMESSAGE The drug has taken effect!
+REMOVE
+
+RETURN 1
+
+[ITEMDEF i_drug_effect]
+ID=i_memory 
+TYPE=t_eq_script 
+NAME=Drug Effect
+LAYER=layer_special
+
+ON=@CREATE
+ATTR=attr_decay
+TAG.TIMER=<TIMER>
+TIMER=1
+MORE2=1
+
+ON=@TIMER
+IF (<MORE2>==1)
+CONT.TAG.OLDFLAG=<CONT.FLAGS>
+CONT.FLAGS=<CONT.FLAGS>|0400000
+CONT.EVENTS +e_drugs
+CONT.UPDATE
+IF (<MORE1>==1)
+TIMER=60
+CONT.STR=105
+CONT.DEX=95
+CONT.INT=90
+ELSEIF (<MORE1>==2)
+TIMER=120
+CONT.STR=110
+CONT.DEX=90
+CONT.INT=85
+ELSEIF (<MORE1>==3)
+TIMER=180
+CONT.STR=115
+CONT.DEX=85
+CONT.INT=70
+ELSEIF (<MORE1>==4)
+TIMER=240
+CONT.STR=120
+CONT.DEX=80
+CONT.INT=75
+ENDIF
+MORE2=2
+ELSE
+CONT.EVENTS -e_drugs
+CONT.FLAGS=<CONT.TAG.OLDFLAG>
+CONT.UPDATE
+CONT.STR=100
+CONT.INT=100
+CONT.DEX=100
+REMOVE
+ENDIF
+RETURN 1
+
+[EVENTS e_drugs]
+ON=@CLICK
+MESSAGE [On Drugs]

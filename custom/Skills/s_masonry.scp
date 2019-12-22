@@ -1,0 +1,1300 @@
+//Changelog:
+//==========
+//20/04/2003 - Firefly - Put the stone region resources into /custom/item/item_res_stone.scp for script loading order
+//27 NOV 03 - Wren - Changed Sandstone color from 008a5 to 06ae to better match houses and lowered houseparts weight from 5 to 4
+//11 NOV 05 - Wren - Revamped Script, moved Mason NPC to char_vend and templates to temp_vend
+
+///Masonry Skill and Items
+///Includes custom skill use and gain script
+//********************************************************************//
+//                                MENUS                               //
+//********************************************************************//
+[MENU m_mason]
+What do you want to craft?
+ON=i_sandstone_housepart Houseparts
+   MENU m_mason_housepart
+ON=i_statue_1_sandstone Decorative Items
+   f_mason_decor
+ON=i_resource_sandstone Other Items
+   MENU m_mason_other
+ON=i_deed_House_stone_small House Deeds
+   MENU m_mason_deeds
+ON=i_sandstone_chair Furniture
+   f_mason_furniture
+
+//********************************************************************//
+[MENU m_mason_2]
+What do you want to craft?
+ON=i_sandstone_housepart Houseparts
+   MENU m_mason_housepart
+ON=i_statue_1_sandstone Decorative Items
+   f_mason_decor
+ON=i_resource_sandstone Other Items
+   MENU m_mason_other
+ON=i_sandstone_chair Furniture
+   f_mason_furniture
+
+//********************************************************************//
+[MENU m_mason_3]
+What do you want to craft?
+ON=i_statue_1_sandstone Decorative Items
+   f_mason_decor
+ON=i_resource_sandstone Other Items
+   MENU m_mason_other
+
+//********************************************************************//
+[MENU m_mason_4]
+What do you want to craft?
+ON=i_statue_1_sandstone Decorative Items
+   f_mason_decor
+
+//********************************************************************//
+[MENU m_mason_furniture]
+What do you want to craft?
+ON=i_sandstone_chair Sandstone Furniture
+   MENU m_mason_furniture_sandstone
+ON=i_sandstone_chair Stone Furniture
+   MENU m_mason_furniture_stone
+ON=i_sandstone_chair Granite Furniture
+   MENU m_mason_furniture_granite
+
+//********************************************************************//
+[MENU m_mason_furniture_2]
+What do you want to craft?
+ON=i_sandstone_chair Sandstone Furniture
+   MENU m_mason_furniture_sandstone
+ON=i_sandstone_chair Stone Furniture
+   MENU m_mason_furniture_stone
+
+//********************************************************************//
+[MENU m_mason_furniture_3]
+What do you want to craft?
+ON=i_sandstone_chair Sandstone Furniture
+   MENU m_mason_furniture_sandstone
+
+//********************************************************************//
+[MENU m_mason_furniture_sandstone]
+What do you want to craft?
+
+ON=i_sandstone_chair <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_sandstone_chair>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	SRC.CONSUME 15 i_resource_sandstone
+	SRC.TAG.MASONITEM = i_sandstone_chair
+	SRC.TAG.MASON.DIFFMAKE = 20
+	f_mason_makeitem
+      ELSE
+	SRC.MESSAGE "You fail to craft the item"
+	SRC.CONSUME 2 i_resource_sandstone
+      ENDIF
+   ENDIF
+
+ON=i_sandstone_bench <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_sandstone_bench>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	SRC.CONSUME 10 i_resource_sandstone
+	SRC.TAG.MASONITEM = i_sandstone_bench
+	SRC.TAG.MASON.DIFFMAKE = 10
+	f_mason_makeitem
+      ELSE
+	SRC.SYSMESSAGE You fail to craft the item
+	SRC.CONSUME 1 i_resource_sandstone 
+      ENDIF
+   ENDIF
+ 
+ON=i_sandstone_table <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_sandstone_table>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 20 i_resource_sandstone
+	 SRC.TAG.MASONITEM = i_sandstone_table
+	 SRC.TAG.MASON.DIFFMAKE = 20
+	 f_mason_makeitem
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+	 SRC.CONSUME 2 i_resource_sandstone
+      ENDIF
+   ENDIF
+
+//********************************************************************//
+[MENU m_mason_furniture_stone]
+What do you want to craft?
+ON=i_masonstone_chair <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_masonstone_chair>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 15 i_resource_stone
+	 SRC.TAG.MASONITEM =  i_masonstone_chair
+	 SRC.TAG.MASON.DIFFMAKE = 20
+	 f_mason_makeitem
+      ELSE
+  	 SRC.SYSMESSAGE You fail to craft the item
+	 SRC.CONSUME 2 i_resource_stone
+      ENDIF
+   ENDIF
+
+ON=i_stone_bench <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_stone_bench>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 10 i_resource_stone
+	 SRC.TAG.MASONITEM = i_stone_bench
+	 SRC.TAG.MASON.DIFFMAKE = 20
+	 f_mason_makeitem
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+	 SRC.CONSUME 1 i_resource_stone
+      ENDIF
+   ENDIF
+
+ON=i_masonstone_table <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_masonstone_table>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 20 i_resource_stone
+	 SRC.TAG.MASONITEM = i_masonstone_table
+	 SRC.TAG.MASON.DIFFMAKE = 30
+	 f_mason_makeitem
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+	 SRC.CONSUME 2 i_resource_stone
+      ENDIF
+   ENDIF 
+
+//********************************************************************//
+[MENU m_mason_furniture_granite]
+What do you want to craft?
+ON=i_granite_chair <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_granite_chair>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 15 i_resource_granite
+	 SRC.TAG.MASONITEM = i_granite_chair
+	 SRC.TAG.MASON.DIFFMAKE = 30
+	 f_mason_makeitem
+      ELSE
+ 	 SRC.SYSMESSAGE You fail to craft the item
+	 SRC.CONSUME 2 i_resource_granite
+      ENDIF
+   ENDIF
+
+ON=i_granite_bench <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_granite_bench>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 10 i_resource_granite
+	 SRC.TAG.MASONITEM = i_granite_bench
+	 SRC.TAG.MASON.DIFFMAKE = 20
+	 f_mason_makeitem
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+	 SRC.CONSUME 1 i_resource_granite
+      ENDIF
+   ENDIF
+
+ON=i_granite_table <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_granite_table>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 20 i_resource_granite
+	 SRC.TAG.MASONITEM = i_granite_table
+	 SRC.TAG.MASON.DIFFMAKE = 20
+	 f_mason_makeitem
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+	 SRC.CONSUME 2 i_resource_granite
+      ENDIF
+   ENDIF
+
+//********************************************************************//
+[MENU m_mason_deeds]
+What type of plans do you want to craft?
+
+ON=i_deed_House_stone_small <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_deed_House_stone_small>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 900 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+         SRC.CONSUME 50 i_stone_housepart, 5 i_tinker_housepart, 5 i_carpenter_housepart
+         SRC.TAG.MASONITEM = i_deed_House_stone_small
+         SRC.TAG.MASON.DIFFMAKE = 20
+         f_mason_makeitem
+      ELSE
+         SRC.SYSMESSAGE You fail to craft the deed.
+         SRC.CONSUME 1 i_stone_housepart
+      ENDIF
+   ENDIF
+
+ON=i_deed_House_stone_brick_small <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_deed_House_stone_brick_small>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 900 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 50 i_stone_housepart, 5 i_tinker_housepart, 5 i_carpenter_housepart
+	 SRC.TAG.MASONITEM = i_deed_House_stone_brick_small
+	 SRC.TAG.MASON.DIFFMAKE = 20
+	 f_mason_makeitem
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the deed
+         SRC.CONSUME 1 i_stone_housepart
+      ENDIF
+   ENDIF
+
+ON=i_deed_house_stone_plaster_small <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_deed_house_stone_plaster_small>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 900 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 15 i_brick_housepart, 35 i_plaster_housepart, 5 i_tinker_housepart, 5 i_carpenter_housepart
+	 SRC.TAG.MASONITEM = i_deed_house_stone_plaster_small
+	 SRC.TAG.MASON.DIFFMAKE = 20
+	 f_mason_makeitem
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the deed
+         SRC.CONSUME 1 i_stone_housepart
+      ENDIF
+   ENDIF
+
+ON=i_deed_House_wood_plaster_small <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_deed_House_wood_plaster_small>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 900 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 15 i_brick_housepart, 25 i_plaster_housepart, 5 i_tinker_housepart, 15 i_carpenter_housepart
+	 SRC.TAG.MASONITEM = i_deed_House_wood_plaster_small
+	 SRC.TAG.MASON.DIFFMAKE = 20
+	 f_mason_makeitem
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the deed
+         SRC.CONSUME 1 i_stone_housepart
+      ENDIF
+   ENDIF
+
+ON=i_deed_House_stone_wood_small <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_deed_House_stone_wood_small>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 900 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 15 i_brick_housepart, 5 i_tinker_housepart, 40 i_carpenter_housepart
+	 SRC.TAG.MASONITEM = i_deed_House_stone_wood_small
+	 SRC.TAG.MASON.DIFFMAKE = 20
+	 f_mason_makeitem
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the deed
+         SRC.CONSUME 1 i_stone_housepart
+      ENDIF
+   ENDIF
+
+ON=i_deed_House_wood_thatched_small <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_deed_House_wood_thatched_small>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 900 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 15 i_brick_housepart, 5 i_tinker_housepart, 40 i_carpenter_housepart
+	 SRC.TAG.MASONITEM = i_deed_House_wood_thatched_small
+	 SRC.TAG.MASON.DIFFMAKE = 20
+	 f_mason_makeitem
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the deed
+         SRC.CONSUME 1 i_stone_housepart
+      ENDIF
+   ENDIF
+
+ON=i_deed_house_patio_sand <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_deed_house_patio_sand>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 900 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 100 i_sandstone_housepart, 10 i_tinker_housepart, 10 i_carpenter_housepart
+	 SRC.TAG.MASONITEM = i_deed_house_patio_sand
+	 SRC.TAG.MASON.DIFFMAKE = 20
+	 f_mason_makeitem
+      ELSE
+ 	 SRC.SYSMESSAGE You fail to craft the deed
+         SRC.CONSUME 1 i_sandstone_housepart
+      ENDIF
+   ENDIF
+
+ON=i_deed_Spy_Tower <name>
+
+
+ON=i_deed_tower_wizard <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_deed_tower_wizard>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 900 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 100 i_granite_housepart, 20 i_tinker_housepart, 20 i_carpenter_housepart
+	 SRC.TAG.MASONITEM = i_deed_tower_wizard
+	 SRC.TAG.MASON.DIFFMAKE = 20
+	 f_mason_makeitem
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the deed
+	 SRC.CONSUME 1 i_granite_housepart
+      ENDIF
+   ENDIF
+
+//********************************************************************//
+[MENU m_mason_decor] //above 500 skill
+What material would you like to craft with?
+ON=i_resource_sandstone Sandstone Items
+   MENU m_decor_sandstone
+ON=i_resource_sandstone Stone Items
+   MENU m_decor_stone
+ON=i_resource_sandstone Granite Items
+   MENU m_decor_granite
+ON=i_resource_plaster Plaster Items
+   MENU m_decor_plaster
+
+//********************************************************************//
+[MENU m_mason_decor_2] //above 400 skill
+What material would you like to craft with?
+ON=i_resource_sandstone Sandstone Items
+   MENU m_decor_sandstone
+ON=i_resource_sandstone Stone Items
+   MENU m_decor_stone
+ON=i_resource_plaster Plaster Items
+   MENU m_decor_plaster
+
+//********************************************************************//
+[MENU m_mason_decor_3] //above 300 skill
+What material would you like to craft with?
+ON=i_resource_sandstone Sandstone Items
+   MENU m_decor_sandstone
+
+//********************************************************************//
+[MENU m_mason_housepart]
+What type of housepart do you want to craft?
+
+ON=i_sandstone_housepart <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_sandstone_housepart>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 20 i_resource_sandstone
+	 SRC.TAG.MASONITEM = i_sandstone_housepart
+	 SRC.TAG.MASON.DIFFMAKE = 20
+	 f_mason_makeitem
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+	 SRC.CONSUME 2 i_resource_sandstone
+      ENDIF
+   ENDIF
+
+ON=i_stone_housepart <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_stone_housepart>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 20 i_resource_stone
+	 SRC.TAG.MASONITEM = i_stone_housepart
+	 SRC.TAG.MASON.DIFFMAKE = 20
+	 f_mason_makeitem
+      ELSE
+ 	 SRC.SYSMESSAGE You fail to craft the item
+	 SRC.CONSUME 2 i_resource_stone
+      ENDIF
+   ENDIF
+
+ON=i_granite_housepart <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_granite_housepart>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 20 i_resource_granite
+	 SRC.TAG.MASONITEM = i_granite_housepart
+	 SRC.TAG.MASON.DIFFMAKE = 20
+	 f_mason_makeitem
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+	 SRC.CONSUME 2 i_resource_granite
+      ENDIF
+   ENDIF
+
+ON=i_brick_housepart <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_brick_housepart>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 20 i_resource_brick
+	 SRC.TAG.MASONITEM = i_brick_housepart
+	 SRC.TAG.MASON.DIFFMAKE = 20
+	 f_mason_makeitem
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+	 SRC.CONSUME 2 i_resource_brick
+      ENDIF
+   ENDIF
+
+ON=i_plaster_housepart <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_plaster_housepart>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 20 i_resource_plaster, 1 i_pitcher_water
+	 SRC.TAG.MASONITEM = i_plaster_housepart
+	 SRC.TAG.MASON.DIFFMAKE = 20
+	 f_mason_makeitem
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+	 SRC.CONSUME 2 i_resource_plaster
+      ENDIF
+   ENDIF
+
+//********************************************************************//
+[MENU m_mason_other]
+What would you like to make?
+
+ON=i_resource_brick <name> 
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_resource_brick>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 10 i_resource_sandstone, 10 i_resource_clay, 5 i_coal
+	 SRC.TAG.MASONITEM = i_resource_brick
+	 SRC.TAG.MASON.DIFFMAKE = 20
+	 f_mason_makeitem
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+	 SRC.CONSUME 1 i_resource_sandstone
+      ENDIF
+   ENDIF
+
+//********************************************************************//
+[MENU m_decor_plaster]
+Plaster Decorative Items
+
+ON=i_pedestal_plaster <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_pedestal_plaster>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 5 i_resource_plaster, 1 i_pitcher_water
+	 SRC.TAG.MASONITEM = i_pedestal_plaster
+	 SRC.TAG.MASON.DIFFMAKE = 20
+	 f_mason_makeitem
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+	 SRC.CONSUME 1 i_resource_plaster
+      ENDIF
+   ENDIF
+
+ON=i_statue_1_plaster <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_statue_1_plaster>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 3 i_resource_plaster, 1 i_pitcher_water
+	 SRC.TAG.MASONITEM = i_statue_1_plaster
+	 SRC.TAG.MASON.DIFFMAKE = 10
+	 f_mason_makeitem
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+      ENDIF
+   ENDIF
+
+ON=i_statue_2_plaster <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_statue_2_plaster>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 3 i_resource_plaster, 1 i_pitcher_water
+	 SRC.TAG.MASONITEM = i_statue_2_plaster
+	 SRC.TAG.MASON.DIFFMAKE = 10
+	 f_mason_makeitem
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+      ENDIF
+   ENDIF
+
+ON=i_statue_3_plaster <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_statue_3_plaster>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 3 i_resource_plaster, 1 i_pitcher_water
+	 SRC.TAG.MASONITEM = i_statue_3_plaster
+	 SRC.TAG.MASON.DIFFMAKE = 10
+	 f_mason_makeitem
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+      ENDIF
+   ENDIF
+
+ON=i_statue_4_plaster <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_statue_4_plaster>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 3 i_resource_plaster, 1 i_pitcher_water
+	 SRC.TAG.MASONITEM = i_statue_4_plaster
+	 SRC.TAG.MASON.DIFFMAKE = 10
+	 f_mason_makeitem 
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+      ENDIF
+   ENDIF
+
+ON=i_statue_5_plaster <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_statue_5_plaster>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 3 i_resource_plaster
+	 SRC.TAG.MASONITEM = i_statue_5_plaster, 1 i_pitcher_water
+	 SRC.TAG.MASON.DIFFMAKE = 10
+	 f_mason_makeitem
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+      ENDIF
+   ENDIF
+
+ON=i_carving_plaster <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_carving_plaster>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 8 i_resource_plaster, 1 i_pitcher_water
+	 SRC.TAG.MASONITEM = i_carving_plaster
+	 SRC.TAG.MASON.DIFFMAKE = 10
+	 f_mason_makeitem 
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+	 SRC.CONSUME 1 i_resource_plaster
+      ENDIF
+   ENDIF
+
+ON=i_vase1_plaster <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_vase1_plaster>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 8 i_resource_plaster, 1 i_pitcher_water
+	 SRC.TAG.MASONITEM = i_vase1_plaster
+	 SRC.TAG.MASON.DIFFMAKE = 20
+	 f_mason_makeitem 
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+	 SRC.CONSUME 1 i_resource_plaster
+      ENDIF
+   ENDIF
+
+ON=i_vase2_plaster <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_vase2_plaster>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 5 i_resource_plaster, 1 i_pitcher_water
+	 SRC.TAG.MASONITEM = i_vase2_plaster
+	 SRC.TAG.MASON.DIFFMAKE = 20
+	 f_mason_makeitem 
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+	 SRC.CONSUME 1 i_resource_plaster
+      ENDIF
+   ENDIF
+
+ON=i_vase3_plaster <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_vase3_plaster>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 8 i_resource_plaster, 1 i_pitcher_water
+	 SRC.TAG.MASONITEM = i_vase3_plaster
+	 SRC.TAG.MASON.DIFFMAKE = 20
+	 f_mason_makeitem 
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+	 SRC.CONSUME 1 i_resource_plaster
+      ENDIF
+   ENDIF
+
+ON=i_vase4_plaster <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_vase4_plaster>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 5 i_resource_plaster, 1 i_pitcher_water
+	 SRC.TAG.MASONITEM = i_vase4_plaster
+	 SRC.TAG.MASON.DIFFMAKE = 20
+	 f_mason_makeitem 
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+	 SRC.CONSUME 1 i_resource_plaster
+      ENDIF
+   ENDIF
+
+//********************************************************************//
+[MENU m_decor_sandstone]
+Sandstone Decorative Items
+
+ON=i_pedestal_sandstone <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_pedestal_sandstone>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 5 i_resource_sandstone
+	 SRC.TAG.MASONITEM = i_pedestal_sandstone
+	 SRC.TAG.MASON.DIFFMAKE = 20
+	 f_mason_makeitem
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+	 SRC.CONSUME 1 i_resource_sandstone
+      ENDIF
+   ENDIF
+
+ON=i_statue_1_sandstone <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_statue_1_sandstone>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 3 i_resource_sandstone
+	 SRC.TAG.MASONITEM = i_statue_1_sandstone
+	 SRC.TAG.MASON.DIFFMAKE = 10
+	 f_mason_makeitem
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+      ENDIF
+   ENDIF
+
+ON=i_statue_2_sandstone <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_statue_2_sandstone>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 3 i_resource_sandstone
+	 SRC.TAG.MASONITEM = i_statue_2_sandstone
+	 SRC.TAG.MASON.DIFFMAKE = 10
+	 f_mason_makeitem
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+      ENDIF
+   ENDIF
+
+ON=i_statue_3_sandstone <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_statue_3_sandstone>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 3 i_resource_sandstone
+	 SRC.TAG.MASONITEM = i_statue_3_sandstone
+	 SRC.TAG.MASON.DIFFMAKE = 10
+	 f_mason_makeitem
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+      ENDIF
+   ENDIF
+
+ON=i_statue_4_sandstone <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_statue_4_sandstone>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 3 i_resource_sandstone
+	 SRC.TAG.MASONITEM = i_statue_4_sandstone
+	 SRC.TAG.MASON.DIFFMAKE = 10
+	 f_mason_makeitem 
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+      ENDIF
+   ENDIF
+
+ON=i_statue_5_sandstone <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_statue_5_sandstone>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 3 i_resource_sandstone
+	 SRC.TAG.MASONITEM = i_statue_5_sandstone
+	 SRC.TAG.MASON.DIFFMAKE = 10
+	 f_mason_makeitem
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+      ENDIF
+   ENDIF
+
+ON=i_carving_sandstone <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_carving_sandstone>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 8 i_resource_sandstone
+	 SRC.TAG.MASONITEM = i_carving_sandstone
+	 SRC.TAG.MASON.DIFFMAKE = 10
+	 f_mason_makeitem 
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+	 SRC.CONSUME 1 i_resource_sandstone
+      ENDIF
+   ENDIF
+
+ON=i_vase1_sandstone <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_vase1_sandstone>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 8 i_resource_sandstone
+	 SRC.TAG.MASONITEM = i_vase1_sandstone
+	 SRC.TAG.MASON.DIFFMAKE = 20
+	 f_mason_makeitem 
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+	 SRC.CONSUME 1 i_resource_sandstone
+      ENDIF
+   ENDIF
+
+ON=i_vase2_sandstone <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_vase2_sandstone>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 5 i_resource_sandstone
+	 SRC.TAG.MASONITEM = i_vase2_sandstone
+	 SRC.TAG.MASON.DIFFMAKE = 20
+	 f_mason_makeitem 
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+	 SRC.CONSUME 1 i_resource_sandstone
+      ENDIF
+   ENDIF
+
+ON=i_vase3_sandstone <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_vase3_sandstone>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 8 i_resource_sandstone
+	 SRC.TAG.MASONITEM = i_vase3_sandstone
+	 SRC.TAG.MASON.DIFFMAKE = 20
+	 f_mason_makeitem 
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+	 SRC.CONSUME 1 i_resource_sandstone
+      ENDIF
+   ENDIF
+
+ON=i_vase4_sandstone <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_vase4_sandstone>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 5 i_resource_sandstone
+	 SRC.TAG.MASONITEM = i_vase4_sandstone
+	 SRC.TAG.MASON.DIFFMAKE = 20
+	 f_mason_makeitem 
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+	 SRC.CONSUME 1 i_resource_sandstone
+      ENDIF
+   ENDIF
+
+//********************************************************************//
+[MENU m_decor_stone]
+Stone Decorative Items
+
+ON=i_pedestal_stone <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_pedestal_stone>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 5 i_resource_stone
+	 SRC.TAG.MASONITEM = i_pedestal_stone
+	 SRC.TAG.MASON.DIFFMAKE = 20
+	 f_mason_makeitem
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+	 SRC.CONSUME 1 i_resource_stone
+      ENDIF
+   ENDIF
+
+ON=i_statue_1_stone <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_statue_1_stone>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 3 i_resource_stone
+	 SRC.TAG.MASONITEM = i_statue_1_stone
+	 SRC.TAG.MASON.DIFFMAKE = 10
+	 f_mason_makeitem 
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+      ENDIF
+   ENDIF
+
+ON=i_statue_2_stone <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_statue_2_stone>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 3 i_resource_stone
+	 SRC.TAG.MASONITEM = i_statue_2_stone
+	 SRC.TAG.MASON.DIFFMAKE = 10
+	 f_mason_makeitem
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+      ENDIF
+   ENDIF
+
+ON=i_statue_3_stone <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_statue_3_stone>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 3 i_resource_stone
+	 SRC.TAG.MASONITEM = i_statue_3_stone
+	 SRC.TAG.MASON.DIFFMAKE = 10
+	 f_mason_makeitem
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+      ENDIF
+   ENDIF
+
+ON=i_statue_4_stone <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_statue_4_stone>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 3 i_resource_stone
+	 SRC.TAG.MASONITEM = i_statue_4_stone
+	 SRC.TAG.MASON.DIFFMAKE = 10
+	 f_mason_makeitem
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+      ENDIF
+   ENDIF
+
+ON=i_statue_5_stone <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_statue_5_stone>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 3 i_resource_stone
+	 SRC.TAG.MASONITEM = i_statue_5_stone
+	 SRC.TAG.MASON.DIFFMAKE = 10
+	 f_mason_makeitem
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+      ENDIF
+   ENDIF
+
+ON=i_carving_stone <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_carving_stone>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 8 i_resource_stone
+	 SRC.TAG.MASONITEM = i_carving_stone
+	 SRC.TAG.MASON.DIFFMAKE = 10
+	 f_mason_makeitem
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+	 SRC.CONSUME 1 i_resource_stone
+      ENDIF
+   ENDIF
+
+ON=i_vase1_stone <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_vase1_stone>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 8 i_resource_stone
+	 SRC.TAG.MASONITEM = i_vase1_stone
+	 SRC.TAG.MASON.DIFFMAKE = 20
+	 f_mason_makeitem 
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+	 SRC.CONSUME 1 i_resource_stone
+      ENDIF
+   ENDIF
+
+ON=i_vase2_stone <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_vase2_stone>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 5 i_resource_stone
+	 SRC.TAG.MASONITEM = i_vase2_stone
+	 SRC.TAG.MASON.DIFFMAKE = 20
+	 f_mason_makeitem 
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+	 SRC.CONSUME 1 i_resource_stone
+      ENDIF
+   ENDIF
+
+ON=i_vase3_stone <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_vase3_stone>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 8 i_resource_stone
+	 SRC.TAG.MASONITEM = i_vase3_stone
+	 SRC.TAG.MASON.DIFFMAKE = 20
+	 f_mason_makeitem 
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+	 SRC.CONSUME 1 i_resource_stone
+      ENDIF
+   ENDIF
+
+ON=i_vase4_stone <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_vase4_stone>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 5 i_resource_stone
+	 SRC.TAG.MASONITEM = i_vase4_stone
+	 SRC.TAG.MASON.DIFFMAKE = 20
+	 f_mason_makeitem 
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+	 SRC.CONSUME 1 i_resource_stone
+      ENDIF
+   ENDIF
+
+//********************************************************************//
+[MENU m_decor_granite]
+Granite Decorative Items
+
+ON=i_pedestal_granite <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_pedestal_granite>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 5 i_resource_granite
+	 SRC.TAG.MASONITEM = i_pedestal_granite
+	 SRC.TAG.MASON.DIFFMAKE = 20
+	 f_mason_makeitem
+      ELSE
+ 	 SRC.SYSMESSAGE You fail to craft the item
+	 SRC.CONSUME 1 i_resource_granite
+      ENDIF
+   ENDIF
+
+ON=i_statue_1_granite <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_statue_1_granite>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 3 i_resource_granite
+	 SRC.TAG.MASONITEM = i_statue_1_granite
+	 SRC.TAG.MASON.DIFFMAKE = 10
+	 f_mason_makeitem
+      ELSE
+         SRC.SYSMESSAGE You fail to craft the item
+      ENDIF
+   ENDIF
+
+ON=i_statue_2_granite <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_statue_2_granite>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+ 	 SRC.CONSUME 3 i_resource_granite
+	 SRC.TAG.MASONITEM = i_statue_2_granite
+	 SRC.TAG.MASON.DIFFMAKE = 10
+	 f_mason_makeitem
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+      ENDIF
+   ENDIF
+
+ON=i_statue_3_granite <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_statue_3_granite>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 3 i_resource_granite
+	 SRC.TAG.MASONITEM = i_statue_3_granite
+	 SRC.TAG.MASON.DIFFMAKE = 10
+	 f_mason_makeitem
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+      ENDIF
+   ENDIF
+
+ON=i_statue_4_granite <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_statue_4_granite>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 3 i_resource_granite
+	 SRC.TAG.MASONITEM = i_statue_4_granite
+	 SRC.TAG.MASON.DIFFMAKE = 10
+	 f_mason_makeitem
+      ELSE
+         SRC.SYSMESSAGE You fail to craft the item
+      ENDIF
+   ENDIF
+   
+ON=i_statue_5_granite <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_statue_5_granite>
+	IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	   SRC.CONSUME 3 i_resource_granite
+	   SRC.TAG.MASONITEM = i_statue_5_granite
+	   SRC.TAG.MASON.DIFFMAKE = 10
+	   f_mason_makeitem
+	ELSE
+	   SRC.SYSMESSAGE You fail to craft the item
+	ENDIF
+   ENDIF
+   
+ON=i_carving_granite <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_carving_granite>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+         SRC.CONSUME 8 i_resource_granite
+         SRC.TAG.MASONITEM = i_carving_granite
+         SRC.TAG.MASON.DIFFMAKE = 10
+         f_mason_makeitem
+      ELSE
+         SRC.SYSMESSAGE You fail to craft the item
+         SRC.CONSUME 1 i_resource_granite
+      ENDIF
+   ENDIF
+
+ON=i_vase1_granite <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_vase1_granite>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 8 i_resource_granite
+	 SRC.TAG.MASONITEM = i_vase1_granite
+	 SRC.TAG.MASON.DIFFMAKE = 20
+	 f_mason_makeitem 
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+	 SRC.CONSUME 1 i_resource_granite
+      ENDIF
+   ENDIF
+
+ON=i_vase2_granite <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_vase2_granite>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 5 i_resource_granite
+	 SRC.TAG.MASONITEM = i_vase2_granite
+	 SRC.TAG.MASON.DIFFMAKE = 20
+	 f_mason_makeitem 
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+	 SRC.CONSUME 1 i_resource_granite
+      ENDIF
+   ENDIF
+
+ON=i_vase3_granite <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_vase3_granite>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 8 i_resource_granite
+	 SRC.TAG.MASONITEM = i_vase3_granite
+	 SRC.TAG.MASON.DIFFMAKE = 20
+	 f_mason_makeitem 
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+	 SRC.CONSUME 1 i_resource_granite
+      ENDIF
+   ENDIF
+
+ON=i_vase4_granite <name>
+   SRC.TAG.MASON.MAKETIME = 5
+   IF <MASON_CANMAKE i_vase4_granite>
+      IF ((((RAND(2000) * 10) - <SRC.MASONRY>) + 1100 ) < ((<SRC.MASONRY> * 2) + (200 + (RAND(2000) * 10)))
+	 SRC.CONSUME 5 i_resource_granite
+	 SRC.TAG.MASONITEM = i_vase4_granite
+	 SRC.TAG.MASON.DIFFMAKE = 20
+	 f_mason_makeitem 
+      ELSE
+	 SRC.SYSMESSAGE You fail to craft the item
+	 SRC.CONSUME 1 i_resource_granite
+      ENDIF
+   ENDIF
+
+//********************************************************************//
+//                           MENU FUNCTIONS                           //
+//********************************************************************//
+[FUNCTION f_mason_make]
+IF (<SRC.MASONRY> >= 850)
+   MENU m_mason
+ELSEIF (<SRC.MASONRY> >= 600)
+   MENU m_mason_2
+ELSEIF (<SRC.MASONRY> >= 500)
+   MENU m_mason_3
+ELSEIF (<SRC.MASONRY> >= 250)
+   MENU m_mason_4
+ELSEIF (<SRC.MASONRY> >= 0)
+   SRC.SYSMESSAGE You lack sufficient Masonry skill to use this item
+   RETURN 1
+ENDIF
+
+//********************************************************************//
+[FUNCTION f_mason_decor]
+IF (<SRC.MASONRY> >= 500)
+   MENU m_mason_decor
+ELSEIF (<SRC.MASONRY> >= 400)
+   MENU m_mason_decor_2
+ELSEIF (<SRC.MASONRY> >= 0)
+   MENU m_mason_decor_3
+ENDIF
+
+//********************************************************************//
+[FUNCTION f_mason_furniture]
+IF (<SRC.MASONRY> >= 800)
+   MENU m_mason_furniture
+ELSEIF (<SRC.MASONRY> >= 700)
+   MENU m_mason_furniture_2
+ELSEIF (<SRC.MASONRY> >= 600)
+   MENU m_mason_furniture_3
+ELSEIF (<SRC.MASONRY> >= 0)
+   SRC.SYSMESSAGE You lack sufficient Masonry skill to use this item
+ENDIF
+
+
+//********************************************************************//
+//                              FUNCTIONS                             //
+//********************************************************************//
+[FUNCTION MASON_CANMAKE]
+   IF !<SRC.CANMAKE <args>>
+      SRC.SYSMESSAGE You cannot make that item.
+      RETURN 0
+   ELSE
+      f_mason_delay
+      IF (<SRC.TAG.MASON.DELAY> = 1)
+         RETURN 0
+      ENDIF
+   ENDIF
+   RETURN 1
+
+//********************************************************************//
+[FUNCTION f_mason_makeitem]
+   SRC.NEWITEM = i_mason_makeitem
+   SRC.ACT.CONT=<SRC.UID>
+   SRC.ACT.TIMER=1
+
+//********************************************************************//
+[ITEMDEF i_mason_makeitem]
+ID=i_memory
+TYPE=t_eq_script
+NAME=Masonry Item Maker
+
+ON=@CREATE
+   MORE=0 
+   ATTR=attr_decay
+
+ON=@TIMER
+   IF (<MORE>=<EVAL(<CONT.TAG.MASON.MAKETIME>)>) //MAKES DELAY LOOP ONCE BEFORE DECAYING/MAKING ITEM
+      CONT.NEWITEM <CONT.TAG.MASONITEM>
+      CONT.ACT.CONT = <CONT.UID>
+      CONT.TAG.MASONITEM
+      SOUND 023d
+      CONT.f_mason_gain
+      REMOVE
+   ELSE
+      TIMER=1
+      SOUND 023d
+      MORE= (<MORE> + 1) //CHANGES MORE VALUE SO ITEM DECAYS NEXT TIMER LOOP
+   ENDIF
+   RETURN 1
+
+//********************************************************************//
+[FUNCTION f_mason_delay]
+   IF (<SRC.FINDID.i_mason_gain_delay.UID>)
+      SRC.MESSAGE "You must wait to use this skill again."
+      SRC.TAG.MASON.DELAY = 1
+   ELSE
+      SRC.TAG.MASON.DELAY = 0
+      SRC.NEWITEM = i_mason_gain_delay
+      SRC.ACT.CONT=<SRC.UID>
+      SRC.ACT.TIMER=1
+   ENDIF
+
+//********************************************************************//
+[ITEMDEF i_mason_gain_delay]
+ID=i_memory
+TYPE=t_eq_script
+NAME=Masonry Gain Delay
+
+ON=@CREATE
+   MORE=0
+   ATTR=attr_decay
+
+ON=@TIMER
+   IF (<MORE>)
+      REMOVE
+   ELSE
+      TIMER=<CONT.TAG.MASON.MAKETIME>
+      MORE=1
+   ENDIF
+   RETURN 1
+
+//********************************************************************//
+[FUNCTION f_mason_gain]
+SOUND 023d
+ANIM 9
+LOCAL.MASON.DIFFMAKE = <TAG.MASON.DIFFMAKE>
+LOCAL.MASONROLL = <EVAL(<LOCAL.MASONROLL> + RAND(1000))>
+
+IF (<MASONRY> < 100)
+   IF (<EVAL (<LOCAL.MASONROLL>+<LOCAL.MASON.DIFFMAKE>)> >= 100)
+      MASONRY = (<MASONRY> + 3)
+      SYSMESSAGE Gain: Your skill in masonry has increased by 0.3
+   ENDIF
+   SYSMESSAGE You need more than 10 to gain, got <EVAL ((<LOCAL.MASONROLL> + <LOCAL.MASON.DIFFMAKE>) / 10)>
+ELSEIF (<MASONRY> < 200)
+   IF (<EVAL (<LOCAL.MASONROLL>+<LOCAL.MASON.DIFFMAKE>)> >= 150)
+      MASONRY = (<MASONRY> + 2)
+      SYSMESSAGE Gain: Your skill in masonry has increased by 0.2
+   ENDIF
+   SYSMESSAGE You need more than 15 to gain, got <EVAL ((<LOCAL.MASONROLL> + <LOCAL.MASON.DIFFMAKE>) / 10)>
+ELSEIF (<MASONRY> < 300)
+   IF (<EVAL (<LOCAL.MASONROLL>+<LOCAL.MASON.DIFFMAKE>)> >= 200)
+      MASONRY = (<MASONRY> + 1)
+      SYSMESSAGE Gain: Your skill in masonry has increased by 0.1
+   ENDIF
+   SYSMESSAGE You need more than 20 to gain, got <EVAL ((<LOCAL.MASONROLL> + <LOCAL.MASON.DIFFMAKE>) / 10)>
+ELSEIF (<MASONRY> < 400)
+   IF (<EVAL (<LOCAL.MASONROLL>+<LOCAL.MASON.DIFFMAKE>)> >= 250)
+      MASONRY = (<MASONRY> + 1)
+      SYSMESSAGE Gain: Your skill in masonry has increased by 0.1
+   ENDIF
+   SYSMESSAGE You need more than 25 to gain, got <EVAL ((<LOCAL.MASONROLL> + <LOCAL.MASON.DIFFMAKE>) / 10)>
+ELSEIF (<MASONRY> < 500)
+   IF (<EVAL (<LOCAL.MASONROLL>+<LOCAL.MASON.DIFFMAKE>)> >= 300)
+      MASONRY = (<MASONRY> + 1)
+      SYSMESSAGE Gain: Your skill in masonry has increased by 0.1
+   ENDIF
+   SYSMESSAGE You need more than 30 to gain, got <EVAL ((<LOCAL.MASONROLL> + <LOCAL.MASON.DIFFMAKE>) / 10)>
+ELSEIF (<MASONRY> < 600)
+   IF (<EVAL (<LOCAL.MASONROLL>+<LOCAL.MASON.DIFFMAKE>)> >= 400)
+      MASONRY = (<MASONRY> + 1)
+      SYSMESSAGE Gain: Your skill in masonry has increased by 0.1
+   ENDIF
+   SYSMESSAGE You need more than 40 to gain, got <EVAL ((<LOCAL.MASONROLL> + <LOCAL.MASON.DIFFMAKE>) / 10)>
+ELSEIF (<MASONRY> < 700)
+   IF (<EVAL (<LOCAL.MASONROLL>+<LOCAL.MASON.DIFFMAKE>)> >= 500)
+      MASONRY = (<MASONRY> + 1)
+      SYSMESSAGE Gain: Your skill in masonry has increased by 0.1
+   ENDIF
+   SYSMESSAGE You need more than 50 to gain, got <EVAL ((<LOCAL.MASONROLL> + <LOCAL.MASON.DIFFMAKE>) / 10)>
+ELSEIF (<MASONRY> < 750)
+   IF (<EVAL (<LOCAL.MASONROLL>+<LOCAL.MASON.DIFFMAKE>)> >= 550)
+      MASONRY = (<MASONRY> + 1)
+      SYSMESSAGE Gain: Your skill in masonry has increased by 0.1
+   ENDIF
+   SYSMESSAGE You need more than 55 to gain, got <EVAL ((<LOCAL.MASONROLL> + <LOCAL.MASON.DIFFMAKE>) / 10)>
+ELSEIF (<MASONRY> < 800)
+   IF (<EVAL (<LOCAL.MASONROLL>+<LOCAL.MASON.DIFFMAKE>)> >= 600)
+      MASONRY = (<MASONRY> + 1)
+      SYSMESSAGE Gain: Your skill in masonry has increased by 0.1
+   ENDIF
+   SYSMESSAGE You need more than 60 to gain, got <EVAL ((<LOCAL.MASONROLL> + <LOCAL.MASON.DIFFMAKE>) / 10)>
+ELSEIF (<MASONRY> < 850)
+   IF (<EVAL (<LOCAL.MASONROLL>+<LOCAL.MASON.DIFFMAKE>)> >= 650)
+      MASONRY = (<MASONRY> + 1)
+      SYSMESSAGE Gain: Your skill in masonry has increased by 0.1
+   ENDIF
+   SYSMESSAGE You need more than 65 to gain, got <EVAL ((<LOCAL.MASONROLL> + <LOCAL.MASON.DIFFMAKE>) / 10)>
+ELSEIF (<MASONRY> < 875)
+   IF (<EVAL (<LOCAL.MASONROLL>+<LOCAL.MASON.DIFFMAKE>)> >= 670)
+      MASONRY = (<MASONRY> + 1)
+      SYSMESSAGE Gain: Your skill in masonry has increased by 0.1
+   ENDIF
+   SYSMESSAGE You need more than 67 to gain, got <EVAL ((<LOCAL.MASONROLL> + <LOCAL.MASON.DIFFMAKE>) / 10)>
+ELSEIF (<MASONRY> < 900)
+   IF (<EVAL (<LOCAL.MASONROLL>+<LOCAL.MASON.DIFFMAKE>)> >= 700)
+      MASONRY = (<MASONRY> + 1)
+      SYSMESSAGE Gain: Your skill in masonry has increased by 0.1
+   ENDIF
+   SYSMESSAGE You need more than 70 to gain, got <EVAL ((<LOCAL.MASONROLL> + <LOCAL.MASON.DIFFMAKE>) / 10)>
+ELSEIF (<MASONRY> < 925)
+   IF (<EVAL (<LOCAL.MASONROLL>+<LOCAL.MASON.DIFFMAKE>)> >= 720)
+      MASONRY = (<MASONRY> + 1)
+      SYSMESSAGE Gain: Your skill in masonry has increased by 0.1
+   ENDIF
+   SYSMESSAGE You need more than 72 to gain, got <EVAL ((<LOCAL.MASONROLL> + <LOCAL.MASON.DIFFMAKE>) / 10)>
+ELSEIF (<MASONRY> < 950)
+   IF (<EVAL (<LOCAL.MASONROLL>+<LOCAL.MASON.DIFFMAKE>)> >= 730)
+      MASONRY = (<MASONRY> + 1)
+      SYSMESSAGE Gain: Your skill in masonry has increased by 0.1
+   ENDIF
+   SYSMESSAGE You need more than 73 to gain, got <EVAL ((<LOCAL.MASONROLL> + <LOCAL.MASON.DIFFMAKE>) / 10)>
+ELSEIF (<MASONRY> < 975)
+   IF (<EVAL (<LOCAL.MASONROLL>+<LOCAL.MASON.DIFFMAKE>)> >= 750)
+      MASONRY = (<MASONRY> + 1)
+      SYSMESSAGE Gain: Your skill in masonry has increased by 0.1
+   ENDIF
+   SYSMESSAGE You need more than 75 to gain, got <EVAL ((<LOCAL.MASONROLL> + <LOCAL.MASON.DIFFMAKE>) / 10)>
+ELSEIF (<MASONRY> < 1000)
+   IF (<EVAL (<LOCAL.MASONROLL>+<LOCAL.MASON.DIFFMAKE>)> >= 760)
+      MASONRY = (<MASONRY> + 1)
+      SYSMESSAGE Gain: Your skill in masonry has increased by 0.1
+   ENDIF
+   SYSMESSAGE You need more than 76 to gain, got <EVAL ((<LOCAL.MASONROLL> + <LOCAL.MASON.DIFFMAKE>) / 10)>
+ENDIF
+
+
+//********************************************************************//
+//                                TYPES                               //
+//********************************************************************//
+[TYPEDEF t_s_mason]
+//just to set id
+ON=@DCLICK
+   SRC.SYSMESSAGE Use Mason's Tools to craft with this
+   RETURN 1
+
+[TYPEDEF t_s_mason_item]
+//just to set id
+ON=@DCLICK
+   RETURN 1
+
+[TYPEDEF t_s_mason_tool]
+//just to set id

@@ -1,0 +1,1020 @@
+
+//Modified by Jessica Graham aka Wren  8-12-03
+//Wren - Oct 15 '03 - Moved most of the songs of war to jes_songs_war to better organize and prepare for peace & world songs
+//Wren - Feb 02 '04 - Changed for checking to interrupt on spelleffect as well.
+//Wren - Feb 10 '04 - Changed interrupt...think it works now
+//Wigifer - Jan 19 '13 - Added delay on discord target & multi-aggro
+//25/11/2019 - Wigifer - Updated all remaining <TIME> to <SERV.TIME> (56d update issue)
+
+//DEFNAMES and SKILL LEVELS FOR EACH SONG------------------------------------------
+
+[DEFNAME def_songs]
+song_none		0
+
+//SONGS OF WAR---------------------------------------------------------------------
+song_WarCry		1
+song_WarCry_level	0.0	 //Wren
+
+song_Exhaustion         2
+song_Exhaustion_level   10.0     //Wren (Lyrics by Lyra)
+
+song_Meditation         3
+song_Meditation_level   20.0     //Wren (Lyrics by Wren)
+
+song_Courage		4
+song_Courage_level	30.0     //Kell-modified by Wren (Lyrics by Lyra)
+
+song_Sprite		5
+song_Sprite_level	40.0	 //Wren (Lyrics by Balthasar)
+
+song_Discord		6
+song_Discord_level	50.0     //Kell
+
+song_MindRhymes		7	 
+song_MindRhymes_level	60.0	 //Wren (Lyrics by Wigifer)
+
+song_BattleDrums	8
+song_BattleDrums_level  70.0	 //Wren (Lyrics by Mort)
+
+song_MindCloud		9
+song_MindCloud_level	80.0	 //Wren (Lyrics by Lyra)
+
+song_Screech		10
+song_Screech_level	90.0	 //Wren (Lyrics by Wren)
+
+song_Uprising		11
+song_Uprising_level	100.0	//Wren (Lyrics by Wraith...slightly modified by Wren)
+
+//SONGS OF THE WORLD----------------------------------------------------------------
+song_Abundance		30
+song_Abundance_level	0.0	//Wren (Lyrics by Wren)
+
+song_Enchantment	31
+song_Enchantment_level	10.0	//Wren (Lyrics by Wren)
+
+song_Sonar		32
+song_Sonar_level	20.0	//Wren (Lyrics by Wren)
+
+song_Journey		33
+song_Journey_level	30.0	//Wren (Lyrics by Wren)
+
+song_Fortify		34
+song_Fortify_level	40.0	//Wren (Lyrics by Wren)
+
+song_Replica		35
+song_Replica_level	50.0	//Wren (Lyrics by Wren)
+
+song_Mimic		36
+song_Mimic_level        60.0    //Wren (Lyrics by Wren)
+
+song_Deflect		37
+song_Deflect_level      70.0    //Wren (Lyrics by Wren)
+
+song_SoulSearcher	38	
+song_SoulSearcher_level 80.0	//Wren (Lyrics by Rolypoly)
+
+song_DefFort		39
+song_DefFort_level      90.0    //Wren (Lyrics by Wren)
+
+song_Energy		40
+song_Energy_level       100.0    //Wren (Lyrics by Wren)
+
+
+//TIMED DELAY FOR DISCORD------------------------------------------------------------
+
+[ITEMDEF i_discord_delay]
+ID=i_memory
+TYPE=t_eq_script
+NAME=Discord Delay
+
+ON=@CREATE
+   TIMER=60
+   
+ON=@TIMER
+   REMOVE
+   RETURN 1
+
+[ITEMDEF i_discord_duration]
+ID=i_memory
+TYPE=t_eq_script
+NAME=Discord Duration
+   
+ON=@TIMER
+   VAR.FORGIVER = <LINK.UID>
+   UID.<MORE1>.FOR_MEMORY f_peace
+   VAR.FORGIVER = <UID.<MORE1>>
+   LINK.FOR_MEMORY f_peace
+   CONT.SYSMESSAGE @43 Your targets no longer feel the effects of discord...
+   REMOVE
+   RETURN 1
+
+  
+//FUNCTIONS USED BY SONG BOOKS-------------------------------------------------------
+
+[FUNCTION song_assign]
+   MOREz	= <args>
+   TARGET What instrument would you like to prepare for this song?
+   return 1
+
+
+[FUNCTION PAGE]
+  if ( <VAR.PAGE2> == 0 )
+     if ( <args> < <MOREm> )
+        VAR.PAGE	= 2206
+     else
+        VAR.PAGE	= 104
+     endif
+     VAR.PAGE2		= 1
+  else
+     if ( <args> < <MOREm> )
+        VAR.PAGE	= <eval (<args>+1)>
+     else
+        VAR.PAGE	= <MOREm>
+     endif
+     VAR.PAGE2		= 0
+  endif
+
+
+[FUNCTION PAGE1]
+  PAGE 1
+  return <VAR.PAGE>
+[FUNCTION PAGE2]
+  PAGE 2
+  return <VAR.PAGE>
+[FUNCTION PAGE3]
+  PAGE 3
+  return <VAR.PAGE>
+[FUNCTION PAGE4]
+  PAGE 4
+  return <VAR.PAGE>
+[FUNCTION PAGE5]
+  PAGE 5
+  return <VAR.PAGE>
+[FUNCTION PAGE6]
+  PAGE 6
+  return <VAR.PAGE>
+[FUNCTION PAGE7]
+  PAGE 7
+  return <VAR.PAGE>
+[FUNCTION PAGE8]
+  PAGE 8
+  return <VAR.PAGE>
+[FUNCTION PAGE9]
+  PAGE 9
+  return <VAR.PAGE>
+[FUNCTION PAGE10]
+  PAGE 10
+  return <VAR.PAGE>
+[FUNCTION PAGE11]
+  PAGE 11
+  return <VAR.PAGE>
+
+
+
+//INSTRUMENT TYPE --------------------------------------------------------------------------
+
+
+[TYPEDEF t_instrument]
+
+//Display the name of assigned song on the first click and reset if another click soon enough after
+ON=@CLICK
+   IF ( 0<TAG.CLICKED> == 0 )
+      TAG.CLICKED = <SERV.TIME>
+   ENDIF
+
+   IF ( !STRCMP( "<TAG.SONG.NAME>", "" ) )
+      MESSAGE <NAME> (no song)
+      RETURN 1
+   ELSE
+      MESSAGE <NAME> (<TAG.SONG.NAME>)
+   ENDIF
+
+   IF ( (<SERV.TIME> - <TAG.CLICKED>) > 15 )
+      MESSAGE (click again to reset)
+   ELSE
+      MESSAGE *You reset the instrument to random tunes*
+      MOREz		= 0
+      TAG.SONG.NAME	=
+   ENDIF
+   TAG.CLICKED = <SERV.TIME>
+   RETURN 1
+
+ON = @DClick
+
+     IF STRMATCH( "PvP Realm 2", "<SRC.REGION.NAME>" )
+         SRC.SYSMESSAGE Barding is not allowed in this area.
+         RETURN 1
+	ENDIF
+      
+     IF STRMATCH( "Classic Arena", "<SRC.REGION.NAME>" )
+         SRC.SYSMESSAGE Barding is not allowed in this area.
+         RETURN 1
+	ENDIF
+   
+   //Not sure...
+   IF ( <TIMER> > 0 )
+      RETURN 1
+   ENDIF
+   TIMER = 4
+   
+   //Can't use instrument if you don't have it in your pack
+   IF ( <TOPOBJ.UID> != <SRC.UID> )
+      SRC.SYSMESSAGE You must have it in your pack to use it.
+      RETURN 1
+   ENDIF
+
+   //If they're hidden Unhide them
+   IF ( <SRC.FLAGS> & statf_hidden )
+      SRC.flags=<SRC.flags> &~ 000400000
+   ENDIF
+
+   //If song already started then end it (can't sing 2 songs at once)
+   IF ( <src.findlayer(layer_k_song).uid> )
+      src.findlayer(layer_k_song).REMOVE
+   ENDIF
+
+   //Reset link
+   LINK	= 04fffffff
+   
+   IF ( 0 )
+
+   //If we don't have a song assigned just play a song (practices only musicianship)
+   ELSEIF ( <MOREz> == 0 )
+      IF ( RAND(1000) > ((<SRC.MUSICIANSHIP> + 1000) / 2) )
+         SRC.SYSMESSAGE You play a simple music, but it doesn't come out as you expected.
+	 SRC.SOUND <TDATA2>
+	 TIMER = 7
+	 
+         IF ( <SRC.MUSICIANSHIP> < 35.0 )
+	    SRC.TAG.MAKEITEM.LEVEL	= 30.0
+            SRC.SKILLCHECK_RUN Skill_Musicianship
+	 ENDIF
+      ELSE
+         SRC.SYSMESSAGE You play a simple music.
+         SRC.SOUND <TDATA1>
+	 TIMER = 7
+         SRC.TAG.MAKEITEM.LEVEL	= 50.0
+         SRC.SKILLCHECK_RUN Skill_Musicianship
+      ENDIF
+
+
+
+
+
+//////////////////////////////////////////SONGS OF WAR//////////////////////////////////////////////////
+
+   //Starts the Songs of War process if rules are met and brings up target if song requires a target
+   ELSEIF ( <MOREz> == song_WarCry )
+      IF ( <SRC.PROVOCATION> < song_WarCry_level )
+         SRC.SYSMESSAGE You're not skilled enough to sing WarCry.
+         RETURN 1
+      ENDIF
+
+      IF (<SRC.FINDID.M_AddWarCry>)
+         SRC.SYSMESSAGE You cannot play this song again yet.
+         RETURN 1
+      ENDIF
+
+      SRC.SYSMESSAGE You start playing War Cry.
+      
+      IF ( RAND(1000) > ((<SRC.MUSICIANSHIP>+190.0)/3) )
+         SRC.SYSMESSAGE You can't recall the propper tunes.
+         SRC.SOUND <TDATA2>
+      ELSE
+         SRC.SOUND <TDATA1>
+         SRC.NEWITEM M_AddWarCry
+   	 SRC.EQUIP <SRC.ACT>
+         SRC.TAKE_STAM	= 5
+         SRC.SKILLCHECK_RUN Skill_Provocation
+      ENDIF
+
+   ELSEIF ( <MOREz> == song_Exhaustion )
+      IF ( <SRC.PROVOCATION> < song_Exhaustion_level )
+         SRC.SYSMESSAGE You're not skilled enough to sing Exhaustion.
+         RETURN 1
+      ENDIF
+
+      IF ( <SRC.REGION.FLAGS> & (region_flag_safe|region_flag_no_pvp) )
+        SRC.SYSMESSAGE Your songs seem to have no effect here.
+        RETURN 1
+      ENDIF
+      
+      TARGET To whom would you like to sing Exhaustion?
+   
+   ELSEIF ( <MOREz> == song_Meditation )
+      IF ( <SRC.PROVOCATION> < song_Meditation_level )
+         SRC.SYSMESSAGE You're not skilled enough to sing Lulls of Meditation.
+         RETURN 1
+      ENDIF
+
+      TARGET To whom would you like to sing Lulls of Meditation?
+   
+   ELSEIF ( <MOREz> == song_Courage )
+      IF ( <SRC.PROVOCATION> < song_Courage_level )
+         SRC.SYSMESSAGE You're not skilled enough to sing Courage of Heroes.
+         RETURN 1
+      ENDIF
+
+      TARGET To whom would you like to sing Courage of Heroes?
+
+   ELSEIF ( <MOREz> == song_Sprite )
+      IF ( <SRC.PROVOCATION> < song_Sprite_level )
+         SRC.SYSMESSAGE You're not skilled enough to sing Minuet of Forests.
+         RETURN 1
+      ENDIF
+
+      IF ( <SRC.REGION.FLAGS> & (region_flag_safe|region_flag_no_pvp) )
+        SRC.SYSMESSAGE Your songs seem to have no effect here.
+        RETURN 1
+      ENDIF
+
+      IF ( <SRC.REGION.GUARDED> )
+         SRC.SYSMESSAGE You can't sing this song with the guard nearby.
+         RETURN 1
+      ENDIF
+
+      TARGET To whom would you like to sing Minuet of Forests?
+
+   ELSEIF ( <MOREz> == song_Discord )
+      IF ( <SRC.PROVOCATION> < song_Discord_level )
+         SRC.SYSMESSAGE You're not skilled enough to sing Whispers of Discord.
+         RETURN 1
+      ENDIF
+
+      IF ( <SRC.REGION.FLAGS> & (region_flag_safe|region_flag_no_pvp) )
+        SRC.SYSMESSAGE Your songs seem to have no effect here.
+        RETURN 1
+      ENDIF
+      
+      IF ( <SRC.REGION.GUARDED> )
+         SRC.SYSMESSAGE You can't sing this song with the guard nearby.
+         RETURN 1
+      ENDIF
+      
+      TARGET To whom would you like to sing Whispers of Discord?
+
+   ELSEIF ( <MOREz> == song_MindRhymes )
+      IF ( <SRC.PROVOCATION> < song_MindRhymes_level )
+         SRC.SYSMESSAGE You're not skilled enough to sing Rhymes of the Mind.
+         RETURN 1
+      ENDIF
+      
+      SRC.NEWITEM i_song_MindRhymes
+      SRC.TAKE_STAM	= 10
+      SRC.ACT.EQUIP
+
+   ELSEIF ( <MOREz> == song_BattleDrums )
+      IF ( <SRC.PROVOCATION> < song_BattleDrums_level )
+         SRC.SYSMESSAGE You're not skilled enough to sing Drums of Battle.
+         RETURN 1
+      ENDIF
+      
+      SRC.NEWITEM i_song_BattleDrums
+      SRC.TAKE_STAM	= 10
+      SRC.ACT.EQUIP
+
+   ELSEIF ( <MOREz> == song_MindCloud )
+      IF ( <SRC.PROVOCATION> < song_MindCloud_level )
+         SRC.SYSMESSAGE You're not skilled enough to sing Mind Cloud.
+         RETURN 1
+      ENDIF
+
+      IF ( <SRC.REGION.FLAGS> & (region_flag_safe|region_flag_no_pvp) )
+        SRC.SYSMESSAGE Your songs seem to have no effect here.
+        RETURN 1
+      ENDIF
+
+      TARGET To whom would you like to sing Mind Cloud?
+   
+   ELSEIF ( <MOREz> == song_Screech )
+      IF ( <SRC.PROVOCATION> < song_Screech_level )
+         SRC.SYSMESSAGE You're not skilled enough to sing Screech of Wrath.
+         RETURN 1
+      ENDIF
+
+      IF ( <SRC.REGION.FLAGS> & (region_flag_safe|region_flag_no_pvp) )
+        SRC.SYSMESSAGE Your songs seem to have no effect here.
+        RETURN 1
+      ENDIF
+      
+      IF ( <SRC.REGION.GUARDED> )
+         SRC.SYSMESSAGE You can't sing this song with the guard nearby.
+         RETURN 1
+      ENDIF
+
+      TARGET To whom would you like to sing Screech of Wrath?
+   
+   ELSEIF ( <MOREz> == song_Uprising )
+      IF ( <SRC.PROVOCATION> < song_Uprising_level )
+         SRC.SYSMESSAGE You're not skilled enough to sing Spirit's Uprising.
+         RETURN 1
+      ENDIF
+
+      IF ( <SRC.REGION.FLAGS> & (region_flag_safe|region_flag_no_pvp) )
+        SRC.SYSMESSAGE Your songs seem to have no effect here.
+        RETURN 1
+      ENDIF
+      
+      IF ( <SRC.REGION.GUARDED> )
+         SRC.SYSMESSAGE You can't sing this song with the guard nearby.
+         RETURN 1
+      ENDIF
+
+      TARGET To whom would you like to sing Spirit's Uprising?
+
+
+
+
+
+
+////////////////////////////////////////SONGS OF THE WORLD//////////////////////////////////////////////
+
+   ELSEIF ( <MOREz> == song_Abundance )
+      IF ( <SRC.ENTICEMENT> < song_Abundance_level)
+         SRC.SYSMESSAGE You're not skilled enough to sing Abundance.
+         RETURN 1
+      ENDIF
+      
+      TARGET Which food would you like to bless?
+
+   ELSEIF ( <MOREz> == song_Fortify )
+      IF ( <SRC.ENTICEMENT> < song_Fortify_level)
+         SRC.SYSMESSAGE You're not skilled enough to sing Fortify.
+         RETURN 1
+      ENDIF
+      SRC.TAKE_STAM	= 10
+      SRC.NEWITEM i_song_fortify
+      SRC.ACT.EQUIP
+
+   ELSEIF ( <MOREz> == song_Mimic )
+      IF ( <SRC.ENTICEMENT> < song_Mimic_level)
+         SRC.SYSMESSAGE You're not skilled enough to sing Mimic.
+         RETURN 1
+      ENDIF
+      
+      TARGET Which creature would you like to mimic?
+
+   ELSEIF ( <MOREz> == song_Deflect )
+      IF ( <SRC.ENTICEMENT> < song_Deflect_level)
+         SRC.SYSMESSAGE You're not skilled enough to sing Deflect.
+         RETURN 1
+      ENDIF
+      SRC.TAKE_STAM	= 15
+      SRC.NEWITEM i_song_deflect
+      SRC.ACT.EQUIP
+
+   ELSEIF ( <MOREz> == song_SoulSearcher )
+      IF ( <SRC.ENTICEMENT> < song_SoulSearcher_level)
+         SRC.SYSMESSAGE You're not skilled enough to sing Soul Searcher.
+         RETURN 1
+      ENDIF
+      SRC.TAKE_STAM	= 15
+      DIALOG d_soulsearcher      
+
+   ELSEIF ( <MOREz> == song_DefFort )
+      IF ( <SRC.ENTICEMENT> < song_DefFort_level)
+         SRC.SYSMESSAGE You're not skilled enough to sing Deflect & Fortify.
+         RETURN 1
+      ENDIF
+      SRC.TAKE_STAM	= 20
+      SRC.NEWITEM i_song_DefFort
+      SRC.ACT.EQUIP
+   ELSEIF ( <MOREz> == song_Energy )
+      IF ( <SRC.ENTICEMENT> < song_Energy_level)
+         SRC.SYSMESSAGE You're not skilled enough to sing Energy.
+         RETURN 1
+      ENDIF
+      SRC.TAKE_STAM	= 20
+      SRC.NEWITEM i_song_Energy
+      SRC.ACT.EQUIP
+   ELSE
+      SRC.SYSMESSAGE That song is still being written.
+   ENDIF
+   
+   RETURN 1
+
+
+ON = @Targon_Char
+   //Must see line of sight to start song.  After started cansee is good enough
+   IF !( <SRC.TARG.CanSeeLOS> )		
+      SRC.SYSMESSAGE The obstructions muffle your song too much for it to have an effect on them.
+      RETURN 1
+
+   //Must have at least 20 stamina points to sing otherwise you're too tired
+   ELSEIF ( <SRC.STAM> < 20 )		
+      SRC.SYSMESSAGE You are too tired to sing.
+      RETURN 1
+   ENDIF
+
+
+   //THIS SECTION ADD THE SONG ITEM IF THE RULES ARE MET WHICH STARTS THE SONG
+   IF ( 0 )
+   ELSEIF ( <MOREz> == song_none )
+      SRC.SYSMESSAGE The instrument is not prepared for any song.
+
+
+
+
+
+
+//////////////////////////////////////////SONGS OF WAR//////////////////////////////////////////////////
+
+   ELSEIF ( <MOREz> == song_Exhaustion )   
+      //OC Protection check
+      IF strmatch("<SRC.TAG.ALIGNMENT>","<SRC.TARG.TAG.ALIGNMENT>")
+         IF <SRC.TARG.faction_ISPROTECTED>
+   	    SRC.SYSMESSAGE You cannot harm your own here.
+     	    RETURN 1
+         ENDIF
+      ENDIF
+
+      SRC.NEWITEM	i_song_Exhaustion
+      SRC.ACT.LINK	= <SRC.TARG.UID>
+      SRC.TAKE_STAM	= 5
+      SRC.ACT.EQUIP
+
+   ELSEIF ( <MOREz> == song_Meditation )
+      
+      //Check to see if they have the increase from an int raise song
+      IF (!<SRC.TARG.FINDID.M_SongINTIncrease>)
+         SRC.NEWITEM	i_song_meditation
+         SRC.ACT.LINK	= <SRC.TARG.UID>
+         SRC.TAKE_STAM	= 5
+         SRC.ACT.EQUIP
+      ELSE
+         SRC.SYSMESSAGE Their minds have already been focused by a song... 
+      ENDIF
+
+   ELSEIF ( <MOREz> == song_Courage )
+      
+      //check to see if they have the increase from a str/dex raise song
+      IF (!<SRC.TARG.FINDID.M_SongSTRIncrease>) || (!<SRC.TARG.FINDID.M_SongDEXIncrease>)
+         SRC.NEWITEM	i_song_courage
+         SRC.ACT.LINK	= <SRC.TARG.UID>
+         SRC.TAKE_STAM	= 5
+         SRC.ACT.EQUIP
+      ELSE
+         SRC.SYSMESSAGE They have already gained courage from a song... 
+      ENDIF
+
+   ELSEIF ( <MOREz> == song_Sprite )
+      //OC Protection check
+      IF strmatch("<SRC.TAG.ALIGNMENT>","<SRC.TARG.TAG.ALIGNMENT>")
+         IF <SRC.TARG.faction_ISPROTECTED>
+   	    SRC.SYSMESSAGE You cannot harm your own here.
+     	    RETURN 1
+         ENDIF
+      ENDIF
+      
+      SRC.NEWITEM	i_song_sprite
+      SRC.ACT.LINK	= <SRC.TARG.UID>
+      SRC.TAKE_STAM	= 10
+      SRC.ACT.EQUIP
+   
+   //Discord is special, there's no item, all the script is right here
+   //Not going to comment it anymore, figure it out yourself
+   ELSEIF ( <MOREz> == song_Discord )
+//	      SRC.SYSMESSAGE This song is TEMPORARILY disabled while we balance it.
+//	      RETURN 1
+		IF ( <LINK> == 04fffffff )
+
+			IF ( !<SRC.TARG.NPC> )
+				SRC.SYSMESSAGE They have a mind of their own, too much so to fall for words of discord.
+				RETURN 1
+	 
+			ELSEIF ( <SRC.TARG.FLAGS> & statf_pet )
+				SRC.SYSMESSAGE They are too peaceful to mind your words.
+				RETURN 1
+				
+			ELSEIF ( <SRC.FINDID.i_discord_delay> )
+			        SRC.SYSMESSAGE You cannot stir your whispers again so quickly!
+			        RETURN 1
+	 
+			ELSEIF ( <SRC.TARG.INT> > (<SRC.PROVOCATION> / 8) )
+				SRC.SYSMESSAGE They are too smart to fall for your music.
+				RETURN 1
+	 
+			ELSEIF ( (<SRC.TARG.PROVOCATION> > <SRC.PROVOCATION>) || ((<SRC.TARG.TAMING>-200) > <SRC.PROVOCATION>) )
+				SRC.SYSMESSAGE They are too willful for your music.
+				RETURN 1
+			ENDIF
+	 
+			LINK = <SRC.TARG>
+			TARGET About whom would you like to sing?
+      
+		ELSE
+			IF ( <LINK.REGION.GUARDED> || <SRC.TARG.REGION.GUARDED> || <SRC.REGION.GUARDED> )
+				SRC.SYSMESSAGE You can't sing to them with the guards nearby.
+				RETURN 1
+		ENDIF
+
+        //OC Protection check
+        IF strmatch("<SRC.TAG.ALIGNMENT>","<SRC.TARG.TAG.ALIGNMENT>")
+            IF <SRC.TARG.faction_ISPROTECTED>
+      	       SRC.SYSMESSAGE You cannot harm your own here.
+               RETURN 1
+            ENDIF
+        ENDIF
+
+		IF ( (<LINK.UID> == <SRC.TARG.UID>) || (<SRC.TARG.UID> == <SRC.UID>) )
+			SRC.SYSMESSAGE @014 You sing to <LINK.NAME>.
+		ELSE
+			SRC.SYSMESSAGE @014 You sing to <LINK.NAME> about <SRC.TARG.NAME>.
+		ENDIF
+		
+		
+		SRC.TAKE_STAM	= 20
+        LOCAL.DIFF	= <EVAL (<LINK.TAMING> + <EVAL <LINK.INT> / 10> - 200)> //TEMP: Added <EVAL > to increase fail rate
+		
+		IF ( <LINK.PROVOCATION> > <LOCAL.DIFF> )
+			LOCAL.DIFF	= <LINK.PROVOCATION>
+		ENDIF
+		
+		LOCAL.DIFF	= <EVAL (<LOCAL.DIFF> / 3)>
+        LOCAL.DIFF	= <EVAL (((<SRC.PROVOCATION>+190.0)/3) - <LOCAL.DIFF>)>
+        VAR.FAIL	= 0
+
+//        IF !(<SRC.ISGM>)
+//           SERV.NEWITEM i_discord_delay
+//	   NEW.EQUIP <SRC.UID>
+//	ENDIF
+                
+
+        	IF ( <SRC.ISGM> )
+		ELSEIF ( RAND(1000) > ((<SRC.MUSICIANSHIP>+190.0)/3) )
+			SRC.SYSMESSAGE @025 You can't recall the proper tunes.
+			VAR.FAIL	= <eval (1+rand(10))>
+			SRC.SOUND <TDATA2>
+        	ELSEIF ( RAND(1000) > <LOCAL.DIFF> )
+			VAR.FAIL	= <eval (3+rand(10))>
+			SRC.SOUND <TDATA1>
+		ELSE
+			SRC.SOUND <TDATA1>
+		ENDIF
+
+		SRC.SKILLCHECK_RUN Skill_Provocation
+
+		IF ( (<LINK.UID> == <SRC.TARG.UID>) || (<SRC.TARG.UID> == <SRC.UID>) )
+			VAR.FAIL	= 7	// attack self
+		ENDIF
+	 
+		IF ( <VAR.FAIL> > 9 )
+			SRC.SYSMESSAGE Your playing lacks talent and aggravates everyone nearby against you!
+			FORCHARS 10
+                            SERV.NEWITEM i_damager
+                            NEW.MORE1	= <UID>
+                            NEW.LINK	= <SRC.UID>
+                            NEW.P	= <P>
+                            SRC.UPDATE
+                        ENDFOR
+//			SRC.SYSMESSAGE 37, 0, 0, 0 <LINK.NAME> doesn't seem to appreciate your song, and neither does <SRC.TARG.NAME>.
+//			SRC.TARG.ATTACK
+		ELSEIF ( <VAR.FAIL> > 5 )
+		        SRC.SYSMESSAGE Your playing lacks talent and aggravates everyone nearby against you!
+			FORCHARS 10
+                            SERV.NEWITEM i_damager
+                            NEW.MORE1	= <UID>
+                            NEW.LINK	= <SRC.UID>
+                            NEW.P	= <P>
+                            SRC.UPDATE
+                        ENDFOR
+//			IF ( <VAR.FAIL> < 10 )
+			//	SRC.SYSMESSAGE @32 <LINK.NAME> doesn't seem to appreciate your song.
+//			ENDIF
+			//LINK.ATTACK
+		ENDIF
+		
+		IF ( <VAR.FAIL> == 0 )
+			LINK.IGNORE_WAR
+			LINK.IGNORE_WAR
+			LINK.IGNORE_WAR
+			SRC.SYSMESSAGE @52 Your song seems to produce the desired effects...
+			SRC.NEWITEM i_damager
+			SRC.ACT.MORE1	= <SRC.TARG.UID>
+			SRC.ACT.LINK	= <LINK.UID>
+			SRC.ACT.P		= <SRC.TARG.P>
+			SRC.UPDATE
+		        //SERV.NEWITEM i_discord_duration
+		       // NEW.LINK = <LINK.UID>
+		       // NEW.MORE1 = <SRC.TARG.UID>
+		       // NEW.TIMER = <EVAL <EVAL <SRC.PROVOCATION> / 100> + <EVAL <SRC.PROVOCATION> / 200>>
+		        //NEW.EQUIP <SRC.UID>
+			LINK		= 04fffffff
+		ELSEIF ( <VAR.FAIL> < 6 ) // Original SYSMESSAGE left for legacy\rollback
+			//SRC.SYSMESSAGE Your song doesn't seem to have any effect on your audience.
+			SRC.SYSMESSAGE Your playing lacks talent and aggravates everyone nearby against you!
+			FORCHARS 8
+                            SERV.NEWITEM i_damager
+                            NEW.MORE1	= <UID>
+                            NEW.LINK	= <SRC.UID>
+                            NEW.P	= <P>
+                            SRC.UPDATE
+                        ENDFOR
+			RETURN 1
+		ENDIF
+    ENDIF
+
+   ELSEIF ( <MOREz> == song_MindCloud )
+      //OC Protection check
+      IF strmatch("<SRC.TAG.ALIGNMENT>","<SRC.TARG.TAG.ALIGNMENT>")
+         IF <SRC.TARG.faction_ISPROTECTED>
+   	    SRC.SYSMESSAGE You cannot harm your own here.
+     	    RETURN 1
+         ENDIF
+      ENDIF
+      
+      //Check to see if they are already hallucinating from a song
+      IF (!<SRC.TARG.FINDID.M_SongHallucinate>)
+         SRC.NEWITEM	i_song_MindCloud
+         SRC.ACT.LINK	= <SRC.TARG.UID>
+         SRC.TAKE_STAM	= 15
+         SRC.ACT.EQUIP
+      ELSE
+         SRC.SYSMESSAGE They have already suffering from the effects of Mind Cloud... 
+      ENDIF
+
+   ELSEIF ( <MOREz> == song_Screech )
+      //OC Protection check
+      IF strmatch("<SRC.TAG.ALIGNMENT>","<SRC.TARG.TAG.ALIGNMENT>")
+         IF <SRC.TARG.faction_ISPROTECTED>
+   	    SRC.SYSMESSAGE You cannot harm your own here.
+     	    RETURN 1
+         ENDIF
+      ENDIF
+
+      IF ( <SRC.TARG.FLAGS> & statf_invul )
+         SRC.SYSMESSAGE They appear to be immune to your song.
+      ELSE 
+         SRC.NEWITEM	i_song_screech
+         SRC.ACT.LINK	= <SRC.TARG.UID>
+         SRC.TAKE_STAM	= 20
+         SRC.ACT.EQUIP
+      ENDIF
+   ELSEIF ( <MOREz> == song_Uprising )
+      //OC Protection check
+      IF strmatch("<SRC.TAG.ALIGNMENT>","<SRC.TARG.TAG.ALIGNMENT>")
+         IF <SRC.TARG.faction_ISPROTECTED>
+   	    SRC.SYSMESSAGE You cannot harm your own here.
+     	    RETURN 1
+         ENDIF
+      ENDIF
+
+      //Check to see if the player is mounted
+      IF ( <SRC.TARG.FLAGS> & statf_onhorse )
+         SRC.NEWITEM	i_song_Uprising
+         SRC.ACT.LINK	= <SRC.TARG.UID>
+         SRC.TAKE_STAM	= 15
+         SRC.ACT.EQUIP
+      ELSE
+         SRC.SYSMESSAGE They are not mounted.
+      ENDIF
+
+
+////////////////////////////////////////SONGS OF THE WORLD//////////////////////////////////////////////
+
+   ELSEIF ( <MOREz> == song_Mimic ) 
+      IF (<SRC.TARG.PLEVEL><=1)
+         SRC.NEWITEM	i_song_Mimic
+         SRC.ACT.LINK	= <SRC.TARG.UID>
+         SRC.TAKE_STAM	= 10
+         SRC.ACT.EQUIP    
+      ELSE
+         SRC.SYSMESSAGE That being is beyond your abilities to mimic.
+      ENDIF
+   ELSE
+      SRC.SYSMESSAGE That song is still being written or does not apply to characters.
+   ENDIF
+   RETURN 1
+
+
+
+ON=@TARGON_ITEM
+
+////////////////////////////////////////SONGS OF THE WORLD//////////////////////////////////////////////
+   IF ( <MOREz> == song_Abundance )
+      IF ( ( <SRC.TARG.TYPE> == t_food ) || ( <SRC.TARG.TYPE> == t_w_food ) )
+         IF ( <SRC.TARG.MOREM> == 0 )
+            SRC.NEWITEM	i_song_Abundance
+            SRC.ACT.LINK	= <SRC.TARG.UID>
+            SRC.TAKE_STAM	= 5
+            SRC.ACT.EQUIP
+         ELSE
+            CONT.SYSMESSAGE This food is already blessed.
+         ENDIF
+      ELSE
+         SRC.SYSMESSAGE You can only bless food
+      ENDIF
+
+   ELSE
+      SRC.SYSMESSAGE That song is still being written or does not apply to items.
+   ENDIF
+
+   RETURN 1
+
+
+
+/////////////////////////////////////////GENERAL SONGS INFO////////////////////////////////////////////
+//This is used to see how much damage was taken from a blow.
+//It is equipped in the GetHit event and saves the hit points
+//The when it times out it compares the current to the saved to determine how 
+//hard the blow was
+
+//Used to monitor the status of the singer and interrupt their singing
+[EVENTS e_singing]
+ON = @GetHit
+   IF (<ARGN1>>5) && (<MUSICIANSHIP><50.0)
+      SYSMESSAGE You get the wind knocked out of you.
+      FINDLAYER(layer_k_song).REMOVE
+   ELSEIF (<ARGN1>>10) && (<MUSICIANSHIP><75.0)
+      SYSMESSAGE You get the wind knocked out of you.
+      FINDLAYER(layer_k_song).REMOVE
+   ELSEIF (<ARGN1>>15) && (<MUSICIANSHIP><100.0)
+      SYSMESSAGE You get the wind knocked out of you.
+      FINDLAYER(layer_k_song).REMOVE
+   ELSEIF (<ARGN1>>20) && (<MUSICIANSHIP>>=100.0)
+      SYSMESSAGE You get the wind knocked out of you.
+      FINDLAYER(layer_k_song).REMOVE      
+   ENDIF
+ON = @Hit
+   FINDLAYER(layer_k_song).REMOVE
+ON = @Logout
+   FINDLAYER(layer_k_song).REMOVE
+ON = @SpellCast
+   FINDLAYER(layer_k_song).REMOVE
+
+
+
+
+//Is used to display the song text
+[FUNCTION SING_SAY]
+   CONT.SAYua <VAR.SONGCOLOR>, 0, 0, 0, ~<ARGS>~
+
+//Is used to determine which line of the song we are on
+[FUNCTION SONGSTATE]
+   RETURN <MOREz>
+
+//Not sure...
+[FUNCTION SING_STATE]
+   IF ( !STRCMP( "<ARGS>", "" ) )
+      MOREz	= (<MOREz> + 1)
+   ELSE
+      MOREz	= <ARGS>
+   ENDIF
+   IF ( <TIMER> == -1 )
+      TIMER		{ 2 3 }
+   ENDIF
+
+[FUNCTION SONGS_CHECKFAIL_PROV]
+   IF ( <SONGSTATE> < 2 )
+     IF ( RAND(1000) > (2900+<CONT.MUSICIANSHIP>)/4 )
+        CONT.SAY *misses the tune*
+	REMOVE
+        RETURN 1
+     ENDIF
+
+     IF ( RAND(1000) > (2900+<CONT.PROVOCATION>)/4 )
+        CONT.SAY *misses the tune*
+	REMOVE
+        RETURN 1
+     ENDIF
+   ENDIF
+
+[FUNCTION SONGS_CHECKFAIL_ENT]
+   IF ( <SONGSTATE> < 2 )
+     IF ( RAND(1000) > (2900+<CONT.MUSICIANSHIP>)/4 )
+        CONT.SAY *misses the tune*
+	REMOVE
+        RETURN 1
+     ENDIF
+
+     IF ( RAND(1000) > (2900+<CONT.ENTICEMENT>)/4 )
+        CONT.SAY *misses the tune*
+	REMOVE
+        RETURN 1
+     ENDIF
+   ENDIF
+   
+
+
+
+
+//INSTRUMENTS--------------------------------------------------------------------------
+
+[FUNCTION replace_instrument]
+   if ( <TYPE> == t_script )
+      SRC.NEWITEM <BASEID>
+      SRC.ACT.BOUNCE
+      REMOVE
+      return 1
+   endif
+   return 0
+
+
+[ITEMDEF 0e9e]	//tambourine (tassle)
+DEFNAME		= i_tambourine_tas
+RESOURCES	= i_tambourine, i_cloth
+SKILLMAKE	= CARPENTRY 50.0, MUSICIANSHIP 65.0, t_carpentry
+TYPE		= T_SCRIPT
+TDATA1		= 052
+TDATA2		= 053
+WEIGHT		= 1
+CATEGORY	= Items by Professions
+SUBSECTION	= Bard
+DESCRIPTION	= Tambourine Tassle
+VALUE 		= 150
+ON = @Create
+   TYPE		= t_instrument
+ON = @DClick
+   return <replace_instrument>
+
+
+[ITEMDEF 0eb3]	//Lute
+DEFNAME		= i_lute
+TYPE		= t_script
+TDATA1		= 04c
+TDATA2		= 04d
+WEIGHT		= 5
+CATEGORY	= Items by Professions
+SUBSECTION	= Bard
+DESCRIPTION	= Lute
+SKILLMAKE	= TINKERING 52.0, MUSICIANSHIP 65.0,t_tinker_tools
+DUPELIST	= 0eb4
+RESOURCES	= 6 i_log_pine, 1 i_wire_iron
+VALUE 		= 150
+ON = @Create
+   TYPE		= t_instrument
+ON = @DClick
+   return <replace_instrument>
+
+
+[ITEMDEF 0e9c]
+DEFNAME		= i_drum
+TYPE		= T_SCRIPT
+TDATA1		= 038
+TDATA2		= 039
+WEIGHT		= 3
+CATEGORY	= Items by Professions
+SUBSECTION	= Bard
+DESCRIPTION	= Drum
+RESOURCES	= 1 i_hides_cut, 5 i_log_pine
+SKILLMAKE	= TINKERING 51.0, MUSICIANSHIP 65.0,t_tinker_tools
+VALUE 		= 150
+ON = @Create
+   TYPE		= t_instrument
+ON = @DClick
+   return <replace_instrument>
+
+[ITEMDEF 0e9d]	//Tambourine
+DEFNAME		= i_tambourine
+TYPE		= T_SCRIPT
+TDATA1		= 052
+TDATA2		= 053
+RESOURCES	= 1 i_ingot_iron, 2 i_board
+SKILLMAKE	= TINKERING 50.0, MUSICIANSHIP 65.0,t_tinker_tools
+WEIGHT		= 1
+CATEGORY	= Items by Professions
+SUBSECTION	= Bard
+DESCRIPTION	= Tambourine
+VALUE 		= 150
+ON = @Create
+   TYPE		= t_instrument
+ON = @DClick
+   return <replace_instrument>
+
+[ITEMDEF 0eb1]
+//standing harp
+DEFNAME		= i_HARP_LARGE
+TYPE		= T_SCRIPT
+TDATA1		= 045	
+TDATA2		= 046
+CATEGORY	= Items by Professions
+SUBSECTION	= Bard
+DESCRIPTION	= Standing Harp
+RESOURCES	= 10 i_log, 4 i_wire_iron
+SKILLMAKE	= TINKERING 56.5, MUSICIANSHIP 65.0,t_tinker_tools
+VALUE 		= 500
+ON = @Create
+   TYPE		= t_instrument
+ON = @DClick
+   return <replace_instrument>
+
+[ITEMDEF 0eb2]
+//Lap Harp
+DEFNAME		= i_lyre
+TYPE		= T_SCRIPT
+TDATA1		= 045
+TDATA2		= 046
+WEIGHT		= 10
+CATEGORY	= Items by Professions
+SUBSECTION	= Bard
+DESCRIPTION	= Lap Harp
+RESOURCES	= 7 i_log, 2 i_wire_iron
+SKILLMAKE	= TINKERING 54.0, MUSICIANSHIP 65.0,t_tinker_tools
+VALUE 		= 150
+ON = @Create
+   TYPE		= t_instrument
+ON = @DClick
+   return <replace_instrument>
+
+
+[EOF]

@@ -1,0 +1,784 @@
+//-----------------------Order and Chaos Main Settings-----------------------
+//-									    -
+//------------------------By James "Wigifer" Timbrell------------------------
+//-                                                                         -
+//---------------------------------------------------------------------------
+
+[FUNCTION faction_ISPROTECTED]
+//Check now if they are in home city
+IF (<ISORDER> && <REGION.DEFNAME>=a_townMagincia)
+   RETURN 1
+ELSEIF (<ISCHAOS> && <REGION.DEFNAME>=a_townSerphold)
+   RETURN 1
+ELSE
+   RETURN 0
+ENDIF
+
+//[FUNCTION ochome]
+//IF (<EVAL (<SRC.TAG.rep.alignment>)> < 2000)
+//		SYSMESSAGE You are not yet worthy of using such powers.
+//		RETURN 1
+//ENDIF
+//IF !(<FINDID.M_FactionHome.UID>)
+//   IF ( <REGION_SKARGARD> )
+//         SYSMESSAGE You can't do that from here.
+//      	RETURN 1
+//   ELSEIF ( <FLAGS> & statf_freeze ) 
+//      SYSMESSAGE You can't do that in your current state.
+//      RETURN 1
+//   ELSEIF ( <FLAGS> & statf_war ) 
+//      SYSMESSAGE You can't do that when in warmode.       
+//      RETURN 1
+//   ELSEIF ( <FLAGS> & statf_stone ) 
+//      SYSMESSAGE You can't do that in your current state.
+//      RETURN 1
+//   ELSEIF ( <REGION.FLAGS> & region_antimagic_all )
+//      SYSMESSAGE You can't do that from here.
+//      RETURN 1
+//   ELSEIF (<REGION.FLAGS> & region_antimagic_recall_out)
+//      SYSMESSAGE You can't do that from here.
+//      RETURN 1
+//   ELSEIF ( ( (<MEMORYFINDTYPE(memory_fight).uid>) && ( <UID.<MEMORYFINDTYPE(memory_fight).LINK>.NPC> = 0 ) ) || ( (<MEMORYFINDTYPE(MEMORY_IAGGRESSOR).uid>) && ( <UID.<MEMORYFINDTYPE(MEMORY_IAGGRESSOR).LINK>.NPC> = 0 ) ) )
+//      SYSMESSAGE You are too busy fighting to do that right now.
+//      RETURN 1
+//   ELSEIF ( (<MEMORYFINDTYPE(memory_harmedby).uid>) && ( <UID.<MEMORYFINDTYPE(memory_harmedby).LINK>.NPC> = 0 ) )
+//      SYSMESSAGE You are too busy defending yourself to do that right now.
+//      RETURN 1
+//   ENDIF
+   
+//   IF (<ISORDER>)
+//      NEWITEM M_FactionHome
+//      EQUIP <ACT>
+//   ELSEIF (<ISCHAOS>)
+//      NEWITEM M_FactionHome
+//      EQUIP <ACT>
+//   ENDIF
+//ELSE
+//   SYSMESSAGE You are already transporting.
+//ENDIF
+//RETURN 1
+
+[ItemDef M_FactionHome]
+id=i_memory
+Name=Faction Home
+type=t_eq_script
+
+ON=@Create
+   TIMER=1
+   MORE1 = 1
+   
+ON=@Equip
+   SRC.SAY Kal Ort Por
+   
+ON=@Timer
+  IF ( <CONT.REGION_SKARGARD> )
+        CONT.SYSMESSAGE You can't do that from here.
+        REMOVE
+      	RETURN 1
+   ELSEIF ( <CONT.FLAGS> & statf_freeze ) 
+      CONT.SYSMESSAGE You can't do that in your current state.
+      REMOVE
+      RETURN 1
+   ELSEIF ( <CONT.FLAGS> & statf_war ) 
+         CONT.SYSMESSAGE You can't do that when in warmode.
+         REMOVE
+      RETURN 1
+   ELSEIF ( <CONT.FLAGS> & statf_stone ) 
+      CONT.SYSMESSAGE You can't do that in your current state.
+      REMOVE
+      RETURN 1
+   ELSEIF ( <CONT.REGION.FLAGS> & region_antimagic_all )
+      CONT.SYSMESSAGE You can't do that from here.
+      REMOVE
+      RETURN 1
+   ELSEIF (<CONT.REGION.FLAGS> & region_antimagic_recall_out)
+      CONT.SYSMESSAGE You can't do that from here.
+      REMOVE
+      RETURN 1
+  // ELSEIF ( ( (<CONT.MEMORYFINDTYPE(memory_fight).uid>) ) || ( (<CONT.MEMORYFINDTYPE(MEMORY_IAGGRESSOR).uid>) ) )
+    //  CONT.SYSMESSAGE You are too busy fighting to do that right now.
+      //REMOVE
+      //RETURN 1
+   //ELSEIF ( (<CONT.MEMORYFINDTYPE(memory_harmedby).uid>) )
+     // CONT.SYSMESSAGE You are too busy defending yourself to do that right now.
+      //REMOVE
+      //RETURN 1
+   ENDIF   
+   IF !(<eval(<CONT.TAG0.REP.ALIGNMENT>)> >= 10000)
+      IF !(<UID.<CONT.REGION.UID>.TYPE> = T_MULTI)
+         IF ( <MORE1> <= 7 )
+            IF (<CONT.ISORDER>)
+               CONT.EFFECT=3,i_fx_sparkle,0,22,0,07a1
+            ELSEIF (<CONT.ISCHAOS>)
+               CONT.EFFECT=3,i_fx_sparkle,0,22,0,079b
+            ENDIF
+            MORE1 = <MORE1>+1
+            TIMER = 1
+         ELSE
+            IF (<CONT.ISORDER>)
+               CONT.Go 3719,2063,25
+	    ELSEIF (<CONT.ISCHAOS>)
+				CONT.Go 3030,3385,15
+            ENDIF
+            REMOVE 
+         ENDIF
+      ELSE
+      	   CONT.SYSMESSAGE You can't use this command from a house.
+      	   REMOVE
+      ENDIF
+   ELSE
+      CONT.SYSMESSAGE You can't use this command at this time.
+      REMOVE
+   ENDIF
+   RETURN 1
+
+
+[FUNCTION region_chaos]
+  if ( 0 )
+  elseif ( !strcmpi( "<REGION.NAME>", "Serpent's Hold" ) )
+      return 1
+  else
+      return 0
+  endif
+
+[FUNCTION region_order]
+  if ( 0 )
+  elseif ( !strcmpi( "<REGION.NAME>", "Magincia" ) )
+      return 1
+  else
+      return 0
+  endif
+
+[ITEMDEF i_alignment_timer_check]
+ID=i_memory
+TYPE=t_eq_script
+NAME=Alignment Timer check
+
+ON=@CREATE
+TIMER=604800
+
+ON=@TIMER
+REMOVE
+RETURN 1
+
+[ITEMDEF i_orderchaos_fix]
+NAME=Order-Chaos Reputation Fix and Resetter
+ID=i_guildstone
+TYPE=T_NORMAL
+
+ON=@CREATE
+   COLOR=01
+
+ON=@DCLICK
+   SRC.TAG0.REP.ALIGNMENT=
+   SRC.MESSAGE Order-Chaos Reputation Reset
+   RETURN 1
+
+[DEFNAME def_alignment]
+alignment_none		0
+alignment_order	1	// order
+alignment_chaos	2	// chaos
+alignment_brotherhood 3 //brotherhood //pink panther
+alignment_syndicate 4 //syndicate
+alignment_mercenary 5 //mercenary
+
+
+[FUNCTION ALIGNMENT_DISCONNECT]
+
+[FUNCTION ALIGNMENT_NAME]
+   if ( !strcmp( "<args>", "" ) )
+      VAR.ALIGNMENT	= <ALIGNMENT>
+   else
+      VAR.ALIGNMENT	= <args>
+   endif
+
+   VAR.ALIGNMENT_NAME	= ""
+   doswitch <var.ALIGNMENT>
+      VAR.ALIGNMENT_NAME	= ""
+      VAR.ALIGNMENT_NAME	= "Order"
+      VAR.ALIGNMENT_NAME	= "Chaos"
+	  VAR.ALIGNMENT_NAME    = "Brotherhood" //pinkpanther
+	  VAR.ALIGNMENT_NAME    = "Mercenary"
+	  VAR.ALIGNMENT_NAME    = "Syndicate"
+   enddo
+
+
+[FUNCTION ALIGNMENT_ACCEPT]
+   TAG.ALIGNMENT		= <args>
+   TAG0.REP.ALIGNMENT	= 1000
+
+
+[FUNCTION alignment_click]
+   doswitch <ALIGNMENT>
+      alignment_none_click
+      alignment_order_click
+      alignment_chaos_click
+	  alignment_brotherhood_click //pinkpanther
+	  alignment_syndicate_click
+	  alignment_mercenary_click
+   enddo
+
+
+[FUNCTION ALIGNMENT]
+   if ( strcmp( "<args>", "" ) )
+      TAG.ALIGNMENT	= <args>
+      return 0
+   endif
+
+   if ( <NPC> )
+      if ( 0<TAG.order.RANK> )
+         return alignment_order
+      elseif ( 0<TAG.chaos.RANK> )
+          return alignment_chaos
+	  elseif ( 0<TAG.brotherhoodrank> ) //pinkpanther
+          return alignment_brotherhood
+	  elseif ( 0<TAG.syndicaterank> )
+          return alignment_syndicate
+	  elseif ( 0<TAG.mercenaryrank> )
+          return alignment_mercenary
+      elseif ( strcmp( "<TAG.ALIGNMENT>", "" ) )
+          return <TAG.ALIGNMENT>
+      endif
+      return alignment_none
+   endif
+
+//   if ( !strcmp( "<TAG.ALIGNMENT>", "" ) )
+//      return alignment_none
+//   endif
+
+   if ( !strcmp( "<TAG.ALIGNMENT>", "alignment_order" ) )
+      return alignment_order
+   elseif ( !strcmp( "<TAG.ALIGNMENT>", "alignment_chaos" ) )
+      return alignment_chaos
+   elseif ( !strcmp( "<TAG.ALIGNMENT>", "alignment_syndicate" ) ) //pinkpanther
+      return alignment_syndicate
+   elseif ( !strcmp( "<TAG.ALIGNMENT>", "alignment_brotherhood" ) )
+      return alignment_brotherhood
+   elseif ( !strcmp( "<TAG.ALIGNMENT>", "alignment_mercenary" ) )
+      return alignment_mercenary
+   else
+      return alignment_none
+   endif
+   
+   return alignment_none
+
+
+
+[FUNCTION ALIGNMENT_INIT]
+   if ( 0<TAG.ALIGNMENT.VERSION> == 0 )
+      TAG.ALIGNMENT.VERSION = 0
+   endif
+   if ( 0<TAG.ALIGNMENT.EXPELLED> == 0 )
+      TAG.ALIGNMENT.EXPELLED	= 0
+   endif
+
+   if ( <TAG.ALIGNMENT.VERSION> == 2 )
+      return 1
+   endif
+
+   if ( 0 )
+   elseif ( 0<TAG.REP.order> )
+      TAG.REP0.ALIGNMENT	= <TAG.REP.order>
+      TAG.REP.order 	=
+      TAG.ALIGNMENT		= alignment_order
+      TAG.ALIGNMENT.VERSION	= 2
+      return 1
+   elseif ( 0<TAG.REP.chaos> )
+      TAG.REP0.ALIGNMENT	= <TAG.REP.chaos>
+      TAG.REP.chaos 	=
+      TAG.ALIGNMENT		= alignment_chaos
+      TAG.ALIGNMENT.VERSION	= 2
+      return 1
+   else
+      TAG.ALIGNMENT.VERSION	= 2
+      TAG.ALIGNMENT		= alignment_none
+   endif
+
+
+
+[FUNCTION ALIGNMENT_EXPELLED]
+   if ( !strcmp( "<args>", "" ) )
+      return <eval isbit( <TAG.ALIGNMENT.EXPELLED>, <ALIGNMENT> )>
+   endif
+
+   VAR.EXPELLED = <eval isbit( <TAG.ALIGNMENT.EXPELLED>, <args> )>
+
+
+
+[FUNCTION alignment_title]
+   if ( !strcmp( "<ARGS>", "" ) )
+      return 0
+   endif
+   if (<SHOWFACTIONCOLOUR <SRC.UID>>)
+      TAG.NAME.HUE =
+   endif
+  
+
+   IF (0<TAG.ALIGNMENT.SHOWTITLE>=1)
+      TAG.NAME.SUFFIX	= ", <ARGS>"
+   ELSEIF ( !strcmpi( "<TAG.ALIGNMENT>", "alignment_order" ) )
+      TAG.NAME.SUFFIX   = " [O]"
+   ELSEIF ( !strcmpi( "<TAG.ALIGNMENT>", "alignment_chaos" ) )
+      TAG.NAME.SUFFIX   = " [C]"
+   ELSEIF ( !strcmpi( "<TAG.ALIGNMENT>", "alignment_brotherhood" ) ) //pinkpanther
+      TAG.NAME.SUFFIX   = " [B]"
+    ELSEIF ( !strcmpi( "<TAG.ALIGNMENT>", "alignment_mercenary" ) )
+      TAG.NAME.SUFFIX   = " [M]"
+   ELSEIF ( !strcmpi( "<TAG.ALIGNMENT>", "alignment_syndicate" ) )
+      TAG.NAME.SUFFIX   = " [S]"
+   ENDIF
+
+[FUNCTION alignment_none_click]
+   TAG.NAME.HUE		= 
+   TAG.NAME.SUFFIX	= 
+
+[FUNCTION alignment_order_click]
+   TAG.NAME.HUE= 005a
+   IF <OBODY> = c_woman
+      alignment_title <order_TITLE_FEMALE>
+   ELSE
+      alignment_title <order_TITLE>
+   ENDIF
+   
+[FUNCTION alignment_chaos_click]
+   TAG.NAME.HUE= 015d
+   IF <OBODY> = c_woman
+      alignment_title <chaos_TITLE_FEMALE>
+   ELSE
+      alignment_title <chaos_TITLE>
+   ENDIF
+   
+[FUNCTION alignment_mercenary_click] //pinkpanther
+   TAG.NAME.HUE= 024
+   alignment_title <mercenary_TITLE>
+
+   
+[FUNCTION alignment_syndicate_click]
+   TAG.NAME.HUE= 07d1
+   alignment_title <syndicate_TITLE>
+  
+   
+[FUNCTION alignment_brotherhood_click]
+   TAG.NAME.HUE= 0770
+   alignment_title <brotherhood_TITLE>
+  
+[FUNCTION brotherhood_TITLE] //pinkpanther
+   doswitch <brotherhood_RANK>
+      LOCAL.TITLE	= Brotherhood Recruit
+      LOCAL.TITLE	= Brotherhood Initiate
+      LOCAL.TITLE	= Brotherhood Apprentice
+      LOCAL.TITLE	= Brotherhood Novice
+      LOCAL.TITLE	= Brotherhood Servant
+      LOCAL.TITLE	= Brotherhood Warrior 
+      LOCAL.TITLE	= Brotherhood Disciple
+      LOCAL.TITLE	= Brotherhood Knight
+      LOCAL.TITLE	= Brotherhood Soldier
+      LOCAL.TITLE	= Brotherhood Veteran
+      LOCAL.TITLE	= Brotherhood Elite
+      LOCAL.TITLE	= Brotherhood Master
+      LOCAL.TITLE	= Brotherhood Master Assassin
+   enddo
+   RETURN <LOCAL.TITLE>
+   
+[FUNCTION mercenary_TITLE] //pinkpanther
+   doswitch <mercenary_RANK>
+      LOCAL.TITLE	= Mercenary Enlistee
+      LOCAL.TITLE	= Mercenary Initiate
+      LOCAL.TITLE	= Mercenary Apprentice
+      LOCAL.TITLE	= Mercenary Novice
+      LOCAL.TITLE	= Mercenary Servant
+      LOCAL.TITLE	= Mercenary Warrior 
+      LOCAL.TITLE	= Mercenary Disciple
+      LOCAL.TITLE	= Mercenary Knight
+      LOCAL.TITLE	= Mercenary Soldier
+      LOCAL.TITLE	= Mercenary Veteran
+      LOCAL.TITLE	= Mercenary Elite
+      LOCAL.TITLE	= Mercenary Master
+      LOCAL.TITLE	= Mercenary Master Marksman
+   enddo
+   RETURN <LOCAL.TITLE>
+   
+   
+[FUNCTION syndicate_TITLE] //pinkpanther
+   doswitch <syndicate_RANK>
+      LOCAL.TITLE	= Syndicate Apprentice
+      LOCAL.TITLE	= Syndicate Gatherer
+      LOCAL.TITLE	= Syndicate Appraiser 
+      LOCAL.TITLE	= Syndicate Constructor
+      LOCAL.TITLE	= Syndicate Producer 
+      LOCAL.TITLE	= Syndicate Designer 
+      LOCAL.TITLE	= Syndicate Artisan
+      LOCAL.TITLE	= Syndicate Fabricator
+      LOCAL.TITLE	= Syndicate Manufacturer
+      LOCAL.TITLE	= Syndicate Inventor
+      LOCAL.TITLE	= Syndicate Elite
+      LOCAL.TITLE	= Syndicate Master
+      LOCAL.TITLE	= Syndicate Master Crafter 
+   enddo
+   RETURN <LOCAL.TITLE>
+
+
+
+
+
+//
+//  TITLE 
+//
+[FUNCTION order_TITLE]
+   doswitch <order_RANK>
+      LOCAL.TITLE	= Order Cadet
+      LOCAL.TITLE	= Order Corporal
+      LOCAL.TITLE	= Order Sergeant
+      LOCAL.TITLE	= Order Officer
+      LOCAL.TITLE	= Order Lieutenant
+      LOCAL.TITLE	= Order Captain
+      LOCAL.TITLE	= Order Major
+      LOCAL.TITLE	= Order Colonel
+      LOCAL.TITLE	= Order Brigadier
+      LOCAL.TITLE	= Order Major General
+      LOCAL.TITLE	= Order Lieutenant General
+      LOCAL.TITLE	= Order Major General
+      LOCAL.TITLE	= Order Field Marshal
+   enddo
+   RETURN <LOCAL.TITLE>
+
+[FUNCTION order_TITLE_FEMALE]
+   doswitch <order_RANK>
+      LOCAL.TITLE	= Order Cadet
+      LOCAL.TITLE	= Order Corporal
+      LOCAL.TITLE	= Order Sergeant
+      LOCAL.TITLE	= Order Officer
+      LOCAL.TITLE	= Order Lieutenant
+      LOCAL.TITLE	= Order Captain
+      LOCAL.TITLE	= Order Major
+      LOCAL.TITLE	= Order Colonel
+      LOCAL.TITLE	= Order Brigadier
+      LOCAL.TITLE	= Order Major General
+      LOCAL.TITLE	= Order Lieutenant General
+      LOCAL.TITLE	= Order Major General
+      LOCAL.TITLE	= Order Field Marshal
+   enddo
+   RETURN <LOCAL.TITLE>
+
+[FUNCTION chaos_TITLE]
+   doswitch <chaos_RANK>
+      LOCAL.TITLE	= Chaos Private
+      LOCAL.TITLE	= Chaos Corporal
+      LOCAL.TITLE	= Chaos Sergeant
+      LOCAL.TITLE	= Chaos Officer
+      LOCAL.TITLE	= Chaos Lieutenant
+      LOCAL.TITLE	= Chaos Captain
+      LOCAL.TITLE	= Chaos Major
+      LOCAL.TITLE	= Chaos Colonel
+      LOCAL.TITLE	= Chaos Brigadier
+      LOCAL.TITLE	= Chaos Major General
+      LOCAL.TITLE	= Chaos Lieutenant General
+      LOCAL.TITLE	= Chaos Major General
+      LOCAL.TITLE	= Chaos Field Marshal
+   enddo
+   RETURN <LOCAL.TITLE>
+
+[FUNCTION chaos_TITLE_FEMALE]
+   doswitch <chaos_RANK>
+      LOCAL.TITLE	= Chaos Private
+      LOCAL.TITLE	= Chaos Corporal
+      LOCAL.TITLE	= Chaos Sergeant
+      LOCAL.TITLE	= Chaos Officer
+      LOCAL.TITLE	= Chaos Lieutenant
+      LOCAL.TITLE	= Chaos Captain
+      LOCAL.TITLE	= Chaos Major
+      LOCAL.TITLE	= Chaos Colonel
+      LOCAL.TITLE	= Chaos Brigadier
+      LOCAL.TITLE	= Chaos Major General
+      LOCAL.TITLE	= Chaos Lieutenant General
+      LOCAL.TITLE	= Chaos Major General
+      LOCAL.TITLE	= Chaos Field Marshal
+   enddo
+   RETURN <LOCAL.TITLE>
+
+
+[FUNCTION ALIGNMENT_ACCEPT_FINISH]
+   TAG.ALIGNMENT	= <args>
+
+   doswitch <args>
+      VAR.O =
+      order_ACCEPT
+      chaos_ACCEPT
+   enddo
+
+
+[FUNCTION order_ACCEPT]
+   EFFECT	= 1, i_fx_explosion_3, 6, 15, 1
+   FLAGS	= <FLAGS> & ~statf_freeze
+
+   ALIGNMENT_ACCEPT	= alignment_order
+   REMOVE
+   return 1
+
+[FUNCTION chaos_ACCEPT]
+   EFFECT	= 1, i_fx_explosion_3, 6, 15, 1
+   FLAGS	= <FLAGS> & ~statf_freeze
+
+   ALIGNMENT_ACCEPT	= alignment_chaos
+   REMOVE
+   return 1
+   
+
+
+[FUNCTION ALIGNMENT_RANK]
+   if ( <NPC> )
+      if ( 0<TAG.order.RANK> )
+          return <TAG.order.RANK>
+      elseif ( 0<TAG.chaos.RANK> )
+          return <TAG.chaos.RANK>
+      elseif ( 0<TAG.ALIGNMENT.RANK> )
+          return <TAG.ALIGNMENT.RANK>
+	  elseif ( 0<TAG.currentsrank> )
+          return <TAG.currentsrank> //pinkpanther
+	   elseif ( 0<TAG.currentbrank> )
+          return <TAG.currentbrank> //pinkpanther
+	    elseif ( 0<TAG.currentmrank> )
+          return <TAG.currentmrank> //pinkpanther
+      endif
+      return 0
+   endif
+
+   if !( <ALIGNMENT> )
+      return 0
+   endif
+
+   // if ( isbit( <ALIGNMENT_EXPELLED>, <ALIGNMENT> ) )
+   //   return 0
+   //endif
+   
+  
+   VAR.RANK	= <eval (<REP_ALIGNMENT> / 1000)>
+   if ( <VAR.RANK> < 0 )
+      VAR.RANK	= 0
+   endif
+   return <VAR.RANK>
+
+
+
+[FUNCTION ISALIGNMENT_order]
+   if ( <ALIGNMENT> == alignment_order )
+      return 1
+   endif
+   return 0
+   
+[FUNCTION ISALIGNMENT_chaos]
+   if ( <ALIGNMENT> == alignment_chaos )
+      return 1
+   endif
+   return 0
+
+ 
+[FUNCTION brotherhood_RANK] //pinkpanther
+   if !( <ALIGNMENT> == alignment_brotherhood )
+      return 0
+   endif
+   return <ALIGNMENT_RANK>
+   
+[FUNCTION syndicate_RANK]
+   if !( <ALIGNMENT> == alignment_syndicate )
+      return 0
+   endif
+   return <ALIGNMENT_RANK>
+   
+[FUNCTION mercenary_RANK]
+   if !( <ALIGNMENT> == alignment_mercenary )
+      return 0
+   endif
+   return <ALIGNMENT_RANK>
+
+[FUNCTION order_RANK]
+   if !( <ALIGNMENT> == alignment_order )
+      return 0
+   endif
+   return <ALIGNMENT_RANK>
+
+[FUNCTION chaos_RANK]
+   if !( <ALIGNMENT> == alignment_chaos )
+      return 0
+   endif
+   return <ALIGNMENT_RANK>
+
+[FUNCTION order_EXPELLED]
+   ALIGNMENT_EXPELLED	alignment_order
+   return <var.expelled>
+[FUNCTION chaos_EXPELLED]
+   ALIGNMENT_EXPELLED	alignment_chaos
+   return <var.expelled>
+
+[FUNCTION rep_alignment]
+   rep_get_init
+   rep_get_add <TAG.REP.ALIGNMENT>
+   rep_get_cap_alignment
+   return <var.rep>
+
+[FUNCTION rep_get_init]
+   VAR.REP	= 0
+
+[FUNCTION rep_report_init]
+   VAR.REP.ALIGNMENT	= <rep_alignment>
+   VAR.ALIGNMENT.RANK	= <ALIGNMENT_RANK>
+
+[FUNCTION rep_get_add]
+   VAR.REP = <eval (0<VAR.REP> + (0<args>))>
+
+[FUNCTION rep_get_cap_alignment]
+   if ( <var.rep> > 12000 )
+      var.rep	= 12000
+   elseif ( <var.rep> < -12000 )
+      var.rep	= -12000
+   endif
+
+/////////////////////////
+///Faction Home Items///
+///////////////////////
+
+[ITEMDEF Memory_FactionHome_Order]
+ID=i_memory
+NAME=Faction Home
+TYPE=t_eq_script
+
+ON=@Create
+TIMER=1
+MORE1=1
+   
+ON=@Equip
+SRC.SAY @005a Kal Ort Por
+   
+ON=@Timer
+
+IF (<MORE1> > 7)
+CONT.GO Magincia
+REMOVE
+RETURN 1
+
+ELSEIF ( <CONT.REGION_SKARGARD> )
+CONT.SYSMESSAGE You can't do that from here.
+REMOVE
+RETURN 1
+
+ELSEIF ( <CONT.FLAGS> & statf_freeze ) 
+CONT.SYSMESSAGE You can't do that in your current state.
+REMOVE
+RETURN 1
+
+ELSEIF ( <CONT.FLAGS> & statf_war ) 
+CONT.SYSMESSAGE You can't do that when in warmode.
+REMOVE
+RETURN 1
+
+ELSEIF ( <CONT.FLAGS> & statf_stone ) 
+CONT.SYSMESSAGE You can't do that in your current state.
+REMOVE
+RETURN 1
+
+ELSEIF ( <CONT.REGION.FLAGS> & region_antimagic_all )
+CONT.SYSMESSAGE You can't do that from here.
+REMOVE
+RETURN 1
+
+ELSEIF (<CONT.REGION.FLAGS> & region_antimagic_recall_out)
+CONT.SYSMESSAGE You can't do that from here.
+REMOVE
+RETURN 1
+
+//ELSEIF ( ( (<CONT.MEMORYFINDTYPE(memory_fight).uid>) ) || ( (<CONT.MEMORYFINDTYPE(MEMORY_IAGGRESSOR).uid>) ) )
+//CONT.SYSMESSAGE You are too busy fighting to do that right now.
+//REMOVE
+//RETURN 1
+
+//ELSEIF ( (<CONT.MEMORYFINDTYPE(memory_harmedby).uid>) )
+//CONT.SYSMESSAGE You are too busy defending yourself to do that right now.
+//REMOVE
+//RETURN 1
+
+ELSEIF (<UID.<CONT.REGION.UID>.TYPE> = T_MULTI)
+CONT.SYSMESSAGE You can't use this command from a house.
+REMOVE
+RETURN 1
+
+ELSEIF (<CONT.ISORDER> == 01)
+CONT.EFFECT=3,i_fx_sparkle,0,22,0,079b
+MORE1=<MORE1>+1
+TIMER=1
+RETURN 1
+
+
+
+[ITEMDEF Memory_FactionHome_Chaos]
+ID=i_memory
+NAME=Faction Home
+TYPE=t_eq_script
+
+ON=@Create
+TIMER=1
+MORE1=1
+   
+ON=@Equip
+SRC.SAY @015d Kal Ort Por
+   
+ON=@Timer
+
+IF (<MORE1> > 7)
+CONT.GO Serpent's Hold
+REMOVE
+RETURN 1
+
+ELSEIF ( <CONT.REGION_SKARGARD> )
+CONT.SYSMESSAGE You can't do that from here.
+REMOVE
+RETURN 1
+
+ELSEIF ( <CONT.FLAGS> & statf_freeze ) 
+CONT.SYSMESSAGE You can't do that in your current state.
+REMOVE
+RETURN 1
+
+ELSEIF ( <CONT.FLAGS> & statf_war ) 
+CONT.SYSMESSAGE You can't do that when in warmode.
+REMOVE
+RETURN 1
+
+ELSEIF ( <CONT.FLAGS> & statf_stone ) 
+CONT.SYSMESSAGE You can't do that in your current state.
+REMOVE
+RETURN 1
+
+ELSEIF ( <CONT.REGION.FLAGS> & region_antimagic_all )
+CONT.SYSMESSAGE You can't do that from here.
+REMOVE
+RETURN 1
+
+ELSEIF (<CONT.REGION.FLAGS> & region_antimagic_recall_out)
+CONT.SYSMESSAGE You can't do that from here.
+REMOVE
+RETURN 1
+
+//ELSEIF ( ( (<CONT.MEMORYFINDTYPE(memory_fight).uid>) ) || ( (<CONT.MEMORYFINDTYPE(MEMORY_IAGGRESSOR).uid>) ) )
+//CONT.SYSMESSAGE You are too busy fighting to do that right now.
+//REMOVE
+//RETURN 1
+
+//ELSEIF ( (<CONT.MEMORYFINDTYPE(memory_harmedby).uid>) )
+//CONT.SYSMESSAGE You are too busy defending yourself to do that right now.
+//REMOVE
+//RETURN 1
+
+ELSEIF (<UID.<CONT.REGION.UID>.TYPE> = T_MULTI)
+CONT.SYSMESSAGE You can't use this command from a house.
+REMOVE
+RETURN 1
+
+ELSEIF (<CONT.ISCHAOS> == 01)
+CONT.EFFECT=3,i_fx_sparkle,0,22,0,079b
+MORE1=<MORE1>+1
+TIMER=1
+RETURN 1
+
+
+[EOF]
+

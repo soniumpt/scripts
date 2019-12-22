@@ -1,0 +1,86 @@
+[ITEMDEF i_robe_mass_murderer]
+ID	= i_deathshroud
+NAME	= Mass Murderer robe
+TYPE	= T_CLOTHING
+ARMOR	= 5
+DYE	= 0
+
+ON = @Create
+  HITPOINTS	= 350
+  COLOR		= 00846
+
+ON = @Equip
+   IF ( <CONT.KARMA> >= 10000)
+      CONT.SYSMESSAGE You are pure enough of mind to overcome the darkness of the robe...
+   ELSEif ( <CONT.KILLS> < 500 )
+      CONT.SYSMESSAGE You Are Not A Mass Murderer
+      UNEQUIP
+      return 1
+   endif
+   COLOR = 00846
+   
+
+
+
+
+
+
+
+
+[ITEMDEF i_Orb_Fire]
+NAME=Orb of Fire
+ID=0e2d
+ON=@Create
+COLOR=02b
+ON = @Dclick
+   orb_place	 0,  0
+   orb_place	 0,  1
+   orb_place	 1,  1
+   orb_place	 1,  0
+   orb_place	-1,  0
+   orb_place	-1, -1
+   orb_place	 0, -1
+   src.sysmessage You activate the orb!!
+
+ON = @Dropon_Ground
+   LINK.REMOVE
+ON = @Pickup_pack
+   LINK.TIMER = 1
+   LINK.MORE1 = 1
+   return 1
+ON = @Pickup_ground
+   SRC.NEWITEM i_orb_timer
+   SRC.ACT.LINK = <UID> // link to this orb
+   LINK = <SRC.ACT.UID> // link orb to timer
+   SRC.ACT.EQUIP
+
+CATEGORY=Imperial uo
+SUBSECTION=Orbs
+DESCRIPTION=Orb of Fire
+
+[ITEMDEF i_orb_timer]
+ID	= i_memory
+LAYER	= layer_special
+NAME	= Orb timer
+ON = @Create
+  TIMER = { 5 7 } // kill stamina first time in 3-5 seconds
+ON = @Timer
+  if ( <MORE1> == 1 ) // drop it
+   CONT.SYSMESSAGE You drop the <LINK.NAME>.
+ LINK.P	= <CONT.P>
+  REMOVE
+ return 1
+endif
+
+TIMER = { 3 5 } // kill stamina gain in 3-5 seconds
+  CONT.SYSMESSAGE Your heart plunges into darkness.
+ CONT.STAMINA
+ RETURN 1
+
+[FUNCTION orb_place]
+   SRC.NEWITEM	0398c
+   SRC.ACT.P	= <SRC.P>
+   SRC.ACT.MOVE	= <args>
+   SRC.ACT.UPDATEx
+
+[EOF]

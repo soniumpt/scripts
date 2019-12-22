@@ -1,0 +1,485 @@
+/////////////////////////////////////////////////////////////////////////////////////////
+// Online List /Pvt Msg Sys v2.0 Created By Mordaunt 
+// 					Inbox dialog is based upon SCP page system
+//
+// NO MYSQL REQUIRED
+// Messages are now unified into an ACCOUNT based inbox.  All chars on the account can see all messages.
+// Reworked/Modified Online list gump.
+// Removed old message queue in favor of using "lists"
+// Messages will list oldest first (intentionally) to prompt players to delete messages rather than holding on to them all.
+// Messages from staff members will always push to the top of the first page and will be written in red.
+// Players can still remove themselves from the list with "Private" mode.
+// If gm_one_way is turned off, the reply also deletes the original message to prevent staff being spammed.
+//
+// Update:
+//		Added Friends lists which will allow OFFLINE messages to be sent
+//
+// HOUSEKEEPING: Add the below into sphere_serv_triggers.scp so that lists on deleted accounts are removed
+// [FUNCTION f_onaccount_delete]
+// LIST.<ARGS>_message.CLEAR
+// LIST.<ARGS>_sender.CLEAR
+// LIST.<ARGS>_time.CLEAR
+// LIST.<ARGS>_friends.CLEAR
+/////////////////////////////////////////////////////////////////////////////////////////
+//Either add this event to all your players, or comment it out and add the triggers under an even already on all your players
+// [EVENTS e_msgpending]
+// ON=@Login
+// 	if <list.<src.account>_message.COUNT>
+// 		src.dialog d_pm_notify
+// 	endif
+// 
+// ON=@MsgPending //custom trigger to fix reply notifications
+// 	src.dialog d_pm_notify
+
+[PLEVEL 1] 
+private //toggle on/off
+inbox //opens inbox id persistent scroll feature is disabled
+friend //add target as a friend
+friends //open friendlist
+
+[defname admin_strings]
+admin_plevel_2		"Counselor"
+admin_plevel_3		"Seer"
+admin_plevel_4		"Game Master"
+admin_plevel_5		"Developer"
+admin_plevel_6		"Administrator"
+admin_plevel_7		"Owner"
+
+[defname font_colors]
+font_good	98	//notoriety
+font_guild	68	//notoriety
+font_waring	48	//notoriety
+font_evil	38	//notoriety
+font_other	966	//notoriety
+font_general	90	//this is the color for all non notoriety text in the gumps
+
+[defname msg_toggles]
+gm_one_way	0		//Can players use reply to GM messages? 1 = no 0 = yes
+list_staff	0		//Do staff show to players on the list? 1=yes 0=no
+reply_delete  	0		//Reply to messages from players deletes original message? 1=yes 0=no
+msg_staff 	0		//Can players message staff members from online list? 1=yes 2=no
+perisitent_notification 0	//The pop-up scroll that is always there when inbox contains a message 1=on 0=off
+max_friends 	30		//How many entries allowed in friend list NOT HIGHER THAN 99!!
+
+//END OF DEFS
+
+[function private]
+if (<tag0.private>)
+	tag.private=
+	Sysmessage @,,1 Privacy Disabled
+else
+	tag.private=1
+	sysmessage @,,1 Privacy Enabled
+	sysmessage @,,1 You will not be able to send or receive PM's while Privacy is Enabled
+endif
+
+[function inbox]
+src.dialog d_inbox
+
+[function online]
+ctag.list_numplayers=
+ctag.list_page=1
+local.uid=<uid>
+for x 0 <eval <serv.clients> +-1>
+	if (<serv.client.<local.x>>)
+		if !(<serv.client.<local.x>.tag0.private>)
+			if !(<def0.list_staff>)
+				if (<serv.client.<local.x>.account.plevel> <= <account.plevel>)
+					ctag0.list_numplayers += 1
+					ctag.list_p<dctag0.list_numplayers>=<serv.client.<local.x>.uid>
+				endif
+			else
+				if !(<serv.client.<local.x>.flags>&statf_insubstantial)
+					ctag0.list_numplayers += 1
+					ctag.list_p<dctag0.list_numplayers>=<serv.client.<local.x>.uid>
+				endif
+			endif
+		endif
+	endif
+endfor
+ctag.list_numpages=<eval (((<ctag0.list_numplayers>-1) / 10) + 1)> // 10 players per page
+dialogclose d_spherelist
+trysrc <uid> dialog d_spherelist
+
+
+[function list_getplayers_list]
+// Function I used to list page system
+for x 1 50
+	ctag.list_p<dlocal.x>=1
+end
+ctag.list_numplayers=50
+
+//Online list gump
+[dialog d_spherelist]
+100,100
+nomove
+
+page 0 // Basic layout
+gumppictiled 0 0 410 340 0a40
+checkertrans 1 1 408 338
+dtext 180 20 <def.font_general> <serv.servname>  
+dtext 120 55 <def.font_general>  Listed Clients:  <dctag0.list_numplayers> / <serv.clients>
+
+page 1 // Player data
+dtext 30 80 <def.font_general> Msg
+dtext 75 80 <def.font_general> Character Name
+dtext 300 80 <def.font_general> Guild
+for x 1 <ctag0.list_numplayers>
+	if (<dlocal.x> > <eval (<ctag0.list_page> - 1) * 10>) && (<dlocal.x> < <eval (<ctag0.list_page> * 10) + 1>)
+		if (<uid.<ctag0.list_p<dlocal.x>>.ischar>)
+			if (<uid.<ctag0.list_p<dlocal.x>>.isonline>)
+				if (<uid.<ctag0.list_p<dlocal.x>>.notogetflag <uid>>==1)
+					local.hue=<def.font_good>
+				elseif (<uid.<ctag0.list_p<dlocal.x>>.notogetflag <uid>>==2)
+					local.hue=<def.font_guild>
+				elseif (<uid.<ctag0.list_p<dlocal.x>>.notogetflag <uid>>==5)
+					local.hue=<def.font_waring>
+				elseif (<uid.<ctag0.list_p<dlocal.x>>.notogetflag <uid>>==6)
+					local.hue=<def.font_evil>
+				else
+					local.hue=<def.font_other>
+				endif
+				if (<ctag0.list_p<dlocal.x>>==<uid>) 
+					dtext 75 <eval 100 +<local.y>> <def.font_general> <qval <uid.<ctag0.list_p<dlocal.x>>.findid.i_rune_incognito> ? <uid.<ctag0.list_p<dlocal.x>>.findid.i_rune_incognito.name> : <uid.<ctag0.list_p<dlocal.x>>.name>>
+					if <uid.<ctag0.list_p<dlocal.x>>.guild>>
+					dtext 300 <eval 100 +<local.y>> <def.font_general> <qval <uid.<ctag0.list_p<dlocal.x>>.findid.i_rune_incognito> ? <uid.<ctag0.list_p<dlocal.x>>.findid.i_rune_incognito.GUILD.abbrev> : [<uid.<ctag0.list_p<dlocal.x>>.GUILD.abbrev>>]
+					endif
+				else
+					if (<uid.<ctag0.list_p<dlocal.x>>.account.plevel> > <account.plevel>)
+						if !<def.msg_staff>
+							dtext 75 <eval 100 +<local.y>> <local.hue> <qval <uid.<ctag0.list_p<dlocal.x>>.findid.i_rune_incognito> ? <uid.<ctag0.list_p<dlocal.x>>.findid.i_rune_incognito.name> : <uid.<ctag0.list_p<dlocal.x>>.name>>
+							if <uid.<ctag0.list_p<dlocal.x>>.guild>>
+								dtext 300 <eval 100 +<local.y>> <def.font_general> <qval <uid.<ctag0.list_p<dlocal.x>>.findid.i_rune_incognito> ? <uid.<ctag0.list_p<dlocal.x>>.findid.i_rune_incognito.GUILD.abbrev> : [<uid.<ctag0.list_p<dlocal.x>>.GUILD.abbrev>>]
+							endif
+						else
+							button 30 <eval 100 +<local.y>> 4011 4013 1 0 <eval (1000 + <local.x>)>
+							dtext 75 <eval 100 +<local.y>> <local.hue> <qval <uid.<ctag0.list_p<dlocal.x>>.findid.i_rune_incognito> ? <uid.<ctag0.list_p<dlocal.x>>.findid.i_rune_incognito.name> : <uid.<ctag0.list_p<dlocal.x>>.name>>
+							if <uid.<ctag0.list_p<dlocal.x>>.guild>>
+								dtext 300 <eval 100 +<local.y>> <def.font_general> <qval <uid.<ctag0.list_p<dlocal.x>>.findid.i_rune_incognito> ? <uid.<ctag0.list_p<dlocal.x>>.findid.i_rune_incognito.GUILD.abbrev> : [<uid.<ctag0.list_p<dlocal.x>>.GUILD.abbrev>>]
+							endif
+						endif
+					else
+						button 30 <eval 100 +<local.y>> 4011 4013 1 0 <eval (1000 + <local.x>)>
+						dtext 75 <eval 100 +<local.y>> <local.hue> <qval <uid.<ctag0.list_p<dlocal.x>>.findid.i_rune_incognito> ? <uid.<ctag0.list_p<dlocal.x>>.findid.i_rune_incognito.name> : <uid.<ctag0.list_p<dlocal.x>>.name>>
+						if <uid.<ctag0.list_p<dlocal.x>>.guild>>
+							dtext 300 <eval 100 +<local.y>> <def.font_general> <qval <uid.<ctag0.list_p<dlocal.x>>.findid.i_rune_incognito> ? <uid.<ctag0.list_p<dlocal.x>>.findid.i_rune_incognito.GUILD.abbrev> : [<uid.<ctag0.list_p<dlocal.x>>.GUILD.abbrev>>]
+						endif
+
+					endif
+				endif
+				local.y += 20
+			endif
+		endif
+	endif
+endfor
+if (<ctag0.list_page> > 1)
+	// Back button
+	button 28 315 4014 4015 1 0 1
+endif
+if (<ctag0.list_page> < <ctag0.list_numpages>)
+	// Forward button
+	button 325 315 4005 4006 1 0 2
+endif
+dtext 150 315 1152 Page <dctag0.list_page> / <dctag0.list_numpages>
+
+[dialog d_spherelist BUTTON]
+on=1 // Back button
+ctag.list_page -= 1
+if (<dctag0.list_page> < 1)
+	// Bad! And shouldnt happen
+	sysmessage Error: list_page value went too low, please report (<dctag0.list_page> / <dctag0.list_numpages>)
+	ctag.list_page=1
+endif
+dialog d_spherelist
+
+on=2 // Forward button
+ctag.list_page += 1
+if (<dctag0.list_page> > <dctag0.list_numpages>)
+	// Bad! Should also not happen
+	sysmessage Error: list_page value went too high, please report (<dctag0.list_page> / <dctag0.list_numpages>)
+	ctag.list_page=<ctag0.list_numpages>
+endif
+dialog d_spherelist
+
+on=1001,65535 // Player buttons
+ctag.receiver=<ctag0.list_p<eval <argn> - 1000>>
+trysrc <uid> uid.<ctag0.list_p<eval <argn> - 1000>>.dialog d_playermsg, 2
+
+
+//msg gump
+[dialog d_playermsg]
+100,100
+//noclose
+page 0
+gumppictiled 0 0 410 340 0a40
+checkertrans 1 1 408 338
+dtext 50 30 <def.font_general> Message for <uid.<src.ctag0.receiver>.name>
+dtextentry 38 90 300 300 <def.font_general> 0
+button 35 280 4005 4006 1 0 1
+dtext 70 280 <def.font_general> Send
+
+[dialog d_playermsg button] 
+on=0
+src.ctag0.receiver=
+if <def.perisitent_notification>
+	if <LIST.<src.account>_message.COUNT>
+		src.dialog d_pm_notify
+	endif
+endif
+return 1
+
+on=1 
+local.recipient = <uid.<src.ctag0.receiver>.account>
+if (<src.tag0.private>)
+	src.sysmessage @,,1 "Private" mode is Enabled, you are not allowed to send messages. Use .private to Disable.
+	return 1
+endif
+if (<uid.<src.ctag0.receiver>.tag0.private>)
+	src.sysmessage @,,1 <uid.<src.ctag0.receiver>.name> has Privacy Enabled and cannot receive messages at this time.
+	return 1
+endif
+if !(<isempty <argtxt[0]>>)
+	if (<eval <list.<local.recipient>_message.COUNT>> < 1000)
+		src.sysmessage @,,1 Message Sent!	
+		if !(<src.isgm>)
+			list.<local.recipient>_message.add <argtxt[0]> 
+			list.<local.recipient>_sender.add <src.uid>
+			list.<local.recipient>_time.add <serv.rtime.format %c>
+		else
+			if <list.<local.recipient>_message.COUNT>
+				list.<local.recipient>_message.0.insert <argtxt[0]> 
+				list.<local.recipient>_sender.0.insert <src.uid>
+				list.<local.recipient>_time.0.insert <serv.rtime.format %c>
+			else
+				list.<local.recipient>_message.add <argtxt[0]> 
+				list.<local.recipient>_sender.add <src.uid>
+				list.<local.recipient>_time.add <serv.rtime.format %c>
+			endif
+		endif
+
+		if !(<isonline>)
+			src.sysmessage @,,1 <uid.<src.ctag0.receiver>.name> is offline, they will receive the message when they next log on.
+		endif
+		trysrc <src.ctag0.receiver> TRIGGER @MsgPending
+	else
+		src.sysmessage @,,1 Player inbox full.  Message not sent!
+	endif
+else
+	src.sysmessage @,,1 You didn't enter any text, right click to cancel sending a message.
+	dialog d_playermsg
+	return 1
+endif
+src.ctag.receiver=
+if <def.perisitent_notification>
+	if <LIST.<src.account>_message.COUNT>
+		src.dialog d_pm_notify
+	endif
+endif
+
+[DIALOG d_pm_notify]
+50,50
+//SRC.SOUND 0234
+NOCLOSE
+PAGE 0
+DTEXT 21 0 <def.font_general> You've Got
+button 20 20 01e 01e 1 0 1
+DTEXT 38 41 <def.font_general> Mail
+
+[DIALOG d_pm_notify BUTTON]
+ON=1
+SRC.DIALOG d_inbox
+
+
+//inbox
+[DIALOG d_inbox]
+
+30,30
+
+page 0
+gumppictiled 0 0 410 448 0a40
+checkertrans 1 1 408 446
+dtext 180 12 <def.font_general> Message Inbox
+if <LIST.<account>_message.COUNT>
+page 1
+    for 0 <eval (<LIST.<account>_message.COUNT> - 1)>
+        if (<local._for> >= 5) && (<eval (<local._for> % 5)> == 0)
+        	button 368 12 0fa5 0fa7 0 <eval ((<local._for> / 5) + 1)>
+        	dtext 305 12 <def.font_general> Next Page
+        	page <eval ((<local._for> / 5) + 1)>
+        	button 12 12 0fae 0fb0 0 <eval (<local._for> / 5))>
+        	dtext 42 12 <def.font_general> Previous Page
+        endif
+    	dhtmlgump 12 <eval (44 + ((<local._for> % 5) * 80)> 350 70 1 1 <QVAL (<uid.<LIST.<src.account>_sender.<dlocal._for>>.account.plevel> < 2)? [<uid.<LIST.<account>_sender.<dlocal._for>>.name>]:<def.BFONT_LRED>[<def.admin_plevel_<uid.<LIST.<src.account>_sender.<dlocal._for>>.account.plevel>> <uid.<LIST.<account>_sender.<dlocal._for>>.name>]> <list.<account>_time.<dlocal._for>> <LIST.<account>_message.<dlocal._for>> 
+        if (<uid.<LIST.<src.account>_sender.<dlocal._for>>.account.plevel> < 2)
+        		button 370 <eval ((24 + ((<local._for> % 5) * 80)) + 24)> 0fa5 0fa7 1 0 <eval (<local._for> + 1)> //reply
+			button 370 <eval ((44 + ((<local._for> % 5) * 80)) + 44)> 4017 4018 1 0 <eval (<local._for> + 1001)> //delete
+	else		
+		if !<def.gm_one_way>
+        		button 370 <eval ((24 + ((<local._for> % 5) * 80)) + 24)> 0fa5 0fa7 1 0 <eval (<local._for> + 1)> //reply
+			button 370 <eval ((44 + ((<local._for> % 5) * 80)) + 44)> 4017 4018 1 0 <eval (<local._for> + 1001)> //delete
+		else
+			button 370 <eval ((44 + ((<local._for> % 5) * 80)) + 44)> 4017 4018 1 0 <eval (<local._for> + 1001)> //delete	
+		endif			
+        endif
+    endfor
+else
+dtext 12 44 2100 You have no messages.
+endif
+
+[DIALOG d_inbox BUTTON]
+ON=0
+if <def.perisitent_notification>
+	if <LIST.<src.account>_message.COUNT>
+		src.dialog d_pm_notify
+	endif
+endif
+
+ON=1,999 //reply
+if (<uid.<LIST.<src.account>_sender.<eval (<argn>-1)>>>==0)
+	list.<src.account>_message.<eval (<argn>-1)>.remove 
+	list.<src.account>_sender.<eval (<argn>-1)>.remove 
+	list.<src.account>_time.<eval (<argn>-1)>.remove
+	src.sysmessage @,,1 This player no longer exists.
+	return 1
+else
+	src.ctag0.receiver=<uid.<list.<src.account>_sender.<eval (<argn>-1)>>>
+	src.dialog d_playermsg
+endif
+if <def.perisitent_notification>
+	if <LIST.<src.account>_message.COUNT>
+		src.dialog d_pm_notify
+	endif
+endif
+
+if (<uid.<src.ctag0.receiver>.account.plevel> > 1) || <def.reply_delete>
+	list.<src.account>_message.<eval (<argn>-1)>.remove 
+	list.<src.account>_sender.<eval (<argn>-1)>.remove 
+	list.<src.account>_time.<eval (<argn>-1)>.remove 
+endif
+
+ON=1001,2001 //delete
+list.<src.account>_message.<eval (<argn>-1001)>.remove 
+list.<src.account>_sender.<eval (<argn>-1001)>.remove 
+list.<src.account>_time.<eval (<argn>-1001)>.remove 
+if <LIST.<src.account>_message.COUNT>
+		src.dialog d_inbox
+endif
+
+
+///////////////FRIENDLIST PLUGIN
+
+[function friends]
+src.dialog d_friends
+
+[DIALOG d_friends]
+100,100
+nomove
+
+page 0 // Basic layout
+gumppictiled 0 0 410 340 0a40
+checkertrans 1 1 408 338
+dtext 180 20 <def.font_general> <serv.servname>  
+dtext 120 55 <def.font_general>  Friend List:  <LIST.<account>_friends.COUNT> / <ddef.max_friends>
+
+page 1 // Player data
+dtext 30 80 <def.font_general> Msg
+dtext 75 80 <def.font_general> Character Name
+dtext 350 80 <def.font_general> Rmv
+if <LIST.<account>_friends.COUNT>
+page 1
+    for 0 <eval (<LIST.<account>_friends.COUNT> - 1)>
+        if (<local._for> >= 5) && (<eval (<local._for> % 5)> == 0)
+        	button 368 12 0fa5 0fa7 0 <eval ((<local._for> / 5) + 1)>
+        	dtext 305 12 <def.font_general> Next Page
+        	page <eval ((<local._for> / 5) + 1)>
+        	button 12 12 0fae 0fb0 0 <eval (<local._for> / 5))>
+        	dtext 42 12 <def.font_general> Previous Page
+        endif
+    	dtext 75 <eval 100 +<local.y>> <def.font_general> <uid.<LIST.<account>_friends.<dlocal._for>>.name> 
+       	button 30 <eval 100 +<local.y>> 0fa5 0fa7 1 0 <eval (<local._for> + 1)> //msg
+	button 350 <eval 100 +<local.y>> 4017 4018 1 0 <eval (<local._for> + 101)> //rmv friend
+	local.y += 20
+    endfor
+else
+dtext 80 150 2100 You have no friends yet.
+endif
+
+[DIALOG d_friends BUTTON]
+ON=1,99 //msg
+src.ctag0.receiver=<uid.<list.<src.account>_friends.<eval (<argn>-1)>>>
+src.dialog d_playermsg
+
+ON=101,199 //remove
+local.defriend=<uid.<list.<src.account>_friends.<eval (<argn>-101)>>>
+LIST.<src.account>_friends.<eval (<argn>-101)>.REMOVE
+LIST.<uid.<local.defriend>.account>_friends.<LIST.<uid.<local.defriend>.account>_friends.FINDELEM <src.uid>>.REMOVE
+src.sysmessage @,,1 you have unfriended <uid.<local.defriend>.name>
+src.sysmessage @,,1 offline message to this player will no longer be available.
+src.dialog d_friends
+
+[function friend]
+targetf f_friend <src.uid>
+
+[FUNCTION f_friend]
+local.request=<args>
+if (<argo.uid>==<local.request>)
+	src.sysmessage @,,1 Are you that lonely that you need to friend yourself?
+	return 1
+else 
+	if (<argo.ctag0.friend_request>==<local.request>)
+		src.sysmessage @,,1 You already have a friend request pending with this person.
+		return 1
+	endif
+endif
+if (<eval <LIST.<src.account>_friends.COUNT>-1> < <ddef.max_friends>)
+src.say <LIST.<src.account>_friends.FINDELEM <argo.uid>>
+	if (<LIST.<src.account>_friends.FINDELEM <argo.uid>>==-1)
+		src.sysmessage @,,1 Friend request sent!
+		argo.ctag0.friend_request <local.request>
+		trysrc <argo.uid> dialog d_friend_request
+		return 1
+	else
+		
+		src.sysmessage @,,1 <argo.name> is already on your friends list.
+		return 1
+
+	endif
+else
+	src.sysmessage @,,1 Your friends list is full
+	src.sysmessage @,,1 You must delete someone before you can add a new one
+	return 1
+endif
+
+[DIALOG d_friend_request]
+100,100
+noclose
+page 0 // Basic layout
+gumppictiled 0 0 310 180 0a40
+checkertrans 1 1 308 178
+dtext 130 20 <def.font_general> Friend Request 
+dtext 60 50 <def.font_general> You have a friend request from 
+dtext 140 80 <def.font_general> <uid.<src.ctag0.friend_request>.name>
+button 80 130 0fa5 0fa5 1 0 1 
+dtext 110 130 <def.font_general> Accept
+button 180 130 4017 4018 1 0 0 
+dtext 210 130 <def.font_general> decline
+
+[DIALOG d_friend_request BUTTON]
+ON=0
+src.ctag0.friend_request=
+
+ON=1
+if (<eval <LIST.<account>_friends.COUNT>-1> < <ddef.max_friends>)
+	LIST.<src.account>_friends.add <src.ctag0.friend_request>
+	list.<uid.<src.ctag0.friend_request>.account>_friends.add <src.uid>
+	src.sysmessage @,,1 You have added <uid.<src.ctag0.friend_request>.name> as a friend.
+	src.sysmessage @,,1 You will now be able to send messages to this player even if they are offline.
+	trysrc <uid.<src.ctag0.friend_request>.uid> sysmessage @,,1 Your friend request was accepted.
+	trysrc <uid.<src.ctag0.friend_request>.uid> sysmessage @,,1 You will now be able to send messages to this player even if they are offline.	
+else
+	src.sysmessage @,,1 your friend list is full 
+	src.sysmessage @,,1 you must delete someone before you can add a new one.
+	return 1
+endif
+
+[EOF]

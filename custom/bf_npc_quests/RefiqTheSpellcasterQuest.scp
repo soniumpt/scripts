@@ -1,0 +1,182 @@
+// This is my Refiq the Spellcaster Quest.
+// 'tis made by Magar for The UO Project.
+// Email vdijk@home.nl if there are any problems.
+
+// Feb 13 '05 - Fixed a bug that allowed people to GM Magery on this quest - Wren
+
+[CHARDEF c_h_Rafiq]
+   Name=Rafiq the Spellcaster
+   ID=c_man
+   DAM={10,15}
+   DESIRES=i_gold,e_notoriety
+   AVERSIONS=t_TRAP,t_eerie_stuff
+   TSPEECH=spk_quest_Rafiq
+   
+
+ON=@NPCSeeNewPlayer
+   IF (<SRC.SKILLTOTAL> < 2000.0)
+      IF ( 0<SRC.TAG.NPC_QUEST_START> & NPCQ_Refiq )
+         SAY <SRC.SEX Milord/Milady>, have you retrieved my reagents?
+      ELSE
+         SAY <SRC.SEX Milord/Milady> please come here, I could require some assistance!
+      ENDIF
+   ELSE
+      SAY Greetings <SRC.SEX milord/milady>!
+   END IF
+
+TEVENTS=e_npc_quest
+ON=@Create
+   NPC=brain_human
+   COLOR=colors_skin
+   STR={66 80}
+   DEX={35 55}
+   INT={80 120}
+
+   Magery=100.0
+
+   ITEMNEWBIE=random_male_hair
+   COLOR=colors_hair
+   ITEMNEWBIE=random_facial_hair
+   COLOR=match_hair
+   ITEMNEWBIE=i_robe
+   COLOR=07a0
+   ITEM=random_coin_purse
+   ITEM=i_staff_black
+
+ON=@NPCRestock
+   ITEMNEWBIE=i_robe
+   COLOR=07a0
+   ITEMNEWBIE=random_shoes
+   COLOR=07a0
+   ITEMNEWBIE=i_hat_wizards
+   COLOR=07a0
+   ITEM=i_staff_black
+   ITEM=random_coin_purse
+
+CATEGORY=Imperial uo
+SUBSECTION=NPC Quest
+DESCRIPTION=Rafiq
+
+
+[SPEECH spk_quest_rafiq]
+ON=*help*
+ON=*quest*
+ON=*hello*
+ON=*hi*
+   IF ( 0<SRC.TAG.NPC_QUEST_DONE> & NPCQ_Refiq )
+      SAY Thanks again <SRC.SEX milord/milady> for your assistance with my spell.
+   ELSEIF (<SRC.SKILLTOTAL> >= 3000.0)
+      SAY I cannot bother one such as yourself with my small problems.	
+   ELSEIF ( 0<SRC.TAG.NPC_QUEST_START> & NPCQ_Refiq )
+      SAY You promised to help me <SRC.SEX milord/milady>. 
+      SAY Please hurry or I'll fail my spell. I need 5 Garlic, 10 spidersilk and a pumice.
+   ELSE
+      SAY I'm casting a spell but I need some more reagents. 
+      SAY Please get me 5 Garlic, 10 spidersilk and a pumice.
+      SAY You wil be well rewarded. Please say you agree.
+   ENDIF
+   RETURN 1
+		
+ON=*agree*
+ON=*accept*
+ON=*yes*
+   IF ( 0<SRC.TAG.NPC_QUEST_DONE> & NPCQ_Refiq )
+      SAY You already helped me with my spell. Many thanks <SRC.SEX milord/milady>.   
+   ELSEIF (<SRC.SKILLTOTAL> >= 300.0)
+      SAY I cannot bother one such as yourself with my small problems.
+   ELSEIF ( 0<SRC.TAG.NPC_QUEST_START> & NPCQ_Refiq )
+      SAY You already promised to help <SRC.SEX milord/milady>. 
+      SAY I need 5 Garlic, 10 spidersilk and a pumice.
+   ELSE
+      SAY Thank you <SRC.SEX milord/milady>! 
+      SAY I realy need those reagents as soon as possible so please hurry!
+      SRC.TAG.NPC_QUEST_START = <eval ( 0<SRC.TAG.NPC_QUEST_START> | NPCQ_Refiq )>
+   ENDIF
+   RETURN 1
+
+ON=*reward*
+ON=*deliver*
+ON=*prize*
+ON=*reagents*
+ON=*regs*
+   IF ( 0<SRC.TAG.NPC_QUEST_DONE> & NPCQ_Refiq )
+      SAY You already helped me with my spell. Many thanks <SRC.SEX milord/milady>.
+   ELSEIF !( 0<SRC.TAG.NPC_QUEST_START> & NPCQ_Refiq )
+      SAY I haven't even told you about my problem yet..
+   ELSEIF (( 0<SRC.TAG.NPC_QUEST_START> & NPCQ_Refiq ) && <SRC.RESTEST 1 i_reag_pumice> && <SRC.RESTEST 5 i_reag_garlic> && <SRC.RESTEST 10 i_reag_spider_silk>)
+      SAY Thank you for getting these reagents <SRC.SEX milord/milady>.
+      IF (<SRC.Magery> <300)
+         SAY For your reward you can choose. 2000 Gold or a lesson in Magery.
+         SAY If you want gold say *gold*, if you want a lesson say *Magery*
+      ELSE
+         SAY As a reward I will give you 2000 gold.      
+         SAY Say *gold* to retrieve your reward.
+      ENDIF
+   ELSE 
+      SAY You do not have all my reagents with you. 
+      SAY Please get all the reagents as soon as possible!   
+      SAY I need 5 Garlic, 10 spidersilk and a pumice!
+   ENDIF
+   RETURN 1
+		
+ON=*Magery*
+   IF ( 0<SRC.TAG.NPC_QUEST_DONE> & NPCQ_Refiq )
+      SAY You have already been rewarded for this task, <SRC.SEX milord/milady>.
+   ELSEIF !( 0<SRC.TAG.NPC_QUEST_START> & NPCQ_Refiq )
+      SAY I haven't even told you about my problem yet..
+   ELSEIF (( 0<SRC.TAG.NPC_QUEST_START> & NPCQ_Refiq ) && <SRC.RESTEST 1 i_reag_pumice> && <SRC.RESTEST 5 i_reag_garlic> && <SRC.RESTEST 10 i_reag_spider_silk>)
+      IF (<SRC.Magery> <300)
+         SRC.CONSUME 5 i_reag_garlic
+         SRC.CONSUME 1 i_reag_pumice
+         SRC.CONSUME 10 i_reag_spider_silk
+      
+         Say So you want a lesson in Magery for your reward.
+       
+         SRC.Magery = <SRC.MAGERY> +100
+         SRC.newitem =i_scroll_teleport
+         SRC.ACT.BOUNCE
+         SRC.newitem =i_scroll_lightning
+         SRC.ACT.BOUNCE
+         SRC.newitem =i_scroll_cunning
+         SRC.ACT.BOUNCE
+         SRC.newitem =i_scroll_flamestrike
+         SRC.ACT.BOUNCE
+      
+         SRC.TAG.NPC_QUEST_START = <eval ( 0<SRC.TAG.NPC_QUEST_START> &~ NPCQ_Refiq )>
+         SRC.TAG.NPC_QUEST_DONE = <eval ( 0<SRC.TAG.NPC_QUEST_DONE> | NPCQ_Refiq )>      
+      ENDIF
+   ELSE 
+      SAY You do not have all my reagents with you.
+      SAY I need 5 Garlic, 10 spidersilk and a pumice!
+   ENDIF
+   RETURN 1
+
+ON=*gold*
+   IF ( 0<SRC.TAG.NPC_QUEST_DONE> & NPCQ_Refiq )
+      SAY You have already been rewarded for this task, <SRC.SEX milord/milady>.
+   ELSEIF !( 0<SRC.TAG.NPC_QUEST_START> & NPCQ_Refiq )
+      SAY I haven't even told you about my problem yet..
+   ELSEIF (( 0<SRC.TAG.NPC_QUEST_START> & NPCQ_Refiq ) && <SRC.RESTEST 1 i_reag_pumice> && <SRC.RESTEST 5 i_reag_garlic> && <SRC.RESTEST 10 i_reag_spider_silk>)
+      SRC.CONSUME 5 i_reag_garlic
+      SRC.CONSUME 1 i_reag_pumice
+      SRC.CONSUME 10 i_reag_spider_silk
+      Say As a reward I will give you 2000 gold.      
+      SRC.TAG.NPC_QUEST_START = <eval ( 0<SRC.TAG.NPC_QUEST_START> &~ NPCQ_Refiq )>
+      SRC.TAG.NPC_QUEST_DONE = <eval ( 0<SRC.TAG.NPC_QUEST_DONE> | NPCQ_Refiq )>      
+      SRC.NEWITEM i_gold,2000
+      SRC.ACT.BOUNCE
+   ELSE 
+      SAY You do not have all my reagents with you.
+      SAY I need 5 Garlic, 10 spidersilk and a pumice!
+   ENDIF
+   RETURN 1
+	
+ON=*where*
+   IF ( 0<SRC.TAG.NPC_QUEST_START> & NPCQ_Refiq )
+      SAY There is a magery shop around here. You can buy the reagents there. 
+      SAY All you have to do is follow the signs.  I need 5 Garlic, 10 spidersilk and a pumice!
+      SAY Please hurry!
+      RETURN 1
+   ENDIF
+ 
+ [EOF]

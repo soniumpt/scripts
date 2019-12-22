@@ -1,0 +1,286 @@
+[ITEMDEF i_deed_wall_log]
+ID	= i_deed
+NAME	= deed to a log wall
+TYPE	= t_struct_deed
+TDATA1	= i_struct_wall_log
+TDATA2	= 0145
+
+
+
+[ITEMDEF i_struct_wall_log]
+ID		= 090
+TYPE		= t_struct_built
+RESOURCES	= 100 i_log_pine
+DUPELIST	= 091,092,093,096,097
+VALUE		= 200
+TDATA1		= 100	// % worth of tax
+TDATA2		= 150	// % worth of man
+
+ON = @ScrapResources
+   SRC.NEWITEM i_log_pine
+   SRC.ACT.AMOUNT { 60 80 }
+   SRC.ACT.BOUNCE
+   return 1
+
+
+//
+// SYSTEM
+//
+[ITEMDEF i_construction_license]
+ID	= i_spellbook
+NAME	= construction license
+
+
+ON = @Create
+  TYPE	= t_eq_script
+  COLOR	= 0350
+
+ON = @Click
+   if ( <LINK> == 04fffffff )
+      return 0
+   endif
+   MESSAGE construction license (<LINK.NAME>)
+   return 1
+
+ON = @DClick
+   if ( <TOPOBJ.UID> != <SRC.UID> )
+      SRC.SYSMESSAGE You must have it with you.
+      return 1
+   endif
+
+   if ( <LINK> == 04fffffff )
+      return 1
+   endif
+
+   if !( <LINK.SRCHOUSE_friend> )
+      src.sysmessage You must be trusted to the house to do that.
+      return 1
+   endif
+
+   if !( <LINK.SRCHOUSEAREA> )
+      return 1
+   endif
+
+   SRC.TAG.CONSTRUCTION_LICENSE	= 1
+   LINK.LINK.USE
+   SRC.TAG.CONSTRUCTION_LICENSE	=
+   return 1
+
+ON = @Targon_Item
+   if ( (<SRC.TARG.TYPE> != t_sign_gump) || (<SRC.TARG.LINK.TYPE> != t_multi) )
+      SRC.SYSMESSAGE You must target a house's sign.
+      return 1
+   endif
+
+   if !( <SRC.TARG.LINK.SRCHOUSE_friend> )
+      src.sysmessage You must be trusted to the house to do that.
+      return 1
+   endif
+
+   LINK	= <SRC.TARG.LINK.UID>
+   SRC.SYSMESSAGE Construction license set to <LINK.NAME>.
+   return 1
+
+
+
+[ITEMDEF i_multi_struct]
+ID		= i_gold
+NAME		= construction site
+TYPE		= t_multi
+VALUE		= 25000
+MULTIREGION	= 0, 0, 1, 1
+COMPONENT	= 085f, 0, 0, 0
+COMPONENT	= 0bd1, 1, 1, 0
+
+ON = @Init
+   if ( 0<TAG.MIN.X> != 0 )
+      return 1
+   endif
+
+   TAG.MIN.X	= 10
+   TAG.MAX.X	= 10
+   TAG.MIN.Y	= 10
+   TAG.MAX.Y	= 10
+
+
+[ITEMDEF i_deed_construction_site]
+ID	= i_deed
+TYPE	= t_deed
+ON = @Create
+   MORE1	= i_multi_struct
+
+
+[TYPEDEF t_struct_built]
+ON = @Scrap
+   TRIGGER @ScrapResources
+   SRC.SYSMESSAGE You scrap the <NAME>.
+   LINK.TAG.NUM.STRUCTS	= <eval (<LINK.TAG.NUM.STRUCTS> - 1)>
+   LINK.TAG.TAX.STRUCTS	= <eval (<SRC.ACT.LINK.TAG.TAX.STRUCTS>-<TDATA1>)>
+   LINK.TAG.MAN.STRUCTS	= <eval (<SRC.ACT.LINK.TAG.MAN.STRUCTS>-<TDATA2>)>
+   REMOVE
+   return 1
+
+ON = @Redeed
+   if !( <SRC.ISGM> )
+     src.consumegold_everywhere <eval (<VALUE>/10)>
+     if ( <var.consumegold> > 0 )
+        src.sysmessage You are <eval <var.consumegold>>gp short in your account.
+        return 0
+     endif
+   endif
+
+   SRC.SYSMESSAGE You redeed the <NAME> for <eval (<VALUE>/10)>gp.
+   LINK.TAG.NUM.STRUCTS	= <eval (<LINK.TAG.NUM.STRUCTS> - 1)>
+   LINK.TAG.TAX.STRUCTS	= <eval (<SRC.ACT.LINK.TAG.TAX.STRUCTS>-<TDATA1>)>
+   LINK.TAG.MAN.STRUCTS	= <eval (<SRC.ACT.LINK.TAG.MAN.STRUCTS>-<TDATA2>)>
+   SRC.NEWITEM i_deed
+   SRC.ACT.MORE1	= <BASEID>
+   SRC.ACT.BOUNCE
+   REMOVE
+   return 1
+
+
+[MENU m_struct_confirm]
+Really place structure here?
+
+ON = 0 Yes
+   SRC.ACT		= <SRC.TAG.STRUCTURE>
+   SRC.ANIM		= 31
+   SRC.ACT.P		= <SRC.P>
+   SRC.ACT.Z		= (<SRC.ACT.z> - 12)
+   SRC.ACT.DISPID	= <SRC.ACT.TDATA2>
+   SRC.ACT.LINK		= <LINK.UID>
+   SRC.ACT.attr		= attr_move_never
+   SRC.ACT.UPDATE
+   SRC.ACT.TIMER	= 2
+   return 1
+
+
+[TYPEDEF t_struct_deed]
+ON = @Click
+   MESSAGE <NAME>
+   MESSAGE (<VALUE> weekly tax)
+   return 1
+
+ON = @DClick
+   if ( <TIMER> != -1 )
+      return 1
+   endif
+
+   if !( <SRC.REGION.UID> & 06000000 )
+      SRC.SYSMESSAGE You must deploy it in the open.
+      return 1
+   endif
+
+   if ( <src.findlayer(1).baseid> == i_construction_license )
+      src.findlayer(1).ADD_STRUCTURE <UID>
+      return 1
+   endif
+
+   TARGET You're not holding a construction license. To which structure should the wall belong to?
+   return 1
+
+ON = @Targon_item
+   if !( <SRC.REGION.UID> & 06000000 )
+      SRC.SYSMESSAGE You must deploy it in the open.
+      return 1
+   endif
+
+   if ( (<SRC.TARG.TYPE> != t_sign_gump) || (<SRC.TARG.LINK.TYPE> != t_multi) )
+      SRC.SYSMESSAGE You must target a house's sign.
+      return 1
+   endif
+
+   SRC.TARG.ADD_STRUCTURE <UID>
+   return 1
+
+ON = @Timer
+   MOREz	= (<MOREz> + 1)
+   Z	= (<Z> + 4)
+   if ( <MOREz> == 1 )
+      TIMER	= 1
+      return 1
+   elseif ( <MOREz> == 2 )
+      TIMER	= 2
+      return 1
+   endif
+
+   SAY *complete*
+   ID	= <TDATA1>
+   LINK.house_init_tags
+   LINK.TAG.NUM.STRUCTS	= <eval (<LINK.TAG.NUM.STRUCTS>+1)>
+   LINK.TAG.TAX.STRUCTS	= <eval (<LINK.TAG.TAX.STRUCTS>+<TDATA1>)>
+   LINK.TAG.MAN.STRUCTS	= <eval (<LINK.TAG.MAN.STRUCTS>+<TDATA2>)>
+   return 1
+
+
+[FUNCTION SRCHOUSEAREA]
+   if ( 0 )
+   elseif ( <BASEID> == i_multi_house_3room )
+      TAG.MIN.X	= 12
+      TAG.MAX.X	= 12
+      TAG.MIN.Y	= 12
+      TAG.MAX.Y	= 12
+   elseif ( <BASEID> == i_multi_shop_blacksmithy_large )
+      TAG.MIN.X	= 10
+      TAG.MAX.X	= 10
+      TAG.MIN.Y	= 10
+      TAG.MAX.Y	= 10
+   elseif ( <BASEID> != i_multi_struct )
+      TAG.MIN.X	=  7
+      TAG.MAX.X	=  7
+      TAG.MIN.Y	=  7
+      TAG.MAX.Y	=  7
+   endif
+   TRIGGER @Init
+
+   VAR.BOUNDS	= ""
+   if ( <SRC.P.X> < (<P.X> - <TAG.MIN.X>) )
+      if ( strcmp( "<VAR.BOUNDS>", "" ) )
+         VAR.BOUNDS	= "<VAR.BOUNDS>, "
+      endif
+      VAR.BOUNDS	= <VAR.BOUNDS><eval ((<P.X> - <TAG.MIN.X>) - <SRC.P.X>)>west
+   endif
+   if ( <SRC.P.X> > (<P.X> + <TAG.MAX.X>) )
+      if ( strcmp( "<VAR.BOUNDS>", "" ) )
+         VAR.BOUNDS	= "<VAR.BOUNDS>, "
+      endif
+      VAR.BOUNDS	= <VAR.BOUNDS><eval (<SRC.P.X> - (<P.X> + <TAG.MAX.X>))>east
+   endif
+   if ( <SRC.P.Y> < (<P.Y> - <TAG.MIN.Y>) )
+      if ( strcmp( "<VAR.BOUNDS>", "" ) )
+         VAR.BOUNDS	= "<VAR.BOUNDS>, "
+      endif
+      VAR.BOUNDS	= <VAR.BOUNDS><eval ((<P.Y> - <TAG.MIN.Y>) - <SRC.P.Y>)>north
+   endif
+   if ( <SRC.P.Y> > (<P.Y> + <TAG.MAX.Y>) )
+      if ( strcmp( "<VAR.BOUNDS>", "" ) )
+         VAR.BOUNDS	= "<VAR.BOUNDS>, "
+      endif
+      VAR.BOUNDS	= <VAR.BOUNDS><eval (<SRC.P.Y> - (<P.Y> + <TAG.MAX.Y>))>south
+   endif
+
+   if ( strcmp( "<VAR.BOUNDS>", "" ) )
+      SRC.SYSMESSAGE This place is outside building boundaries by <VAR.BOUNDS>.
+      return 0
+   endif
+   
+   return 1
+
+
+[FUNCTION ADD_STRUCTURE]
+   if !( <LINK.SRCHOUSEAREA> )
+      return 1
+   endif
+
+   if !( <LINK.SRCHOUSE_friend> )
+      src.sysmessage You must be trusted to the house to do that.
+      return 1
+   endif
+
+   SRC.SYSMESSAGE Placing structure...
+   SRC.TAG.STRUCTURE	= <args>
+   MENU m_struct_confirm
+
+[EOF]
+

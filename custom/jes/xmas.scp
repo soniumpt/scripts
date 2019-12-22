@@ -1,0 +1,727 @@
+// Christmas present script
+// Scripted by Boo and Wren
+// Nov 2004
+
+// Note: BFUO Christmas Gifts are at the bottom appended for
+//       space reasons - Wig
+
+[PLEVEL 2]
+ChristmasControl
+
+[PLEVEL 1]
+Christmas
+
+[FUNCTION ChristmasControl]
+DIALOG GiftControl
+RETURN 1
+
+[FUNCTION Christmas]
+IF (0<VAR.DisableChristmas>=0)
+   DIALOG GiftExchange
+ELSE
+   SYSMESSAGE Christmas command is disabled at the moment.
+ENDIF
+RETURN 1
+
+//best
+[TEMPLATE tm_christmas_1] 
+CONTAINER=i_bag
+ITEM=i_snowman
+ITEM=i_ale_smoked
+ITEM=i_snow_globe_britain
+
+[TEMPLATE tm_christmas_2]
+CONTAINER=i_bag
+ITEM=i_ale_smoked
+ITEM=i_elven_specs
+ITEM=i_snow_globe_brae
+
+[TEMPLATE tm_christmas_3]
+CONTAINER=i_bag
+ITEM=i_ale_smoked
+ITEM=i_snow_globe_bucs_den
+ITEM=i_portrait_1
+
+
+[TEMPLATE tm_christmas_4]
+CONTAINER=i_bag
+ITEM=b_snowball
+ITEM=i_ale_smoked
+ITEM=i_snow_globe_cove
+
+[TEMPLATE tm_christmas_5]
+CONTAINER=i_bag
+ITEM=i_ale_spiced
+ITEM=i_golden_chest
+ITEM=i_snow_globe_hold
+
+[TEMPLATE tm_christmas_6]
+CONTAINER=i_bag
+ITEM=i_rarecards
+ITEM=i_snow_globe_jhelom
+
+[TEMPLATE tm_christmas_7]
+CONTAINER=i_bag
+ITEM=i_ale_spiced
+ITEM=i_crystal_purple
+ITEM=i_mug_pewter
+
+[TEMPLATE tm_christmas_8]
+CONTAINER=i_bag
+ITEM=i_ale_smoked
+ITEM=i_frozen_clock
+
+[TEMPLATE tm_christmas_9]
+CONTAINER=i_bag
+ITEM=i_ale_smoked
+ITEM=i_globe
+
+[TEMPLATE tm_christmas_10]
+CONTAINER=i_bag
+ITEM=i_ale_smoked
+ITEM=i_statue_stone_sm_3
+
+[TEMPLATE tm_christmas_11]
+CONTAINER=i_bag
+ITEM=i_ale_spiced
+ITEM=i_snowflake
+
+[TEMPLATE tm_christmas_12]
+CONTAINER=i_bag
+ITEM=i_ale_smoked
+ITEM=i_trophy_polarbearhead
+
+[TEMPLATE tm_christmas_13]
+CONTAINER=i_bag
+ITEM=i_ale_spiced
+ITEM=i_gloves_leather
+
+[TEMPLATE tm_christmas_14]
+CONTAINER=i_bag
+ITEM=i_ale_smoked
+ITEM=i_shirt_fancy
+ITEM=i_necklace_silver
+
+[CHARDEF c_santa] 
+DEFNAME=c_santa
+NAME=Santa Claus 
+ID=C_MAN 
+CAN=MT_EQUIP|MT_USEHANDS 
+TSPEECH=spk_santa
+TEVENTS=e_Human_Environ 
+
+ON=@Create 
+TITLE=He only comes once a year
+FLAGS=00005 
+STR={41 55} 
+DEX={41 55} 
+INT={41 55} 
+
+FAME=5000 
+KARMA=5000 
+
+NPC=brain_human 
+
+ON=@NPCRestock 
+ITEMNEWBIE=i_boots_calf
+ITEMNEWBIE=i_pants_long
+COLOR=0026 
+ITEMNEWBIE=i_tunic 
+COLOR=0026 
+ITEMNEWBIE=i_gloves_leather 
+COLOR=0026 
+ITEMNEWBIE=i_beard_long
+COLOR=00481 
+ITEMNEWBIE=i_hair_long
+COLOR=00481 
+
+
+ON=@DCLICK 
+emote giggle
+say That tickles!
+
+ON=@GETHIT 
+FLAGS=00005 
+RETURN 1 
+
+ON=@HIT 
+FLAGS=00005 
+RETURN 1 
+
+ON=@DAMAGE 
+FLAGS=00005 
+RETURN 1 
+
+CATEGORY=Imperial uo 
+SUBSECTION=Xmas 
+DESCRIPTION=Town Cryer 
+
+ON=@NPCSeeNewPlayer 
+SAY Ho! Ho! Ho! Merry Christmas!
+
+[SPEECH spk_santa]
+on=*present*
+  Say If you ask for it, i might give you a gift!
+ 
+ON=*gift*
+   if ( <SRC.ISDEAD> )
+      Say I cannot give you a gift if you are dead!
+      return 1
+   endif
+if (<src.ACCOUNT.tag.christmas06> = 1)
+	say Dont be greedy!
+	return 1
+endif
+IF (<SRC.ACCOUNT.TOTALCONNECTTIME> < 5000)
+	say Sorry, you are not old enough to get presents!
+	return 1
+endif
+src.ACCOUNT.tag.christmas06 = 1
+local.randchristmaschance = RAND(100)
+
+if ( <local.randchristmaschance> <= 2 )
+	SERV.NEWITEM i_snowman_decorative
+	NEW.NAME= Imperial UO Christmas 2015 Snowman
+	NEW.BOUNCE
+elseif ( <local.randchristmaschance> <= 5 )
+	SERV.NEWITEM i_wreath
+	NEW.NAME= Imperial UO Christmas 2015 Snowman
+	NEW.BOUNCE
+elseif ( <local.randchristmaschance> <= 10 )
+	SERV.NEWITEM i_deed_reindeer
+	NEW.BOUNCE
+elseif ( <local.randchristmaschance> <= 15 )
+	SERV.NEWITEM i_snowflake
+	NEW.NAME= Imperial UO Christmas 2015 Snowflake
+	NEW.BOUNCE
+elseif ( <local.randchristmaschance> <= 20 )
+	SERV.NEWITEM i_snowflake_1
+	NEW.NAME= Imperial UO Christmas 2015 Snowflake
+	NEW.BOUNCE
+elseif ( <local.randchristmaschance> <= 25 )
+	SERV.NEWITEM i_candle_holiday
+	NEW.NAME= Imperial UO Christmas 2015 Candle
+	NEW.BOUNCE
+elseif ( <local.randchristmaschance> <= 30 )
+	SERV.NEWITEM i_snowball_decorative
+	NEW.NAME= Imperial UO Christmas 2015 Pile of Snowballs
+	NEW.BOUNCE
+elseif ( <local.randchristmaschance> <= 60 )
+	SERV.NEWITEM i_tree_snowy
+	NEW.BOUNCE
+elseif ( <local.randchristmaschance> <= 80 )
+	SERV.NEWITEM i_topiary_festive
+	NEW.BOUNCE
+else
+	SERV.NEWITEM i_poinsettia_white
+	NEW.BOUNCE
+endif
+        say Happy Christmas!
+	return 1
+
+ON=hi
+ON=hello*
+ON=greetings*
+ON=good*see*thee*
+ON=Hail*
+ON=Greet
+     SAY Ho Ho Ho Merry Christmas!
+
+ON=*Christmas*
+    say Ho Ho Ho yes it is, have you had your gift yet?
+
+
+ON=*bad*
+	say Bad children will only get coal!
+ON=*good*
+	say Good children get nice presents!
+
+
+[DEFNAME Xmasboxes]
+xmasbox1 043d8960e
+xmasbox2 043d8960c
+xmasbox3 043d8960d
+xmasbox4 043d8958a
+xmasbox5 043d8956e
+xmasbox6 043d89584
+xmasbox7 043d8957a
+xmasbox8 043d89575
+xmasbox9 043d89572
+xmasbox10 043d8938e
+
+
+
+[DIALOG GiftExchange]
+150, 50
+NODISPOSE
+
+    //Border
+    gumppic     1    2 83
+    gumppic    16    0 84
+    gumppic    32    0 84
+    gumppic    48    0 84
+    gumppic    64    0 84
+    gumppic    80    0 84
+    gumppic    96    0 84
+    gumppic   112    0 84
+    gumppic   128    0 84
+    gumppic   144    0 84
+    gumppic   160    0 84
+    gumppic   176    0 84
+    gumppic   192    0 84
+    gumppic   208    0 84
+    gumppic   224    0 84
+    gumppic   240    0 84
+    gumppic   256    0 84
+    gumppic   272    0 84
+    gumppic   288    0 84
+    gumppic   295    0 85
+   
+    //Bottom Border
+    gumppic     0    337 89
+    gumppic    16    337 90
+    gumppic    32    337 90
+    gumppic    48    337 90
+    gumppic    64    337 90
+    gumppic    80    337 90
+    gumppic    96    337 90
+    gumppic   112    337 90
+    gumppic   128    337 90
+    gumppic   144    337 90
+    gumppic   160    337 90
+    gumppic   176    337 90
+    gumppic   192    337 90
+    gumppic   208    337 90
+    gumppic   224    337 90
+    gumppic   240    337 90
+    gumppic   256    337 90
+    gumppic   272    337 90
+    gumppic   288    337 90
+    gumppic   295    337 91
+
+    //Background gray
+    gumppic     7   10 5124
+    gumppic     7  120 5124
+    gumppic     7  230 5124
+    gumppic   147   10 5124
+    gumppic   147  120 5124
+    gumppic   147  230 5124
+
+
+    //Tree
+    tilepic  5  20 3287
+
+    tilepic 20  75 3149
+    tilepic 20 125 3149
+
+    tilepic 30  35 5172
+    tilepic 15 100 5172
+    tilepic 50 125 5172
+
+    tilepic 40  60 4233
+    tilepic 50 115 3875
+
+    tilepic 45  55 3859
+    tilepic 32 142 3859
+
+    //Block Text
+    dtext 105  35 32  Christmas Delivery Service
+    dtext 105  50 32  Delivery Charge: 2.5k
+    dtext 105  65 32  Delivery Date: Dec. 25th
+    dtext 105  90 50  How to place a delivery:
+    dtext 105 105 50  Use the buttons below to
+    dtext 105 120 50  Target the player and the
+    dtext 105 135 50  package you would like to
+    dtext 105 150 50  send.  Press ok to apply.
+
+    //Buttons and associated text
+    button   30 185 2117 2118 1 0 100
+    dtext    50 183 50 Gift this player:
+    gumppic  20 205 1142
+    dtext    30 208 0 <UID.<SRC.TAG.xmastarg>.NAME>
+
+    button   30 235 2117 2118 1 0 200
+    dtext    50 233 50 Give this bag:
+    gumppic  20 255 1142
+    dtext    30 258 0 <UID.<SRC.TAG.xmasitem>.NAME>
+
+    checkbox 100 285 210 211 0 1
+    dtext    125 285 50 Secret Santa
+
+    button    75 315 247 249 1 0 300
+    button   175 315 242 243 1 0 0
+
+[DIALOG GiftExchange TEXT]
+
+
+[DIALOG GiftExchange BUTTON]
+ON=0
+   src.tag.xmastarg =
+   src.tag.xmasitem =
+   src.tag.xmassecret =
+
+ON=100
+   SERV.NEWITEM M_GiftTo
+   NEW.EQUIP
+   RETURN 1
+
+ON=200
+   SERV.NEWITEM M_GiftBag
+   NEW.EQUIP
+   RETURN 1
+
+ON=300
+   if !( <UID.<SRC.TAG.xmasitem>.CONT.CONT> = <SRC.UID> )
+      SRC.SYSMESSAGE You must have it in your backpack.
+      src.tag.xmastarg =
+      src.tag.xmasitem =
+      src.tag.xmassecret =
+      return 1  
+   elseif !(<SRC.HITS>=<SRC.STR>)
+      SRC.SYSMESSAGE You must have full health to use this function.
+      src.tag.xmastarg =
+      src.tag.xmasitem =
+      src.tag.xmassecret =
+      return 1
+   elseif (<SRC.FLAGS> & statf_criminal))
+      SRC.SYSMESSAGE You must wait until your criminal status wears off to use this function.
+      src.tag.xmastarg =
+      src.tag.xmasitem =
+      src.tag.xmassecret =
+      return 1   
+   endif
+   
+
+   var.gold=2500
+   consumegold_everywhere <eval (<var.gold>)>
+   if ( <VAR.consumegold> > 0 )
+      SRC.SYSMESSAGE You are <eval <VAR.consumegold>>gp short.
+      VAR.RETURN	= 1
+      src.tag.xmastarg =
+      src.tag.xmasitem =
+      src.tag.xmassecret =
+      return 1
+   endif
+
+   if 0<var.christmas>=0
+      var.christmas=0
+   endif
+   
+   src.tag.xmassecret=<argchk[1]>
+   
+   if ( <var.christmas> < 200 ) 
+      Process_GiftExchange xmasbox1
+   elseif ( <var.christmas> < 400 )
+      Process_GiftExchange xmasbox2
+   elseif ( <var.christmas> < 600 )
+      Process_GiftExchange xmasbox3
+   elseif ( <var.christmas> < 800 )
+      Process_GiftExchange xmasbox4
+   elseif ( <var.christmas> < 1000 )
+      Process_GiftExchange xmasbox5
+   elseif ( <var.christmas> < 1200 )
+      Process_GiftExchange xmasbox6
+   elseif ( <var.christmas> < 1400 )
+      Process_GiftExchange xmasbox7
+   elseif ( <var.christmas> < 1600 )
+      Process_GiftExchange xmasbox8
+   elseif ( <var.christmas> < 1800 )
+      Process_GiftExchange xmasbox9
+   elseif ( <var.christmas> < 2000 )
+      Process_GiftExchange xmasbox10
+   else    
+      src.sysmessage system overload please contact a gamemaster
+   ENDIF
+
+   src.tag.xmastarg =
+   src.tag.xmasitem =
+   src.tag.xmassecret =
+   RETURN 1
+
+
+
+[FUNCTION Process_GiftExchange]
+
+
+   TRYP 0 UID.<args>.tag.<var.christmas>.item = <src.tag.xmasitem>
+   TRYP 0 UID.<args>.tag.<var.christmas>.char = <src.tag.xmastarg>
+   TRYP 0 UID.<src.tag.xmasitem>.CONT=<args>
+   
+   If (0<src.tag.xmassecret> = 01)
+      TRYP 0 UID.<src.tag.xmasitem>.NAME=A Christmas present from Secret Santa
+   else
+      TRYP 0 UID.<src.tag.xmasitem>.NAME=A Christmas present from <src.name>
+   endif
+
+   TRYP 0 UID.<src.tag.xmasitem>.COLOR=00025
+   
+   TRYP 0 UID.<src.tag.xmastarg>.NEWITEM M_Delay_Notification
+   TRYP 0 UID.<src.tag.xmastarg>.ACT.EQUIP
+
+   src.sysmessage The gift has been added to Santa's Sleigh!
+   VAR.christmas = <eval (<VAR.christmas> + 1)>
+   SERV.LOG Christmas Present (<SRC.NAME>) gave (<src.tag.xmastarg>) this (<src.tag.xmasitem>)
+
+   RETURN 1
+
+
+
+
+
+[ITEMDEF M_GiftTo]
+ID=i_memory
+NAME= Gift Exchange To
+TYPE	= t_eq_script
+
+ON=@CREATE
+   Timer=30
+
+ON=@EQUIP
+   TARGET Target the player to which you would like to give your gift.
+
+ON=@TARGON_CHAR
+   IF (<SRC.TARG.NPC>=0)
+      SRC.TAG.xmastarg = <src.targ.uid>
+   ELSE
+      src.sysmessage They already have plenty of Christmas presents.
+   ENDIF
+   SRC.DIALOG GIFTEXCHANGE
+   REMOVE
+   RETURN 1
+
+ON=@TIMER
+   CONT.SYSMESSAGE Target has timed out. Please Cancel and Click the Target button again.
+   REMOVE
+   RETURN 1
+
+
+
+[ITEMDEF M_GiftBag]
+ID=i_memory
+NAME= Gift Exchange Bag
+TYPE	= t_eq_script
+
+ON=@CREATE
+   Timer=30
+
+ON=@EQUIP
+    TARGET Target the bag you wish to send to the player.
+
+ON=@TARGON_ITEM
+   if !( <SRC.TARG.CONT.CONT> = <SRC.UID> )
+      SRC.SYSMESSAGE You must have it in your backpack.
+   elseif ( <SRC.TARG.ATTR> & attr_newbie )
+      SRC.SYSMESSAGE You cant send that
+   elseif !( strmatch("<SRC.TARG.BASEID>","i_bag")
+      SRC.SYSMESSAGE Please put the gift in a bag before sending.
+   elseif <SRC.TARG.RESCOUNT>=0
+      SRC.SYSMESSAGE That bag is empty.
+   ELSE
+      SRC.TAG.xmasitem = <src.targ.uid>
+   endif
+   SRC.DIALOG GIFTEXCHANGE
+   REMOVE
+   RETURN 1
+
+
+ON=@TIMER
+   CONT.SYSMESSAGE Target has timed out. Please Cancel and Click the Target button again.
+   REMOVE
+   RETURN 1
+
+
+
+[ITEMDEF M_Delay_Notification]
+ID=i_memory
+NAME= Gift Notification
+TYPE	= t_eq_script
+
+ON=@CREATE
+   Timer=600
+
+ON=@TIMER
+   CONT.SYSMESSAGE @52 Someone thinks you've been good this year!
+   REMOVE
+   RETURN 1
+
+
+
+
+////////////////This dialog lets gms see and control the delivery of gifts.//////////////////
+[DIALOG GiftControl]
+150, 50
+NODISPOSE
+
+   //Background gray
+   gumppic     7   0 5124
+   gumppic   147   0 5124
+
+   dtext    25 30 50 Gifts Awaiting Delivery: <EVAL <VAR.christmas>>
+   button   25 62 2117 2118 1 0 100
+   dtext    50 60 50 Send Gifts and reset the system.
+   button   25 82 2117 2118 1 0 200
+   dtext    50 80 50 Toggle the system off/on.
+
+[DIALOG GiftControl TEXT]
+
+
+[DIALOG GiftControl BUTTON]
+ON=100
+   SRC.MENU mnu_confirm_delivery
+   RETURN 1
+ON=200
+   IF (0<VAR.DisableChristmas>=0)
+      VAR.DisableChristmas=1
+      SRC.SYSMESSAGE Christmas command has been disabled.
+   ELSE
+      VAR.DisableChristmas=
+      SRC.SYSMESSAGE Christmas command has been enabled.
+   ENDIF
+   RETURN 1
+
+//Require a confirmation on the delivery to avoid accidents
+[MENU mnu_confirm_delivery]
+Are you sure you want to deliver all the packages now?
+
+ON = 0 Yes
+  DeliverGifts
+  
+ON = 0 No
+  RETURN 1
+
+
+
+
+[FUNCTION DeliverGifts]
+   VAR.DeliverGift=0
+   WHILE (<VAR.DeliverGift> <= <VAR.Christmas>)
+   
+      if ( <Var.DeliverGift> < 200 )
+         TRYP 0 UID.<UID.xmasbox1.tag.<VAR.DeliverGift>.item>.CONT=<UID.xmasbox1.tag.<VAR.DeliverGift>.char>
+         TRYP 0 UID.xmasbox1.tag.<VAR.DeliverGift>.item=
+         TRYP 0 UID.xmasbox1.tag.<VAR.DeliverGift>.char=
+      elseif ( <Var.DeliverGift> < 400 )
+         TRYP 0 UID.<UID.xmasbox2.tag.<VAR.DeliverGift>.item>.CONT=<UID.xmasbox2.tag.<VAR.DeliverGift>.char>
+         TRYP 0 UID.xmasbox2.tag.<VAR.DeliverGift>.item=
+         TRYP 0 UID.xmasbox2.tag.<VAR.DeliverGift>.char=
+      elseif ( <Var.DeliverGift> < 600 )
+         TRYP 0 UID.<UID.xmasbox3.tag.<VAR.DeliverGift>.item>.CONT=<UID.xmasbox3.tag.<VAR.DeliverGift>.char>
+         TRYP 0 UID.xmasbox3.tag.<VAR.DeliverGift>.item=
+         TRYP 0 UID.xmasbox3.tag.<VAR.DeliverGift>.char=
+      elseif ( <Var.DeliverGift> < 800 )
+         TRYP 0 UID.<UID.xmasbox4.tag.<VAR.DeliverGift>.item>.CONT=<UID.xmasbox4.tag.<VAR.DeliverGift>.char>
+         TRYP 0 UID.xmasbox4.tag.<VAR.DeliverGift>.item=
+         TRYP 0 UID.xmasbox4.tag.<VAR.DeliverGift>.char=
+      elseif ( <Var.DeliverGift> < 1000 )
+         TRYP 0 UID.<UID.xmasbox5.tag.<VAR.DeliverGift>.item>.CONT=<UID.xmasbox5.tag.<VAR.DeliverGift>.char>
+         TRYP 0 UID.xmasbox5.tag.<VAR.DeliverGift>.item=
+         TRYP 0 UID.xmasbox5.tag.<VAR.DeliverGift>.char=
+      elseif ( <Var.DeliverGift> < 1200 )
+         TRYP 0 UID.<UID.xmasbox6.tag.<VAR.DeliverGift>.item>.CONT=<UID.xmasbox6.tag.<VAR.DeliverGift>.char>
+         TRYP 0 UID.xmasbox6.tag.<VAR.DeliverGift>.item=
+         TRYP 0 UID.xmasbox6.tag.<VAR.DeliverGift>.char=
+      elseif ( <Var.DeliverGift> < 1400 )
+         TRYP 0 UID.<UID.xmasbox7.tag.<VAR.DeliverGift>.item>.CONT=<UID.xmasbox7.tag.<VAR.DeliverGift>.char>
+         TRYP 0 UID.xmasbox7.tag.<VAR.DeliverGift>.item=
+         TRYP 0 UID.xmasbox7.tag.<VAR.DeliverGift>.char=
+      elseif ( <Var.DeliverGift> < 1600 )
+         TRYP 0 UID.<UID.xmasbox8.tag.<VAR.DeliverGift>.item>.CONT=<UID.xmasbox8.tag.<VAR.DeliverGift>.char>
+         TRYP 0 UID.xmasbox8.tag.<VAR.DeliverGift>.item=
+         TRYP 0 UID.xmasbox8.tag.<VAR.DeliverGift>.char=
+      elseif ( <Var.DeliverGift> < 1800 )
+         TRYP 0 UID.<UID.xmasbox9.tag.<VAR.DeliverGift>.item>.CONT=<UID.xmasbox9.tag.<VAR.DeliverGift>.char>
+         TRYP 0 UID.xmasbox9.tag.<VAR.DeliverGift>.item=
+         TRYP 0 UID.xmasbox9.tag.<VAR.DeliverGift>.char=
+      else
+         TRYP 0 UID.<UID.xmasbox10.tag.<VAR.DeliverGift>.item>.CONT=<UID.xmasbox10.tag.<VAR.DeliverGift>.char>
+         TRYP 0 UID.xmasbox10.tag.<VAR.DeliverGift>.item=
+         TRYP 0 UID.xmasbox10.tag.<VAR.DeliverGift>.char=
+      ENDIF
+      
+      VAR.DeliverGift=<EVAL (<VAR.DeliverGift>+1)>
+   ENDWHILE
+
+   VAR.DeliverGift=
+   VAR.Christmas=
+   
+   RETURN 1
+
+
+//Christmas Tree
+[itemdef i_christmas_tree]
+ID=i_foliage_cedar2
+DYE=1
+TYPE=T_SCRIPT
+NAME=Christmas Tree
+
+ON=@Create
+   ATTR = 010
+   MORE1=1
+
+ON=@DClick
+   IF <MORE1>=1
+      IF <CANSEELOS>
+         TARGET Target an item that is the color you would like on the tree.
+      ENDIF
+   ELSE
+      SRC.SYSMESSAGE Dying of this tree has been disabled.
+   ENDIF
+   RETURN 1
+
+ON=@TARGON_ITEM
+   COLOR = <SRC.TARG.COLOR>
+   RETURN 1
+
+
+
+[ITEMDEF i_Christmas_wand]
+NAME=Christmas Tree Wand
+ID=0df3
+
+ON=@CREATE
+COLOR=05
+ATTR=05
+
+ON=@DCLICK
+   EQUIP
+   TARGET Target your tree.
+   RETURN 1
+
+ON=@TARGON_ITEM 
+   IF !(<LINK>=04fffffff)
+      IF (<SRC.TARG.UID>=<LINK>)
+         IF <SRC.TARG.MORE1>=1
+            SRC.TARG.MORE1=0
+            SRC.SYSMESSAGE This tree's color has been locked.
+         ELSE
+            SRC.TARG.MORE1=1
+            SRC.SYSMESSAGE This tree's color has been unlocked.
+         ENDIF
+      ELSE
+         SRC.SYSMESSAGE This is not your tree.
+      ENDIF
+   ELSE
+      LINK = <SRC.TARG.UID>
+   ENDIF
+   RETURN 1
+
+ON=@DAMAGE
+   RETURN 1
+
+
+
+//--Christmas Items--
+
+[ITEMDEF i_wreath_christmas2015]
+ID=0232c
+NAME=Christmas 2015 Wreath
+RESDISPDNID=i_sign_brass
+RESLEVEL=2
+
+ON=@CLICK
+IF (<SRC.ACCOUNT.RESDISP> = 1)
+   MESSAGE Note: To see the wreath in full, you need at least an AoS client...
+ENDIF
+
+[EOF]
+

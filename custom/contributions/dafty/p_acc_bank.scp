@@ -1,0 +1,879 @@
+//***********************************************//
+//    Unique Bank Account For All Characters     //
+//***********************************************//
+
+// Use this if you can't be sure all character banks are empty (Place the function under @login)
+// This function will bounce items from all account characters bank to the current character bank
+
+[FUNCTION f_account_bank125a]
+FOR 0 <EVAL <SRC.ACCOUNT.CHARS>-1>
+	IF !(<SRC.UID>==<SRC.ACCOUNT.CHAR.<EVAL <LOCAL._FOR>>.UID>)
+		IF (<UID.<SRC.ACCOUNT.CHAR.<EVAL <LOCAL._FOR>>.UID>.FINDLAYER.layer_bankbox.UID>)
+			LOCAL.UID=<UID.<SRC.ACCOUNT.CHAR.<EVAL <LOCAL._FOR>>.UID>.FINDLAYER.layer_bankbox.UID>
+			FORCONT <LOCAL.UID> 0
+				LOCAL.CONTP=<CONTP>
+				CONT=<SRC.FINDLAYER.layer_bankbox.UID>
+				CONTP=<LOCAL.CONTP>
+			ENDFOR
+		ENDIF
+	ENDIF
+ENDFOR
+
+// Use this if you are sure all character banks are empty (Place the function under @login)
+// This function will seek a character bank with items and transfer it to your current character
+
+[FUNCTION f_bank_account125a]
+
+IF (<SRC.ACCOUNT.CHARS> > 1) && !(<SRC.FINDLAYER.layer_bankbox.COUNT> > 0)
+    FOR 0 <EVAL <SRC.ACCOUNT.CHARS>-1>
+		IF !(<SRC.UID>==<SRC.ACCOUNT.CHAR.<EVAL <LOCAL._FOR>>.UID>)
+			IF (<SRC.ACCOUNT.CHAR.<EVAL <LOCAL._FOR>>.FINDLAYER.layer_bankbox.UID>)
+				IF (<SRC.ACCOUNT.CHAR.<EVAL <LOCAL._FOR>>.FINDLAYER.layer_bankbox.COUNT> > 0)
+					SRC.FINDLAYER.layer_bankbox.REMOVE
+					SRC.ACCOUNT.CHAR.<EVAL <LOCAL._FOR>>.FINDLAYER.layer_bankbox.CONT=<SRC.UID>
+				ENDIF
+			ENDIF
+		ENDIF
+    ENDFOR
+ENDIF
+
+// If you have a running server and want to use the second function, run one of the following functions:
+
+// Use this function if you want to move all items in the account characters banks to one character only, starting from char 0 to char 4
+
+[FUNCTION f_merge_account_banks_up]
+
+FOR <SERV.ACCOUNTS>
+	LOCAL.ACCOUNT=<EVAL (<LOCAL._FOR>-1)>
+	IF (<SERV.ACCOUNT.<EVAL <LOCAL.ACCOUNT>>.CHARS> > 0)
+		FOR <SERV.ACCOUNT.<EVAL <LOCAL.ACCOUNT>>.CHARS>
+			LOCAL.FORMULA=<EVAL (<LOCAL._FOR>-1)>
+			LOCAL.CHAR1=<SERV.ACCOUNT.<EVAL <LOCAL.ACCOUNT>>.CHAR.<EVAL <LOCAL.FORMULA>>.UID>
+			IF (<EVAL <LOCAL.FORMULA>> < <EVAL (<SERV.ACCOUNT.<EVAL <LOCAL.ACCOUNT>>.CHARS>-1)>)
+				LOCAL.CHAR2=<SERV.ACCOUNT.<EVAL <LOCAL.ACCOUNT>>.CHAR.<EVAL (<LOCAL.FORMULA>+1)>.UID>
+				IF !(<UID.<LOCAL.CHAR2>.FINDLAYER.layer_bankbox.UID>)
+					SERV.NEWITEM i_bankbox
+					TRY UID.<LOCAL.CHAR2>.EQUIP <NEW.UID>
+				ENDIF
+				LOCAL.BANK1=<UID.<LOCAL.CHAR1>.FINDLAYER.layer_bankbox.UID>
+				LOCAL.BANK2=<UID.<LOCAL.CHAR2>.FINDLAYER.layer_bankbox.UID>
+				FORCONT <LOCAL.BANK1> 0
+					LOCAL.CONTP=<CONTP>
+					CONT=<LOCAL.BANK2>
+					CONTP=<LOCAL.CONTP>
+				ENDFOR
+			ENDIF
+		ENDFOR
+	ENDIF
+ENDFOR
+
+
+// Use this function if you want to move all items in the account characters banks to one character only, starting from char 4 to char 0
+
+[FUNCTION f_merge_account_banks_down]
+
+FOR <SERV.ACCOUNTS>
+	LOCAL.ACCOUNT=<EVAL (<LOCAL._FOR>-1)>
+	IF (<SERV.ACCOUNT.<EVAL <LOCAL.ACCOUNT>>.CHARS> > 0)
+		FOR <SERV.ACCOUNT.<EVAL <LOCAL.ACCOUNT>>.CHARS>
+			LOCAL.FORMULA=<EVAL <SERV.ACCOUNT.<EVAL <LOCAL.ACCOUNT>>.CHARS>-<EVAL <LOCAL._FOR>>> 
+			LOCAL.CHAR1=<SERV.ACCOUNT.<EVAL <LOCAL.ACCOUNT>>.CHAR.<EVAL <LOCAL.FORMULA>>.UID>
+			IF (<EVAL <LOCAL.FORMULA>> > 0)
+				LOCAL.CHAR2=<SERV.ACCOUNT.<EVAL <LOCAL.ACCOUNT>>.CHAR.<EVAL (<LOCAL.FORMULA>-1)>.UID>
+				IF !(<UID.<LOCAL.CHAR2>.FINDLAYER.layer_bankbox.UID>)
+					SERV.NEWITEM i_bankbox
+					TRY UID.<LOCAL.CHAR2>.EQUIP <NEW.UID>
+				ENDIF
+				LOCAL.BANK1=<UID.<LOCAL.CHAR1>.FINDLAYER.layer_bankbox.UID>
+				LOCAL.BANK2=<UID.<LOCAL.CHAR2>.FINDLAYER.layer_bankbox.UID>
+				FORCONT <LOCAL.BANK1> 0
+					LOCAL.CONTP=<CONTP>
+					CONT=<LOCAL.BANK2>
+					CONTP=<LOCAL.CONTP>
+				ENDFOR
+			ENDIF
+		ENDFOR
+	ENDIF
+ENDFOR
+
+//***********************************************//
+//    Account Characters Bank                    //
+//***********************************************//
+
+// Double-clicking this chest will give players access to their other characters bank
+
+[ITEMDEF i_account_characters_bank]
+ID=i_chest_metal_brass
+NAME=Account Characters Bank
+TYPE=t_container
+DUPELIST=0e41
+
+ON=@CREATE
+ATTR=08010
+
+ON=@DCLICK
+IF !(<SRC.ISGM>)
+	DIALOG d_account_characters_bank
+	RETURN 1
+ENDIF
+
+ON=@CLICK
+MESSAGE=Account Characters Bank
+RETURN 1
+
+ON=@DROPON_SELF
+RETURN 1
+
+
+[DIALOG d_account_characters_bank]
+200,135
+
+resizepic 29 22 3500 370 325
+
+gumppic 63 37 4037
+gumppic 328 37 4037
+
+tilepic 105 270 3823
+
+
+dtext 139 45 0 Account Characters Bank
+dtext 57 80 0 Please select the Character Bank you wish to open:
+
+
+dtext 168 110 2300 <SRC.ACCOUNT.CHAR.0.NAME>
+button 148 114 1210 1209 1 0 1
+
+IF (<SRC.ACCOUNT.CHARS> > 1)
+	dtext 168 140 2300 <SRC.ACCOUNT.CHAR.1.NAME>
+	button 148 144 1210 1209 1 0 2
+ENDIF
+
+IF (<SRC.ACCOUNT.CHARS> > 2)
+	dtext 168 170 2300 <SRC.ACCOUNT.CHAR.2.NAME>
+	button 148 174 1210 1209 1 0 3
+ENDIF
+
+IF (<SRC.ACCOUNT.CHARS> > 3)
+	dtext 168 203 2300 <SRC.ACCOUNT.CHAR.3.NAME>
+	button 148 204 1210 1209 1 0 4
+ENDIF
+
+IF (<SRC.ACCOUNT.CHARS> > 4)
+	dtext 168 230 2300 <SRC.ACCOUNT.CHAR.4.NAME>
+	button 148 234 1210 1209 1 0 5
+ENDIF
+
+dtext 155 273 0 Access Account Gold Bank
+button 200 305 1154 1155 1 0 6
+
+
+[DIALOG d_account_characters_bank button]
+
+ON=1 5
+
+IF (<DISTANCE> > 3)
+	SRC.SYSMESSAGE You are too far away from the Account Gold Bank.
+	RETURN 1
+ENDIF
+
+LOCAL.UID=<UID>
+
+IF (<SRC.UID>==<SRC.ACCOUNT.CHAR.<EVAL (<ARGN1>-1)>.UID>)
+	FORCONT <LOCAL.UID>
+		IF (<TAG0.CHARUID>==<SRC.ACCOUNT.CHAR.<EVAL (<ARGN1>-1)>.UID>
+			f_remove_account_character_bank125a
+		ENDIF
+	ENDFOR
+	SRC.BANKSELF
+	DIALOG d_account_characters_bank
+	RETURN 1
+ENDIF
+
+FORCONT <LOCAL.UID>
+	IF (<TAG0.CHARUID>==<SRC.ACCOUNT.CHAR.<EVAL (<ARGN1>-1)>.UID>
+		OPEN
+		TRY UID.<LOCAL.UID>.DIALOG d_account_characters_bank
+		RETURN 1
+	ENDIF
+ENDFOR
+	
+SERV.NEWITEM i_chest_iron
+NEW.CONT=<LOCAL.UID>
+NEW.TAG.CHARUID=<SRC.ACCOUNT.CHAR.<EVAL (<ARGN1>-1)>.UID>
+LOCAL.UID=<UID.<SRC.ACCOUNT.CHAR.<EVAL (<ARGN1>-1)>.UID>.FINDLAYER.layer_bankbox.UID>
+FORCONT <LOCAL.UID> 0
+	LOCAL.CONTP=<CONTP>
+	CONT=<NEW.UID>
+	CONTP=<LOCAL.CONTP>
+ENDFOR
+NEW.OPEN
+SRC.SYSMESSAGE You've requested access to <SRC.ACCOUNT.CHAR.<EVAL (<ARGN1>-1)>.NAME> bank account.
+SRC.SYSMESSAGE Items will be transferred back to its original bank account in 5 minutes.
+NEW.TIMERF 300, f_remove_account_character_bank125a
+DIALOG d_account_characters_bank
+
+ON=6
+
+IF (<DISTANCE> > 3)
+	SRC.SYSMESSAGE You are too far away from the Account Gold Bank.
+	RETURN 1
+ENDIF
+
+FOR <SRC.ACCOUNT.CHARS>
+	IF (<SRC.ACCOUNT.CHAR.<EVAL (<LOCAL._FOR>-1)>.UID>==<SRC.UID>)
+		LOCAL.PAGE=<EVAL <LOCAL._FOR>>
+	ENDIF
+ENDFOR
+accountgoldbank <LOCAL.PAGE>
+SRC.SYSMESSAGE You have requested access to your Account Gold Bank.
+
+
+[FUNCTION f_remove_account_character_bank125a]
+IF !(<UID.<TAG.CHARUID>.FINDLAYER.layer_bankbox.UID>)
+	SERV.NEWITEM i_bankbox
+	TRY UID.<TAG.CHARUID>.EQUIP <NEW.UID>
+ENDIF
+LOCAL.UID1=<UID>
+LOCAL.UID2=<UID.<TAG.CHARUID>.FINDLAYER.layer_bankbox.UID>
+FORCONT <LOCAL.UID1> 0
+	LOCAL.CONTP=<CONTP>
+	CONT=<LOCAL.UID2>
+	CONTP=<LOCAL.CONTP>
+ENDFOR
+REMOVE
+	
+
+//****************************************//
+//        Account Gold Bank               //
+//****************************************//
+
+// Double-clicking this chest will give players access to their other characters GOLD
+
+[ITEMDEF i_account_gold_bank]
+ID=i_chest_metal_brass
+NAME=Account Gold Bank
+TYPE=t_script
+DUPELIST=0e41
+
+ON=@CREATE
+ATTR=08010
+
+ON=@DCLICK
+FOR <SRC.ACCOUNT.CHARS>
+	IF (<SRC.ACCOUNT.CHAR.<EVAL (<LOCAL._FOR>-1)>.UID>==<SRC.UID>)
+		LOCAL.PAGE=<EVAL <LOCAL._FOR>>
+	ENDIF
+ENDFOR
+accountgoldbank <LOCAL.PAGE>
+SRC.SYSMESSAGE You have requested access to your Account Gold Bank.
+RETURN 1
+
+
+[FUNCTION accountgoldbank]
+SRC.TAG.TOTALACCOUNTGOLD1=
+FOR <SRC.ACCOUNT.CHARS>
+	IF (<EVAL <SRC.ACCOUNT.CHAR.<EVAL (<LOCAL._FOR>-1)>.GOLD>> > 0)
+		SRC.TAG.TOTALACCOUNTGOLD1 = <EVAL <SRC.TAG0.TOTALACCOUNTGOLD1>+<SRC.ACCOUNT.CHAR.<EVAL (<LOCAL._FOR>-1)>.GOLD>>
+	ENDIF
+ENDFOR
+
+IF (<EVAL STRLEN(<EVAL <SRC.TAG.TOTALACCOUNTGOLD1>>)> <= 3)
+	SRC.TAG.TOTALACCOUNTGOLD=<EVAL <SRC.TAG.TOTALACCOUNTGOLD1>>
+ELSEIF (<EVAL STRLEN(<EVAL <SRC.TAG.TOTALACCOUNTGOLD1>>)>==4)
+	SRC.TAG.TOTALACCOUNTGOLD=<STRSUB 0 1 <EVAL <SRC.TAG.TOTALACCOUNTGOLD1>>>.<STRSUB 1 3 <EVAL <SRC.TAG.TOTALACCOUNTGOLD1>>>
+ELSEIF (<EVAL STRLEN(<EVAL <SRC.TAG.TOTALACCOUNTGOLD1>>)>==5)
+	SRC.TAG.TOTALACCOUNTGOLD=<STRSUB 0 2 <EVAL <SRC.TAG.TOTALACCOUNTGOLD1>>>.<STRSUB 2 3 <EVAL <SRC.TAG.TOTALACCOUNTGOLD1>>>
+ELSEIF (<EVAL STRLEN(<EVAL <SRC.TAG.TOTALACCOUNTGOLD1>>)>==6)
+	SRC.TAG.TOTALACCOUNTGOLD=<STRSUB 0 3 <EVAL <SRC.TAG.TOTALACCOUNTGOLD1>>>.<STRSUB 3 3 <EVAL <SRC.TAG.TOTALACCOUNTGOLD1>>>
+ELSEIF (<EVAL STRLEN(<EVAL <SRC.TAG.TOTALACCOUNTGOLD1>>)>==7)
+	SRC.TAG.TOTALACCOUNTGOLD=<STRSUB 0 1 <EVAL <SRC.TAG.TOTALACCOUNTGOLD1>>>.<STRSUB 1 3 <EVAL <SRC.TAG.TOTALACCOUNTGOLD1>>>.<STRSUB 4 3 <EVAL <SRC.TAG.TOTALACCOUNTGOLD1>>>
+ELSEIF (<EVAL STRLEN(<EVAL <SRC.TAG.TOTALACCOUNTGOLD1>>)>==8)
+	SRC.TAG.TOTALACCOUNTGOLD=<STRSUB 0 2 <EVAL <SRC.TAG.TOTALACCOUNTGOLD1>>>.<STRSUB 2 3 <EVAL <SRC.TAG.TOTALACCOUNTGOLD1>>>.<STRSUB 5 3 <EVAL <SRC.TAG.TOTALACCOUNTGOLD1>>>
+ELSEIF (<EVAL STRLEN(<EVAL <SRC.TAG.TOTALACCOUNTGOLD1>>)>==9)
+	SRC.TAG.TOTALACCOUNTGOLD=<STRSUB 0 3 <EVAL <SRC.TAG.TOTALACCOUNTGOLD1>>>.<STRSUB 3 3 <EVAL <SRC.TAG.TOTALACCOUNTGOLD1>>>.<STRSUB 6 3 <EVAL <SRC.TAG.TOTALACCOUNTGOLD1>>>
+ENDIF
+
+DIALOG d_account_gold_bank, <ARGS>
+
+[DIALOG d_account_gold_bank]
+200,135
+NOMOVE
+page 1
+
+gumppic 136 172 3504
+gumppic 52 167 3504
+gumppic 134 47 3504
+gumppic 372 22 3502
+gumppic 29 46 3503
+gumppic 53 47 3504
+gumppic 372 168 3505
+gumppic 28 407 3506
+gumppic 131 407 3507
+gumppic 372 407 3508
+gumppic 54 22 3501
+gumppic 29 22 3500
+gumppic 124 95 66
+gumppic 131 22 3501
+gumppic 372 45 3505
+gumppic 53 407 3507
+gumppic 28 167 3503
+gumppic 63 58 4037
+tilepic 134 147 3823
+tilepic 55 200 3827
+tilepic 324 200 3827
+resizepic 149 205 3000 130 21
+
+dtext 151 37 0 Account Gold Bank
+dtext 100 68 0 Total Account Gold: <SRC.TAG.TOTALACCOUNTGOLD> gold pieces
+dtext 126 354 0 Character: <SRC.ACCOUNT.CHAR.0.NAME> 
+
+dtext 62 224 0 New
+dtext 54 240 0 Cheque
+button 61 266 1154 1155 1 0 11 // New Cheque
+dtext 330 224 0 Cash
+dtext 323 240 0 Cheque
+button 333 266 1154 1155 1 0 16 // Cash Cheque
+
+IF (<EVAL STRLEN(<SRC.ACCOUNT.CHAR.0.GOLD>)> <= 3)
+	dtext 174 149 2300 <EVAL <SRC.ACCOUNT.CHAR.0.GOLD>> gps
+ELSEIF (<EVAL STRLEN(<SRC.ACCOUNT.CHAR.0.GOLD>)>==4)
+	dtext 174 149 2300 <EVAL <STRSUB 0 1 <SRC.ACCOUNT.CHAR.0.GOLD>>>.<EVAL <STRSUB 1 3 <SRC.ACCOUNT.CHAR.0.GOLD>>> gps
+ELSEIF (<EVAL STRLEN(<SRC.ACCOUNT.CHAR.0.GOLD>)>==5)
+	dtext 174 149 2300 <STRSUB 0 2 <SRC.ACCOUNT.CHAR.0.GOLD>>.<STRSUB 2 3 <SRC.ACCOUNT.CHAR.0.GOLD>> gps
+ELSEIF (<EVAL STRLEN(<SRC.ACCOUNT.CHAR.0.GOLD>)>==6)
+	dtext 174 149 2300 <STRSUB 0 3 <SRC.ACCOUNT.CHAR.0.GOLD>>.<STRSUB 3 3 <SRC.ACCOUNT.CHAR.0.GOLD>> gps
+ELSEIF (<EVAL STRLEN(<SRC.ACCOUNT.CHAR.0.GOLD>)>==7)
+	dtext 174 149 2300 <STRSUB 0 1 <SRC.ACCOUNT.CHAR.0.GOLD>>.<STRSUB 1 3 <SRC.ACCOUNT.CHAR.0.GOLD>>.<STRSUB 4 3 <SRC.ACCOUNT.CHAR.0.GOLD>> gps
+ELSEIF (<EVAL STRLEN(<SRC.ACCOUNT.CHAR.0.GOLD>)>==8)
+	dtext 174 149 2300 <STRSUB 0 2 <SRC.ACCOUNT.CHAR.0.GOLD>>.<STRSUB 2 3 <SRC.ACCOUNT.CHAR.0.GOLD>>.<STRSUB 5 3 <SRC.ACCOUNT.CHAR.0.GOLD>> gps
+ELSEIF (<EVAL STRLEN(<SRC.ACCOUNT.CHAR.0.GOLD>)>==9)
+	dtext 174 149 2300 <STRSUB 0 3 <SRC.ACCOUNT.CHAR.0.GOLD>>.<STRSUB 3 3 <SRC.ACCOUNT.CHAR.0.GOLD>>.<STRSUB 6 3 <SRC.ACCOUNT.CHAR.0.GOLD>> gps
+ENDIF
+
+dtext 153 206 0 Gold:
+dtextentrylimited 186 206 88 18 0 1 9
+
+dtext 163 235 2300 Transfer Gold To
+button 148 238 1210 1209 1 0 1
+dtext 163 254 2300 Transfer Gold From
+button 148 257 1210 1209 1 0 6
+
+IF (<SRC.ACCOUNT.CHARS> > 1)
+	dtext 240 391 0 Next Character
+	button 344 390 4005 4007 0 2 // Next Page
+ENDIF
+
+page 2
+
+gumppic 136 172 3504
+gumppic 52 167 3504
+gumppic 134 47 3504
+gumppic 372 22 3502
+gumppic 29 46 3503
+gumppic 53 47 3504
+gumppic 372 168 3505
+gumppic 28 407 3506
+gumppic 131 407 3507
+gumppic 372 407 3508
+gumppic 54 22 3501
+gumppic 29 22 3500
+gumppic 124 95 66
+gumppic 131 22 3501
+gumppic 372 45 3505
+gumppic 53 407 3507
+gumppic 28 167 3503
+gumppic 63 58 4037
+tilepic 134 147 3823
+tilepic 55 200 3827
+tilepic 324 200 3827
+resizepic 149 205 3000 130 21
+
+dtext 151 37 0 Account Gold Bank
+dtext 100 68 0 Total Account Gold: <SRC.TAG.TOTALACCOUNTGOLD> gold pieces
+dtext 126 354 0 Character: <SRC.ACCOUNT.CHAR.1.NAME>
+
+dtext 62 224 0 New
+dtext 54 240 0 Cheque
+button 61 266 1154 1155 1 0 12 // New Cheque
+dtext 330 224 0 Cash
+dtext 323 240 0 Cheque
+button 333 266 1154 1155 1 0 17 // Cash Cheque
+
+IF (<EVAL STRLEN(<SRC.ACCOUNT.CHAR.1.GOLD>)> <= 3)
+	dtext 174 149 2300 <SRC.ACCOUNT.CHAR.1.GOLD> gps
+ELSEIF (<EVAL STRLEN(<SRC.ACCOUNT.CHAR.1.GOLD>)>==4)
+	dtext 174 149 2300 <STRSUB 0 1 <SRC.ACCOUNT.CHAR.1.GOLD>>.<STRSUB 1 3 <SRC.ACCOUNT.CHAR.1.GOLD>> gps
+ELSEIF (<EVAL STRLEN(<SRC.ACCOUNT.CHAR.1.GOLD>)>==5)
+	dtext 174 149 2300 <STRSUB 0 2 <SRC.ACCOUNT.CHAR.1.GOLD>>.<STRSUB 2 3 <SRC.ACCOUNT.CHAR.1.GOLD>> gps
+ELSEIF (<EVAL STRLEN(<SRC.ACCOUNT.CHAR.1.GOLD>)>==6)
+	dtext 174 149 2300 <STRSUB 0 3 <SRC.ACCOUNT.CHAR.1.GOLD>>.<STRSUB 3 3 <SRC.ACCOUNT.CHAR.1.GOLD>> gps
+ELSEIF (<EVAL STRLEN(<SRC.ACCOUNT.CHAR.1.GOLD>)>==7)
+	dtext 174 149 2300 <STRSUB 0 1 <SRC.ACCOUNT.CHAR.1.GOLD>>.<STRSUB 1 3 <SRC.ACCOUNT.CHAR.1.GOLD>>.<STRSUB 4 3 <SRC.ACCOUNT.CHAR.1.GOLD>> gps
+ELSEIF (<EVAL STRLEN(<SRC.ACCOUNT.CHAR.1.GOLD>)>==8)
+	dtext 174 149 2300 <STRSUB 0 2 <SRC.ACCOUNT.CHAR.1.GOLD>>.<STRSUB 2 3 <SRC.ACCOUNT.CHAR.1.GOLD>>.<STRSUB 5 3 <SRC.ACCOUNT.CHAR.1.GOLD>> gps
+ELSEIF (<EVAL STRLEN(<SRC.ACCOUNT.CHAR.1.GOLD>)>==9)
+	dtext 174 149 2300 <STRSUB 0 3 <SRC.ACCOUNT.CHAR.1.GOLD>>.<STRSUB 3 3 <SRC.ACCOUNT.CHAR.1.GOLD>>.<STRSUB 6 3 <SRC.ACCOUNT.CHAR.1.GOLD>> gps
+ENDIF
+
+dtext 153 206 0 Gold:
+dtextentrylimited 186 206 88 18 0 2 9
+
+dtext 163 235 2300 Transfer Gold To
+button 148 238 1210 1209 1 0 2
+dtext 163 254 2300 Transfer Gold From
+button 148 257 1210 1209 1 0 7
+
+dtext 87 391 0 Previous Character
+button 52 390 4014 4016 0 1 // Previous Page
+
+IF (<SRC.ACCOUNT.CHARS> > 2)
+	dtext 240 391 0 Next Character
+	button 344 390 4005 4007 0 3 // Next Page
+ENDIF
+
+page 3
+
+gumppic 136 172 3504
+gumppic 52 167 3504
+gumppic 134 47 3504
+gumppic 372 22 3502
+gumppic 29 46 3503
+gumppic 53 47 3504
+gumppic 372 168 3505
+gumppic 28 407 3506
+gumppic 131 407 3507
+gumppic 372 407 3508
+gumppic 54 22 3501
+gumppic 29 22 3500
+gumppic 124 95 66
+gumppic 131 22 3501
+gumppic 372 45 3505
+gumppic 53 407 3507
+gumppic 28 167 3503
+gumppic 63 58 4037
+tilepic 134 147 3823
+tilepic 55 200 3827
+tilepic 324 200 3827
+resizepic 149 205 3000 130 21
+
+dtext 151 37 0 Account Gold Bank
+dtext 100 68 0 Total Account Gold: <SRC.TAG.TOTALACCOUNTGOLD> gold pieces
+dtext 126 354 0 Character: <SRC.ACCOUNT.CHAR.2.NAME>
+
+dtext 62 224 0 New
+dtext 54 240 0 Cheque
+button 61 266 1154 1155 1 0 13 // New Cheque
+dtext 330 224 0 Cash
+dtext 323 240 0 Cheque
+button 333 266 1154 1155 1 0 18 // Cash Cheque
+
+IF (<EVAL STRLEN(<SRC.ACCOUNT.CHAR.2.GOLD>)> <= 3)
+	dtext 174 149 2300 <SRC.ACCOUNT.CHAR.2.GOLD> gps
+ELSEIF (<EVAL STRLEN(<SRC.ACCOUNT.CHAR.2.GOLD>)>==4)
+	dtext 174 149 2300 <STRSUB 0 1 <SRC.ACCOUNT.CHAR.2.GOLD>>.<STRSUB 1 3 <SRC.ACCOUNT.CHAR.2.GOLD>> gps
+ELSEIF (<EVAL STRLEN(<SRC.ACCOUNT.CHAR.2.GOLD>)>==5)
+	dtext 174 149 2300 <STRSUB 0 2 <SRC.ACCOUNT.CHAR.2.GOLD>>.<STRSUB 2 3 <SRC.ACCOUNT.CHAR.2.GOLD>> gps
+ELSEIF (<EVAL STRLEN(<SRC.ACCOUNT.CHAR.2.GOLD>)>==6)
+	dtext 174 149 2300 <STRSUB 0 3 <SRC.ACCOUNT.CHAR.2.GOLD>>.<STRSUB 3 3 <SRC.ACCOUNT.CHAR.2.GOLD>> gps
+ELSEIF (<EVAL STRLEN(<SRC.ACCOUNT.CHAR.2.GOLD>)>==7)
+	dtext 174 149 2300 <STRSUB 0 1 <SRC.ACCOUNT.CHAR.2.GOLD>>.<STRSUB 1 3 <SRC.ACCOUNT.CHAR.2.GOLD>>.<STRSUB 4 3 <SRC.ACCOUNT.CHAR.2.GOLD>> gps
+ELSEIF (<EVAL STRLEN(<SRC.ACCOUNT.CHAR.2.GOLD>)>==8)
+	dtext 174 149 2300 <STRSUB 0 2 <SRC.ACCOUNT.CHAR.2.GOLD>>.<STRSUB 2 3 <SRC.ACCOUNT.CHAR.2.GOLD>>.<STRSUB 5 3 <SRC.ACCOUNT.CHAR.2.GOLD>> gps
+ELSEIF (<EVAL STRLEN(<SRC.ACCOUNT.CHAR.2.GOLD>)>==9)
+	dtext 174 149 2300 <STRSUB 0 3 <SRC.ACCOUNT.CHAR.2.GOLD>>.<STRSUB 3 3 <SRC.ACCOUNT.CHAR.2.GOLD>>.<STRSUB 6 3 <SRC.ACCOUNT.CHAR.2.GOLD>> gps
+ENDIF
+
+dtext 153 206 0 Gold:
+dtextentrylimited 186 206 88 18 0 3 9
+
+dtext 163 235 2300 Transfer Gold To
+button 148 238 1210 1209 1 0 3
+dtext 163 254 2300 Transfer Gold From
+button 148 257 1210 1209 1 0 8
+
+dtext 87 391 0 Previous Character
+button 52 390 4014 4016 0 2 // Previous Page
+
+IF (<SRC.ACCOUNT.CHARS> > 3)
+	dtext 240 391 0 Next Character
+	button 344 390 4005 4007 0 4 // Next Page
+ENDIF
+
+page 4
+
+gumppic 136 172 3504
+gumppic 52 167 3504
+gumppic 134 47 3504
+gumppic 372 22 3502
+gumppic 29 46 3503
+gumppic 53 47 3504
+gumppic 372 168 3505
+gumppic 28 407 3506
+gumppic 131 407 3507
+gumppic 372 407 3508
+gumppic 54 22 3501
+gumppic 29 22 3500
+gumppic 124 95 66
+gumppic 131 22 3501
+gumppic 372 45 3505
+gumppic 53 407 3507
+gumppic 28 167 3503
+gumppic 63 58 4037
+tilepic 134 147 3823
+tilepic 55 200 3827
+tilepic 324 200 3827
+resizepic 149 205 3000 130 21
+
+dtext 151 37 0 Account Gold Bank
+dtext 100 68 0 Total Account Gold: <SRC.TAG.TOTALACCOUNTGOLD> gold pieces
+dtext 126 354 0 Character: <SRC.ACCOUNT.CHAR.3.NAME>
+
+dtext 62 224 0 New
+dtext 54 240 0 Cheque
+button 61 266 1154 1155 1 0 14 // New Cheque
+dtext 330 224 0 Cash
+dtext 323 240 0 Cheque
+button 333 266 1154 1155 1 0 19 // Cash Cheque
+
+IF (<EVAL STRLEN(<SRC.ACCOUNT.CHAR.3.GOLD>)> <= 3)
+	dtext 174 149 2300 <SRC.ACCOUNT.CHAR.3.GOLD> gps
+ELSEIF (<EVAL STRLEN(<SRC.ACCOUNT.CHAR.3.GOLD>)>==4)
+	dtext 174 149 2300 <STRSUB 0 1 <SRC.ACCOUNT.CHAR.3.GOLD>>.<STRSUB 1 3 <SRC.ACCOUNT.CHAR.3.GOLD>> gps
+ELSEIF (<EVAL STRLEN(<SRC.ACCOUNT.CHAR.3.GOLD>)>==5)
+	dtext 174 149 2300 <STRSUB 0 2 <SRC.ACCOUNT.CHAR.3.GOLD>>.<STRSUB 2 3 <SRC.ACCOUNT.CHAR.3.GOLD>> gps
+ELSEIF (<EVAL STRLEN(<SRC.ACCOUNT.CHAR.3.GOLD>)>==6)
+	dtext 174 149 2300 <STRSUB 0 3 <SRC.ACCOUNT.CHAR.3.GOLD>>.<STRSUB 3 3 <SRC.ACCOUNT.CHAR.3.GOLD>> gps
+ELSEIF (<EVAL STRLEN(<SRC.ACCOUNT.CHAR.3.GOLD>)>==7)
+	dtext 174 149 2300 <STRSUB 0 1 <SRC.ACCOUNT.CHAR.3.GOLD>>.<STRSUB 1 3 <SRC.ACCOUNT.CHAR.3.GOLD>>.<STRSUB 4 3 <SRC.ACCOUNT.CHAR.3.GOLD>> gps
+ELSEIF (<EVAL STRLEN(<SRC.ACCOUNT.CHAR.3.GOLD>)>==8)
+	dtext 174 149 2300 <STRSUB 0 2 <SRC.ACCOUNT.CHAR.3.GOLD>>.<STRSUB 2 3 <SRC.ACCOUNT.CHAR.3.GOLD>>.<STRSUB 5 3 <SRC.ACCOUNT.CHAR.3.GOLD>> gps
+ELSEIF (<EVAL STRLEN(<SRC.ACCOUNT.CHAR.3.GOLD>)>==9)
+	dtext 174 149 2300 <STRSUB 0 3 <SRC.ACCOUNT.CHAR.3.GOLD>>.<STRSUB 3 3 <SRC.ACCOUNT.CHAR.3.GOLD>>.<STRSUB 6 3 <SRC.ACCOUNT.CHAR.3.GOLD>> gps
+ENDIF
+
+dtext 153 206 0 Gold:
+dtextentrylimited 186 206 88 18 0 4 9
+
+dtext 163 235 2300 Transfer Gold To
+button 148 238 1210 1209 1 0 4
+dtext 163 254 2300 Transfer Gold From
+button 148 257 1210 1209 1 0 9
+
+dtext 87 391 0 Previous Character
+button 52 390 4014 4016 0 3 // Previous Page
+
+IF (<SRC.ACCOUNT.CHARS> > 4)
+	dtext 240 391 0 Next Character
+	button 344 390 4005 4007 0 5 // Next Page
+ENDIF
+
+page 5
+
+gumppic 136 172 3504
+gumppic 52 167 3504
+gumppic 134 47 3504
+gumppic 372 22 3502
+gumppic 29 46 3503
+gumppic 53 47 3504
+gumppic 372 168 3505
+gumppic 28 407 3506
+gumppic 131 407 3507
+gumppic 372 407 3508
+gumppic 54 22 3501
+gumppic 29 22 3500
+gumppic 124 95 66
+gumppic 131 22 3501
+gumppic 372 45 3505
+gumppic 53 407 3507
+gumppic 28 167 3503
+gumppic 63 58 4037
+tilepic 134 147 3823
+tilepic 55 200 3827
+tilepic 324 200 3827
+resizepic 149 205 3000 130 21
+
+dtext 151 37 0 Account Gold Bank
+dtext 100 68 0 Total Account Gold: <SRC.TAG.TOTALACCOUNTGOLD> gold pieces
+dtext 126 354 0 Character: <SRC.ACCOUNT.CHAR.4.NAME>
+
+dtext 62 224 0 New
+dtext 54 240 0 Cheque
+button 61 266 1154 1155 1 0 15 // New Cheque
+dtext 330 224 0 Cash
+dtext 323 240 0 Cheque
+button 333 266 1154 1155 1 0 20 // Cash Cheque
+
+IF (<EVAL STRLEN(<SRC.ACCOUNT.CHAR.4.GOLD>)> <= 3)
+	dtext 174 149 2300 <SRC.ACCOUNT.CHAR.4.GOLD> gps
+ELSEIF (<EVAL STRLEN(<SRC.ACCOUNT.CHAR.4.GOLD>)>==4)
+	dtext 174 149 2300 <STRSUB 0 1 <SRC.ACCOUNT.CHAR.4.GOLD>>.<STRSUB 1 3 <SRC.ACCOUNT.CHAR.4.GOLD>> gps
+ELSEIF (<EVAL STRLEN(<SRC.ACCOUNT.CHAR.4.GOLD>)>==5)
+	dtext 174 149 2300 <STRSUB 0 2 <SRC.ACCOUNT.CHAR.4.GOLD>>.<STRSUB 2 3 <SRC.ACCOUNT.CHAR.4.GOLD>> gps
+ELSEIF (<EVAL STRLEN(<SRC.ACCOUNT.CHAR.4.GOLD>)>==6)
+	dtext 174 149 2300 <STRSUB 0 3 <SRC.ACCOUNT.CHAR.4.GOLD>>.<STRSUB 3 3 <SRC.ACCOUNT.CHAR.4.GOLD>> gps
+ELSEIF (<EVAL STRLEN(<SRC.ACCOUNT.CHAR.4.GOLD>)>==7)
+	dtext 174 149 2300 <STRSUB 0 1 <SRC.ACCOUNT.CHAR.4.GOLD>>.<STRSUB 1 3 <SRC.ACCOUNT.CHAR.4.GOLD>>.<STRSUB 4 3 <SRC.ACCOUNT.CHAR.4.GOLD>> gps
+ELSEIF (<EVAL STRLEN(<SRC.ACCOUNT.CHAR.4.GOLD>)>==8)
+	dtext 174 149 2300 <STRSUB 0 2 <SRC.ACCOUNT.CHAR.4.GOLD>>.<STRSUB 2 3 <SRC.ACCOUNT.CHAR.4.GOLD>>.<STRSUB 5 3 <SRC.ACCOUNT.CHAR.4.GOLD>> gps
+ELSEIF (<EVAL STRLEN(<SRC.ACCOUNT.CHAR.4.GOLD>)>==9)
+	dtext 174 149 2300 <STRSUB 0 3 <SRC.ACCOUNT.CHAR.4.GOLD>>.<STRSUB 3 3 <SRC.ACCOUNT.CHAR.4.GOLD>>.<STRSUB 6 3 <SRC.ACCOUNT.CHAR.4.GOLD>> gps
+ENDIF
+
+dtext 153 206 0 Gold:
+dtextentrylimited 186 206 88 18 0 5 9
+
+dtext 163 235 2300 Transfer Gold To
+button 148 238 1210 1209 1 0 5
+dtext 163 254 2300 Transfer Gold From
+button 148 257 1210 1209 1 0 10
+
+dtext 87 391 0 Previous Character
+button 52 390 4014 4016 0 4 // Previous Page
+
+
+[DIALOG d_account_gold_bank button]
+ON=1 5
+
+IF (<DISTANCE> > 3)
+	SRC.SYSMESSAGE You are too far away from the Account Gold Bank.
+	RETURN 1
+ENDIF
+
+IF (<EVAL <ARGTXT[<ARGN1>]>>==0)
+	SRC.SYSMESSAGE Please enter the gold amount you wish to transfer to <SRC.ACCOUNT.CHAR.<EVAL (<ARGN1>-1)>.NAME>'s gold account.
+	accountgoldbank <ARGN1>
+	RETURN 1
+ENDIF
+
+IF (<EVAL <SRC.GOLD>> < <EVAL <ARGTXT[<ARGN1>]>>)
+	SRC.SYSMESSAGE You do not own that amount of gold to transfer it to <SRC.ACCOUNT.CHAR.<EVAL (<ARGN1>-1)>.NAME>'s gold account.
+	accountgoldbank <ARGN1>
+	RETURN 1
+ENDIF
+
+SRC.GOLD -= <EVAL <ARGTXT[<ARGN1>]>>
+SRC.ACCOUNT.CHAR.<EVAL <EVAL (<ARGN1>-1)>>.GOLD = <EVAL <SRC.ACCOUNT.CHAR.<EVAL (<ARGN1>-1)>.GOLD>+<EVAL <ARGTXT[<ARGN1>]>>>
+
+SRC.SYSMESSAGE You have successfully transfered <EVAL <ARGTXT[<ARGN1>]>> gold pieces to <SRC.ACCOUNT.CHAR.<EVAL (<ARGN1>-1)>.NAME>'s gold account.
+
+accountgoldbank <ARGN1>
+
+ON=6 10
+
+IF (<DISTANCE> > 3)
+	SRC.SYSMESSAGE You are too far away from the Account Gold Bank.
+	RETURN 1
+ENDIF
+
+IF (<EVAL <ARGTXT[<EVAL (<ARGN1>-5)>]>>==0)
+	SRC.SYSMESSAGE Please enter the gold amount you wish to transfer from <SRC.ACCOUNT.CHAR.<EVAL (<ARGN1>-6)>.NAME>'s gold account.
+	accountgoldbank <EVAL (<ARGN1>-5)>
+	RETURN 1
+ENDIF
+
+IF (<EVAL <SRC.ACCOUNT.CHAR.<EVAL (<ARGN1>-6)>.GOLD>> < <EVAL <ARGTXT[<EVAL (<ARGN1>-5)>]>>)
+	SRC.SYSMESSAGE That character does not own that amount of gold to transfer it.
+	accountgoldbank <EVAL (<ARGN1>-5)>
+	RETURN 1
+ENDIF
+
+SRC.GOLD += <EVAL <ARGTXT[<EVAL (<ARGN1>-5)>]>>
+SRC.ACCOUNT.CHAR.<EVAL <EVAL (<ARGN1>-6)>>.GOLD = <EVAL <SRC.ACCOUNT.CHAR.<EVAL (<ARGN1>-6)>.GOLD>-<EVAL <ARGTXT[<EVAL (<ARGN1>-5)>]>>>
+
+SRC.SYSMESSAGE You have successfully transfered <EVAL <ARGTXT[<EVAL (<ARGN1>-5)>]>> gold pieces from <SRC.ACCOUNT.CHAR.<EVAL (<ARGN1>-6)>.NAME>'s gold account.
+
+accountgoldbank <EVAL (<ARGN1>-5)>
+
+ON=11 15
+
+IF (<DISTANCE> > 3)
+	SRC.SYSMESSAGE You are too far away from the Account Gold Bank.
+	RETURN 1
+ENDIF
+
+IF (<EVAL <ARGTXT[<EVAL (<ARGN1>-10)>]>>==0)
+	SRC.SYSMESSAGE Please enter the gold amount you wish to put into a cheque from <SRC.ACCOUNT.CHAR.<EVAL (<ARGN1>-11)>.NAME>'s gold account.
+	accountgoldbank <EVAL (<ARGN1>-10)>
+	RETURN 1
+ENDIF
+
+IF (<EVAL <SRC.ACCOUNT.CHAR.<EVAL (<ARGN1>-11)>.GOLD>> < <EVAL <ARGTXT[<EVAL (<ARGN1>-10)>]>>)
+	SRC.SYSMESSAGE That character does not own that amount of gold to add it into a cheque.
+	accountgoldbank <EVAL (<ARGN1>-10)>
+	RETURN 1
+ENDIF
+
+SRC.ACCOUNT.CHAR.<EVAL <EVAL (<ARGN1>-11)>>.GOLD = <EVAL <SRC.ACCOUNT.CHAR.<EVAL (<ARGN1>-11)>.GOLD>-<EVAL <ARGTXT[<EVAL (<ARGN1>-10)>]>>>
+SERV.NEWITEM i_cheque_new
+NEW.MORE2=<EVAL <ARGTXT[<EVAL (<ARGN1>-10)>]>>
+NEW.BOUNCE
+
+SRC.SYSMESSAGE You have successfully add <EVAL <ARGTXT[<EVAL (<ARGN1>-10)>]>> gold pieces into a cheque from <SRC.ACCOUNT.CHAR.<EVAL (<ARGN1>-11)>.NAME>'s gold account.
+
+accountgoldbank <EVAL (<ARGN1>-10)>
+
+ON=16 20
+
+IF (<DISTANCE> > 3)
+	SRC.SYSMESSAGE You are too far away from the Account Gold Bank.
+	RETURN 1
+ENDIF
+
+SRC.SYSMESSAGE Please target the cheque you want to cash into <SRC.ACCOUNT.CHAR.<EVAL (<ARGN1>-16)>.NAME>'s gold account.
+TARGETF f_account_gold_bank_cash_cheque125a <EVAL (<ARGN1>-16)>, <EVAL (<ARGN1>-15)>, <UID>
+RETURN 1
+
+
+[FUNCTION f_account_gold_bank_cash_cheque125a]
+IF !(<ARGO.BASEID>==i_cheque_new)
+	SRC.SYSMESSAGE You must target a cheque in order to cash it into <SRC.ACCOUNT.CHAR.<EVAL <ARGV0>>.NAME>'s gold account.
+	TRY UID.<ARGV2>.ACCOUNTGOLDBANK <ARGV1>
+	RETURN 1
+ENDIF
+
+IF !(<ARGO.CONT>==<SRC.FINDLAYER.layer_pack.UID>)
+	SRC.SYSMESSAGE You must be holding the desired cheque in your backpack in order to cash it into <SRC.ACCOUNT.CHAR.<EVAL <ARGV0>>.NAME>'s gold account.
+	TRY UID.<ARGV2>.ACCOUNTGOLDBANK <ARGV1>
+	RETURN 1
+ENDIF
+
+IF (<ARGO.AMOUNT> > 1)
+	SRC.SYSMESSAGE You must cash cheques individually.
+	TRY UID.<ARGV2>.ACCOUNTGOLDBANK <ARGV1>
+	RETURN 1
+ENDIF
+
+IF (<EVAL <ARGO.MORE2>>==0)
+	SRC.SYSMESSAGE That cheque has no gold in it to cash into into <SRC.ACCOUNT.CHAR.<EVAL <ARGV0>>.NAME>'s gold account.
+	TRY UID.<ARGV2>.ACCOUNTGOLDBANK <ARGV1>
+	RETURN 1
+ENDIF
+
+SRC.ACCOUNT.CHAR.<EVAL <ARGV0>>.GOLD = <EVAL <SRC.ACCOUNT.CHAR.<EVAL <ARGV0>>.GOLD>+<EVAL <ARGO.MORE2>>>
+SRC.SYSMESSAGE You have successfully cashed <EVAL <ARGO.MORE2>> gold pieces from a cheque into <SRC.ACCOUNT.CHAR.<EVAL <ARGV0>>.NAME>'s gold account.
+ARGO.REMOVE
+
+TRY UID.<ARGV2>.ACCOUNTGOLDBANK <ARGV1>
+
+
+//****************************************//
+//           Cheque                       //
+//****************************************//
+
+
+[ITEMDEF i_cheque_new]
+ID=i_scroll_blank
+NAME=cheque
+TYPE=t_normal
+VALUE=100
+
+ON=@CLICK
+IF (<AMOUNT> > 1)
+	MESSAGE <AMOUNT> cheques worth <EVAL <MORE2>> gold pieces each
+ELSE
+	MESSAGE a cheque worth <EVAL <MORE2>> gold pieces
+ENDIF
+RETURN 1
+
+ON=@CLIENTTOOLTIP
+src.addcliloc 1042971,worth <EVAL <MORE2>> gold pieces 
+	 
+ON=@DCLICK
+IF (<CONT>==<SRC.FINDLAYER.layer_pack.UID>)
+	IF (<AMOUNT>==1)
+		IF (<EVAL <MORE2>> >= 500000)
+			TARGET Please target a Banker NPC in order to retrieve your gold.
+		ELSE
+			TARGET Please target a Banker NPC in order to retrieve your gold or a pile of gold to add to the cheque.
+		ENDIF
+    ELSE
+        SRC.SYSMESSAGE Please use only one cheque at a time.
+    ENDIF
+    RETURN 1
+ELSE
+	SRC.SYSMESSAGE Please put the cheque in your backpack before trying to cash it.
+	RETURN 1
+ENDIF
+   
+ON=@TARGON_CHAR
+IF !(<CONT>==<SRC.FINDLAYER.layer_pack.UID>)
+	SRC.SYSMESSAGE You must be holding the cheque in your backpack in order to cash it.
+	RETURN 1
+ENDIF
+
+IF !((<SRC.TARG.BASEID>==c_h_banker) || (<SRC.TARG.BASEID>==c_h_banker_f))
+	SRC.SYSMESSAGE That's not a Banker NPC.
+	RETURN 1
+ENDIF
+   
+IF (<AMOUNT> > 1)
+    SRC.TARG.SAY Sorry, I'm not permitted to cash in stacks. Each cheque has to be individually cashed.
+    RETURN 1
+ENDIF
+
+IF (<EVAL <MORE2>>=0)    
+    SRC.TARG.SAY There is no gold to cash in that cheque.
+	RETURN 1
+ENDIF
+
+IF (<EVAL <MORE2>> <= 100000)    
+    SRC.TARG.SAY Here, I'll cash in that <EVAL <MORE2>> cheque for you.
+    SRC.f_gold_cheque125a <EVAL <MORE2>>
+	REMOVE
+ELSE
+	SRC.TARG.SAY Here, I'll cash in 100000 of that cheque for you. If you would like to cash in the rest, pass the cheque to me again.
+    SRC.f_gold_cheque125a 100000
+	MORE2=<EVAL (<MORE2>-100000)>
+ENDIF
+RETURN 1
+
+ON=@TARGON_ITEM
+IF !(<CONT>==<SRC.FINDLAYER.layer_pack.UID>)
+	SRC.SYSMESSAGE You must be holding the cheque in your backpack in order to cash it.
+	RETURN 1
+ENDIF
+
+IF !(<SRC.TARG.BASEID>==i_gold)
+	SRC.SYSMESSAGE You can only put gold into a cheque.
+	RETURN 1
+ENDIF
+
+IF (<AMOUNT> > 1)
+    SRC.SYSMESSAGE You must separate the cheques before adding gold to them
+    RETURN 1
+ENDIF
+
+IF !(<SRC.TARG.CONT>==<SRC.FINDLAYER.layer_pack.UID>)
+	SRC.SYSMESSAGE You must have the gold in your backpack in order to add it to the cheque.
+	RETURN 1
+ENDIF
+
+IF (<EVAL <MORE2>> >= 500000)    
+    SRC.SYSMESSAGE You can not add more gold in to this cheque.
+	RETURN 1
+ENDIF
+
+IF (<EVAL <SRC.TARG.AMOUNT>+<MORE2>> > 500000)    
+    SRC.SYSMESSAGE You can not add more than 500000 gold in to a cheque.
+	RETURN 1
+ENDIF
+
+MORE2=(<EVAL <MORE2>> + <EVAL <SRC.TARG.AMOUNT>>)
+SRC.SYSMESSAGE You add <EVAL <SRC.TARG.AMOUNT>> gold to the cheque. It is now worth <EVAL <MORE2>> gold.
+SRC.TARG.REMOVE
+
+RETURN 1
+
+[FUNCTION f_gold_cheque125a]
+LOCAL.GOLD=<EVAL <ARGS>>
+
+IF (<EVAL <LOCAL.GOLD>> > 50000)
+	WHILE (<EVAL <LOCAL.GOLD>> > 50000)
+		SERV.NEWITEM i_gold, 50000, <SRC.FINDLAYER.layer_bankbox.UID>
+		LOCAL.GOLD -= 50000
+	ENDWHILE
+ENDIF
+
+SERV.NEWITEM i_gold, <EVAL <LOCAL.GOLD>>, <SRC.FINDLAYER.layer_bankbox.UID>
+
+SRC.UPDATE

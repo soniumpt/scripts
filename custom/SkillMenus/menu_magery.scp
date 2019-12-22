@@ -1,0 +1,143 @@
+[SKILLMENU sm_summon]
+What do you want to summon ?
+
+ON=i_pet_Grizzly <name>
+TESTIF= ( <MAGERY> >= 80.0 )
+FLAGS=<FLAGS>&~statf_war
+if ( <REGION.GUARDED> )
+   CRIMINAL 1
+endif
+SUMMON=c_Bear_Grizzly
+   
+
+ON=i_pet_bear_polar <name>
+TESTIF= ( <MAGERY> >= 70.0 )
+FLAGS=<FLAGS>&~statf_war
+SUMMON=c_Bear_Polar
+
+ON=i_PET_SCORP <name>
+TESTIF= ( <MAGERY> >= 60.0 )
+FLAGS=<FLAGS>&~statf_war
+if ( <REGION.GUARDED> )
+   CRIMINAL 1
+endif
+SUMMON=c_SCORPION_GIANT
+
+ON=i_PET_BEAR <name>
+TESTIF= ( <MAGERY> >= 50.0 )
+FLAGS=<FLAGS>&~statf_war
+SUMMON=c_Bear_Brown
+
+ON=i_pet_horse_brown_lt <name>
+TESTIF= ( <MAGERY> >= 35.0 )
+FLAGS=<FLAGS>&~statf_war
+SUMMON=HORSES
+
+ON=i_PET_CROC <name>
+TESTIF= ( <MAGERY> >= 45.0 )
+FLAGS=<FLAGS>&~statf_war
+SUMMON=c_Alligator
+
+ON=i_PET_DEER <name>
+TESTIF= ( <MAGERY> >= 40.0 )
+FLAGS=<FLAGS>&~statf_war
+SUMMON=c_STAG
+
+ON=i_pet_DOG <name>
+TESTIF= ( <MAGERY> >= 35.0 )
+FLAGS=<FLAGS>&~statf_war
+SUMMON=c_DOG
+
+ON=i_pet_SHEEP <name>
+TESTIF= ( <MAGERY> >= 35.0 )
+FLAGS=<FLAGS>&~statf_war
+SUMMON=c_sheep_shorn
+
+ON=i_PET_RAT_2 <name>
+TESTIF= ( <MAGERY> >= 30.0 )
+FLAGS=<FLAGS>&~statf_war
+SUMMON=c_RAT_GIANT
+
+ON=i_pet_snake <name>
+TESTIF= ( <MAGERY> >= 25.0 )
+FLAGS=<FLAGS>&~statf_war
+SUMMON=c_Snake
+
+ON=i_pet_rabbit_2 <name>
+TESTIF= ( <MAGERY> >= 20.0 )
+FLAGS=<FLAGS>&~statf_war
+SUMMON=c_Rabbit
+
+ON=i_PET_CHICKEN <name>
+TESTIF= ( <MAGERY> >= 15.0 )
+FLAGS=<FLAGS>&~statf_war
+SUMMON=c_CHICKEN
+
+
+[SKILLMENU sm_polymorph]
+What do you want to polymorph into?
+
+ON=i_pet_DRAGON Dragon
+TESTIF= ( <MAGERY> >= 100.0 )
+POLYMORPH	= @Init_dragon
+
+ON=i_PET_DAEMON Daemon
+TESTIF= ( <MAGERY> >= 85.0 )
+POLYMORPH	= @Init_daemon
+
+ON=i_PET_GARG Gargoyle
+TESTIF= ( <MAGERY> >= 80.0 )
+POLYMORPH	= @Init_gargoyle
+
+ON=i_PET_SNAKE_GIANT Giant serpent
+TESTIF= ( <MAGERY> >= 75.0 )
+POLYMORPH	= @Init_snake_giant
+
+ON=i_PET_vampirebat Vampire Bat
+TESTIF= ( <MAGERY> >= 75.0 )
+POLYMORPH	= @Init_vampire_bat
+
+
+ON=i_PET_gorilla Gorilla
+TESTIF= ( (<MAGERY> >= 70.0) && <RESTEST 5 i_fruit_banana> )
+   if ( !<RESTEST 5 i_fruit_banana> )
+      SRC.SYSMESSAGE You lack the bananas.
+      return 1
+   endif
+   CONSUME 5 i_fruit_banana
+   POLYMORPH	= @Init_gorilla
+
+
+ON=i_pet_mongbat Mongbat
+TESTIF= ( <MAGERY> >= 65.0 )
+POLYMORPH	= @Init_mongbat
+
+
+ON=i_PET_llama Llama
+TESTIF= ( (<MAGERY> >= 60.0) && <RESTEST 5 i_hay_sheaf> )
+   if ( !<RESTEST 5 i_hay_sheaf> )
+      SRC.SYSMESSAGE You lack the hay.
+      return 1
+   endif
+   CONSUME 5 i_hay_sheaf
+   POLYMORPH	= @Init_llama
+
+ON=i_pet_DOG Dog
+TESTIF= ( <MAGERY> >= 50.0 )
+POLYMORPH	= @Init_dog
+
+ON=i_PET_rabbit Rabbit
+TESTIF= ( (<MAGERY> >= 40.0) && <RESTEST 5 i_fruit_carrot> )
+   if ( !<RESTEST 5 i_fruit_carrot> )
+      SRC.SYSMESSAGE You lack the carrots.
+      return 1
+   endif
+   CONSUME 5 i_fruit_carrot
+   POLYMORPH	= @Init_rabbit
+
+ON=i_PET_CHICKEN Chicken
+TESTIF= ( <MAGERY> >= 30.0 )
+POLYMORPH	= @Init_chicken
+
+[EOF]
+

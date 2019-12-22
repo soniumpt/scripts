@@ -1,0 +1,572 @@
+//Changelog
+//---------
+// Wigifer - 05-10-03 - Complete change on magicals some new templates changed
+// Ray - 03-19-13 - Added Rare Circlet, Sandals and Gloves
+
+[Events e_fishing_check]
+On=@Click
+   MESSAGE @59 [Fishing Quest]
+
+On=@DClick
+   MESSAGE [Fishing Quest]
+
+
+
+[ITEMDEF i_floppy_fishing]
+NAME	= GM ILLEGAL ITEM
+ID	= i_hat_floppy
+TDATA1  = mat_verite
+TYPE	= t_armor
+DYE	= 0
+ARMOR	= 5
+WEIGHT	= 1.5
+VALUE	= 12000
+
+ON = @Create
+   COLOR	= 02
+   ATTR		= attr_magic
+   MOREz	= 1
+ON = @Equip
+if ( <CONT.fishing> > 1 )
+      COnT.SYSMESSAGE You cant use this
+      UNEQUIP
+      return 1
+   endif
+ if ( !<ISIDENTIFIED> )
+      COnT.SYSMESSAGE This must be identified
+      UNEQUIP
+      return 1
+   endif
+   if ( <MORE1h> == 0 )
+      HITPOINTS	= { 40 60 }
+   endif
+   EQUIPCANCEL 0
+   if ( !<ISIDENTIFIED> )
+      return 0
+   endif
+   CONT.events = +e_fishing_check
+   CONT.FISHING	= 100.0
+ON = @Unequip
+   if ( !<UNEQUIPCANCEL> && <ISIDENTIFIED> )
+      CONT..events = -e_fishing_check
+      CONT.FISHING	= 0
+   endif
+ON = @DClick
+if ( <SRC.fishing> > 1 )
+      SRC.SYSMESSAGE You cant use this
+      return 1
+   endif
+   return <DCLICKCANCEL>
+ON = @Identify
+     
+//ON = @ArmorEffect
+//   MSG_EFFECT_ADD	= +<MOREz> intelligence 
+ON = @Spelleffect
+   return 1
+
+//
+//  BRILLIANCE
+//
+[ITEMDEF i_floppy_brilliance]
+NAME	= Floppy Hat
+ID	= i_hat_floppy
+TDATA1  = mat_verite
+TYPE	= t_armor
+DYE	= 0
+ARMOR	= 30
+WEIGHT	= 1.5
+VALUE	= 12000
+
+ON = @Create
+   COLOR	= 02
+   ATTR		= attr_magic
+   MOREz	= 1
+ON = @Equip
+ if ( !<ISIDENTIFIED> )
+      COnT.SYSMESSAGE This must be identified
+      UNEQUIP
+      return 1
+   endif
+   if ( <MORE1h> == 0 )
+      HITPOINTS	= { 40 60 }
+   endif
+   EQUIPCANCEL 0
+   if ( !<ISIDENTIFIED> )
+      return 0
+   endif
+   SRC.MODINT	= (<SRC.MODINT> + <MOREz>)
+ON = @Unequip
+   if ( !<UNEQUIPCANCEL> && <ISIDENTIFIED> )
+      SRC.MODINT	= (<SRC.MODINT> - <MOREz>)
+   endif
+ON = @DClick
+   return <DCLICKCANCEL>
+ON = @Identify
+   NAME = +<MOREz> Circlet of Brilliance  
+//ON = @ArmorEffect
+//   MSG_EFFECT_ADD	= +<MOREz> intelligence 
+ON = @Spelleffect
+   return 1
+
+[ITEMDEF i_tricorne_brilliance]
+NAME	= Tricorne
+ID	= i_hat_tricorne
+TYPE	= t_armor
+TDATA1  = mat_verite
+DYE	= 0
+ARMOR	=30
+WEIGHT	= 1.5
+VALUE	= 12000
+
+ON = @Create
+   COLOR	= 02
+   ATTR		= attr_magic
+   MOREz	= { 2 36  3 30  4 9 }
+ON = @Equip
+   if ( <MORE1h> == 0 )
+      HITPOINTS	= { 40 60 }
+   endif
+   EQUIPCANCEL 0
+   if ( !<ISIDENTIFIED> )
+      return 0
+   endif
+   SRC.MODINT	= (<SRC.MODINT> + <MOREz>)
+ON = @Unequip
+   if ( !<UNEQUIPCANCEL> && <ISIDENTIFIED> )
+      SRC.MODINT	= (<SRC.MODINT> - <MOREz>)
+   endif
+ON = @DClick
+   return <DCLICKCANCEL>
+ON = @Identify
+   NAME = +<MOREz> Tricorne of Brilliance
+//ON = @ArmorEffect
+//   MSG_EFFECT_ADD	= +<MOREz> intelligence
+ON = @Spelleffect
+   return 1
+
+[ITEMDEF i_circlet_brilliance]
+NAME	= circlet
+ID	= i_bandana
+TDATA1  = mat_verite
+TYPE	= t_armor
+DYE	= 0
+ARMOR	= 30
+WEIGHT	= 1.5
+VALUE	= 42000
+
+ON = @Create
+   COLOR	= 0489
+   ATTR		= attr_magic
+   MOREz	= { 5 40  6 31  7 6 }
+ON = @Equip
+   if ( <MORE1h> == 0 )
+      HITPOINTS	= { 40 60 }
+   endif
+   EQUIPCANCEL 0
+   if ( !<ISIDENTIFIED> )
+      return 0
+   endif
+   SRC.MODINT	= (<SRC.MODINT> + <MOREz>)
+ON = @Unequip
+   if ( !<UNEQUIPCANCEL> && <ISIDENTIFIED> )
+      SRC.MODINT	= (<SRC.MODINT> - <MOREz>)
+   endif
+ON = @DClick
+   return <DCLICKCANCEL>
+ON = @Identify
+   NAME = +<MOREz> Circlet of Brilliance
+//ON = @ArmorEffect
+//   MSG_EFFECT_ADD	= +<MOREz> intelligence
+ON = @Spelleffect
+   return 1
+
+
+
+[ITEMDEF i_helm_brilliance]
+NAME	= nose helm
+ID	= i_helm_nose
+TYPE	= t_armor
+DYE	= 0
+TDATA1  = mat_blackrock
+ARMOR	= 60
+TDATA1	= 0
+WEIGHT	= 3.5
+VALUE	= 175000
+
+ON = @Create
+   COLOR	= 0489
+   ATTR		= attr_magic
+   MOREz	= { 8 58  9 27  10 1 }
+ON = @Equip
+   if ( <MORE1h> == 0 )
+      HITPOINTS	= { 40 60 }
+   endif
+   EQUIPCANCEL 0
+   if ( !<ISIDENTIFIED> )
+      return 0
+   endif
+   SRC.MODINT	= (<SRC.MODINT> + <MOREz>)
+ON = @Unequip
+   if ( !<UNEQUIPCANCEL> && <ISIDENTIFIED> )
+      SRC.MODINT = (<SRC.MODINT> - <MOREz>)
+   endif
+ON = @DClick
+   return <DCLICKCANCEL>
+ON = @Identify
+   NAME = +<MOREz> Helm of Brilliance
+//ON = @ArmorEffect
+//   MSG_EFFECT_ADD	= +<MOREz> intelligence
+ON = @Spelleffect
+   return 1
+
+
+//
+//  SPEED
+//
+[ITEMDEF i_sandals_speed]
+NAME	= sandals
+ID	= i_sandals
+TYPE	= t_armor
+TDATA1  = mat_valorite
+DYE	= 0
+ARMOR	= 30
+WEIGHT	= 3.0
+VALUE	= 12000
+
+ON = @Create
+   COLOR	= 07b5
+   ATTR		= attr_magic
+   MOREz	= { 2 36  3 30  4 12  5 8  6 4 }
+ON = @Equip
+   if ( <MORE1h> == 0 )
+      HITPOINTS	= { 40 60 }
+   endif
+   EQUIPCANCEL 0
+   if ( !<ISIDENTIFIED> )
+      return 0
+   endif
+   SRC.MODDEX	= (<SRC.MODDEX> + <MOREz>)
+   SRC.findlayer(24).unequip
+ON = @Unequip
+   if ( !<UNEQUIPCANCEL> && <ISIDENTIFIED> )
+      SRC.MODDEX	= (<SRC.MODDEX> - <MOREz>)
+   endif
+ON = @DClick
+   return <DCLICKCANCEL>
+ON = @Identify
+   NAME = +<MOREz> Sandals of Speed
+//ON = @ArmorEffect
+//   MSG_EFFECT_ADD	= +<MOREz> dexterity
+ON = @Spelleffect
+   return 1
+
+
+
+[ITEMDEF i_boots_speed]
+NAME	= thigh boots
+ID	= i_boots_thigh
+TYPE	= t_armor
+TDATA1  = mat_valorite
+DYE	= 0
+ARMOR	= 60
+DYE	= 0
+WEIGHT	= 5.0
+VALUE	= 52000
+
+ON = @Create
+   COLOR	= 0491
+   ATTR		= attr_magic
+   MOREz	= { 7 42  8 21  9 12  10 1 }
+ON = @Equip
+   if ( <MORE1h> == 0 )
+      HITPOINTS	= { 40 60 }
+   endif
+   EQUIPCANCEL 0
+   if ( !<ISIDENTIFIED> )
+      return 0
+   endif
+   SRC.MODDEX	= (<SRC.MODDEX> + <MOREz>)
+   SRC.findlayer(24).unequip
+ON = @Unequip
+   if ( !<UNEQUIPCANCEL> && <ISIDENTIFIED> )
+      SRC.MODDEX	= (<SRC.MODDEX> - <MOREz>)
+   endif
+ON = @DClick
+   return <DCLICKCANCEL>
+ON = @Identify
+   NAME = +<MOREz> Boots of Speed
+//ON = @ArmorEffect
+//   MSG_EFFECT_ADD	= +<MOREz> dexterity
+ON = @Spelleffect
+   return 1
+
+
+//
+//  MIGHT
+//
+[ITEMDEF i_gloves_might]
+NAME	= gloves
+ID	= i_leather_gloves
+TYPE	= t_armor
+TDATA1  = mat_adamantine
+DYE	= 0
+ARMOR	= 30
+WEIGHT	= 3.0
+VALUE	= 13500
+
+ON = @Create
+   COLOR	= 025
+   ATTR		= attr_magic
+   MOREz	= { 2 46  3 30  4 9 }
+ON = @Equip
+   if ( <MORE1h> == 0 )
+      HITPOINTS	= { 40 60 }
+   endif
+   EQUIPCANCEL 0
+   if ( !<ISIDENTIFIED> )
+      return 0
+   endif
+   SRC.MODSTR	= (<SRC.MODSTR> + <MOREz>)
+ON = @Unequip
+   if ( !<UNEQUIPCANCEL> && <ISIDENTIFIED> )
+      SRC.MODSTR	= (<SRC.MODSTR> - <MOREz>)
+   endif
+ON = @DClick
+   return <DCLICKCANCEL>
+ON = @Identify
+   NAME = +<MOREz> Gloves of Might
+//ON = @ArmorEffect
+//   MSG_EFFECT_ADD	= +<MOREz> strength
+ON = @Spelleffect
+   return 1
+
+
+[ITEMDEF i_ringmail_gloves_might]
+NAME	= gloves
+ID	= i_ringmail_gloves
+TYPE	= t_armor
+DYE	= 0
+TDATA1  = mat_adamantine
+ARMOR	= 40
+WEIGHT	= 3.0
+VALUE	= 59500
+
+ON = @Create
+   COLOR	= 0486
+   ATTR		= attr_magic
+   MOREz	= { 5 52  6 22  7 6 }
+ON = @Equip
+   if ( <MORE1h> == 0 )
+      HITPOINTS	= { 40 60 }
+   endif
+   EQUIPCANCEL 0
+   if ( !<ISIDENTIFIED> )
+      return 0
+   endif
+   SRC.MODSTR	= (<SRC.MODSTR> + <MOREz>)
+ON = @Unequip
+   if ( !<UNEQUIPCANCEL> && <ISIDENTIFIED> )
+      SRC.MODSTR	= (<SRC.MODSTR> - <MOREz>)
+   endif
+ON = @DClick
+   return <DCLICKCANCEL>
+ON = @Identify
+   NAME = +<MOREz> Gloves of Might
+//ON = @ArmorEffect
+//   MSG_EFFECT_ADD	= +<MOREz> strength
+ON = @Spelleffect
+   return 1
+
+
+[ITEMDEF i_gauntlets_might]
+NAME	= gauntlets
+ID	= i_platemail_gloves
+TYPE	= t_armor
+TDATA1  = mat_blackrock
+DYE	= 0
+ARMOR	= 80
+WEIGHT	= 5.0
+VALUE	= 190000
+
+ON = @Create
+   COLOR	= 0486
+   ATTR		= attr_magic
+   MOREz	= { 8 58  9 25  10 1 }
+ON = @Equip
+   if ( <MORE1h> == 0 )
+      HITPOINTS	= { 40 60 }
+   endif
+   EQUIPCANCEL 0
+   if ( !<ISIDENTIFIED> )
+      return 0
+   endif
+   SRC.MODSTR	= (<SRC.MODSTR> + <MOREz>)
+ON = @Unequip
+   if ( !<UNEQUIPCANCEL> && <ISIDENTIFIED> )
+      SRC.MODSTR	= (<SRC.MODSTR> - <MOREz>)
+   endif
+ON = @DClick
+   return <DCLICKCANCEL>
+ON = @Identify
+   NAME = +<MOREz> Gauntlets of Might
+//ON = @ArmorEffect
+//   MSG_EFFECT_ADD	= +<MOREz> strength
+ON = @Spelleffect
+   return 1
+
+
+
+//
+//  other
+//
+[ITEMDEF i_sash_warrior]
+NAME	= sash
+ID	= i_sash
+TDATA1  = mat_mytheril
+TYPE	= t_armor
+DYE	= 0
+ARMOR	= 24
+WEIGHT	= 2.5
+VALUE	= 10000
+
+ON = @Create
+   COLOR	= 07b5
+   ATTR		= attr_magic
+   MOREz	= { 2 36  3 30  4 10  5 8  6 6  7 4  8 3  9 2  10 1 }
+ON = @Equip
+   if ( <MORE1h> == 0 )
+      HITPOINTS	= { 40 60 }
+   endif
+   EQUIPCANCEL 0
+   if ( !<ISIDENTIFIED> )
+      return 0
+   endif
+ON = @Unequip
+   if ( !<UNEQUIPCANCEL> && <ISIDENTIFIED> )
+   endif
+ON = @DClick
+   return <DCLICKCANCEL>
+ON = @Identify
+   NAME = "+<eval (<MOREz>*2)>.0 Sash of Warriors"
+ON = @ArmorEffect
+   // VAR.ARM.EFFECT.SWORD_PARRY = <eval <VAR.ARM.EFFECT.SWORD_PARRY> + (<MOREz>*2))>
+   VAR.ARM.EFFECT.WEAPON_BLOCK = <eval <VAR.ARM.EFFECT.WEAPON_BLOCK> + (<MOREz>*2))>
+ON = @Spelleffect
+   return 1
+
+//Rare Ones
+
+[ITEMDEF i_circlet_brilliance_rare]
+NAME	= circlet
+ID	= i_bandana
+TDATA1  = mat_verite
+TYPE	= t_armor
+DYE	= 0
+ARMOR	= 30
+WEIGHT	= 1.5
+VALUE	= 42000
+
+ON = @Create
+   COLOR	= 0796
+   ATTR		= attr_magic
+   MOREz	= { 8 75  9 30  10 1 }
+ON = @Equip
+   if ( <MORE1h> == 0 )
+      HITPOINTS	= { 40 60 }
+   endif
+   EQUIPCANCEL 0
+   if ( !<ISIDENTIFIED> )
+      return 0
+   endif
+   SRC.MODINT	= (<SRC.MODINT> + <MOREz>)
+ON = @Unequip
+   if ( !<UNEQUIPCANCEL> && <ISIDENTIFIED> )
+      SRC.MODINT = (<SRC.MODINT> - <MOREz>)
+   endif
+ON = @DClick
+   return <DCLICKCANCEL>
+ON = @Identify
+   NAME = +<MOREz> Circlet of Brilliance
+//ON = @ArmorEffect
+//   MSG_EFFECT_ADD	= +<MOREz> intelligence
+ON = @Spelleffect
+   return 1
+
+
+
+[ITEMDEF i_sandals_speed_rare]
+NAME	= sandals
+ID	= i_sandals
+TYPE	= t_armor
+TDATA1  = mat_valorite
+DYE	= 0
+ARMOR	= 30
+WEIGHT	= 3.0
+VALUE	= 12000
+
+ON = @Create
+   COLOR	= 07a1
+   ATTR		= attr_magic
+   MOREz	= { 8 75  9 30  10 1 }
+ON = @Equip
+   if ( <MORE1h> == 0 )
+      HITPOINTS	= { 40 60 }
+   endif
+   EQUIPCANCEL 0
+   if ( !<ISIDENTIFIED> )
+      return 0
+   endif
+   SRC.MODDEX	= (<SRC.MODDEX> + <MOREz>)
+   SRC.findlayer(24).unequip
+ON = @Unequip
+   if ( !<UNEQUIPCANCEL> && <ISIDENTIFIED> )
+      SRC.MODDEX	= (<SRC.MODDEX> - <MOREz>)
+   endif
+ON = @DClick
+   return <DCLICKCANCEL>
+ON = @Identify
+   NAME = +<MOREz> Sandals of Speed
+//ON = @ArmorEffect
+//   MSG_EFFECT_ADD	= +<MOREz> dexterity
+ON = @Spelleffect
+   return 1
+
+
+[ITEMDEF i_gloves_might_rare]
+NAME	= gloves
+ID	= i_ringmail_gloves
+TYPE	= t_armor
+DYE	= 0
+TDATA1  = mat_adamantine
+ARMOR	= 40
+WEIGHT	= 3.0
+VALUE	= 59500
+
+ON = @Create
+   COLOR	= 0799
+   ATTR		= attr_magic
+   MOREz	= { 8 75  9 30  10 1 }
+ON = @Equip
+   if ( <MORE1h> == 0 )
+      HITPOINTS	= { 40 60 }
+   endif
+   EQUIPCANCEL 0
+   if ( !<ISIDENTIFIED> )
+      return 0
+   endif
+   SRC.MODSTR	= (<SRC.MODSTR> + <MOREz>)
+ON = @Unequip
+   if ( !<UNEQUIPCANCEL> && <ISIDENTIFIED> )
+      SRC.MODSTR	= (<SRC.MODSTR> - <MOREz>)
+   endif
+ON = @DClick
+   return <DCLICKCANCEL>
+ON = @Identify
+   NAME = +<MOREz> Gloves of Might
+//ON = @ArmorEffect
+//   MSG_EFFECT_ADD	= +<MOREz> strength
+ON = @Spelleffect
+   return 1
+
+
+[EOF]

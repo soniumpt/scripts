@@ -1,0 +1,544 @@
+// Changelog
+//
+// Name			Version		Date		Change
+// Vidar		1.0             17. June 2003	Bug solving
+// Vidar/Tiffany	1.1		18. June 2003	Bug solving
+// Tiffany              1.hax           05. Sept 2003   Line:112 (can't dye others' hair with '70' tub)
+// Jessica		1.2		02. Jan  2004   Added the ability to dye donator robes with the 15 ticket tub
+// Arkos                1.3             22. Sept 2009   Added new stuff
+
+
+[ITEMDEF i_pvp_tub_15]
+//Dying Tub
+DEFNAME=i_pvp_tub_15
+ID=i_dye_tub
+WEIGHT=10
+CATEGORY=Imperial uo
+SUBSECTION=Items by Professions Tailor
+DESCRIPTION=Dying Tub reward board
+NAME=15 PvP ticket dye vat
+RESOURCES=5 i_log_pine
+
+ON=@CREATE
+  TYPE	= t_pvp_tub
+
+ON=@TARGON_CHAR
+	IF  (<SRC.TARG.uid> == <SRC.uid>) 
+	SRC.TARG.FINDLAYER(layer_hair).color = <COLOR>
+	remove
+	RETURN 1	
+   ENDIF		
+ON=@TARGON_ITEM
+   IF ( (<SRC.TARG.BASEID> == i_backpack) && (<SRC.TARG.ATTR> == 014))
+    SRC.TARG.COLOR = <COLOR>
+   	remove
+   	RETURN 1
+   ELSEIF ( <SRC.TARG.TYPE> == t_spellbook )
+   	SRC.SYSMESSAGE "You need a 70 ticket dye tub to dye this"
+   	RETURN 1
+   ELSEIF (<SRC.TARG.BASEID> == i_robe_donator)
+   	SRC.TARG.COLOR = <COLOR>
+    	remove
+     	RETURN 1
+   ELSEIF ( <SRC.TARG.TYPE> == t_clothing )
+        SRC.SYSMESSAGE You cannot dye this.
+        return 1
+   ELSEIF (<SRC.TARG.TYPE> == t_armor)
+   	SRC.TARG.COLOR = <COLOR>
+    	remove
+     	RETURN 1
+   ELSEIF (<SRC.TARG.TYPE> == t_armor_leather)
+    	SRC.TARG.COLOR = <COLOR>
+    	remove
+    	RETURN 1
+   ELSEIF (<SRC.TARG.TYPE> == t_weapon_sword)
+    	SRC.TARG.COLOR = <COLOR>
+    	remove
+    	RETURN 1
+   ELSEIF (<SRC.TARG.TYPE> == t_weapon_mace_sharp)
+    	SRC.TARG.COLOR = <COLOR>
+    	remove
+    	RETURN 1
+   ELSEIF (<SRC.TARG.TYPE> == t_weapon_mace_staff)
+    	SRC.TARG.COLOR = <COLOR>
+    	remove
+    	RETURN 1
+   ELSEIF (<SRC.TARG.TYPE> == t_weapon_bow)
+    	SRC.TARG.COLOR = <COLOR>
+    	remove
+    	RETURN 1
+   ELSEIF (<SRC.TARG.TYPE> == t_weapon_xbow)
+    	SRC.TARG.COLOR = <COLOR>
+    	remove
+    	RETURN 1
+   ELSEIF (<SRC.TARG.TYPE> == t_weapon_mace_smith)
+    	SRC.TARG.COLOR = <COLOR>
+    	remove
+    	RETURN 1
+   ELSEIF (<SRC.TARG.TYPE> == t_weapon_axe)
+    	SRC.TARG.COLOR = <COLOR>
+    	remove 
+    	RETURN 1
+   ELSEIF (<SRC.TARG.TYPE> == t_weapon_fence)
+    	SRC.TARG.COLOR = <COLOR>
+    	remove 
+    	RETURN 1 
+   ELSEIF (<SRC.TARG.TYPE> == t_shield)
+    	IF ( <SRC.TARG.BASEID> == i_shield_chaos_2 )
+		SRC.SYSMESSAGE "You need a 70 ticket dye tub to dye this"
+		Return 1  
+	ELSEIF ( <SRC.TARG.BASEID> == i_shield_order_2 )
+		SRC.SYSMESSAGE "You need a 70 ticket dye tub to dye this"
+		Return 1
+    	ELSEIF ( <SRC.TARG.BASEID> == i_shield_chaos_3 )
+		SRC.SYSMESSAGE "You need a 70 ticket dye tub to dye this"
+		Return 1  
+	ELSEIF ( <SRC.TARG.BASEID> == i_shield_order_3 )
+		SRC.SYSMESSAGE "You need a 70 ticket dye tub to dye this"
+		Return 1
+	ELSE
+		SRC.TARG.COLOR = <COLOR>
+		remove 
+     		RETURN 1   
+     	ENDIF
+   ELSE
+   	SRC.SYSMESSAGE You can not dye this item
+   	RETURN 1
+   ENDIF
+	
+     
+
+[ITEMDEF i_pvp_tub_70]
+//Dying Tub
+DEFNAME=i_pvp_tub_70
+ID=i_dye_tub
+WEIGHT=10
+CATEGORY=Imperial uo
+SUBSECTION=Items by Professions Tailor
+DESCRIPTION=Dying Tub reward board
+NAME= 70 PvP ticket dye vat
+RESOURCES=5 i_log_pine
+
+ON=@CREATE
+	TYPE = t_pvp_tub
+
+ON=@TARGON_Char
+   SRC.SYSMESSAGE "You need a 15 ticket dye tub to dye your hair"
+   RETURN 1	
+ON=@TARGON_ITEM
+   IF (<SRC.TARG.TYPE> == t_spellbook)
+   	SRC.TARG.COLOR = <COLOR>
+   	remove
+   	RETURN 1
+   ELSEIF ( (<SRC.TARG.BASEID> == i_backpack) && (<SRC.TARG.ATTR> == 014))
+   	SRC.SYSMESSAGE "You need a 15 ticket dye tub to dye this"
+   	Return 1
+   ELSEIF ((<SRC.TARG.BASEID> == i_shield_chaos)
+   	SRC.TARG.COLOR = <COLOR>
+   	remove
+   	RETURN 1
+   ELSEIF ((<SRC.TARG.BASEID> == i_shield_order)
+   	SRC.TARG.COLOR = <COLOR>
+   	remove
+   	RETURN 1 
+   ELSEIF ((<SRC.TARG.BASEID> == i_shield_chaos_2)
+   	SRC.TARG.COLOR = <COLOR>
+   	remove
+   	RETURN 1
+   ELSEIF ((<SRC.TARG.BASEID> == i_shield_order_2)
+   	SRC.TARG.COLOR = <COLOR>
+   	remove
+   	RETURN 1
+   ELSEIF ((<SRC.TARG.BASEID> == i_shield_chaos_3)
+   	SRC.TARG.COLOR = <COLOR>
+   	remove
+   	RETURN 1
+   ELSEIF ((<SRC.TARG.BASEID> == i_shield_order_3)
+   	SRC.TARG.COLOR = <COLOR>
+   	remove
+   	RETURN 1
+   ELSE ( <SRC.TARG.TYPE> == t_clothing )
+   	SRC.SYSMESSAGE You cannot dye this.
+   	return 1
+   ENDIF
+
+///
+///// type definition for the pvp dye tub
+///
+
+[TYPEDEF T_PVP_TUB]
+ON=@DCLICK
+F_PVP_TUB125a
+RETURN 1
+
+Dialogs for PvP dye tubs
+
+// Changelog
+//
+// Name		Version		Date		Change
+// Vidar        1.0             17. June 2003	Created Dialogs for PvP tubs
+//
+
+
+///
+///// Dialog for choosing a color
+///
+
+[DIALOG d_pvp_tub]
+0,0
+
+PAGE 1
+
+gumppic 100 100 3500
+gumppic 120 100 3501
+gumppic 350 100 3502
+gumppic 100 120 3503
+gumppic 120 120 3504
+gumppic 350 120 3505
+gumppic 100 360 3506
+gumppic 120 360 3507
+gumppic 350 360 3508
+
+button  120  115 2510 2511 1 0 1  // color 0ae0
+button  240  115 2510 2511 1 0 2  // color 0b4e
+button  120  135 2510 2511 1 0 3  // color 0683
+button  240  135 2510 2511 1 0 4  // color 0b9b
+button  120  155 2510 2511 1 0 5  // color 0b99
+button  240  155 2510 2511 1 0 6  // color 07ac
+button  120  175 2510 2511 1 0 7  // color 0a0f
+button  240  175 2510 2511 1 0 8  // color 07a3
+button  120  195 2510 2511 1 0 9  // color 07a2
+button  240  195 2510 2511 1 0 10 // color 01
+button  120  215 2510 2511 1 0 11 // color 0b56
+button  240  215 2510 2511 1 0 12 // color 0a2a
+button  120  235 2510 2511 1 0 13 // color 07ad
+button  240  235 2510 2511 1 0 14 // color 0799
+button  120  255 2510 2511 1 0 15 // color 0796
+button  240  255 2510 2511 1 0 16 // color 0ba1
+button  120  275 2510 2511 1 0 17 // color 09ed
+button  240  275 2510 2511 1 0 18 // color 0783
+button  120  295 2510 2511 1 0 19 // color 07bf
+button  240  295 2510 2511 1 0 20 // color 09aa
+button  120  315 2510 2511 1 0 21 // color 09e6
+button  240  315 2510 2511 1 0 22 // color 079a
+button  120  335 2510 2511 1 0 23 // color 0a03
+button  240  335 2510 2511 1 0 24 // color 0bb0
+button  120  355 2510 2511 1 0 25 // color 05b0
+
+
+//text 200 110 0  0  // line  1
+text 140 113 0  1  // line  2 color 0ae0
+text 260 113 0  2  // line  3 color 0b4e
+text 140 133 0  3  // line  4 color 0683
+text 260 133 0  4  // line  5 color 0b9b
+text 140 153 0  5  // line  6 color 0b99
+text 260 153 0  6  // line  8 color 07ac
+text 140 173 0  7  // line  9 color 0a0f
+text 260 173 0  8  // line 10 color 07a3
+text 140 193 0  9  // line 11 color 07a2
+text 260 193 0 10  // line 12 color 01
+text 140 213 0 11  // line 13 color 0b56
+text 260 213 0 12  // line 14 color 0a2a
+text 140 233 0 13  // line 15 color 07ad
+text 260 233 0 14  // line 16 color 0799
+text 140 253 0 15  // line 17 color 0796
+text 260 253 0 16  // line 18 color 0ba1
+text 140 273 0 17  // line 19 color 09ed
+text 260 273 0 18  // line 20 color 0783
+text 140 293 0 19  // line 21 color 07bf
+text 260 293 0 20  // line 22 color 09aa
+text 140 313 0 21  // line 22 color 09e6
+text 260 313 0 22  // line 22 color 079a
+text 140 333 0 23  // line 22 color 0a03
+text 260 333 0 24  // line 22 color 0bb0
+text 140 353 0 25  // line 22 color 05b0
+
+
+
+[DIALOG d_pvp_tub BUTTON]
+
+
+ON = 1
+IF ((strmatch(15 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)) || (strmatch(70 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)))
+	SRC.FINDTYPE.T_PVP_TUB.COLOR = 0ae0
+	SRC.FINDTYPE.T_PVP_TUB.TYPE = t_dye_vat
+ 	return 1	
+ELSE
+	SRC.SYSMESSAGE You do not have such an item
+	return 0
+ENDIF
+
+ON = 2
+IF ((strmatch(15 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)) || (strmatch(70 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)))
+	SRC.FINDTYPE.T_PVP_TUB.COLOR = 0b4e
+	SRC.FINDTYPE.T_PVP_TUB.TYPE = t_dye_vat
+	return 1
+ELSE
+	SRC.SYSMESSAGE You do not have such an item
+	return 0
+ENDIF
+
+ON = 3
+IF ((strmatch(15 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)) || (strmatch(70 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)))
+	SRC.FINDTYPE.T_PVP_TUB.COLOR = 0683
+	SRC.FINDTYPE.T_PVP_TUB.TYPE = t_dye_vat
+	return 1
+ELSE
+	SRC.SYSMESSAGE You do not have such an item
+	return 0
+ENDIF
+
+
+ON = 4
+IF ((strmatch(15 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)) || (strmatch(70 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)))
+	SRC.FINDTYPE.T_PVP_TUB.COLOR = 0b9b
+	SRC.FINDTYPE.T_PVP_TUB.TYPE = t_dye_vat
+	return 1
+ELSE
+	SRC.SYSMESSAGE You do not have such an item
+	return 0
+ENDIF
+
+ON = 5
+IF ((strmatch(15 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)) || (strmatch(70 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)))
+	SRC.FINDTYPE.T_PVP_TUB.COLOR = 0b99
+	SRC.FINDTYPE.T_PVP_TUB.TYPE = t_dye_vat
+	return 1
+ELSE
+	SRC.SYSMESSAGE You do not have such an item
+	return 0
+ENDIF
+
+ON = 6
+IF ((strmatch(15 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)) || (strmatch(70 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)))
+	SRC.FINDTYPE.T_PVP_TUB.COLOR = 07ac
+	SRC.FINDTYPE.T_PVP_TUB.TYPE = t_dye_vat
+	return 1
+ELSE
+	SRC.SYSMESSAGE You do not have such an item
+	return 0
+ENDIF
+
+ON = 7
+IF ((strmatch(15 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)) || (strmatch(70 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)))
+	SRC.FINDTYPE.T_PVP_TUB.COLOR = 0a0f
+	SRC.FINDTYPE.T_PVP_TUB.TYPE = t_dye_vat
+	return 1
+ELSE
+	SRC.SYSMESSAGE You do not have such an item
+	return 0
+ENDIF
+
+ON = 8
+IF ((strmatch(15 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)) || (strmatch(70 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)))
+	SRC.FINDTYPE.T_PVP_TUB.COLOR = 07a3
+	SRC.FINDTYPE.T_PVP_TUB.TYPE = t_dye_vat
+	return 1
+ELSE
+	SRC.SYSMESSAGE You do not have such an item
+	return 0
+ENDIF
+
+ON = 9
+IF ((strmatch(15 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)) || (strmatch(70 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)))
+	SRC.FINDTYPE.T_PVP_TUB.COLOR = 07a2
+	SRC.FINDTYPE.T_PVP_TUB.TYPE = t_dye_vat
+	return 1
+ELSE
+	SRC.SYSMESSAGE You do not have such an item
+	return 0
+ENDIF
+
+ON = 10
+IF ((strmatch(15 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)) || (strmatch(70 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)))
+	SRC.FINDTYPE.T_PVP_TUB.COLOR = 01
+	SRC.FINDTYPE.T_PVP_TUB.TYPE = t_dye_vat
+	return 1
+ELSE
+	SRC.SYSMESSAGE You do not have such an item
+	return 0
+ENDIF
+
+ON = 11
+IF ((strmatch(15 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)) || (strmatch(70 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)))
+	SRC.FINDTYPE.T_PVP_TUB.COLOR = 0b56
+	SRC.FINDTYPE.T_PVP_TUB.TYPE = t_dye_vat
+	return 1
+ELSE
+	SRC.SYSMESSAGE You do not have such an item
+	return 0
+ENDIF
+
+ON = 12
+IF ((strmatch(15 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)) || (strmatch(70 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)))
+	SRC.FINDTYPE.T_PVP_TUB.COLOR = 0a2a
+	SRC.FINDTYPE.T_PVP_TUB.TYPE = t_dye_vat
+	return 1
+ELSE
+	SRC.SYSMESSAGE You do not have such an item
+	return 0
+ENDIF
+
+ON = 13
+IF ((strmatch(15 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)) || (strmatch(70 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)))
+	SRC.FINDTYPE.T_PVP_TUB.COLOR = 07ad
+	SRC.FINDTYPE.T_PVP_TUB.TYPE = t_dye_vat
+	return 1
+ELSE
+	SRC.SYSMESSAGE You do not have such an item
+	return 0
+ENDIF
+
+ON = 14
+IF ((strmatch(15 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)) || (strmatch(70 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)))
+	SRC.FINDTYPE.T_PVP_TUB.COLOR = 0799
+	SRC.FINDTYPE.T_PVP_TUB.TYPE = t_dye_vat
+	return 1
+ELSE
+	SRC.SYSMESSAGE You do not have such an item
+	return 0
+ENDIF
+
+ON = 15
+IF ((strmatch(15 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)) || (strmatch(70 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)))
+	SRC.FINDTYPE.T_PVP_TUB.COLOR = 0796
+	SRC.FINDTYPE.T_PVP_TUB.TYPE = t_dye_vat
+	return 1
+ELSE
+	SRC.SYSMESSAGE You do not have such an item
+	return 0
+ENDIF
+
+ON = 16
+IF ((strmatch(15 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)) || (strmatch(70 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)))
+	SRC.FINDTYPE.T_PVP_TUB.COLOR = 0ba1
+	SRC.FINDTYPE.T_PVP_TUB.TYPE = t_dye_vat
+	return 1
+ELSE
+	SRC.SYSMESSAGE You do not have such an item
+	return 0
+ENDIF
+
+ON = 17
+IF ((strmatch(15 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)) || (strmatch(70 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)))
+	SRC.FINDTYPE.T_PVP_TUB.COLOR = 09ed
+	SRC.FINDTYPE.T_PVP_TUB.TYPE = t_dye_vat
+	return 1
+ELSE
+	SRC.SYSMESSAGE You do not have such an item
+	return 0
+ENDIF
+
+ON = 18
+IF ((strmatch(15 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)) || (strmatch(70 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)))
+	SRC.FINDTYPE.T_PVP_TUB.COLOR = 0783
+	SRC.FINDTYPE.T_PVP_TUB.TYPE = t_dye_vat
+	return 1
+ELSE
+	SRC.SYSMESSAGE You do not have such an item
+	return 0
+ENDIF
+
+ON = 19
+IF ((strmatch(15 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)) || (strmatch(70 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)))
+	SRC.FINDTYPE.T_PVP_TUB.COLOR = 07bf
+	SRC.FINDTYPE.T_PVP_TUB.TYPE = t_dye_vat
+	return 1
+ELSE
+	SRC.SYSMESSAGE You do not have such an item
+	return 0
+ENDIF
+
+ON = 20
+IF ((strmatch(15 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)) || (strmatch(70 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)))
+	SRC.FINDTYPE.T_PVP_TUB.COLOR = 09aa
+	SRC.FINDTYPE.T_PVP_TUB.TYPE = t_dye_vat
+	return 1
+ELSE
+	SRC.SYSMESSAGE You do not have such an item
+	return 0
+ENDIF
+
+ON = 21
+IF ((strmatch(15 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)) || (strmatch(70 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)))
+	SRC.FINDTYPE.T_PVP_TUB.COLOR = 09e6
+	SRC.FINDTYPE.T_PVP_TUB.TYPE = t_dye_vat
+	return 1
+ELSE
+	SRC.SYSMESSAGE You do not have such an item
+	return 0
+ENDIF
+
+ON = 22
+IF ((strmatch(15 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)) || (strmatch(70 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)))
+	SRC.FINDTYPE.T_PVP_TUB.COLOR = 079a
+	SRC.FINDTYPE.T_PVP_TUB.TYPE = t_dye_vat
+	return 1
+ELSE
+	SRC.SYSMESSAGE You do not have such an item
+	return 0
+ENDIF
+
+ON = 23
+IF ((strmatch(15 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)) || (strmatch(70 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)))
+	SRC.FINDTYPE.T_PVP_TUB.COLOR = 0a03
+	SRC.FINDTYPE.T_PVP_TUB.TYPE = t_dye_vat
+	return 1
+ELSE
+	SRC.SYSMESSAGE You do not have such an item
+	return 0
+ENDIF
+
+ON = 24
+IF ((strmatch(15 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)) || (strmatch(70 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)))
+	SRC.FINDTYPE.T_PVP_TUB.COLOR = 0bb0
+	SRC.FINDTYPE.T_PVP_TUB.TYPE = t_dye_vat
+	return 1
+ELSE
+	SRC.SYSMESSAGE You do not have such an item
+	return 0
+ENDIF
+
+ON = 25
+IF ((strmatch(15 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)) || (strmatch(70 PvP ticket dye vat,<SRC.FINDTYPE.T_PVP_TUB.NAME>)))
+	SRC.FINDTYPE.T_PVP_TUB.COLOR = 05b0
+	SRC.FINDTYPE.T_PVP_TUB.TYPE = t_dye_vat
+	return 1
+ELSE
+	SRC.SYSMESSAGE You do not have such an item
+	return 0
+ENDIF
+
+
+[DIALOG d_pvp_tub TEXT]
+Color menu 		// line 1
+Marine			// line 2
+Azure		// line 3
+Bubblegum		// line 4	
+Sunfire			// line 5
+Purple Haze			// line 6
+Neon			// line 7	
+Flamingo			// line 8
+Vermilion			// line 9	
+Blueberry			// line 10
+Pitch Black		// line 11
+Magenta		// line 12
+Anthrax		// line 13	
+Sun		// line 14
+Blood		// line 15
+Midnight		// line 16
+Vorpal			// line 17	
+Salmon		// line 18
+Jupiter		// line 19	
+Onyx		// line 20
+Cyanide			// line 21
+Lime		// line 22
+Butterscotch			// line 23
+Orange Haze			// line 24
+Firebrick			// line 25
+Indigo			// line 26
+
+
+
+
+[EOF]

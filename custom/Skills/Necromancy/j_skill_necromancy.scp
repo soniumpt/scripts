@@ -1,0 +1,1926 @@
+//Feb 16 '04 -- Wren -- added karma set in necrosummons function
+//25/11/2019 - Wigifer - Updated all remaining <TIME> to <SERV.TIME> (56d update issue)
+
+//---------------------------------------------------------------------------------------------
+//
+//---------------------------------Wigifer's Necromancy Script---------------------------------
+//
+//---------------------------------------------------------------------------------------------
+//
+//---------------------------------        Version 0.1        ---------------------------------
+//
+//---------------------------------------------------------------------------------------------
+//
+//
+//- Last Update - 18th October at 17:34
+//
+//- Fixed tags on necro wands
+//- Gump for spells
+//- 70% satisfied with spell list, more might be added
+//
+//
+//- Version 0.3 - 14th October at 14:56
+//
+//- In this version -
+//- 60% of spells finished
+//- Necro reagents
+//- Necro wand settings etc
+//
+//
+//- Version 0.1 - 12th October at 14:56
+//
+//- In this version -
+//- Nosferatu's Curse
+//- Scrapping old script, rescripting from scratch
+//- Type for the Necro Wands
+//
+//
+//---------------------------------------------------------------------------------------------
+
+
+//---------------------------------         Reagents          ---------------------------------
+
+
+[ITEMDEF i_reag_ectoplasm_vial]
+ID=i_reag_blood_vial
+NAME=Vial of Ectoplasm
+VALUE=8
+WEIGHT=0.1
+
+ON=@CREATE
+   COLOR=0777
+
+
+[ITEMDEF i_reag_heart_zombie]
+ID=i_reag_worm_heart
+NAME=Zombie Heart
+VALUE=6
+WEIGHT=0.1
+TYPE=t_reagent
+
+ON=@CREATE
+COLOR=05ac
+
+ON=@CLICK
+RETURN <replace_zombieheart>
+
+[FUNCTION replace_zombieheart]
+IF (<TYPE> == t_meat_raw)
+SRC.NEWITEM <BASEID>
+SRC.ACT.BOUNCE
+REMOVE
+RETURN 1
+ENDIF
+RETURN 0
+
+
+//---------------------------------    Necromancy Summons     ---------------------------------
+
+[FUNCTION NECROSUMMONHERE]
+NEWNPC			= <args>
+
+IF (<NPC>=0)
+   ACT.FLAGS		= (<ACT.FLAGS> | statf_pet | statf_conjured)
+   ACT.EVENTS		= e_necrosummon
+ENDIF
+
+IF (<NPC>=0)
+   IF ((<args>=c_m_skeleton_hero) || (<args>=c_m_liche_lord))
+      ACT.STR		= 300
+      ACT.KARMA		= -3000
+   ELSE
+      ACT.KARMA		= 0
+   ENDIF
+ENDIF
+
+ACT.FIX
+ACT.NEWITEM		= i_memory
+ACT.ACT.COLOR		= memory_ipet
+ACT.ACT.LAYER		= layer_special
+ACT.ACT.CONT		= <ACT.UID>
+ACT.ACT.LINK		= <UID>
+ACT.NEWITEM		= M_NECROSUMMON
+ACT.ACT.LAYER
+ACT.ACT.CONT		= <ACT.UID>
+ACT.ACT.TIMER 		= 300
+
+
+[ITEMDEF M_NECROSUMMON]
+ID=i_memory
+NAME=Necromancy Summon
+type=t_eq_script
+
+ON=@Timer
+   CONT.REMOVE
+   RETURN 1
+
+[EVENTS e_necrosummon]
+ON=@Spelleffect
+   if ( (<argn> == 41) || (<argn> == 54) )
+      if  !(RAND(2))
+         remove
+         return 1
+      else
+         emote resist the spell...
+         return 1
+      endif
+   endif
+   
+ON=@HIT
+   IF <ARGN> > 40
+      ARGN = 40
+   ENDIF
+
+ON=@DEATH
+   remove
+   return 1
+
+
+
+//---------------------------------     General Functions     ---------------------------------
+
+
+[DEFNAME def_necrospells]
+necro_none			0
+
+necro_nosferatu			1
+necro_nosferatu_level		20.0	 
+
+necro_summonspectre     	2
+necro_summonspectre_level	20.0
+
+necro_brimstone			3
+necro_brimstone_level		20.0
+
+necro_bloodlust			4
+necro_bloodlust_level		40.0
+
+necro_mummy			5
+necro_mummy_level		40.0
+
+necro_vengeance			6
+necro_vengeance_level		60.0
+
+necro_bloodties			7
+necro_bloodties_level		60.0
+
+necro_reaperscall		8
+necro_reaperscall_level 	80.0
+
+necro_summondragon		9
+necro_summondragon_level	80.0
+
+necro_darkrebirth		10
+necro_darkrebirth_level		80.0
+
+[FUNCTION necro_assign]
+   MOREz	= <args>
+   TARGET Which wand will carry the spell?
+   return 1
+
+
+[ITEMDEF M_NECRO_DAMAGE_CHECK]
+ID=i_memory
+NAME=Damage Checker
+TYPE=t_eq_script
+
+ON=@Create
+   TIMER    = 2
+
+ON=@EQUIP
+   MOREX    = <SRC.HITS>
+
+ON=@Timer
+   MOREX    = (<MOREX>+-<CONT.HITS>)
+   IF (<MOREX>>0) && (<CONT.NECROMANCY><50.0)
+      CONT.FINDLAYER(layer_special).COLOR=10
+      CONT.FINDLAYER(layer_special).REMOVE
+   ELSEIF (<MOREX>>10) && (<CONT.NECROMANCY><75.0)
+      CONT.FINDLAYER(layer_special).COLOR=10
+      CONT.FINDLAYER(layer_special).REMOVE
+   ELSEIF (<MOREX>>20) && (<CONT.NECROMANCY><100.0)
+      CONT.FINDLAYER(layer_special).COLOR=10
+      CONT.FINDLAYER(layer_special).REMOVE
+   ELSEIF (<MOREX>>30) && (<CONT.NECROMANCY>>=100.0)
+      CONT.FINDLAYER(layer_special).COLOR=10
+      CONT.FINDLAYER(layer_special).REMOVE      
+   ENDIF
+   REMOVE 
+   RETURN 1
+
+
+[EVENTS e_necrospell]
+ON = @GetHit
+   NEWITEM M_NECRO_DAMAGE_CHECK
+   EQUIP <ACT>
+ON = @Hit
+   FINDLAYER(layer_special).REMOVE
+ON = @Logout
+   FINDLAYER(layer_special).REMOVE
+ON = @SpellCast
+   FINDLAYER(layer_special).REMOVE
+
+  
+
+//---------------------------------         Necro Book        ---------------------------------
+ 
+[ITEMDEF i_book_necro]
+NAME	= Book of the Undead
+ID	= i_spellbook
+TYPE	= t_script
+VALUE	= 1500
+RESOURCES	= 30 i_scroll_blank, 1 i_hide, 1 i_thread, 1 i_necro_light
+SKILLMAKE	= INSCRIPTION 100.0
+
+ON = @Create
+  COLOR	= 03ca
+
+ON = @DClick
+  //Requires at least 20 Necromancy to use
+//  SRC.SYSMESSAGE @50 It feels as if all the magic has been drained from this book...
+//  RETURN 1
+  IF ( <SRC.NECROMANCY> < 20.0 )
+     SRC.SYSMESSAGE @69 The book rejects you for your lack of skill...
+     return 1
+  ENDIF
+  DIALOG	d_necro_book
+  RETURN 1
+
+
+ON = @Targon_Item
+
+  //Can't assign a song to an instrument unless the instrument is in your backpack
+  IF ( <SRC.TARG.TOPOBJ.UID> != <SRC.UID> )
+     SRC.SYSMESSAGE You must have it in your backpack.
+     RETURN 1
+  ENDIF
+  
+  //Sets the wand as the target
+  IF ( <SRC.TARG.TYPE> == t_wand_necro )
+     SRC.ACT	= <SRC.TARG>
+  //Can't assign a song to anything but a Necro wand
+  ELSE
+     SRC.SYSMESSAGE That's not a wand of Necromancy mortal...
+     return 1
+  ENDIF
+
+  //Prepare the wand
+  SRC.ACT.MOREz	= <MOREz>
+  SRC.ACT.COLOR=<TAG.NECROSPELL.COLOR>
+  SRC.ACT.TAG.NECROSPELL.NAME=<TAG.NECROSPELL.NAME>
+  SRC.SYSMESSAGE You prepare the <SRC.ACT.NAME> for <SRC.ACT.TAG.NECROSPELL.NAME>.
+  RETURN 1
+
+
+[FUNCTION necro_book_bg]
+   GUMPPIC 0 0 9390
+   GUMPPIC 110 0 9391
+   GUMPPIC 150 0 9391
+   GUMPPIC 180 0 9391
+   GUMPPIC 210 0 9391
+   GUMPPIC 240 0 9391
+   GUMPPIC 270 0 9391
+   GUMPPIC 287 0 9392
+   GUMPPIC 0 140 9393
+   GUMPPIC 0 170 9393
+   GUMPPIC 0 210 9393
+   GUMPPIC 0 240 9393
+   GUMPPIC 0 270 9393
+   GUMPPIC 0 300 9396
+   GUMPPIC 110 140 9394
+   GUMPPIC 150 140 9394
+   GUMPPIC 180 140 9394
+   GUMPPIC 210 140 9394
+   GUMPPIC 240 140 9394
+   GUMPPIC 270 140 9394
+   GUMPPIC 287 140 9395
+   GUMPPIC 110 170 9394
+   GUMPPIC 150 170 9394
+   GUMPPIC 180 170 9394
+   GUMPPIC 210 170 9394
+   GUMPPIC 240 170 9394
+   GUMPPIC 270 170 9394
+   GUMPPIC 287 170 9395
+   GUMPPIC 110 210 9394
+   GUMPPIC 150 210 9394
+   GUMPPIC 180 210 9394
+   GUMPPIC 210 210 9394
+   GUMPPIC 240 210 9394
+   GUMPPIC 270 210 9394
+   GUMPPIC 287 210 9395
+   GUMPPIC 110 240 9394
+   GUMPPIC 150 240 9394
+   GUMPPIC 180 240 9394
+   GUMPPIC 210 240 9394
+   GUMPPIC 240 240 9394
+   GUMPPIC 270 240 9394
+   GUMPPIC 287 240 9395
+   GUMPPIC 110 270 9394
+   GUMPPIC 150 270 9394
+   GUMPPIC 180 270 9394
+   GUMPPIC 210 270 9394
+   GUMPPIC 240 270 9394
+   GUMPPIC 270 270 9394
+   GUMPPIC 287 270 9395
+   GUMPPIC 110 300 9397
+   GUMPPIC 150 300 9397
+   GUMPPIC 180 300 9397
+   GUMPPIC 210 300 9397
+   GUMPPIC 240 300 9397
+   GUMPPIC 270 300 9397
+   GUMPPIC 287 300 9398
+   GUMPPIC 22 37 10452
+   GUMPPIC 200 37 10452
+   GUMPPIC 227 40 120
+//   GUMPPIC 205 25 1870
+//   GUMPPIC 227 41 50448
+
+
+[FUNCTION necro_book_bg_temp]
+    //Border
+    gumppic     1    2 83
+    gumppic    16    0 84
+    gumppic    32    0 84
+    gumppic    48    0 84
+    gumppic    64    0 84
+    gumppic    80    0 84
+    gumppic    96    0 84
+    gumppic   112    0 84
+    gumppic   128    0 84
+    gumppic   144    0 84
+    gumppic   160    0 84
+    gumppic   176    0 84
+    gumppic   192    0 84
+    gumppic   208    0 84
+    gumppic   224    0 84
+    gumppic   240    0 84
+    gumppic   256    0 84
+    gumppic   272    0 84
+    gumppic   288    0 84
+    gumppic   304    0 84
+    gumppic   320    0 84
+    gumppic   336    0 84
+    gumppic   352    0 84
+    gumppic   368    0 84
+    gumppic   384    0 85
+   
+    //Bottom Border
+    gumppic     0    317 89
+    gumppic    16    317 90
+    gumppic    32    317 90
+    gumppic    48    317 90
+    gumppic    64    317 90
+    gumppic    80    317 90
+    gumppic    96    317 90
+    gumppic   112    317 90
+    gumppic   128    317 90
+    gumppic   144    317 90
+    gumppic   160    317 90
+    gumppic   176    317 90
+    gumppic   192    317 90
+    gumppic   208    317 90
+    gumppic   224    317 90
+    gumppic   240    317 90
+    gumppic   256    317 90
+    gumppic   272    317 90
+    gumppic   288    317 90
+    gumppic   304    317 90
+    gumppic   320    317 90
+    gumppic   336    317 90
+    gumppic   352    317 90
+    gumppic   368    317 90
+    gumppic   384    317 91
+
+    //Background gray
+    gumppic     7   10 5124
+    gumppic     7  110 5124
+    gumppic     7  210 5124
+    gumppic   147   10 5124
+    gumppic   235   10 5124
+    gumppic   147  110 5124
+    gumppic   235  110 5124
+    gumppic   147  210 5124
+    gumppic   235  210 5124
+
+    //Bones
+    tilepic    20   40 6921  
+    tilepic    60   45 6926
+    tilepic   100   45 6927
+    tilepic   140   40 6928
+    tilepic   174   31 6923
+    tilepic   210   40 6922
+    tilepic   250   45 6923
+    tilepic   290   31 6926
+    tilepic   330   40 6922
+
+    //Skull Pile
+    tilepic   269  175 6872
+    tilepic   248  152 6873
+    tilepic   243  130 6874
+    tilepic   268  130 6875
+    tilepic   293  153 6876
+    tilepic   316  150 6877
+    tilepic   338  169 6878
+    tilepic   315  176 6879
+    tilepic   325  174 6880
+
+[DIALOG d_necro_book]
+0,0
+   
+PAGE 0
+   necro_book_bg_temp
+
+   //Drop Y by 80 for Clean, Next, and Last when we go to original gump.
+   DTEXT 240 220 50 Clean Wand
+   BUTTON 330 215 2152 2154 1 0 1
+
+   DTEXT 240 250 50 Next Level
+   BUTTON 330 245 2152 2154 1 0 2
+
+   DTEXT 40 120 50 Nosferatu's Curse
+   BUTTON 185 115 2152 2154 1 0 4
+
+   DTEXT 40 150 50 Summon Spectre
+   BUTTON 185 145 2152 2154 1 0 5
+
+   DTEXT 40 180 50 Brimstone
+   BUTTON 185 175 2152 2154 1 0 6   
+   
+[DIALOG d_necro_book TEXT]
+
+[DIALOG d_necro_book BUTTON]
+ONBUTTON=1
+   TAG.NECROSPELL.NAME=
+   necro_assign
+
+ONBUTTON=2
+   IF (<SRC.NECROMANCY> >= 40.0)
+      DIALOG d_necro_book_2
+   ELSE
+      SRC.SYSMESSAGE @69 You are not skilled enough to go up to the next level!
+   ENDIF
+
+ONBUTTON=4
+   TAG.NECROSPELL.NAME="Nosferatu's Curse"
+   TAG.NECROSPELL.COLOR=0777
+   necro_assign necro_nosferatu
+
+ONBUTTON=5
+   TAG.NECROSPELL.NAME="Summon Spectre"
+   TAG.NECROSPELL.COLOR=0163
+   necro_assign necro_summonspectre
+
+ONBUTTON=6
+   TAG.NECROSPELL.NAME="Brimstone"
+   TAG.NECROSPELL.COLOR=025
+   necro_assign necro_brimstone
+
+[DIALOG d_necro_book_2]
+0,0
+   
+PAGE 0
+   necro_book_bg_temp
+
+   //Drop Y by 80 for Clean, Next, and Last when we go to original gump.
+   DTEXT 240 220 50 Clean Wand
+   BUTTON 330 215 2152 2154 1 0 1
+
+   DTEXT 240 250 50 Next Level
+   BUTTON 330 245 2152 2154 1 0 2
+
+   DTEXT 240 280 50 Last Level
+   BUTTON 330 275 2152 2154 1 0 3
+
+   DTEXT 40 120 50 Bloodlust
+   BUTTON 185 115 2152 2154 1 0 4
+
+   DTEXT 40 150 50 Summon Mummy
+   BUTTON 185 145 2152 2154 1 0 5
+   
+[DIALOG d_necro_book_2 TEXT]
+
+
+[DIALOG d_necro_book_2 BUTTON]
+ONBUTTON=1
+   TAG.NECROSPELL.NAME=
+   necro_assign
+
+ONBUTTON=2
+   IF (<SRC.NECROMANCY> >= 60.0)
+      DIALOG d_necro_book_3
+   ELSE
+      SRC.SYSMESSAGE @69 You are not skilled enough to go up to the next level!
+   ENDIF
+
+ONBUTTON=3
+   DIALOG d_necro_book
+   
+ONBUTTON=4
+   TAG.NECROSPELL.NAME="Bloodlust"
+   TAG.NECROSPELL.COLOR=0732
+   necro_assign necro_bloodlust
+
+ONBUTTON=5
+   TAG.NECROSPELL.NAME="Summon Mummy"
+   TAG.NECROSPELL.COLOR=0232
+   necro_assign necro_mummy
+
+
+[DIALOG d_necro_book_3]
+0,0
+   
+PAGE 0
+   necro_book_bg_temp
+
+   //Drop Y by 80 for Clean, Next, and Last when we go to original gump.
+   DTEXT 240 220 50 Clean Wand
+   BUTTON 330 215 2152 2154 1 0 1
+
+   DTEXT 240 250 50 Next Level
+   BUTTON 330 245 2152 2154 1 0 2
+
+   DTEXT 240 280 50 Last Level
+   BUTTON 330 275 2152 2154 1 0 3
+
+   DTEXT 40 120 50 Vengeance
+   BUTTON 185 115 2152 2154 1 0 4
+
+   DTEXT 40 150 50 Blood Ties
+   BUTTON 185 145 2152 2154 1 0 5
+   
+[DIALOG d_necro_book_3 TEXT]
+
+
+[DIALOG d_necro_book_3 BUTTON]
+ONBUTTON=1
+   TAG.NECROSPELL.NAME=
+   necro_assign
+
+ONBUTTON=2
+   IF (<SRC.NECROMANCY> >= 80.0)
+      DIALOG d_necro_book_4
+   ELSE
+      SRC.SYSMESSAGE @69 You are not skilled enough to go up to the next level!
+   ENDIF
+
+ONBUTTON=3
+   DIALOG d_necro_book_2
+   
+ONBUTTON=4
+   TAG.NECROSPELL.NAME="Vengeance"
+   TAG.NECROSPELL.COLOR=0732
+   necro_assign necro_vengeance
+
+ONBUTTON=5
+   TAG.NECROSPELL.NAME="Blood Ties"
+   TAG.NECROSPELL.COLOR=0283
+   necro_assign necro_bloodties
+   
+
+[DIALOG d_necro_book_4]
+0,0
+   
+PAGE 0
+   necro_book_bg_temp
+
+   //Drop Y by 80 for Clean, Next, and Last when we go to original gump.
+   DTEXT 240 220 50 Clean Wand
+   BUTTON 330 215 2152 2154 1 0 1
+
+   DTEXT 240 280 50 Last Level
+   BUTTON 330 275 2152 2154 1 0 3
+
+   DTEXT 40 120 50 Reapers Call
+   BUTTON 185 115 2152 2154 1 0 4
+
+   DTEXT 40 150 50 Undead Dragon
+   BUTTON 185 145 2152 2154 1 0 5
+
+   DTEXT 40 180 50 Dark Rebirth
+   BUTTON 185 175 2152 2154 1 0 6
+   
+[DIALOG d_necro_book_4 TEXT]
+
+
+[DIALOG d_necro_book_4 BUTTON]
+ONBUTTON=1
+   TAG.NECROSPELL.NAME=
+   COLOR=00
+   necro_assign
+
+ONBUTTON=3
+   DIALOG d_necro_book_3
+   
+ONBUTTON=4
+   TAG.NECROSPELL.NAME="Reapers Call"
+   TAG.NECROSPELL.COLOR=094
+   necro_assign necro_reaperscall
+
+ONBUTTON=5
+   TAG.NECROSPELL.NAME="Undead Dragon"
+   TAG.NECROSPELL.COLOR=0232
+   necro_assign necro_summondragon
+
+ONBUTTON=6
+   TAG.NECROSPELL.NAME="Dark Rebirth"
+   TAG.NECROSPELL.COLOR=07a1
+   necro_assign necro_darkrebirth
+
+//---------------------------------         Necro Wands       ---------------------------------
+
+[ITEMDEF i_wand_necro]
+ID=0df3 
+RESOURCES=2 i_ingot_silver, 2 i_ingot_gold, 1 i_necro_skeletons
+SKILLMAKE=TINKERING 80.0, t_tinker_tools
+TYPE=t_script
+DAM=2,6
+REQSTR=1
+TWOHANDS=N
+VALUE=500
+WEIGHT=5
+CATEGORY=Imperial uo
+SUBSECTION=Necromancy
+DESCRIPTION=Necro Wand
+
+ON=@CREATE
+   TYPE=t_wand_necro
+   ATTR=00
+   TIMER=1
+
+[TYPEDEF t_wand_necro]
+
+//Display the name of assigned spell on the first click and reset if another click soon enough after
+ON = @Click
+   IF ( 0<TAG.CLICKED> == 0 )
+      TAG.CLICKED = <SERV.TIME>
+   ENDIF
+
+   IF (<ISIDENTIFIED>)
+      ATTR=00
+   ENDIF
+
+   IF ( !STRCMP( "<TAG.NECROSPELL.NAME>", "" ) )
+      MESSAGE <NAME> (No Spell)
+      RETURN 1
+   ELSE
+      MESSAGE <NAME> (<TAG.NECROSPELL.NAME>)
+   ENDIF
+
+   TAG.CLICKED = <SERV.TIME>
+   RETURN 1
+
+ON = @DClick
+
+     IF STRMATCH( "PvP Realm 2", "<SRC.REGION.NAME>" )
+         SRC.SYSMESSAGE Necromancy is not allowed in this area.
+         RETURN 1
+	ENDIF
+      
+     IF STRMATCH( "Classic Arena", "<SRC.REGION.NAME>" )
+         SRC.SYSMESSAGE Necromancy is not allowed in this area.
+         RETURN 1
+	ENDIF
+   
+   //See if they're paralyzed
+   if ( <SRC.FLAGS> & statf_freeze )
+      SRC.SYSMESSAGE You can't do much in your current state.
+      return 1
+   endif
+
+   //If they're hidden Unhide them
+   IF ( <SRC.FLAGS> & statf_hidden )
+      SRC.flags=<SRC.flags> &~ 000400000
+   ENDIF
+
+   //If caster is under a self-influence spell, prevent casting another necro spell - To be decided if this should be implemented
+   //IF ( <src.findlayer(layer_special).uid> )
+   //   SRC.SYSMESSAGE You can only cast one spell at a time!
+   //   RETURN 1
+   //ENDIF
+
+   //Reset link
+   LINK	= 04fffffff
+   
+
+   //If we don't have a spell assigned a sysmessage appears
+   IF ( <MOREz> == 0 )
+      SRC.SYSMESSAGE No spell is assigned
+      RETURN 1
+   
+   //Starts the spell if rules are met and brings up target if spell requires a target
+   ELSEIF ( <MOREz> == necro_nosferatu )
+      IF ( <SRC.NECROMANCY> < necro_nosferatu_level )
+         SRC.SYSMESSAGE You're not skilled enough to cast Nosferatu's Curse.
+         RETURN 1
+      ELSEIF (<SRC.FINDID.M_NOSFERATU>)
+         SRC.SYSMESSAGE You cannot cast this again yet.
+         RETURN 1
+      ELSEIF !(<SRC.FINDID.i_reag_ectoplasm_vial>)
+         SRC.SYSMESSAGE You do not have enough ectoplasm for this spell!
+         RETURN 1
+      ELSEIF !(<SRC.FINDID.i_reag_heart_zombie>)
+          SRC.SYSMESSAGE You do not have any zombie hearts for this spell!
+          RETURN 1
+      ELSEIF !(<SRC.FINDID.i_reag_blood_vial>)
+         SRC.SYSMESSAGE You do not have any blood vials for this spell!
+         RETURN 1
+      ENDIF
+
+      IF (<SRC.MANA> <= 24)
+         SRC.SYSMESSAGE You do not have enough mana to cast this
+         RETURN 1
+      ENDIF
+
+      SRC.SYSMESSAGE You begin to cast Nosferatu's Curse
+      
+      IF ( RAND(1000) > ((<SRC.NECROMANCY>+190.0)/3) )
+         SRC.MESSAGE *The Spell Fizzles*
+      ELSE
+         SRC.NEWITEM M_NOSFERATU
+   	 SRC.EQUIP <SRC.ACT>
+   	 SRC.ACT.LINK = <SRC.UID>
+         SRC.TAKE_MANA	= 20
+         SRC.CONSUME i_reag_ectoplasm_vial 1
+         SRC.CONSUME i_reag_blood_vial 1
+         SRC.CONSUME i_reag_heart_zombie 1
+         SRC.SAY Korem Al Nor
+         RETURN 1
+      ENDIF
+
+  ELSEIF ( <MOREz> == necro_summonspectre )
+      IF STRMATCH( "Britain Cowpen", "<SRC.REGION.NAME>" )
+         SRC.SYSMESSAGE Summons are blocked in this arena.
+         RETURN 1
+      ELSEIF ( <SRC.NECROMANCY> < necro_summonspectre_level )
+         SRC.SYSMESSAGE You're not skilled enough to cast Summon Spectre.
+         RETURN 1
+      ELSEIF (<SRC.FINDID.M_SUMMONSPECTRE>)
+         SRC.SYSMESSAGE You cannot cast this again yet.
+         RETURN 1
+      ELSEIF !(<SRC.FINDID.i_reag_ectoplasm_vial>)
+          SRC.SYSMESSAGE You do not have enough ectoplasm for this spell!
+          RETURN 1
+      ELSEIF !(<SRC.FINDID.i_reag_volcanic_ash>)
+          SRC.SYSMESSAGE You do not have enough volcanic ash for this spell!
+          RETURN 1
+      ELSEIF (<SRC.MANA> <= 14)
+          SRC.SYSMESSAGE You do not have enough mana to cast this
+          RETURN 1
+      ENDIF
+      
+      IF ( RAND(1000) > ((<SRC.NECROMANCY>+190.0)/3) )
+          SRC.MESSAGE *The Spell Fizzles*
+      ELSE
+          SRC.NEWITEM M_SUMMONSPECTRE
+          SRC.EQUIP <SRC.ACT>
+          SRC.ACT.LINK = <SRC.UID>
+          SRC.TAKE_MANA	= 10
+          SRC.CONSUME i_reag_ectoplasm_vial 1
+          SRC.CONSUME i_reag_volcanic_ash 1
+          SRC.SAY Derum Il Runume
+          RETURN 1
+      ENDIF
+     
+
+  ELSEIF ( <MOREz> == necro_brimstone )
+      
+      IF ( <SRC.NECROMANCY> < necro_brimstone_level )
+         SRC.SYSMESSAGE You're not skilled enough to cast Brimstone.
+         RETURN 1
+      ELSEIF (<SRC.FINDID.M_BRIMSTONE>)
+         SRC.SYSMESSAGE You cannot cast this again yet.
+         RETURN 1
+      ELSEIF !(<SRC.FINDID.i_reag_sulfur_ash>)
+          SRC.SYSMESSAGE You do not have enough sulfurous ash for this spell!
+          RETURN 1
+      ELSEIF !(<SRC.FINDID.i_reag_black_pearl>)
+          SRC.SYSMESSAGE You do not have enough black pearl for this spell!
+          RETURN 1
+      ELSEIF (<SRC.MANA> <= 7)
+          SRC.SYSMESSAGE You do not have enough mana to cast this
+          RETURN 1
+      ENDIF
+      
+      IF ( RAND(1000) > ((<SRC.NECROMANCY>+190.0)/3) )
+          SRC.MESSAGE *The Spell Fizzles*
+      ELSE
+          SRC.NEWITEM M_BRIMSTONE
+	  SRC.EQUIP <SRC.ACT>
+	  SRC.ACT.LINK = <SRC.UID>
+	  RETURN 1
+      ENDIF
+
+  ELSEIF ( <MOREz> == necro_bloodlust )
+      
+      //--TEMP CODE - THIS SKILL NEEDS FIXING, REFER TO FORUMS--
+      //SRC.SYSMESSAGE This spell is temporarily disabled, due to abuse.
+      //RETURN 1
+      //--END TEMP CODE--
+      
+      IF ( <SRC.NECROMANCY> < necro_bloodlust_level )
+         SRC.SYSMESSAGE You're not skilled enough to cast Bloodlust.
+         RETURN 1
+      ELSEIF (<SRC.FINDID.M_BLOODLUST>)
+         SRC.SYSMESSAGE You cannot cast this again yet.
+         RETURN 1
+      ELSEIF !(<SRC.FINDID.i_reag_heart_zombie>)
+          SRC.SYSMESSAGE You do not have enough zombie heart for this spell!
+          RETURN 1
+      ELSEIF !(<SRC.FINDID.i_reag_volcanic_ash>)
+          SRC.SYSMESSAGE You do not have enough volcanic ash for this spell!
+          RETURN 1
+      ELSEIF (<SRC.MANA> <= 24)
+          SRC.SYSMESSAGE You do not have enough mana to cast this
+          RETURN 1
+      ENDIF
+      
+      IF ( RAND(1000) > ((<SRC.NECROMANCY>+190.0)/3) )
+          SRC.MESSAGE *The Spell Fizzles*
+      ELSE
+          SRC.NEWITEM M_BLOODLUST
+          SRC.EQUIP <SRC.ACT>
+          SRC.ACT.LINK = <SRC.UID>
+          SRC.TAKE_MANA	= 20
+          SRC.CONSUME i_reag_heart_zombie 1
+          SRC.CONSUME i_reag_volcanic_ash 1
+          SRC.SAY Korem En Porta
+          RETURN 1
+      ENDIF
+
+  ELSEIF ( <MOREz> == necro_mummy )
+      
+      IF ( <SRC.NECROMANCY> < necro_mummy_level )
+         SRC.SYSMESSAGE You're not skilled enough to cast Summon Mummy.
+         RETURN 1
+      ELSEIF (<SRC.FINDID.M_SUMMONMUMMY>)
+         SRC.SYSMESSAGE You cannot cast this again yet.
+         RETURN 1
+      ELSEIF !(<SRC.FINDID.i_reag_ectoplasm_vial>)
+          SRC.SYSMESSAGE You do not have enough ectoplasm for this spell!
+          RETURN 1
+      ELSEIF !(<SRC.FINDID.i_reag_volcanic_ash>)
+          SRC.SYSMESSAGE You do not have enough volcanic ash for this spell!
+          RETURN 1
+      ELSEIF (<SRC.MANA> <= 14)
+          SRC.SYSMESSAGE You do not have enough mana to cast this
+          RETURN 1
+      ENDIF
+      
+      IF ( RAND(1000) > ((<SRC.NECROMANCY>+190.0)/3) )
+          SRC.MESSAGE *The Spell Fizzles*
+      ELSE
+          SRC.NEWITEM M_SUMMONMUMMY
+          SRC.EQUIP <SRC.ACT>
+          SRC.ACT.LINK = <SRC.UID>
+          SRC.TAKE_MANA	= 24
+          SRC.CONSUME i_reag_ectoplasm_vial 1
+          SRC.CONSUME i_reag_volcanic_ash 1
+          SRC.SAY Corpus El Xen Runume
+          SRC.EVENTS +e_necrospell
+          RETURN 1
+      ENDIF
+
+  ELSEIF ( <MOREz> == necro_vengeance )
+
+      //--TEMP CODE - THIS SKILL NEEDS FIXING, REFER TO FORUMS--
+      //SRC.SYSMESSAGE This spell is temporarily disabled, due to abuse.
+      //RETURN 1
+      //--END TEMP CODE--
+      
+      IF ( <SRC.NECROMANCY> < necro_vengeance_level )
+         SRC.SYSMESSAGE You're not skilled enough to cast Vengeance.
+         RETURN 1
+      ELSEIF (<SRC.FINDID.M_VENGEANCE>)
+         SRC.SYSMESSAGE You cannot cast this again yet.
+         RETURN 1
+      ELESIF !(<SRC.FINDID.i_reag_pumice>)
+          SRC.SYSMESSAGE You do not have enough pumice for this spell!
+          RETURN 1
+      ELSEIF !(<SRC.FINDID.i_reag_volcanic_ash>)
+          SRC.SYSMESSAGE You do not have enough volcanic for this spell!
+          RETURN 1
+      ELSEIF (<SRC.MANA> <= 44)
+          SRC.SYSMESSAGE You do not have enough mana to cast this
+          RETURN 1
+      ENDIF
+      
+      IF ( RAND(1000) > ((<SRC.NECROMANCY>+190.0)/3) )
+          SRC.MESSAGE *The Spell Fizzles*
+      ELSE
+          SRC.NEWITEM M_VENGEANCE
+          SRC.EQUIP <SRC.ACT>
+          SRC.ACT.LINK = <SRC.UID>
+          SRC.TAKE_MANA	= 44
+          SRC.CONSUME i_reag_pumice 1
+          SRC.CONSUME i_reag_volcanic_ash 1
+          SRC.SAY Korem Il Vengata
+          RETURN 1
+      ENDIF
+      
+  ELSEIF ( <MOREz> == necro_bloodties )
+      
+      IF ( <SRC.NECROMANCY> < necro_bloodties_level )
+         SRC.SYSMESSAGE You're not skilled enough to cast Blood Ties.
+         RETURN 1
+      ELSEIF (<SRC.FINDID.M_BLOODTIES>)
+         SRC.SYSMESSAGE You cannot cast this again yet.
+         RETURN 1
+      ELSEIF !(<SRC.FINDID.i_reag_worm_heart>)
+          SRC.SYSMESSAGE You do not have enough wyrms heart for this spell!
+          RETURN 1
+      ELSEIF !(<SRC.FINDID.i_reag_garlic>)
+          SRC.SYSMESSAGE You do not have enough garlic for this spell!
+          RETURN 1
+      ELSEIF !(<SRC.FINDID.i_reag_ginseng>)
+          SRC.SYSMESSAGE You do not have enough ginseng for this spell!
+          RETURN 1
+      ELSEIF !(<SRC.FINDID.i_reag_sulfur_ash>)
+          SRC.SYSMESSAGE You do not have enough sulphurous ash for this spell!
+          RETURN 1
+      ELSEIF (<SRC.MANA> <= 30)
+          SRC.SYSMESSAGE You do not have enough mana to cast this
+          RETURN 1
+      ELSEIF (<SRC.HITS> < 50)
+          SRC.SYSMESSAGE Your life must be at least at 50 to begin casting this...
+          RETURN 1
+      ENDIF
+      
+      IF ( RAND(1000) > ((<SRC.NECROMANCY>+190.0)/3) )
+          SRC.MESSAGE *The Spell Fizzles*
+      ELSE
+          SRC.NEWITEM M_BLOODTIES
+          SRC.EQUIP <SRC.ACT>
+          SRC.ACT.LINK = <SRC.UID>
+          RETURN 1
+      ENDIF      
+
+  ELSEIF ( <MOREz> == necro_reaperscall )
+      
+      IF ( <SRC.NECROMANCY> < necro_reaperscall_level )
+         SRC.SYSMESSAGE You're not skilled enough to cast Reapers Call.
+         RETURN 1
+      ELSEIF (<SRC.FINDID.M_REAPERSCALL>)
+         SRC.SYSMESSAGE You cannot cast this again yet.
+         RETURN 1
+      ELSEIF !(<SRC.FINDID.i_reag_pumice>)
+          SRC.SYSMESSAGE You do not have enough pumice for this spell!
+          RETURN 1
+      ELSEIF !(<SRC.FINDID.i_reag_volcanic_ash>)
+          SRC.SYSMESSAGE You do not have enough volcanic for this spell!
+          RETURN 1
+      ELSEIF (<SRC.MANA> <= 60)
+          SRC.SYSMESSAGE You do not have enough mana to cast this
+          RETURN 1
+      ENDIF
+      
+      IF ( RAND(1000) > ((<SRC.NECROMANCY>+190.0)/3) )
+          SRC.MESSAGE *The Spell Fizzles*
+      ELSE
+          SRC.NEWITEM M_REAPERSCALL
+          SRC.EQUIP <SRC.ACT>
+          SRC.ACT.LINK = <SRC.UID>
+          RETURN 1
+      ENDIF
+
+
+
+  ELSEIF ( <MOREz> == necro_summondragon )
+      IF STRMATCH( "Britain Cowpen", "<SRC.REGION.NAME>" )
+         SRC.SYSMESSAGE Summons are blocked in this arena.
+         RETURN 1
+      ELSEIF ( <SRC.NECROMANCY> < necro_summondragon_level )
+         SRC.SYSMESSAGE You're not skilled enough to cast Summon Dragon.
+         RETURN 1
+      ELSEIF (<SRC.FINDID.M_SUMMONDRAGON>)
+         SRC.SYSMESSAGE You cannot cast this again yet.
+         RETURN 1
+      ELSEIF !(<SRC.FINDID.i_reag_ectoplasm_vial>)
+          SRC.SYSMESSAGE You do not have enough ectoplasm for this spell!
+          RETURN 1
+      ELSEIF !(<SRC.FINDID.i_reag_worm_heart>)
+          SRC.SYSMESSAGE You do not have enough wyrms heart for this spell!
+          RETURN 1
+      ELSEIF !(<SRC.FINDID.i_reag_Dragons_heart>)
+          SRC.SYSMESSAGE You do not have enough dragons heart for this spell!
+          RETURN 1
+      ELSEIF (<SRC.MANA> <= 70)
+          SRC.SYSMESSAGE You do not have enough mana to cast this
+          RETURN 1
+      ENDIF
+      
+      IF ( RAND(1000) > ((<SRC.NECROMANCY>+190.0)/3) )
+          SRC.MESSAGE *The Spell Fizzles*
+      ELSE
+          SRC.NEWITEM M_SUMMONDRAGON
+          SRC.EQUIP <SRC.ACT>
+          SRC.ACT.LINK = <SRC.UID>
+          SRC.TAKE_MANA	= 70
+          SRC.CONSUME i_reag_ectoplasm_vial 1
+          SRC.CONSUME i_reag_worm_heart 1
+          SRC.CONSUME i_reag_Dragons_heart 1
+          SRC.SAY Derum Il Dragonus
+          RETURN 1
+      ENDIF 
+
+  ELSEIF ( <MOREz> == necro_darkrebirth )
+      
+      IF ( <SRC.NECROMANCY> < necro_darkrebirth_level )
+         SRC.SYSMESSAGE You're not skilled enough to cast Dark Rebirth.
+         RETURN 1
+      ELSEIF (<SRC.FINDID.M_DARKREBIRTH>)
+         SRC.SYSMESSAGE You cannot cast this again yet.
+         RETURN 1
+      ELSEIF !(<SRC.FINDID.i_reag_ginseng>)
+          SRC.SYSMESSAGE You do not have enough ginseng for this spell!
+          RETURN 1
+      ELSEIF !(<SRC.FINDID.i_reag_ectoplasm_vial>)
+          SRC.SYSMESSAGE You do not have enough ectoplasm for this spell!
+          RETURN 1
+      ELSEIF (<SRC.MANA> <= 50)
+          SRC.SYSMESSAGE You do not have enough mana to cast this
+          RETURN 1
+      ENDIF
+
+      IF ( RAND(1000) > ((<SRC.NECROMANCY>+190.0)/3) )
+          SRC.MESSAGE *The Spell Fizzles*
+      ELSE
+          SRC.NEWITEM M_DARKREBIRTH
+          SRC.EQUIP <SRC.ACT>
+          SRC.ACT.LINK = <SRC.UID>
+          RETURN 1
+      ENDIF
+
+ENDIF
+  
+
+//********************************************************************//
+//                         NOSFERATU'S CURSE                          //
+//********************************************************************//
+[ITEMDEF M_NOSFERATU]
+ID=i_memory
+NAME=Nosferatu's Curse
+TYPE=t_eq_script
+LAYER=layer_special
+
+ON=@Create
+   TIMER=4
+   COLOR=02
+
+ON=@UNEQUIP
+   //If this is the correct color, in this case 02, we add the benefits
+   IF <COLOR> = 02
+      SRC.STR = (<SRC.STR> + 15)
+      SRC.DEX = (<SRC.DEX> + 15)
+      SRC.COLOR = 0835
+      SOUND=snd_spell_cunning
+      SRC.TAG.MAKEITEM.LEVEL = 10.0
+      SRC.SKILLCHECK_RUN Skill_Necromancy
+      EFFECT=3,i_fx_glow_spike,1,25,1
+      SRC.EVENTS +e_undead
+      SRC.EVENTS +e_nosferatu
+   //If this is the correct color, in this case 03, we drop the benefits
+   ELSEIF <COLOR> = 03
+      SRC.STR = (<SRC.STR> +- 15)
+      SRC.DEX = (<SRC.DEX> +- 15)
+      SRC.COLOR = <SRC.OSKIN>
+      IF <SRC.HITS> > <SRC.STR>   
+            SRC.HITS = <SRC.STR>
+      ENDIF
+      IF <SRC.STAM> > <SRC.DEX>   
+            SRC.STAM = <SRC.DEX>
+      ENDIF
+      SOUND=snd_spell_weaken
+      SRC.EVENTS -e_undead
+      SRC.EVENTS -e_nosferatu
+   ENDIF
+
+ON=@SPELLEFFECT
+    IF (<COLOR>=02)
+       NEWITEM M_NECRO_DAMAGE_CHECK
+       EQUIP <ACT>
+    ENDIF
+ 
+ON=@GETHIT
+    IF (<COLOR>=02)
+       NEWITEM M_NECRO_DAMAGE_CHECK
+       EQUIP <ACT>
+    ENDIF   
+
+ON=@Timer
+   //Add this item again of a different color to add a delay after the spell
+   IF <COLOR> = 02
+      CONT.NEWITEM M_NOSFERATU
+      CONT.ACT.COLOR = 03
+      CONT.ACT.TIMER = 180
+      CONT.EQUIP <CONT.ACT>
+      REMOVE
+      RETURN 1
+   ELSEIF <COLOR> = 03
+      CONT.NEWITEM M_NOSFERATU
+      CONT.ACT.COLOR = 04
+      CONT.EQUIP <CONT.ACT>
+      REMOVE 
+      RETURN 1
+   ELSE
+      REMOVE 
+      RETURN 1
+   ENDIF
+
+
+[EVENTS e_nosferatu]
+ON=@Spelleffect
+     if ( (<argn> == 41) || (<argn> == 54) )
+        if (<FINDID.M_NOSFERATU.COLOR>=02)
+        elseif (<FINDID.M_NOSFERATU.COLOR>=04)
+        else
+           FINDID.M_NOSFERATU.TIMER = 1
+           SOUND=snd_SPELL_DISPEL
+           return 0
+        endif
+     elseif ( (<argn> == 11) || (<argn> == 25) )
+        if (<FINDID.M_NOSFERATU.COLOR>=02)
+        elseif (<FINDID.M_NOSFERATU.COLOR>=04)
+        else
+           EMOTE reject the cure
+           SOUND=snd_SPELL_MAGIC_REFLECTION
+           return 1
+        endif
+     elseif (<argn> == 4)
+     if (<FINDID.M_NOSFERATU.COLOR>=02)
+        elseif (<FINDID.M_NOSFERATU.COLOR>=04)
+        else
+           EMOTE writhe in pain
+           HITS = (<HITS> +- 8)
+           SOUND=snd_SPELL_HARM
+           return 1
+        endif
+     elseif (<argn> == 29)
+        if (<FINDID.M_NOSFERATU.COLOR>=02)
+        elseif (<FINDID.M_NOSFERATU.COLOR>=04)
+        else
+           EMOTE writhe in pain
+           HITS = (<HITS> +- 19)
+           SOUND=snd_SPELL_HARM
+           return 1
+        endif
+     elseif (<argn> == 20) || (<argn> == 39)
+        if (<FINDID.M_NOSFERATU.COLOR>=02)
+        elseif (<FINDID.M_NOSFERATU.COLOR>=04)
+        else
+           if (<rand(5)>)
+              EMOTE shrug off the poison
+              RETURN 1
+              SOUND=snd_SPELL_MAGIC_REFLECTION
+           endif
+        endif
+     endif
+   
+  
+//********************************************************************//
+//                           SUMMON SPECTRE                           //
+//********************************************************************//
+[ITEMDEF M_SUMMONSPECTRE]
+ID=i_memory
+NAME=Summon Spectre
+TYPE=t_eq_script
+LAYER=layer_special
+
+ON=@Create
+   TIMER=3
+   COLOR=02
+
+
+ON=@UNEQUIP
+   //Summons a spectre
+   IF <COLOR> = 02
+      SOUND=snd_SPELL_SUMMON_CREATURE
+      SRC.TAG.MAKEITEM.LEVEL = 10.0
+      SRC.SKILLCHECK_RUN Skill_Necromancy
+      SRC.NECROSUMMONHERE c_spectre
+      SRC.ACT.findlayer.layer_pack.remove
+      SRC.ACT.KARMA	= -3000
+      SRC.SKILLCHECK_NECRO <TDATA1>
+      SRC.ACT.TIMER 300
+   ENDIF
+   
+ON=@SPELLEFFECT
+   NEWITEM M_NECRO_DAMAGE_CHECK
+   EQUIP <ACT>
+
+ON=@GETHIT
+   NEWITEM M_NECRO_DAMAGE_CHECK
+   EQUIP <ACT>
+   
+ON=@Timer
+   //Add this item again of a different color to add a delay after the spell
+   IF <COLOR> = 02
+      REMOVE
+      RETURN 1
+   ELSE
+      REMOVE 
+      RETURN 1
+   ENDIF
+
+  
+//********************************************************************//
+//                              BRIMSTONE                             //
+//********************************************************************//
+[ITEMDEF M_BRIMSTONE]
+ID=i_memory
+NAME=Brimstone
+TYPE=t_eq_script
+LAYER=layer_special
+
+ON=@Create
+   COLOR=01
+   TIMER=10
+
+ON=@EQUIP
+   TARGET Target the player to cast Brimstone on...
+   SRC.SYSMESSAGE @425 Please note you have 10 seconds to do so...
+   RETURN 1
+
+ON=@TARGON_CHAR
+   IF !( <SRC.TARG.CanSeeLOS> )
+      SRC.SYSMESSAGE You cannot clearly see your mark to cast on...
+      REMOVE
+      RETURN 1
+   ENDIF
+
+   //OC Protection check
+   IF strmatch("<SRC.TAG.ALIGNMENT>","<SRC.TARG.TAG.ALIGNMENT>")
+      IF <SRC.TARG.OC_ISPROTECTED>
+	 SRC.SYSMESSAGE You cannot harm your own here.
+	 RETURN 1
+      ENDIF
+   ENDIF
+   
+   COLOR=02
+   LINK=<SRC.TARG.UID>
+   LINK.NEWITEM i_damager
+   LINK.ACT.ATTR = <LINK.ACT.ATTR>|attr_invis 
+   LINK.ACT.MORE1	= <SRC.UID>
+   LINK.ACT.LINK	= <LINK.UID>
+   LINK.ACT.P	= <SRC.P>
+   LINK.UPDATE
+   SRC.TAKE_MANA	= 7
+   SRC.CONSUME i_reag_sulfur_ash 1
+   SRC.CONSUME i_reag_volcanic_ash 1
+   SRC.SAY Runume En Flam
+   SRC.EVENTS +e_necrospell
+   TIMER=1
+   LINK=<SRC.TARG.UID>
+   RETURN 1
+
+ON=@SPELLEFFECT
+    IF (<COLOR>=02)
+       NEWITEM M_NECRO_DAMAGE_CHECK
+       EQUIP <ACT>
+    ENDIF
+ 
+ON=@GETHIT
+    IF (<COLOR>=02)
+       NEWITEM M_NECRO_DAMAGE_CHECK
+       EQUIP <ACT>
+    ENDIF
+   
+ON=@TARGON_ITEM
+   SRC.SYSMESSAGE This is not a mortal... This isn't even intelligent...
+   REMOVE
+   RETURN 1
+
+ON=@TARGON_GROUND
+   SRC.SYSMESSAGE This is not a mortal... This isn't even intelligent...
+   REMOVE
+   RETURN 1
+   
+ON=@TIMER
+   IF (<COLOR>=01)
+      CONT.SYSMESSAGE @424 Automatic casting timer for Brimstone expired.
+      REMOVE
+   ELSEIF (<COLOR>=02)
+      CONT.EVENTS -e_necrospell
+      CONT.SKILLCHECK_RUN Skill_Necromancy
+      CONT.TAG.MAKEITEM.LEVEL = 10.0
+      LINK.HITS = <eval ( <LINK.HITS> - {4 6} )>
+      LINK.EFFECT=2,i_fx_field_fire,0,22,0
+      REMOVE      
+   ENDIF
+   RETURN 1
+
+
+//********************************************************************//
+//                             BLOOD LUST                             //
+//********************************************************************//
+[ITEMDEF M_BLOODLUST]
+ID=i_memory
+NAME=Bloodlust
+TYPE=t_eq_script
+LAYER=layer_special
+
+ON=@Create
+   TIMER=4
+   COLOR=02
+
+ON=@UNEQUIP
+   //If this is the correct color, in this case 02, we add the benefits
+   IF <COLOR> = 02
+      SRC.STR = (<SRC.STR> + 30)
+      SRC.DEX = (<SRC.DEX> + 30)
+      SRC.COLOR = 0835
+      SOUND=snd_spell_strength
+      EFFECT=3,i_fx_glow_spike,1,25,1
+      SRC.EVENTS +e_bloodlust
+      SRC.TAG.MAKEITEM.LEVEL = 30.0
+      SRC.SKILLCHECK_RUN Skill_Necromancy
+   //If this is the correct color, in this case 03, we drop the benefits
+   ELSEIF <COLOR> = 03
+      SRC.STR = (<SRC.STR> +- 30)
+      SRC.DEX = (<SRC.DEX> +- 30)
+      SRC.COLOR = <SRC.OSKIN>
+      IF <SRC.HITS> > <SRC.STR>   
+            SRC.HITS = <SRC.STR>
+      ENDIF
+      IF <SRC.STAM> > <SRC.DEX>   
+            SRC.STAM = <SRC.DEX>
+      ENDIF
+      SOUND=snd_spell_weaken
+      SRC.EVENTS -e_bloodlust
+   ENDIF
+   
+
+ON=@Timer
+   //Add this item again of a different color to add a delay after the spell
+   IF <COLOR> = 02
+      CONT.NEWITEM M_BLOODLUST
+      CONT.ACT.COLOR = 03
+      CONT.ACT.TIMER = 180
+      CONT.EQUIP <CONT.ACT>
+      REMOVE
+      RETURN 1
+   ELSEIF <COLOR> = 03
+      CONT.NEWITEM M_BLOODLUST
+      CONT.ACT.COLOR = 04
+      CONT.EQUIP <CONT.ACT>
+      REMOVE 
+      RETURN 1
+   ELSE
+      REMOVE 
+      RETURN 1
+   ENDIF
+
+ON=@SPELLEFFECT
+    IF (<COLOR>=02)
+       NEWITEM M_NECRO_DAMAGE_CHECK
+       EQUIP <ACT>
+    ENDIF
+ 
+ON=@GETHIT
+    IF (<COLOR>=02)
+       NEWITEM M_NECRO_DAMAGE_CHECK
+       EQUIP <ACT>
+    ENDIF
+
+[EVENTS e_bloodlust]
+ON=@Spelleffect
+   if ( (<argn> == 41) || (<argn> == 54) )
+      if (<FINDID.M_BLOODLUST.COLOR>=02)
+      elseif (<FINDID.M_BLOODLUST.COLOR>=04)
+      else
+         FINDID.M_VENGEANCE.TIMER = 1
+         SOUND=snd_SPELL_DISPEL
+         return 0
+      endif
+   endif
+
+ON=@NPCSeeNewPlayer
+   IF (<DISTANCE>>6)
+      RETURN 1
+   ENDIF
+   SRC.P=<P>
+   SRC.NEWITEM i_damager
+   SRC.ACT.MORE1 = <SRC.UID>
+   SRC.ACT.LINK	= <LINK.UID>
+   SRC.UPDATE
+   RETURN 0
+ 
+ 
+//********************************************************************//
+//                            SUMMON MUMMY                            //
+//********************************************************************//
+[ITEMDEF M_SUMMONMUMMY]
+ID=i_memory
+NAME=Summon Mummy
+TYPE=t_eq_script
+LAYER=layer_special
+
+ON=@Create
+   TIMER=4
+   COLOR=02
+
+
+ON=@UNEQUIP
+   //Summons a spectre
+   IF <COLOR> = 02
+      SOUND=snd_SPELL_SUMMON_CREATURE
+      SRC.TAG.MAKEITEM.LEVEL = 30.0
+      SRC.NECROSUMMONHERE c_m_mummy
+      SRC.SKILLCHECK_RUN Skill_Necromancy
+      SRC.ACT.findlayer.layer_pack.remove
+      SRC.ACT.KARMA	= -3000
+      SRC.SKILLCHECK_NECRO <TDATA1>
+      SRC.ACT.TIMER 300
+      SRC.EVENTS -e_necrospell
+   ENDIF
+   
+ON=@SPELLEFFECT
+   NEWITEM M_NECRO_DAMAGE_CHECK
+   EQUIP <ACT>
+
+ON=@GETHIT
+   NEWITEM M_NECRO_DAMAGE_CHECK
+   EQUIP <ACT>
+   
+ON=@Timer
+   //Add this item again of a different color to add a delay after the spell
+   IF <COLOR> = 02
+      REMOVE
+      RETURN 1
+   ELSE
+      REMOVE 
+      RETURN 1
+   ENDIF
+ 
+  
+//********************************************************************//
+//                             VENGEANCE                              //
+//********************************************************************//
+[ITEMDEF M_VENGEANCE]
+ID=i_memory
+NAME=Vengeance
+TYPE=t_eq_script
+LAYER=layer_special
+
+ON=@Create
+   TIMER=4
+   COLOR=02
+
+ON=@UNEQUIP
+   //If this is the correct color, in this case 02, we add the benefits
+   IF <COLOR> = 02
+      SRC.STR = (<SRC.STR> + 20)
+      SRC.INT = (<SRC.INT> +- 30)
+      SRC.COLOR = 0486
+      SOUND=snd_spell_strength
+      EFFECT=3,i_fx_glow_spike,1,25,1
+      SRC.EVENTS +e_vengeance
+      CONT.TAG.MAKEITEM.LEVEL = 10.0
+      CONT.SKILLCHECK_RUN Skill_Necromancy
+   //If this is the correct color, in this case 03, we drop the benefits
+   ELSEIF <COLOR> = 03
+      SRC.STR = (<SRC.STR> +- 20)
+      SRC.INT = (<SRC.INT> + 30)
+      SRC.COLOR = <SRC.OSKIN>
+      IF <SRC.HITS> > <SRC.STR>   
+            SRC.HITS = <SRC.STR>
+      ENDIF
+      IF <SRC.STAM> > <SRC.DEX>   
+            SRC.STAM = <SRC.DEX>
+      ENDIF
+      SOUND=snd_spell_weaken
+      SRC.EVENTS -e_vengeance
+   ENDIF
+
+ON=@SPELLEFFECT
+    IF (<COLOR>=02)
+       NEWITEM M_NECRO_DAMAGE_CHECK
+       EQUIP <ACT>
+    ENDIF
+ 
+ON=@GETHIT
+    IF (<COLOR>=02)
+       NEWITEM M_NECRO_DAMAGE_CHECK
+       EQUIP <ACT>
+    ENDIF   
+
+ON=@Timer
+   //Add this item again of a different color to add a delay after the spell
+   IF <COLOR> = 02
+      CONT.NEWITEM M_VENGEANCE
+      CONT.ACT.COLOR = 03
+      CONT.ACT.TIMER = 180
+      CONT.EQUIP <CONT.ACT>
+      REMOVE
+      RETURN 1
+   ELSEIF <COLOR> = 03
+      CONT.NEWITEM M_VENGEANCE
+      CONT.ACT.COLOR = 04
+      CONT.EQUIP <CONT.ACT>
+      REMOVE 
+      RETURN 1
+   ELSE
+      REMOVE 
+      RETURN 1
+   ENDIF
+
+
+[EVENTS e_vengeance]
+ON=@Spelleffect
+   if ( (<argn> == 41) || (<argn> == 54) )
+      if (<FINDID.M_VENGEANCE.COLOR>=02)
+      elseif (<FINDID.M_BLOODLUST.COLOR>=04)
+      else
+         FINDID.M_VENGEANCE.TIMER = 1
+         SOUND=snd_SPELL_DISPEL
+         return 0
+      endif
+   endif
+
+ON=@GetHit
+   IF ( rand(40) >= 20 )
+      SYSMESSAGE @0486 You counter the hit with vengeance!
+      LOCAL.RETURN_HIT = {2 8}
+      ACT.HITS = (<eval (<ACT.HITS> +- <LOCAL.RETURN_HIT>) >)
+      ACT.SYSMESSAGE @0486 You get hit back by <SRC.NAME>'s vengeance!
+   ENDIF
+
+  
+//********************************************************************//
+//                            BLOOD TIES                              //
+//********************************************************************//
+[ITEMDEF M_BLOODTIES]
+ID=i_memory
+NAME=Blood Ties
+TYPE=t_eq_script
+LAYER=layer_special
+
+ON=@Create
+   COLOR=01
+   TIMER=10
+
+ON=@EQUIP
+   TARGET Target the character to cast Blood Ties on...
+   SRC.SYSMESSAGE @425 Please note you have 10 seconds to do so...
+   RETURN 1
+
+ON=@TARGON_CHAR
+   IF (<SRC.TARG.UID>==<SRC.UID>)
+      SRC.SYSMESSAGE You cannot target yourself!
+      REMOVE
+   ENDIF
+   
+   IF !( <SRC.TARG.CanSeeLOS> )
+      SRC.SYSMESSAGE You cannot clearly see your mark to cast on...
+      REMOVE
+      RETURN 1
+   ENDIF
+
+   LINK=<SRC.TARG.UID>
+   SRC.CONSUME i_reag_blood_vial 1
+   SRC.CONSUME i_reag_garlic 1
+   SRC.CONSUME i_reag_ginseng 1
+   SRC.CONSUME i_reag_sulfur_ash 1
+   SRC.TAKE_MANA	= 30
+   SRC.SAY Il Des In Mani
+   SRC.EVENTS +e_necrospell
+   TIMER=5
+   COLOR=02
+   RETURN 1
+
+ON=@SPELLEFFECT
+    IF (<COLOR>=02)
+       NEWITEM M_NECRO_DAMAGE_CHECK
+       EQUIP <ACT>
+    ENDIF
+ 
+ON=@GETHIT
+    IF (<COLOR>=02)
+       NEWITEM M_NECRO_DAMAGE_CHECK
+       EQUIP <ACT>
+    ENDIF
+   
+ON=@TARGON_ITEM
+   SRC.SYSMESSAGE You decide healing <SRC.TARG.NAME> is futile...
+   REMOVE
+   RETURN 1   
+   
+ON=@TARGON_GROUND
+   SRC.SYSMESSAGE You decide healing the ground is futile...
+   REMOVE
+   RETURN 1
+   
+ON=@TIMER
+   IF (<COLOR>=01)
+      CONT.SYSMESSAGE @424 Automatic casting timer for Blood Ties expired.
+      CONT.EVENTS -e_necrospell
+      REMOVE
+      RETURN 1
+   ELSEIF (<COLOR>=02)
+      IF (<CONT.HITS> < 50)
+         CONT.SYSMESSAGE You do not have enough health to transfer...
+         CONT.EVENTS -e_necrospell
+         REMOVE
+         RETURN 1
+      ENDIF
+      CONT.EVENTS -e_necrospell
+      CONT.TAG.MAKEITEM.LEVEL = 50.0
+      CONT.SKILLCHECK_RUN Skill_Necromancy
+      CONT.HITS=(<eval (<CONT.HITS>+-50)>)
+      CONT.SOUND=snd_SPELL_HARM
+      CONT.EFFECT=3,i_fx_curse,0,16,0
+      LINK.HITS=(<eval (<LINK.HITS>+50)>)
+      LINK.SOUND=snd_SPELL_HEAL
+      LINK.EFFECT=3,i_fx_heal_effect,0,16,0
+      IF (<LINK.HITS> > <LINK.STR>)
+         LINK.HITS=<LINK.STR>
+      ENDIF
+      REMOVE
+      RETURN 1
+   ENDIF
+
+  
+//********************************************************************//
+//                           REAPERS CALL                             //
+//********************************************************************//
+[ITEMDEF M_REAPERSCALL]
+ID=i_memory
+NAME=Reapers Call
+TYPE=t_eq_script
+LAYER=layer_special
+
+ON=@Create
+   COLOR=01
+   TIMER=10
+
+ON=@EQUIP
+   TARGET Target the player to cast Reapers curse on...
+   SRC.SYSMESSAGE @425 Please note you have 10 seconds to do so...
+   RETURN 1
+
+ON=@SPELLEFFECT
+    IF (<COLOR>=02)
+       NEWITEM M_NECRO_DAMAGE_CHECK
+       EQUIP <ACT>
+    ENDIF
+ 
+ON=@GETHIT
+   IF (<COLOR>=02)
+      NEWITEM M_NECRO_DAMAGE_CHECK
+      EQUIP <ACT>
+   ENDIF
+
+ON=@TARGON_CHAR
+   IF !( <SRC.TARG.CanSeeLOS> )
+      SRC.SYSMESSAGE You cannot clearly see your mark to cast on...
+      REMOVE
+      RETURN 1
+   ENDIF
+   
+   //OC Protection check
+   IF strmatch("<SRC.TAG.ALIGNMENT>","<SRC.TARG.TAG.ALIGNMENT>")
+      IF <SRC.TARG.OC_ISPROTECTED>
+	 SRC.SYSMESSAGE You cannot harm your own here.
+	 RETURN 1
+      ENDIF
+   ENDIF
+   
+   IF ( <SRC.TARG.FLAGS> & statf_invul )
+      SRC.SYSMESSAGE The seem invulnerable to your attack.
+      REMOVE
+      RETURN 1
+   ENDIF
+   
+   IF ( (<SRC.TARG.ID>==c_m_balron) || (<SRC.TARG.ID>==c_m_dragon_crystal) || (<SRC.TARG.ID>==c_m_phoenix) )
+      SRC.SYSMESSAGE The monster seems too powerful to be affected...
+      REMOVE
+      RETURN 1
+   ENDIF
+
+   //Make Criminal if Blue victim
+   IF <SRC.UID> != <SRC.TARG.UID>
+      IF (<SRC.TARG.ISKARMAGOOD> && !<SRC.TARG.ISMURDERER> && !<SRC.TARG.src_WASAGGRESSOR> && !<SRC.TARG.ISSPARING> && !(<SRC.TARG.FLAGS> & statf_criminal))
+         SRC.CRIMINAL 1
+      END IF
+   END IF
+   
+   COLOR=02
+   LINK=<SRC.TARG.UID>
+   SRC.TAKE_MANA	= 85
+   SRC.CONSUME i_reag_pumice 1
+   SRC.CONSUME i_reag_volcanic_ash 1
+   SRC.SAY Corpus El Xen Runume
+   SRC.EVENTS +e_necrospell
+   TIMER=3
+   LINK=<SRC.TARG.UID>
+   RETURN 1
+   
+ON=@TARGON_ITEM
+   SRC.SYSMESSAGE This is not a mortal... This isn't even intelligent...
+   REMOVE
+   RETURN 1
+
+ON=@TARGON_GROUND
+   SRC.SYSMESSAGE This is not a mortal... This isn't even intelligent...
+   REMOVE
+   RETURN 1
+   
+ON=@TIMER
+   IF (<COLOR>=01)
+      CONT.SYSMESSAGE @424 Automatic casting timer for Reapers Call expired.
+      REMOVE
+   ELSEIF (<COLOR>=02)
+      CONT.EVENTS -e_necrospell
+      CONT.HITS = (<eval (<CONT.HITS> / 4) * 3>)
+      LINK.SPELLEFFECT s_curse,1000
+      LINK.SPELLEFFECT s_Hallucination,1000
+      LINK.SPELLEFFECT s_harm,1250
+      LINK.EFFECT=3,i_fx_vortex,1,25,1
+      IF <LINK.ISPOISONED>=0
+         LINK.SPELLEFFECT s_poison 900
+      ELSE 
+         CONT.MANA = <CONT.MANA>+30
+      ENDIF
+      LINK.NEWITEM i_damager
+      LINK.ACT.ATTR = <LINK.ACT.ATTR>|attr_invis 
+      LINK.ACT.MORE1	= <CONT.UID>
+      LINK.ACT.LINK	= <LINK.UID>
+      LINK.ACT.P	= <CONT.P>
+      LINK.UPDATE
+      LINK.FIX 
+      CONT.TAG.MAKEITEM.LEVEL = 70.0
+      CONT.SKILLCHECK_RUN Skill_Necromancy
+      TIMER=60
+      COLOR=03
+    ELSEIF (<COLOR>=03)
+      REMOVE
+    ENDIF
+    RETURN 1
+
+  
+//********************************************************************//
+//                           SUMMON DRAGON                            //
+//********************************************************************//
+[ITEMDEF M_SUMMONDRAGON]
+ID=i_memory
+NAME=Summon Spectre
+TYPE=t_eq_script
+LAYER=layer_special
+ 
+ON=@Create
+    TIMER=13
+    COLOR=02
+ 
+ 
+ON=@UNEQUIP
+    //Summons a spectre
+    IF <COLOR> = 02
+       SOUND=snd_SPELL_SUMMON_CREATURE
+       SRC.NECROSUMMONHERE c_undead_dragon
+       SRC.TAG.MAKEITEM.LEVEL = 70.0
+       SRC.SKILLCHECK_RUN Skill_Necromancy
+       SRC.ACT.STR=450
+       SRC.ACT.findlayer.layer_pack.remove
+       SRC.ACT.KARMA	= -3000
+       SRC.SKILLCHECK_NECRO <TDATA1>
+       SRC.ACT.TIMER 300
+    ENDIF
+    
+ON=@SPELLEFFECT
+    NEWITEM M_NECRO_DAMAGE_CHECK
+    EQUIP <ACT>
+ 
+ON=@GETHIT
+    NEWITEM M_NECRO_DAMAGE_CHECK
+    EQUIP <ACT>
+    
+ON=@Timer
+    //Add this item again of a different color to add a delay after the spell
+    IF <COLOR> = 02
+       REMOVE
+       RETURN 1
+    ELSE
+       REMOVE 
+       RETURN 1
+    ENDIF
+
+    
+//********************************************************************//
+//                            DARK REBIRTH                            //
+//********************************************************************//
+[ITEMDEF M_DARKREBIRTH]
+ID=i_memory
+NAME=Dark Rebirth
+TYPE=t_eq_script
+LAYER=layer_special
+
+ON=@Create
+   COLOR=01
+   TIMER=10
+
+ON=@EQUIP
+   TARGET Target the player to cast Dark Rebirth on...
+   SRC.SYSMESSAGE @425 Please note you have 10 seconds to do so...
+   RETURN 1
+
+ON=@TARGON_CHAR
+   //Make Gray to the victim
+   IF !( <SRC.TARG.CanSeeLOS> )
+      SRC.SYSMESSAGE You cannot clearly see your mark to cast on...
+      REMOVE
+      RETURN 1
+   ENDIF
+   if ( !<src.targ.npc> & ((<SRC.TARG.ID>==c_ghost_man) || (<SRC.TARG.ID>==c_ghost_woman)) ) 
+      COLOR=02
+      LINK=<SRC.TARG.UID>
+      SRC.TAKE_MANA	= 50
+      SRC.CONSUME i_reag_ginseng 1
+      SRC.CONSUME i_reag_ectoplasm_vial 1
+      SRC.SAY Des Mani Il Corp
+      TIMER=8
+      LINK=<SRC.TARG.UID>
+      RETURN 1
+    else
+      SRC.SYSMESSAGE @42 This only works on the dead...
+      REMOVE
+      RETURN 1
+    endif
+
+ON=@SPELLEFFECT
+    IF (<COLOR>=02)
+       NEWITEM M_NECRO_DAMAGE_CHECK
+       EQUIP <ACT>
+    ENDIF
+ 
+ON=@GETHIT
+    IF (<COLOR>=02)
+       NEWITEM M_NECRO_DAMAGE_CHECK
+       EQUIP <ACT>
+    ENDIF
+   
+ON=@TARGON_ITEM
+   SRC.SYSMESSAGE This is not a mortal... This isn't even intelligent...
+   REMOVE
+   RETURN 1
+
+ON=@TARGON_GROUND
+   SRC.SYSMESSAGE This is not a mortal... This isn't even intelligent...
+   REMOVE
+   RETURN 1
+   
+ON=@TIMER
+   IF (<COLOR>=01)
+      CONT.SYSMESSAGE @424 Automatic casting timer for Dark Rebirth expired.
+      REMOVE
+   ELSEIF (<COLOR>=02)
+      CONT.TAG.MAKEITEM.LEVEL = 70.0
+      CONT.SKILLCHECK_RUN Skill_Necromancy
+      LINK.RESURRECT
+      LINK.HITS=(<EVAL (<LINK.HITS> + ( (<CONT.HITS> / 4) * 3 ) ) >)
+      CONT.HITS=(<CONT.HITS> / 4)
+      REMOVE      
+   ENDIF
+   RETURN 1
+
+    
+//********************************************************************//
+//                            NECRO POLY                              //
+//********************************************************************//
+[TYPEDEF NECRO_POLY]
+ON=@DCLICK
+   IF ( <SRC.NECROMANCY> >= 50.0 )
+      SRC.SKILLMENU=sm_necro_polymorph
+      REMOVE
+   ELSE
+      SRC.SYSMESSAGE You don't think you can bring yourself to eat that yet.
+   ENDIF
+   RETURN 1
+
+[SKILLMENU sm_necro_polymorph]
+What do you want to polymorph into?
+
+ON=i_pet_zombie Zombie
+TESTIF= ( <NECROMANCY> >= 50.0 )
+POLYMORPH	= @Init_zombie
+
+ON=i_pet_zombie Ghoul
+TESTIF= ( <NECROMANCY> >= 60.0 )
+POLYMORPH	= @Init_Ghoul
+
+ON=i_pet_lich Liche
+TESTIF= ( <NECROMANCY> >= 70.0 )
+POLYMORPH	= @Init_liche
+
+ON=i_pet_zombie Wretched Corpse
+TESTIF= ( <NECROMANCY> >= 80.0 )
+POLYMORPH	= @Init_Wreched_Corpse
+
+ON=i_pet_lich Liche Lord
+TESTIF= ( <NECROMANCY> >= 90.0 )
+POLYMORPH	= @Init_Liche_Lord
+
+ON=i_pet_dragon Undead Dragon
+TESTIF= ( <NECROMANCY> >= 100.0 )
+POLYMORPH	= @Init_Undead_Dragon
+
+
+[EOF]

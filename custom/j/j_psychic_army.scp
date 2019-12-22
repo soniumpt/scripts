@@ -1,0 +1,156 @@
+// CHANGELOG
+// =========
+//
+// 18/08/18 - Wigifer - Removed references to e_all_npc 
+//
+
+[NAMES NAMES_PSYCHIC]
+6
+Photos
+Irilias
+Neptune
+Orion
+Graak
+Derren
+
+//Moved from Boo's CTF File since it's being removed
+[ITEMDEF i_full_spellbook]
+DEFNAME=i_full_spellbook
+ID=i_spellbook
+NAME=spellbook
+TYPE=t_spellbook
+ON=@CREATE
+ATTR=attr_magic|attr_newbie
+MORE=0ffffffff
+MORE2=0ffffffff
+CATEGORY=GM Tools
+SUBSECTION=Miscellaneous
+DESCRIPTION=Full Spellbook
+
+
+[CHARDEF c_h_psychic_grunt]
+ID=c_man
+NAME=#NAMES_PSYCHIC the Psychic
+SOUND=snd_HUMAN_M_DIE_02
+TITLE=Psychic Grunt
+DAM=15,18
+ARMOR=85
+
+ON=@CREATE
+   COLOR=colors_skin
+   STR=320
+   DEX=120
+   INT=600
+   NPC=brain_monster
+   PARRYING=95.0
+   WRESTLING=85.0
+   TACTICS=95.0
+   ANATOMY=100.0
+   MAGERY=100.0
+   EVALUATINGINTEL=100.0
+   FAME=1200
+   KARMA=-5000
+   ITEMNEWBIE=random_male_hair
+   COLOR=colors_hair
+   ITEMNEWBIE=random_facial_hair
+   COLOR=match_hair
+   
+   ITEMNEWBIE=i_shirt_fancy
+   COLOR=01
+   ITEMNEWBIE=i_pants_long
+   COLOR=01
+   ITEMNEWBIE=i_shoes_plain
+   COLOR=07a1
+   
+   ITEMNEWBIE=i_full_spellbook
+   COLOR=01
+   SRC.ACT.EQUIP
+   
+   ITEM=i_bag
+   ACT.ITEM=i_reag_black_pearl,{ 6 15 }
+   ACT.ITEM=i_reag_blood_moss,{ 6 15 }
+   ACT.ITEM=i_reag_garlic,{ 6 15 }
+   ACT.ITEM=i_reag_ginseng,{ 6 15 }
+   ACT.ITEM=i_reag_mandrake_root,{ 6 15 }
+   ACT.ITEM=i_reag_nightshade,{ 6 15 }
+   ACT.ITEM=i_reag_sulfur_ash,{ 6 15 }
+   ACT.ITEM=i_reag_spider_silk,{ 6 15 }
+
+
+ON=@NPCLookAtChar
+   IF ( !(<SRC.NAME>=Photos) || !(<SRC.NAME>=Irilas) || !(<SRC.NAME>=Neptune) || !(<SRC.NAME>=Orion) || !(<SRC.NAME>=Graak) || !(<SRC.NAME>=Derren) || !(<SRC.NAME>=Yuri) )
+      IF (<SRC.NAME>=Jean Grey)
+         IF (RAND(50) == 1)
+            SAY The traitor to our kind! ATTACK!
+         ENDIF
+         ATTACK
+         RETURN 1
+      ELSE
+         SAY All the un-enlightened must perish!
+         IF (RAND(50) == 1)
+            ATTACK
+         ENDIF
+         RETURN 1
+      ENDIF
+   ENDIF
+
+[CHARDEF c_h_psychic_yuri]
+ID=c_man
+NAME=Yuri
+SOUND=snd_HUMAN_M_DIE_02
+TITLE=Psychic Commander
+DAM=21,28
+ARMOR=100
+
+ON=@CREATE
+   COLOR=083ea
+   STR=1120
+   DEX=120
+   INT=900
+   NPC=brain_monster
+   PARRYING=95.0
+   WRESTLING=85.0
+   TACTICS=95.0
+   ANATOMY=100.0
+   MAGERY=100.0
+   EVALUATINGINTEL=100.0
+   FAME=1200
+   KARMA=-5000
+   
+   ITEMNEWBIE=i_shirt_fancy
+   COLOR=01
+   ITEMNEWBIE=i_pants_long
+   COLOR=01
+   ITEMNEWBIE=i_shoes_plain
+   COLOR=07a1
+   
+   ITEMNEWBIE=i_full_spellbook
+   COLOR=01
+   SRC.ACT.EQUIP
+   
+   ITEM=i_bag
+   ITEM=i_reag_black_pearl,{ 6 15 }
+   ITEM=i_reag_blood_moss,{ 6 15 }
+   ITEM=i_reag_garlic,{ 6 15 }
+   ITEM=i_reag_ginseng,{ 6 15 }
+   ITEM=i_reag_mandrake_root,{ 6 15 }
+   ITEM=i_reag_nightshade,{ 6 15 }
+   ITEM=i_reag_sulfur_ash,{ 6 15 }
+   ITEM=i_reag_spider_silk,{ 6 15 }
+  
+ON=@NPCLookAtChar
+   IF ( !(<SRC.NAME>=Photos) || !(<SRC.NAME>=Irilas) || !(<SRC.NAME>=Neptune) || !(<SRC.NAME>=Orion) || !(<SRC.NAME>=Graak) || !(<SRC.NAME>=Derren) || !(<SRC.NAME>=Yuri) )
+      IF (<SRC.NAME>=Jean Grey)
+         IF (RAND(50) == 1)
+            SAY The traitor to our kind! ATTACK!
+         ENDIF
+         ATTACK
+         RETURN 1
+      ELSE
+         SAY All the un-enlightened must perish!
+         IF (RAND(50) == 1)
+            ATTACK
+         ENDIF
+         RETURN 1
+      ENDIF
+   ENDIF

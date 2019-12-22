@@ -1,0 +1,903 @@
+// #-----------#
+// # CHANGELOG #
+// #-----------#
+//
+// 18/08/18 - Wigifer - Removed random loot from these monsters, ready for conversion to the new f_central_loot table.
+// 25/11/2019 - Wigifer - Updated all remaining <TIME> to <SERV.TIME>
+
+//********************************************************************//
+//                              TERATHANE                             //
+//********************************************************************//
+[CHARDEF 01055]
+DEFNAME=c_m_terathan_avenger
+NAME=Terathan Avenger
+ID=c_TERATHAN_WARRIOR
+SOUND=snd_MONSTER_TERA_WARRIOR1
+ICON=i_pet_terathan_war
+DAM=10,30
+ARMOR=25
+RESOURCES=10 i_ribs_raw
+CAN=MT_WALK
+TEVENTS=e_terathan
+
+FOODTYPE=15 t_meat_raw
+AVERSIONS=r_civilization
+
+CATEGORY=Monsters
+SUBSECTION=Memory UO Monsters
+DESCRIPTION=Terathan Avenger
+
+ON=@Create
+   STR={465 645}
+   DEX={66 75}
+   INT={77 85}
+
+   PARRYING={75.0 85.0}
+   MAGERY={70.0 80.0}
+   MAGICRESISTANCE={65.0 80.0}
+   TACTICS={90.0 100.0}
+   WRESTLING={90.0 100.0}
+
+   NPC=brain_monster
+   TAG.DK.RANK	= 1
+
+   FAME={100 2000}
+   KARMA=-100
+
+//********************************************************************//
+[CHARDEF 046]
+DEFNAME		= c_terathan_warrior
+NAME		= Terathan Warrior
+SOUND		= snd_MONSTER_TERA_WARRIOR1
+ICON		= i_pet_terathan_war
+ANIM		= 078c7f
+CAN		= MT_WALK|MT_USEHANDS
+DAM		= 6, 20
+ARMOR		= 40
+RESOURCES	= 20 i_ribs_raw
+FOODTYPE	= 15 t_meat_raw
+AVERSIONS	= r_civilization
+DESIRES		= e_TERATHAN
+TEVENTS		= e_TERATHAN
+
+
+CATEGORY	= Monsters
+SUBSECTION	= Memory UO Monsters
+DESCRIPTION	= Terathan Warrior
+
+ON = @Create
+   NPC		= brain_monster
+   TAG.DK.RANK	= 1
+   FAME		= {100 2000}
+   KARMA		= -100
+   STR		= {165 215}
+   DEX		= {96 145}
+   INT		= {69 80}
+   PARRYING	= {70.0 80.0}
+   MAGICRESISTANCE={70.0 80.0}
+   TACTICS	= {80.0 100.0}
+   WRESTLING	= {80.0 90.0}
+
+
+//********************************************************************//
+[CHARDEF 047]
+DEFNAME		= c_terathan_drone
+NAME		= Terathan Drone
+SOUND		= snd_MONSTER_TERA_DRONE1
+ICON		= i_pet_terathan_drone
+ANIM		= 078c7f
+DAM		= 4,14
+ARMOR		= 12
+RESOURCES	= 20 i_ribs_raw
+CAN		= MT_WALK
+TEVENTS		= e_TERATHAN
+
+FOODTYPE	= 15 t_meat_raw
+AVERSIONS	= r_civilization
+DESIRES		= e_TERATHAN
+
+CATEGORY	= Monsters
+SUBSECTION	= Memory UO Monsters
+DESCRIPTION	= Terathan Drone
+
+ON = @Create
+   NPC		= brain_monster
+   TAG.DK.RANK	= 1
+   FAME		= {100 2000}
+   KARMA		= -100
+   STR		= {36 65}
+   DEX		= {96 145}
+   INT		= {55 62}
+   PARRYING	= {30.0 40.0}
+   MAGICRESISTANCE={30.0 45.0}
+   TACTICS	= {30.0 50.0}
+   WRESTLING	= {40.0 50.0}
+
+//********************************************************************//
+[CHARDEF c_terathan_drone2]
+ID		= c_terathan_drone
+NAME		= Terathan Drone
+SOUND		= snd_MONSTER_TERA_DRONE1
+ICON		= i_pet_terathan_drone
+ANIM		= 078c7f
+DAM		= 4,14
+ARMOR		= 12
+RESOURCES	= 20 i_ribs_raw
+CAN		= MT_WALK|MT_USEHANDS
+TEVENTS		= e_TERATHAN
+
+FOODTYPE	= 15 t_meat_raw
+AVERSIONS	= r_civilization
+DESIRES		= e_TERATHAN
+CATEGORY	= Monsters
+SUBSECTION	= Memory UO Monsters
+DESCRIPTION	= Terathan Drone 2
+
+ON = @Create
+   NPC		= brain_monster
+   TAG.DK.RANK	= 1
+   FAME		= {100 2000}
+   KARMA		= -100
+   STR		= {36 65}
+   DEX		= {96 145}
+   INT		= {55 62}
+   PARRYING	= {30.0 40.0}
+   MAGICRESISTANCE={30.0 45.0}
+   TACTICS	= {30.0 50.0}
+   WRESTLING	= {40.0 50.0}
+   ITEMNEWBIE	= i_pickaxe
+  
+//********************************************************************//
+[CHARDEF 048]
+DEFNAME		= c_terathan_matriarch
+NAME		= Terathan Matriarch
+SOUND		= snd_MONSTER_TERA_MATRIARCH1
+ICON		= i_pet_terathan_queen
+ANIM		= 07fc7f
+DAM		= 5,20
+ARMOR		= 25
+CAN		= MT_WALK|MT_USEHANDS
+AVERSIONS	= r_civilization
+DESIRES		= e_TERATHAN
+TEVENTS		= e_TERATHAN
+
+CATEGORY	= Monsters
+SUBSECTION	= Memory UO Monsters
+DESCRIPTION	= Terathan Matriarch
+
+ON=@Create
+   NPC		= brain_monster
+   TAG.DK.RANK	= 1
+   FAME		= {100 2000}
+   KARMA	= -100
+   STR		= {315 405}
+   DEX		= {96 115}
+   INT		= {110 118}
+   PARRYING	= {55.0 65.0}
+   MAGERY	= {90.0 100.0}
+   MAGICRESISTANCE={90.0 100.0}
+   TACTICS	= {90.0 100.0}
+   WRESTLING	= {60.0 80.0}
+
+
+//********************************************************************//
+//                       TERATHAN LOOT TEMPLATES                      //
+//      NOTE: NOW OBSOLETE - REFER TO F_CENTRAL_LOOT IN E_ALL_NPC     //
+//********************************************************************//
+[TEMPLATE loot_TERATHAN_AVENGER]
+CATEGORY=Item Templates
+SUBSECTION=Monster Loot Templates
+DESCRIPTION=Terathan Avenger
+CONTAINER=i_backpack
+   ITEM=Random_Potion
+   ITEM=Random_Potion
+   ITEM=RANDOM_SCROLL
+   ITEM=i_gold,{400 800}
+
+//********************************************************************//
+[TEMPLATE loot_TERATHAN_DRONE]
+CATEGORY=Item Templates
+SUBSECTION=Monster Loot Templates
+DESCRIPTION=Terathan Drone
+   CONTAINER = i_backpack   
+   ITEM=i_reag_spider_silk,{5 10}
+   ITEM=i_gold,{100 200}
+
+//********************************************************************//
+[TEMPLATE loot_TERATHAN_MATRIARCH]
+CATEGORY=Item Templates
+SUBSECTION=Monster Loot Templates
+DESCRIPTION=Terathan Matriarch
+   CONTAINER = i_backpack   
+   ITEM=i_reag_spider_silk,{5 10}
+   ITEM=Random_Potion
+   ITEM=RANDOM_SCROLL
+   ITEM=i_gold,{1000 2000}
+
+//********************************************************************//
+[TEMPLATE loot_TERATHAN_WARRIOR]
+CATEGORY=Item Templates
+SUBSECTION=Monster Loot Templates
+DESCRIPTION=Terathan Warrior
+   CONTAINER = i_backpack   
+   ITEM=Random_Potion
+   ITEM=i_gold,{400 800}
+
+
+
+//********************************************************************//
+//                           TERATHAN EVENTS                          //
+//********************************************************************//
+[EVENTS e_Terathan]
+ON = @Click
+   TAG.DK.RANK	= 1
+   KARMA	= -100
+
+ON = @NPCSeeNewPlayer
+   IF !( 0<SRC.TAG.DK.RANK> )
+      CONSUME i_peaceful
+      ATTACK
+      RETURN 1
+   ENDIF
+
+   NEWITEM	i_peaceful
+   ACT.CONT	= <UID>
+   FLAGS	= <FLAGS> | statf_dead
+   RETURN 0
+
+
+
+//********************************************************************//
+//                           TERATHAN ITEMS                           //
+//********************************************************************//
+[ITEMDEF i_peaceful]
+ID	= i_memory
+TYPE	= t_eq_memory_obj
+
+ON = @Create
+   TIMER	= 3
+
+ON = @Timer
+   CONT.FLAGS	= <CONT.FLAGS> & ~statf_dead
+   CONT.ACT	= 0
+   CONT.ACTION	= -1
+   REMOVE
+   RETURN 1
+
+
+
+//********************************************************************//
+//                              OPHIDIANS                             //
+//********************************************************************//
+[CHARDEF 055]
+DEFNAME=c_ophidian_mage
+NAME=Ophidian Mage
+SOUND=snd_MONSTER_OPHIDIAN_MAGE1
+ICON=i_pet_ophid_mage
+ANIM=07fc7f
+CAN=MT_WALK|MT_USEHANDS
+
+DAM=3,17
+ARMOR=15
+RESOURCES=8 i_ribs_raw
+FOODTYPE=5 t_meat_raw, 5 t_food
+DESIRES=i_gold,t_reagent,t_web,i_reag_spider_silk,e_Ophidian
+TEVENTS=e_Ophidian
+
+CATEGORY=Monsters
+SUBSECTION=Memory UO Monsters
+DESCRIPTION=Ophidian Mage
+
+ON=@Create
+   NPC=brain_monster
+   FAME={100 2000}
+   KARMA={-4000 -4999}
+
+   STR={180 205}
+   DEX={96 120}
+   INT={68 75}
+
+   PARRYING={65.0 87.0}
+   MAGERY={60.0 69.0}
+   MAGICRESISTANCE={75.0 97.0}
+   TACTICS={65.0 87.0}
+   WRESTLING={20.0 60.0}
+
+   ITEMNEWBIE=i_spellbook	// knows fire type spells.
+   ADDSPELL=s_feeblemind
+   ADDSPELL=s_lightning
+   ADDSPELL=s_poison
+   ADDSPELL=s_explosion
+
+//********************************************************************//
+[CHARDEF 056]
+DEFNAME=c_ophidian_warrior
+NAME=Ophidian Warrior
+SOUND=snd_MONSTER_OPHIDIAN_WARRIOR1
+ICON=i_pet_ophid_war
+ANIM=078c7f
+CAN=MT_WALK|MT_USEHANDS
+
+DAM=3,18
+ARMOR=18
+RESOURCES=9 i_ribs_raw
+FOODTYPE=15 t_meat_raw
+DESIRES=e_Ophidian
+TEVENTS=e_Ophidian
+
+CATEGORY=Monsters
+SUBSECTION=Memory UO Monsters
+DESCRIPTION=Ophidian Warrior
+
+ON=@Create
+   NPC=brain_monster
+   FAME={100 2000}
+   KARMA={-3000 -3999}
+ 
+   STR={150 320}
+   DEX={65 160}
+   INT={73 81}
+
+   PARRYING={60.0 85.0}
+   MAGERY={70.0 95.0}
+   MAGICRESISTANCE={70.0 85.0}
+   TACTICS={75.0 90.0}
+   SWORDSMANSHIP={60.0 85.0}
+   WRESTLING={60.0 80.0}
+   
+//********************************************************************//
+[CHARDEF 057]
+DEFNAME=c_ophidian_queen
+NAME=Ophidian Queen
+SOUND=snd_MONSTER_OPHIDIAN_QUEEN1
+ICON=i_pet_ophid_queen
+ANIM=078c7f
+CAN=MT_WALK|MT_USEHANDS
+
+DAM=6,23
+ARMOR=25
+RESOURCES=
+FOODTYPE=15 t_meat_raw, 5 t_food
+DESIRES=i_gold,e_Ophidian
+TEVENTS=e_Ophidian
+TEVENTS=e_npc_daemon
+
+CATEGORY=Monsters
+SUBSECTION=Memory UO Monsters
+DESCRIPTION=Ophidian Queen
+
+ON=@Create
+   NPC=brain_monster
+   FAME={100 2000}
+   KARMA={-4000 -4999}
+   STR={415 505}
+   DEX={96 115}
+   INT={85 93}
+
+   PARRYING={55.0 65.0}
+   MAGERY={90.0 100.0}
+   MAGICRESISTANCE={90.0 100.0}
+   TACTICS={50.0 70.0}
+   WRESTLING={60.0 80.0}
+
+//********************************************************************//
+[CHARDEF c_ophidian_queen_mst]
+NAME=Great Ophidian Queen
+SOUND=snd_MONSTER_OPHIDIAN_QUEEN1
+ICON=i_pet_ophid_queen
+ANIM=078c7f
+CAN=MT_WALK|MT_USEHANDS|MT_FIRE_IMMUNE|MT_RUN
+
+DAM=15,35
+ARMOR=40
+FOODTYPE=15 t_meat_raw, 5 t_food
+DESIRES=i_gold,e_Ophidian
+TEVENTS=e_Ophidian
+TEVENTS=e_npc_daemon
+
+CATEGORY=Monsters
+SUBSECTION=Memory UO Monsters
+DESCRIPTION=Ophidian MST Queen
+
+ON=@Create
+   NPC=brain_monster
+   FAME={100 2000}
+   KARMA={-4000 -4999}
+   STR={600 800}
+   DEX={120 150}
+   INT={118 125}
+
+   PARRYING={55.0 65.0}
+   MAGERY={90.0 100.0}
+   MAGICRESISTANCE={100.0 120.0}
+   TACTICS={90.0 110.0}
+   WRESTLING={90.0 110.0}
+
+  
+//********************************************************************//
+[CHARDEF 01044]
+DEFNAME=c_m_ophidian_archmage
+NAME=Ophidian Archmage
+ID=c_OPHIDIAN_MAGE
+DAM=3,17
+ARMOR=22
+RESOURCES=8 i_ribs_raw
+FOODTYPE=5 t_meat_raw, 5 t_food
+DESIRES=i_gold,t_magic,i_reag_spider_silk
+
+CATEGORY=Monsters
+SUBSECTION=Memory UO Monsters
+DESCRIPTION=Ophidian Archmage
+
+ON=@Create
+   NPC=brain_monster
+   STR={280 305}
+   DEX={228 250}
+   INT={106 112}
+ 
+   PARRYING={65.0 87.0}
+   MAGERY={80.0 100.0}
+   MAGICRESISTANCE={75.0 97.0}
+   TACTICS={65.0 87.0}
+   WRESTLING={60.0 80.0}
+
+   FAME={100 2000}
+   KARMA={-5000 -5999}
+
+
+//********************************************************************//
+[CHARDEF 01048]
+DEFNAME=c_m_ophidian_knight
+NAME=Ophidian Knight
+ID=c_OPHIDIAN_WARRIOR
+SOUND=snd_MONSTER_OPHIDIAN_WARRIOR1
+ICON=i_pet_ophid_war
+DAM=10,30
+ARMOR=20
+RESOURCES=10 i_ribs_raw
+CAN=MT_WALK
+
+FOODTYPE=15 t_meat_raw
+
+CATEGORY=Monsters
+SUBSECTION=Memory UO Monsters
+DESCRIPTION=Ophidian Knight
+
+ON=@Create
+   STR={415 595}
+   DEX={165 175}
+   INT={87 93}
+
+   PARRYING={75.0 85.0}
+   MAGICRESISTANCE={65.0 80.0}
+   TACTICS={90.0 100.0}
+   WRESTLING={90.0 100.0}
+
+   NPC=brain_monster
+
+   FAME={100 2000}
+   KARMA={-5000 -5999}
+
+//********************************************************************//
+//                       OPHIDIAN LOOT TEMPLATES                      //
+//          NOTE: NOW OBSOLETE - REFER TO F_CENTRAL_LOOT              //
+//********************************************************************//
+[TEMPLATE loot_OPHIDIAN_MAGE]
+CATEGORY=Item Templates
+SUBSECTION=Monster Loot Templates
+DESCRIPTION=Ophidian Mage
+   CONTAINER = i_backpack   
+   ITEM=Random_Potion
+   ITEM=RANDOM_REAGENT,{ 4 6 }
+   ITEM=RANDOM_SCROLL
+   ITEM=i_gold,{50 150}
+
+//********************************************************************//
+[TEMPLATE loot_OPHIDIAN_AVENGER]
+CATEGORY=Item Templates
+SUBSECTION=Monster Loot Templates
+DESCRIPTION=Ophidian Avenger
+   CONTAINER = i_backpack   
+   ITEM=Random_Potion
+   ITEM=RANDOM_REAGENT,{ 4 6 }
+   ITEM=RANDOM_SCROLL
+   ITEM=i_gold,{500 700}
+
+//********************************************************************//
+[TEMPLATE loot_OPHIDIAN_KNIGHT]
+CATEGORY=Item Templates
+SUBSECTION=Monster Loot Templates
+DESCRIPTION=Ophidian Knight
+   CONTAINER = i_backpack   
+   ITEM=Random_Potion
+   ITEM=RANDOM_REAGENT,{ 4 6 }
+   ITEM=RANDOM_SCROLL
+   ITEM=i_gold,{1000 1500}
+
+//********************************************************************//
+[TEMPLATE loot_OPHIDIAN_ARCHMAGE]
+CATEGORY=Item Templates
+SUBSECTION=Monster Loot Templates
+DESCRIPTION=Ophidian ArchMage
+   CONTAINER = i_backpack   
+   ITEM=Random_Potion
+   ITEM=i_gold,{500 1000}
+
+//********************************************************************//
+[TEMPLATE loot_OPHIDIAN_WARRIOR]
+CATEGORY=Item Templates
+SUBSECTION=Monster Loot Templates
+DESCRIPTION=Ophidian Warrior
+   CONTAINER = i_backpack   
+   ITEM=Random_Potion
+   ITEM=i_gold,{400 900}
+
+
+
+//********************************************************************//
+//                               SHADOWS                              //
+//********************************************************************//
+// Scripted specially for Memory UO shard
+// By Tgon.
+// Any application of this script to your site is done so at your own risk.
+
+[CHARDEF c_shadow_elemental]
+DEFNAME=c_shadow_elemental
+NAME=Shadow Elemental
+ID=c_elem_water
+DAM=100,200
+ARMOR=100
+CAN=MT_WALK|MT_FIRE_IMMUNE|MT_RUN|MT_FLY
+TEVENTS		= e_shadow
+TEVENTS 	= e_teleporter
+
+
+Category=Memory UO
+Subsection=Shadows
+Description=Elemental
+
+ON=@CREATE
+   NPC=BRAIN_MONSTER
+   COLOR=0485
+   STR=4000
+   DEX=200
+   INT={162 172}
+   MAGICRESISTANCE={100.0 200.0}
+   PARRYING={90.0 100.0}
+   TACTICS=100.0
+   WRESTLING=100.0
+   FAME={1000 2000}
+   KARMA={-4500 -5500}
+   TAG.SHADOW=1
+
+ON=@GetHit
+   if (<src.findlayer(layer_hand1).type>==t_weapon_bow )
+      IF (RAND(10))
+         EMOTE contort as the arrow passes through it...
+         return 1
+      ENDIF
+   endif
+   if (<src.findlayer(layer_hand1).type>==t_weapon_xbow )
+      IF (RAND(10))
+         EMOTE contort as the bolt passes through it...
+         return 1
+         ENDIF
+   endif
+   if (<src.findlayer(layer_hand2).type>==t_weapon_bow )
+      IF (RAND(10))
+         EMOTE contort as the arrow passes through it...
+         return 1
+      ENDIF
+   endif
+   if (<src.findlayer(layer_hand2).type>==t_weapon_xbow )
+      IF (RAND(10))
+         EMOTE contort as the bolt passes through it...
+         return 1
+      ENDIF
+   endif
+   
+//********************************************************************//
+[CHARDEF c_shadow_corpser]
+DEFNAME=c_shadow_corpser
+NAME=Shadow
+ID=c_corpser
+DAM=50,100
+ARMOR=100
+CAN=MT_WALK|MT_FIRE_IMMUNE|MT_RUN|MT_FLY
+TEVENTS		= e_shadow
+TEVENTS 	= e_teleporter
+
+
+Category=Memory UO
+Subsection=Shadows
+Description=Corpser
+
+ON=@CREATE
+   NPC=BRAIN_MONSTER
+   COLOR=0485
+   STR=2500
+   DEX=200
+   INT={171 182}
+   MAGICRESISTANCE={100.0 120.0}
+   PARRYING={90.0 95.0}
+   TACTICS={90.0 95.0}
+   WRESTLING={90.0 95.0}
+   FAME={1000 2000}
+   KARMA={-4500 -5500}
+   TAG.SHADOW=1
+   
+ON=@GetHit
+   if (<src.findlayer(layer_hand1).type>==t_weapon_bow )
+      IF (RAND(10))
+         EMOTE contort as the arrow passes through it...
+         return 1
+      ENDIF
+   endif
+   if (<src.findlayer(layer_hand1).type>==t_weapon_xbow )
+      IF (RAND(10))
+         EMOTE contort as the bolt passes through it...
+         return 1
+         ENDIF
+   endif
+   if (<src.findlayer(layer_hand2).type>==t_weapon_bow )
+      IF (RAND(10))
+         EMOTE contort as the arrow passes through it...
+         return 1
+      ENDIF
+   endif
+   if (<src.findlayer(layer_hand2).type>==t_weapon_xbow )
+      IF (RAND(10))
+         EMOTE contort as the bolt passes through it...
+         return 1
+      ENDIF
+   endif
+
+//********************************************************************//
+[CHARDEF c_shadow_serpent]
+DEFNAME=c_shadow_serpent
+NAME=Shadow
+ID=c_snake_giant
+DAM=40,80
+ARMOR=100
+CAN=MT_WALK|MT_FIRE_IMMUNE|MT_RUN|MT_FLY
+TEVENTS		= e_shadow
+TEVENTS 	= e_teleporter
+
+ 
+Category=Memory UO
+Subsection=Shadows
+Description=Serpent
+
+ON=@CREATE
+   NPC=BRAIN_MONSTER
+   COLOR=0485
+   STR=1200
+   DEX=200
+   INT={130 139}
+   MAGICRESISTANCE={60.0 100.0}
+   PARRYING={80.0 95.0}
+   TACTICS={80.0 95.0}
+   WRESTLING={80.0 95.0}
+   FAME={1000 2000}
+   KARMA={-4500 -5500}
+   TAG.SHADOW=1
+
+//********************************************************************//
+[CHARDEF c_shadow_spider]
+DEFNAME=c_shadow_spider
+NAME=Shadow
+ID=c_spider_giant
+DAM=20,50
+ARMOR=100
+CAN=MT_WALK|MT_FIRE_IMMUNE|MT_RUN|MT_FLY
+TEVENTS = e_shadow
+
+Category=Memory UO
+Subsection=Shadows
+Description=Spider
+
+ON=@CREATE
+   NPC=BRAIN_MONSTER
+   COLOR=0485
+   STR=1000
+   DEX={65 100}
+   INT={133 139}
+   MAGICRESISTANCE={70.0 100.0}
+   PARRYING={80.0 95.0}
+   TACTICS={80.0 95.0}
+   WRESTLING={80.0 95.0}
+   FAME={1000 2000}
+   KARMA={-4500 -5500}
+   TAG.SHADOW=1
+
+//********************************************************************//
+[CHARDEF c_shadow_slime]
+DEFNAME=c_shadow_slime
+NAME=Shadow
+ID=c_slime
+DAM=10,40
+ARMOR=100
+CAN=MT_WALK|MT_FIRE_IMMUNE|MT_RUN|MT_FLY
+TEVENTS		= e_shadow
+TEVENTS         = e_teleporter
+
+
+Category=Memory UO
+Subsection=Shadows
+Description=Slime
+
+ON=@CREATE
+   NPC=BRAIN_MONSTER
+   COLOR=0485
+   STR=700
+   DEX=90
+   INT={119 129}
+   MAGICRESISTANCE={40.0 100.0}
+   PARRYING={70.0 95.0}
+   TACTICS={70.0 95.0}
+   WRESTLING={70.0 95.0}
+   FAME={1000 2000}
+   KARMA={-4500 -5500}
+   TAG.SHADOW=1
+   
+//********************************************************************//
+//                            SHADOW EVENTS                           //
+//********************************************************************//
+[EVENTS e_shadow]
+ON = @HitTry
+   f_w_shadow_call23
+
+ON = @Click
+   shadow_regen
+
+ON = @GetHit
+   FLAGS = (<FLAGS> & ~statf_poisoned)
+   IF ( (<SRC.FLAGS> & statf_conjured) && <SRC.NPC> )
+      IF ( rand(10) == 0 )
+         P	= <SRC.P>
+         SRC.UPDATE
+         SRC.REMOVE
+         RETURN 1
+      ENDIF
+   ENDIF
+
+   shadow_regen
+   TAG.TIME.LASTHIT	= <SERV.TIME>
+   f_w_shadow_call23
+   IF ( !(<ID> == c_shadow_slime) && (RAND(100) < 10) )
+      REGION.ALLCLIENTS shadow_earthquake
+   ENDIF
+
+ON = @SpellEffect
+   IF (0<SRC.TAG.SHADOW> == 1)
+      RETURN 1
+   ENDIF
+
+   // immune to fields and earthquake
+   IF ( (<argn> == 28) || (<argn> == 39) || (<argn> == 47) || (<argn> == 57) )
+      RETURN 1
+   ELSEIF ( <argn> == 3 )
+      EMOTE resist the spell
+      RETURN 1
+   ELSEIF (<argn> == 20)
+      IF (rand(10))
+         EMOTE resist the spell
+         RETURN 1
+      ENDIF
+   ELSEIF (<argn> == 30)
+      IF (rand(5))
+         EMOTE recoil in pain
+         DAMAGE {20 40}
+         RETURN 1
+      ENDIF
+   ELSEIF ( (<argn> == 29) || (<argn> == 38) )
+      SRC.SYSMESSAGE They seem unaffected by the spell.
+      RETURN 1
+   ENDIF
+
+ON = @Death
+   DEFAULTLIGHT
+
+ON = @NPCSeeNewPlayer
+   shadow_regen
+   IF ( (<FLAGS> & statf_pet) || <SRC.ISGM> || <SRC.NPC> || <region.guarded> )
+      RETURN 1
+   ENDIF
+   IF ( <SRC.UID> == <ACT.UID> )
+   ELSEIF ( (<FLAGS> & statf_war) && (<ACT.UID> != <SRC.UID>) )	// already fighting another player
+      RETURN 1
+   ENDIF
+
+   IF ( rand(4) == 0 )
+      findlayer(layer_spell_paralyze).remove
+      P	= <SRC.P>
+      SRC.UPDATE
+   ENDIF
+
+   ATTACK
+   RETURN 1
+
+ON=@NPCLOOKATCHAR
+   EVENTS +e_shadow
+
+
+
+//********************************************************************//
+//                      SHADOW FUNCTIONS & ITEMS                      //
+//********************************************************************//
+[FUNCTION shadow_earthquake]
+   IF ( <DISTANCE> > 10 )
+      RETURN 0
+   ENDIF
+   
+   SYSMESSAGE The world trembles beneath your feet...
+   
+   LOCAL.DAM	= <EVAL( { 10 30 } )>
+   IF ( <HITS> < <LOCAL.DAM> )
+      HITS	= 0
+   ELSE
+      HITS	= <eval (<HITS> - <LOCAL.DAM>)>
+   ENDIF
+
+
+//********************************************************************//
+[FUNCTION shadow_regen]
+   if !( <HITS> < <STR> )
+      TAG.TIME.LASTHIT	=
+      RETURN 1
+   endif
+
+   if ( 0<TAG.TIME.LASTHIT> == 0 )
+      TAG.TIME.LASTHIT	= <SERV.TIME>
+   endif
+
+   if ( (<SERV.TIME> - <TAG.TIME.LASTHIT>) < 60 )
+      RETURN 1
+   endif
+
+   TAG.TIME.LASTHIT	= <SERV.TIME>
+   HITS	= <HITS> + { 10 20 }
+
+
+//********************************************************************//
+[FUNCTION f_w_shadow_call23]
+   IF ( <HITS> > ((<STR>*1)/3) )
+      RETURN 0
+   ENDIF
+
+   IF ( 0<TAG.SUMMONED> )
+      RETURN 0
+   ENDIF
+   
+   IF (RAND(100) < 25)
+      TAG.SUMMONED = 1
+   ENDIF
+   
+   IF ( !strcmp( "<TAG.SUMMONS>", "" ) )
+      RETURN 0
+   ENDIF
+   
+   LOCAL.NEWNPC = <EVAL (<TAG.SUMMONS>)>
+   IF (<LOCAL.NEWNPC> == 0)
+      RETURN 0
+   ENDIF
+   NEWNPC = <LOCAL.NEWNPC>
+   
+
+//********************************************************************//
+[ITEMDEF m_w_light]
+ID	= i_memory
+TYPE	= t_eq_script
+LAYER	= layer_special
+NAME	= posdef
+
+ON=@Create
+ATTR = 02
+TIMER = 2
+
+ON=@TIMER
+FORCELIGHT 30
+REMOVE
+
+
+[EOF]

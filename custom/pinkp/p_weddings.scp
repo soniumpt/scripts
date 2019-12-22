@@ -1,0 +1,501 @@
+[PLEVEL 1]
+m
+
+[FUNCTION m]
+
+IF (<ISEMPTY <ARGS>>)
+	IF (<SRC.FINDID.i_wedding_ring>) 
+		IF (<SRC.FINDID.i_wedding_ring.tag0.owner>=<SRC.UID>)
+			serv.allclients f_to_wedding3 
+			RETURN 1
+		ELSE
+			SRC.SYSMESSAGE The Wedding Ring you carry with yourself isnt yours.
+			RETURN 1
+		ENDIF
+	ELSE
+		SRC.SYSMESSAGE You don't have any Wedding Ring with you.
+		RETURN 1
+	ENDIF
+ENDIF
+
+IF (<SRC.FINDID.i_wedding_ring>) 
+	IF (<SRC.FINDID.i_wedding_ring.tag0.owner>=<SRC.UID>)
+		serv.allclients f_to_wedding <args>
+		SRC.SYSMESSAGE @55 [Wedding Chat] <SRC.name>: <args>
+	ELSE
+		SRC.SYSMESSAGE The Wedding Ring you carry with yourself isnt yours.
+		RETURN 1
+	ENDIF
+ELSE
+SRC.SYSMESSAGE You don't have any Wedding Ring with you.
+RETURN 1
+ENDIF
+
+[EVENTS e_wedding]
+ON=@DEATH
+serv.allclients f_to_wedding2 <SRC.NAME> died at <SRC.REGION.NAME>, <SRC.REGION.P>
+
+ON=@LOGIN
+serv.allclients f_to_wedding2 <SRC.NAME> logged in at <SRC.REGION.NAME>, <SRC.REGION.P>
+
+ON=@LOGOUT
+serv.allclients f_to_wedding2 <SRC.NAME> logged out at <SRC.REGION.NAME>, <SRC.REGION.P>
+
+[FUNCTION f_to_wedding]
+   IF (<FINDID.i_wedding_ring.link.uid>==<SRC.FINDID.i_wedding_ring.uid>)
+		IF (<FINDID.i_wedding_ring.tag0.owner>==<UID>)
+			SYSMESSAGE @55 [<SRC.NAME> - <SRC.P>]: <args>
+		ENDIF
+   ENDIF
+   
+[FUNCTION f_to_wedding2]
+   IF (<FINDID.i_wedding_ring.link.uid>==<SRC.FINDID.i_wedding_ring.uid>)
+		IF (<FINDID.i_wedding_ring.tag0.owner>==<UID>)
+			SYSMESSAGE @55 <args>
+		ENDIF
+   ENDIF
+   
+[FUNCTION f_to_wedding3]
+   IF (<FINDID.i_wedding_ring.link.uid>==<SRC.FINDID.i_wedding_ring.uid>)
+		IF (<FINDID.i_wedding_ring.tag0.owner>==<UID>)
+			SRC.SYSMESSAGE @55 <NAME>: <REGION.NAME> - <P>
+			SRC.SYSMESSAGE @55 <SRC.NAME>: <SRC.REGION.NAME> - <SRC.P>
+		ENDIF
+   ENDIF
+   
+   
+
+
+
+[ITEMDEF i_wedding_ring]
+ID=i_ring_gold
+NAME=Wedding Ring
+
+
+ON=@CREATE
+ATTR=05
+
+ON=@DCLICK
+	IF (<SRC.ISGM>)
+		IF !(<TAG0.OWNER>) && (<LINK>==04fffffff)
+			TARGET Please target another Wedding Ring or Player to link this to.
+			RETURN 1
+		ELSEIF (<TAG0.OWNER>) && (<LINK>==04fffffff)
+			TARGET Please target another Wedding Ring to link this one to.
+			RETURN 1
+		ELSEIF !(<TAG0.OWNER>) && !(<LINK>==04fffffff)
+			TARGET Please target a Player to link this Wedding Ring to.
+			RETURN 1
+		ELSEIF (<TAG0.OWNER>) && !(<LINK>==04fffffff)
+			SRC.SYSMESSAGE This Wedding Ring has already been linked to a Player and to another Wedding Ring.
+			RETURN 1
+		ENDIF
+	ENDIF
+		
+	// General Checks
+	
+	IF (<LINK>==04fffffff)
+		SRC.SYSMESSAGE This Wedding Ring is not linked to any other.
+		RETURN 1
+	ELSEIF !(<TAG0.OWNER>)
+		SRC.SYSMESSAGE This Wedding Ring is not linked to any player.
+		RETURN 1
+	ELSEIF !(<TAG0.OWNER>==<SRC.UID>)
+		SRC.SYSMESSAGE This Wedding Ring is not yours to use.
+		RETURN 1
+	ELSEIF (<SRC.FINDID.M_Wedding_RING>)
+		SRC.SYSMESSAGE You are already teleporting.
+		RETURN 1
+	ENDIF
+	
+	IF !(<SRC.ISGM>)
+		EQUIP
+	ENDIF
+	
+	// SRC Checks
+
+	IF (<UID.<SRC.REGION.UID>.TYPE> = T_MULTI)
+		SRC.SYSMESSAGE You cant use the Wedding Ring inside an house.
+		RETURN 1
+	ELSEIF !(<TOPOBJ.UID>==<SRC.UID>)
+		SRC.SYSMESSAGE You must be wearing the Wedding Ring in order to use it.
+		RETURN 1
+	ELSEIF (<SRC.MEMORYFINDTYPE.memory_fight>) && (<SRC.MEMORYFINDTYPE(memory_harmedby).uid>) && (<SRC.MEMORYFINDTYPE(MEMORY_IAGGRESSOR).uid>)
+		SRC.SYSMESSAGE You are too busy fighting right now.
+		RETURN 1
+	ELSEIF (<SRC.TAG0.INEVENT>==1)
+		SRC.SYSMESSAGE You can't teleport to your husband/wife current location while participating in an event.
+		RETURN 1
+	ELSEIF (strmatch("<SRC.REGION.NAME>","Britain Cowpen"))
+		SRC.SYSMESSAGE You can't teleport to your husband/wife current location while inside Britain Cowpen.
+		RETURN 1
+	ELSEIF (<SRC.REGION_SKARGARD>)
+		SRC.SYSMESSAGE You can't teleport to your husband/wife current location from this region.
+		RETURN 1
+	ELSEIF (STRMATCH("Shame", "<SRC.REGION.NAME>"))
+		SRC.SYSMESSAGE You can't teleport to your husband/wife current location from this region.
+		RETURN 1
+	ELSEIF (STRMATCH("Lycaeum", "<SRC.REGION.NAME>"))
+		SRC.SYSMESSAGE You can't teleport to your husband/wife current location from this region.
+		RETURN 1
+	ELSEIF (<SRC.REGION.FLAGS> & region_antimagic_all)
+		SRC.SYSMESSAGE You can't teleport to your husband/wife current location from this region.
+		RETURN 1
+	ELSEIF (<SRC.REGION.FLAGS> & region_antimagic_recall_out)
+		SRC.SYSMESSAGE You can't teleport to your husband/wife current location from this region.
+		RETURN 1
+	ELSEIF (<SRC.FLAGS> & statf_stone) 
+		SRC.SYSMESSAGE You can't teleport to your husband/wife current location while stoned.
+		RETURN 1
+	ELSEIF (<SRC.ACCOUNT.JAIL>=1)
+		SRC.SYSMESSAGE You can't teleport to your husband/wife current location while jailed.
+		RETURN 1
+	ELSEIF (<SRC.FLAGS> & statf_war) 
+		SRC.SYSMESSAGE You can't teleport to your husband/wife current location while at war.
+		RETURN 1
+	ELSEIF (<SRC.FLAGS> & statf_criminal) 
+		SRC.SYSMESSAGE You can't teleport to your husband/wife current location while criminal.
+		RETURN 1
+	ELSEIF (<SRC.FLAGS> & statf_freeze ) 
+		SRC.SYSMESSAGE You can't teleport to your husband/wife current location while frozen.
+		RETURN 1
+	ENDIF 
+	
+	
+	//LINK.TOPOBJ CHECKS
+	
+	IF !(<LINK.TOPOBJ.ISPLAYER>)
+		SRC.SYSMESSAGE Your husband/wife is not wearing the Wedding Ring.
+		RETURN 1
+	ELSEIF !(strmatch("<LINK.TOPOBJ.TAG0.ISONLINE>","YES"))
+		SRC.SYSMESSAGE Your husband/wife is not online at the moment.
+		RETURN 1
+	ELSEIF !(<LINK.TAG0.OWNER>==<LINK.TOPOBJ.UID>)
+		SRC.SYSMESSAGE Your husband/wife is not wearing the Wedding Ring.
+		RETURN 1
+	ELSEIF (<UID.<LINK.TOPOBJ.REGION.UID>.TYPE> = T_MULTI)
+		CONT.SYSMESSAGE You can't teleport to your husband/wife current location at the moment.
+		RETURN 1
+	ELSEIF (<LINK.TOPOBJ.MEMORYFINDTYPE.memory_fight>) && (<LINK.TOPOBJ.MEMORYFINDTYPE(memory_harmedby).uid>) && (<LINK.TOPOBJ.MEMORYFINDTYPE(MEMORY_IAGGRESSOR).uid>)
+		SRC.SYSMESSAGE Your husband/wife is too busy fighting right now.
+		RETURN 1
+	ELSEIF (<LINK.TOPOBJ.TAG0.INEVENT>==1)
+		SRC.SYSMESSAGE You can't teleport to your husband/wife current location at the moment.
+		RETURN 1
+	ELSEIF (strmatch("<LINK.TOPOBJ.REGION.NAME>","Britain Cowpen"))
+		SRC.SYSMESSAGE You can't teleport to your husband/wife current location at the moment.
+		RETURN 1
+	ELSEIF (<LINK.TOPOBJ.REGION_SKARGARD>)
+		SRC.SYSMESSAGE You can't teleport to your husband/wife current location at the moment.
+		RETURN 1
+	ELSEIF (STRMATCH("Shame", "<LINK.TOPOBJ.REGION.NAME>"))
+		SRC.SYSMESSAGE You can't teleport to your husband/wife current location at the moment.
+		RETURN 1
+	ELSEIF (STRMATCH("Lycaeum", "<LINK.TOPOBJ.REGION.NAME>"))
+		SRC.SYSMESSAGE You can't teleport to your husband/wife current location at the moment.
+		RETURN 1
+	ELSEIF (<LINK.TOPOBJ.REGION.FLAGS> & region_antimagic_all)
+		SRC.SYSMESSAGE You can't teleport to your husband/wife current location at the moment.
+		RETURN 1
+	ELSEIF (<LINK.TOPOBJ.REGION.FLAGS> & region_antimagic_recall_out)
+		SRC.SYSMESSAGE You can't teleport to your husband/wife current location at the moment.
+		RETURN 1
+	ELSEIF (<LINK.TOPOBJ.REGION.FLAGS> & region_antimagic_recall_in)
+		SRC.SYSMESSAGE You can't teleport to your husband/wife current location at the moment.
+		RETURN 1
+	ELSEIF (<LINK.TOPOBJ.FLAGS> & statf_stone) 
+		SRC.SYSMESSAGE You can't teleport to your husband/wife current location at the moment.
+		RETURN 1
+	ELSEIF (<LINK.TOPOBJ.ACCOUNT.JAIL>=1)
+		SRC.SYSMESSAGE You can't teleport to your husband/wife current location at the moment.
+		RETURN 1
+	ELSEIF (<LINK.TOPOBJ.FLAGS> & statf_war) 
+		SRC.SYSMESSAGE You can't teleport to your husband/wife current location at the moment.
+		RETURN 1
+	ELSEIF (<LINK.TOPOBJ.FLAGS> & statf_criminal) 
+		SRC.SYSMESSAGE You can't teleport to your husband/wife current location at the moment.
+		RETURN 1
+	ELSEIF (<LINK.TOPOBJ.FLAGS> & statf_freeze ) 
+		SRC.SYSMESSAGE You can't teleport to your husband/wife current location at the moment.
+		RETURN 1
+	ELSEIF (<LINK.TOPOBJ.ISDEAD>)
+		SRC.SYSMESSAGE You can't teleport to your dead husband/wife.
+		RETURN 1
+	ENDIF 
+	
+	IF (<SRC.ISDEAD>) 
+		SRC.GO <LINK.TOPOBJ.P>
+		SERV.LOG :Wedding: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> is teleporting DEAD to <LINK.TOPOBJ.UID> <LINK.TOPOBJ.ACCOUNT> <LINK.TOPOBJ.NAME> to <LINK.TOPOBJ.P>
+	ELSE
+		SERV.LOG :Wedding: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> is trying to teleport ALIVE to <LINK.TOPOBJ.UID> <LINK.TOPOBJ.ACCOUNT> <LINK.TOPOBJ.NAME> to <LINK.TOPOBJ.P>
+		SERV.NEWITEM M_Wedding_ring
+		NEW.LINK=<LINK.TOPOBJ.UID>
+		NEW.EQUIP
+	ENDIF
+	RETURN 1
+	
+on=@equip
+	IF (strmatch("<TAG0.OWNER>",""))
+		SRC.SYSMESSAGE This Wedding Ring has no owner - please report this to a GM.
+		RETURN 1
+	ELSEIF !(<TAG0.OWNER>==<SRC.UID>)
+		SRC.SYSMESSAGE This Wedding Ring is not yours to use.
+		RETURN 1
+	ENDIF
+	
+ON=@Targon_ground
+	SRC.SYSMESSAGE You must target another Wedding Ring or a Player with this.
+	RETURN 1
+	
+ON=@Targon_char
+	IF (<SRC.TARG.UID>=<SRC.UID>)
+		SRC.SYSMESSAGE You can't target yourself with this.
+		RETURN 1
+	ENDIF
+	
+	IF (<SRC.TARG.ISNPC>)
+		SRC.SYSMESSAGE You can't target an NPC with this.
+		RETURN 1
+	ENDIF
+		
+	IF (<SRC.TARG.ISEVENT.e_wedding>)
+		SRC.SYSMESSAGE This players is already engaged with someone else.
+		RETURN 1
+	ENDIF
+	
+	SRC.TARG.EVENTS +e_wedding
+	TAG.OWNER=<SRC.TARG.UID>
+	SRC.SYSMESSAGE You successfully linked the Wedding Ring to <SRC.TARG.NAME>.
+	RETURN 1
+	
+ON=@Targon_item
+    IF (<SRC.TARG.BASEID>==i_Wedding_ring)
+		IF (<SRC.TARG.UID>==<UID>)
+			SRC.SYSMESSAGE You need to link two different rings.
+			RETURN 1
+		ENDIF
+		IF (<LINK>==<SRC.TARG.UID>)
+			SRC.SYSMESSAGE This Wedding Rings are already linked to each other.
+			RETURN 1
+		ENDIF
+		IF !(<LINK>==04fffffff)
+			SRC.SYSMESSAGE This Wedding Ring is already linked to another one.
+			RETURN 1
+		ENDIF
+		
+		LINK=<SRC.TARG.UID>
+		SRC.TARG.LINK=<UID>
+		SRC.SYSMESSAGE You successfully linked the two Wedding Rings.
+		RETURN 1
+	ELSE
+		SRC.SYSMESSAGE This is not an Wedding Ring.
+		RETURN 1
+	ENDIF
+
+
+[ItemDef M_Wedding_Ring]
+id=i_memory
+Name=Wedding Ring Teleport
+type=t_eq_script
+
+ON=@Create
+   TIMER=1
+   MORE1 = 1
+   
+ON=@Equip
+   SRC.SAY Kal Ort Por
+    
+ON=@Timer
+  
+	// CONT Checks
+
+	IF (<UID.<CONT.REGION.UID>.TYPE> = T_MULTI)
+		CONT.SYSMESSAGE You cant use the Wedding Ring inside an house.
+		REMOVE
+		RETURN 1
+	ELSEIF (<CONT.MEMORYFINDTYPE.memory_fight>) && (<CONT.MEMORYFINDTYPE(memory_harmedby).uid>) && (<CONT.MEMORYFINDTYPE(MEMORY_IAGGRESSOR).uid>)
+		CONT.SYSMESSAGE You are too busy fighting right now.
+		REMOVE
+		RETURN 1
+	ELSEIF (<CONT.TAG0.INEVENT>==1)
+		CONT.SYSMESSAGE You can't teleport to your husband/wife current location while participating in an event.
+		REMOVE
+		RETURN 1
+	ELSEIF (strmatch("<CONT.REGION.NAME>","Britain Cowpen"))
+		CONT.SYSMESSAGE You can't teleport to your husband/wife current location while inside Britain Cowpen.
+		REMOVE
+		RETURN 1
+	ELSEIF (<CONT.REGION_SKARGARD>)
+		CONT.SYSMESSAGE You can't teleport to your husband/wife current location from this region.
+		REMOVE
+		RETURN 1
+	ELSEIF (STRMATCH("Shame", "<CONT.REGION.NAME>"))
+		CONT.SYSMESSAGE You can't teleport to your husband/wife current location from this region.
+		REMOVE
+		RETURN 1
+	ELSEIF (STRMATCH("Lycaeum", "<CONT.REGION.NAME>"))
+		CONT.SYSMESSAGE You can't teleport to your husband/wife current location from this region.
+		REMOVE
+		RETURN 1
+	ELSEIF (<CONT.REGION.FLAGS> & region_antimagic_all)
+		CONT.SYSMESSAGE You can't teleport to your husband/wife current location from this region.
+		REMOVE
+		RETURN 1
+	ELSEIF (<CONT.REGION.FLAGS> & region_antimagic_recall_out)
+		CONT.SYSMESSAGE You can't teleport to your husband/wife current location from this region.
+		REMOVE
+		RETURN 1
+	ELSEIF (<CONT.FLAGS> & statf_stone) 
+		CONT.SYSMESSAGE You can't teleport to your husband/wife current location while stoned.
+		REMOVE
+		RETURN 1
+	ELSEIF (<CONT.ACCOUNT.JAIL>=1)
+		CONT.SYSMESSAGE You can't teleport to your husband/wife current location while jailed.
+		REMOVE
+		RETURN 1
+	ELSEIF (<CONT.FLAGS> & statf_war) 
+		CONT.SYSMESSAGE You can't teleport to your husband/wife current location while at war.
+		REMOVE
+		RETURN 1
+	ELSEIF (<CONT.FLAGS> & statf_criminal) 
+		CONT.SYSMESSAGE You can't teleport to your husband/wife current location while criminal.
+		REMOVE
+		RETURN 1
+	ELSEIF (<CONT.FLAGS> & statf_freeze ) 
+		CONT.SYSMESSAGE You can't teleport to your husband/wife current location while frozen.
+		REMOVE
+		RETURN 1
+	ENDIF 
+	
+	
+	//LINK CHECKS
+	
+	IF !(strmatch("<LINK.TAG0.ISONLINE>","YES"))
+		CONT.SYSMESSAGE Your husband/wife is not online at the moment.
+		REMOVE
+		RETURN 1
+	ELSEIF (<LINK.MEMORYFINDTYPE.memory_fight>) && (<LINK.MEMORYFINDTYPE(memory_harmedby).uid>) && (<LINK.MEMORYFINDTYPE(MEMORY_IAGGRESSOR).uid>)
+		CONT.SYSMESSAGE Your husband/wife is too busy fighting right now.
+		REMOVE
+		RETURN 1
+	ELSEIF (<LINK.TAG0.INEVENT>==1)
+		CONT.SYSMESSAGE You can't teleport to your husband/wife current location at the moment.
+		REMOVE
+		RETURN 1
+	ELSEIF (strmatch("<LINK.REGION.NAME>","Britain Cowpen"))
+		CONT.SYSMESSAGE You can't teleport to your husband/wife current location at the moment.
+		REMOVE
+		RETURN 1
+	ELSEIF (<LINK.REGION_SKARGARD>)
+		CONT.SYSMESSAGE You can't teleport to your husband/wife current location at the moment.
+		REMOVE
+		RETURN 1
+	ELSEIF (STRMATCH("Shame", "<LINK.REGION.NAME>"))
+		CONT.SYSMESSAGE You can't teleport to your husband/wife current location at the moment.
+		REMOVE
+		RETURN 1
+	ELSEIF (STRMATCH("Lycaeum", "<LINK.REGION.NAME>"))
+		CONT.SYSMESSAGE You can't teleport to your husband/wife current location at the moment.
+		REMOVE
+		RETURN 1
+	ELSEIF (<LINK.REGION.FLAGS> & region_antimagic_all)
+		CONT.SYSMESSAGE You can't teleport to your husband/wife current location at the moment.
+		REMOVE
+		RETURN 1
+	ELSEIF (<LINK.REGION.FLAGS> & region_antimagic_recall_out)
+		CONT.SYSMESSAGE You can't teleport to your husband/wife current location at the moment.
+		REMOVE
+		RETURN 1
+	ELSEIF (<LINK.REGION.FLAGS> & region_antimagic_recall_in)
+		SRC.SYSMESSAGE You can't teleport to your husband/wife current location at the moment.
+		REMOVE
+		RETURN 1
+	ELSEIF (<LINK.FLAGS> & statf_stone) 
+		CONT.SYSMESSAGE You can't teleport to your husband/wife current location at the moment.
+		REMOVE
+		RETURN 1
+	ELSEIF (<LINK.ACCOUNT.JAIL>=1)
+		CONT.SYSMESSAGE You can't teleport to your husband/wife current location at the moment.
+		REMOVE
+		RETURN 1
+	ELSEIF (<LINK.FLAGS> & statf_war) 
+		CONT.SYSMESSAGE You can't teleport to your husband/wife current location at the moment.
+		REMOVE
+		RETURN 1
+	ELSEIF (<LINK.FLAGS> & statf_criminal) 
+		CONT.SYSMESSAGE You can't teleport to your husband/wife current location at the moment.
+		REMOVE
+		RETURN 1
+	ELSEIF (<LINK.FLAGS> & statf_freeze ) 
+		CONT.SYSMESSAGE You can't teleport to your husband/wife current location at the moment.
+		REMOVE
+		RETURN 1
+	ELSEIF (<LINK.ISDEAD>)
+		CONT.SYSMESSAGE You can't teleport to your dead husband/wife.
+		REMOVE
+		RETURN 1
+	ENDIF 
+	
+    IF ( <MORE1> <= 7 )
+        CONT.EFFECT=3,i_fx_sparkle,0,22,0,07a7
+		LINK.EFFECT=3,i_fx_sparkle,0,22,0,07a9
+        MORE1 = <MORE1>+1
+        TIMER = 1
+		RETURN 1
+    ELSE
+		CONT.GO <LINK.P>
+		SERV.LOG :Wedding: <CONT.UID> <CONT.ACCOUNT> <CONT.NAME> successfully teleport to <LINK.UID> <LINK.ACCOUNT> <LINK.NAME> to <LINK.P>
+    ENDIF
+   REMOVE 
+   RETURN 1
+   
+   
+[ITEMDEF i_cape_Wedding]
+ID=i_cape
+NAME=Wedding Cloak
+TYPE=t_script
+
+ON=@CREATE
+   TYPE=t_clothing
+   ATTR=05
+   MORE1L=9999
+   MORE1H=9999
+
+ON=@DCLICK
+   IF (<SRC.ISGM>)
+      TARGET Who do you want to set as the owner of the Wedding Cloak?
+      RETURN 1
+   ENDIF
+   
+   	IF (strmatch("<TAG0.OWNER>",""))
+		SRC.SYSMESSAGE This Wedding Cloak has no owner - please report this to a GM.
+		RETURN 1
+	ENDIF
+	
+	IF !(strmatch("<TAG0.OWNER>","<SRC.NAME>"))
+		SRC.SYSMESSAGE This Wedding Cloak does not belong to you.
+		RETURN 1
+	ENDIF
+   
+on=@equip
+	IF (strmatch("<TAG0.OWNER>",""))
+		SRC.SYSMESSAGE This Wedding Cloak has no owner - please report this to a GM.
+		RETURN 1
+	ENDIF
+	IF !(strmatch("<TAG0.OWNER>","<SRC.NAME>"))
+		SRC.SYSMESSAGE This Wedding Cloak does not belong to you.
+		RETURN 1
+	ENDIF
+ 
+ON=@TARGON_CHAR
+   TAG.OWNER=<SRC.TARG.NAME>
+   SRC.SYSMESSAGE Wedding Cloak owner set to <SRC.TARG.NAME>.
+   RETURN 1
+   
+ON=@TARGON_ITEM
+	SRC.SYSMESSAGE Please target a player to set the Wedding Cloak owner.
+	RETURN 1
+	
+ON=@TARGON_GROUND
+	SRC.SYSMESSAGE Please target a player to set the Wedding Cloak owner.
+	RETURN 1

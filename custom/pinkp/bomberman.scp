@@ -1,0 +1,1009 @@
+//*********************************************//
+//   Function to check who is still alive      //
+//                                             //
+// If there is only 1 player alive it will     //
+// pick him as the winner, teleport him out    //
+// and place 2 PvP Tickets inside his backpack.//    
+//                                             //
+// MUST BE USED INSIDE OR VERY NEAR THE ARENA  //    
+//*********************************************//
+
+[PLEVEL 2]
+removerocks
+spawn_bomberman
+
+[FUNCTION checkbomberman]
+FORCLIENTS 500 
+    IF (<ISEVENT.E_BOMBERMAN>)
+        SRC.SYSMESSAGE <NAME> is still alive at <P>
+		VAR.BOMBERMANALIVE=<UID>
+		VAR0.ALIVEBOMBERMAN +=1
+    ENDIF
+ENDFOR
+
+IF !(<VAR0.ALIVEBOMBERMAN>)
+	SRC.SYSMESSAGE There is no one alive playing Bomberman in this region.
+	RETURN 1
+ENDIF
+
+OBJ=<VAR.BOMBERMANALIVE>
+
+IF (<EVAL <VAR0.ALIVEBOMBERMAN>>==1)
+	OBJ.FINDID.i_bomb_special_bomberman.remove
+	OBJ.FINDID.i_bomb_special_flame.remove
+	OBJ.FINDID.i_bomb_special_bomb.remove
+	OBJ.FINDID.i_bomb_special_tribomb.remove
+	OBJ.FINDID.i_bomb_special_clock.remove
+	OBJ.FINDID.i_bomb_special_detonator.remove
+	OBJ.TAG.DETONATORBOMB1
+	OBJ.TAG.DETONATORBOMB2
+	OBJ.TAG.DETONATORBOMB3
+	OBJ.consume 1000 i_bomb_placer
+	OBJ.events -e_bomberman
+	OBJ.go 5974,2083
+	REGION.ALLCLIENTS SYSMESSAGE @07AC <OBJ.NAME> Won the Bomberman!
+	SERV.NEWITEM i_pvptoken, 2
+	NEW.CONT=<OBJ.findlayer.layer_pack.uid>
+	SERV.LOG :BOMBERMAN: <OBJ> <OBJ.ACCOUNT> <OBJ.NAME> got 2 PvP Tickets for winning the Bomberman!
+	OBJ.SYSMESSAGE @07ad Congratulations for winning the Bomberman! 2 PvP Tickets have been placed inside your backpack!
+	SRC.SYSMESSAGE @079c The winner, <OBJ.NAME>, was given 2 PvP Tickets and teleported out of the arena automatically!
+ENDIF
+VAR.ALIVEBOMBERMAN=
+VAR.BOMBERMANALIVE=
+
+
+
+
+//*****************************************//
+//   Function to remove explosive rocks    //
+//*****************************************//
+
+[FUNCTION removerocks]
+foritems 800
+   if (<baseid>==i_remove_rock) 
+         remove
+   endif
+endfor
+RETURN 1
+
+//**************************************************************************//
+// Function to remove items/events and teleport players out when they die   //
+//**************************************************************************//
+
+[function bombermancleanup]
+FINDID.i_bomb_special_bomberman.remove
+FINDID.i_bomb_special_flame.remove
+FINDID.i_bomb_special_bomb.remove
+FINDID.i_bomb_special_tribomb.remove
+FINDID.i_bomb_special_clock.remove
+FINDID.i_bomb_special_detonator.remove
+TAG.DETONATORBOMB1
+TAG.DETONATORBOMB2
+TAG.DETONATORBOMB3
+consume 1000 i_bomb_placer
+events -e_bomberman
+go 5974,2083
+region.allclients sysmessage @079c <NAME> died and is now out of the Bomberman!
+
+
+//*********************************************//
+// Spawn explosive rocks functions and items   //
+//*********************************************//
+
+[ITEMDEF i_rockcreatore]
+ID=i_fx_yellow_dot
+DEFNAME=i_rockcreatore
+name = probe
+
+on=@create
+timer = 1
+more1 = 57
+ATTR=attr_move_never|attr_invis
+
+on=@timer
+OBJ=<UID>
+timer = 1
+IF (<OBJ.more1> > 0)
+rockcreator e
+ELSE 
+obj.remove
+return 1
+ENDIF
+return 1
+
+[ITEMDEF i_rockcreatorspaces]
+ID=i_fx_yellow_dot
+DEFNAME=i_rockcreatorspaces
+name = probe
+
+on=@create
+timer = 1
+more1 = 57
+ATTR=attr_move_never|attr_invis
+
+on=@timer
+OBJ=<UID>
+timer = 1
+IF (<OBJ.more1> > 0)
+rockcreatorspaces e
+ELSE 
+obj.remove
+return 1
+ENDIF
+return 1
+
+
+[function rockcreator]
+serv.newitem i_remove_rock 
+new.p=<OBJ.p>
+OBJ.move <args>
+OBJ.more1 = <eval <OBJ.more1> - 1>
+
+
+[function rockcreatorspaces]
+serv.newitem i_remove_rock 
+new.p=<OBJ.p>
+OBJ.move <args>
+OBJ.more1 = <eval <OBJ.more1> - 1>
+OBJ.move <args>
+OBJ.more1 = <eval <OBJ.more1> - 1>
+
+[function spawn_bomberman]
+serv.newitem i_rockcreatorspaces
+NEW.P=5950,2024
+serv.newitem i_rockcreatorspaces
+NEW.P=5950,2026
+serv.newitem i_rockcreatorspaces
+NEW.P=5950,2028
+serv.newitem i_rockcreatorspaces
+NEW.P=5950,2030
+serv.newitem i_rockcreatorspaces
+NEW.P=5950,2032
+serv.newitem i_rockcreatorspaces
+NEW.P=5950,2034
+serv.newitem i_rockcreatorspaces
+NEW.P=5950,2036
+serv.newitem i_rockcreatorspaces
+NEW.P=5950,2038
+serv.newitem i_rockcreatorspaces
+NEW.P=5950,2040
+serv.newitem i_rockcreatorspaces
+NEW.P=5950,2042
+serv.newitem i_rockcreatorspaces
+NEW.P=5950,2044
+serv.newitem i_rockcreatorspaces
+NEW.P=5950,2046
+serv.newitem i_rockcreatorspaces
+NEW.P=5950,2048
+serv.newitem i_rockcreatorspaces
+NEW.P=5950,2050
+serv.newitem i_rockcreatorspaces
+NEW.P=5950,2052
+serv.newitem i_rockcreatorspaces
+NEW.P=5950,2054
+serv.newitem i_rockcreatorspaces
+NEW.P=5950,2056
+serv.newitem i_rockcreatorspaces
+NEW.P=5950,2058
+serv.newitem i_rockcreatorspaces
+NEW.P=5950,2060
+serv.newitem i_rockcreatorspaces
+NEW.P=5950,2062
+serv.newitem i_rockcreatorspaces
+NEW.P=5950,2064
+serv.newitem i_rockcreatorspaces
+NEW.P=5950,2066
+serv.newitem i_rockcreatorspaces
+NEW.P=5950,2068
+serv.newitem i_rockcreatorspaces
+NEW.P=5950,2070
+serv.newitem i_rockcreatorspaces
+NEW.P=5950,2072
+serv.newitem i_rockcreatorspaces
+NEW.P=5950,2074
+serv.newitem i_rockcreatorspaces
+NEW.P=5950,2076
+serv.newitem i_rockcreatorspaces
+NEW.P=5950,2078
+serv.newitem i_rockcreatore
+NEW.P=5950,2025
+serv.newitem i_rockcreatore
+NEW.P=5950,2027
+serv.newitem i_rockcreatore
+NEW.P=5950,2029
+serv.newitem i_rockcreatore
+NEW.P=5950,2031
+serv.newitem i_rockcreatore
+NEW.P=5950,2033
+serv.newitem i_rockcreatore
+NEW.P=5950,2035
+serv.newitem i_rockcreatore
+NEW.P=5950,2037
+serv.newitem i_rockcreatore
+NEW.P=5950,2039
+serv.newitem i_rockcreatore
+NEW.P=5950,2041
+serv.newitem i_rockcreatore
+NEW.P=5950,2043
+serv.newitem i_rockcreatore
+NEW.P=5950,2045
+serv.newitem i_rockcreatore
+NEW.P=5950,2047
+serv.newitem i_rockcreatore
+NEW.P=5950,2049
+serv.newitem i_rockcreatore
+NEW.P=5950,2051
+serv.newitem i_rockcreatore
+NEW.P=5950,2053
+serv.newitem i_rockcreatore
+NEW.P=5950,2055
+serv.newitem i_rockcreatore
+NEW.P=5950,2057
+serv.newitem i_rockcreatore
+NEW.P=5950,2059
+serv.newitem i_rockcreatore
+NEW.P=5950,2061
+serv.newitem i_rockcreatore
+NEW.P=5950,2063
+serv.newitem i_rockcreatore
+NEW.P=5950,2065
+serv.newitem i_rockcreatore
+NEW.P=5950,2067
+serv.newitem i_rockcreatore
+NEW.P=5950,2069
+serv.newitem i_rockcreatore
+NEW.P=5950,2071
+serv.newitem i_rockcreatore
+NEW.P=5950,2073
+serv.newitem i_rockcreatore
+NEW.P=5950,2075
+serv.newitem i_rockcreatore
+NEW.P=5950,2077
+serv.newitem i_rockcreatore
+NEW.P=5950,2079
+serv.newitem i_rockcreatore
+NEW.P=5950,2023
+
+
+//************//
+// Rock Bomb  //
+//************//
+
+[ITEMDEF i_bomb]
+ID=01772
+DEFNAME=i_bomb
+
+on=@create
+color = 0020
+timer = 1
+more1 = 3
+more2 = 2
+ATTR=attr_move_never
+
+on=@timer
+IF (<more1> > 1)
+say <eval <more1>>
+more1 = <eval <more1> -1>
+timer = 1
+return 1
+else
+IF !(0<tag.owner> = 0)
+ try uid.<tag.owner>.givebomb
+ENDIF
+ say <eval <more1>>
+ serv.newitem i_probe_n 
+ new.p=<p>
+ new.more1 = <more2>
+ serv.newitem i_probe_e 
+ new.p=<p> 
+ new.more1 = <more2>
+ serv.newitem i_probe_s 
+ new.p=<p> 
+ new.more1 = <more2>
+ serv.newitem i_probe_w 
+ new.p=<p>
+ new.more1 = <more2>
+ serv.newitem bman_fire 
+new.p=<p>
+ remove
+ return 1
+ENDIF
+
+
+//************//
+//Potion Bomb //
+//************//
+
+[ITEMDEF i_bomb_placer]
+NAME	=Bomb
+ID	=i_bottle_empty
+TYPE	=T_normal
+
+ON=@Create
+  COLOR=09a1
+  ATTR=attr_move_never
+  
+ON=@DClick
+IF !(<src.ISEVENT.e_bomberman>)
+REMOVE
+return 1
+ENDIF
+IF !(<CONT>==<SRC.FINDLAYER.21.UID>)
+src.sysmessage you cannot use that
+return 1
+endif
+src.placebomb
+src.consume 1 i_bomb_placer
+return 1
+
+[FUNCTION placebomb]
+IF (<ISEVENT.e_bomberman>)
+      serv.newitem i_bomb
+      new.p = <p>
+      new.tag.owner = <uid>
+      IF (<FINDID.i_bomb_special_detonator.UID>)
+      new.timer = -1
+         IF !(<UID.<TAG.DETONATORBOMB1>.BASEID>=i_bomb)
+           TAG.DETONATORBOMB1 = <new.uid>
+         ELSEIF !(<UID.<SRC.TAG.DETONATORBOMB2>.BASEID>=i_bomb)
+              TAG.DETONATORBOMB2 = <new.uid>
+         ELSEIF !(<UID.<SRC.TAG.DETONATORBOMB3>.BASEID>=i_bomb)
+              TAG.DETONATORBOMB3 = <new.uid>
+         ENDIF
+      sysmessage you have detonator use .detonate to detonate
+      ENDIF
+      IF (<FINDID.i_bomb_special_flame.UID>) 
+      new.more2 = <FINDID.i_bomb_special_flame.tag.range>
+      ENDIF
+endif
+
+[FUNCTION dropbomb]
+IF !(<SRC.ISEVENT.e_bomberman>)
+SRC.SYSMESSAGE You are not in a Bomberman event to use this command.
+RETURN 1
+ENDIF
+
+IF (<RESTEST 1 i_bomb_placer>)
+	FINDID.i_bomb_placer.USE
+ELSE
+SRC.SYSMESSAGE You are out of Bombs.
+ENDIF
+RETURN 1
+
+//************//
+//   Event    //
+//************//
+
+[events e_bomberman]
+on=@gethit
+IF (<argn2> == 144)
+   IF !(<FINDID.i_bomb_special_bomberman.UID>)
+        bombermancleanup
+   ELSE
+        FINDID.i_bomb_special_bomberman.timer = 3
+        sysmessage You lost a life!
+   ENDIF
+ENDIF
+
+on=@logout
+bombermancleanup
+
+
+
+//*******//
+// Rocks //
+//*******//
+
+[ITEMDEF i_block_rock]
+ID=01772
+DEFNAME=i_block_rock
+CAN=CAN_I_BLOCK
+
+[ITEMDEF i_remove_rock]
+ID=01772
+DEFNAME=i_remove_rock
+CAN=CAN_I_BLOCK
+on=@create
+color = 0049
+attr = ATTR_MOVE_NEVER
+
+
+//*****************//
+//  Fire Effects   //
+//*****************//
+
+[ITEMDEF bman_fire]
+//fire column
+ID=i_fire_column
+TYPE=t_fire
+on=@create
+timer = 2
+attr=attr_static|attr_decay 
+on=@timer
+remove
+
+[ITEMDEF i_probe_n]
+ID=i_fx_yellow_dot
+DEFNAME=i_probe_n
+name = probe
+
+on=@create
+timer = 1
+more1 = 2
+ATTR=attr_move_never|attr_invis
+
+on=@timer
+OBJ=<UID>
+IF (<OBJ.more1> > 0)
+bombtest n
+ELSE 
+obj.remove
+return 1
+ENDIF
+IF (<OBJ.more1> > 0)
+bombtest n
+ELSE 
+obj.remove
+return 1
+ENDIF
+IF (<OBJ.more1> > 0)
+bombtest n
+ELSE 
+obj.remove
+return 1
+ENDIF
+IF (<OBJ.more1> > 0)
+bombtest n
+ELSE 
+obj.remove
+return 1
+ENDIF
+IF (<OBJ.more1> > 0)
+bombtest n
+ELSE 
+obj.remove
+return 1
+ENDIF
+IF (<OBJ.more1> > 0)
+bombtest n
+ELSE 
+obj.remove
+return 1
+ENDIF
+IF (<OBJ.more1> > 0)
+bombtest n
+ELSE 
+obj.remove
+return 1
+ENDIF
+IF (<OBJ.more1> > 0)
+bombtest n
+ELSE 
+obj.remove
+return 1
+ENDIF
+obj.remove
+return 1
+
+
+[ITEMDEF i_probe_e]
+ID=i_fx_yellow_dot
+DEFNAME=i_probe_e
+name = probe
+
+on=@create
+timer = 1
+more1 = 2
+ATTR=attr_move_never|attr_invis
+
+on=@timer
+OBJ=<UID>
+IF (<OBJ.more1> > 0)
+bombtest e
+ELSE 
+obj.remove
+return 1
+ENDIF
+IF (<OBJ.more1> > 0)
+bombtest e
+ELSE 
+obj.remove
+return 1
+ENDIF
+IF (<OBJ.more1> > 0)
+bombtest e
+ELSE 
+obj.remove
+return 1
+ENDIF
+IF (<OBJ.more1> > 0)
+bombtest e
+ELSE 
+obj.remove
+return 1
+ENDIF
+IF (<OBJ.more1> > 0)
+bombtest e
+ELSE 
+obj.remove
+return 1
+ENDIF
+IF (<OBJ.more1> > 0)
+bombtest e
+ELSE 
+obj.remove
+return 1
+ENDIF
+IF (<OBJ.more1> > 0)
+bombtest e
+ELSE 
+obj.remove
+return 1
+ENDIF
+IF (<OBJ.more1> > 0)
+bombtest e
+ELSE 
+obj.remove
+return 1
+ENDIF
+obj.remove
+return 1
+
+
+[ITEMDEF i_probe_s]
+ID=i_fx_yellow_dot
+DEFNAME=i_probe_s
+name = probe
+
+on=@create
+timer = 1
+more1 = 2
+ATTR=attr_move_never|attr_invis
+
+on=@timer
+OBJ=<UID>
+IF (<OBJ.more1> > 0)
+bombtest s
+ELSE 
+obj.remove
+return 1
+ENDIF
+IF (<OBJ.more1> > 0)
+bombtest s
+ELSE 
+obj.remove
+return 1
+ENDIF
+IF (<OBJ.more1> > 0)
+bombtest s
+ELSE 
+obj.remove
+return 1
+ENDIF
+IF (<OBJ.more1> > 0)
+bombtest s
+ELSE 
+obj.remove
+return 1
+ENDIF
+IF (<OBJ.more1> > 0)
+bombtest s
+ELSE 
+obj.remove
+return 1
+ENDIF
+IF (<OBJ.more1> > 0)
+bombtest s
+ELSE 
+obj.remove
+return 1
+ENDIF
+IF (<OBJ.more1> > 0)
+bombtest s
+ELSE 
+obj.remove
+return 1
+ENDIF
+IF (<OBJ.more1> > 0)
+bombtest s
+ELSE 
+obj.remove
+return 1
+ENDIF
+obj.remove
+return 1
+
+
+[ITEMDEF i_probe_w]
+ID=i_fx_yellow_dot
+DEFNAME=i_probe_w
+name = probe
+
+on=@create
+timer = 1
+more1 = 2
+ATTR=attr_move_never|attr_invis
+
+on=@timer
+OBJ=<UID>
+IF (<OBJ.more1> > 0)
+bombtest w
+ELSE 
+obj.remove
+return 1
+ENDIF
+IF (<OBJ.more1> > 0)
+bombtest w
+ELSE 
+obj.remove
+return 1
+ENDIF
+IF (<OBJ.more1> > 0)
+bombtest w
+ELSE 
+obj.remove
+return 1
+ENDIF
+IF (<OBJ.more1> > 0)
+bombtest w
+ELSE 
+obj.remove
+return 1
+ENDIF
+IF (<OBJ.more1> > 0)
+bombtest w
+ELSE 
+obj.remove
+return 1
+ENDIF
+IF (<OBJ.more1> > 0)
+bombtest w
+ELSE 
+obj.remove
+return 1
+ENDIF
+IF (<OBJ.more1> > 0)
+bombtest w
+ELSE 
+obj.remove
+return 1
+ENDIF
+IF (<OBJ.more1> > 0)
+bombtest w
+ELSE 
+obj.remove
+return 1
+ENDIF
+obj.remove
+return 1
+
+//**********************************************************//
+//  Spawn Bonus Items when green rocks are blown up        //
+//*********************************************************//
+
+[function bombtest]
+FORITEMS 0
+IF (<BASEID>==i_block_rock)
+OBJ.remove
+ELSEIF (<BASEID>==i_remove_rock)
+IF ( RAND(10) = 1 )
+SERV.NEWITEM random_bomberman_bonus
+new.p=<p>
+ENDIF
+remove
+obj.remove
+ELSEIF (<BASEID>==i_bomb)
+timer = 1
+more1 = 1
+obj.remove
+ENDIF
+ENDFOR
+OBJ.move <args>
+OBJ.more1 = <eval <OBJ.more1> - 1>
+serv.newitem bman_fire 
+new.p=<OBJ.p>
+
+//**************************************//
+//  Bonus Items template and drop rate  //
+//**************************************//
+
+[TEMPLATE random_bomberman_bonus]
+CATEGORY=Imperial uo
+SUBSECTION=Bomberman Item Templates
+DESCRIPTION=Bonus
+ITEM={ i_bomb_special_bomb 1 i_bomb_special_flame 1 i_bomb_special_detonator 1 i_bomb_special_bomberman 1 }
+
+
+//****************//
+//  Bonus Items   //
+//****************//
+
+// Increases the number of bombs you can drop at a time by one, up to 3.
+
+[ITEMDEF i_bomb_special_bomb]
+ID=i_rune_telekinesis
+DEFNAME=i_bomb_special_bomb
+TYPE=t_eq_script
+name=Bomb bonus
+LAYER    = layer_special
+
+on=@step
+remove
+IF (<SRC.FINDID.i_bomb_special_bomb.UID>) 
+	IF (<SRC.FINDID.i_bomb_special_bomb.tag.amount> < 3)
+	SRC.FINDID.i_bomb_special_bomb.tag.amount = <eval (<SRC.FINDID.i_bomb_special_bomb.tag.amount> + 1)>
+	src.sysmessage The amount of Bombs you can place at a time has increased to <SRC.FINDID.i_bomb_special_bomb.tag.amount>
+	region.allclients sysmessage @07ad <SRC.NAME> can now place <SRC.FINDID.i_bomb_special_bomb.tag.amount> Bombs at a time!
+	SRC.EMOTE got an extra Bomb!
+	serv.newitem i_bomb_placer
+	new.equip <src.uid>
+	ELSE
+	src.sysmessage You are already at maximum amount of Bombs.
+	ENDIF
+ELSE 
+SERV.NEWITEM i_bomb_special_bomb
+SRC.EQUIP <NEW.UID>
+region.allclients sysmessage @07ad <SRC.NAME> can now place <SRC.FINDID.i_bomb_special_bomb.tag.amount> Bombs at a time!
+SRC.EMOTE got an extra Bomb!
+ENDIF
+on=@create
+ATTR=attr_move_never
+on=@equip
+tag.amount = 2
+cont.sysmessage The amount of Bombs you can place at a time has increased to <eval <SRC.FINDID.i_bomb_special_bomb.tag.amount>>
+serv.newitem i_bomb_placer
+new.equip <cont.uid>
+
+
+// Increases explosion range by 1, up to 8.
+
+[ITEMDEF i_bomb_special_flame]
+ID=i_rune_explosion
+DEFNAME=i_bomb_special_flame
+TYPE=t_eq_script
+name=Flame
+LAYER    = layer_special
+
+on=@step
+remove
+IF (<SRC.FINDID.i_bomb_special_flame.UID>) 
+	IF (<SRC.FINDID.i_bomb_special_flame.tag.range> < 8)
+	SRC.FINDID.i_bomb_special_flame.tag.range = <eval (<SRC.FINDID.i_bomb_special_flame.tag.range> +1)>
+	src.sysmessage Your Bomb Blasts Range increased to <eval <SRC.FINDID.i_bomb_special_flame.tag.range>>!
+	region.allclients sysmessage @07ad <SRC.NAME> now have <eval <SRC.FINDID.i_bomb_special_flame.tag.range>> Bomb Blast Range! 
+	SRC.EMOTE got one more Bomb Blast Range!
+	ELSE
+	src.sysmessage You are already at maximum of Bomb Blasts Range.
+	ENDIF
+ELSE 
+SERV.NEWITEM i_bomb_special_flame
+SRC.EQUIP <NEW.UID>
+region.allclients sysmessage @07ad <SRC.NAME> now have <eval <SRC.FINDID.i_bomb_special_flame.tag.range>> Bomb Blast Range! 
+SRC.EMOTE got one more Bomb Blast Range!
+ENDIF
+on=@create
+ATTR=attr_move_never
+on=@equip
+tag.range = 3
+cont.sysmessage Your Bomb Blasts Range increased to <eval <SRC.FINDID.i_bomb_special_flame.tag.range>>!
+
+
+// DISABLED - Tribomb, Allows you to lay all your bombs at once in a single line (meteor swarm)
+
+[ITEMDEF i_bomb_special_tribomb]
+ID=i_rune_meteor_swarm
+DEFNAME=i_bomb_special_tribomb
+TYPE=t_eq_script
+name=Tribomb
+LAYER    = layer_special
+
+on=@step
+remove
+IF (<SRC.FINDID.i_bomb_special_tribomb.UID>) 
+SRC.FINDID.i_bomb_special_tribomb.timer = 60
+src.sysmessage you extend your Tribomb Ability
+ELSE 
+SERV.NEWITEM i_bomb_special_tribomb
+SRC.EQUIP <NEW.UID>
+ENDIF
+on=@create
+ATTR=attr_move_never
+on=@timer
+cont.sysmessage Your <name> Ability runs out
+remove
+
+on=@equip
+timer = 60
+cont.sysmessage You Gain <name> Ability
+
+
+// DISABLED - Paralyze every player in the event for 2 seconds
+
+[ITEMDEF i_bomb_special_clock]
+ID=i_rune_paralyze
+DEFNAME=i_bomb_special_clock
+TYPE=t_eq_script
+name=Clock
+LAYER    = layer_special
+on=@create
+ATTR=attr_move_never
+on=@step
+remove
+IF (<SRC.FINDID.i_bomb_special_clock.UID>) 
+SERV.NEWITEM i_bomb_special_clock
+SRC.EQUIP <NEW.UID>
+ENDIF
+
+on=@timer
+remove
+
+on=@equip
+timer = 2
+serv.allclients bombermanpara
+cont.sysmessage You stop the clock
+
+[FUNCTION bombermanpara]
+IF ((<ISEVENT.e_bomberman>) && !(<FINDID.i_bomb_special_clock.UID>))
+      spelleffect s_paralyze, 1000
+endif
+
+
+// Used to detonate bombs, type .detonate to do so. Lasts 60 seconds.
+
+[ITEMDEF i_bomb_special_detonator]
+ID=i_rune_flamestrike
+DEFNAME=i_bomb_special_detonator
+TYPE=t_eq_script
+name=Detonator
+LAYER    = layer_special
+
+on=@step
+remove
+IF (<SRC.FINDID.i_bomb_special_detonator.UID>) 
+SRC.FINDID.i_bomb_special_detonator.timer = 60
+src.sysmessage Your Detonator ability remaining time increased to 60 seconds! Type .detonate to detonate placed Bombs!
+region.allclients sysmessage @07ad <SRC.NAME> got a Detonator for 60 seconds!
+SRC.EMOTE got a Detonator!
+ELSE 
+SERV.NEWITEM i_bomb_special_detonator
+SRC.EQUIP <NEW.UID>
+region.allclients sysmessage @07ad <SRC.NAME> got a Detonator for 60 seconds!
+SRC.EMOTE got a Detonator!
+ENDIF
+
+on=@create
+ATTR=attr_move_never
+
+on=@timer
+cont.sysmessage Your Detonator Ability runs out.
+remove
+
+on=@equip
+timer = 60
+cont.sysmessage You Gain Detonator Ability for 60 seconds! Type .detonate to detonate placed Bombs!
+
+[function detonate]
+IF (<SRC.ISEVENT.e_bomberman>)
+   IF (<UID.<SRC.TAG.DETONATORBOMB1>.BASEID>=i_bomb)
+     UID.<SRC.TAG.DETONATORBOMB1>.TIMER = 1
+     UID.<SRC.TAG.DETONATORBOMB1>.MORE1 = 0
+     SRC.TAG.DETONATORBOMB1
+   ENDIF
+      IF (<UID.<SRC.TAG.DETONATORBOMB2>.BASEID>=i_bomb)
+        UID.<SRC.TAG.DETONATORBOMB2>.TIMER = 1
+        UID.<SRC.TAG.DETONATORBOMB2>.MORE1 = 0
+        SRC.TAG.DETONATORBOMB2
+   ENDIF
+      IF (<UID.<SRC.TAG.DETONATORBOMB3>.BASEID>=i_bomb)
+        UID.<SRC.TAG.DETONATORBOMB3>.TIMER = 1
+        UID.<SRC.TAG.DETONATORBOMB3>.MORE1 = 0
+        SRC.TAG.DETONATORBOMB3
+   ENDIF
+ENDIF
+
+
+// Gives an extra life. If you die you will lose all your bonus but you will keep playing.
+
+[ITEMDEF i_bomb_special_bomberman]
+ID=i_rune_heal
+DEFNAME=i_bomb_special_bomberman
+TYPE=t_eq_script
+name=Bomberman
+LAYER    = layer_special
+
+on=@create
+ATTR=attr_move_never
+
+on=@step
+remove
+IF (<SRC.FINDID.i_bomb_special_bomberman.UID>) 
+SRC.FINDID.i_bomb_special_bomberman.timer = 300
+src.sysmessage Your extra life time was increased to 300 seconds!
+region.allclients sysmessage @07ad <SRC.NAME> got an Extra Life for 300 seconds!
+SRC.EMOTE got an Extra Life!
+ELSE 
+SERV.NEWITEM i_bomb_special_bomberman
+SRC.EQUIP <NEW.UID>
+region.allclients sysmessage @07ad <SRC.NAME> got an Extra Life for 300 seconds!
+SRC.EMOTE got an Extra Life!
+ENDIF
+
+on=@timer
+cont.sysmessage Your Extra Life disappeared.
+remove
+
+on=@equip
+timer = 300
+cont.sysmessage You gain one Extra Life during 300 seconds! Upon taking fatal damage you won't die but you will lose all your bonus!
+
+
+//****************//
+//  Entry Gate    //
+//****************//
+
+[ITEMDEF i_bomberman_gate]
+ID=i_moongate_blue
+NAME=Bomberman Positioner Gate
+
+ON=@CREATE
+ATTR=08010
+COLOR=07ac
+
+ON=@STEP
+
+DORAND 20
+TAG.POSITION=5954,2027
+TAG.POSITION=5965,2027
+TAG.POSITION=5976,2027
+TAG.POSITION=5987,2027
+TAG.POSITION=5998,2027
+
+TAG.POSITION=5954,2038
+TAG.POSITION=5965,2038
+TAG.POSITION=5976,2038
+TAG.POSITION=5987,2038
+TAG.POSITION=5998,2038
+
+TAG.POSITION=5954,2049
+TAG.POSITION=5965,2049
+TAG.POSITION=5976,2049
+TAG.POSITION=5987,2049
+TAG.POSITION=5998,2049
+
+TAG.POSITION=5954,2060
+TAG.POSITION=5965,2060
+TAG.POSITION=5976,2060
+TAG.POSITION=5987,2060
+TAG.POSITION=5998,2060
+
+TAG.POSITION=5954,2071
+TAG.POSITION=5965,2071
+TAG.POSITION=5976,2071
+TAG.POSITION=5987,2071
+TAG.POSITION=5998,2071
+ENDDO
+
+src.events +e_bomberman
+src.givebomb
+src.go <TAG.POSITION>
+src.clearrocksroundme
+SERV.NEWITEM i_bomb_special_bomberman
+SRC.EQUIP <NEW.UID>
+return 1
+
+
+[function givebomb]
+serv.newitem i_bomb_placer
+NEW.CONT <uid>
+
+[FUNCTION clearrocksroundme]
+foritems 2
+   if (<baseid>==i_remove_rock) 
+         remove
+   endif
+endfor
+RETURN 1
+
+[PLEVEL 1]
+detonate
+dropbomb

@@ -1,0 +1,793 @@
+//*********************************************************************************************************//
+//                               PvP Armor                                                                 //
+//*********************************************************************************************************//
+
+
+// Leggings
+
+[ITEMDEF i_pvp_leggings]
+ID = 01411
+TDATA1 = mat_adamantine
+NAME = Illegal PvP Armor
+TYPE = T_ARMOR
+FLIP = 1
+LAYER = layer_legs
+WEIGHT = 23
+ARMOR = 55
+REQSTR = 40
+DUPELIST = 0141a
+
+ON = @Create
+ATTR=01
+COLOR = color_o_adamantine
+HITPOINTS = 98
+
+ON = @DropOn_Ground
+SRC.SYSMESSAGE Illegal PvP items are removed when dropped.
+REMOVE
+
+
+// Female
+
+[ITEMDEF i_pvp_female]
+ID = 01c04
+TDATA1 = mat_adamantine
+NAME = Illegal PvP Armor
+TYPE = T_ARMOR
+FLIP = 1
+WEIGHT = 23
+ARMOR = 35
+REQSTR = 60
+DUPELIST = 01c05
+
+ON = @Create
+ATTR=01
+COLOR = color_o_adamantine
+HITPOINTS = 98
+
+ON = @DropOn_Ground
+SRC.SYSMESSAGE Illegal PvP items are removed when dropped.
+REMOVE
+
+// Arms
+
+[ITEMDEF i_pvp_arms]
+ID = 01410
+TDATA1 = mat_adamantine
+NAME = Illegal PvP Armor
+TYPE = T_ARMOR
+FLIP = 1
+WEIGHT = 18
+ARMOR = 120
+REQSTR = 40
+DUPELIST = 01417
+
+ON = @Create
+ATTR=01
+COLOR = color_o_adamantine
+HITPOINTS = 98
+
+ON = @DropOn_Ground
+SRC.SYSMESSAGE Illegal PvP items are removed when dropped.
+REMOVE
+
+// Helm
+
+[ITEMDEF i_pvp_helm]
+ID = 01412
+TDATA1 = mat_adamantine
+NAME = Illegal PvP Armor
+TYPE = T_ARMOR
+FLIP = 1
+WEIGHT = 8
+ARMOR = 90
+REQSTR = 60
+DUPELIST = 01419
+
+ON = @Create
+ATTR=01
+COLOR = color_o_adamantine
+HITPOINTS = 105
+
+ON = @DropOn_Ground
+SRC.SYSMESSAGE Illegal PvP items are removed when dropped.
+REMOVE
+
+// Gorget
+
+[ITEMDEF i_pvp_gorget]
+ID = 01413
+TDATA1 = mat_adamantine
+NAME = Illegal PvP Armor
+TYPE = T_ARMOR
+FLIP = 1
+WEIGHT = 7
+ARMOR = 120
+REQSTR = 30
+
+ON = @Create
+ATTR=01
+COLOR = color_o_adamantine
+HITPOINTS = 98
+
+ON = @DropOn_Ground
+SRC.SYSMESSAGE Illegal PvP items are removed when dropped.
+REMOVE
+
+// Tunic
+
+[ITEMDEF i_pvp_tunic]
+NAME=Illegal PvP Armor
+ID=i_chainmail_tunic
+ARMOR=20
+REQSTR=20
+WEIGHT=15
+TDATA1=mat_verite
+
+ON=@Create
+ATTR=01
+COLOR=color_o_verite
+HITPOINTS={41 51}
+
+ON=@EQUIP
+TIMER=60
+ON=@Timer
+	if <cont>
+		f_verite_effect
+		return 1
+	endif
+	
+ON = @DropOn_Ground
+SRC.SYSMESSAGE Illegal PvP items are removed when dropped.
+REMOVE
+	
+// Gloves
+
+[ITEMDEF i_pvp_gloves]
+NAME=Illegal PvP Armor
+ID=i_ringmail_gloves
+ARMOR=40
+REQSTR=20
+WEIGHT=5
+TDATA1=mat_verite
+
+ON=@Create
+ATTR=01
+COLOR=color_o_verite
+HITPOINTS={41 51}
+
+ON=@EQUIP
+TIMER=60
+ON=@Timer
+	if <cont>
+		f_verite_effect
+		return 1
+	endif
+
+ON = @DropOn_Ground
+SRC.SYSMESSAGE Illegal PvP items are removed when dropped.
+REMOVE
+	
+// Shield
+
+[ITEMDEF i_pvp_shield]
+ID = 01b76
+TDATA1 = mat_adamantine
+NAME = Illegal PvP Shield
+TYPE = t_shield
+FLIP = 1
+WEIGHT = 16
+ARMOR = 28
+REQSTR = 75
+DUPELIST = 01b77
+
+ON = @Create
+ATTR=01
+COLOR = color_o_adamantine
+HITPOINTS = 90
+
+ON = @DropOn_Ground
+SRC.SYSMESSAGE Illegal PvP items are removed when dropped.
+REMOVE
+
+
+//*********************************************************************************************************//
+//                         PvP Weapons                                                                     //
+//*********************************************************************************************************//
+
+// Kryss
+
+[ITEMDEF i_pvp_kryss]
+ID = 01400
+NAME = Illegal PvP Weapon
+WEIGHT = 4
+TYPE = T_WEAPON_FENCE
+TDATA1 = mat_adamantine
+FLIP = 1
+DAM = 6, 25 //5, 22 -2nd
+SKILL = Fencing
+REQSTR = 25
+TWOHANDS = N
+DUPELIST = 01401
+
+ON = @Create
+ATTR=01
+HITPOINTS = 90
+COLOR = color_o_adamantine
+MOREP=0,0,0,137
+
+ON = @DClick
+return = <wpn_dclick_bladed>
+
+ON = @Targon_ground
+return = <wpn_targon_ground_bladed>
+
+ON = @Targon_char
+return = <wpn_targon_char_bladed>
+
+ON = @Targon_item
+return = <wpn_targon_item_bladed>
+
+ON = @DropOn_Ground
+SRC.SYSMESSAGE Illegal PvP items are removed when dropped.
+REMOVE
+
+// Katana
+
+[ITEMDEF i_pvp_katana]
+ID = 013fe
+NAME = Illegal PvP Weapon
+WEIGHT = 5
+TYPE = T_WEAPON_SWORD
+TDATA1 = mat_adamantine
+FLIP = 1
+DAM = 7, 28
+SKILL = Swordsmanship
+REQSTR = 30
+TWOHANDS = N
+DUPELIST = 013ff
+ON = @Create
+ATTR=01
+HITPOINTS = 90
+COLOR = color_o_adamantine
+MOREP=0,0,0,137
+ON = @DClick
+return = <wpn_dclick_bladed>
+ON = @Targon_ground
+return = <wpn_targon_ground_bladed>
+ON = @Targon_char
+return = <wpn_targon_char_bladed>
+ON = @Targon_item
+return = <wpn_targon_item_bladed>
+
+ON = @DropOn_Ground
+SRC.SYSMESSAGE Illegal PvP items are removed when dropped.
+REMOVE
+
+// Spear
+
+[ITEMDEF i_pvp_spear]
+ID = 0f62
+NAME = Illegal PvP Weapon
+TYPE = T_WEAPON_FENCE
+TDATA1 = mat_adamantine
+FLIP = 1
+DAM = 5, 26
+SKILL = Fencing
+REQSTR = 35
+TWOHANDS = Y
+WEIGHT = 5
+DUPELIST = 0f63
+ON = @Create
+ATTR=01
+HITPOINTS = 105
+COLOR = color_o_adamantine
+MOREP=0,0,0,137
+ON = @DClick
+return = <wpn_dclick_pole>
+ON = @Targon_ground
+return = <wpn_targon_ground_pole>
+ON = @Targon_char
+return = <wpn_targon_char_pole>
+ON = @Targon_item
+return = <wpn_targon_item_pole>
+
+ON = @DropOn_Ground
+SRC.SYSMESSAGE Illegal PvP items are removed when dropped.
+REMOVE
+
+// Halberd
+
+[ITEMDEF i_pvp_halberd]
+ID = 0143e
+NAME = Illegal PvP Weapon
+WEIGHT = 11
+TYPE = T_WEAPON_SWORD
+TDATA1 = mat_adamantine
+FLIP = 1
+DAM = 8, 45
+SKILL = Swordsmanship
+REQSTR = 60
+TWOHANDS = Y
+ON = @Create
+ATTR=01
+HITPOINTS = 120
+COLOR = color_o_adamantine
+MOREP=0,0,0,137
+ON = @DClick
+return = <wpn_dclick_pole>
+ON = @Targon_ground
+return = <wpn_targon_ground_pole>
+ON = @Targon_char
+return = <wpn_targon_char_pole>
+ON = @Targon_item
+return = <wpn_targon_item_pole>
+
+ON = @DropOn_Ground
+SRC.SYSMESSAGE Illegal PvP items are removed when dropped.
+REMOVE
+
+// Maul
+
+[ITEMDEF i_pvp_maul]
+ID = 0143a
+NAME = Illegal PvP Weapon
+RESOURCES = 16 i_ingot_adamantine, 1 i_coal
+WEIGHT = 8
+TYPE = T_WEAPON_MACE_SMITH
+TDATA1 = mat_adamantine
+FLIP = 1
+DAM = 5, 39
+SKILL = Mace Fighting
+REQSTR = 40
+TWOHANDS = N
+CATEGORY = Provisions - Weapons
+SUBSECTION = Maces & Hammers
+DESCRIPTION = adamantine maul
+DUPELIST = 0143b
+SKILLMAKE = BLACKSMITHING 760, ARMSLORE 650
+ON = @Create
+ATTR=01
+HITPOINTS = 105
+COLOR = color_o_adamantine
+MOREP=0,0,0,137
+ON = @DClick
+return = <wpn_dclick_blunt>
+ON = @Targon_ground
+return = <wpn_targon_ground_blunt>
+ON = @Targon_char
+return = <wpn_targon_char_blunt>
+ON = @Targon_item
+return = <wpn_targon_item_blunt>
+
+ON = @DropOn_Ground
+SRC.SYSMESSAGE Illegal PvP items are removed when dropped.
+REMOVE
+
+// Staff
+
+[ITEMDEF i_pvp_staff]
+ID = 0e89
+NAME = Illegal PvP Weapon
+TYPE = T_WEAPON_MACE_STAFF
+FLIP = 1
+TDATA1 = mat_composite
+DAM = 8, 28
+SKILL = MaceFighting
+REQSTR = 30
+TWOHANDS = N
+WEIGHT = 4
+DUPELIST = 0e8a
+VALUE = 175
+
+ON = @Create
+ATTR=01
+HITPOINTS = 50
+COLOR = color_o_composite
+MOREP=0,0,0,137
+ON = @DClick
+return = <wpn_dclick_staff>
+ON = @Targon_ground
+return = <wpn_targon_ground_staff>
+ON = @Targon_char
+return = <wpn_targon_char_staff>
+ON = @Targon_item
+return = <wpn_targon_item_staff>
+
+ON = @DropOn_Ground
+SRC.SYSMESSAGE Illegal PvP items are removed when dropped.
+REMOVE
+
+// Bow
+
+[ITEMDEF i_pvp_bow] 
+ID = 013fc 
+NAME = Illegal PvP Weapon
+TDATA1 = mat_composite 
+TYPE = T_WEAPON_XBOW 
+FLIP = 1 
+WEIGHT = 10 
+DAM = 11, 40 
+SKILL = Archery 
+REQSTR = 65 
+TWOHANDS = Y 
+DUPELIST = 013fd 
+TDATA3 = 0 
+TDATA4 = i_xbolt_x 
+VALUE = 2000
+
+ON = @Create 
+ATTR=01
+HITPOINTS = 70 
+COLOR = color_o_composite 
+MOREP=0,0,0,137
+
+ON=@EQUIP
+IF (<MOREX> > 0)
+   TAG.POISONLEVEL=<EVAL <MOREX>>
+   MOREX=0
+ENDIF 
+IF (<SRC.ARCHERY>>=950) 
+SRC.SYSMESSAGE You equip the bow
+ELSE
+SRC.SYSMESSAGE You are not skilled enough to use this weapon 
+BOUNCE
+RETURN 1 
+ENDIF 
+
+ON = @DropOn_Ground
+SRC.SYSMESSAGE Illegal PvP items are removed when dropped.
+REMOVE
+
+// War Mace
+
+[ITEMDEF i_pvp_warmace]
+ID = 01406
+NAME = Illegal PvP Weapon
+WEIGHT = 9
+TYPE = T_WEAPON_MACE_SMITH
+TDATA1 = mat_adamantine
+FLIP = 1
+DAM = 5, 40
+SKILL = Mace Fighting
+REQSTR = 55
+TWOHANDS = N
+DUPELIST = 01407
+ON = @Create
+ATTR=01
+HITPOINTS = 120
+COLOR = color_o_adamantine
+MOREP=0,0,0,137
+ON = @DClick
+return = <wpn_dclick_blunt>
+ON = @Targon_ground
+return = <wpn_targon_ground_blunt>
+ON = @Targon_char
+return = <wpn_targon_char_blunt>
+ON = @Targon_item
+return = <wpn_targon_item_blunt>
+
+ON = @DropOn_Ground
+SRC.SYSMESSAGE Illegal PvP items are removed when dropped.
+REMOVE
+
+
+[ITEMDEF i_pvp_kit_stone]
+ID=i_guildstone
+NAME=PvP Kit Selector
+TYPE=t_script
+
+ON=@CREATE
+   COLOR=079c
+   
+ON=@DCLICK
+   IF (<SRC.ISGM>)
+   DIALOG d_kit_setup2
+   RETURN 1
+   ELSE
+   IF !(<SRC.TAG0.PVPKITMENU>==1)
+   DIALOG d_kit_setup
+   SRC.TAG.PVPKITMENU=1
+   RETURN 1
+   ELSE
+   SRC.SYSMESSAGE You already have one PvP Kit Menu open.
+   RETURN 1
+   ENDIF
+   
+
+[DIALOG d_kit_setup2]
+0,0
+page 0
+resizepic 92 56 3600 180 230
+
+dtext 120 80 137 Select PvP Kit Color:
+
+dtext 135 110 2300 Red
+button 115 115 1209 1210 1 0 1
+
+dtext 135 140 2300 Blue
+button 115 145 1209 1210 1 0 2
+
+dtext 135 170 2300 Green
+button 115 175 1209 1210 1 0 3
+
+dtext 135 200 2300 Yellow
+button 115 205 1209 1210 1 0 4
+
+dtext 135 230 37 Nuke ALL PvP Kits
+button 115 235 1209 1210 1 0 5
+
+[DIALOG d_kit_setup2 button]
+ON=1
+COLOR=079c
+ON=2
+COLOR=07a0
+ON=3
+COLOR=07ac
+ON=4
+COLOR=07ad
+ON=5
+SRC.BOODELETE i_pvp_bag_armor 
+SRC.BOODELETE i_pvp_female
+SRC.BOODELETE i_pvp_arms
+SRC.BOODELETE i_pvp_tunic
+SRC.BOODELETE i_pvp_leggings
+SRC.BOODELETE i_pvp_gorget
+SRC.BOODELETE i_pvp_gloves
+SRC.BOODELETE i_pvp_shield
+SRC.BOODELETE i_pvp_helm
+
+SRC.BOODELETE i_pvp_bag_weapons
+SRC.BOODELETE i_pvp_katana
+SRC.BOODELETE i_pvp_kryss
+SRC.BOODELETE i_pvp_spear
+SRC.BOODELETE i_pvp_warmace
+SRC.BOODELETE i_pvp_maul
+SRC.BOODELETE i_pvp_halberd
+SRC.BOODELETE i_pvp_bow
+SRC.BOODELETE i_pvp_staff
+
+SRC.BOODELETE i_pvp_bag_reags
+SRC.BOODELETE i_pvp_bag_potions
+
+
+
+   
+[DIALOG d_kit_setup]
+0,0
+page 1
+//Main background
+GUMPPIC 100 100 10
+GUMPPIC 100 100 12
+DTEXT 135 332 37 PvP Kit Setup
+DTEXT 135 347 37 Please pick only the items you need.
+// Tank
+BUTTON 270 198 1209 1210 1 0 101
+DTEXT 288 194 37 Armor
+// Archer
+BUTTON 270 226 1209 1210 1 0 102
+DTEXT 288 222 37 Weapons
+// Warrior
+BUTTON 270 254 1209 1210 1 0 103
+DTEXT 288 250 37 Reagents
+// Mage
+BUTTON 270 282 1209 1210 1 0 104
+DTEXT 288 278 37 Potions
+
+[DIALOG d_kit_setup BUTTON]
+
+ON=0
+SRC.TAG.PVPKITMENU=
+
+ONBUTTON=101
+
+SRC.TAG.PVPKITMENU=
+
+IF (<DISTANCE> > 3)
+	SRC.SYSMESSAGE You are too far away from the PvP Kit Selector.
+	RETURN 1
+ENDIF
+
+SERV.LOG :PVP KITS: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> got a PvP Bag Armor from <uid>.
+
+SERV.NEWITEM i_pvp_bag_armor
+NEW.COLOR=<COLOR>
+NEW.BOUNCE
+SERV.NEWITEM i_pvp_female
+NEW.COLOR=<COLOR>
+QUALITY={177 200}
+NEW.CONT <SRC.FINDID.I_pvp_bag_armor>
+SERV.NEWITEM i_pvp_arms
+NEW.COLOR=<COLOR>
+QUALITY={177 200}
+NEW.CONT <SRC.FINDID.I_pvp_bag_armor>
+SERV.NEWITEM i_pvp_tunic
+NEW.COLOR=<COLOR>
+QUALITY={177 200}
+NEW.CONT <SRC.FINDID.I_pvp_bag_armor>
+SERV.NEWITEM i_pvp_leggings
+NEW.COLOR=<COLOR>
+QUALITY={177 200}
+NEW.CONT <SRC.FINDID.I_pvp_bag_armor>
+SERV.NEWITEM i_pvp_gorget
+NEW.COLOR=<COLOR>
+QUALITY={177 200}
+NEW.CONT <SRC.FINDID.I_pvp_bag_armor>
+SERV.NEWITEM i_pvp_gloves
+NEW.COLOR=<COLOR>
+QUALITY={177 200}
+NEW.CONT <SRC.FINDID.I_pvp_bag_armor>
+SERV.NEWITEM i_pvp_shield
+NEW.COLOR=<COLOR>
+QUALITY={177 200}
+NEW.CONT <SRC.FINDID.I_pvp_bag_armor>
+SERV.NEWITEM i_pvp_helm
+NEW.COLOR=<COLOR>
+QUALITY={177 200}
+NEW.CONT <SRC.FINDID.I_pvp_bag_armor>
+SERV.NEWITEM = i_bandage,{100}
+NEW.BOUNCE
+
+ONBUTTON=102
+
+SRC.TAG.PVPKITMENU=
+
+IF (<DISTANCE> > 3)
+	SRC.SYSMESSAGE You are too far away from the PvP Kit Selector.
+	RETURN 1
+ENDIF
+
+SERV.LOG :PVP KITS: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> got a PvP Bag Weapons from <uid>.
+
+SERV.NEWITEM i_pvp_bag_weapons
+NEW.COLOR=<COLOR>
+NEW.BOUNCE
+SERV.NEWITEM i_pvp_katana
+NEW.COLOR=<COLOR>
+QUALITY={177 200}
+NEW.CONT <SRC.FINDID.I_pvp_bag_weapons>
+SERV.NEWITEM i_pvp_kryss
+NEW.COLOR=<COLOR>
+QUALITY={177 200}
+NEW.CONT <SRC.FINDID.I_pvp_bag_weapons>
+SERV.NEWITEM i_pvp_spear
+NEW.COLOR=<COLOR>
+QUALITY={177 200}
+NEW.CONT <SRC.FINDID.I_pvp_bag_weapons>
+SERV.NEWITEM i_pvp_warmace
+NEW.COLOR=<COLOR>
+QUALITY={177 200}
+NEW.CONT <SRC.FINDID.I_pvp_bag_weapons>
+SERV.NEWITEM i_pvp_maul
+NEW.COLOR=<COLOR>
+QUALITY={177 200}
+NEW.CONT <SRC.FINDID.I_pvp_bag_weapons>
+SERV.NEWITEM i_pvp_halberd
+NEW.COLOR=<COLOR>
+QUALITY={177 200}
+NEW.CONT <SRC.FINDID.I_pvp_bag_weapons>
+SERV.NEWITEM i_pvp_bow
+NEW.COLOR=<COLOR>
+QUALITY={177 200}
+NEW.CONT <SRC.FINDID.I_pvp_bag_weapons>
+SERV.NEWITEM i_pvp_staff
+NEW.COLOR=<COLOR>
+QUALITY={177 200}
+NEW.CONT <SRC.FINDID.I_pvp_bag_weapons>
+SERV.NEWITEM=i_xbolt,{150}
+NEW.CONT <SRC.FINDID.I_pvp_bag_weapons>
+
+ONBUTTON=103
+
+SRC.TAG.PVPKITMENU=
+
+IF (<DISTANCE> > 3)
+	SRC.SYSMESSAGE You are too far away from the PvP Kit Selector.
+	RETURN 1
+ENDIF
+
+SERV.LOG :PVP KITS: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> got a PvP Bag Reags from <uid>.
+
+SERV.NEWITEM i_pvp_bag_reags
+NEW.COLOR=<COLOR>
+NEW.BOUNCE
+SERV.NEWITEM=i_reag_black_pearl,{150}
+NEW.CONT <SRC.FINDID.I_pvp_bag_reags>
+SERV.NEWITEM=i_reag_spider_silk,{150}
+NEW.CONT <SRC.FINDID.I_pvp_bag_reags>
+SERV.NEWITEM=i_reag_ginseng,{150}
+NEW.CONT <SRC.FINDID.I_pvp_bag_reags>
+SERV.NEWITEM=i_reag_blood_moss,{150}
+NEW.CONT <SRC.FINDID.I_pvp_bag_reags>
+SERV.NEWITEM=i_reag_garlic,{150}
+NEW.CONT <SRC.FINDID.I_pvp_bag_reags>
+SERV.NEWITEM=i_reag_nightshade,{150}
+NEW.CONT <SRC.FINDID.I_pvp_bag_reags>
+SERV.NEWITEM=i_reag_mandrake_root,{150}
+NEW.CONT <SRC.FINDID.I_pvp_bag_reags>
+SERV.NEWITEM=i_reag_sulfur_ash,{150}
+NEW.CONT <SRC.FINDID.I_pvp_bag_reags>
+   
+ONBUTTON=104
+
+SRC.TAG.PVPKITMENU=
+
+IF (<DISTANCE> > 3)
+	SRC.SYSMESSAGE You are too far away from the PvP Kit Selector.
+	RETURN 1
+ENDIF
+
+SERV.LOG :PVP KITS: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> got a PvP Bag Potions from <uid>.
+
+SERV.NEWITEM i_pvp_bag_potions
+NEW.COLOR=<COLOR>
+NEW.BOUNCE
+SERV.NEWITEM=i_potion_clevernessgreat,{5}
+NEW.CONT <SRC.FINDID.I_pvp_bag_potions>
+SERV.NEWITEM=i_potion_clevernessgreat,{5}
+NEW.CONT <SRC.FINDID.I_pvp_bag_potions>
+SERV.NEWITEM=i_potion_strengthgreat,{5}
+NEW.CONT <SRC.FINDID.I_pvp_bag_potions>
+SERV.NEWITEM=i_potion_managreat,{30}
+NEW.CONT <SRC.FINDID.I_pvp_bag_potions>
+SERV.NEWITEM=i_potion_curegreat,{10}
+NEW.CONT <SRC.FINDID.I_pvp_bag_potions>
+SERV.NEWITEM=i_potion_healgreat,{5}
+NEW.CONT <SRC.FINDID.I_pvp_bag_potions>
+SERV.NEWITEM=i_potion_refreshgreat,{10}
+NEW.CONT <SRC.FINDID.I_pvp_bag_potions>
+SERV.NEWITEM=i_potion_permanencegreat,{5}
+NEW.CONT <SRC.FINDID.I_pvp_bag_potions>
+   
+
+[ITEMDEF i_pvp_bag_armor]
+DEFNAME=i_pvp_bag_armor
+ID=i_bag
+NAME=Illegal PvP Armors Bag
+TYPE=t_container
+
+on=@create
+COLOR=<COLOR>
+
+ON = @DropOn_Ground
+SRC.SYSMESSAGE Illegal PvP items are removed when dropped.
+REMOVE
+
+[ITEMDEF i_pvp_bag_weapons]
+DEFNAME=i_pvp_bag_weapons
+ID=i_bag
+NAME=Illegal PvP Weapons Bag
+TYPE=t_container
+
+on=@create
+COLOR=<COLOR>
+
+ON = @DropOn_Ground
+SRC.SYSMESSAGE Illegal PvP items are removed when dropped.
+REMOVE
+
+[ITEMDEF i_pvp_bag_reags]
+DEFNAME=i_pvp_bag_reags
+ID=i_bag
+NAME=Illegal PvP Reagents Bag
+TYPE=t_container
+
+on=@create
+COLOR=<COLOR>
+
+ON = @DropOn_Ground
+SRC.SYSMESSAGE Illegal PvP items are removed when dropped.
+REMOVE
+
+[ITEMDEF i_pvp_bag_potions]
+DEFNAME=i_pvp_bag_potions
+ID=i_bag
+NAME=Illegal PvP Potions Bag
+TYPE=t_container
+
+on=@create
+COLOR=<COLOR>
+
+ON = @DropOn_Ground
+SRC.SYSMESSAGE Illegal PvP items are removed when dropped.
+REMOVE

@@ -1,0 +1,562 @@
+//Sept 13 '05 - Raist - Added a little something to point the playrs way to the exit.
+//July 18 '05 - Wren - Shortened scripts via newer gump structures and moved intro book to a gump and command
+//Feb 21 '04  - Wren - *sniff* they didn't like my stoning :( changed to check skilltotal on button press
+//Feb 18 '04  - Wren - Added SRC.STONE to the portal so that people don't go through multiple times to gain multiple start skills
+//March 18 '13 - Ray - Skillgates now give 60.0 skill, up from 50.0 and 5000gps, up from 3000 gps. Also added scrolls for circle 1, 2 and 3. And 45-50 of each regnant.
+
+// Scripted by Kell, evren@portugalmail.pt
+// MPZ Intro book by Kira & Gwyn
+// Changed to UOProject
+
+//
+//  newbies
+//
+[ITEMDEF i_portal_newbie]
+ID	= i_moongate_blue
+TYPE	= t_script
+
+ON = @Create
+  COLOR	= 200
+  
+ON = @Step
+   SRC.P		= <eval <P.X>> <eval <P.Y>+1> <eval <P.Z>> <eval <P.M>>
+   SRC.UPDATE
+   SRC.HOME		= <MOREP>
+   if ( <SRC.SKILLTOTAL> >= 220.0 )
+      SRC.GO <SRC.HOME>
+      return 1
+   endif
+   SRC.TAG.NEWBIE.MSG0	= <TAG.MSG0>
+   SRC.TAG.NEWBIE.MSG	= <TAG.MSG>
+   IF <SRC.ACCOUNT.totalconnecttime> < 60000)
+      SRC.TAG.PLAYERCHAT	= 1
+   ENDIF
+   SRC.DIALOG d_skill_newbie
+   return 1
+
+
+[DIALOG d_skill_newbie]
+200, 50
+NOMOVE
+NODISPOSE
+NOCLOSE
+
+  gumppic    0    0 <eval   0ce>			// top
+  gumppic   44    0 <eval   0c9>
+  gumppic  471    0 <eval   0cf>
+
+  gumppic    0   44 <eval   0ca>			// middle
+  gumppic   44   44 <eval  0a2c>
+  gumppic  471   44 <eval   0cb>
+
+  gumppic    0  360 <eval   0cc>			// bottom
+  gumppic   44  360 <eval   0e9>
+  gumppic  471  360 <eval   0cd>
+
+  dtext 50 40 0 Your journey is about to begin. Please select the ONE
+  dtext 50 57 0 skill you wish to claim 60% in.
+
+  button  45 90 <eval 0d2> <eval 0d3> 1 0 10
+  button  45 112 <eval 0d2> <eval 0d3> 1 0 11
+  button  45 134 <eval 0d2> <eval 0d3> 1 0 12
+  button  45 156 <eval 0d2> <eval 0d3> 1 0 13
+  button  45 178 <eval 0d2> <eval 0d3> 1 0 14
+  button  45 200 <eval 0d2> <eval 0d3> 1 0 15
+//button  55 192 <eval 0d2> <eval 0d3> 1 0 16
+  button  45 222 <eval 0d2> <eval 0d3> 1 0 26 //mystic
+  button  45 244 <eval 0d2> <eval 0d3> 1 0 17
+  button  45 266 <eval 0d2> <eval 0d3> 1 0 18 
+//  button  45 243 <eval 0d2> <eval 0d3> 1 0 19
+//  button  45 261 <eval 0d2> <eval 0d3> 1 0 20
+  button  45 288 <eval 0d2> <eval 0d3> 1 0 21 
+  button  45 310 <eval 0d2> <eval 0d3> 1 0 22 
+  button  45 332 <eval 0d2> <eval 0d3> 1 0 23 
+  button  45 354 <eval 0d2> <eval 0d3> 1 0 24 
+//  button  45 315 <eval 0d2> <eval 0d3> 1 0 25 
+  
+  button 205  90 <eval 0d2> <eval 0d3> 1 0 27
+  button 205 112 <eval 0d2> <eval 0d3> 1 0 28
+  button 205 134 <eval 0d2> <eval 0d3> 1 0 29
+  button 205 156 <eval 0d2> <eval 0d3> 1 0 30
+  button 205 178 <eval 0d2> <eval 0d3> 1 0 31
+  button 205 200 <eval 0d2> <eval 0d3> 1 0 32
+  button 205 222 <eval 0d2> <eval 0d3> 1 0 33
+//  button 205 209 <eval 0d2> <eval 0d3> 1 0 34
+  button 205 244 <eval 0d2> <eval 0d3> 1 0 35 
+  button 205 266 <eval 0d2> <eval 0d3> 1 0 36 
+  button 205 288 <eval 0d2> <eval 0d3> 1 0 37
+//  button 205 278 <eval 0d2> <eval 0d3> 1 0 38
+  button 205 310 <eval 0d2> <eval 0d3> 1 0 39
+//  button 205 312 <eval 0d2> <eval 0d3> 1 0 40
+  button 205 332 <eval 0d2> <eval 0d3> 1 0 41
+//  button 205 346 <eval 0d2> <eval 0d3> 1 0 42
+//  button 205 298 <eval 0d2> <eval 0d3> 1 0 43 //stealing
+  button 205  354 <eval 0d2> <eval 0d3> 1 0 44
+
+  button 355 90 <eval 0d2> <eval 0d3> 1 0 45
+  button 355 112 <eval 0d2> <eval 0d3> 1 0 46
+  button 355 134 <eval 0d2> <eval 0d3> 1 0 47
+  button 355 156 <eval 0d2> <eval 0d3> 1 0 48
+  button 355 178 <eval 0d2> <eval 0d3> 1 0 49
+  button 355 200 <eval 0d2> <eval 0d3> 1 0 50
+  button 355 222 <eval 0d2> <eval 0d3> 1 0 51
+  button 355 244 <eval 0d2> <eval 0d3> 1 0 52
+  button 355 266 <eval 0d2> <eval 0d3> 1 0 53
+  button 355 288 <eval 0d2> <eval 0d3> 1 0 54
+  button 355 310 <eval 0d2> <eval 0d3> 1 0 55
+  button 355 332 <eval 0d2> <eval 0d3> 1 0 56
+  button 355 354 <eval 0d2> <eval 0d3> 1 0 57
+//button 335 329 <eval 0d2> <eval 0d3> 1 0 58
+
+  dtext  65  90 0 Alchemy
+  dtext  65 112 0 Assessment
+  dtext  65 134 0 Creature lore
+  dtext  65 156 0 Item lore
+  dtext  65 178 0 Arms lore
+  dtext  65 200 0 Shieldfighting
+//dtext  75 192 0 unused
+  dtext  65 222 0 Mystic lore 
+  dtext  65 244 0 Blacksmithy 
+//  dtext  60 243 0 Songs of Peace
+//  dtext  60 261 0 Survival
+  dtext  65 266 0 Bowery 
+  dtext  65 288 0 Carpentry  
+  dtext  65 310 0 Cartography  
+  dtext  65 332 0 Cooking 
+//  dtext  60 346 0 Songs of the World
+  dtext  65 354 0 Detection
+  
+  dtext 225  90 0 Healing
+  dtext 225 112 0 Fishing
+  dtext 225 134 0 Netherworld lore
+  dtext 225 156 0 Farming/Herding
+  dtext 225 178 0 Hiding
+  dtext 225 200 0 Songs of War
+  dtext 225 222 0 Inscription
+//  dtext 220 209 0 Lockpicking/Traps
+  dtext 225 244 0 Magery 
+  dtext 225 266 0 Resist Magic 
+  dtext 225 288 0 Tactics 
+//  dtext 220 278 0 Snooping
+  dtext 225 310 0 Musicianship 
+//  dtext 220 312 0 Poisoning
+  dtext 225 332 0 Archery 
+// dtext 220 346 0 Necromancy
+//  dtext 370 329 0 Stealing 
+  dtext 225  354 0 Tailoring
+  
+  dtext 375 90 0 Taming
+  dtext 375 112 0 Herbs lore
+  dtext 375 134 0 Tinkering 
+  dtext 375 156 0 Tracking 
+  dtext 375 178 0 Masonry
+  dtext 375 200 0 Blade weapons
+  dtext 375 222 0 Blunt weapons
+  dtext 375 244 0 Piercing weapons
+  dtext 375 266 0 Unarmed combat
+  dtext 375 288 0 Lumberjacking
+  dtext 375 310 0 Mining
+  dtext 375 332 0 Meditation
+  dtext 375 354 0 Stealth
+//dtext 375 364 0 Stealing
+
+//button 400 350 <eval 047b> <eval 047c> 1 0 60
+  
+
+[DIALOG d_skill_newbie BUTTON]
+ONBUTTON=10 58
+  LOCAL.SKILL=<ARGN1>
+  f_newbie_finish <LOCAL.SKILL>
+  
+
+[FUNCTION f_newbie_item]
+  VAR.GOTITEM	= <eval (<VAR.GOTITEM>+1)>
+  NEWITEM <args>
+  ACT.BOUNCE
+
+
+[FUNCTION f_newbie_finish]
+  IF ( <SKILLTOTAL> >= 220.0 )
+    SRC.GO <HOME>
+  //  SRC.ARROWQUEST 3673 2625
+  //  SRC.SAYUA 32 00 0 0 Greetings new player, you have just entered the Island of Ocllo. Here you can start by joining the academy that will help you throughout your journey, or simply look around the multiple spots in here for new players, note you are safe from other players (pks on this island). If you wish to leave simply follow the arrow.
+  //  SRC.Tag.Enteredocllo=1
+    RETURN 1
+  ENDIF
+
+  LOCAL.SKILL	= <eval (<args> - 10)>
+  LOCAL.SKILL = <SERV.SKILL(<LOCAL.SKILL>).KEY>
+  if ( <<LOCAL.SKILL>> > 0 )
+     sysmessage You already have some knowledge on that skill. You must select another in order to pass.
+     return 1
+  endif
+  
+  TRY <LOCAL.SKILL>	= 60.0
+  VAR.GOTITEM		= 0
+  
+  if ( <0> ) // alchemy
+     VAR.GOTITEM	= <eval (<VAR.GOTITEM>+1)>
+     f_newbie_item i_mortar_pestle
+  endif
+  if ( <5> ) // parrying
+     VAR.GOTITEM	= <eval (<VAR.GOTITEM>+1)>
+     f_newbie_item i_shield_buckler_copper
+  endif
+  if ( <7> ) // blacksmith
+     VAR.GOTITEM	= <eval (<VAR.GOTITEM>+1)>
+     f_newbie_item { i_tongs 1 i_hammer_smith 1 }
+  endif
+  if ( <11> ) // carpentry
+     VAR.GOTITEM	= <eval (<VAR.GOTITEM>+1)>
+     f_newbie_item { i_saw 1 i_saw_dovetail 1 i_hammer 1 }
+  endif
+  if ( <17> ) // healing
+     VAR.GOTITEM	= <eval (<VAR.GOTITEM>+1)>
+     NEWITEM i_bandage
+     ACT.AMOUNT	= { 10 15 }
+     ACT.BOUNCE
+  endif
+  if ( <18> ) // fishing
+     VAR.GOTITEM	= <eval (<VAR.GOTITEM>+1)>
+     f_newbie_item i_fishing_pole
+  endif
+  if ( <23> ) // inscription
+     VAR.GOTITEM	= <eval (<VAR.GOTITEM>+1)>
+     f_newbie_item i_pen_and_ink
+  endif
+  if ( <25> ) // magery
+     VAR.GOTITEM	= <eval (<VAR.GOTITEM>+1)>
+     f_newbie_item i_spellbook
+  endif
+  if ( <29> ) // musicianship
+    VAR.GOTITEM	= <eval (<VAR.GOTITEM>+1)>
+    f_newbie_item random_instrument
+  endif
+  if ( <31> ) // archery
+     VAR.GOTITEM	= <eval (<VAR.GOTITEM>+1)>
+     f_newbie_item i_bow_pine
+     NEWITEM i_arrow
+     ACT.AMOUNT	= { 20 25 }
+     ACT.BOUNCE
+  endif
+  if ( <34> ) // tailoring
+     VAR.GOTITEM	= <eval (<VAR.GOTITEM>+1)>
+     f_newbie_item i_sewing_kit
+     f_newbie_item i_cloth
+     ACT.COLOR	= colors_neutral
+     f_newbie_item i_cloth
+     ACT.COLOR	= colors_neutral
+  endif
+  if ( <40> ) // swordsmanship
+     VAR.GOTITEM	= <eval (<VAR.GOTITEM>+1)>
+     f_newbie_item { i_scimitar_copper 1 i_cutlass_copper 1 }
+  endif
+  if ( <41> ) // macefighting
+     VAR.GOTITEM	= <eval (<VAR.GOTITEM>+1)>
+     f_newbie_item { i_mace_copper 1 i_maul_copper 1 }
+  endif
+  if ( <43> ) // wrestling
+     VAR.GOTITEM	= <eval (<VAR.GOTITEM>+1)>
+     f_newbie_item { i_leather_gloves }
+  endif
+  if ( <44> ) // lumberjack
+     VAR.GOTITEM	= <eval (<VAR.GOTITEM>+1)>
+     f_newbie_item i_hatchet
+  endif
+  if ( <45> ) // mining
+     VAR.GOTITEM	= <eval (<VAR.GOTITEM>+1)>
+     f_newbie_item i_pickaxe 1
+  endif
+
+  NEWITEM i_gold
+  ACT.AMOUNT	= 5000
+  ACT.CONT	= <findlayer(layer_bankbox).uid>
+  SERV.LOG Starting Gold is <act.uid> amount is <ACT.AMOUNT>
+  //ACT.BOUNCE
+
+  if ( !strcmp( "<TAG.NEWBIE.MSG0>", "" ) )
+     SYSMESSAGE You are taken into a swirling vortex... your journey has begun.
+  else
+     SYSMESSAGE <TAG.NEWBIE.MSG0>.
+     TAG.NEWBIE.MSG0	= 
+  endif
+
+  GO <HOME>
+  
+  //SRC.ARROWQUEST 3673 2625
+  SRC.SYSMESSAGE @0793 Greetings new player, you have just entered the Trinsic Academy. Here you can start by joining the academy that will help you throughout your journey.
+  //SRC.Tag.Enteredocllo=1
+
+  IF (<SRC.POISONING> > 0)
+      SERV.LOG New Player <SRC.NAME> : UID <SRC.UID> : <SRC.ACCOUNT> : <SRC.NECROMANCY> was selected as a new player : Refund required
+      SRC.POISONING=0
+      SRC.SYSMESSAGE @300 Poisoning is disabled, and your skill in this has been dropped.
+      SRC.SYSMESSAGE @300 To claim a replacement skill please page for a GM.
+  ENDIF    
+  
+  if ( !strcmp( "<TAG.NEWBIE.MSG>", "" ) )
+     SYSMESSAGE You arrive safely at <REGION.NAME>.
+  else
+     SYSMESSAGE <TAG.NEWBIE.MSG>.
+     TAG.NEWBIE.MSG	= 
+  endif
+//   IF ((<src.account.totalconnecttime> < 5000) && (<src.skilltotal> < 450.1))
+//     IF !(0<src.tag.newbieout> == 1)
+//     SRC.SYSMESSAGE @0793 Welcome new player, you currently have new player status, which means
+//     SRC.SYSMESSAGE @0793 You cannot harm or be harmed by players, to opt out please type .newoptout
+//     ENDIF
+// ENDIF
+
+	SRC.HTMLDIALOG d_new_player_2
+
+[ITEMDEF i_portal_newbie_travel]
+ID	= i_moongate_blue
+TYPE	= t_script
+NAME	= Portal to the Mainland
+
+ON = @Create
+  COLOR			= 200
+  
+  
+ON = @Step
+   SRC.P		= <eval <P.X>> <eval <P.Y>+1> <eval <P.Z>> <eval <P.M>>
+   SRC.UPDATE
+   IF (<SRC.SKILLTOTAL> < 4500)
+      SRC.DIALOGCLOSE d_newbie_travel
+      SRC.DIALOG d_newbie_travel 
+   ELSE 
+      SRC.SYSMESSAGE You are too experianced to use this portal.
+   ENDIF
+   RETURN 1
+
+
+[DIALOG d_newbie_travel]
+0, 0
+NOMOVE
+NODISPOSE
+
+  resizepic 0 0 3600 640 480 
+  gumppic 1 1 5500 
+  gumppic 60 50 5528	// map
+
+  button 555   5 5513 5514 1 0 0 
+  button 178 210 2118 2117 1 0 1 
+  dtext  188 205   90 Britain 
+  button 240  90 2104 2103 1 0 2 
+  dtext  250  85   95 Minoc
+  button 205 320 2104 2103 1 0 3 
+  dtext  215 315   95 Trinsic
+
+  dtext 450 250  50 Before leaving, make 
+  dtext 450 270  50 sure you've completed
+  dtext 450 290  50 any quests that you
+  dtext 450 310  50 have here.
+
+  dtext 450 350  50 This will take you to 
+  dtext 450 370  50 the mainland. Return
+  dtext 450 390  50 will be difficult.
+  dtext 450 410  50 Where will you go?
+
+
+[DIALOG d_newbie_travel BUTTON] 
+ONBUTTON=0 
+  RETURN 0 
+
+ON = 1	//Britain 
+  HOME	= 1430, 1700, 0
+  GO <HOME>
+  ARROWQUEST
+ON = 2	//Minoc 
+  HOME	= 2518, 562, 0
+  GO <HOME>
+  ARROWQUEST
+ON = 3	//Trinsic
+  HOME	= 1867, 2780, 0
+  GO <HOME>
+  ARROWQUEST
+
+
+[PLEVEL 1]
+shardintro
+
+[FUNCTION shardintro]
+   SRC.DIALOG d_shard_intro
+   
+[DIALOG d_shard_intro]
+200, 50
+
+  PAGE 0
+  gumppic    0    0 <eval   0ce>			// top
+  gumppic   44    0 <eval   0c9>
+  gumppic  471    0 <eval   0cf>
+
+  gumppic    0   44 <eval   0ca>			// middle
+  gumppic   44   44 <eval  0a2c>
+  gumppic  471   44 <eval   0cb>
+
+  gumppic    0  360 <eval   0cc>			// bottom
+  gumppic   44  360 <eval   0e9>
+  gumppic  471  360 <eval   0cd>
+
+  PAGE 1
+  button   425  310 <eval 01196> <eval 01197> 0 2		// NEXT page
+  dtext    425  350 0 Next
+  dtext    425  365 0 Page
+
+  dtext 220   30 0  Welcome
+  dtext  40   50 0  Welcome to The Memory Shard, a UK-based Ultima Online shard
+  dtext  40   70 0  that has existed since 1999 under the names "MPZ UO" and
+  dtext  40   90 0  "Burstfire UO", with a record of 3000 active accounts and
+  dtext  40  110 0  194 maximum clients at one time.
+  dtext  40  130 0  These are quieter days, and the server has seen a complete
+  dtext  40  150 0  wipe. Accordingly, there is plenty of opportunity at this
+  dtext  40  170 0  time for newer players to make their mark on the server.
+  dtext  40  190 0  If you've never played on MPZ or Burstfire before, or
+  dtext  40  210 0  on clone servers such as "The UO Project" and "Imperial UO"
+  dtext  40  230 0  then do not be intimidated - There are plenty of starter
+  dtext  40  250 0  quests and resources to get you used to the game.
+  dtext  40  270 0  Many mechanics are unique to this shard, developed over a
+  dtext  40  290 0  near 20 year period.
+  dtext  40  310 0  - Memory Shard
+  
+  PAGE 2
+  button    40  310 <eval 0119a> <eval 01199> 0 1		// PREVIOUS page
+  dtext     40  350 0 Previous
+  dtext     40  365 0 Page
+  button   425  310 <eval 01196> <eval 01197> 0 3		// NEXT page
+  dtext    425  350 0 Next
+  dtext    425  365 0 Page
+
+  dtext 220   30 0  Web Sites
+  dtext  40   50 0  There are several web sites that you will find useful during
+  dtext  40   70 0  your stay at TUP. They can be accessed by pressing the HELP
+  dtext  40   90 0  button in your profile, and then selecting the apropriate option.
+  
+  dtext 210  130 0  Skill Selection
+  dtext  40  150 0  During character creation you were given a total of 100
+  dtext  40  170 0  skill points to distribute between 3 skills. After entering 
+  dtext  40  190 0  the game world, you will be able to assign 50 additional skill
+  dtext  40  210 0  points to a skill of your choice, but you will not be permitted 
+  dtext  40  230 0  to add them to the skills you have previously chosen. Choose 
+  dtext  40  250 0  wisely - the choices you make at this stage will influence
+  dtext  40  270 0  your game for weeks to come.
+  
+  PAGE 3
+  button    40  310 <eval 0119a> <eval 01199> 0 2		// PREVIOUS page
+  dtext     40  350 0 Previous
+  dtext     40  365 0 Page
+  button   425  310 <eval 01196> <eval 01197> 0 4		// NEXT page
+  dtext    425  350 0 Next
+  dtext    425  365 0 Page
+
+  dtext 230   30 0  Occlo
+  dtext  30   50 0  Ahead of you lies the fair city of Occlo, containing all of the 
+  dtext  30   70 0  comforts and conveniences a lonely adventurer may need. 
+  dtext  30   90 0  Surrounded by deep ocean and far from the mainland, it is a 
+  dtext  30  110 0  safehaven for those new to this world, with no dangerous 
+  dtext  30  130 0  monsters and few wild animals. Your stay here should be at 
+  dtext  30  150 0  least half an hour - time enough to familiarise yourself with 
+  dtext  30  170 0  life in Britannia. If you require equipment or sustenance, follow  
+  dtext  30  190 0  the coloured arrows to the various shops and services provided.  
+  dtext  30  210 0  Take a stroll around the town and you can try out some of the 
+  dtext  30  230 0  many trades on offer, or meet other newcomers to this fair land. 
+ 
+  PAGE 4
+  button    40  310 <eval 0119a> <eval 01199> 0 3		// PREVIOUS page
+  dtext     40  350 0 Previous
+  dtext     40  365 0 Page
+  button   425  310 <eval 01196> <eval 01197> 0 5		// NEXT page
+  dtext    425  350 0 Next
+  dtext    425  365 0 Page
+
+  dtext 220  30 0  Britannia
+  dtext 20   50 0  When you feel you are ready to leave Occlo, walk through the 
+  dtext 20   70 0  shimmering gate and you will be transported to the city of Trinsic. 
+  dtext 20   90 0  Here you will be able to enroll in the Academy, a large institution 
+  dtext 20  110 0  in Trinsic that caters for the young people of the land, and has 
+  dtext 20  130 0  extensive facilities on the campus, and special equipment for you to 
+  dtext 20  150 0  use during your first steps in the world of Britannia. However,  
+  dtext 20  170 0  young traveller, even though you are a member of the Academy, and
+  dtext 20  190 0  you have been taken to a guarded city, you must still be watchful.
+  dtext 20  210 0  Thieves will happily relieve you of your possessions, and outside
+  dtext 20  230 0  the cities brigands and murderers lurk eager to cut short your visit
+  dtext 20  250 0  to this world. If they, or the many dangerous creatures native to 
+  dtext 20  270 0  these lands get the better of you, do not fear. Friendly healers can 
+  dtext 20  290 0  be found in every town in the land, ready to bring you back to life.
+
+  PAGE 5
+  button    40  310 <eval 0119a> <eval 01199> 0 4		// PREVIOUS page
+  dtext     40  350 0 Previous
+  dtext     40  365 0 Page
+
+  dtext 225  30 0  Rules
+  dtext 20   50 0  The rules page can be accessed via your profile HELP button.
+  dtext 20   70 0  Please be sure to read them before doing any serious playing. 
+  dtext 20   90 0  Ignorance is not an excuse. If you are unsure of anything, ASK.
+  dtext 20  110 0  It is better to do that than risk a term in our jail. Play 
+  dtext 20  130 0  nicely and fairly and you will never have anything to worry about.
+  
+  dtext 220 170 0  Problems?
+  dtext 20  190 0  If you have any questions or problems, the following can be tried:
+  dtext 20  210 0  1. Ask the other players.  Remember to always be polite!
+  dtext 20  230 0  2. Check out the forums at "uo.UOProject.net/forums/". Forums
+  dtext 20  250 0  are the best ways to access the community and stay informed.
+  dtext 20  270 0  3. As a last resort, you can page for GM assistance. Access your
+  dtext 20  290 0  character profile by pressing ALT-P, and press the HELP button. 
+
+[ITEMDEF i_occlo_leaver]
+ID	= i_floor_marble
+NAME	= arrow remover do not delete
+TYPE	= t_normal
+
+On=@Create
+    Color=079c
+
+On=@Step
+    If ( 0<Src.Tag.Enteredocllo>==01 )
+          Src.Tag.Enteredocllo=
+          Src.Arrowquest
+          Src.Sayua 32 00 0 0 Enter this gate once you have decided to go over to main land.
+          return 1
+    EndIf
+
+[TEMPLATE magery_newbie]
+CATEGORY=Item Templates
+SUBSECTION=Academy
+DESCRIPTION=Magery Starter
+CONTAINER=i_bag
+NAME=Magery Items
+//item=i_spellbook
+//item=01f30
+//item=01f2e
+//item=i_scroll_reactive_armor
+//item=i_scroll_heal 
+//item=i_scroll_magic_arrow 
+//item=i_scroll_night_sight 
+//item=i_scroll_weaken
+//item=i_scroll_agility
+//item=i_scroll_cunning
+//item=i_scroll_cure
+//item=i_scroll_harm
+//item=01f3a
+//item=01f39
+//item=i_scroll_protection
+//item=i_scroll_strength
+//item=i_scroll_bless
+//item=i_scroll_fireball
+//item=01f3f
+//item=i_scroll_poison
+//item=01f41
+//item=i_scroll_teleport
+//item=i_scroll_unlock
+//item=i_scroll_wall_of_stone
+item=0f7a,{45 50}
+item=0f7b,{45 50}
+item=0f84,{45 50}
+item=0f85,{45 50}
+item=0f86,{45 50}
+item=0f88,{45 50}
+item=0f8d,{45 50}
+item=0f8c,{45 50}
+
+[EOF]

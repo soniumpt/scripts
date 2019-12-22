@@ -1,0 +1,822 @@
+// Auxiliary functions
+//08 07 2005 Raistilin added the skillcheck under the skillinit to fix a medit bug
+
+[FUNCTION SKILLINIT_stop]
+   findlayer(layer_k_control).timer	= -1
+   VAR.RETURN				= 1
+   ACTION				= -1
+
+[FUNCTION SKILLINIT_noitem]
+  if ( <ACT.ISITEM> )
+     VAR.RETURN		= 1
+     //SYSMESSAGE No improvement for using action on an object.
+  endif
+
+
+[FUNCTION SKILLINIT_nochar]
+  if !( <ACT.ISITEM> )
+     VAR.RETURN		= 1
+     //SYSMESSAGE No improvement for using action on a character.
+  endif
+
+
+[FUNCTION SKILLINIT_noself]
+  if ( <VAR.NOIMPROVE> || <VAR.RETURN> )
+     return 0
+  endif
+  if ( <ACT.UID> == <UID> )
+     VAR.NOIMPROVE	= 1
+     //SYSMESSAGE No improvement for repeating action on self.
+  endif
+
+
+[FUNCTION SKILLINIT_nolast]
+  if ( <VAR.NOIMPROVE> || <VAR.RETURN> )
+     return 0
+  endif
+
+  if ( <ACT.UID> == <TAG.LastTarg> )
+     VAR.NOIMPROVE	= 1
+     //SYSMESSAGE No improvement for repeating action on last target.
+  endif
+
+  if ( <ACT.UID> != <UID> )
+     TAG.LastTarg	= <ACT.UID>
+  endif
+
+
+[FUNCTION SKILLINIT_cansee]
+   if !( <ACT.CANSEE> )
+      VAR.RETURN	= 1
+      SRC.SYSMESSAGE You can't see it.
+   endif
+   
+   
+[FUNCTION SKILLINIT_canseelos]
+   if !( <ACT.CANSEELOS> )
+      VAR.RETURN	= 1
+      SRC.SYSMESSAGE Target is not in line of sight.
+   endif
+
+
+//
+//  Called before the skill
+//
+
+[FUNCTION SKILLINIT_0] // Alchemy
+  RETURN 1
+
+
+[FUNCTION SKILLINIT_1] // Anatomy
+  SKILLINIT_noitem
+  SKILLINIT_noself
+  SKILLINIT_nolast
+  SKILLINIT_canseelos
+  RETURN 1
+  
+
+[FUNCTION SKILLINIT_2] // AnimalLore
+   if !(<SRC.ACT.ISNPC>)
+      SRC.SYSMESSAGE That isnt a creature
+      SKILLINIT_stop
+      return 1
+   endif
+   if (<SRC.AnimalLore> < <SRC.ACT.ITEMID>)
+      SRC.SYSMESSAGE You have no clue about this creature.
+      SKILLINIT_stop
+      return 1
+   endif
+  SKILLINIT_noitem
+  SKILLINIT_noself
+  SKILLINIT_nolast
+  SKILLINIT_canseelos
+  RETURN 1
+
+
+[FUNCTION SKILLINIT_3] // ItemID
+  if !( <ACT.ISITEM> )
+     VAR.RETURN		= 1
+     RETURN 1
+  endif
+
+  if ( <ACT.CONT.UID> )
+     if !( <ACT.CONT.BASEID> = c_man ) && !( <ACT.CONT.BASEID> = c_woman ) 
+        if ( <ACT.CONT.LAYER> == layer_vendor_stock )
+           RETURN 1
+        endif
+     endif
+  endif
+  
+  IF ( <ACT.TYPE>==t_l1map )
+     SRC.SYSMESSAGE You have no clue about this item.
+     SKILLINIT_stop
+     RETURN 1
+  ENDIF
+  
+   IF ( <ACT.TYPE>==t_l2map )
+     SRC.SYSMESSAGE You have no clue about this item.
+     SKILLINIT_stop
+     RETURN 1
+  ENDIF
+  
+   IF ( <ACT.TYPE>==t_l3map )
+     SRC.SYSMESSAGE You have no clue about this item.
+     SKILLINIT_stop
+     RETURN 1
+  ENDIF
+  
+   IF ( <ACT.TYPE>==t_l4map )
+     SRC.SYSMESSAGE You have no clue about this item.
+     SKILLINIT_stop
+     RETURN 1
+  ENDIF
+  
+   IF ( <ACT.TYPE>==t_l5map )
+     SRC.SYSMESSAGE You have no clue about this item.
+     SKILLINIT_stop
+     RETURN 1
+  ENDIF
+
+  IF ( <ACT.ATTR> & attr_identified )
+     ItemLore_Identify
+     VAR.RETURN		= 1
+  ENDIF
+
+  VAR.ITEM.MINSKILL_id		= 0
+  VAR.ITEM.MINSKILL_magery	= 0
+  ACT.TRIGGER @GetItemVars
+  IF (<SRC.ITEMID> < <VAR.ITEM.MINSKILL_id>)
+     SRC.SYSMESSAGE You have no clue about this item.
+     SKILLINIT_stop
+     RETURN 1
+  ENDIF
+
+  SKILLINIT_nolast
+  SKILLINIT_cansee
+  RETURN 1
+
+
+[FUNCTION SKILLINIT_4] // ArmsLore
+  if !( <ACT.ISITEM> )
+     VAR.RETURN		= 1
+     return 1
+  endif
+
+  if !( <ACT.ISWEAPON> || <ACT.ISARMOUR> || <ACT.ISSHIELD> )
+     SRC.SYSMESSAGE That doesn't look like a weapon or armour.
+     SKILLINIT_stop
+     return 1
+  endif
+
+  //if ( <ACT.ATTR> & attr_magic )
+  //   SRC.SYSMESSAGE That has magic in it, and you can't tell much about it.
+  //   SKILLINIT_stop
+  //   return 1
+  //endif
+
+  IF ( <ACT.ATTR> & attr_identified )
+     ArmsLore_Identify
+     VAR.RETURN		= 1
+  ENDIF
+
+  SKILLINIT_nochar
+  SKILLINIT_nolast
+  SKILLINIT_cansee
+  RETURN 1
+
+[FUNCTION SKILLINIT_5] // Parrying
+   if ( <REGION.FLAGS> & (region_flag_safe|region_flag_no_pvp) )
+      SKILLINIT_stop
+   endif
+   RETURN 1
+
+
+[FUNCTION SKILLINIT_6] // Begging
+  SKILLINIT_noitem
+  SKILLINIT_noself
+  SKILLINIT_nolast
+  RETURN 1
+
+
+[FUNCTION SKILLINIT_7] // Blacksmithing
+   RETURN 1
+
+
+[FUNCTION SKILLINIT_8] // Bowcraft
+   RETURN 1
+
+
+[FUNCTION SKILLINIT_9] // Peacemaking
+  SKILLINIT_noitem
+  SKILLINIT_noself
+  SKILLINIT_nolast
+  RETURN 1
+
+
+[FUNCTION SKILLINIT_10] // Camping
+   RETURN 1
+
+
+[FUNCTION SKILLINIT_11] // Carpentry
+   RETURN 1
+
+
+[FUNCTION SKILLINIT_12] // Cartography
+   IF (<SRC.p.x> > 5114)
+      SKILLINIT_stop
+      RETURN 0
+   endif
+   RETURN 1
+
+
+[FUNCTION SKILLINIT_13] // Cooking
+   RETURN 1
+
+
+[FUNCTION SKILLINIT_14] // Detection
+  if ( 0<TAG.detectinghidden_tile> == 0 )		// normal detection
+     if ( RAND(1000) > <detection> )
+        VAR.RETURN	= 1
+        RETURN 0
+     endif
+     RETURN 0
+  endif
+  RETURN 1
+
+
+[FUNCTION SKILLINIT_15] // Enticement
+   if ( !<findtype(t_musical).uid> )
+      SKILLINIT_stop
+      RETURN 0
+   endif
+
+  SKILLINIT_noitem
+  SKILLINIT_noself
+  SKILLINIT_nolast
+  SKILLINIT_canseelos
+  RETURN 1
+  
+
+[FUNCTION SKILLINIT_16] // EvaluatingIntel
+  SKILLINIT_noitem
+  SKILLINIT_noself
+  SKILLINIT_nolast
+  SKILLINIT_canseelos
+  RETURN 1
+  
+
+[FUNCTION SKILLINIT_17] // Healing
+  SKILLINIT_canseelos
+  RETURN 1
+  
+
+[FUNCTION SKILLINIT_18] // Fishing
+  RETURN 1
+  
+
+[FUNCTION SKILLINIT_19] // Forensics aka Netherlore
+   if ( <ACT.baseid> != 02006 )
+      //sysmessage No improvement for using Forensics on something other than a corpse.
+      VAR.NOIMPROVE	= 1
+   endif
+     if ( <ACT.timer> < 1 )
+        sysmessage That doesn't seem very fresh.
+        SKILLINIT_stop
+        VAR.NOIMPROVE	= 1
+        return 1
+   endif
+  SKILLINIT_nolast
+  RETURN 1
+  
+
+[FUNCTION SKILLINIT_20] // Herding
+  SKILLINIT_noitem
+  SKILLINIT_noself
+  SKILLINIT_nolast
+  SKILLINIT_canseelos
+  RETURN 1
+  
+
+[FUNCTION SKILLINIT_21] // Hiding
+  if ( <findtype(t_light_lit).uid> )
+     sysmessage You are too well lit to try and hide.
+     SKILLINIT_stop
+     RETURN 0
+  endif
+  IF strmatch("<REGION.NAME>","Event Organization Place")
+     sysmessage You can hide in here.
+	 SKILLINIT_stop
+     RETURN 0
+  endif
+  RETURN 1
+
+
+[FUNCTION SKILLINIT_22] // Provocation
+  if ( !<findtype(t_musical).uid> )
+     SRC.SYSMESSAGE You need a musical instrument for that.
+     SKILLINIT_stop
+     RETURN 0
+  endif
+
+  // TARG is the provoked
+  SKILLINIT_noitem
+  SKILLINIT_noself
+  SKILLINIT_nolast
+  
+   if ( <REGION.guarded> || <TARG.REGION.GUARDED> || <ACT.REGION.GUARDED> )
+     SYSMESSAGE You can't provoke anyone here.
+     SKILLINIT_stop
+     RETURN 0
+   endif
+
+   if ( <TARG.UID> == <UID> )
+      sysmessage You can't provoke yourself!
+      SKILLINIT_stop
+      RETURN 0
+   endif
+
+   if ( <TARG.UID> == <ACT.UID> )	// ignore on self
+      sysmessage You can't provoke them against themselves!
+      SKILLINIT_stop
+      RETURN 0
+   endif
+
+   if ( !<TARG.CANSEELOS> )
+      sysmessage The <TARG.NAME> isn't within line of sight.
+      SKILLINIT_stop
+      RETURN 0
+   endif
+
+   if ( !<ACT.CANSEELOS> )
+      sysmessage The <ACT.NAME> isn't within line of sight.
+      SKILLINIT_stop
+      RETURN 0
+   endif
+  
+   if ( !<TARG.NPC> )
+     SKILLINIT_stop
+     SYSMESSAGE They are too much in control of their attitudes.
+     RETURN 0
+   endif
+
+   if ( <TARG.memoryfindtype( memory_ipet ).uid> )
+      SYSMESSAGE They are too peaceful to be provoked.
+      SKILLINIT_stop
+      RETURN 0
+   endif
+   
+   if ( <TARG.INT> > (<PROVOCATION>/8) )
+      SYSMESSAGE They are too smart to fall for your music.
+      SKILLINIT_stop
+      if ( <REGION.guarded> )
+         CRIMINAL 1
+      endif
+      RETURN 0
+   endif
+
+   if ( (<TARG.PROVOCATION> > <PROVOCATION>) || ((<TARG.TAMING>-200) > <PROVOCATION>) )
+      SYSMESSAGE They are too willful for your music.
+      SKILLINIT_stop
+      if ( <REGION.guarded> )
+         CRIMINAL 1
+      endif
+      RETURN 0
+   endif
+
+   SYSMESSAGE You try to provoke <TARG.NAME> against <ACT.NAME>.
+
+   RETURN 1
+   
+
+[FUNCTION SKILLINIT_23] // Inscription
+  RETURN 1
+  
+
+[FUNCTION SKILLINIT_24] // LockPicking
+  SKILLINIT_nochar
+  SKILLINIT_nolast
+  RETURN 1
+  
+
+[FUNCTION SKILLINIT_25] // Magery
+  if ( ( <ACT.UID> != 0 ) && !<ACT.CANSEELOS> )
+    VAR.RETURN	= 1
+    SYSMESSAGE Target is not in line of sight.
+    RETURN 0
+  endif
+  if ( <TAG0.LASTSPELL> >= 600 )	// necro
+   return 1
+  ENDIF
+//  LOCAL.TESTMAGERY = 0
+
+//  if ( 0 )
+//  elseif ( (<TAG0.LASTSPELL> == 13) || (<TAG0.LASTSPELL> == 14) || (<TAG0.LASTSPELL> == 19) || ( <TAG0.LASTSPELL> == 23) )
+//     SKILLINIT_nochar // must be a container for these spells
+//     if ( <VAR.RETURN> = 1 )
+//        LOCAL.TESTMAGERY = nochar 1
+//        SERV.LOG The Spell fizzles. (Init - nochar - <ACT.NAME>::<ACT.BASEID>::<EVAL <TAG0.LASTSPELL>>)     
+//     endif
+//  elseif ( (<TAG0.LASTSPELL> == 21) || (<TAG0.LASTSPELL> == 32) || (<TAG0.LASTSPELL> == 34) || (<TAG0.LASTSPELL> == 45) || (<TAG0.LASTSPELL> == 52) )
+//     SKILLINIT_nochar
+//     if ( <VAR.RETURN> = 1 )
+//        LOCAL.TESTMAGERY = nochar 2
+//        SERV.LOG The Spell fizzles. (Init  - nochar <ACT.NAME>::<ACT.BASEID>::<EVAL <TAG0.LASTSPELL>>)     
+//     endif
+//  else
+     if ( (<TAG0.LASTSPELL> == 41) )
+        if ( <ACT.ISITEM> )
+	   VAR.NOIMPROVE = 1
+	endif
+//     else
+//        SKILLINIT_noitem
+//        if ( <VAR.RETURN> = 1 )
+//           LOCAL.TESTMAGERY = noitem
+//           SERV.LOG The Spell fizzles. (Init  - noitem <ACT.NAME>::<ACT.BASEID>::<EVAL <TAG0.LASTSPELL>>)     
+//        endif
+//     endif
+  endif
+
+  
+  // 33 blade spirits
+// 58 ev
+// 61 summon daemon
+// 62 elem earth
+// 63 elem fire
+// 64 elem water
+//commented out check below was causing people to go crim when recalling, marking etc
+  if ( 0 )
+  elseif ( (<TAG0.LASTSPELL> == 33) || (<TAG0.LASTSPELL> == 58) || (<TAG0.LASTSPELL> == 61) || (<TAG0.LASTSPELL> == 62) || (<TAG0.LASTSPELL> == 63) || (<TAG0.LASTSPELL> == 64) )
+     //if ( <REGION.GUARDED> )
+       // CRIMINAL 1
+		//serv.log setting criminal due to lastspell tag lastspell is <TAG0.LASTSPELL>
+     //endif
+  //elseif ( (<TAG0.LASTSPELL> == 1) || (<TAG0.LASTSPELL> == 3) || (<TAG0.LASTSPELL> == 5) || (<TAG0.LASTSPELL> == 8) || (<TAG0.LASTSPELL> == 12) || (<TAG0.LASTSPELL> == 18) || (<TAG0.LASTSPELL> == 20) || (<TAG0.LASTSPELL> == 27) || (<TAG0.LASTSPELL> == 30) || (<TAG0.LASTSPELL> == 31) || (<TAG0.LASTSPELL> == 37) || (<TAG0.LASTSPELL> == 38) || (<TAG0.LASTSPELL> == 42) || (<TAG0.LASTSPELL> == 43) || (<TAG0.LASTSPELL> == 51) || (<TAG0.LASTSPELL> == 53) )
+  //   SKILLINIT_noself
+  //   if ( <VAR.RETURN> = 1 )
+  //      LOCAL.TESTMAGERY = noself
+  //      SERV.LOG The Spell fizzles. (Init - noself <ACT.NAME>::<ACT.BASEID>::<EVAL <TAG0.LASTSPELL>>)     
+  //   endif
+  endif
+
+  if ( <VAR.RETURN> = 1 )
+     f_spell_fizzle The spell fizzles.
+  endif
+  RETURN 1
+  
+
+[FUNCTION SKILLINIT_26] // MagicResistance
+  RETURN 1
+  
+
+[FUNCTION SKILLINIT_27] // Tactics
+  if ( <REGION.FLAGS> & (region_flag_safe|region_flag_no_pvp) )
+    SKILLINIT_stop
+    RETURN 1
+  endif
+  RETURN 1
+
+
+[FUNCTION SKILLINIT_28] // Snooping
+  if ( strmatch( "Ocllo", "<REGION.NAME>" ) )
+    SYSMESSAGE You can't steal in this area.
+    SKILLINIT_stop
+    RETURN 1
+  endif
+
+  SKILLINIT_noitem
+  SKILLINIT_noself
+  SKILLINIT_nolast
+
+  if ( <VAR.NOIMPROVE> || <VAR.RETURN> )
+     RETURN 0
+  endif
+
+  if ( <REGION.GUARDED> && rand(1000) > ((<SNOOPING>+600)/2) )
+     CRIMINAL 1
+  endif
+  RETURN 1
+  
+
+[FUNCTION SKILLINIT_29] // Musicianship
+  RETURN 1
+  
+
+[FUNCTION SKILLINIT_30] // Poisoning
+  //SKILLINIT_nochar
+  //SKILLINIT_nolast
+  RETURN 1
+  
+
+[FUNCTION SKILLINIT_31] // Archery
+  if ( <REGION.FLAGS> & (region_flag_safe|region_flag_no_pvp) )
+    SKILLINIT_stop
+    RETURN 1
+  endif
+  if ( <ACT.DISTANCE> < 2 )
+    VAR.NOIMPROVE	= 1
+  endif
+
+  if ( <FINDLAYER(layer_hand1).uid> )
+    if ( !<RESTEST <FINDLAYER(layer_hand1).tdata3>> )
+      VAR.NOIMPROVE = 1
+    endif
+  elseif ( <FINDLAYER(layer_hand2).uid> )
+    if strmatch("<FINDLAYER(layer_hand2).type>","t_weapon_xbow")
+       if !(0<TAG.AMMO.t_weapon_xbow.BASEID>=0)
+          TAG.AMMO.t_weapon_xbow.BASEID=i_xbolt
+       endif
+       if ( !<RESTEST <TAG.AMMO.t_weapon_xbow.BASEID>> )
+          VAR.NOIMPROVE = 1
+       endif
+    elseif strmatch("<FINDLAYER(layer_hand2).type>","t_weapon_bow")
+       if !(0<TAG.AMMO.t_weapon_bow.BASEID>=0)
+          TAG.AMMO.t_weapon_bow.BASEID=i_arrow
+       endif
+       if ( !<RESTEST <TAG.AMMO.t_weapon_bow.BASEID>> )
+          VAR.NOIMPROVE = 1
+       endif
+    endif
+  endif
+  RETURN 1
+
+
+[FUNCTION SKILLINIT_32] // SpiritSpeak
+  RETURN 1
+
+
+[FUNCTION SKILLINIT_33] // Stealing
+
+    SRC.SYSMESSAGE This skill is under development and cannot be used yet.
+    SKILLINIT_stop
+    RETURN 1
+
+
+IF (<ACT.CONT.TYPE>==t_container)
+  if ( strmatch( "Ocllo", "<REGION.NAME>" ) )
+    SRC.SYSMESSAGE You can't steal in this area.
+    SKILLINIT_stop
+    RETURN 1
+  endif
+  
+  SKILLINIT_noself
+  SKILLINIT_canseelos
+
+    IF !(<ACT.CONT>==<ACT.TOPOBJ.UID>)
+        IF !( <ACT.CONT.LAYER> == 21 )
+           IF (<SRC.STEALING> < 80.0)
+              SRC.SYSMESSAGE You don't have enough skill to steal from anything other than backpacks...
+              SKILLINIT_stop
+              RETURN 1
+           ELSEIF !(<EVAL RAND(4)>=1)
+              SRC.SYSMESSAGE You fail to focus on your opponents <ACT.NAME> and must try again...
+              SKILLINIT_stop
+              RETURN 1           
+           ENDIF
+        ENDIF
+     ENDIF
+
+  if ( <ACT.ISITEM> ) 
+     IF ( <ACT.TOPOBJ.UID> == <UID> )
+       src.sysmessage You can't steal from yourself.
+       SKILLINIT_stop
+       RETURN 1
+     ENDIF
+
+     IF ( <UID.<ACT.TOPOBJ.UID>.ISMYPET> )
+       src.sysmessage You can't steal from your own.
+       SKILLINIT_stop
+       RETURN 1
+     ENDIF
+     
+     IF ( <UID.<ACT.TOPOBJ.UID>.DISTANCE> > 2 )
+       VAR.NOIMPROVE	= 1
+     ENDIF
+
+     IF (<ACT.CONT>==<ACT.TOPOBJ.UID>)
+        SRC.SYSMESSAGE You cannot steal directly from another character's body!
+        SKILLINIT_stop
+        RETURN 1
+     ENDIF
+  
+     IF (<ACT.TYPE>==t_runebook)
+        SRC.SYSMESSAGE You go to grab <ACT.TOPOBJ.NAME>'s runebook, but the magics prevent you from holding it!
+        SKILLINIT_stop
+        RETURN 1        
+     ENDIF
+
+     IF (<ACT.TYPE>==t_container)
+        SRC.SYSMESSAGE Due to the tight fit of the <ACT.NAME> in <ACT.TOPOBJ.NAME>'s backpack, you can't take it... Or any container.
+        SKILLINIT_stop
+        RETURN 1        
+     ENDIF
+
+     IF (<ACT.ID>==i_pvptoken)
+        SRC.SYSMESSAGE The magics of the land prevent you from stealing a PvP Ticket in <ACT.TOPOBJ.NAME>'s bag!
+        SKILLINIT_stop
+        RETURN 1
+     ENDIF
+
+     IF (<ACT.ID>==i_check)
+        SRC.SYSMESSAGE The magics of the land prevent you from stealing the check in <ACT.TOPOBJ.NAME>'s bag!
+        SKILLINIT_stop
+        RETURN 1
+     ENDIF
+
+  else
+     if ( <ACT.UID> == <UID> )
+       src.sysmessage You can't steal from yourself.
+       SKILLINIT_stop
+       RETURN 1
+     endif
+
+     if ( <ACT.ISMYPET> == <UID> )
+       src.sysmessage You can't steal from your own pets.
+       SKILLINIT_stop
+       RETURN 1
+     endif
+
+  endif
+
+
+
+  SKILLINIT_nolast
+
+  if ( <VAR.NOIMPROVE> || <VAR.RETURN> )
+     RETURN 0
+  endif
+
+  RETURN 1
+ELSE
+ 	src.sysmessage Why try and steal something that is in plain sight?
+	SKILLINIT_stop
+       RETURN 1
+ENDIF
+RETURN 1
+
+
+
+      
+[FUNCTION SKILLINIT_34] // Tailoring
+  SKILLINIT_nochar
+  RETURN 1
+
+
+[FUNCTION SKILLINIT_35] // Taming
+if (<act.isnpc>)
+   if (<act.NPC> != 1) && (<act.NPC> != 10)
+    serv.log <SRC.NAME> Trying to Tame NPC <ACT.NAME>
+    SKILLINIT_stop
+   endif
+
+  if ( (<ACT.FLAGS> & statf_war) && (<ACT.ACT.UID> != <UID>) )
+    SRC.SYSMESSAGE You can't do that while they're fighting!
+    SKILLINIT_stop
+    return 1
+  endif
+  
+  IF ((<SRC.TARG.ID>=C_HORSE_GRAY_DONATOR)||(<SRC.TARG.ID>=C_HORSE_BROWN_LT_DONATOR)||(<SRC.TARG.ID>=C_HORSE_BROWN_DK_DONATOR)||(<SRC.TARG.ID>=C_HORSE_TAN_DONATOR)||(<SRC.TARG.ID>=C_LLAMA_DONATOR)||(<SRC.TARG.ID>=C_OSTARD_FOREST_DONATOR)||(<SRC.TARG.ID>=C_OSTARD_DESERT_DONATOR)||(<SRC.TARG.ID>=C_OSTARD_ZOSTRICH_DONATOR) || (<SRC.TARG.ID>=c_polar_bear_donator)||(<SRC.TARG.ID>=c_casual_horse_donator)||(<SRC.TARG.ID>=c_armored_steed_donator)||(<SRC.TARG.ID>=c_flame_steed_donator)||(<SRC.TARG.ID>=c_cusidhe_donator)||(<SRC.TARG.ID>=c_lion_wings_donator)||(<SRC.TARG.ID>=c_billy_goat_donator)||(<SRC.TARG.ID>=c_raptor_light_donator)||(<SRC.TARG.ID>=c_ostrich_donator)||(<SRC.TARG.ID>=c_grizzly_polar_bear_donator)||(<SRC.TARG.ID>=c_raptor_donator))
+  src.sysmessage You can't tame this.
+  SKILLINIT_stop
+  return 1
+  endif
+  
+  //serv.log :MOUNT TAMING: <SRC.UID< <SRC.ACCOUNT> <SRC.NAME> Trying to Tame NPC <ACT.NAME> <ACT.UID> <ACT.ID>. Player position is <SRC.P>. Mount position is <ACT.P>
+  
+  IF ( <ACT.TAMING> > <TAMING> )
+    VAR.RETURN = 1
+    VAR.DIF	= <eval (<ACT.TAMING> - <SRC.TAMING>)>
+    if ( 0 )
+    elseif ( <VAR.DIF> < 150 )
+      SRC.sysmessage They look a little too wild for you to tame.
+    elseif ( <VAR.DIF> < 300 )
+      SRC.sysmessage They look too wild for you to tame.
+    elseif ( <VAR.DIF> < 500 )
+      SRC.sysmessage They look way too wild for you to tame.
+    elseif ( <VAR.DIF> < 700 )
+      SRC.sysmessage They look definitly too wild for you to tame.
+    endif
+    SKILLINIT_stop
+  ELSEIF ( <ACT.MEMORYFINDTYPE.MEMORY_IPET.UID> > 0 )
+    SKILLINIT_stop
+  ENDIF
+  
+  SKILLINIT_noitem
+  SKILLINIT_noself
+  SKILLINIT_nolast
+  SKILLINIT_canseelos
+  RETURN 1
+else
+	RETURN  1
+endif
+
+
+[FUNCTION SKILLINIT_36] // TasteID
+  SKILLINIT_nochar
+  SKILLINIT_nolast
+  RETURN 1
+
+
+[FUNCTION SKILLINIT_37] // Tinkering
+  RETURN 1
+
+
+[FUNCTION SKILLINIT_38] // Tracking
+  RETURN 1
+
+
+[FUNCTION SKILLINIT_39] // Masonry
+  RETURN 1
+
+
+[FUNCTION SKILLINIT_40] // Swordsmanship
+  if ( <REGION.FLAGS> & (region_flag_safe|region_flag_no_pvp) )
+    SKILLINIT_stop
+    RETURN 1
+  endif
+  RETURN 1
+
+
+[FUNCTION SKILLINIT_41] // Macefighting
+  if ( <REGION.FLAGS> & (region_flag_safe|region_flag_no_pvp) )
+    SKILLINIT_stop
+    RETURN 1
+  endif
+  RETURN 1
+  
+
+[FUNCTION SKILLINIT_42] // Fencing
+  if ( <REGION.FLAGS> & (region_flag_safe|region_flag_no_pvp) )
+    SKILLINIT_stop
+    RETURN 1
+  endif
+  RETURN 1
+
+
+[FUNCTION SKILLINIT_43] // Wrestling
+  if ( <REGION.FLAGS> & (region_flag_safe|region_flag_no_pvp) )
+    SKILLINIT_stop
+    RETURN 1
+  endif
+  RETURN 1
+
+
+[FUNCTION SKILLINIT_44] // Lumberjacking
+  RETURN 1
+  
+
+[FUNCTION SKILLINIT_45] // Mining
+  RETURN 1
+  
+
+[FUNCTION SKILLINIT_46] // Meditation
+  if ( <MANA> >= <INT> )
+    VAR.NOIMPROVE	= 1
+  else
+    if ( !<FINDID(b_meditating)> )
+      SKILLCHECK_START Skill_Meditation
+      NEWITEM b_meditating
+      ACT.DISPID = i_memory
+      ACT.EQUIP
+    endif
+  endif
+  RETURN 1
+  
+   
+[FUNCTION SKILLINIT_47] // Stealth
+  if ( <HIDING> < 80.0 )
+    src.sysmessage You're not good enough in hiding to try and stealth.
+    SKILLINIT_stop
+    RETURN 1
+  endif
+  if ( <findtype(t_light_lit).uid> )
+    sysmessage You are too well lit to try and hide.
+    SKILLINIT_stop
+    RETURN 1
+  endif
+  IF strmatch("<REGION.NAME>","Event Organization Place")
+     sysmessage You can hide in here.
+	 SKILLINIT_stop
+     RETURN 0
+  endif
+  RETURN 1
+
+
+[FUNCTION SKILLINIT_48] // RemoveTrap
+  RETURN 1
+
+
+[FUNCTION SKILLINIT_49] // Necromancy
+  RETURN 1
+
+[FUNCTION SKILLINIT_50] // Focus
+  RETURN 1
+
+[FUNCTION SKILLINIT_51] // Chivalry
+  if ( <REGION.FLAGS> & (region_flag_safe|region_flag_no_pvp) )
+    SKILLINIT_stop
+    RETURN 1
+  endif
+  RETURN 1
+
+
+[EOF]

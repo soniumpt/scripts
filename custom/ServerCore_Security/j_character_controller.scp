@@ -1,0 +1,155 @@
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+                                                                        +
+//+                  MEMORY SHARD CHARACTER CONTROLLER                     +
+//+                                                                        +
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+                                                                        +
+//+                           AUTHOR: WIGIFER                              +
+//+                         CREATED: 23/08/2018                            +
+//+                     LATEST REVISION: 26/08/2018                        +
+//+                                                                        +
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+                                                                        +
+//+ A big issue with Kells systems remains the undocumented, poorly        +
+//+ documented item known as the "char CONTROL", or m_kell_control.        +
+//+ Although some scripts treat it like it's sister script the "periodic   +
+//+ trigger", or m_kell_periodic, the two are separate entities.           +
+//+                                                                        +
+//+ What we're aiming to do here is consolidate both items into one, and   +
+//+ establish a new structure for constructing components for the          +
+//+ m_character_manager (Not putting my name on it, just in case).         +
+//+                                                                        +
+//+ The goal is to encourage anyone whom adds to this in future to add a   +
+//+ function to any @Trigger event, so that components can be found        +
+//+ quicker and easier.                                                    +
+//+                                                                        +
+//+ The m_character_manager has a TIMER that fires every second. For       +
+//+ the sake of integrity, the server runs a pass through every character  +
+//+ in e_all_pc's (To be determined where - RESERVED SPACE)                +
+//+ that ensures the timer is not -1 at any time.                          +
+//+                                                                        +
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+                                                                        +
+//+ PAY ATTENTION HERE PLEASE!                                             +
+//+                                                                        +
+//+ Whenever a script calls f_prepare_character_manager for *any* reason,  +
+//+ it should call f_prepare_character_manager first. This function is     +
+//+ designed to ensure that a player not just has a Character Controller,  +
+//+ but to ensure that if there is a change in structure or format that    +
+//+ it is updated. It also does a small integrity check to ensure that     +
+//+ key components such as the timer and stat tags exist.                  +
+//+                                                                        +
+//+ This also means that, if you need to roll out a shard wide fix, you    +
+//+ can roll it out in the Character Controller as a function. Please,     +
+//+ however, only add function calls and not raw code where possible.      +
+//+ This allows your code to be compartmentalised PROPERLY AND IN FULL so  +
+//+ it's not spread out across multiple scripts.                           +
+//+                                                                        +
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+                                                                        +
+//+ [CROSS DEPENDENCIES]                                                   +
+//+                                                                        +
+//+ j_MAIN_skill_system - This is where any skill based function is fired. +
+//+                                                                        +
+//+                                                                        +
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+                                                                        +
+//+ [CHANGELOG]                                                            +
+//+                                                                        +
+//+ 29/08/18 - Wigifer - Been putting it off but now cracking on with it.  +
+//+                      Gonna get this dooooooooooooooooooooooooooooone!  +
+//+                                                                        +
+//+                                                                        +
+//+                                                                        +
+//+                                                                        +
+//+                                                                        +
+//+                                                                        +
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+                                                                        +
+//+ [TO DO]                                                                +
+//+                                                                        +
+//+ -                                                                      +
+//+                                                                        +
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+// ========================
+// =       FUNCTION       =
+// = Prepare CHAR Control =
+// ========================
+//
+// USAGE: CALL f_prepare_character_manager
+// RETRIEVES:
+// - LOCAL.CHARMANAGERUID: The UID of the character manager.
+//
+// YOU MUST USE THIS TO RETRIEVE THE CHARACTER MANAGER FROM ANY SCRIPT!
+// What this script will do is check for a character manager first.
+// If no character manager is found, it will create one and leave a note
+// in the server log files that the character did not have one.
+// Once a player is determined to have a character manager, the script
+// will add the UID of this Character Manager to LOCAL.CHARMANAGERUID
+
+[FUNCTION f_prepare_character_manager]
+IF (<FINDLAYER(21).FINDID(m_character_manager).UID>)
+   SERV.LOG ::ERROR:: <ACCOUNT>:<NAME>:<UID> has character managers in their pack!
+   FOR 100 0
+      IF (<FINDLAYER(21).FINDID(m_character_manager).UID>)
+         FINDLAYER(21).FINDID(m_character_manager).REMOVE
+      ENDIF
+   ENDFOR
+ENDIF
+IF (<FINDID(m_kell_control).UID>)
+   // Create and/or set the character manager as NEW
+   IF !(<FINDID(m_character_manager).UID>)
+      SERV.NEWITEM m_character_manager
+      SERV.LOG ::CHAR MANAGER:: <ACCOUNT>:<NAME>:<UID> has a m_kell_control and no Character Manager. Removing m_kell_control and equipping a Character Manager now.
+      SERV.NEWITEM m_character_manager
+      NEW.LAYER = layer_char_manager
+      NEW.CONT = <UID>
+      NEW.EQUIP <UID>
+   ELSE
+      NEW = <FINDID(m_character_manager).UID>
+      SERV.LOG ::CHAR MANAGER:: <ACCOUNT>:<NAME>:<UID> has a m_kell_control and a Character Manager. Removing m_kell_control and fixing the Character Manager.
+   ENDIF
+   // Migrate all tags from m_kell_control to this
+   NEW.TAG.CAPDEX = <FINDID(m_kell_control).TAG0.CAPDEX>
+   NEW.TAG.CAPSTR = <FINDID(m_kell_control).TAG0.CAPSTR>
+   NEW.TAG.CAPINT = <FINDID(m_kell_control).TAG0.CAPINT>
+   FINDID.m_kell_control.REMOVE
+   FINDID(m_kell_control).REMOVE
+ELSEIF !(<FINDID(m_character_manager).UID>)
+   SERV.LOG ::CHAR MANAGER:: <ACCOUNT>:<NAME>:<UID> does not have a Character Manager. Equipping one now.
+   SERV.NEWITEM m_character_manager
+   NEW.LAYER = layer_char_manager
+   NEW.CONT = <UID>
+   NEW.EQUIP <UID>
+ENDIF
+
+// Allocate the Character Manager to LOCAL.CHARMANAGERUID
+// If this function is used with CALL, this will pass LOCAL.CHARMANAGERUID to that function.
+LOCAL.CHARMANAGERUID = <FINDID(m_character_manager).UID>
+
+// ========================
+// =         ITEM         =
+// = Character Controller =
+// ========================
+//
+// PURPOSE: Store higher level character data and manage aspects such as skills and stats.
+//          Fire periodic functions relating to monster and/or region effects.
+// 
+// WHEN EDITING: - Only add CALLS and straight functions to this item.
+//               - Remember that the timer on this item MUST NOT BE STOPPED.#
+
+
+[ITEMDEF m_character_manager]	// yes, I'm egocentric
+NAME	= Character Control
+ID	= 0c09
+TYPE	= t_eq_script
+WEIGHT	= 0
+LAYER	= layer_char_manager
+
+ON=@CREATE
+  TIMER	= -1
+  
+ON=@TIMER
+  TIMER = 1
+  RETURN 1

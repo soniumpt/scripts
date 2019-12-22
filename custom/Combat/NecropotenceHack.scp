@@ -1,0 +1,43 @@
+[Function y_arm_disarm_fix] //set it on login for all, or use to check on some players
+IF !( <RESTEST 1 m_arm_disarm_timer>)
+   NEWITEM = m_arm_disarm_timer
+   NEW.CONT <UID>
+   NEW.TIMERD = 2000
+   <UID> +e_arm_disarm_fox
+ENDIF
+
+[ITEMDEF m_arm_disarm_timer]    
+ID= i_memory
+TYPE = t_eq_script
+NAME = Arm Disarm Check
+
+ON =@Timer
+   TIMERD= 10000
+   CONT.TAG.ARM_DISARM_FIX_AMOUNT = 0
+   RETURN 1
+
+[EVENTS e_arm_disarm_fix]
+ON=@ItemEquipTest
+   IF  (<ACT.LAYER> == 31) OR (<ACT.LAYER> == 2)
+      IF !(<ACT.TYPE> == t_spellbook)
+         IF (<ACT> = <SRC.TAG.ARM_DISARM_FIX_UID>)
+            IF (<SRC.TAG.ARM_DISARM_FIX_TIMER> < (<FINDID.m_arm_disarm_timer.TIMER> + 3))
+               SRC.TAG.ARM_DISARM_FIX_TIMER = <FINDID.m_arm_disarm_timer.TIMER>
+               SRC.TAG.ARM_DISARM_FIX_AMOUNT = <SRC.TAG.ARM_DISARM_FIX_AMOUNT> + 1
+               SRC.SAY  I did this already <EVAL <SRC.TAG.ARM_DISARM_FIX_AMOUNT>> times! //for test
+               IF (<SRC.TAG.ARM_DISARM_FIX_AMOUNT> > 3)
+                  SERV.LOG Character <SRC.NAME>[<SRC.ACCOUNT>] is using NecroPotence Arm/Disarm hack. <EVAL <SRC.TAG.ARM_DISARM_FIX_AMOUNT>> uses by now.
+                  //SRC.STONE
+               ENDIF
+               RETURN 1
+            ENDIF
+            SRC.TAG.ARM_DISARM_FIX_TIMER = <FINDID.m_arm_disarm_timer.TIMER>
+         ELSE
+            SRC.TAG.ARM_DISARM_FIX_UID = <ACT>
+            SRC.TAG.ARM_DISARM_FIX_TIMER = <FINDID.m_arm_disarm_timer.TIMER>
+         ENDIF    
+      ENDIF
+   ENDIF
+
+
+[eof]

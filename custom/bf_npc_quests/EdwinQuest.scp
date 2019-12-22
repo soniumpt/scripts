@@ -1,0 +1,304 @@
+//------------------Lothian Quest--------------------------------
+// Written by Karl Ironblade for The UO Project, 26th March 2003
+//
+// This quest is meant for karma grey/red players. This allows them the chance to recover the staff
+// of Edwin, a wicked sorceror who has been sealed in a Wizards' Tower near Britain
+
+[CHARDEF c_h_Edwin]
+   NAME=Edwin
+   ID=c_man
+   DAM={10,15}
+   DESIRES=i_gold,e_notoriety
+   AVERSIONS=t_TRAP,t_eerie_stuff
+   TSPEECH=spk_human_default
+   TSPEECH=spk_quest_Edwin
+   
+TEVENTS=e_npc_quest
+	
+ON=@Create
+   TITLE the Evil Sorceror
+   NPC=brain_human
+   COLOR=040e
+   STR={100 100}
+   DEX={100 100}
+   INT={100 100}
+
+   MAGERY=100.0
+   EVALINT=100.0
+   MACEFIGHTING=100.0
+   TACTICS=100.0
+   KARMA= {-2000 -2500}
+
+   ITEMNEWBIE=i_hair_short
+   COLOR=006a9
+   ITEMNEWBIE=i_beard_short
+   COLOR=match_hair
+   ITEMNEWBIE=i_robe
+   COLOR=00026	
+   ITEM=random_shoes
+   COLOR=colors_neutral
+   ITEM=random_coin_purse
+
+ON=@NPCRestock
+   ITEMNEWBIE=i_spellbook
+   ADDSPELL=s_lightning
+   ADDSPELL=s_explosion
+   ADDSPELL=s_harm
+   ADDSPELL=s_fireball
+   ADDSPELL=s_poison
+   ADDSPELL=s_paralyze
+   ADDSPELL=s_explosion
+   ADDSPELL=s_mass_dispel
+   ADDSPELL=s_energy_bolt
+   ADDSPELL=s_flamestrike
+   ADDSPELL=s_summon_daemon
+
+ON=@NPCSeeNewPlayer
+   IF !( <SRC.TAG.NPC_QUEST_START> & NPCQ_Edwin )
+      SAY Accursed wizards locking me up in this infernal tower..What? Is someone there? 
+      SAY Oh, thank Exodus..I could use the talents of you if you're devious enough for the task..
+      SAY If you want to help say so and listen closely...
+   ELSE
+      SAY What are you waiting for, GET ME OUT OF HERE!
+   ENDIF
+   
+CATEGORY=Imperial uo
+SUBSECTION=Evil Wizard Quest
+DESCRIPTION=Edwin
+
+
+[SPEECH spk_quest_Edwin]
+ON=*aye*
+ON=*i wish to assist*
+ON=*quest*
+ON=*help*
+ON=*yes*
+ON=*yea*
+ON=*job*
+ON=*help*
+   IF (<SRC.KARMA> >  -3000)
+      SAY BAH! You're too much of a goody two shoes for my liking...begone, peasant!
+   ELSE
+      IF ( <SRC.TAG.NPC_QUEST_START> & NPCQ_Edwin )
+         SAY I seem to notice a distinct lack of a certain item.... 
+         SAY THAT ITEM BEING MY STAFF! GO, PEASANT! GET IT!
+      ELSE
+         SAY I've been locked in here by the Britannian High Wizards for 'disrupting the peace' or some other twaddle. 
+         SAY Anyway, I think it's time I got out of here, but I need my staff.
+         SAY Those damned wizards are probably looking after it, but I think I may have a clue as to where they are now.
+         SAY Say you "agree" and I shall tell you more...
+      ENDIF
+   ENDIF
+   RETURN 1
+   
+ON=*agree*
+   IF ( <SRC.TAG.NPC_QUEST_START> & NPCQ_Edwin )
+      SAY GAH! You have not got my staff yet?! 
+      SAY Am I the only competent person left in this world?! GO! GO GET MY STAFF!
+   ELSEIF (<SRC.KARMA> <=  -3000)
+      SRC.TAG.NPC_QUEST_START = <eval ( <SRC.TAG.NPC_QUEST_START> | NPCQ_Edwin )>
+      SAY Excellent! A person after my own black heart...Anyway, kill Lothian, the Head Wizard, and take my staff
+      SAY from him, and you'll be handsomely rewarded. I think I have a good idea of where he is now. 
+      RETURN 0
+   ENDIF
+   RETURN 1
+
+ON=*location*                           
+   IF ( <SRC.TAG.NPC_QUEST_START> & NPCQ_Edwin )
+      SAY Their meditation spot isn't too far from Moonglow. No doubt Lothian will be there with some of his disciples to "improve their skills". 
+      SAY Pah! I need no such effort. Anyway, be wary, they may not be as evil as you or I but their magic is potent.
+   ELSE (<SRC.KARMA> <=  -3000)
+      SAY I'm not telling you a thing until you agree to help me...I don't know if you're evil enough for the task yet...
+   ENDIF
+   RETURN 1
+   
+ON=*reward*
+ON=*staff*
+   IF (<SRC.KARMA> >  -3000)
+      SAY You are useless to me, your heart is too good to do what I would ask.
+   ELSEIF !( <SRC.TAG.NPC_QUEST_START> & NPCQ_Edwin )
+      SAY I'm not telling you a thing until you agree to help me...I don't know if you're evil enough for the task yet...
+   ELSEIF (( <SRC.TAG.NPC_QUEST_START> & NPCQ_Edwin ) && (!<SRC.RESTEST 1 i_staff_edwin>))
+      SAY Excellent...Now Edwin shall have his revenge..
+      SAY Hand me the staff, young <SRC.SEX man/woman>, and you shall have your reward.
+   ELSEIF <SRC.RESTEST 1 i_staff_edwin>
+      SAY HAAHAHA! THE STAFF IS MINE! ALL MINE!!! .....Oh are you still here?
+      SAY Take this coin and begone, peasant. THE TIME OF EDWIN IS AT HAND!
+      SRC.CONSUME 1 i_staff_edwin
+      SRC.NEWITEM tm_reward_edwin
+      SRC.ACT.BOUNCE
+      SRC.TAG.NPC_QUEST_START = <eval ( <SRC.TAG.NPC_QUEST_START> &~ NPCQ_Edwin )>
+      SRC.TAG.NPC_QUEST_DONE = <eval ( <SRC.TAG.NPC_QUEST_DONE> | NPCQ_Edwin )>      
+      REMOVE
+      ANNOUNCE <SRC.NAME> has helped a wicked mage to escape the authorities! Beware!
+      RETURN 0
+   ENDIF
+   RETURN 1
+
+[ITEMDEF i_staff_Edwin]
+   Name=Edwin's Magic Staff
+   ID=i_staff_black
+   TYPE=t_normal
+   WEIGHT=8
+
+ON=@Create
+   COLOR=00026
+
+CATEGORY=Imperial uo
+SUBSECTION=Evil Wizard Quest Item
+DESCRIPTION=Edwin's Staff
+
+
+[TEMPLATE tm_reward_edwin]
+   ITEM=i_gold,{3000}
+
+
+[CHARDEF c_h_lothian]
+   DEFNAME=c_h_lothian
+   NAME=Lothian
+   ID=C_MAN
+   DAM=5,13
+   ARMOR=15
+   CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_MALE
+   TSPEECH=spk_human_prime
+   TSPEECH=spk_human_default
+   
+
+ON=@Create
+   TITLE = the Britannian High Mage
+   COLOR=00415
+   STR={120,140}
+   DEX={60,75}
+   INT={600,600}
+
+   MAGICRESISTANCE={90.0,100.0}
+   TACTICS={80.0,90.0}
+   WRESTLING={60.0,60.0}
+   MAGERY={90.0,100.0}
+
+   FAME={500 1500}
+   KARMA={1000 2000}
+
+   NPC=brain_monster
+
+   ITEMNEWBIE=i_hair_long
+   COLOR=003fe
+
+   ITEMNEWBIE=i_spellbook
+   ADDSPELL=s_lightning
+   ADDSPELL=s_poison
+   ADDSPELL=s_fireball
+   ADDSPELL=s_paralyze
+   ADDSPELL=s_explosion
+   ADDSPELL=s_energy_bolt
+   ADDSPELL=s_flame_strike
+
+ON=@NPCRestock
+   ITEMNEWBIE=i_robe
+   COLOR=0005e
+   ITEMNEWBIE=i_cape
+   COLOR=00481
+   ITEMNEWBIE=i_hat_wizards
+   COLOR=0005e
+   ITEM=i_boots_calf
+   COLOR=1
+   ITEM=random_jewel
+   ITEM=random_scroll
+
+   CONTAINER=i_bag
+   ITEM=i_reag_black_pearl,{ 5 15 }
+   ITEM=i_reag_blood_moss,{ 5 15 }
+   ITEM=i_reag_garlic,{ 5 15 }
+   ITEM=i_reag_ginseng,{ 5 15 }
+   ITEM=i_reag_mandrake_root,{ 10 15 }
+   ITEM=i_reag_nightshade,{ 5 15 }
+   ITEM=i_reag_sulfur_ash,{ 5 15 }
+   ITEM=i_reag_spider_silk,{ 5 15 }
+
+   ITEM=random_coin_purse
+   ITEM=i_staff_Edwin
+
+On=@NPCSeeNewPlayer
+   IF ( <SRC.KARMA> < -2500) //If Karma is less than -2500
+      ATTACK
+   ENDIF
+
+CATEGORY=Imperial uo
+SUBSECTION=Evil Wizard Quest
+DESCRIPTION=Lothian
+
+
+[CHARDEF c_h_disciple]
+   DEFNAME=c_h_disciple
+   NAME=#NAMES_HUMANMALE
+   ID=C_MAN
+   DAM=5,13
+   ARMOR=15
+   CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_MALE
+   TSPEECH=spk_human_prime
+   TSPEECH=spk_human_default
+   
+
+ON=@Create
+   TITLE = the Britannian Mage
+   COLOR=00415
+   STR={100,110}
+   DEX={60,75}
+   INT={400,400}
+
+   MAGICRESISTANCE={90.0,100.0}
+   TACTICS={80.0,90.0}
+   WRESTLING={60.0,60.0}
+   MAGERY={80.0,90.0}
+
+   FAME={500 1500}
+   KARMA={1000 2000}
+
+   NPC=brain_monster
+
+   ITEMNEWBIE=i_hair_long
+   COLOR=colors_hair
+
+   ITEMNEWBIE=i_spellbook
+   ADDSPELL=s_lightning
+   ADDSPELL=s_poison
+   ADDSPELL=s_fireball
+   ADDSPELL=s_paralyze
+   ADDSPELL=s_explosion
+   ADDSPELL=s_energy_bolt
+   ADDSPELL=s_flamestrike
+
+ON=@NPCRestock
+   ITEMNEWBIE=i_robe
+   COLOR=00481
+   ITEMNEWBIE=i_cape
+   COLOR=0005e
+   ITEMNEWBIE=i_hat_wizards
+   COLOR=00481
+   ITEM=i_boots_calf
+   COLOR=1
+   ITEM=random_jewel
+   ITEM=random_scroll
+
+   CONTAINER=i_bag
+   ITEM=i_reag_black_pearl,{ 5 15 }
+   ITEM=i_reag_blood_moss,{ 5 15 }
+   ITEM=i_reag_garlic,{ 5 15 }
+   ITEM=i_reag_ginseng,{ 5 15 }
+   ITEM=i_reag_mandrake_root,{ 10 15 }
+   ITEM=i_reag_nightshade,{ 5 15 }
+   ITEM=i_reag_sulfur_ash,{ 5 15 }
+   ITEM=i_reag_spider_silk,{ 5 15 }
+
+   ITEM=random_coin_purse
+
+On=@NPCSeeNewPlayer
+   IF (<SRC.KARMA>)> -2500
+      ATTACK
+   ENDIF
+
+CATEGORY=Imperial uo
+SUBSECTION=Evil Wizard Quest
+DESCRIPTION=Disciple
+
+[EOF]

@@ -1,0 +1,1692 @@
+//FEB 07 '04 - Wren - DETECTINGHIDDEN to DETECTION
+//======================THE TOMB OF KHAL ANKUR==================
+//                            KHALDUN
+//                        *SPHERE VERSION*
+//                      RELEASED AT OSI 2001
+//==============================================================
+//                       AN ONLINEUO PRODUCT
+//                        2002 ONLINEUO.COM
+//                          ADMIN PETER
+//==============================================================
+
+
+
+//========================FUNCTIONS=============================
+
+[Function GethumanName_Male]
+	NAME	= #NAMES_HUMANMALE
+	NAME	= <NAME> <Args>
+	return 0
+
+[Function GethumanName_FeMale]
+	NAME	= #NAMES_HUMANFEMALE
+	NAME	= <NAME> <Args>
+	return 0
+	
+
+//=======================TYPES=============================
+
+[TYPEDEF T_hole]
+ON=@Click
+	Message "the floor of the cavern seems to have collapsed here - a faint light is visible at the bottom of the pit"
+	return 1
+
+on=@Dclick
+//Jump
+	Src.emote "Jump into the hole"
+	src.go 5396,1290
+	return 1
+
+ON=@Step
+Src.emote "Jump into the hole"
+	src.go 5396,1290
+	return 1
+	
+[TYPEDEF t_Khaldun_Exit_A]
+ON=@Step
+	src.go 5854 3832 -3
+	
+
+[TYPEDEF T_Khaldun_Entrance_A]
+ON=@Step
+	src.go 5395 1292 0
+
+[TYPEDEF t_Khaldun_Exit_B]
+ON=@Step
+	src.go 6051 3720 2
+	
+	
+
+[TYPEDEF T_Khaldun_Entrance_B]
+ON=@Step
+	src.go 5854 3827 -6
+
+
+//========================EVENTS===========================
+[ITEMDEF m_delay_go]
+ID=i_memory
+NAME=Khaldun Delay Go
+type=t_eq_script
+
+ON=@CREATE
+TIMER=3
+
+ON=@TIMER
+   cont.message "You feel your life force leave Khaldun"
+   cont.go 1824,2415
+   remove
+   return 1
+
+[EVENTS e_Khaldun_Curse]
+
+ON=@Death
+	if !<NPC>
+	   VAR.NAME = <SRC.NAME>
+	   newnpc C_M_Revenants	
+           SERV.NEWITEM m_delay_go
+           NEW.EQUIP
+
+        ENDIF
+        return 0
+        
+ON=@SpellEffect
+
+	if ( <argn> == 59 )
+		src.message "You feel a strange force is acting on you"
+		return 1
+	endif
+
+ON=@SpellCast
+	If ( <Argn> == 59 )
+		src.message "You feel a strange force is acting on you"
+		return 1
+	endif
+
+	If ( <Argn> == 45 )
+		src.message "You feel a strange force is acting on you"
+		return 1
+	endif
+
+	If ( <Argn> == 57 )
+		src.message "You feel a strange force is acting on you"
+		return 1
+	endif
+
+	If ( <Argn> == 58 )
+		src.message "You feel a strange force is acting on you"
+		return 1
+	endif
+
+	If ( <Argn> == 60 )
+		src.message "You feel a strange force is acting on you"
+		return 1
+	endif
+
+	If ( <Argn> == 61 )
+		src.message "You feel a strange force is acting on you"
+		return 1
+	endif
+
+	If ( <Argn> == 62 )
+		src.message "You feel a strange force is acting on you"
+		return 1
+	endif
+
+	If ( <Argn> == 63 )
+		src.message "You feel a strange force is acting on you"
+		return 1
+	endif
+
+	If ( <Argn> == 64 )
+		src.message "You feel a strange force is acting on you"
+		return 1
+	endif
+
+[events e_m_poisonres]
+ON=@Spelleffect
+	if (<argn> == 20) || (<argn> == 39)
+		return 1
+	endif
+
+ON=@Gethit
+	if <flags> & 080
+		spelleffect s_cure,1500
+		return 1
+	endif
+
+//===================Doors\Traps\Triggers=====================
+//Link these triggers to a wall (or any kind of secret door)
+//then hide these triggers well :P
+
+//Here is a list of what they do:
+
+//Trigger A: When triggered, move link item right
+//B:	Move UP Linked item by 20
+//C:	Move linked items north
+//Torch: the most secret trigger, does the same thing as B.
+
+
+[ITEMDEF I_Khaldun_C_Trigger_A]
+ID	= 0108f
+NAME	= A hidden Switch
+TYPE	= T_Script
+
+ON=@Dclick
+	if <eval rand(5)> = 3
+		src.spelleffect 51,1800
+		src.effect 2,03709,6,10,0
+		return 1
+	endif
+
+	if <morex> = 0 //Closed
+		MOREX = 1 //Open
+		TIMER = 20 //Have to run to Trigger B in 20 seconds
+		LINK.MOVE E //Show the hidden level
+		DISPID = 01090
+		update
+		src.message "You hear a grinding noise echoing in the distance"
+		return 1
+	else
+		MOREX = 0 //Closed
+		Timer = -1 //Always close
+		LINK.MOVE W //Hide the trigger
+		DISPID = 0108f
+		update
+		return 1
+	endif
+	
+ON=@Timer
+	if <morex> = 0 //Closed
+		return 1  //Do nothing
+	else
+		MOREX = 0 //Closed
+		Timer = -1 //Always close
+		LINK.MOVE W //Hide the trigger
+		DISPID = 0108f
+		update
+		return 1
+	endif
+
+[ITEMDEF I_Khaldun_C_Trigger_B]
+ID	= 0108c
+NAME	= A hidden Lever
+TYPE	= T_Script
+
+ON=@Create
+	Attr = 08010
+	
+ON=@Dclick	
+	if <eval rand(5)> = 3
+		src.spelleffect 51,1800
+		src.effect 2,03709,6,10,0
+		return 1
+	endif
+
+	if <morex> = 0 //Closed
+		MOREX = 1 //Open
+		TIMER = 60 //Have to run to Trigger B in 60 seconds
+		LINK.z 20 //open the door
+		DISPID = 0108e
+		update
+		src.message "You hear a grinding noise echoing in the distance"
+		return 1
+	else
+		MOREX = 0 //Closed
+		Timer = -1 //Always close
+		LINK.Z 0 //Close the door
+		DISPID = 0108c
+		update
+		return 1
+	endif
+	
+ON=@Timer
+	if <morex> = 0 //Closed
+		return 1  //Do nothing
+	else
+		MOREX = 0 //Closed
+		Timer = -1 //Always close
+		LINK.Z 0 //Hide the trigger
+		DISPID = 0108c
+		update
+		return 1
+	endif
+
+[ITEMDEF I_Khaldun_C_TRIGGER_Torch] //Up down trigger
+ID	= 0a07
+NAME	= A Torch
+TYPE	= T_Light_Lit
+
+ON=@Dclick
+
+	if <eval rand(5)> = 3
+		src.spelleffect 51,1800
+		src.effect 2,03709,6,10,0
+		return 1
+	endif
+
+	if <morex> = 0 //Closed
+		MOREX = 1 //Open
+		TIMER = 60 //Have to run to Trigger B in 60 seconds
+		LINK.z 20 //open the door
+		DISPID = 0a05
+		update
+		src.message "You hear a grinding noise echoing in the distance"
+		return 1
+	else
+		MOREX = 0 //Closed
+		Timer = -1 //Always close
+		LINK.Z 0 //Close the door
+		DISPID = 0a07
+		update
+		return 1
+	endif
+
+	
+ON=@Timer
+	if <morex> = 0 //Closed
+		return 1  //Do nothing
+	else
+		MOREX = 0 //Closed
+		Timer = -1 //Always close
+		LINK.Z 0 //Hide the trigger
+		DISPID = 0a07
+		update
+		return 1
+	endif
+
+[ITEMDEF I_Khaldun_C_Trigger_C]
+ID	= 0108c
+NAME	= A hidden Lever
+TYPE	= T_Script
+
+ON=@Create
+	Attr = 08010
+	
+ON=@Dclick
+
+	if <eval rand(5)> = 3
+		src.spelleffect 51,1800
+		src.effect 2,03709,6,10,0
+		return 1
+	endif
+
+
+	if <morex> = 0 //Closed
+		MOREX = 1 //Open
+		TIMER = 60 //Have to run to Trigger B in 60 seconds
+		LINK.MOVE N //open the door
+		DISPID = 0108e
+		update
+		src.message "You hear a grinding noise echoing in the distance"
+		return 1
+	else
+		MOREX = 0 //Closed
+		Timer = -1 //Always close
+		LINK.MOVE S //Close the door
+		DISPID = 0108c
+		update
+		return 1
+	endif
+	
+ON=@Timer
+	if <morex> = 0 //Closed
+		return 1  //Do nothing
+	else
+		MOREX = 0 //Closed
+		Timer = -1 //Always close
+		LINK.MOVE S //Hide the trigger
+		DISPID = 0108c
+		update
+		return 1
+	endif
+	
+	
+//==========================Characters============================
+
+[CHARDEF C_Liche_Ancient]
+name	=Ancient Liche
+ID	=c_Liche
+ICON	=i_pet_LICH
+TEVENTS	= e_npc_daemon
+TEVENTS	= e_m_poisonres
+DAM	=32,48
+ARMOR	=50
+
+CAN	=MT_WALK
+DESIRES	=t_bone,i_gold,t_wand,t_reagent,e_undead
+
+ON=@Create
+
+
+NPC	=brain_undead
+STR	={1415 1505}
+DEX	={596 715}
+INT	={500 700}
+COLOR	=03d5
+
+PARRYING	={100.0 120.0}
+MAGERY		={100.0 130.0}
+MAGICRESISTANCE	={120.0 160.0}
+TACTICS		={100.0 130.0}
+WRESTLING	={70.0 80.0}
+
+
+FAME		={6000 7000}
+KARMA		={-9000 -9999}
+
+	ITEMNEWBIE=i_spellbook
+	ADDSPELL S_Lightning	
+	ADDSPELL s_paralyze
+	ADDSPELL s_summon_daemon
+	ADDSPELL s_poison
+	ADDSPELL s_weaken
+	ADDSPELL s_Clumsy
+	ADDSPELL s_feeblemind
+
+
+
+
+ON=@NPCRestock
+ITEM	=i_gold,{4000 6200}
+ITEM	=RANDOM_FILTHY_RICH_MAGIC_LOOT
+
+ON=@Death
+loot_LICH_LORD
+
+CATEGORY	=Monsters
+SUBSECTION	=Khaldun
+DESCRIPTION	=Ancient Liche
+
+
+
+//=======================THE CURSED DISCOVERS===================
+
+[CHARDEF C_M_Cursed_Warrior]
+ID	=C_MAN
+NAME	=The Cursed Morg Bergen
+DAM	=18,30
+ARMOR	=19,30
+CAN	=MT_EQUIP|MT_RUN|MT_USEHANDS|MT_WALK
+
+TEVENTS	= e_m_poisonres
+
+CATEGORY	=Monsters
+SUBSECTION	=Khaldun
+DESCRIPTION	=Cursed Warrior
+
+ON=@Create
+	COLOR	=0597
+	STR	={370 390}
+	DEX	={271 295}
+	INT	={270 290}
+
+	MAGICRESISTANCE	={85.0 100.0}
+	SWORDSMANSHIP	={80.0 100.0}
+	TACTICS		={80.0 100.0}
+	WRESTLING	={85.0 100.0}
+	
+	NPC		=BRAIN_MONSTER
+
+KARMA	={-4000 -5000}
+FAME	={1000 3000}
+
+ITEMNEWBIE=i_beard_goatee
+ITEMNEWBIE=i_hair_long
+
+ON=@NPCRestock
+ITEM=0f4e
+ITEM=0457d
+ITEM=0457c
+ITEM=I_BONE_HELMET
+COLOR=0455
+ITEM=0457a
+ITEM=0457b
+ITEM=i_gold,{500 600}
+
+[CHARDEF C_M_Cursed_Archer]
+ID	=C_MAN
+DAM	=18,30
+ARMOR	=19,25
+NAME	=The Cursed Grimmoch Drummel
+CAN	=MT_EQUIP|MT_RUN|MT_USEHANDS|MT_WALK
+
+TEVENTS	= e_m_poisonres
+
+CATEGORY	=Monsters
+SUBSECTION	=Khaldun
+DESCRIPTION	=Cursed Archer
+
+ON=@Create
+	COLOR	=0597
+	STR	={270 290}
+	DEX	={471 595}
+	INT	={270 290}
+
+	MAGICRESISTANCE	={85.0 100.0}
+	Archery		={90.0 120.0}
+	TACTICS		={80.0 100.0}
+	WRESTLING	={85.0 100.0}
+	
+	NPC		=BRAIN_MONSTER
+
+KARMA	={-4000 -5000}
+FAME	={1000 3000}
+
+ITEMNEWBIE=i_beard_goatee
+ITEMNEWBIE=i_hair_long
+
+ON=@NPCRestock
+ITEM=05000
+ITEM=0457d
+ITEM=0457c
+COLOR=0455
+ITEM=0457a
+ITEM=0457b
+ITEM=i_gold,{500 600}
+ITEM={ i_cursed_j_1_1 1 i_cursed_j_1_2 1 i_cursed_j_1_3 1 i_cursed_j_1_6 1 i_cursed_j_1_7 1 i_cursed_j_1_11 1 i_cursed_j_1_14 1 i_cursed_j_1_17 1 i_cursed_j_1_23 1 } 
+
+[CHARDEF C_M_Cursed_Fencer]
+ID	=C_WOMAN
+DAM	=18,30
+ARMOR	=19,25
+NAME	=The Cursed Tavara Sewel
+CAN	=MT_EQUIP|MT_RUN|MT_USEHANDS|MT_WALK
+
+TEVENTS	= e_m_poisonres
+
+CATEGORY	=Monsters
+SUBSECTION	=Khaldun
+DESCRIPTION	=Cursed Fencer
+
+ON=@Create
+	COLOR	=0597
+	STR	={270 290}
+	DEX	={471 595}
+	INT	={270 290}
+
+	MAGICRESISTANCE	={85.0 100.0}
+	Fencing		={100.0 140.0}
+	Swordsmanship	={110.0 120.0}
+	TACTICS		={80.0 100.0}
+	WRESTLING	={85.0 100.0}
+	
+	NPC		=BRAIN_MONSTER
+
+KARMA	={-4000 -5000}
+FAME	={1000 3000}
+
+ITEMNEWBIE=i_hair_long
+
+ON=@NPCRestock
+ITEM=01400
+ITEM=0457d
+ITEM=0457c
+COLOR=0455
+ITEM=0457a
+ITEM=0457b
+ITEM=0457e
+ITEM=i_gold,{500 600}
+ITEM={ i_cursed_j_3_1 1 i_cursed_j_3_2 1 i_cursed_j_3_5 1 i_cursed_j_3_6 1 i_cursed_j_3_7 1 i_cursed_j_3_8 1 i_cursed_j_3_10 1 i_cursed_j_3_13 1 i_cursed_j_3_15 1 i_cursed_j_3_16 1 i_cursed_j_3_16_2 1 i_cursed_j_3_17 1 i_cursed_j_3_19 1 } 
+
+[CHARDEF C_M_Cursed_Wizard]
+ID	=C_MAN
+DAM	=15,30
+ARMOR	=19,19
+CAN	=MT_EQUIP|MT_RUN|MT_USEHANDS|MT_WALK
+NAME	=The Cursed Lysander Gathenwale
+
+TEVENTS	= e_m_poisonres
+
+CATEGORY	=Monsters
+SUBSECTION	=Khaldun
+DESCRIPTION	=Cursed Wizard
+
+ON=@Create
+	COLOR	=0597
+	STR	={270 290}
+	DEX	={471 595}
+	INT	={370 390}
+
+	MAGICRESISTANCE	={85.0 100.0}
+	Magery		={120.0 140.0}
+	TACTICS		={80.0 100.0}
+	WRESTLING	={85.0 100.0}
+	
+	NPC		=BRAIN_MONSTER
+
+KARMA	={-4000 -5000}
+FAME	={1000 3000}
+
+ITEMNEWBIE=i_beard_goatee
+ITEMNEWBIE=i_hair_long
+
+ON=@NPCRestock
+	ITEMNEWBIE=i_spellbook
+	ADDSPELL S_Lightning	
+	ADDSPELL s_paralyze
+ITEM		=0457d
+ITEM		=0457c
+	COLOR	=0455
+ITEM		=0457a
+ITEM		=0457b
+ITEM		=i_cape
+	color	= color_o_copper
+ITEM		=i_gold,{500 600}
+ITEM={ i_cursed_j_4_1 1 i_cursed_j_4_2 1 i_cursed_j_4_6 1 i_cursed_j_4_7 1 i_cursed_j_4_8 1 i_cursed_j_4_11 1 } 
+
+
+//=====================SPECTRAL ARMOR=====================
+
+[CHARDEF C_M_Spectral_Armor]
+ID	=c_Man
+DAM	=15,30
+ARMOR	=19,19
+CAN	=MT_EQUIP|MT_RUN|MT_USEHANDS|MT_WALK
+NAME	=Spectral Armor
+
+TEVENTS	= e_m_poisonres
+
+CATEGORY	=Monsters
+SUBSECTION	=Khaldun
+DESCRIPTION	=Spectral Armor
+
+ON=@Create
+	NPC = brain_monster
+	COLOR	=0ffff
+	STR	={870 1290}
+	DEX	={1271 1395}
+	INT	={270 290}
+
+	MAGICRESISTANCE	={85.0 100.0}
+	Swordsmanship	={130.0 150.0}
+	TACTICS		={100.0 130.0}
+	WRESTLING	={85.0 100.0}
+	
+
+KARMA	={-4000 -5000}
+FAME	={1000 3000}
+
+ITEMNEWBIE=i_hair_long
+
+ON=@NPCRestock
+ITEM=0f5f
+ITEM=013ee
+ITEM=013f2
+ITEM=013bb
+ITEM=013db
+
+ON=@Death
+	Src.findlayer(1).drop
+	return 0
+	
+//===============================THE ZEALOTS===============================
+
+[Itemdef i_transform_smoke]
+id	= 03709
+name	= a gas column
+type	= 34
+
+ON=@Create
+	Color	= 0835
+	Timer	= 4
+		
+ON=@Timer
+	Remove
+	return 0	
+
+[CHARDEF C_Zealot_Knight]
+ID=C_man
+NAME=Zealot Knight
+CAN=MT_EQUIP|MT_RUN|MT_USEHANDS|MT_WALK
+DAM=35,40
+ARMOR=40
+DESIRES=i_gold
+
+TEVENTS	= e_m_poisonres
+
+CATEGORY	=Monsters
+SUBSECTION	=Khaldun
+DESCRIPTION	=Zealot Knight
+
+ON=@Create
+	NPC = brain_monster
+	Gethumanname_Male "The Zealot Knight"
+	//ALIGNMENT=EVIL
+	COLOR=0835
+	STR={351 465}
+	DEX={251 365}
+	INT={51 65}
+	KARMA={-5000 -6000}
+	FAME={2000 3000}
+	Swordsmanship={150.0 160.0}
+	Parrying={150.0 160.0}
+	TACTICS={90.0 100.0}
+	MAGICRESISTANCE={90.0 100.0}
+
+ON=@Death
+	NEWITEM i_transform_smoke
+	SRC.ACT.P	= <P>
+	
+	
+	NEWNPC C_Zealot_Knight_Dead
+	SRC.ACT.P = <P>
+	
+	RETURN 0
+	
+	
+	
+ON=@NPCRestock
+	Item = 0144f //Chest
+		Color	= 0835
+	Item = 01451 //Helmet
+		Color	= 0835
+	Item = 01452 //Leg
+		Color	= 0835
+	Item = 0144e //Arms
+		Color	= 0835
+	Item=01b73	//Shield
+		Color	= 0835
+	ITEM=013b9	//Sword
+		Color	= 0835
+	ITEM=I_Gold
+		AMOUNT={1000 1800}
+	ITEMNEWBIE = I_Bandage
+		AMOUNT = {30,50}
+	
+
+[CHARDEF C_Zealot_Summoner]
+ID=C_man
+NAME=Zealot Summoner
+CAN=MT_EQUIP|MT_RUN|MT_USEHANDS|MT_WALK
+DAM=35,40
+ARMOR=40
+DESIRES=i_gold
+
+TEVENTS	= e_m_poisonres
+
+CATEGORY	=Monsters
+SUBSECTION	=Khaldun
+DESCRIPTION	=Zealot Summoner
+
+ON=@Death
+	NEWITEM i_transform_smoke
+	SRC.ACT.P	= <P>
+	
+	
+	NEWNPC C_Zealot_Summoner_Dead
+	SRC.ACT.P = <P>
+	
+	RETURN 0
+	
+ON=@Create
+	NPC=brain_monster
+	Gethumanname_Male "The Zealot Summoner"
+	//ALIGNMENT=EVIL
+	COLOR=0835
+	STR={251 365}
+	DEX={251 365}
+	INT={701 805}
+	KARMA={-5000 -6000}
+	FAME={2000 3000}
+
+	MAGERY={150.0 160.0}
+	Parrying={150.0 160.0}
+	TACTICS={90.0 100.0}
+	MAGICRESISTANCE={90.0 100.0}
+
+	ITEMNEWBIE = I_SPELLBOOK
+	ADDSPELL S_Lightning
+	ADDSPELL S_Fireball
+	ADDSPELL 42
+	ADDSPELL 65
+	
+ON=@NPCRestock
+	Item = i_cape
+		Color	= 014c
+	Item = 01451 //Helmet
+		Color	= 0835
+	Item = 01537 //Kilt
+		Color	= 014c
+	Item = 0170d //Arms
+		Color	= 014c
+	ITEM=I_Gold
+		AMOUNT={1000 1800}
+	ITEMNEWBIE = I_Bandage
+		AMOUNT = {30,50}
+	
+[CHARDEF C_Zealot_Knight_Dead]
+ID	=039
+NAME	=The Dead Zealot Knight
+CAN	=MT_EQUIP|MT_USEHANDS|MT_WALK
+DAM	=35,40
+ARMOR	=40
+DESIRES	=i_gold
+
+TEVENTS	= e_m_poisonres
+
+CATEGORY	=Monsters
+SUBSECTION	=Khaldun
+DESCRIPTION	=DEAD Zealot Knight
+
+ON=@Create
+	NPC = brain_monster
+	COLOR=0835
+	STR={351 465}
+	DEX={251 365}
+	INT={51 65}
+	KARMA={-5000 -6000}
+	FAME={2000 3000}
+	DETECTION={90.0 100.0}
+	Swordsmanship={150.0 160.0}
+	Parrying={150.0 160.0}
+	TACTICS={90.0 100.0}
+	MAGICRESISTANCE={90.0 100.0}
+	
+ON=@NPCRestock
+	Item = 0144f //Chest
+		Color	= 0835
+	Item = 01451 //Helmet
+		Color	= 0835
+	Item = 01452 //Leg
+		Color	= 0835
+	Item = 0144e //Arms
+		Color	= 0835
+	Item=01b73	//Shield
+		Color	= 0835
+	ITEM=013b9	//Sword
+		Color	= 0835
+	ITEM=I_Gold
+		AMOUNT={1000 1800}
+	ITEMNEWBIE = I_Bandage
+		AMOUNT = {30,50}
+	
+
+[CHARDEF C_Zealot_Summoner_Dead]
+ID=032
+NAME=Dead Zealot Summoner
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK
+DAM=35,40
+ARMOR=40
+DESIRES=i_gold
+
+TEVENTS	= e_m_poisonres
+
+CATEGORY	=Monsters
+SUBSECTION	=Khaldun
+DESCRIPTION	=Dead Zealot Summoner
+
+ON=@Create
+	NPC=brain_monster
+	COLOR=014c
+	STR={351 465}
+	DEX={251 365}
+	INT={51 65}
+	KARMA={-5000 -6000}
+	FAME={2000 3000}
+
+	MAGERY={150.0 160.0}
+	Wrestling={150.0 160.0}
+	TACTICS={90.0 100.0}
+	MAGICRESISTANCE={90.0 100.0}
+	ITEMNEWBIE = I_SPELLBOOK
+	ADDSPELL S_Lightning
+	ADDSPELL S_Fireball
+	ADDSPELL 42
+	ADDSPELL 65
+
+ON=@NPCRestock
+	Item = i_cape
+		Color	= 014c
+	Item = 01451 //Helmet
+		Color	= 0835
+	Item = 01537 //Kilt
+		Color	= 014c
+	Item = 0170d //Arms
+		Color	= 014c
+	ITEM=I_Gold
+		AMOUNT={1000 1800}
+	ITEMNEWBIE = I_Bandage
+		AMOUNT = {30,50}
+
+
+//=================================REVENANTS==========================
+
+
+[CHARDEF C_M_Revenants_NUKE]
+ID	=c_grim_reaper
+DAM	=15,30
+ARMOR	=19,19
+CAN	=MT_EQUIP|MT_RUN|MT_USEHANDS|MT_GHOST|MT_WALK
+
+TEVENTS	= e_m_poisonres
+
+	NAME = Revenant
+
+CATEGORY	=Monsters
+SUBSECTION	=Khaldun
+DESCRIPTION	=Revenants
+
+ON=@Create
+	NAME = <VAR.NAME>
+	COLOR	=0ffff
+	STR	={270 310}
+	DEX	={500 695}
+	INT	={270 290}
+
+	MAGICRESISTANCE	={85.0 100.0}
+	Swordsmanship	={130.0 150.0}
+	TACTICS		={100.0 130.0}
+	WRESTLING	={85.0 100.0}
+	
+	NPC		=BRAIN_MONSTER
+
+KARMA	={-6000 -7000}
+FAME	={1000 3000}
+
+
+ON=@NPCRestock
+ITEM = i_gem_diamond
+
+[CHARDEF C_M_Revenants_spawn_NUKE]
+ID	=c_grim_reaper
+DAM	=15,30
+ARMOR	=19,19
+CAN	=MT_EQUIP|MT_RUN|MT_USEHANDS|MT_GHOST|MT_WALK
+
+TEVENTS	= e_m_poisonres
+
+NAME = Revenant
+
+CATEGORY	=Monsters
+SUBSECTION	=Khaldun
+DESCRIPTION	=Revenants (spawn)
+
+ON=@Create
+	COLOR	=0ffff
+	STR	={270 310}
+	DEX	={500 695}
+	INT	={270 290}
+
+	MAGICRESISTANCE	={85.0 100.0}
+	Swordsmanship	={130.0 150.0}
+	TACTICS		={100.0 130.0}
+	WRESTLING	={85.0 100.0}
+	
+	NPC		=BRAIN_MONSTER
+
+KARMA	={-6000 -7000}
+FAME	={1000 3000}
+
+
+ON=@NPCRestock
+ITEM = i_gem_diamond, r8
+
+
+//=======================SHADOW FIEND=========================
+
+[Chardef C_Shadow_Fiend]
+ID	=C_Elem_Water
+NAME	=Shade
+SOUND	=snd_ELEMENTL_WATREL1
+ICON	=i_pet_elem_water
+DAM	=4,12
+ARMOR	=20
+RESOURCES=8 t_MAGIC
+CAN	=MT_WALK|MT_SWIM|MT_USEHANDS
+BLOODCOLOR=colors_blue
+
+TEVENTS	= e_m_poisonres
+
+CATEGORY	=Monsters
+SUBSECTION	=Khaldun
+DESCRIPTION	=Shadow Fiend
+
+ON=@Create
+NPC=brain_monster
+COLOR=1
+FAME={1000 6000}
+KARMA={-3000 -3999}
+
+STR={200 250}
+DEX={136 185}
+INT={71 95}
+
+DETECTION=1000.0
+PARRYING={120.0 140.0}
+MAGERY={60.0 75.0}
+MAGICRESISTANCE={120.0 140.0}
+TACTICS={55.0 65.0}
+WRESTLING={70.0 90.0}
+
+//=========================TENTACLES========================
+
+[EVENTS e_Tentacles]
+ON=@NPCSEENEWPLAYER
+	if <distance> < 5
+		if <hits> < <str>
+			hits = <hits> + 25
+		endif
+		
+		src.hits = <src.hits> +- 25
+		
+		return 1
+	endif
+	
+	ATTACK
+	
+ON=@Hit
+	if <hits> < <str>
+		hits = <hits> + 10
+	endif
+	
+ON=@Gethit
+	if <hits> < <str>
+		if <eval rand(5)> = 1
+			hits 		= <hits> + <eval <ARGN>/2>
+			src.hits	= <src.hits> +- <ARGN>
+		endif
+	endif
+	
+ON=@SpellEffect
+	if (<argn> == S_EarthQuake)
+		return 1
+	endif
+
+[CHARDEF C_M_Tentacles]
+NAME	=Tentacles of the Harrower
+ID	=08
+ARMOR	=19,19
+SOUND	=snd_MONSTER_CORPSR1
+CAN	=MT_USEHANDS|MT_FIRE_IMMUNE
+TEVENTS	= e_npc_daemon
+TEVENTS	=e_Tentacles
+
+TEVENTS	= e_m_poisonres
+
+CATEGORY	=Monsters
+SUBSECTION	=Khaldun
+DESCRIPTION	=Tentacles of the Harrower
+
+
+ON=@create
+	Color	= 0e8
+	STR	={1500 2000}
+	DEX	={500 700}
+	INT	={7030 9343}
+	
+	FAME	={5000 6000}
+	KARMA	=-10000
+
+	MAGICRESISTANCE	={585.0 600.0}
+	TACTICS		={300.0 500.0}
+	WRESTLING	={110.0 160.0}
+	MAGERY		={500.0 600.0}
+	
+	NPC		=BRAIN_MONSTER
+	
+	ITEMNEWBIE	=i_spellbook
+	ADDSPELL S_Lightning	
+	ADDSPELL s_paralyze
+	ADDSPELL s_curse
+	ADDSPELL s_summon_daemon
+
+ON=@NPCRestock
+ITEM	=i_gold,{20000 25000}
+ITEM    =loot_newrares_hard
+ITEM    =loot_newrares_hard
+ITEM    =loot_newrares_hard
+ITEM    =i_rune_khaldun_exit
+//////// more traps by sqweak
+
+ON=@Death
+loot_LICH_LORD
+
+
+[SCROLL scroll_cursed_j_3_1]
+Day One:
+The workers continue tireless in their efforts to unload our supplies even as light fades. I feel I should lend a hand in the effort, and yet I cannot bear to take my attention away from the magnificent stone doors of the tomb. Every inch of their massive frame is covered with intricately carved design work - 'tis truly a sight to see. I've spent the day sketching and cataloging what I can of them while my companions set up our camp and make preparations for tomorrow's work. Though the stonework symbols inspire me to new flights of fancy, some of the workers seem strangely fearful of them. I cannot wait 'til the morrow when those ancient works of stone shall swing open and deliver unto me everything I have dreamed of for the last ten years of my life.
+
+[SCROLL scroll_cursed_j_3_2]
+Day Two:
+Everything we'd heard and read of the tomb has proved correct - and yet, nothing could prepare me for the sight of it with my own eyes. The Tomb of Khal Ankur has given up its secrets at last! The intricate stonework that covered the tomb doors seems to continue throughout the entirety of the catacombs, each hallway and room yielding a seemingly endless amount of information for my companions and I to record. It will take years to catalogue the entirety of the Tomb, if those legends of its massive size prove true. Sadly, a good deal (of) the Tomb's interior has been damaged or utterly destroyed, whether by seismic activity in the surrounding mountainside or merely the slow efforts of Time itself, I do not know. A good deal of the stonework has been cracked or collapsed entirely, especially near the entrance supports of the main hall. Our passage has indeed already been entirely blocked in the first major room we've discovered, a massive pile of boulders and stones blocking any exit from the antechamber. What could have caused such a localized disruption of the support structures, one can only guess - but it will surely take an entire afternoon's effort to remove even a fraction of it. I look forward to more progress tomorrow once the workers have set to excavating the hall.
+
+[SCROLL scroll_cursed_j_3_5]
+Day Five:
+I do not understand this place... not as I once thought I did. Something palatable seems to hinder our every attempt to investigate this ancient site. Excavation work on the first major hallway finished only yesterday - the amount of stone and rubble blocking the egress was astounding, it stands in immense piles outside the Tomb's entrance, as if we were digging the tunnels of this abhorred place ourselves! The satisfaction of completing our efforts was quickly thwarted, however, as we discovered the end of the hallway we had just revealed was blocked by yet another colossal pile of stone. I've had a few of the workers set up primitive scaffolding in the main antechamber so that I can spend my time pouring over the detail work on the stone carvings while the rest of the crew continue excavating the inner halls.
+
+[SCROLL scroll_cursed_j_3_6]
+Day Six:
+Late last night our camp was set upon by a pack of wild beasts - behemoth creatures with a speed and viciousness I'd n'ere before seen. Even Grimmoch, well versed in all manner of wildlife, was unsure as to their nature - though I lay blame upon the darkness covering their movements rather than on his skill as a huntsman. The attacks did not let up the entire night, and we were eventually forced to flee into the Tomb itself to take refuge from the ravenous creatures - e'en Lysander's spells could not keep the foul things from attacking in great numbers. The Tomb performed well as an impromptu fortress, and we managed to spend the night unscathed. Morning's light seemed to have scattered the beasts, as not a single one of them was to be seen as exited the Tomb - not even a carcass of the few that were slain a'fore we fled. Lysander set the crew to work, moving our supplies and gear into the Tomb, in case the creatures did opt to return. Such savage fury had the beasts - and not a single one ever turned to run, even in the face of certain death.
+
+[SCROLL scroll_cursed_j_3_7]
+Day Seven:
+T'was written that, upon his death, Khal Ankur's followers, those known as the Keepers of the Seven Death, sealed them selves within the Sanctum they had carved from the mountains in his honor. The Zealots of his order entombed the lesser followers alive, then, when all but two remained, slit their throats and joined Khal Ankhur in death. Surely this is not suprising for a Cult that worshipped death and sacrifice so vehemently as it is said that the Keepers did - and yet, to be in this Tomb, to know that somewhere in its depths hundreds upon hundreds of bodies lay, sealed alive at their own behest... I must confess that the very thought of it troubles my dreams at night. I've asked Lysander if we might reestablish the camp outside the Tomb, setting up night watches and some sort of fortification, but he'll have none of it. I did not press the issue, as I suddenly felt foolish even at my askance.
+
+[SCROLL scroll_cursed_j_3_8]
+Day Eight:
+Astounding progress was made today, and my very head spins with the excitement of it. Upon full excavation of the far western hall, another large antechamber was revealed. By the larger, mosaic style of the wall carvings and their framing, as well as the numerous vellum scrolls and tomes held within, the room appears to have been a great museum or library of sorts. The sheer amount of written information encased within this room would surely take me decades to study e'en if I could immediately decipher the strange text with which it was written. My sheer joy at the discovery was quickly noted by the brute known as Morg Bergen, who, even in his simple way, seemed just as delighted as I that some progress had been made. I must confess, upon his inclusion in our party at the beginning of this journey I was somewhat suspect of his nature, but he has a startingly quick wit about him for such a massive, calloused warrior. While Lysander and e'en Grimmoch always seem to investigate the tomb with a scowling determination, Bergen seems to feel the same thrill of discovery as I. I am proud to now count him as a friend, and am thankful for his laughter as well as his strength.
+
+[SCROLL scroll_cursed_j_3_10]
+Day Ten:
+The excavation of the next set of tunnels has ceased, as three of the workers have gone missing in the night. Bergen voiced the opinion that they had most likely abandoned our group altogether and headed back, as they were of the number that seemed especially disturbed by the Tomb. Lysander had other ideas, however. In the middle of our discussion on the matter, he went into a wild tirade on the possibility that they had somehow infilitrated the tonb's interior without us. The pure, hateful venom in his voice when he spoke of the workers shocked me, as I had always though(t) him to be a levelheaded man of great learning. As we are still at work digging out the rubble that blocks all access to the inner chanbers, I cannot help but believe the workers must have fled the site altogether, as Bergen said.
+
+[SCROLL scroll_cursed_j_3_13]
+Day Thirteen:
+Two more workers have gone missing. Even more disturbing is the fact that Lysander has joined him. Late last night the workers finished excavating the next main hall, and we retired to the main antechamber and our camp to rest up for exploration on the 'morrow. In the middle of the night we woke to a strange howling sound, and as the men prepared themselves for another onslaught of the beasts that had troubled our outer camp, it was noticed that Lysander was nowhere in our number. I cannot fathom where he has gone - the newly revealed chamber holds no immediate egress, blocked again by piles of stone and rubble, and I cannot believe that Lysander, of all people, would have fled this site - indeed, he had lately grown almost fanatical in his work to discover more of the secrets barred to us by the consistently slow progress of excavating each new hallway. The men are at work even now, and as the ceaseless thumps and cracks of their picks reverberate throughout the entirety of the tomb, the dust continous to pour down from the ancient stonework above us like some horrible, eldritch curse upon us all.
+
+[SCROLL scroll_cursed_j_3_15]
+Day Fifteen:
+Lysander has returned... and yet, how can I describe the horror of it? He stands across the chamber from me even now, a changed man. His hair hangs in grimy knots across his face, his clothes filthy and torn in places... and the blood - covered in blood, his skin shining in scarlet reflections of the torchlight. He will let no one approach; a thick rusted dagger in his hand warding off any attempts to overcome him. And the blood, which runs down in great rivulets from his arms and hands - it is not his own, and this is enough to keep is at a wary distance. Morg Bergen wishes to subdue him quickly, but there is something in Lysander's eyes - and I remember the power of his spells, even as he swings the jagged dagger back and forth in a wide swath before him. Something about the sight of it makes my stomach churn. Something has happened, something that changes everything. Lysander has lost his sanity to this tomb... or to something within it. Do we dare approach? We must make a decision soon.
+
+[SCROLL scroll_cursed_j_3_16]
+Day Sixteen:
+Why do I write? I must... not so much because there must be some record of this... what's happened here... as for my own sanity. The act of putting pen to paper calms me, focuses me, even in this madness. Lysander is dead. So many are dead. And we're trapped here, trapped forever in this nightmare. He would not let us pass, wild in his psychosis, furious, spitting, covered in blood, he swung the ancient dagger at any who approached. He babbled incoherently, cursed at us, the most hateful curses, prophecy, doom upon us. Bergen would have none of it. Finally, he leapt at Lysander, his massive axe at his side. But he would not be the end of the mad mage... no... they were... those hands, covered in the dirt of the grave, maggots, filth. They rose up behind Lysander. That look of curiosity on the mage's face as Bergen skidded to a halt... t'was almost a moment of sanity for him, surely, to attempt to comprehend what could have stopped the warrior in his tracks. And then they were upon him. Skeletal hands, arms, and faces with loose, corrupted flesh hanging from yellow bone. Inhuman, yet once human, staggering towards us as their companions tore at Lysander, coming towards us in droves.
+
+[SCROLL scroll_cursed_j_3_16_2]
+Day Sixteen, Later:
+We Ran. What could we do? We ran back towards the entrance, cutting at them when we could. T'was a nightmare, and yet nothing to prepare us for what would come. We were almost there, the entrance to the abhorred crypt in sight. Then the earth shook with such a force that we were dropped to our hands and knees, stumbling in the darkness with those.... those things surely behind us. The noise of falling rock and crumbling stone drowned out our piteous cries. No sign of the entrance remained. We owe our lives to Bergen, whose wits returned quickly. That he could make us hurry back into the main antechamber.... actually run back towards those eldritch dead that stalked us. But we did, the strength of his convictions enough for us in the moment. And at our campsite we erected our last defense, a pitiable wall of wood and stone, anything at hand that might block the tide of those nightmare creatures. And I sit against it even now. I can hear their moans, their wailing cries in the distance - they'll be here soon, even at the unhurried pace of the shuffling dead.
+
+[SCROLL scroll_cursed_j_3_17]
+Day Seventeen:
+I cannot go on much longer. I know now t'was no work of the earth that trapped us here - I can feel His force in it. It was His will, His power that has sealed us in this nightmare. The barricade will not be enough. So many of them. They come like unto the ocean's waves - ceaseless, neverending. For every five we strike down, another ten rise up against us. And like the sands we cannot help bu be brought down, wasted away in this ocean of blood.
+
+[SCROLL scroll_cursed_j_3_19]
+Day Nineteen:
+The barricade won't hold - never, and they'll come, they come even now. I would tear the last of it down, let them in to devour us all, if only to stop the screaming - the awful, wailing cries that fill the tomb with their presence. May my ancestors forgive me, but it must be done. I must end this.
+
+[SCROLL scroll_cursed_j_4_1]
+Day One:
+At last, it stands before me. The doors of Thy Sanctum will open to me now, after all these years of searching. I give myself unto thee, Khal Ankhur, I have come for Thy secrets and I will kneel prostrate before Thee, Blessed are the Keepers, praise unto thee, a thousand fortunes in the night.
+
+[SCROLL scroll_cursed_j_4_2]
+Day Two:
+The woman, Tavara Sewel, is unbearable. Her entire demeanor sickens me. I would take her life for Thee now, my Lord. But I cannot alert the others. Progress is made too slowly, I cannot wait this perpetual waiting. Today I knelt down with the workers, tossing stones and dirt aside with my very hands as they dug all the last of the rubble covering the entrance to Thy Sanctum. The Sewel woman was shocked at my demeanor, dirtying my robes on my knees in the muck as I clawed at the rocks. She thought I did this for those sickly scholars, or for her, or for what she laughably calls 'The Gift of Discovery', of learning. As if I did not know what I went to find! I come for Thee, Master. Soon shall I receive Thy gifts, Thy blessings. Patience, eternal patience. I must take my lessons well. I have learned from Thee, Master, I have.
+
+[SCROLL scroll_cursed_j_4_3]
+Day Three:
+What are these Beasts that dare to defy our presence here? Hast Thou sent them, Master? To tear apart these foolish ones that accompany me? That repugant pustule, Drummel, put forth his absurd little theories as to the nature of the Beasts that attacked our camp, but I'll have none of his words. He asks too many questions. He is taint upon the grounds of Thy Sanctum, Master - I will deal with him after the Sewel woman. Speaking of Sewel, I have convinced that empty-headed harlot that we should move our encampement within the antechamber. She thinks I worry for her safety. I come for thee, Master. I make my camp in thy chambers. I sleep under Thy roof. I can feel Thine presence even now. Soon, Master. Soon.
+
+[SCROLL scroll_cursed_j_4_7]
+Day Seven:
+The Sewel woman pratters on endlessly. And she dares to speak Thy Name, Master! I wish so vehemently to take a knife to that little neck of hers. She struts around the chambers of Thy Sanctum with her repugnant airs, her scholarly conjecture on this or that. That I could peel the skin from her face and show her how vile and ugly she truly is, how unworthy of entrance to Thy Sanctum. I must take her, Master. I must rend that little wench to pieces. I ask this gift of Thee, that I might cleanse Thy Sanctum of her presence. Give me the Sewel woman and I shall show you my mastery of Death, Master. I shall cut her to bits and scatter them before the others as a warning. I cannot stand her presence, I cannot abide it. And Drummel! He is a pustule that must be lanced, a sickness that I must cure by blade and fire. Not a trace of him will be left when I'm done with him. Praises to Thee, Master. I shall honor Thee with many sacrifices, soon enough.
+
+[SCROLL scroll_cursed_j_4_8]
+Day Eight:
+Have you taken them, Master ? They could not have found a way past the stones that block our path! The three workers, My Master, where have they gone ? Curses upon them! I'll cut them all to pieces if they show their faces again, then burn the rest alive upon a pyre, for all to see, as a warning of Thy Power. How could they have gotten past me ? I sleep against the very walls, to hear Thy Words, to feel Thy Breath. I can find no egress from the chambers that the Sewel woman does not know of not have men working at excavating. Where have they gone, Master ? Have you taken them, or do they truly flee from Thy Presence ? I will kill them if they show their faces again. Give me Strength, my Master, to let them live a while longer, until they have fulfilled their purpose and I kneel before Thee, covered in their blood.
+
+[SCROLL scroll_cursed_j_4_11]
+Day Eleven:
+I come for Thee, my Master. I come! The way is clear, I have found Thy path and washed it in the blood of the two workers that caught sight of me. Ah, how sweet it was to cut them open, to see the blood pour out in great torrents, to stand in it, to revel in it. If only I had time for the Sewel woman. But there will be time enough for her. I have learned Thy Patience, Master. I come for Thee. I walk thy halls in penance, my last steps in this repulsive living frame. I come for Thee and Thy Gifts my Master. Glory Unto Thee, Khal Ankur, Keeper of the Seventh Death, Master, Leader of the Chosen, the Khaldun. Praises in Thy Name, Master of Life and Death, Lord of All. Khal Ankur, Master, Prophet, I join Thy ranks this night, a member of the Khaldun at last.
+
+
+[SCROLL scroll_cursed_j_1_1]
+Day One:
+'Tis a grand sight, this primeval tomb, I agree with Tavara on that. And we've a good crew here, they've strong backs and a good attitude. I'm a bit concerned by those that worked as guides for us, however. All seemed well enough until we revealed the immense stone doors of the tomb structure itself. Seemed to send a shiver up their spines and get them all stirred up with whispering. I'll watch the lot of them with a close eye, but I'm confidant we won't have any real problems on the dig. I'm especially proud to see Thomas standing out - he was a good hire despite the warnings from his previous employers. He's drummed up the workers into a furious pace - we've nearly halved the estimate on the timeline for excavating he Tomb's entrance.
+
+[SCROLL scroll_cursed_j_1_2]
+Day Two:
+We managed to dig out the last of the remaining rubble today , revealing the entirety of the giant stone doors that sealed ol Khal Ankur and his folks up ages ago. Actually getting them open was another matter altogether, however. As the workers set to the task with picks and crowbars, I could have sworn I saw Lysander Gathenwale fiddling with something in that musty old tome of his. I've no great knowledge of things magical, but the way his hand moved over that book, and the look of concentration on his face as he whispered something to himself looked like every description of an incantation I've ever heard. The strange thing is, this set of doors that an entire crew of excavators was laboring over for hours, right then when Gathenwale finishes with his mumbling... well I swore the doors just gave open at the exact moment he spoke his last bit of whisper and shut the tome tight in his hands. When he looked up, it was almost as if hew was expecting the doors to be open, rather than shocked that they'd finally given way.
+
+[SCROLL scroll_cursed_j_1_3]
+Day Three:
+I might have written too hastily in my first entry - this place doesn't seem too bent on giving up any secrets. Though the main antechamber is open to us, the main exit hall is blocked by yet another pile of rubble. Doesn't look a bit like anything caused by a quake or instability in the stonework... I swear it looks as if someone actually piled the stones up themselves, some time after the tomb was built. The stones aren't of the same set nor quality of the carved work that surrounds them - if anything, they resemble the grade of common rock we saw in great quantities on the trip here. Which makes it feel all the more like someone hauled them in and covered this passage. But then why not decorate them in the same ornate manner as the rest of the stone in this place? Lysander wouldn't hear a work of what I had to say - to him, it was a quake sometime in the history of the tomb, and that was it, shut up and move on. So I shut up, and got back to work.
+
+[SCROLL scroll_cursed_j_1_6]
+Day Six:
+The camp was attacked last night by a pack of, well, I don't have a clue. I've never seen the likes of these beasts anywhere. Huge things, with fangs the size of your forefinger, covered in hair and with the strangest arched back I've ever seen. And so many of them. We were forced back into the Tomb for the night, just to keep our hides on us. And today Gathenwale practically orders us all to move the entire exterior camp into the Tomb. Now, I don't disagree that we'd be well off to use the place as a point of fortification... but I don't like it one bit, in anycase. I don't like the looks of this place, nore the sound of it. The way the wind gets into the passageways, whistling up the strangest noises. Deep, sustained echoes of the wind, not so much flute-like as...well, it sounds ridiculous. In any case, we've set to work moving the bulk of the exterior camp into the main antechamber so there's no moaning about it now.
+
+[SCROLL scroll_cursed_j_1_7]
+Day Seven:
+I cannot stand this place, I cannot bear it. I've got to get out. Something evil lurks in this ancient place, something best left alone. I hear them, yet none of the others do. And yet they must. Hands, claws, scratching at stone, the awful scratching and the piteous cries that sound almost like laughter. I can hear them above even the cracks of the workmen's picks, and at night they are all I can hear. And yet the others hear nothing. We must leave this place, we must. Three workers have gone missing - Tavara expects they've abandoned us - and I count them lucky if they have. I don't care what the others say, we must leave this place. We must do as those before and pile up the stones, block all access to this primeval crypt, seal it up again for all eternity.
+
+[SCROLL scroll_cursed_j_1_11]
+Day Eleven:
+Lysander is gone, and two more workers with him. Good riddance to the first. He knows something. He heard them too, I know he did - and yet he scowled at me when I mentioned them. I cannot stop the noise in my head, the scratching, the clawing tears at my senses. What is it? What does Lysander seek that I can only turn from? Where has he gone? The only answer to my questions comes as laughter from behind the stones.
+
+[SCROLL scroll_cursed_j_1_14]
+Day Fourteen:
+We are lost ... we are lost ... all is lost. The dead are piled up at my feet. Bergen and I managed somehow in the madness to piece together a barricade, barring access to the camp antechamber. He knows as well as I that we cannot hold it forever. The dead come. They took Lysander before our eyes. I pity the soul of even such a madman - no one should die in such a manner. And yet so many have. We're trapped in this horror. So many have died, and for what? What curse have we stumbled upon? I cannot bear it, the moaning, wailing cries of the dead. Poor Thomas, cut to pieces by their blades. We had only an hour to properly bury those we could, before the undead legions struck again. I cannot go on... I cannot go on.
+
+[SCROLL scroll_cursed_j_1_17]
+Day Seventeen:
+The fighting never ceases... the blood never stop flowing, like a river through the bloated corpses of the dead. And yet there are still more. Always more, with the red fire gleaming in their eyes. My arm aches, I'v taken to the sword as my bow seems to do little good... the dull ache in my arm... so many swings, cleavig a mountain of decaying flesh. And Thomas... he was there, in the thick of it.. Thomas was beside me... his face cleaved in twain - and yet beside me, fighting with us against the horde until he was cut down once again. And I swear I see him even now, there in the dark corner of the antechamber, his eyes flickering in the last dying embers of the fire... and he stares at me, and a scream fills the vault - wheather his or mine, I can no longer tell.
+
+[SCROLL scroll_cursed_j_1_23]
+Day Twenty Three:
+We no longer bury the dead.
+
+
+[ITEMDEF i_cursed_j_1_1]
+DEFNAME=i_cursed_j_1_1
+ID=i_scroll_blank
+TYPE=t_normal
+NAME=Grimmoch Drummel's Diary, day 1
+WEIGHT=2
+
+ON=@Create
+COLOR=color_o_gold
+
+ON=@DClick
+SRC.SCROLL scroll_cursed_j_1_1
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Cursed
+DESCRIPTION=Grimmoch Drummel's Diary, day 1
+
+
+[ITEMDEF i_cursed_j_1_2]
+DEFNAME=i_cursed_j_1_2
+ID=i_scroll_blank
+TYPE=t_normal
+NAME=Grimmoch Drummel's Diary, day 2
+WEIGHT=2
+
+ON=@Create
+COLOR=color_o_gold
+
+ON=@DClick
+SRC.SCROLL scroll_cursed_j_1_2
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Cursed
+DESCRIPTION=Grimmoch Drummel's Diary, day 2
+
+
+[ITEMDEF i_cursed_j_1_3]
+DEFNAME=i_cursed_j_1_3
+ID=i_scroll_blank
+TYPE=t_normal
+NAME=Grimmoch Drummel's Diary, day 3
+WEIGHT=2
+
+ON=@Create
+COLOR=color_o_gold
+
+ON=@DClick
+SRC.SCROLL scroll_cursed_j_1_3
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Cursed
+DESCRIPTION=Grimmoch Drummel's Diary, day 3
+
+[ITEMDEF i_cursed_j_1_6]
+DEFNAME=i_cursed_j_1_6
+ID=i_scroll_blank
+TYPE=t_normal
+NAME=Grimmoch Drummel's Diary, day 6
+WEIGHT=2
+
+ON=@Create
+COLOR=color_o_gold
+
+ON=@DClick
+SRC.SCROLL scroll_cursed_j_1_6
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Cursed
+DESCRIPTION=Grimmoch Drummel's Diary, day 6
+
+
+[ITEMDEF i_cursed_j_1_7]
+DEFNAME=i_cursed_j_1_7
+ID=i_scroll_blank
+TYPE=t_normal
+NAME=Grimmoch Drummel's Diary, day 7
+WEIGHT=2
+
+ON=@Create
+COLOR=color_o_gold
+
+ON=@DClick
+SRC.SCROLL scroll_cursed_j_1_7
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Cursed
+DESCRIPTION=Grimmoch Drummel's Diary, day 7
+
+
+[ITEMDEF i_cursed_j_1_11]
+DEFNAME=i_cursed_j_1_11
+ID=i_scroll_blank
+TYPE=t_normal
+NAME=Grimmoch Drummel's Diary, day 11
+WEIGHT=2
+
+ON=@Create
+COLOR=color_o_gold
+
+ON=@DClick
+SRC.SCROLL scroll_cursed_j_1_11
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Cursed
+DESCRIPTION=Grimmoch Drummel's Diary, day 11
+
+
+[ITEMDEF i_cursed_j_1_14]
+DEFNAME=i_cursed_j_1_14
+ID=i_scroll_blank
+TYPE=t_normal
+NAME=Grimmoch Drummel's Diary, day 14
+WEIGHT=2
+
+ON=@Create
+COLOR=color_o_gold
+
+ON=@DClick
+SRC.SCROLL scroll_cursed_j_1_14
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Cursed
+DESCRIPTION=Grimmoch Drummel's Diary, day 14
+
+
+[ITEMDEF i_cursed_j_1_17]
+DEFNAME=i_cursed_j_1_17
+ID=i_scroll_blank
+TYPE=t_normal
+NAME=Grimmoch Drummel's Diary, day 17
+WEIGHT=2
+
+ON=@Create
+COLOR=color_o_gold
+
+ON=@DClick
+SRC.SCROLL scroll_cursed_j_1_17
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Cursed
+DESCRIPTION=Grimmoch Drummel's Diary, day 17
+
+
+[ITEMDEF i_cursed_j_1_23]
+DEFNAME=i_cursed_j_1_23
+ID=i_scroll_blank
+TYPE=t_normal
+NAME=Grimmoch Drummel's Diary, day 23
+WEIGHT=2
+
+ON=@Create
+COLOR=color_o_gold
+
+ON=@DClick
+SRC.SCROLL scroll_cursed_j_1_23
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Cursed
+DESCRIPTION=Grimmoch Drummel's Diary, day 23
+
+
+
+
+
+[ITEMDEF i_cursed_j_3_1]
+DEFNAME=i_cursed_j_3_1
+ID=i_scroll_blank
+TYPE=t_normal
+NAME=Tavara Sewel's Diary, day 1
+WEIGHT=2
+
+ON=@Create
+COLOR=color_o_gold
+
+ON=@DClick
+SRC.SCROLL scroll_cursed_j_3_1
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Cursed
+DESCRIPTION=Tavara Sewel's Diary, day 1
+
+[ITEMDEF i_cursed_j_3_2]
+DEFNAME=i_cursed_j_3_2
+ID=i_scroll_blank
+TYPE=t_normal
+NAME=Tavara Sewel's Diary, day 2
+WEIGHT=2
+
+ON=@Create
+COLOR=color_o_gold
+
+ON=@DClick
+SRC.SCROLL scroll_cursed_j_3_2
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Cursed
+DESCRIPTION=Tavara Sewel's Diary, day 2
+
+
+[ITEMDEF i_cursed_j_3_5]
+DEFNAME=i_cursed_j_3_5
+ID=i_scroll_blank
+TYPE=t_normal
+NAME=Tavara Sewel's Diary, day 5
+WEIGHT=2
+
+ON=@Create
+COLOR=color_o_gold
+
+ON=@DClick
+SRC.SCROLL scroll_cursed_j_3_5
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Cursed
+DESCRIPTION=Tavara Sewel's Diary, day 5
+
+
+[ITEMDEF i_cursed_j_3_6]
+DEFNAME=i_cursed_j_3_6
+ID=i_scroll_blank
+TYPE=t_normal
+NAME=Tavara Sewel's Diary, day 6
+WEIGHT=2
+
+ON=@Create
+COLOR=color_o_gold
+
+ON=@DClick
+SRC.SCROLL scroll_cursed_j_3_6
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Cursed
+DESCRIPTION=Tavara Sewel's Diary, day 6
+
+
+[ITEMDEF i_cursed_j_3_7]
+DEFNAME=i_cursed_j_3_7
+ID=i_scroll_blank
+TYPE=t_normal
+NAME=Tavara Sewel's Diary, day 7
+WEIGHT=2
+
+ON=@Create
+COLOR=color_o_gold
+
+ON=@DClick
+SRC.SCROLL scroll_cursed_j_3_7
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Cursed
+DESCRIPTION=Tavara Sewel's Diary, day 7
+
+
+[ITEMDEF i_cursed_j_3_8]
+DEFNAME=i_cursed_j_3_8
+ID=i_scroll_blank
+TYPE=t_normal
+NAME=Tavara Sewel's Diary, day 8
+WEIGHT=2
+
+ON=@Create
+COLOR=color_o_gold
+
+ON=@DClick
+SRC.SCROLL scroll_cursed_j_3_8
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Cursed
+DESCRIPTION=Tavara Sewel's Diary, day 8
+
+
+[ITEMDEF i_cursed_j_3_10]
+DEFNAME=i_cursed_j_3_10
+ID=i_scroll_blank
+TYPE=t_normal
+NAME=Tavara Sewel's Diary, day 10
+WEIGHT=2
+
+ON=@Create
+COLOR=color_o_gold
+
+ON=@DClick
+SRC.SCROLL scroll_cursed_j_3_10
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Cursed
+DESCRIPTION=Tavara Sewel's Diary, day 10
+
+
+[ITEMDEF i_cursed_j_3_13]
+DEFNAME=i_cursed_j_3_13
+ID=i_scroll_blank
+TYPE=t_normal
+NAME=Tavara Sewel's Diary, day 13
+WEIGHT=2
+
+ON=@Create
+COLOR=color_o_gold
+
+ON=@DClick
+SRC.SCROLL scroll_cursed_j_3_13
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Cursed
+DESCRIPTION=Tavara Sewel's Diary, day 13
+
+
+[ITEMDEF i_cursed_j_3_15]
+DEFNAME=i_cursed_j_3_15
+ID=i_scroll_blank
+TYPE=t_normal
+NAME=Tavara Sewel's Diary, day 15
+WEIGHT=2
+
+ON=@Create
+COLOR=color_o_gold
+
+ON=@DClick
+SRC.SCROLL scroll_cursed_j_3_15
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Cursed
+DESCRIPTION=Tavara Sewel's Diary, day 15
+
+
+[ITEMDEF i_cursed_j_3_16]
+DEFNAME=i_cursed_j_3_16
+ID=i_scroll_blank
+TYPE=t_normal
+NAME=Tavara Sewel's Diary, day 16
+WEIGHT=2
+
+ON=@Create
+COLOR=color_o_gold
+
+ON=@DClick
+SRC.SCROLL scroll_cursed_j_3_16
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Cursed
+DESCRIPTION=Tavara Sewel's Diary, day 16
+
+
+[ITEMDEF i_cursed_j_3_16_2]
+DEFNAME=i_cursed_j_3_16_2
+ID=i_scroll_blank
+TYPE=t_normal
+NAME=Tavara Sewel's Diary, day 16 later
+WEIGHT=2
+
+ON=@Create
+COLOR=color_o_gold
+
+ON=@DClick
+SRC.SCROLL scroll_cursed_j_3_16_2
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Cursed
+DESCRIPTION=Tavara Sewel's Diary, day 16 later
+
+
+[ITEMDEF i_cursed_j_3_17]
+DEFNAME=i_cursed_j_3_17
+ID=i_scroll_blank
+TYPE=t_normal
+NAME=Tavara Sewel's Diary, day 17
+WEIGHT=2
+
+ON=@Create
+COLOR=color_o_gold
+
+ON=@DClick
+SRC.SCROLL scroll_cursed_j_3_17
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Cursed
+DESCRIPTION=Tavara Sewel's Diary, day 17
+
+
+[ITEMDEF i_cursed_j_3_19]
+DEFNAME=i_cursed_j_3_19
+ID=i_scroll_blank
+TYPE=t_normal
+NAME=Tavara Sewel's Diary, day 19
+WEIGHT=2
+
+ON=@Create
+COLOR=color_o_gold
+
+ON=@DClick
+SRC.SCROLL scroll_cursed_j_3_19
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Cursed
+DESCRIPTION=Tavara Sewel's Diary, day 19
+
+
+
+
+[ITEMDEF i_cursed_j_4_1]
+DEFNAME=i_cursed_j_4_1
+ID=i_scroll_blank
+TYPE=t_normal
+NAME=Lysander Gathenwale's Diary, day 1
+WEIGHT=2
+
+ON=@Create
+COLOR=color_o_gold
+
+ON=@DClick
+SRC.SCROLL scroll_cursed_j_4_1
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Cursed
+DESCRIPTION=Lysander Gathenwale's Diary, day 1
+
+[ITEMDEF i_cursed_j_4_2]
+DEFNAME=i_cursed_j_4_2
+ID=i_scroll_blank
+TYPE=t_normal
+NAME=Lysander Gathenwale's Diary, day 2
+WEIGHT=2
+
+ON=@Create
+COLOR=color_o_gold
+
+ON=@DClick
+SRC.SCROLL scroll_cursed_j_4_2
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Cursed
+DESCRIPTION=Lysander Gathenwale's Diary, day 2
+
+
+[ITEMDEF i_cursed_j_4_6]
+DEFNAME=i_cursed_j_4_6
+ID=i_scroll_blank
+TYPE=t_normal
+NAME=Lysander Gathenwale's Diary, day 6
+WEIGHT=2
+
+ON=@Create
+COLOR=color_o_gold
+
+ON=@DClick
+SRC.SCROLL scroll_cursed_j_4_6
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Cursed
+DESCRIPTION=Lysander Gathenwale's Diary, day 6
+
+
+[ITEMDEF i_cursed_j_4_7]
+DEFNAME=i_cursed_j_4_7
+ID=i_scroll_blank
+TYPE=t_normal
+NAME=Lysander Gathenwale's Diary, day 7
+WEIGHT=2
+
+ON=@Create
+COLOR=color_o_gold
+
+ON=@DClick
+SRC.SCROLL scroll_cursed_j_4_7
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Cursed
+DESCRIPTION=Lysander Gathenwale's Diary, day 7
+
+
+[ITEMDEF i_cursed_j_4_8]
+DEFNAME=i_cursed_j_4_8
+ID=i_scroll_blank
+TYPE=t_normal
+NAME=Lysander Gathenwale's Diary, day 8
+WEIGHT=2
+
+ON=@Create
+COLOR=color_o_gold
+
+ON=@DClick
+SRC.SCROLL scroll_cursed_j_4_8
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Cursed
+DESCRIPTION=Lysander Gathenwale's Diary, day 8
+
+
+[ITEMDEF i_cursed_j_4_11]
+DEFNAME=i_cursed_j_4_11
+ID=i_scroll_blank
+TYPE=t_normal
+NAME=Lysander Gathenwale's Diary, day 11
+WEIGHT=2
+
+ON=@Create
+COLOR=color_o_gold
+
+ON=@DClick
+SRC.SCROLL scroll_cursed_j_4_11
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Cursed
+DESCRIPTION=Lysander Gathenwale's Diary, day 11
+
+[eof]

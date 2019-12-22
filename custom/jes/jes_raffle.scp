@@ -1,0 +1,75 @@
+// Raffle ticket bin ID must be the container you want the tickets to be stored on
+
+[DEFNAME RAFFLE]
+RAFFLE_TICKET_BIN 043a70565
+
+
+[itemdef i_raffle_stone]
+Name= Raffle Ticket Stone
+ID=i_guildstone
+Type=T_Script
+
+ON=@Create
+   COLOR=0bb2
+   MORE1=10000
+
+ON=@DClick
+   MENU mnu_raffle_buy
+   RETURN 1
+
+   
+// Set this item more1 to 1 if you are ready to select the winner
+
+[itemdef i_raffle_tumbler]
+Name=Raffle Ticket Tumbler
+ID=i_fx_spin_head
+Type=t_script
+
+ON=@Create
+   COLOR=0bb2
+   ATTR=010
+   
+ON=@DClick
+   IF (<SRC.ISGM>)
+      IF (<MORE1>=1)      
+         LOCAL.WINNER = <EVAL RAND(<UID.RAFFLE_TICKET_BIN.COUNT>)>
+         TRYP 0 UID.RAFFLE_TICKET_BIN.FINDCONT.<EVAL <LOCAL.WINNER>>.CONT=<SRC.FINDLAYER(21).UID>
+         MESSAGE *TUMBLES AND FLIPS A TICKET TO <SRC.NAME>*
+         SERV.LOG RAFFLE WINNER <SRC.NAME>
+      ELSE
+         SRC.SYSMESSAGE If you are ready to draw the names you must set MORE1 = 1.
+      ENDIF
+   ENDIF 
+   RETURN 1
+   
+   
+[MENU mnu_raffle_buy]
+Raffle Tickets
+
+ON = 0 Buy a Raffle Ticket for <EVAL <MORE1>> gold.
+  //Check money
+    IF ( !<SRC.RESTEST <eval <MORE1>> i_gold> )
+       SRC.SYSMESSAGE You dont have enough money on you.
+       RETURN 1
+    ENDIF
+    
+  //Process rental
+    SRC.CONSUME 10000 i_gold
+    SRC.SYSMESSAGE One raffle ticket has been put into the tumbler with your name on it.
+    SERV.NEWITEM i_raffle_ticket
+    SERV.LOG <SRC.NAME> bought a Raffle Ticket from <uid> stone
+    NEW.MORE1=<SRC.UID>
+    NEW.NAME=Raffle ticket - Acct:<SRC.ACCOUNT>:Char:<SRC.NAME>
+    NEW.CONT=RAFFLE_TICKET_BIN
+    RETURN 1
+
+
+[ITEMDEF i_raffle_ticket]
+ID	= i_map_rolled
+TYPE	= t_script
+NAME	= Raffle ticket%s
+WEIGHT	= 0
+VALUE	= 2
+
+
+[EOF]

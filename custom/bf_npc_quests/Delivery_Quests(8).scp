@@ -1,0 +1,1320 @@
+//Quests by Sqweak
+//——————————————————————————————
+//There are # quests in this file
+//They are all variations of getting an item and  
+//delivering it to a specified individual for a reward
+//Contained Quests:
+//*Rare Wine Dealer
+//*Stock List
+//*Party Invitation
+//*Lucky Drum
+//*Important News
+//*Play
+//*Stone
+//*mapmaker
+//——————————————————————————————
+
+//——————————————————————————————
+//Rare Wine Dealer
+//——————————————————————————————
+
+[CHARDEF C_H_qq1_a] 
+DEFNAME=C_H_qq1_a
+NAME=Drunk Man
+ID=C_MAN 
+DAM=15,20 
+ARMOR=20 
+TSPEECH=g_quest
+TSPEECH=rarewine_a
+
+TEVENTS=e_npc_quest
+CATEGORY=Imperial uo
+SUBSECTION=Quick Quests 
+DESCRIPTION=Wine Quest trigger
+
+ON=@Create 
+   TITLE=Drunk
+   NPC=brain_human 
+   COLOR=colors_skin 
+   STR={151 165} 
+   DEX={80 120} 
+   INT={151 165} 
+
+   DETECTION={90.0 100.0} 
+   FENCING={90.0 100.0} 
+   PARRYING={90.0 100.0} 
+   SWORDSMANSHIP={90.0 100.0} 
+   WRESTLING={90.0 100.0} 
+   MACEFIGHTING={90.0 100.0} 
+   MAGICRESISTANCE={90.0 100.0} 
+   TACTICS={90.0 100.0} 
+ 
+   ITEMNEWBIE=random_male_hair 
+   COLOR=colors_hair 
+   ITEMNEWBIE=random_facial_hair 
+   COLOR=match_hair 
+   TAG.SEE_SAY=Hic!
+
+ON=@NPCRestock
+   ITEM=i_shirt_plain 
+   COLOR=colors_all 
+   ITEM=random_pants 
+   COLOR=colors_all
+   ITEM=01710
+   COLOR=colors_all
+
+
+[ITEMDEF i_Rare_wine]
+NAME=Fine Vintage wine
+ID=09c7
+TYPE=T_NORMAL
+
+CATEGORY=Imperial uo
+SUBSECTION=Quick Quests 
+DESCRIPTION=Vintage wine
+
+
+[CHARDEF C_H_qq1_b] 
+   DEFNAME=C_H_qq1_b
+   NAME=Wine Dealer
+   ID=C_MAN 
+   DAM=15,20 
+   ARMOR=20 
+   TSPEECH=rarewine_b
+   
+   TEVENTS=e_npc_quest
+   CATEGORY=Imperial uo
+   SUBSECTION=Quick Quests 
+   DESCRIPTION=Wine quest finish
+
+ON=@Create 
+   TITLE=Wine Dealer
+   NPC=brain_human 
+   COLOR=colors_skin 
+   STR={151 165} 
+   DEX={80 120} 
+   INT={151 165} 
+
+   DETECTION={90.0 100.0} 
+   FENCING={90.0 100.0} 
+   PARRYING={90.0 100.0} 
+   SWORDSMANSHIP={90.0 100.0} 
+   WRESTLING={90.0 100.0} 
+   MACEFIGHTING={90.0 100.0} 
+   MAGICRESISTANCE={90.0 100.0} 
+   TACTICS={90.0 100.0} 
+
+   ITEMNEWBIE=random_male_hair 
+   COLOR=colors_hair 
+   ITEMNEWBIE=random_facial_hair 
+   COLOR=match_hair 
+
+ON=@NPCRestock
+   ITEM=i_shirt_plain 
+   COLOR=colors_all 
+   ITEM=random_pants 
+   COLOR=colors_all
+   ITEM=01710
+   COLOR=colors_all
+
+
+[SPEECH rarewine_a] 
+ON=*hello*
+ON=*hi*
+Say Hello Adventurer!
+Say Would you like to help me?
+Say If yes please say "quest"
+
+ON=*quest*
+IF ( <SRC.TAG.NPC_QUEST_START> & NPCQ_Wine )
+   SAY You are already on this quest! 
+ELSEIF ( <SRC.TAG.NPC_QUEST_DONE> & NPCQ_Wine )
+   SAY You already done this quest!   
+ELSE
+   SAY Hic! I need you to deliver, Hic! a rare wine for me, hic! Before I drink it! hic!
+   SAY Find the rare wine dealer inside this city, hic, and say "reward" and he will pay you, hic!
+   SRC.TAG.NPC_QUEST_START = <eval ( <SRC.TAG.NPC_QUEST_START> | NPCQ_Wine )>
+   SRC.NEWITEM=i_rare_wine
+   SRC.ACT.BOUNCE
+   SOUND=01FC
+   SRC.ARROWQUEST 1875,2662,-8
+   SAY Please deliver the wine safely, hic!
+   return 1 
+ENDIF
+
+ON=*where*
+SAY A magic arrow will guide your way to the Winer Dealer!
+RETURN 1
+
+
+[SPEECH rarewine_b] 
+ON=*quest*
+ON=*hello*
+ON=*hi*
+Say Hello Adventurer!
+Say I'm looking for Rare Wine...
+Say If you want to help me, find the Drunk Man and return my wine!
+Say Say "reward" if you have my wine!
+
+on=Deliver 
+on=reward 
+on=collect 
+IF <SRC.RESTEST i_Rare_wine> 
+   SERV.NEWITEM=i_gold 
+   NEW.AMOUNT=2500
+   NEW.BOUNCE 
+   BLUE_SYSMSG You earn 2500 gold coins for completing the quest.
+   SRC.consume i_Rare_wine
+   SRC.ARROWQUEST 
+   SRC.TAG.NPC_QUEST_START = <eval ( <SRC.TAG.NPC_QUEST_START> &~ NPCQ_Wine )>
+   SRC.TAG.NPC_QUEST_DONE = <eval ( <SRC.TAG.NPC_QUEST_DONE> | NPCQ_Wine )>
+   SRC.SYSMESSAGE Thank you for delivering the wine safely, I shall never trust that drunk again.
+ELSE 
+   SAY You don't have my rare wine!! 
+RETURN 1 
+
+
+//——————————————————————————————
+//Stock List
+//——————————————————————————————
+[CHARDEF C_H_qq2_a] 
+DEFNAME=C_H_qq2_a
+NAME=Stock Employee
+ID=C_MAN 
+DAM=15,20 
+ARMOR=20 
+TSPEECH=g_quest
+TSPEECH=stocklist_a
+
+TEVENTS=e_npc_quest
+CATEGORY=Imperial uo
+SUBSECTION=Quick Quests 
+DESCRIPTION=stocklist Quest trigger
+
+ON=@Create 
+   TITLE=Stock Clerk
+   NPC=brain_human 
+   COLOR=colors_skin 
+   STR={151 165} 
+   DEX={80 120} 
+   INT={151 165} 
+
+   DETECTION={90.0 100.0} 
+   FENCING={90.0 100.0} 
+   PARRYING={90.0 100.0} 
+   SWORDSMANSHIP={90.0 100.0} 
+   WRESTLING={90.0 100.0} 
+   MACEFIGHTING={90.0 100.0} 
+   MAGICRESISTANCE={90.0 100.0} 
+   TACTICS={90.0 100.0} 
+
+   ITEMNEWBIE=random_male_hair 
+   COLOR=colors_hair 
+   ITEMNEWBIE=random_facial_hair 
+   COLOR=match_hair 
+   TAG.SEE_SAY=Hello! Can you help me?
+
+ON=@NPCRestock
+   ITEM=i_shirt_plain 
+   COLOR=colors_all 
+   ITEM=random_pants 
+   COLOR=colors_all
+   ITEM=01710
+   COLOR=colors_all
+
+
+[ITEMDEF i_stocklist]
+   NAME=Stock List
+   ID=0ff2
+   CATEGORY=Imperial uo
+   SUBSECTION=Quick Quests 
+   DESCRIPTION=Stock List
+
+[CHARDEF C_H_qq2_b] 
+   DEFNAME=C_H_qq2_b
+   NAME=Stock Manager
+   ID=C_MAN 
+   DAM=15,20 
+   ARMOR=20 
+   TSPEECH=stocklist_b
+   
+   TEVENTS=e_npc_quest
+   CATEGORY=Imperial uo
+   SUBSECTION=Quick Quests 
+   DESCRIPTION=Stocklist finish
+
+ON=@Create 
+   TITLE=Stock Manager
+   NPC=brain_human 
+   COLOR=colors_skin 
+   STR={151 165} 
+   DEX={80 120} 
+   INT={151 165} 
+
+   DETECTION={90.0 100.0} 
+   FENCING={90.0 100.0} 
+   PARRYING={90.0 100.0} 
+   SWORDSMANSHIP={90.0 100.0} 
+   WRESTLING={90.0 100.0} 
+   MACEFIGHTING={90.0 100.0} 
+   MAGICRESISTANCE={90.0 100.0} 
+   TACTICS={90.0 100.0} 
+
+   ITEMNEWBIE=random_male_hair 
+   COLOR=colors_hair 
+   ITEMNEWBIE=random_facial_hair 
+   COLOR=match_hair 
+
+ON=@NPCRestock
+   ITEM=i_shirt_plain 
+   COLOR=colors_all 
+   ITEM=random_pants 
+   COLOR=colors_all
+   ITEM=01710
+   COLOR=colors_all
+
+
+[SPEECH stocklist_a] 
+ON=*hello*
+ON=*hi*
+Say Hello Adventurer!
+Say Would you like to help me?
+Say If yes please say "quest"
+on=quest
+IF ( <SRC.TAG.NPC_QUEST_START> & NPCQ_Stock )
+   SAY You are already on this quest! 
+ELSEIF ( <SRC.TAG.NPC_QUEST_DONE> & NPCQ_Stock )
+   SAY You already done this quest!
+ELSE
+   SAY Greetings my friend, Please could you do me a favor and deliver
+   SAY a stock list to my boss, the Stock Manager, east of this city? Go to him and say "reward".
+   SRC.TAG.NPC_QUEST_START = <eval ( <SRC.TAG.NPC_QUEST_START> | NPCQ_Stock )>
+   SRC.NEWITEM=i_stocklist
+   SRC.ACT.BOUNCE
+   SOUND=01FC
+   SRC.ARROWQUEST 2036,2861
+   SAY Please deliver the list safely.
+   return 1 
+ENDIF
+
+ON=*where*
+SAY A magic arrow will guide your way to the Stock Manager!
+RETURN 1
+
+
+[SPEECH stocklist_b]
+on=*quest*
+ON=*hello*
+ON=*hi*
+Say Hello Adventurer!
+Say The Stock Employee is way too slow...
+Say Where the hell is the Stock List?
+Say If you have my stock list say "reward"
+on=Deliver 
+on=reward 
+on=collect 
+IF <SRC.RESTEST i_stocklist> 
+   SERV.NEWITEM=i_gold 
+   NEW.AMOUNT=2500
+   NEW.BOUNCE 
+   SOUND=01FC 
+   BLUE_SYSMSG You earn 2500 gold coins for completing the quest.
+   SRC.consume i_stocklist
+   SRC.TAG.NPC_QUEST_START = <eval ( <SRC.TAG.NPC_QUEST_START> &~ NPCQ_Stock )>
+   SRC.TAG.NPC_QUEST_DONE = <eval ( <SRC.TAG.NPC_QUEST_DONE> | NPCQ_Stock )>
+   SRC.SYSMESSAGE Thank you for delivering the Stock List safely. I can do my stock take now.
+   SRC.ARROWQUEST 
+ELSE 
+   SAY You don't have my Stock List!! 
+   RETURN 1 
+ENDIF
+
+
+
+//——————————————————————————————
+//Party Invitation
+//——————————————————————————————
+[CHARDEF C_H_qq3_a] 
+   DEFNAME=C_H_qq3_a
+   NAME=Party Organizer
+   ID=C_MAN 
+   DAM=15,20 
+   ARMOR=20 
+   TSPEECH=g_quest
+   TSPEECH=party_a
+   
+   TEVENTS=e_npc_quest
+   CATEGORY=Imperial uo
+   SUBSECTION=Quick Quests 
+   DESCRIPTION=Party Quest trigger
+
+ON=@Create 
+   TITLE=Party Organizer
+   NPC=brain_human 
+   COLOR=colors_skin 
+   STR={151 165} 
+   DEX={80 120} 
+   INT={151 165} 
+
+   DETECTION={90.0 100.0} 
+   FENCING={90.0 100.0} 
+   PARRYING={90.0 100.0} 
+   SWORDSMANSHIP={90.0 100.0} 
+   WRESTLING={90.0 100.0} 
+   MACEFIGHTING={90.0 100.0} 
+   MAGICRESISTANCE={90.0 100.0} 
+   TACTICS={90.0 100.0} 
+
+   ITEMNEWBIE=random_male_hair 
+   COLOR=colors_hair 
+   ITEMNEWBIE=random_facial_hair 
+   COLOR=match_hair 
+
+   TAG.SEE_SAY=Hello! Can you help me to organize my party? 
+
+ON=@NPCRestock
+   ITEM=i_shirt_plain 
+   COLOR=colors_all 
+   ITEM=random_pants 
+   COLOR=colors_all
+   ITEM=01710
+   COLOR=colors_all
+   
+
+[ITEMDEF i_partyinvite]
+   NAME=Party Invite
+   ID=0ef3
+   CATEGORY=Imperial uo
+   SUBSECTION=Quick Quests 
+   DESCRIPTION=Party Invite
+
+
+[CHARDEF C_H_qq3_b] 
+   DEFNAME=C_H_qq3_b
+   NAME=Party Attender
+   ID=C_MAN 
+   DAM=15,20 
+   ARMOR=20 
+   TSPEECH=party_b
+   
+   TEVENTS=e_npc_quest
+   CATEGORY=Imperial uo
+   SUBSECTION=Quick Quests 
+   DESCRIPTION=Party finish
+
+ON=@Create 
+   TITLE=Party Attender
+   NPC=brain_human 
+   COLOR=colors_skin 
+   STR={151 165}
+   DEX={80 120} 
+   INT={151 165} 
+
+   DETECTION={90.0 100.0} 
+   FENCING={90.0 100.0} 
+   PARRYING={90.0 100.0} 
+   SWORDSMANSHIP={90.0 100.0} 
+   WRESTLING={90.0 100.0} 
+   MACEFIGHTING={90.0 100.0} 
+   MAGICRESISTANCE={90.0 100.0} 
+   TACTICS={90.0 100.0} 
+
+   ITEMNEWBIE=random_male_hair 
+   COLOR=colors_hair 
+   ITEMNEWBIE=random_facial_hair 
+   COLOR=match_hair 
+
+ON=@NPCRestock
+   ITEM=i_shirt_plain 
+   COLOR=colors_all 
+   ITEM=random_pants 
+   COLOR=colors_all
+   ITEM=01710
+   COLOR=colors_all
+
+
+[SPEECH party_a] 
+ON=*hello*
+ON=*hi*
+Say Hello Adventurer!
+Say Would you like to help me?
+Say If yes please say "quest"
+on=quest
+IF ( <SRC.TAG.NPC_QUEST_START> & NPCQ_Party )
+   SAY You are already on this quest! 
+ELSEIF ( <SRC.TAG.NPC_QUEST_DONE> & NPCQ_Party )
+   SAY You already done this quest!
+ELSE
+   SAY Hiya, I'm throwing a party, could you deliver a party invite for me?
+   SAY Take this invite to my favorite party attender and say "reward".
+   SRC.TAG.NPC_QUEST_START = <eval ( <SRC.TAG.NPC_QUEST_START> | NPCQ_Party )>
+   SRC.NEWITEM=i_partyinvite
+   SRC.ACT.BOUNCE
+   SOUND=01FC
+   SRC.ARROWQUEST 1906,2663
+   SAY Please deliver the invite safely.
+   return 1 
+ENDIF
+
+ON=*where*
+SAY A magic arrow will guide your way to the Party Attender!
+RETURN 1
+
+ON=ok
+ON=sure
+   SAY=Thank you kindly, it will be a party to remember.
+   return 1
+
+[SPEECH party_b] 
+on=*quest*
+ON=*hello*
+ON=*hi*
+Say Hello Adventurer!
+Say Long time I've been waiting for a party but no one invites me...
+Say Say "reward" if you have a party invite for me.
+on=Deliver 
+on=reward 
+on=collect 
+IF <SRC.RESTEST i_partyinvite> 
+   SERV.NEWITEM=i_gold 
+   NEW.AMOUNT=2500
+   NEW.BOUNCE 
+   SOUND=01FC 
+   BLUE_SYSMSG You earn 2500 gold coins for completing the quest.
+   SRC.consume i_partyinvite
+   SRC.ARROWQUEST 
+   SRC.TAG.NPC_QUEST_START = <eval ( <SRC.TAG.NPC_QUEST_START> &~ NPCQ_Party )>
+   SRC.TAG.NPC_QUEST_DONE = <eval ( <SRC.TAG.NPC_QUEST_DONE> | NPCQ_Party )>
+   SRC.SYSMESSAGE Thank you for delivering the invite. I can't wait, I'm mad for it.
+   SRC.SYSMESSAGE I'm just a party animal!
+ELSE 
+   SAY You don't have any invite, no party!!!!!! 
+   RETURN 1 
+ENDIF
+
+//——————————————————————————————
+//Lucky Drum
+//——————————————————————————————
+[CHARDEF C_H_qq4_a] 
+   DEFNAME=C_H_qq4_a
+   NAME=Lute 
+   ID=C_MAN 
+   DAM=15,20 
+   ARMOR=20 
+   TSPEECH=g_quest
+   TSPEECH=drum_a
+   
+   TEVENTS=e_npc_quest
+   CATEGORY=Imperial uo
+   SUBSECTION=Quick Quests 
+   DESCRIPTION=Drum Quest trigger
+
+ON=@Create 
+   TITLE=Drum Maker
+   NPC=brain_human 
+   COLOR=colors_skin 
+   STR={151 165} 
+   DEX={80 120} 
+   INT={151 165} 
+   
+   DETECTION={90.0 100.0}  
+   FENCING={90.0 100.0} 
+   PARRYING={90.0 100.0} 
+   SWORDSMANSHIP={90.0 100.0} 
+   WRESTLING={90.0 100.0} 
+   MACEFIGHTING={90.0 100.0} 
+   MAGICRESISTANCE={90.0 100.0} 
+   TACTICS={90.0 100.0} 
+
+   ITEMNEWBIE=random_male_hair 
+   COLOR=colors_hair 
+   ITEMNEWBIE=random_facial_hair 
+   COLOR=match_hair 
+
+   TAG.SEE_SAY=Hello! Can you help me?
+
+ON=@NPCRestock
+   ITEM=i_shirt_plain 
+   COLOR=colors_all 
+   ITEM=random_pants 
+   COLOR=colors_all
+   ITEM=01710
+   COLOR=colors_all
+
+
+[ITEMDEF i_luckydrum]
+   NAME=Lucky Drum
+   ID=0e9c
+   CATEGORY=Imperial uo
+   SUBSECTION=Quick Quests 
+   DESCRIPTION=lucky drum
+
+
+[CHARDEF C_H_qq4_b] 
+   DEFNAME=C_H_qq4_b
+   NAME=Drummer
+   ID=C_MAN 
+   DAM=15,20 
+   ARMOR=20 
+   TSPEECH=drum_b
+   
+   TEVENTS=e_npc_quest
+   CATEGORY=Imperial uo
+   SUBSECTION=Quick Quests 
+   DESCRIPTION=drum finish
+
+ON=@Create 
+   TITLE=Drummer
+   NPC=brain_human 
+   COLOR=colors_skin 
+   STR={151 165} 
+   DEX={80 120} 
+   INT={151 165} 
+
+   DETECTION={90.0 100.0} 
+   FENCING={90.0 100.0} 
+   PARRYING={90.0 100.0} 
+   SWORDSMANSHIP={90.0 100.0} 
+   WRESTLING={90.0 100.0} 
+   MACEFIGHTING={90.0 100.0} 
+   MAGICRESISTANCE={90.0 100.0} 
+   TACTICS={90.0 100.0} 
+
+   ITEMNEWBIE=random_male_hair 
+   COLOR=colors_hair 
+   ITEMNEWBIE=random_facial_hair 
+   COLOR=match_hair 
+
+ON=@NPCRestock
+   ITEM=i_shirt_plain 
+   COLOR=colors_all 
+   ITEM=random_pants 
+   COLOR=colors_all
+   ITEM=01710
+   COLOR=colors_all
+
+
+[SPEECH drum_a] 
+ON=*hello*
+ON=*hi*
+Say Hello Adventurer!
+Say Would you like to help me?
+Say If yes please say "quest"
+on=quest
+IF ( <SRC.TAG.NPC_QUEST_START> & NPCQ_Drum )
+   SAY You are already on this quest! 
+ELSEIF ( <SRC.TAG.NPC_QUEST_DONE> & NPCQ_Drum )
+   SAY You already done this quest!
+ELSE
+   SAY Yo! Can you help me out, I have this drum... its lucky to see you...
+   SAY I need you to take it to the drummer, he will not play without it.
+   Say Say "reward" when you reach him to receive your reward.
+   SRC.TAG.NPC_QUEST_START = <eval ( <SRC.TAG.NPC_QUEST_START> | NPCQ_Drum )>
+   SRC.NEWITEM=i_luckydrum
+   SRC.ACT.BOUNCE
+   SOUND=01FC
+   SAY Please deliver the drum safely, The concert won't go on without it.
+   SRC.ARROWQUEST 2011,2771,18
+   return 1 
+ENDIF
+
+ON=*where*
+SAY A magic arrow will guide your way to the Drummer!
+RETURN 1
+
+[SPEECH drum_b] 
+on*quest*
+ON=*hello*
+ON=*hi*
+Say Hello Adventurer!
+Say Have you seen my drum?
+Say I can't play without it...
+Say If you have it with yourself then say "reward"
+on=Deliver 
+on=reward 
+on=collect 
+IF <SRC.RESTEST i_luckydrum> 
+   SERV.NEWITEM=i_gold 
+   NEW.AMOUNT=2500
+   NEW.BOUNCE
+   SOUND=01FC 
+   BLUE_SYSMSG You earn 2500 gold coins for completing the quest.
+   SRC.ARROWQUEST 
+   SRC.consume i_luckydrum
+   SRC.TAG.NPC_QUEST_START = <eval ( <SRC.TAG.NPC_QUEST_START> &~ NPCQ_Drum )>
+   SRC.TAG.NPC_QUEST_DONE = <eval ( <SRC.TAG.NPC_QUEST_DONE> | NPCQ_Drum )>
+   SRC.SYSMESSAGE Thank you for delivering the drum. I can't wait to play.
+   SRC.SYSMESSAGE It will be one of my best giggs.
+ELSE 
+   SAY You don't have my drum, I can't play that way.
+   RETURN 1 
+ENDIF
+
+
+//------------------------------------------------------------
+//Important News
+//------------------------------------------------------------
+[CHARDEF C_H_qq5_a] 
+   DEFNAME=C_H_qq5_a
+   NAME=Newspaper Reporter 
+   ID=C_MAN 
+   DAM=15,20 
+   ARMOR=20 
+   
+   TSPEECH=g_quest
+   TSPEECH=news_a
+   
+   TEVENTS=e_npc_quest
+   
+   CATEGORY=Imperial uo
+   SUBSECTION=Quick Quests 
+   DESCRIPTION=News Quest trigger
+ 
+ON=@Create 
+   TITLE=Reporter
+   NPC=brain_human 
+   COLOR=colors_skin 
+   STR={151 165} 
+   DEX={80 120} 
+   INT={151 165} 
+   
+   DETECTION={90.0 100.0} 
+   FENCING={90.0 100.0} 
+   PARRYING={90.0 100.0} 
+   SWORDSMANSHIP={90.0 100.0} 
+   WRESTLING={90.0 100.0} 
+   MACEFIGHTING={90.0 100.0} 
+   MAGICRESISTANCE={90.0 100.0} 
+   TACTICS={90.0 100.0} 
+   
+   ITEMNEWBIE=random_male_hair 
+   COLOR=colors_hair 
+   ITEMNEWBIE=random_facial_hair 
+   COLOR=match_hair 
+ 
+   TAG.SEE_SAY=Hello! Can you help me?
+
+ON=@NPCRestock
+   ITEM=i_shirt_plain 
+   COLOR=colors_all 
+   ITEM=random_pants 
+   COLOR=colors_all
+   ITEM=01710
+   COLOR=colors_all
+
+
+[ITEMDEF i_importantnews]
+   NAME=News Story
+   ID=0e34
+   CATEGORY=Imperial uo
+   SUBSECTION=Quick Quests 
+   DESCRIPTION=News Story
+
+[CHARDEF C_H_qq5_b] 
+   DEFNAME=C_H_qq5_b
+   NAME=Newspaper Editor
+   ID=C_MAN 
+   DAM=15,20 
+   ARMOR=20 
+   
+   TSPEECH=news_b
+   
+   TEVENTS=e_npc_quest
+   
+   CATEGORY=Imperial uo
+   SUBSECTION=Quick Quests 
+   DESCRIPTION=news finish
+ 
+ON=@Create 
+   TITLE=Editor
+   NPC=brain_human 
+   COLOR=colors_skin 
+   STR={151 165} 
+   DEX={80 120} 
+   INT={151 165} 
+   
+   DETECTION={90.0 100.0} 
+   FENCING={90.0 100.0} 
+   PARRYING={90.0 100.0} 
+   SWORDSMANSHIP={90.0 100.0} 
+   WRESTLING={90.0 100.0} 
+   MACEFIGHTING={90.0 100.0} 
+   MAGICRESISTANCE={90.0 100.0} 
+   TACTICS={90.0 100.0} 
+   
+   ITEMNEWBIE=random_male_hair 
+   COLOR=colors_hair 
+   ITEMNEWBIE=random_facial_hair 
+   COLOR=match_hair 
+
+ON=@NPCRestock
+   ITEM=i_shirt_plain 
+   COLOR=colors_all 
+   ITEM=random_pants 
+   COLOR=colors_all
+   ITEM=01710
+   COLOR=colors_all
+
+
+
+[SPEECH news_a] 
+ON=*hello*
+ON=*hi*
+Say Hello Adventurer!
+Say Would you like to help me?
+Say If yes please say "quest"
+on=quest
+IF ( <SRC.TAG.NPC_QUEST_START> & NPCQ_News )
+   SAY You are already on this quest! 
+ELSEIF ( <SRC.TAG.NPC_QUEST_DONE> & NPCQ_News )
+   SAY You already done this quest!
+ELSE
+   SAY Evening, I have some important news for my newspaper, but can't find my editor.
+   SAY Can you find him and deliver this report, he will pay you well.
+   Say Say "reward" when you find him to receive your reward.
+   SRC.TAG.NPC_QUEST_START = <eval ( <SRC.TAG.NPC_QUEST_START> | NPCQ_News )>
+   SRC.NEWITEM=i_importantnews
+   SRC.ACT.BOUNCE 
+   SOUND=01FC
+   SAY Please deliver the News, the people must know.
+   SRC.ARROWQUEST 1963,2717,5
+   return 1
+ENDIF
+
+ON=*where*
+SAY A magic arrow will guide your way to the Newspaper Editor!
+RETURN 1
+
+[SPEECH news_b] 
+on*quest*
+ON=*hello*
+ON=*hi*
+Say Hello Adventurer!
+Say Do you have any news report?
+Say If yes, say "reward".
+on=Deliver 
+on=reward 
+on=collect 
+IF <SRC.RESTEST i_importantnews> 
+   SERV.NEWITEM=i_gold 
+   NEW.AMOUNT=2500
+   NEW.BOUNCE 
+   SOUND=01FC 
+   BLUE_SYSMSG You earn 2500 gold coins for completing the quest. 
+   SRC.consume i_importantnews
+   SRC.TAG.NPC_QUEST_START = <eval ( <SRC.TAG.NPC_QUEST_START> &~ NPCQ_News )>
+   SRC.TAG.NPC_QUEST_DONE = <eval ( <SRC.TAG.NPC_QUEST_DONE> | NPCQ_News )>
+   SRC.SYSMESSAGE Thank you for delivering the news report. I will publish it right away.
+   SRC.ARROWQUEST 
+ELSE
+   SAY You don't have any news for me?
+   RETURN 1 
+ENDIF
+
+//——————————————————————————————
+//Play
+//——————————————————————————————
+[CHARDEF C_H_qq6_a] 
+   DEFNAME=C_H_qq6_a
+   NAME=Playwrite
+   ID=C_MAN 
+   DAM=15,20 
+   ARMOR=20    
+   TSPEECH=g_quest
+   TSPEECH=play_a
+   
+   TEVENTS=e_npc_quest   
+   CATEGORY=Imperial uo
+   SUBSECTION=Quick Quests 
+   DESCRIPTION=Play Quest trigger
+
+ON=@Create 
+   TITLE=Play Writter
+   NPC=brain_human 
+   COLOR=colors_skin 
+   STR={151 165} 
+   DEX={80 120} 
+   INT={151 165} 
+   
+   DETECTION={90.0 100.0} 
+   FENCING={90.0 100.0} 
+   PARRYING={90.0 100.0} 
+   SWORDSMANSHIP={90.0 100.0} 
+   WRESTLING={90.0 100.0} 
+   MACEFIGHTING={90.0 100.0} 
+   MAGICRESISTANCE={90.0 100.0} 
+   TACTICS={90.0 100.0} 
+   
+   ITEMNEWBIE=random_male_hair 
+   COLOR=colors_hair 
+   ITEMNEWBIE=random_facial_hair 
+   COLOR=match_hair  
+
+   TAG.SEE_SAY=Hello! Can you help me?
+
+ON=@NPCRestock
+   ITEM=i_shirt_plain 
+   COLOR=colors_all 
+   ITEM=random_pants 
+   COLOR=colors_all
+   ITEM=01710
+   COLOR=colors_all
+
+
+[ITEMDEF i_play]
+   NAME=Play "The Tempest" by William Shakestick
+   ID=0e34
+   CATEGORY=Imperial uo
+   SUBSECTION=Quick Quests 
+   DESCRIPTION=Play Story
+
+[CHARDEF C_H_qq6_b] 
+   DEFNAME=C_H_qq6_b
+   NAME=Play Director
+   ID=C_MAN 
+   DAM=15,20 
+   ARMOR=20 
+   TSPEECH=play_b
+   
+   TEVENTS=e_npc_quest
+   CATEGORY=Imperial uo
+   SUBSECTION=Quick Quests 
+   DESCRIPTION=Play finish
+
+ON=@Create 
+   TITLE=Director
+   NPC=brain_human 
+   COLOR=colors_skin 
+   STR={151 165} 
+   DEX={80 120} 
+   INT={151 165} 
+
+   DETECTION={90.0 100.0} 
+   FENCING={90.0 100.0} 
+   PARRYING={90.0 100.0} 
+   SWORDSMANSHIP={90.0 100.0} 
+   WRESTLING={90.0 100.0} 
+   MACEFIGHTING={90.0 100.0} 
+   MAGICRESISTANCE={90.0 100.0} 
+   TACTICS={90.0 100.0} 
+
+   ITEMNEWBIE=random_male_hair 
+   COLOR=colors_hair 
+   ITEMNEWBIE=random_facial_hair 
+   COLOR=match_hair 
+
+ON=@NPCRestock
+   ITEM=i_shirt_plain 
+   COLOR=colors_all 
+   ITEM=random_pants 
+   COLOR=colors_all
+   ITEM=01710
+   COLOR=colors_all
+
+
+[SPEECH play_a] 
+ON=*hello*
+ON=*hi*
+Say Hello Adventurer!
+Say Would you like to help me?
+Say If yes please say "quest"
+on=quest
+IF ( <SRC.TAG.NPC_QUEST_START> & NPCQ_Play )
+   SAY You are already on this quest! 
+ELSEIF ( <SRC.TAG.NPC_QUEST_DONE> & NPCQ_Play )
+   SAY You already done this quest!
+ELSE
+   SAY Hail, I have just written a play, I need someone to deliver it.
+   SAY Can you find the Director of the play and deliver this new play by William Shakestick?
+   Say Say "reward" when you find him to receive your reward.
+   SRC.TAG.NPC_QUEST_START = <eval ( <SRC.TAG.NPC_QUEST_START> | NPCQ_Play )>
+   SRC.NEWITEM=i_play
+   SRC.ACT.BOUNCE 
+   SOUND=01FC
+   SAY Please deliver the Play, its very good.
+   SRC.ARROWQUEST 1861,2730,8
+   return 1
+ENDIF
+
+ON=*where*
+SAY A magic arrow will guide your way to the Play Director!
+RETURN 1
+
+[SPEECH play_b] 
+on*quest*
+ON=*hello*
+ON=*hi*
+Say Hello Adventurer!
+Say The Play Writer sent you?
+Say He should send me a play this days.
+Say Do you have my play? If yes say "reward"
+on=Deliver 
+on=reward 
+on=collect 
+IF <SRC.RESTEST i_play> 
+   SERV.NEWITEM=i_gold 
+   NEW.AMOUNT=2500
+   NEW.BOUNCE
+   SOUND=01FC 
+   BLUE_SYSMSG You earn 2500 gold coins for completing the quest. 
+   SRC.consume i_play
+   SRC.TAG.NPC_QUEST_START = <eval ( <SRC.TAG.NPC_QUEST_START> &~ NPCQ_Play )>
+   SRC.TAG.NPC_QUEST_DONE = <eval ( <SRC.TAG.NPC_QUEST_DONE> | NPCQ_Play )>
+   SRC.SYSMESSAGE Thank you for delivering the play. I will break the box office records.
+   SRC.ARROWQUEST 
+ELSE 
+   SAY You don't have a play for me?
+   RETURN 1
+ENDIF
+
+//——————————————————————————————
+//Stone
+//——————————————————————————————
+[CHARDEF C_H_qq7_a] 
+   DEFNAME=C_H_qq7_a
+   NAME=Granite Miner
+   ID=C_MAN 
+   DAM=15,20 
+   ARMOR=20 
+   TSPEECH=g_quest
+   TSPEECH=stone_a
+   
+   TEVENTS=e_npc_quest
+   CATEGORY=Imperial uo
+   SUBSECTION=Quick Quests 
+   DESCRIPTION=Stone Quest trigger
+
+ON=@Create 
+   TITLE=Granite Miner
+   NPC=brain_human 
+   COLOR=colors_skin 
+   STR={151 165} 
+   DEX={80 120} 
+   INT={151 165} 
+   
+   DETECTION={90.0 100.0}  
+   FENCING={90.0 100.0} 
+   PARRYING={90.0 100.0} 
+   SWORDSMANSHIP={90.0 100.0} 
+   WRESTLING={90.0 100.0} 
+   MACEFIGHTING={90.0 100.0} 
+   MAGICRESISTANCE={90.0 100.0} 
+   TACTICS={90.0 100.0} 
+   
+   ITEMNEWBIE=random_male_hair 
+   COLOR=colors_hair 
+   ITEMNEWBIE=random_facial_hair 
+   COLOR=match_hair 
+
+   TAG.SEE_SAY=Hello! Can you help me?
+
+ON=@NPCRestock
+   ITEM=i_shirt_plain 
+   COLOR=colors_all 
+   ITEM=random_pants 
+   COLOR=colors_all
+   ITEM=01710
+   COLOR=colors_all
+
+
+[ITEMDEF i_granite]
+   NAME=Granite
+   ID=01365
+   CATEGORY=Imperial uo
+   SUBSECTION=Quick Quests 
+   DESCRIPTION=Granite
+
+[CHARDEF C_H_qq7_b] 
+   DEFNAME=C_H_qq7_b
+   NAME=Sculpter
+   ID=C_MAN 
+   DAM=15,20 
+   ARMOR=20 
+   TSPEECH=Stone_b
+   
+   TEVENTS=e_npc_quest
+   CATEGORY=Imperial uo
+   SUBSECTION=Quick Quests 
+   DESCRIPTION=Stone finish
+
+ON=@Create 
+   TITLE=Sculpter
+   NPC=brain_human 
+   COLOR=colors_skin 
+   STR={151 165} 
+   DEX={80 120} 
+   INT={151 165} 
+
+   DETECTION={90.0 100.0} 
+   FENCING={90.0 100.0} 
+   PARRYING={90.0 100.0} 
+   SWORDSMANSHIP={90.0 100.0} 
+   WRESTLING={90.0 100.0} 
+   MACEFIGHTING={90.0 100.0} 
+   MAGICRESISTANCE={90.0 100.0} 
+   TACTICS={90.0 100.0} 
+
+   ITEMNEWBIE=random_male_hair 
+   COLOR=colors_hair 
+   ITEMNEWBIE=random_facial_hair 
+   COLOR=match_hair 
+
+ON=@NPCRestock
+   ITEM=i_shirt_plain 
+   COLOR=colors_all 
+   ITEM=random_pants 
+   COLOR=colors_all
+   ITEM=01710
+   COLOR=colors_all
+
+
+[SPEECH stone_a] 
+ON=*hello*
+ON=*hi*
+Say Hello Adventurer!
+Say Would you like to help me?
+Say If yes please say "quest"
+on=quest
+IF ( <SRC.TAG.NPC_QUEST_START> & NPCQ_Sculpter ) 
+   SAY You are already on this quest! 
+ELSEIF ( <SRC.TAG.NPC_QUEST_DONE> & NPCQ_Sculpter )
+   SAY You are already done this quest!
+ELSE
+   SAY I have this rare piece of granite that needs delivering. Can you help me?
+   SAY Find the Sculptor and give him this stone to help him finish his statue.
+   Say Say "reward" when you find him to receive your reward.
+   SRC.TAG.NPC_QUEST_START = <eval ( <SRC.TAG.NPC_QUEST_START> | NPCQ_Sculpter )>
+   SRC.NEWITEM=i_granite
+   SRC.ACT.BOUNCE 
+   SOUND=01FC
+   SAY Please deliver the granite, so he can finish his statue.
+   SRC.ARROWQUEST 1906,2680
+   return 1 
+ENDIF
+
+ON=*where*
+SAY A magic arrow will guide your way to the Sculptor!
+RETURN 1
+
+[SPEECH stone_b] 
+on=*quest*
+ON=*hello*
+ON=*hi*
+Say Hello Adventurer!
+Say Do you have any stone to help me finish this statue?
+Say If yes, say "reward"
+on=Deliver 
+on=reward 
+on=collect 
+IF <SRC.RESTEST i_granite> 
+   SERV.NEWITEM=i_gold 
+   NEW.AMOUNT=2500
+   NEW.BOUNCE 
+   SOUND=01FC 
+   BLUE_SYSMSG You earn 2500 gold coins for completing the quest.  
+   SRC.consume i_granite
+   SRC.TAG.NPC_QUEST_START = <eval ( <SRC.TAG.NPC_QUEST_START> &~ NPCQ_Sculpter )>
+   SRC.TAG.NPC_QUEST_DONE = <eval ( <SRC.TAG.NPC_QUEST_DONE> | NPCQ_Sculpter )>
+   SRC.SYSMESSAGE Thank you for delivering the Granite. I can continue making this statue.
+   SRC.ARROWQUEST 
+ELSE 
+   SAY You don't have a granite for me?
+   RETURN 1  
+ENDIF
+
+//——————————————————————————————
+//mapmaker
+//——————————————————————————————
+[CHARDEF C_H_qq8_a] 
+DEFNAME=C_H_qq8_a
+NAME=Map Maker 
+ID=C_MAN 
+DAM=15,20 
+ARMOR=20 
+
+TSPEECH=g_quest
+TSPEECH=mapmaker_a
+
+TEVENTS=e_npc_quest
+
+CATEGORY=Imperial uo
+SUBSECTION=Quick Quests 
+DESCRIPTION=Mapmaker Quest trigger
+
+ON=@Create 
+   TITLE=Mapmaker
+   NPC=brain_human 
+   COLOR=colors_skin 
+   STR={151 165} 
+   DEX={80 120} 
+   INT={151 165} 
+
+   DETECTION={90.0 100.0} 
+   FENCING={90.0 100.0} 
+   PARRYING={90.0 100.0} 
+   SWORDSMANSHIP={90.0 100.0} 
+   WRESTLING={90.0 100.0} 
+   MACEFIGHTING={90.0 100.0} 
+   MAGICRESISTANCE={90.0 100.0} 
+   TACTICS={90.0 100.0} 
+
+   ITEMNEWBIE=random_male_hair 
+   COLOR=colors_hair 
+   ITEMNEWBIE=random_facial_hair 
+   COLOR=match_hair 
+   TAG.SEE_SAY=Hello! Can you help me?
+
+ON=@NPCRestock
+   ITEM=i_shirt_plain 
+   COLOR=colors_all 
+   ITEM=random_pants 
+   COLOR=colors_all
+   ITEM=01710
+   COLOR=colors_all
+
+
+[ITEMDEF i_roadmap]
+   NAME=A Road Map
+   ID=014ed
+   CATEGORY=Imperial uo
+   SUBSECTION=Quick Quests 
+   DESCRIPTION=Road Map
+
+[CHARDEF C_H_qq8_b] 
+   DEFNAME=C_H_qq8_b
+   NAME=Road Worker
+   ID=C_MAN 
+   DAM=15,20 
+   ARMOR=20 
+   TSPEECH=mapmaker_b
+   
+   TEVENTS=e_npc_quest
+   CATEGORY=Imperial uo
+   SUBSECTION=Quick Quests 
+   DESCRIPTION=mapmaker finish
+
+ON=@Create 
+   TITLE=Road Worker
+   NPC=brain_human 
+   COLOR=colors_skin 
+   STR={151 165} 
+   DEX={80 120} 
+   INT={151 165} 
+
+   DETECTION={90.0 100.0} 
+   FENCING={90.0 100.0} 
+   PARRYING={90.0 100.0} 
+   SWORDSMANSHIP={90.0 100.0} 
+   WRESTLING={90.0 100.0} 
+   MACEFIGHTING={90.0 100.0} 
+   MAGICRESISTANCE={90.0 100.0} 
+   TACTICS={90.0 100.0} 
+
+   ITEMNEWBIE=random_male_hair 
+   COLOR=colors_hair 
+   ITEMNEWBIE=random_facial_hair 
+   COLOR=match_hair 
+
+ON=@NPCRestock
+   ITEM=i_shirt_plain 
+   COLOR=colors_all 
+   ITEM=random_pants 
+   COLOR=colors_all
+   ITEM=01710
+   COLOR=colors_all
+
+
+
+[SPEECH mapmaker_a] 
+ON=*hello*
+ON=*hi*
+Say Hello Adventurer!
+Say Would you like to help me?
+Say If yes please say "quest"
+on=quest 
+IF ( <SRC.TAG.NPC_QUEST_START> & NPCQ_RoadMap )
+   SAY You are already on this quest! 
+ELSEIF ( <SRC.TAG.NPC_QUEST_DONE> & NPCQ_RoadMap )
+   SAY You are already done this quest!
+ELSE
+   SAY I can't find the Road Worker. He's always off having tea. The roads will never be finished.
+   SAY Can you find the Road Worker and give him these road maps?
+   Say Say "reward" when you find him to receive your reward.
+   SRC.TAG.NPC_QUEST_START = <eval ( <SRC.TAG.NPC_QUEST_START> | NPCQ_RoadMap )>
+   SRC.NEWITEM=i_roadmap
+   SRC.ACT.BOUNCE 
+   SOUND=01FC
+   SAY Please deliver the Road Map, so he can finish his work.
+   SRC.ARROWQUEST 1994,2700
+   return 1
+ENDIF
+
+ON=*where*
+SAY A magic arrow will guide your way to the Road Worker!
+RETURN 1
+
+[SPEECH mapmaker_b] 
+On=*quest*
+ON=*hello*
+ON=*hi*
+Say Hello Adventurer!
+Say Got any Road Map for me?
+Say You better don't...But if you do, say "reward".
+on=Deliver 
+on=reward 
+on=collect 
+IF <SRC.RESTEST i_roadmap> 
+   SERV.NEWITEM=i_gold 
+   NEW.AMOUNT=2500
+   NEW.BOUNCE
+   SOUND=01FC 
+   BLUE_SYSMSG You earn 2500 gold coins for completing the quest.
+   SRC.consume i_roadmap
+   SRC.TAG.NPC_QUEST_START = <eval ( <SRC.TAG.NPC_QUEST_START> &~ NPCQ_RoadMap )>
+   SRC.TAG.NPC_QUEST_DONE = <eval ( <SRC.TAG.NPC_QUEST_DONE> | NPCQ_RoadMap )>
+   SRC.SYSMESSAGE I suppose I will have to do some work now!
+   SRC.ARROWQUEST 
+ELSE 
+   SAY I hope you don't have the Road Map. I was having a nice cup of tea.
+   RETURN 1  
+ENDIF
+
+
+///////////////////////// Quest General Speech and Events//////////////
+
+[SPEECH G_quest] 
+on=hello
+on=hiya
+on=greetings
+on=hail
+on=what
+on=hi
+SAY If you would like to help me out say "Quest"
+on=help
+SAY Find the person I'm looking for and deliver the object
+SAY Then say collect for your reward
+
+
+[EVENTS e_npc_quest]
+//on=@hit 
+//   FLAGS=000000005 
+//   RETURN 1 
+
+//on=@gethit 
+//   FLAGS=000000005 
+//   RETURN 1 
+
+//on=@damage 
+//   FLAGS=000000005 
+//   RETURN 1 
+
+On=@NPCSeeNewPlayer 
+   IF !(<TAG0.SEE_SAY> == 00)
+      SAY <TAG0.SEE_SAY>
+   ENDIF
+   
+ON=@CLICK
+MESSAGE @0AFE [Quest NPC]
+
+   
+[EOF]

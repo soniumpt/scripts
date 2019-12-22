@@ -1,0 +1,242 @@
+//More or less by Ray.
+///////////////////////////////////////////////////////////////////
+
+[FUNCTION f_resenddialog]
+SRC.DIALOGCLOSE <ARGV[0]>
+SDIALOG <ARGS>
+
+[FUNCTION f_generate_coords]
+local.coords = "<eval {2304 5008}>,<eval {1344 3696}>"
+if <serv.map(<local.coords>).type> != t_water
+f_generate_coords
+else
+tag.sextantp = <local.coords>,255,0
+endif
+
+[FUNCTION sextant]
+local.lat = <eval ((<p.y> - 1624) * 360 * 60) / 4096>
+local.lng = <eval ((<p.x> - 1323) * 360 * 60) / 5120>
+local.latd = <eval <local.lat> / 60>
+local.latm = <eval <local.lat> - (<local.latd> * 60)>
+local.lngd = <eval <local.lng> / 60>
+local.lngm = <eval <local.lng> - (<local.lngd> * 60)>
+//absval latd
+// absval latm
+// absval lngd
+// absval lngm
+local.latc = "N"
+if <local.lat> > 0
+local.latc = "S"
+endif
+local.lngc = "W"
+if <local.lng> > 0
+local.lngc = "E"
+endif
+link.tag.coords = "<dlocal.latd>o<dlocal.latm>'<local.latc>, <dlocal.lngd>o<dlocal.lngm>'<local.lngc>"
+
+[FUNCTION f_disturb_seamonster]
+// npc that shows up when you *accidentally* disturb the waters
+serv.newnpc c_sea_serpent
+new.p = <args>
+new.attack <uid>
+local.seamon = <new.uid>
+serv.newitem i_fishing_spawn_remover
+uid.<local.seamon>.equip <new.uid>
+sector.allclients update
+
+[FUNCTION f_pullout_treasure]
+LOCAL.TREASURE = <QVAL (<UID.<ARGS>.LINK.TAG0.sos.ancient> == 1) ? tm_sos_treasure_ancient : tm_sos_treasure> // I’ll ignore the sos.ancient since it’s functional this way.
+SYSMESSAGE You pull up a heavy chest from the depths of the ocean!
+IF (<R4> == 1)
+f_disturb_seamonster <UID.<ARGS>.P>
+f_disturb_seamonster <UID.<ARGS>.P>
+ENDIF
+SERV.NEWITEM <local.treasure>
+NEW.ATTR = attr_decay
+NEW.P = <P>
+NEW.TIMER = 600
+UID.<ARGS>.LINK.REMOVE
+UID.<ARGS>.REMOVE
+RETURN 1
+
+[FUNCTION f_fishing_bones]
+// got useless body parts, which may work for decoration
+SYSMESSAGE You pull up a body part!
+SERV.NEWITEM tm_sos_bodyparts
+NEW.P = <P>
+
+[FUNCTION f_fishing_items]
+// catch up painting or pillows from the treasure tile
+SYSMESSAGE You managed pull up something.
+SERV.NEWITEM {tm_sos_paintings 1 tm_sos_pillows 1}
+NEW.P = <P>
+
+//////////////////////////////////////////////////////////////////
+
+[ITEMDEF i_sos_tile]
+ID=0352e
+TYPE=t_script
+
+ON=@CREATE
+ATTR=attr_decay
+TIMER=0
+
+ON=@DCLICK
+REMOVE
+LINK.REMOVE
+SRC.TAG.SEXTANTCOORDS=
+SRC.ANIM 12
+SRC.SOUND 027
+DORAND 3
+SRC.f_pullout_treasure <ARGO.UID>
+SRC.f_fishing_bones <ARGO.UID>
+SRC.f_fishing_items <ARGO.UID>
+RETURN 1
+ENDDO
+ENDIF
+
+[ITEMDEF i_sos_bottle]
+NAME=Message in a bottle
+ID=i_bottle_ale
+VALUE=20000
+TYPE=t_script
+
+ON=@Create
+ATTR=attr_decay
+COLOR=07b5
+
+ON=@DCLICK
+IF (<SRC.FISHING> < 800)
+SRC.SYSMESSAGE You can not understand the message.
+RETURN 1
+
+ELSE
+
+SERV.NEWITEM i_sos_message
+NEW.BOUNCE
+REMOVE
+ENDIF
+RETURN 1
+
+[ITEMDEF i_sos_message]
+NAME=Water stained SOS
+ID=014ed
+TYPE=t_script
+VALUE=20000
+CATEGORY=Treasure Hunting
+SUBSECTION=SOS Items
+DESCRIPTION=Waterstained SOS
+
+ON=@Create
+ATTR=attr_decay
+TIMER=0
+
+ON=@DCLICK
+IF (<ISEMPTY <tag.sextantp>>)
+f_generate_coords
+SERV.NEWITEM i_sos_tile
+NEW.LINK = <UID>
+LINK = <NEW.UID>
+NEW.ATTR = attr_static|attr_move_never
+NEW.P = <TAG0.SEXTANTP>
+NEW.SEXTANT
+NEW.FIX
+ENDIF
+SRC.TAG.SEXTANTCOORDS = <LINK.P>
+SRC.f_resenddialog d_sos_message
+RETURN 1
+
+// This is to make sure the spawns don't hang around forever, which can be a problem
+
+[ITEMDEF i_fishing_spawn_remover]
+NAME=Spawn Remover Memory
+ID=i_memory
+TYPE=t_eq_script
+
+ON=@CREATE
+ATTR=attr_invis|attr_newbie
+TIMER=60*60*2 //4 hours
+
+ON=@TIMER
+CONT.REMOVE
+RETURN 1
+
+//////////////////////////////////////////////////////////////////
+
+[TEMPLATE tm_sos_treasure_ancient]
+// this is one level greater than any common sos
+CATEGORY=Item Templates
+SUBSECTION=Treasure Hunting
+DESCRIPTION=Ancient SOS Treasure
+CONTAINER=0e41
+
+[TEMPLATE tm_sos_treasure]
+// common sos treasure
+CATEGORY=Item Templates
+SUBSECTION=Treasure Hunting
+DESCRIPTION=Common SOS Treasure
+CONTAINER=0e41
+ITEM=i_gold,{500 5000}
+
+[TEMPLATE tm_sos_pillows]
+// decorative items fished up from treasure tile
+CATEGORY=Item Templates
+SUBSECTION=Treasure Hunting
+DESCRIPTION=Pillows
+ITEM=i_gold,{100 250}
+
+[TEMPLATE tm_sos_paintings]
+// decorative items fished up from treasure tile
+CATEGORY=Item Templates
+SUBSECTION=Treasure Hunting
+DESCRIPTION=Paintings
+ITEM={ i_portrait_1 1 i_portrait_2 1 i_portrait_3 1 i_portrait_4 1 i_portrait_5 1 i_portrait_6 1 i_portrait_7 1 i_portrait_big 1 }//i_painting_ruined 1 }
+
+[TEMPLATE tm_sos_bodyparts]
+// decorative items fished up from treasure tile
+CATEGORY=Item Templates
+SUBSECTION=Treasure Hunting
+DESCRIPTION=Body Parts
+ITEM={ i_flesh_arm_right 1 i_flesh_upper_body 1 i_flesh_leggings 1 i_flesh_torso_2 1 i_flesh_head 1 i_flesh_leg 1 i_flesh 1 i_flesh_legs_3 1 i_flesh_arm_left 1 i_flesh_upper_body_2 1 i_flesh_legs_4 1 i_flesh_torso_3 1 i_flesh_2 1 i_flesh_legs_5 1 i_flesh_leg_2 1 i_flesh_heart 1 i_flesh_liver 1 i_flesh_entrails 1 i_flesh_brain 1 i_flesh_torso 1 i_flesh_head_2 1 i_flesh_left_arm 1 i_flesh_right_arm 1 i_flesh_left_leg 1 i_flesh_right_leg 1 }
+
+//////////////////////////////////////////////////////////////////
+
+[DIALOG d_sos_message]
+0, 0
+PAGE 0
+resizepic 63 62 2520 317 319
+resizepic 91 103 3500 256 189
+text 122 114 0 0
+text 104 130 0 1
+text 112 147 0 2
+text 113 165 0 3
+text 108 181 0 4
+text 106 197 0 5
+text 112 214 0 6
+text 110 231 0 7
+text 176 248 0 8
+button 91 317 4014 4015 1 0 0
+text 132 317 0 9
+text 91 293 0 10
+
+[DIALOG d_sos_message TEXT]
+This is a message hastily
+scribbled by a passenger aboard
+a sinking ship. While it is
+probably too late to save the
+passengers and crew, perhaps
+some treasure went down with
+the ship! The message gives
+the ships last known sextant
+coordinates.
+OKAY
+<src.tag.sextantcoords>
+
+[DIALOG d_sos_message BUTTON]
+on=0
+src.tag.sextantcoords=
+
+//////////////////////////////////////////////////////////////////
+
+
+

@@ -1,0 +1,291 @@
+
+//////////////////////////////////MODIFIED TYPES/////////////////////////////////////////
+//T_booze originally by Ivan0/kuchervano
+//Changelog
+//Wren - 14 NOV 03 - Fixed some bugs in t_booze script and added stat removal
+//Wren - 22 NOV 03 - Add t_food
+//Wigi - 11 SEP 06 - Add t_telepad
+
+
+/////////////////////////T_TELEPAD/////////////////////////
+
+[TYPEDEF t_telepad]
+ON=@STEP
+   //IF (<SRC.FINDID.i_delivery_memory.UID>)
+   //   SRC.SYSMESSAGE You can't use gates! You'll spoil the delivery!
+   //   RETURN 1
+   //ENDIF
+
+  //SRC.SYSMESSAGE @337 You are now in <REGION.NAME>
+
+//////////////////////////T_BOOZE//////////////////////////
+
+[TYPEDEF t_booze]
+ON=@Dclick
+IF (SRC.FINDID(m_drunk))
+   SRC.MESSAGE You are already drunk!
+   SRC.SYSMESSAGE You cant drink anymore!
+   RETURN 1
+ELSE
+   SRC.NEWITEM=m_drunk_stats
+   SRC.ACT.EQUIP
+   SRC.NEWITEM=m_drunk
+   SRC.ACT.EQUIP
+   SOUND 030
+   REMOVE
+   RETURN 1
+ENDIF
+
+
+[ITEMDEF m_drunk]
+ID=i_memory
+TYPE=t_eq_script
+WEIGHT=0
+NAME=IsDrunk
+
+ON=@Create
+   TIMER={5 15} //interval between hics
+   MORE={5 15} //number of hics
+
+ON=@Timer
+   IF <MORE><1
+      CONT.FINDID(m_drunk_stats).REMOVE
+      RETURN 0
+   ELSE
+      MORE=<MORE>+-1
+      DORAND 2
+        CONT.ANIM=020 //bow anim
+        CONT.SAY=*Hic*
+      ENDDO
+      TIMER={5 15}
+      RETURN 1
+   ENDIF
+
+
+[ITEMDEF m_drunk_stats]
+NAME=Drunk Stats
+ID=i_memory
+TYPE=t_eq_script
+WEIGHT=0
+
+ON=@Create
+   TIMER=300
+
+ON=@EQUIP
+   //CONT.STR=(<CONT.STR>-6)
+   //CONT.DEX=(<CONT.DEX>-6)
+   //CONT.INT=(<CONT.INT>-6)
+
+ON=@UNEQUIP
+   //CONT.STR=(<CONT.STR>+6)
+   //CONT.DEX=(<CONT.DEX>+6)
+   //CONT.INT=(<CONT.INT>+6)
+
+ON=@Timer
+   REMOVE
+   RETURN 1
+
+
+
+//////////////////////////T_FOOD///////////////////////////////
+
+[TYPEDEF t_food]
+ON=@DCLICK
+    IF (<ATTR> & attr_move_never)
+       SRC.SYSMESSAGE You have not been invited to eat that.   
+       RETURN 1
+    ENDIF
+    
+    IF (<SRC.FOOD> > 14)
+       SRC.SYSMESSAGE You are too full to eat anymore.
+       RETURN 1
+    ENDIF
+
+    IF (<WEIGHT> > 0)
+       IF (0<TAG.ISDRINK>)
+          SRC.EMOTE drink the <NAME>
+       ELSE
+          SRC.EMOTE eat the <NAME>
+       ENDIF
+  
+       LOCAL.WEIGHT = <WEIGHT>/<AMOUNT>
+       IF (<LOCAL.WEIGHT> > 10)
+          SRC.FOOD = <EVAL (<src.food> + (<LOCAL.WEIGHT> / 10) + <MOREM>)>
+       ELSE
+          SRC.FOOD = <EVAL (<SRC.FOOD> + 1  + <MOREM>)>
+       ENDIF
+       
+       LOCAL.WEIGHT = <EVAL (<LOCAL.WEIGHT> / 10)>
+       IF (0<TAG.ISDRINK>)
+          IF ( (<LOCAL.WEIGHT> + <MOREM>) < 2 )
+             SRC.SYSMESSAGE After sipping a light beverage:
+          elseif ( (<LOCAL.WEIGHT> + <MOREM>) < 3 )
+             SRC.SYSMESSAGE After drinking a reasonably sized beverage:
+          elseif ( (<LOCAL.WEIGHT> + <MOREM>) < 4 )
+             SRC.SYSMESSAGE After enjoying a good, ok sized beverage:
+          elseif ( (<LOCAL.WEIGHT> + <MOREM>) <  5 )
+             SRC.SYSMESSAGE After consuming a rather refreshing drink:
+          elseif ( (<LOCAL.WEIGHT> + <MOREM>) <  6 )
+             SRC.SYSMESSAGE After drinking an impressively large beverage:
+          elseif ( (<LOCAL.WEIGHT> + <MOREM>) <  7 )
+             SRC.SYSMESSAGE After drinking a fine-tasting large beverage:
+          else
+             SRC.SYSMESSAGE After drinking a beverage you swear is ambrosia itself:
+          endif
+       ELSE
+           IF ( (<LOCAL.WEIGHT> + <MOREM>) < 2 )
+              SRC.SYSMESSAGE After eating a puny snack:
+           elseif ( (<LOCAL.WEIGHT> + <MOREM>) < 3 )
+              SRC.SYSMESSAGE After eating a small snack:
+           elseif ( (<LOCAL.WEIGHT> + <MOREM>) < 4 )
+              SRC.SYSMESSAGE After eating a good snack:
+           elseif ( (<LOCAL.WEIGHT> + <MOREM>) <  5 )
+              SRC.SYSMESSAGE After eating a small meal:
+           elseif ( (<LOCAL.WEIGHT> + <MOREM>) <  6 )
+              SRC.SYSMESSAGE After eating a medium meal:
+           elseif ( (<LOCAL.WEIGHT> + <MOREM>) <  7 )
+              SRC.SYSMESSAGE After eating a good meal:
+           elseif ( (<LOCAL.WEIGHT> + <MOREM>) <  8 )
+              SRC.SYSMESSAGE After eating a great meal:
+           elseif ( (<LOCAL.WEIGHT> + <MOREM>) <  9 )
+              SRC.SYSMESSAGE After eating an enormous meal:
+           elseif ( (<LOCAL.WEIGHT> + <MOREM>) <  10 )
+              SRC.SYSMESSAGE After eating a gigantic meal:
+           elseif ( (<LOCAL.WEIGHT> + <MOREM>) <  11 )
+              SRC.SYSMESSAGE After eating a banquet:
+           elseif ( (<LOCAL.WEIGHT> + <MOREM>) <  12 )
+              SRC.SYSMESSAGE After eating a King's banquet:
+           elseif ( (<LOCAL.WEIGHT> + <MOREM>) <  13 )
+              SRC.SYSMESSAGE After eating the town's granary:
+           elseif ( (<LOCAL.WEIGHT> + <MOREM>) <  14 )
+              SRC.SYSMESSAGE After eating Britains whole food suply:
+           else
+              SRC.SYSMESSAGE After eating enough to feed the peasants of vesper for a year:
+          endif
+       ENDIF
+ 
+ 
+ 
+       IF ( <SRC.FOOD> < 2 )
+          SRC.SYSMESSAGE Your stomach still starves.
+       elseif ( <SRC.FOOD> < 4 )
+          SRC.SYSMESSAGE Your stomach feels near empty.
+       elseif ( <SRC.FOOD> < 6 )
+          SRC.SYSMESSAGE Your stomach still yearns for more.
+       elseif ( <SRC.FOOD> < 8 )
+          SRC.SYSMESSAGE Your stomach is almost satisfied.
+       elseif ( <SRC.FOOD> < 10 )
+          SRC.SYSMESSAGE Your stomach feels satisfied.
+       elseif ( <SRC.FOOD> < 12 )
+          SRC.SYSMESSAGE Your stomach feels a little bloated.
+       elseif ( <SRC.FOOD> < 14 )
+          SRC.SYSMESSAGE Your stomach feels very bloated.
+       else
+          SRC.SYSMESSAGE Your stomach feels like it's ready to pop!
+       endif
+
+       //To negate the effect of possible infinite food and to
+       //reward complexity of food consumption, this function
+       //is set to allow a maximum number of hits equal to the
+       //current strengh plus 6 times the nourishment value of
+       //the food being consumed.
+         LOCAL.MAXHITSPERFOOD = (<EVAL (<SRC.STR> + (((<WEIGHT>/<AMOUNT>) + <MOREM>)*6))>)
+         IF !( <SRC.HITS> >= <LOCAL.MAXHITSPERFOOD> )
+            SRC.HITS = <EVAL (<SRC.HITS> + (<WEIGHT>/<AMOUNT>)))>
+         ENDIF
+         
+       //consume only one item
+         AMOUNT = <EVAL (<AMOUNT>-1)>
+         IF (<AMOUNT> == 0)
+             REMOVE
+         ENDIF
+         SRC.UPDATE
+         RETURN 1
+
+    ENDIF
+    TYPE = T_FOOD
+    RETURN 0
+
+
+
+///////////////////////////////T_W_FOOD//////////////////////////////
+//NO SCRIPT USE THIS ANYMORE BUT THERE ARE STILL ITEMS ON THE SERVER
+//THAT MIGHT SO WE NEED TO LEAVE IT IN FOR AT LEAST A LITTLE WHILE
+
+[TYPEDEF t_w_food]
+ON=@DCLICK
+    IF (<SRC.FOOD> > 14)
+       SRC.SYSMESSAGE You are too full to eat anymore.
+       RETURN 1
+    ENDIF
+    IF (<TDATA4> >1)
+       SRC.EMOTE eat the <NAME>
+
+       SRC.FOOD = <EVAL (<src.food> + <TDATA4> + <MOREM>)>
+
+       IF ( (<TDATA4> + <MOREM>) < 2 )
+          SRC.SYSMESSAGE After eating a puny snack:
+       elseif ( (<TDATA4> + <MOREM>) < 3 )
+          SRC.SYSMESSAGE After eating a small snack:
+       elseif ( (<TDATA4> + <MOREM>) < 4 )
+          SRC.SYSMESSAGE After eating a good snack:
+       elseif ( (<TDATA4> + <MOREM>) <  5 )
+          SRC.SYSMESSAGE After eating a small meal:
+       elseif ( (<TDATA4> + <MOREM>) <  6 )
+          SRC.SYSMESSAGE After eating a medium meal:
+       elseif ( (<TDATA4> + <MOREM>) <  7 )
+          SRC.SYSMESSAGE After eating a good meal:
+       elseif ( (<TDATA4> + <MOREM>) <  8 )
+          SRC.SYSMESSAGE After eating a great meal:
+       elseif ( (<TDATA4> + <MOREM>) <  9 )
+          SRC.SYSMESSAGE After eating an enormous meal:
+       elseif ( (<TDATA4> + <MOREM>) <  10 )
+          SRC.SYSMESSAGE After eating a gigantic meal:
+       elseif ( (<TDATA4> + <MOREM>) <  11 )
+          SRC.SYSMESSAGE After eating a banquet:
+       elseif ( (<TDATA4> + <MOREM>) <  12 )
+          SRC.SYSMESSAGE After eating a King's banquet:
+       elseif ( (<TDATA4> + <MOREM>) <  13 )
+          SRC.SYSMESSAGE After eating the town's granary:
+       elseif ( (<TDATA4> + <MOREM>) <  14 )
+          SRC.SYSMESSAGE After eating Britains whole food suply:
+       else
+          SRC.SYSMESSAGE After eating enough to feed the peasants of vesper for a year:
+       endif
+       IF ( <SRC.FOOD> < 2 )
+          SRC.SYSMESSAGE You still feel starving.
+       elseif ( <SRC.FOOD> < 4 )
+          SRC.SYSMESSAGE You still feel very hungry.
+       elseif ( <SRC.FOOD> < 6 )
+          SRC.SYSMESSAGE You still feel hungry.
+       elseif ( <SRC.FOOD> < 8 )
+          SRC.SYSMESSAGE You still feel a little hungry.
+       elseif ( <SRC.FOOD> < 10 )
+          SRC.SYSMESSAGE You dont't feel hungry anymore.
+       elseif ( <SRC.FOOD> < 12 )
+          SRC.SYSMESSAGE You feel fed.
+       elseif ( <SRC.FOOD> < 14 )
+          SRC.SYSMESSAGE You feel well fed.
+       else
+          SRC.SYSMESSAGE You feel absolutely stuffed
+       endif
+       //consume only one item
+         AMOUNT = <EVAL (<AMOUNT>-1)>
+         IF (<AMOUNT> == 0)
+             REMOVE
+         ENDIF
+         SRC.UPDATE
+       //To negate the effect of possible infinite food and to
+       //reward complexity of food consumption, this function
+       //is set to allow a maximum number of hits equal to the
+       //current strengh plus 6 times the nourishment value of
+       //the food being consumed.
+         LOCAL.MAXHITSPERFOOD = (<EVAL (<SRC.STR> + ((<TDATA4> + <MOREM>)*6))>)
+         IF ( <SRC.HITS> >= <LOCAL.MAXHITSPERFOOD> )
+            RETURN 1
+         ENDIF
+         SRC.HITS = <EVAL (<SRC.HITS> + (<TDATA4>*3))>       
+       RETURN 1
+    ENDIF
+    TYPE = T_FOOD
+    RETURN 0

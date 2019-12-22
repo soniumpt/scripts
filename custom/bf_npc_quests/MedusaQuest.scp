@@ -1,0 +1,1010 @@
+////////// Medusa Quest ///////////
+//// By SQWEAK  UOProject.uo///////
+///////////////////////////////////
+
+////// EVENTS & FUNCTIONS ///////
+
+[FUNCTION try_sirensong_one]
+   if ( <DISTANCE> > 10 )
+      return 0
+   endif
+   SYSMESSAGE The Song Makes you Feel Weak
+   LOCAL.STAM	= <eval( { 10 25 } )>
+   if ( <STAM> < <LOCAL.STAM> )
+      STAM	= 0
+   else
+      STAM	= <eval (<stam> - <LOCAL.STAM>)>
+   endif
+   SOUND=045
+  
+[FUNCTION try_sirensong]
+   if ( rand(6) = 1)
+      return 0
+   endif
+   EMOTE Begins to sing
+   REGION.ALLCLIENTS try_sirensong_one
+
+
+[EVENTS e_npc_siren]
+ON = @HitTry
+   try_sirensong
+ON = @GetHit
+   try_sirensong
+
+
+//// SPEECH FILES /////
+[SPEECH spk_questhelp] 
+on=*Help*
+   SAY I understand simple words such as hello, help, quest, reward collect. 
+   SAY When I talk I might tell you the sentences I understand. 
+   SAY If I'm ignoring you, you might want to get my attention.
+   SAY To do this say name and hello, I will then know you are talking to me.
+   SAY Are you talking to me?
+   EMOTE Pulls a De Nero Face.
+
+[SPEECH spk_Phineus] 
+on=*hi* 
+on=*hello*
+on=*hail*
+on=*Greetings*
+on=*quest*
+   SAY Have the harpies gone?.
+   SAY Because I am able to predict the future, I have been punished. 
+   SAY Every time I begin a meal, these horrible flying creatures, the Harpies, snatch some of my food and make the rest smell so foul that I cannot eat it.
+   SAY When you have killed all the harpies and have the feathers as proof say, You are safe.
+
+on=*Feather*
+on=*Feathers*
+   SAY Aye Harpy feathers, so I know that they will torment me no more.
+   SAY When you have them say, You are Safe
+
+on=*safe*
+on=*You are safe*
+   IF ((<SRC.RESTEST i_Harpy_Feather 3>) && ( (<SRC.Tag.GREEK1> =0) )
+      SAY I cannot thank you enough.
+      SAY You have saved my life. And now I am going to help you, I have a part of a crystal.
+      SAY I do not know anything about it, but I do know it is linked to your future.
+      SRC.consume i_Harpy_Feather 3
+      SRC.Tag.GREEK1=1
+      SRC.NEWITEM= i_Crystal_part1
+      SRC.ACT.BOUNCE 
+      SOUND=01FC 
+   ELSE
+      SAY You do not have the feathers on you.
+      RETURN 1
+   ENDIF
+
+[SPEECH spk_Hephaestus] 
+on=*hi* 
+on=*hello*
+on=*hail*
+on=*Greetings*
+on=*quest*
+   SAY You quest is a hard on Mortal... I foreseen a toubled path ahead. To help you in your task I have created.
+   SAY I find Mirrored shield. But If you wish The sheild you must Forfil 3 labours.
+   SAY You must bring to me The following
+   SAY to know the Labours say Labours.
+
+on=*Labours*
+   SAY You must bring me the following
+   SAY 12 Feathers from the Stymphalians
+   SAY The Heart Of Talos.
+   SAY THe Golden Harp of The Sirens
+   SAY You have complteted the labours return to me and say. Completed.
+
+on=*Sirens*
+   SAY The Sirens are located on a samll island BLAH BLAH
+
+on=*Talos*
+   SAY Talos can be found deep inside this dungeon
+
+on=*Stymphalians*
+   SAY Stymphalians can be found somehwre around here
+
+on=*why*
+   SAY To Protect me from Prometheus.
+
+on=*Completed*
+   IF ( 0<SRC.Tag.GREEK1> = 1 ) 
+      SAY You have forfilled tha labours I asked you.. Do not test the Gods.
+   ELSEIF ((<SRC.RESTEST i_golden_Harp 1>) && ( (<SRC.Tag.GREEK1> =0) && (<SRC.RESTEST i_Stymphalian_Feather 12>) && (<SRC.RESTEST i_Heart_Talos>) )
+      SAY You have done well brave mortal, I will rewrads with with a weapon of the gods.
+      SAY You have saved my life. And now I am going to help you, I have a part of a crystal.
+      SAY I do not know anything about it, but I do know it is linked to your future.
+      SRC.consume i_golden_Harp 1
+      SRC.consume i_Stymphalian_Feather 12
+      SRC.consume i_Heart_Talos 1
+      SRC.Tag.GREEK2=1
+      SRC.NEWITEM= i_shield_mirrored
+      SRC.ACT.BOUNCE 
+      SOUND=01FC 
+   ELSE
+      SAY You do not have the feathers on you.
+      RETURN 1
+   ENDIF
+
+
+[SPEECH spk_Charon] 
+on=*hi* 
+on=*hello*
+on=*hail*
+on=*Greetings*
+on=*river*
+   SAY Wish to cross you do. Forfil an errand you will.
+
+on=*Styx*
+   SAY The river Styx this be, Crossing you want. The ferryman you must pay.
+
+on=*Pay*
+   SAY Pay, you want to cross? Foril an errand you will. Say Quest for errand
+
+on=*quest*
+   IF 0<SRC.TAG.Charon> = 0
+      SAY You wish to pass, then ferryman you must pay.
+      SAY West I the jungle it be, A Willow it is, posesses A Golden Bough, it does.
+      SAY Bring me and your way will be paid.
+      SAY Come back and say I have the ferryfare
+      SRC.TAG.Charon = 1
+   endif
+   IF 0<SRC.TAG.Charon> = 01
+      SAY Have you brought the bough?
+      SAY If so your fee is paid.
+      SAY Say I have the ferryfare and You may cross safely.
+   endif
+
+on=*I have the ferryfare*
+on=*ferryfare*
+   IF ((<SRC.TAG.Charon> = 1) && (<SRC.RESTEST i_golden_bough 1> ))
+      SAY Transport you I will.
+      EMOTE raises his Mighty hammer and smashes it into the ground.
+      SRC.go 5924,37,44
+      SRC.TAG.Charon = 1
+      SRC.consume i_golden_bough
+      SOUND=01FC 
+      SRC.SYSMESSAGE = The ground begins to crack, a Dusty vapour pours from the gapping hole.
+      SRC.SYSMESSAGE = Slowly it forms a ghosty Boat.
+      SRC.EMOTE step aboard The Ghosty Boat.
+      SRC.SYSMESSAGE = All around becomes blurred... The next thing you realise is you safely ashore on the other side.
+   ELSE
+      SAY No Golden Bough. No ferry across.
+      RETURN 1
+   endif
+
+///// CHARATER FILES //////
+
+[CHARDEF C_H_Charon]
+DEFNAME=C_H_Charon
+NAME=Charon
+ID=C_Man
+DAM=15,80
+ARMOR=40
+DESIRES=i_gold,e_notoriety
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+
+TSPEECH = spk_Charon
+TSPEECH = spk_questhelp
+
+ON=@Create
+NPC=brain_human
+TITLE =   
+COLOR=003c1
+STR={561 675}
+DEX={561 675}
+INT={541 655}
+
+PARRYING={90.0 100.0}
+MACEFIGHTING={90.0 100.0}
+MAGICRESISTANCE={90.0 100.0}
+TACTICS={90.0 100.0}
+WRESTLING={90.0 100.0}
+MACEFIGHTING={90.0 100.0}
+
+ON=@NPCRestock
+ITEMNEWBIE=i_robe_Charon
+ITEMNEWBIE=i_hammer_war_gold
+
+
+ON=@NPCSeeNewPlayer
+SAY Wish to cross you do.
+
+CATEGORY=Imperial uo
+SUBSECTION=Sqweaks Greek Quest
+DESCRIPTION=Charon
+
+
+[CHARDEF c_m_death_willow]
+NAME=Lost Willow
+ID=c_reaper
+SOUND=snd_MONSTER_REAPER1
+ICON=i_pet_REAPER
+ANIM=078c7f
+CAN=MT_WALK|MT_USEHANDS|MT_FIRE_IMMUNE
+DAM=10,30
+ARMOR=50
+RESOURCES=16 i_reag_bone
+FOODTYPE=30 t_meat_raw
+DESIRES=r_foliage
+
+
+ON=@CREATE
+     NPC=brain_monster
+     COLOR=colors_black
+     STR={1000 1200}
+     DEX={75 95}
+     INT={535 675}
+     PARRYING={65.0 95.0}
+     MAGERY={200.0 275.0}
+     MAGICRESISTANCE={70.0 95.0}
+     TACTICS={60.0 75.0}
+     WRESTLING={80.0 90.0}
+
+     FAME={1200 1400}
+     KARMA={-6000 -8999}
+
+     ITEMNEWBIE=i_spellbook
+     ADDSPELL=s_fireball
+     ADDSPELL=s_lightning
+     ADDSPELL=s_energy_bolt
+
+     
+ON=@NPCRestock
+ITEM=i_golden_bough
+ITEM=i_gold,{800 1500}
+
+CATEGORY=Imperial uo
+SUBSECTION=Sqweaks Greek Quest
+DESCRIPTION=Death Willow
+
+[CHARDEF c_m_Aello]
+DEFNAME		= c_m_Aello
+NAME		= Aello
+ID		= c_harpy
+SOUND		= snd_MONSTER_HARPY1
+ICON		= i_pet_HARPY
+CAN		= MT_FLY|MT_WALK|MT_FEMALE
+DAM		= 3,35
+ARMOR		= 40
+RESOURCES	= 3 i_ribs_raw, 50 i_feather, 5 tm_rocks
+FOODTYPE	= 5 t_meat_raw, 5 t_arock
+DESIRES		= i_gold, t_arock, c_harpy
+AVERSIONS	= r_water,r_civilization
+TEVENTS		= e_npc_harpy
+
+
+ON=@Create
+  NPC		= brain_monster
+  COLOR		= 0975
+  FAME		= {500 1600}
+  KARMA		= {-4000 -5999}
+  STR		= {500 620}
+  DEX		= {160 210}
+  INT		= {150 170}
+ 
+  PARRYING	= {75.0 90.0}
+  MAGICRESISTANCE={85.0 100.0}
+  TACTICS	= {95.0 100.0}
+  WRESTLING	= {80.0 100.0}
+  MAGERY = {120.0 140.0}
+
+ON=@NPCRestock
+ITEM=loot_newrares_Med
+ITEM = i_Harpy_Feather
+ITEM=i_gold,{1300 1600}
+
+ON=@DEATH
+  y_region_loot_death
+  y_region_loot_calculator
+  loot_STONE_HARPY
+
+CATEGORY=Imperial uo
+SUBSECTION=Sqweaks Greek Quest
+DESCRIPTION=Harpy Aello
+
+[CHARDEF c_m_Celaeno]
+DEFNAME		= c_m_Celaeno 
+NAME		= Celaeno 
+ID		= c_harpy
+SOUND		= snd_MONSTER_HARPY1
+ICON		= i_pet_HARPY
+CAN		= MT_FLY|MT_WALK|MT_FEMALE
+DAM		= 3,35
+ARMOR		= 40
+RESOURCES	= 3 i_ribs_raw, 50 i_feather, 5 tm_rocks
+FOODTYPE	= 5 t_meat_raw, 5 t_arock
+DESIRES		= i_gold, t_arock, c_harpy
+AVERSIONS	= r_water,r_civilization
+TEVENTS		= e_npc_harpy
+
+
+ON=@Create
+  NPC		= brain_monster
+  COLOR		= 0975
+  FAME		= {500 1600}
+  KARMA		= {-4000 -5999}
+  STR		= {500 620}
+  DEX		= {160 210}
+  INT		= {150 170}
+ 
+  PARRYING	= {75.0 90.0}
+  MAGICRESISTANCE={85.0 100.0}
+  TACTICS	= {95.0 100.0}
+  WRESTLING	= {80.0 100.0}
+  MAGERY = {120.0 140.0}
+
+ON=@NPCRestock
+ITEM=loot_newrares_Med
+ITEM = i_Harpy_Feather
+ITEM=i_gold,{1300 1600}
+
+ON=@DEATH
+  y_region_loot_death
+  y_region_loot_calculator
+  loot_STONE_HARPY
+
+CATEGORY=Imperial uo
+SUBSECTION=Sqweaks Greek Quest
+DESCRIPTION=Harpy Celaeno
+
+[CHARDEF c_m_Ocypete]
+DEFNAME		= c_m_Ocypete
+NAME		= Ocypete
+ID		= c_harpy
+SOUND		= snd_MONSTER_HARPY1
+ICON		= i_pet_HARPY
+CAN		= MT_FLY|MT_WALK|MT_FEMALE
+DAM		= 3,35
+ARMOR		= 40
+RESOURCES	= 3 i_ribs_raw, 50 i_feather, 5 tm_rocks
+FOODTYPE	= 5 t_meat_raw, 5 t_arock
+DESIRES		= i_gold, t_arock, c_harpy
+AVERSIONS	= r_water,r_civilization
+TEVENTS		= e_npc_harpy
+
+
+ON=@Create
+  NPC		= brain_monster
+  COLOR		= 0975
+  FAME		= {500 1600}
+  KARMA		= {-4000 -5999}
+  STR		= {500 620}
+  DEX		= {160 210}
+  INT		= {150 170}
+ 
+  PARRYING	= {75.0 90.0}
+  MAGICRESISTANCE={85.0 100.0}
+  TACTICS	= {95.0 100.0}
+  WRESTLING	= {80.0 100.0}
+  MAGERY = {120.0 140.0}
+
+ON=@NPCRestock
+ITEM=loot_newrares_Med
+ITEM = i_Harpy_Feather
+ITEM=i_gold,{1300 1600}
+
+ON=@DEATH
+  y_region_loot_death
+  y_region_loot_calculator
+  loot_STONE_HARPY
+
+CATEGORY=Imperial uo
+SUBSECTION=Sqweaks Greek Quest
+DESCRIPTION=Harpy Ocypete
+
+[CHARDEF C_H_Phineus]
+DEFNAME=C_H_Phineus
+NAME=Phineus
+ID=C_Man
+DAM=3,20
+ARMOR=1
+DESIRES=i_gold,e_notoriety
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+
+TSPEECH = spk_Phineus 
+TSPEECH = spk_questhelp
+
+ON=@Create
+NPC=brain_human
+TITLE =   
+COLOR=003c1
+STR={30 60}
+DEX={80 90}
+INT={50 90}
+
+PARRYING={90.0 100.0}
+MACEFIGHTING={90.0 100.0}
+MAGICRESISTANCE={90.0 100.0}
+TACTICS={90.0 100.0}
+WRESTLING={90.0 100.0}
+MACEFIGHTING={90.0 100.0}
+
+     ITEMNEWBIE=random_male_hair
+     COLOR=03d5
+     ITEMNEWBIE=random_facial_hair
+     COLOR=03d5
+
+ON=@NPCRestock
+ITEMNEWBIE=i_robe
+COLOR=0417
+ITEM=random_shoes
+COLOR=colors_neutral
+
+
+
+ON=@NPCSeeNewPlayer
+SAY Why do these harpies tourment a Blind man so?
+
+CATEGORY=Imperial uo
+SUBSECTION=Sqweaks Greek Quest
+DESCRIPTION=Phineus
+
+[CHARDEF C_m_Sirens]
+DEFNAME		= C_m_Sirens
+NAME		= Siren
+ID		= c_harpy
+SOUND		= 001
+ICON		= i_pet_HARPY
+CAN		= MT_FLY|MT_WALK|MT_FEMALE
+DAM		= 8,35
+ARMOR		= 43
+RESOURCES	= 3 i_ribs_raw, 50 i_feather, 5 tm_rocks
+FOODTYPE	= 5 t_meat_raw, 5 t_arock
+DESIRES		= i_gold, t_arock, c_harpy
+AVERSIONS	= r_water,r_civilization
+TEVENTS		= e_npc_siren
+
+
+ON=@Create
+  NPC		= brain_monster
+  COLOR		= 0542
+  FAME		= {300 1000}
+  KARMA		= {-4000 -4999}
+  STR		= {450 520}
+  DEX		= {120 160}
+  INT		= {51 75}
+  PARRYING	= {75.0 90.0}
+  MAGICRESISTANCE={50.0 65.0}
+  TACTICS	= {70.0 100.0}
+  WRESTLING	= {60.0 90.0}
+ON=@NPCRestock
+ITEM=i_gold,{1000 1400}
+ITEM=loot_newrares_Med
+
+ON=@DEATH
+  y_region_loot_death
+  y_region_loot_calculator
+  loot_STONE_HARPY
+
+CATEGORY=Imperial uo
+SUBSECTION=Sqweaks Greek Quest
+DESCRIPTION=Sirens
+
+[CHARDEF C_m_HSirens]
+DEFNAME		= C_m_HSirens
+NAME		= Higher Siren
+ID		= c_harpy
+SOUND		= 001
+ICON		= i_pet_HARPY
+CAN		= MT_FLY|MT_WALK|MT_FEMALE
+DAM		= 12,40
+ARMOR		= 52
+RESOURCES	= 3 i_ribs_raw, 50 i_feather, 5 tm_rocks
+FOODTYPE	= 5 t_meat_raw, 5 t_arock
+DESIRES		= i_gold, t_arock, c_harpy
+AVERSIONS	= r_water,r_civilization
+TEVENTS		= e_npc_siren
+
+
+ON=@Create
+  NPC		= brain_monster
+  COLOR		= 0523
+  FAME		= {800 1200}
+  KARMA		= {-4000 -4999}
+  STR		= {700 900}
+  DEX		= {200 240}
+  INT		= {51 75}
+  PARRYING	= {75.0 90.0}
+  MAGICRESISTANCE={50.0 65.0}
+  TACTICS	= {70.0 100.0}
+  WRESTLING	= {60.0 90.0}
+ON=@NPCRestock
+ITEM=i_gold,{2000 3000}
+ITEM=loot_newrares_Med
+
+ON=@DEATH
+  y_region_loot_death
+  y_region_loot_calculator
+  loot_STONE_HARPY
+
+CATEGORY=Imperial uo
+SUBSECTION=Sqweaks Greek Quest
+DESCRIPTION=Higher Siren
+
+[CHARDEF C_m_Himeropa]
+DEFNAME		= C_m_Himeropa
+NAME		= Himeropa
+ID		= c_harpy
+SOUND		= 001
+ICON		= i_pet_HARPY
+CAN		= MT_FLY|MT_WALK|MT_FEMALE
+DAM		= 12,40
+ARMOR		= 60
+RESOURCES	= 3 i_ribs_raw, 50 i_feather, 5 tm_rocks
+FOODTYPE	= 5 t_meat_raw, 5 t_arock
+DESIRES		= i_gold, t_arock, c_harpy
+AVERSIONS	= r_water,r_civilization
+TEVENTS		= e_npc_siren
+
+
+ON=@Create
+  NPC		= brain_monster
+  COLOR		= 07a0
+  FAME		= {1200 1200}
+  KARMA		= {-4000 -4999}
+  STR		= {1000 1200}
+  DEX		= {200 240}
+  INT		= {51 75}
+  PARRYING	= {75.0 90.0}
+  MAGICRESISTANCE={50.0 65.0}
+  TACTICS	= {70.0 100.0}
+  WRESTLING	= {60.0 90.0}
+ON=@NPCRestock
+ITEM=i_gold,{4000 6000}
+ITEM=loot_newrares_Med
+
+ON=@DEATH
+  y_region_loot_death
+  y_region_loot_calculator
+  loot_STONE_HARPY
+
+CATEGORY=Imperial uo
+SUBSECTION=Sqweaks Greek Quest
+DESCRIPTION=Himeropa Siren
+
+[CHARDEF c_Bronze_Bull]
+DEFNAME=c_Bronze_Bull
+ID=c_bull_brown_lt
+NAME=Bronze Bull
+SOUND=snd_ANIMALS_BULL1
+ICON=i_pet_BULL
+ANIM=017ff
+DAM=10,39
+ARMOR=34
+BLOODCOLOR	= color_o_bronze
+RESOURCES=12 i_gears_bronze, 24 i_ingot_Bronze
+CAN=MT_WALK|MT_RUN
+
+TEVENTS	= e_npc_dragon
+FOODTYPE=25 t_grain, 25 I_HAY, 64 t_grass
+DESIRES=c_cow_bw,c_cow_brown,c_bull_brown_lt,c_bull_brown_dk
+AVERSIONS=e_carnivores3
+
+ON=@Create
+TITLE = Automton
+ NPC		= brain_dragon
+  FAME		= {1000 2000}
+  KARMA		= {-5000 -5999}
+//ALIGNMENT=NEUTRAL
+  COLOR		= color_o_bronze
+
+STR={350 440}
+DEX={55 75}
+INT={47 75}
+PARRYING={80.0 95.0}
+MAGICRESISTANCE={100.0 125.0}
+TACTICS={68.0 85.0}
+WRESTLING={80.0 110.0}
+
+ON=@NPCRestock
+ITEM=i_gold,{400 600}
+ITEM=loot_newrares_Med
+
+CATEGORY=Imperial uo
+SUBSECTION=Sqweaks Greek Quest
+DESCRIPTION=Bronze Bull 
+
+[CHARDEF c_a_silverdog]
+DEFNAME=c_a_silverdog
+NAME=Silver Dog
+ID=c_wolf
+DAM=6,40
+ARMOR=30
+RESOURCES=8 i_gears_Silver,20 i_ingot_Silver 
+//ALIGNMENT=EVIL
+CAN=MT_WALK
+
+FOODTYPE=15 t_meat_raw
+DESIRES=C_A_DIREWOLF
+AVERSIONS=r_civilization
+
+
+ON=@Create
+TITLE = Automton
+COLOR=0835
+NPC=brain_animal
+STR={400 600}
+DEX={160 180}
+INT={51 90}
+
+PARRYING={80.0 100.0}
+MAGICRESISTANCE={100.0 175.0}
+TACTICS={50.0 70.0}
+WRESTLING={60.0 80.0}
+
+
+FAME={1000 1300}
+KARMA={-1000 -1300}
+
+ON=@NPCRestock
+ITEM=i_gold,{400 600}
+ITEM=loot_newrares_Med
+
+CATEGORY=Imperial uo
+SUBSECTION=Sqweaks Greek Quest
+DESCRIPTION=Silver Dog
+
+[CHARDEF c_a_golddog]
+DEFNAME=c_a_golddog
+NAME=Gold Dog
+ID=c_wolf
+DAM=6,40
+ARMOR=40
+BLOODCOLOR	= 08a7
+RESOURCES=8 i_gears_Gold, 20 i_ingot_Gold
+//ALIGNMENT=EVIL
+CAN=MT_WALK
+
+FOODTYPE=15 t_meat_raw
+DESIRES=C_A_DIREWOLF
+AVERSIONS=r_civilization
+
+
+ON=@Create
+TITLE = Automton
+COLOR=08a7
+NPC=brain_animal
+STR={500 700}
+DEX={130 140}
+INT={51 90}
+
+PARRYING={80.0 100.0}
+MAGICRESISTANCE={100.0 175.0}
+TACTICS={50.0 70.0}
+WRESTLING={60.0 80.0}
+
+
+FAME={1000 1300}
+KARMA={-1000 -1300}
+
+ON=@NPCRestock
+ITEM=i_gold,{400 600}
+ITEM=loot_newrares_Med
+
+CATEGORY=Imperial uo
+SUBSECTION=Sqweaks Greek Quest
+DESCRIPTION=Gold Dog
+
+[CHARDEF c_Talos]
+DEFNAME=c_Talos
+ID=c_titan
+NAME=Titan
+SOUND=snd_MONSTER_TITAN1
+ICON=i_pet_TITAN
+ANIM=078c7f
+DAM=10,38
+ARMOR=70
+BLOODCOLOR	= 08a7
+RESOURCES=18 i_gears_Gold, 40 i_ingot_Gold,1 i_Heart_Talos
+CAN=MT_WALK|MT_USEHANDS
+
+
+TEVENTS	= e_npc_daemon
+
+
+DESIRES=c_titan
+AVERSIONS=r_civilization
+
+ON=@Create
+TITLE = Automton
+COLOR=08a7
+NPC=brain_monster
+
+STR={1535 1685}
+DEX={125 145}
+INT={280 305}
+
+PARRYING={100.0 100.0}
+MAGERY={85.0 100.0}
+MAGICRESISTANCE={190.0 200.0}
+TACTICS={60.0 80.0}
+WRESTLING={100.0 100.0}
+
+FAME={1000 2000}
+KARMA={-5000 -5999}
+//ALIGNMENT=EVIL
+//SPELLCIRCLES=5-8
+
+ON=@NPCRestock
+ITEM=i_gold,{7000 9000}
+ITEM=loot_newrares_Med
+
+
+CATEGORY=Imperial uo
+SUBSECTION=Sqweaks Greek Quest
+DESCRIPTION=Talos (Titan)
+
+[CHARDEF c_m_Stymphalian]
+DEFNAME=c_m_Stymphalian
+//DEFNAME2=C_M_MONGBAT_1
+NAME=Stymphalian
+ID=C_MONGBAT
+SOUND=snd_MONSTER_MNGBAT1
+ICON=i_pet_mongbat
+
+DAM=5,25
+ARMOR=20
+BLOODCOLOR	= 0835
+RESOURCES=3 i_ribs_raw, 1 i_Stymphalian_Feather
+
+//ALIGNMENT=EVIL
+CAN=MT_WALK|MT_FLY|MT_EQUIP
+
+FOODTYPE=5 t_meat_raw
+DESIRES=i_gold
+
+ON=@Create
+COLOR=0835
+STR={100 190}
+DEX={100 138}
+INT={200 300}
+
+PARRYING={25.0 68.0}
+MAGICRESISTANCE={60.0 90.0}
+TACTICS={55.0 100.0}
+WRESTLING={30.0 50.0}
+MAGERY = {300 420}
+
+
+NPC=brain_monster
+
+FAME={600 700}
+KARMA={-1000 -1999}
+
+ON=@NPCRestock
+ITEMNEWBIE = i_SPELLBOOK
+ADDSPELL=s_magic_arrow
+ITEM=i_gold,{200 400}
+ITEM=loot_newrares_easy
+
+
+CATEGORY=Imperial uo
+SUBSECTION=Sqweaks Greek Quest
+DESCRIPTION=Stymphalians
+
+[CHARDEF c_m_Golden_serpent]
+DEFNAME=c_m_Golden_serpent
+NAME=Golden Serpent
+ID=c_SNAKE_GIANT
+SOUND=snd_ANIMALS_SNAKE1
+ICON=i_pet_SNAKE
+
+DAM=5,30
+ARMOR=40
+RESOURCES=1 i_ribs_raw, 8 i_reag_serpent_scale
+
+//ALIGNMENT=EVIL
+CAN=MT_WALK
+
+
+ON=@Create
+STR={260 360}
+DEX={151 350}
+INT={21 40}
+
+MAGICRESISTANCE={60.0 100.0}
+TACTICS={60.0 100.0}
+WRESTLING={90.0 100.0}
+
+NPC=BRAIN_MONSTER
+
+FAME={100 2000}
+KARMA={-4000 -4999}
+
+ON=@NPCRestock
+ITEM={ random_jewel 1 0 1 }
+ITEM=i_gold,{300 500}
+
+
+CATEGORY=Imperial uo
+SUBSECTION=Sqweaks Greek Quest
+DESCRIPTION=Golden Sperant
+
+////   ITEMS  ////
+
+[ITEMDEF i_Heart_Talos]
+ID	= i_flesh Heart
+NAME	= Heart of Talos
+TYPE	= T_NORMAL
+ARMOR	= 5
+DYE	= 0
+
+ON = @Create
+COLOR=08a7
+
+ON = @DCLCIK
+SRC.MESSAGE The heart still beats
+
+CATEGORY=Imperial uo
+SUBSECTION=Sqweaks Greek Quest
+DESCRIPTION=Heart of Talos
+
+[ITEMDEF i_Crystal_part1]
+ID	= 0f2f
+NAME	= Crystal Shard 
+TYPE	= T_NORMAL
+ARMOR	= 5
+DYE	= 0
+
+ON = @Create
+COLOR=0798
+
+CATEGORY=Imperial uo
+SUBSECTION=Sqweaks Greek Quest
+DESCRIPTION=Crystal Shard (part 1)
+
+[ITEMDEF i_Harpy_Feather]
+ID	= i_feather
+NAME	= Harpy Feather 
+TYPE	= T_NORMAL
+ARMOR	= 5
+DYE	= 0
+
+ON = @Create
+COLOR=0975
+
+CATEGORY=Imperial uo
+SUBSECTION=Sqweaks Greek Quest
+DESCRIPTION=Harpy Feather
+
+[ITEMDEF i_Stymphalian_Feather]
+ID	= i_feather
+NAME	= Stymphalian Feather 
+TYPE	= T_NORMAL
+ARMOR	= 5
+DYE	= 0
+
+ON = @Create
+COLOR=0835
+
+CATEGORY=Imperial uo
+SUBSECTION=Sqweaks Greek Quest
+DESCRIPTION=Stymphalian Feather
+
+
+[ITEMDEF i_golden_bough]
+ID	= 0cf6
+NAME	= Golden Bough
+TYPE	= T_NORMAL
+ARMOR	= 5
+DYE	= 0
+
+ON = @Create
+COLOR=08a5
+
+CATEGORY=Imperial uo
+SUBSECTION=Sqweaks Greek Quest
+DESCRIPTION=Golden Bough
+
+[ITEMDEF i_robe_Charon]
+ID	= i_deathshroud
+NAME	= Robe of The Ferryman
+TYPE	= T_CLOTHING
+ARMOR	= 5
+DYE	= 0
+
+ON = @Create
+ HITPOINTS	= 350
+COLOR=0902
+
+CATEGORY=Imperial uo
+SUBSECTION=Sqweaks Greek Quest
+DESCRIPTION=Charons robe
+
+
+
+[ITEMDEF i_charon_QT]
+ID	= 0495
+NAME	= charon QT
+TYPE	= T_NORMAL
+ARMOR	= 5
+DYE	= 0
+
+ON = @Create
+COLOR=08a5
+ATTR= 0090
+
+ON=@Step
+if ( <SRC.NPC> )
+     return 0
+else
+
+SRC.SYSMESSAGE = As you Enter the room you see Charon the Ferryman. Charon is appallingly filthy, with eyes like jets of fire, and a dirty robe hanging from his shoulders. IN his hands A mighty Double headed Golden Hammer.
+SRC.SYSMESSAGE = he turns to look at you, you feel his eyes looking into your soul.
+SRC.EMOTE Shiver.
+REMOVE
+return 1
+endif
+
+CATEGORY=Imperial uo
+SUBSECTION=Sqweaks Greek Quest
+DESCRIPTION=Charon quest Tile
+
+[ITEMDEF i_Phineus_QT]
+ID	= 0495
+NAME	= Phineus QT
+TYPE	= T_NORMAL
+ARMOR	= 5
+DYE	= 0
+
+ON = @Create
+COLOR=08a5
+ATTR= 0090
+
+ON=@Step
+if ( <SRC.NPC> )
+     return 0
+else
+
+SRC.SYSMESSAGE = You see 3 Harpies Tourmenting an Old man as he trys to eat.
+SRC.SYSMESSAGE = Every time he reaches out for the food on the table the harpies swoop down slashing and clawing at the old mans hands. He backs away.
+REMOVE
+return 1
+endif
+
+CATEGORY=Imperial uo
+SUBSECTION=Sqweaks Greek Quest
+DESCRIPTION=Phineus quest Tile
+
+[ITEMDEF i_golden_Harp]
+ID	= i_lyre
+NAME	= Golden Harp
+TYPE	= 27
+ARMOR	= 5
+DYE	= 0
+
+ON = @Create
+COLOR=08a7
+
+ON = @DCLICK
+SRC.MESSAGE Only Gods may play the Golden Harp.
+
+ON = @CLICK
+SRC.MESSAGE A harp of the Gods.
+
+CATEGORY=Imperial uo
+SUBSECTION=Sqweaks Greek Quest
+DESCRIPTION=Golden Harp
+
+[ITEMDEF i_shield_mirrored]
+DEFNAME=i_shield_mirrored
+ID=i_shield_buckler
+NAME Mirrored Shield
+TYPE = t_shield
+FLIP=1
+WEIGHT=6
+ARMOR=13
+REQSTR=15
+
+ON=@Create
+COLOR=0482
+HITPOINTS={41 51}
+
+on=@click
+SRC.MESSAGE The shield reflects your image.
+
+CATEGORY=Imperial uo
+SUBSECTION=Sqweaks Greek Quest
+DESCRIPTION=Mirrored Shield
+
+[eof]

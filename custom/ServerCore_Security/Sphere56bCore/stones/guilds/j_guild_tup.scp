@@ -1,0 +1,499 @@
+[PLEVEL 1]
+kickfromguild
+guildinvite
+acceptinvite
+declineinvite
+guildresign
+
+//-------------------------------GUILD CAPE-------------------------------
+
+[ITEMDEF i_guild_cape]
+ID=i_cape
+NAME=guild cape
+ARMOR=0
+WEIGHT=1
+
+ON=@CREATE
+   ATTR=0d
+   COLOR=00
+   HITPOINTS=100000
+   
+ON=@DCLICK
+   IF (<SRC.ACCOUNT.PLEVEL> > 4)
+      TARGET OVERRIDE: Who do you want to set as the owner of the cape
+      RETURN 1
+   ELSE
+      IF !(<SRC.MEMORYFINDTYPE.MEMORY_GUILD>)
+         SRC.SYSMESSAGE @85 Sorry, only guild members can wear this.
+      ELSEIF ( strmatch("<SRC.UID>","<TAG.OWNERUID>"))
+         SRC.SYSMESSAGE @84 You put on your guilds cape proudly.
+      ELSE
+         SRC.SYSMESSAGE @85 You cannot wear this, as it does not belong to you!
+         RETURN 1
+      ENDIF
+   ENDIF
+
+ON=@EQUIP
+      IF !(<SRC.MEMORYFINDTYPE.MEMORY_GUILD>)
+         SRC.SYSMESSAGE @85 Sorry, only guild members can wear this.
+      ELSEIF ( strmatch("<SRC.UID>","<TAG.OWNERUID>"))
+         SRC.SYSMESSAGE @84 You put on your guilds cape proudly.
+      ELSE
+         SRC.SYSMESSAGE @85 You cannot wear this, as it does not belong to you!
+         RETURN 1
+      ENDIF
+
+ON=@TARGON_CHAR
+   LINK=<SRC.TARG.UID>
+   TAG.OWNERNAME=<SRC.TARG.NAME>
+   TAG.OWNERACCOUNT=<SRC.TARG.ACCOUNT>
+   TAG.OWNERUID=<SRC.TARG.UID>
+   SRC.SYSMESSAGE @88 Owner set
+   RETURN 1
+   
+//ON=@DESTROY
+   //IF (<HITPOINTS> = 0)
+      //HITPOINTS=100000
+      //RETURN 1
+   //ENDIF
+   
+[FUNCTION remove_guild_cape]
+IF (<UID.<UID.<ARGS>.TAG.MYGUILDCAPE>.UID>)
+	IF ( !STRCMPI("<UID.<UID.<ARGS>.TAG.MYGUILDCAPE>.BASEID>","i_guild_cape") )
+         UID.<UID.<ARGS>.TAG.MYGUILDCAPE>.REMOVE
+	ENDIF
+ENDIF
+
+[FUNCTION give_guild_cape]
+	 SERV.NEWITEM i_guild_cape
+	 NEW.BOUNCE <ARGS>
+	 NEW.LINK=<ARGS>
+	 NEW.TAG.OWNERNAME=<UID.<ARGS>.NAME>
+	 NEW.TAG.OWNERACCOUNT=<UID.<ARGS>.ACCOUNT>
+	 NEW.TAG.OWNERUID=<UID.<ARGS>.UID>
+	 IF (<UID.<ARGS>.MEMORYFINDTYPE.MEMORY_GUILD.LINK.TAG.CAPECOLOUR>)
+		NEW.COLOR=<UID.<ARGS>.MEMORYFINDTYPE.MEMORY_GUILD.LINK.TAG.CAPECOLOUR>
+	 ENDIF
+	 UID.<ARGS>.TAG.MYGUILDCAPE=<NEW.UID> 
+   
+//-------------------------------GUILD AMBASSADOR-------------------------------
+		 
+[SPEECH spk_guild_ambassador]
+ON=*cape*
+ON=*robe*
+ON=*cloak*
+   IF !(<SRC.MEMORYFINDTYPE.MEMORY_GUILD>)
+      SAY Sorry but you don't appear to be a part of a guild...
+   ELSEIF (<SRC.MEMORYFINDTYPE.MEMORY_GUILD.LINK>)
+      IF !(<SRC.TAG.MYGUILDCAPE>)
+         SAY Ah, I will grant you your guild cape immediately!
+         SERV.LOG ::NOTE:: <SRC.NAME>:<SRC.UID> requested their first guild cape.
+		 give_guild_cape <SRC.UID>
+      ELSEIF !(<UID.<SRC.TAG.MYGUILDCAPE>.UID>)
+         SAY Ah your old cape appears to be no more... I shall grant you a new one.
+		 give_guild_cape <SRC.UID>
+         SERV.LOG ::NOTE:: <SRC.NAME>:<SRC.UID> requested a new guild cape.
+      ELSEIF ( STRCMPI("<UID.<SRC.TAG.MYGUILDCAPE>.BASEID>","i_guild_cape") )
+         SAY Ah your old cape appears to be no more... I shall grant you a new one.        
+		 give_guild_cape <SRC.UID>
+         SERV.LOG ::NOTE:: <SRC.NAME>:<SRC.UID> requested a new guild cape (Old UID is not a guild cape).
+      ELSEIF ( !STRCMPI("<UID.<SRC.TAG.MYGUILDCAPE>.BASEID>","i_guild_cape") )
+         SAY I will replace your current cape immediately.
+         UID.<SRC.TAG.MYGUILDCAPE>.REMOVE
+		 give_guild_cape <SRC.UID>
+         SERV.LOG ::NOTE:: <SRC.NAME>:<SRC.UID> requested a new guild cape (Old UID is a guild cape).
+      ENDIF
+   ELSE
+      SAY Hmm... Sorry but there appears to be an error with your records. I'll notify a GM immediately.
+      SERV.LOG ::ERROR:: Guild Ambassador - <SRC.UID>,<SRC.NAME> broke the function!
+      GMPAGE Guild Ambassador Issue with <SRC.NAME>'s guild (No link for memory_guild)
+   ENDIF
+
+
+ON=*colour*
+ON=*color*
+   IF !(<SRC.MEMORYFINDTYPE.MEMORY_GUILD>)
+      SAY You are not a part of a guild!
+   ELSEIF !(<SRC.MEMORYFINDTYPE.MEMORY_GUILD.LINK.MASTERUID> = <SRC.UID>)
+      SAY Only the guildmaster, <SRC.MEMORYFINDTYPE.MEMORY_GUILD.LINK.MASTER>, can alter cloak colours!
+   ELSEIF (<SRC.MEMORYFINDTYPE.MEMORY_GUILD.LINK.MASTERUID> = <SRC.UID>)
+      SAY Okay, here you go.
+      SRC.DIALOG D_GUILD_CLOAK_DYE
+   ELSE
+      SRC.SYSMESSAGE @07a0 YOU BROKE THE SYSTEM!
+      SERV.LOG ::ERROR:: Function: .inviteguild - <SRC.UID>,<SRC.NAME> broke the function!
+   ENDIF
+      
+
+
+ON=*guildstone*
+   IF !(<SRC.MEMORYFINDTYPE.MEMORY_GUILD>)
+      SAY Sorry but you don't appear to be a part of a guild...
+   ELSEIF (<SRC.MEMORYFINDTYPE.MEMORY_GUILD.LINK>)   
+      SAY Ah yes, the guildstone for <SRC.MEMORYFINDTYPE.MEMORY_GUILD.LINK.NAME> is at <SRC.MEMORYFINDTYPE.MEMORY_GUILD.LINK.P>!
+   ELSE
+      SAY Hmm... Sorry but there appears to be an error with your records. I'll notify a GM immediately.
+      SERV.LOG ::ERROR:: Guild Ambassador - <SRC.UID>,<SRC.NAME> broke the function!
+      GMPAGE Guild Ambassador Issue with <SRC.NAME>'s guild (No link for memory_guild)
+   ENDIF
+
+
+ON=*fealty*
+ON=*leader*
+ON=*master*
+ON=*guildmaster*
+ON=*guild master*
+   IF !(<SRC.MEMORYFINDTYPE.MEMORY_GUILD>)
+      SAY Sorry but you don't appear to be a part of a guild...
+   ELSEIF (<SRC.MEMORYFINDTYPE.MEMORY_GUILD.LINK>)   
+      SAY Your guildmaster is <SRC.MEMORYFINDTYPE.MEMORY_GUILD.LINK.MASTER> - Declare your fealty at your guildstone.
+   ELSE
+      SAY Hmm... Sorry but there appears to be an error with your records. I'll notify a GM immediately.
+      SERV.LOG ::ERROR:: Guild Ambassador - <SRC.UID>,<SRC.NAME> broke the function!
+      GMPAGE Guild Ambassador Issue with <SRC.NAME>'s guild (No link for memory_guild)
+   ENDIF
+   
+
+ON=*help*
+ON=*commands*
+ON=*what to say*
+   SAY I can help with a guild "cape", "colour" or "guildstone", as well as tell you who your "guildmaster" is.
+   
+   
+[CHARDEF c_h_guild_ambassador]
+ID=c_man
+NAME=#NAMES_HUMANMALE the Guild Ambassador
+DESIRES=i_gold
+AVERSIONS=t_trap
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_trainer
+TSPEECH=spk_needs
+TSPEECH=spk_rehello
+TSPEECH=spk_human_default
+TSPEECH=spk_guild_ambassador
+
+TEVENTS=e_Human_HearUnk
+TEVENTS=e_Human_Needs
+TEVENTS=e_Human_ConvInit
+TEVENTS=e_Human_Greet
+TEVENTS=e_Human_Space
+TEVENTS=e_Human_Refuse
+TEVENTS=e_Human_Environ
+
+ON=@Create
+COLOR=colors_skin
+FLAGS=028000005
+STR={16 30}
+DEX={26 40}
+INT={31 45}
+
+EVALUATINGINTEL={89.0 99.0}
+WRESTLING={85.0 99.0}
+MAGICRESISTANCE={150.0 180.0}
+TACTICS={85.0 99.0}
+
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+
+ON=@NPCRestock
+ITEM=RANDOM_LIGHT
+ITEMNEWBIE=i_hat_feather
+COLOR=0733
+ITEMNEWBIE=i_tunic_studded
+COLOR=0733
+ITEMNEWBIE=i_leggings_leather
+COLOR=0733
+ITEMNEWBIE=i_boots_calf
+COLOR=0733
+ITEMNEWBIE=i_shirt_fancy
+ITEMNEWBIE=i_spellbook
+COLOR=07ad
+ITEMNEWBIE=i_sash
+COLOR=07ad
+NAME=Guild Ambassador
+
+CATEGORY=Guilds
+SUBSECTION=Guild Management
+DESCRIPTION=Guild Ambassador
+
+
+//-------------------------------GUILD FUNCTIONS-------------------------------
+
+[FUNCTION guildresign]
+   IF !(<SRC.MEMORYFINDTYPE.MEMORY_GUILD>)
+      SRC.SYSMESSAGE @07a0 You are not a part of a guild!
+   ELSE
+      f_guildsys_removecharfromguild <src.memoryfindtype(memory_guild).link.uid>,<src.uid>
+   ENDIF
+
+
+[ITEMDEF i_guildinviter]
+NAME=Guild Inviter
+ID=i_memory
+TYPE=T_EQ_SCRIPT
+LAYER=30
+
+ON=@CREATE
+   ATTR=attr_decay
+   TIMER=60
+
+On=@TARGON_Char
+   IF !(<SRC.TARG.FINDID.i_guildaccept.UID>)
+      SRC.TARG.NEWITEM i_guildaccept
+	  
+   SRC.TARG.ACT.MORE1=<SRC.UID>
+   SRC.TARG.EQUIP <SRC.TARG.ACT>
+   
+      NEW.TAG.GUILDSTONE=<src.memoryfindtype(memory_guild).link.uid>
+      SRC.TARG.SYSMESSAGE @49 You have been invited to join <SRC.MEMORYFINDTYPE(MEMORY_GUILD).LINK.NAME> - Use .acceptinvite or .declineinvite to accept or decline respectively.
+   ELSEIF (<SRC.TARG.MEMORYFINDTYPE(MEMORY_GUILD).UID>)
+      SRC.SYSMESSAGE @43 They are already in a guild!
+   ELSE
+      SRC.SYSMESSAGE @43 They have already been invited!
+   ENDIF
+   REMOVE
+   RETURN 1
+
+
+ON=@TIMER
+   CONT.SYSMESSAGE @07a0 You have failed to target anyone to add to a guild.
+   REMOVE
+
+[ITEMDEF i_guildaccept]
+NAME=Guild Accept
+ID=i_memory
+TYPE=T_EQ_SCRIPT
+LAYER	= layer_special
+
+ON=@CREATE
+   ATTR=attr_decay
+   TIMER=60
+
+ON=@TIMER
+   CONT.SYSMESSAGE @07a0 You did not accept the invite to <UID.<TAG.GUILDSTONE>.NAME>.
+   REMOVE
+   return 1
+   
+[FUNCTION acceptinvite]
+   IF !(<FINDID.i_guildaccept.UID>)
+      SYSMESSAGE @49 There are no outstanding guild invites...
+   ELSEIF (<MEMORYFINDTYPE(MEMORY_GUILD).UID>)
+      SYSMESSAGE @49 You are already in a guild!
+   ELSEIF (<FINDID.i_guildaccept>)
+      f_guildsys_addchartoguild <UID.<FINDID.i_guildaccept.UID>.TAG.GUILDSTONE>,<UID>,1
+      FINDID.i_guildaccept.REMOVE
+      SYSMESSAGE @51 You accept the invite!
+   ELSE
+      SERV.LOG :ERROR: Command .acceptinvite - Failed to work out invite status! <UID>:<NAME>
+   ENDIF
+
+[FUNCTION declineinvite]
+   IF !(<FINDID.i_guildaccept>)
+      SYSMESSAGE @49 There are no outstanding guild invites...
+   ELSEIF (<MEMORYFINDTYPE(MEMORY_GUILD).UID>)
+      SYSMESSAGE @49 You are already in a guild!
+   ELSEIF (<FINDID.i_guildaccept>)
+      FINDID.i_guildaccept.REMOVE
+      SYSMESSAGE @51 You decline the invite!
+   ELSE
+      SERV.LOG :ERROR: Command .acceptinvite - Failed to work out invite status! <UID>:<NAME>
+   ENDIF
+
+
+[FUNCTION guildinvite]
+   IF !(<SRC.MEMORYFINDTYPE.MEMORY_GUILD>)
+      SRC.SYSMESSAGE @07a0 You are not a part of a guild!
+   ELSEIF !(<SRC.MEMORYFINDTYPE.MEMORY_GUILD.LINK.MASTERUID> = <SRC.UID>)
+      SRC.SYSMESSAGE @07a0 Only the guildmaster, <UID.<SRC.MEMORYFINDTYPE.MEMORY_GUILD.LINK.MASTER>.NAME>, can add members!
+   ELSEIF (<SRC.MEMORYFINDTYPE.MEMORY_GUILD.LINK.MASTERUID> = <SRC.UID>)
+      SRC.NEWITEM i_guildinviter
+      SRC.ACT.TARGET Who do you wish to invite to the guild?
+   ELSE
+      SRC.SYSMESSAGE @07a0 YOU BROKE THE SYSTEM!
+      SERV.LOG ::ERROR:: Function: .inviteguild - <SRC.UID>,<SRC.NAME> broke the function!
+   ENDIF
+
+
+// Guild Remover
+
+
+[ITEMDEF i_guildkick]
+NAME=Guild Kicker
+ID=i_memory
+TYPE=T_EQ_SCRIPT
+LAYER=30
+
+ON=@CREATE
+   ATTR=attr_decay
+   TIMER=60
+
+On=@TARGON_Char
+   SRC.SYSMESSAGE @07a0 <SRC.TARG.NAME> is now ejected from <SRC.MEMORYFINDTYPE.MEMORY_GUILD.LINK.NAME>.
+   f_guildsys_removecharfromguild <src.memoryfindtype(memory_guild).link.uid>,<src.targ.uid>
+   REMOVE
+   
+ON=@TIMER
+   CONT.SYSMESSAGE @07a0 You have failed to target anyone to add to a guild.
+   REMOVE
+
+
+
+[FUNCTION kickfromguild]
+   IF !(<SRC.MEMORYFINDTYPE.MEMORY_GUILD>)
+      SRC.SYSMESSAGE @07a0 You are not a part of a guild!
+   ELSEIF !(<SRC.MEMORYFINDTYPE.MEMORY_GUILD.LINK.MASTERUID> = <SRC.UID>)
+      SRC.SYSMESSAGE @07a0 Only the guildmaster, <UID.<SRC.MEMORYFINDTYPE.MEMORY_GUILD.LINK.MASTER>.NAME>, can remove members!
+   ELSEIF (<SRC.MEMORYFINDTYPE.MEMORY_GUILD.LINK.MASTERUID> = <SRC.UID>)
+      SRC.NEWITEM i_guildkick
+      SRC.ACT.TARGET Who do you wish to remove from the guild?
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE @07a0 YOU BROKE THE SYSTEM!
+      SERV.LOG ::ERROR:: Function: .inviteguild - <SRC.UID>,<SRC.NAME> broke the function!
+   ENDIF
+
+
+//-----------------------------------CLOAK DYE----------------------------------------------
+
+[DIALOG D_GUILD_CLOAK_DYE]
+5,25
+
+page 0
+resizepic 0 0 5054 592 455
+resizepic 10 10 3000 572 435
+dtext 20 20 0 For the price of 15,000 gold, please select a colour for your guild capes:  // 029
+
+page 1
+buttontileart 15 40 0918 0919 1 0 1907 01515 1907 10 7
+buttontileart 95 40 0918 0919 1 0 1908 01515 1908 10 7
+buttontileart 175 40 0918 0919 1 0 1909 01515 1909 10 7
+buttontileart 255 40 0918 0919 1 0 1910 01515 1910 10 7
+buttontileart 335 40 0918 0919 1 0 1911 01515 1911 10 7
+buttontileart 415 40 0918 0919 1 0 1912 01515 1912 10 7
+buttontileart 495 40 0918 0919 1 0 1913 01515 1913 10 7
+buttontileart 15 100 0918 0919 1 0 1915 01515 1915 10 7
+buttontileart 95 100 0918 0919 1 0 1916 01515 1916 10 7
+buttontileart 175 100 0918 0919 1 0 1917 01515 1917 10 7
+buttontileart 255 100 0918 0919 1 0 1918 01515 1918 10 7
+buttontileart 335 100 0918 0919 1 0 1919 01515 1919 10 7
+buttontileart 415 100 0918 0919 1 0 1920 01515 1920 10 7
+buttontileart 495 100 0918 0919 1 0 1921 01515 1921 10 7
+buttontileart 15 160 0918 0919 1 0 1922 01515 1922 10 7
+buttontileart 95 160 0918 0919 1 0 1923 01515 1923 10 7
+buttontileart 175 160 0918 0919 1 0 1924 01515 1924 10 7
+buttontileart 255 160 0918 0919 1 0 1925 01515 1925 10 7
+buttontileart 335 160 0918 0919 1 0 1926 01515 1926 10 7
+buttontileart 415 160 0918 0919 1 0 1927 01515 1927 10 7
+buttontileart 495 160 0918 0919 1 0 1928 01515 1928 10 7
+buttontileart 15 220 0918 0919 1 0 1929 01515 1929 10 7
+buttontileart 95 220 0918 0919 1 0 1930 01515 1930 10 7
+buttontileart 175 220 0918 0919 1 0 1931 01515 1931 10 7
+buttontileart 255 220 0918 0919 1 0 1932 01515 1932 10 7
+buttontileart 335 220 0918 0919 1 0 1933 01515 1933 10 7
+buttontileart 415 220 0918 0919 1 0 1934 01515 1934 10 7
+buttontileart 495 220 0918 0919 1 0 1935 01515 1935 10 7
+buttontileart 15 280 0918 0919 1 0 1936 01515 1936 10 7
+buttontileart 95 280 0918 0919 1 0 1937 01515 1937 10 7
+buttontileart 175 280 0918 0919 1 0 1938 01515 1938 10 7
+buttontileart 255 280 0918 0919 1 0 1939 01515 1939 10 7
+buttontileart 335 280 0918 0919 1 0 1940 01515 1940 10 7
+buttontileart 415 280 0918 0919 1 0 1941 01515 1941 10 7
+buttontileart 495 280 0918 0919 1 0 1942 01515 1942 10 7
+buttontileart 15 340 0918 0919 1 0 1943 01515 1943 10 7
+buttontileart 95 340 0918 0919 1 0 1944 01515 1944 10 7
+buttontileart 175 340 0918 0919 1 0 1945 01515 1945 10 7
+buttontileart 255 340 0918 0919 1 0 1946 01515 1946 10 7
+buttontileart 335 340 0918 0919 1 0 1947 01515 1947 10 7
+buttontileart 415 340 0918 0919 1 0 1948 01515 1948 10 7
+buttontileart 495 340 0918 0919 1 0 1949 01515 1949 10 7
+
+//dhtmlgump 55 416 175 30 0 0 Previous Page
+//  button 20 415 4014 4016 0 1 0 // Last
+dhtmlgump 480 416 175 30 0 0 Next Page
+  button 543 415 4005 4007 0 2 0 // Next
+  
+  
+
+page 2
+buttontileart 15 40 0918 0919 1 0 1950 01515 1950 10 7
+buttontileart 95 40 0918 0919 1 0 1951 01515 1951 10 7
+buttontileart 175 40 0918 0919 1 0 1952 01515 1952 10 7
+buttontileart 255 40 0918 0919 1 0 1953 01515 1953 10 7
+buttontileart 335 40 0918 0919 1 0 1954 01515 1954 10 7
+buttontileart 415 40 0918 0919 1 0 1955 01515 1955 10 7
+buttontileart 495 40 0918 0919 1 0 1956 01515 1956 10 7
+buttontileart 15 100 0918 0919 1 0 1957 01515 1957 10 7
+buttontileart 95 100 0918 0919 1 0 1958 01515 1958 10 7
+buttontileart 175 100 0918 0919 1 0 1959 01515 1959 10 7
+buttontileart 255 100 0918 0919 1 0 1960 01515 1960 10 7
+buttontileart 335 100 0918 0919 1 0 1961 01515 1961 10 7
+buttontileart 415 100 0918 0919 1 0 1962 01515 1962 10 7
+buttontileart 495 100 0918 0919 1 0 1963 01515 1963 10 7
+buttontileart 15 160 0918 0919 1 0 1964 01515 1964 10 7
+buttontileart 95 160 0918 0919 1 0 1965 01515 1965 10 7
+buttontileart 175 160 0918 0919 1 0 1966 01515 1966 10 7
+buttontileart 255 160 0918 0919 1 0 2018 01515 2018 10 7
+buttontileart 335 160 0918 0919 1 0 2019 01515 2019 10 7
+buttontileart 415 160 0918 0919 1 0 2020 01515 2020 10 7
+buttontileart 495 160 0918 0919 1 0 2021 01515 2021 10 7
+buttontileart 15 220 0918 0919 1 0 2159 01515 2159 10 7
+buttontileart 95 220 0918 0919 1 0 2151 01515 2151 10 7
+buttontileart 175 220 0918 0919 1 0 2152 01515 2152 10 7
+buttontileart 255 220 0918 0919 1 0 2025 01515 2025 10 7
+buttontileart 335 220 0918 0919 1 0 2026 01515 2026 10 7
+buttontileart 415 220 0918 0919 1 0 2027 01515 2027 10 7
+buttontileart 495 220 0918 0919 1 0 2028 01515 2028 10 7
+buttontileart 15 280 0918 0919 1 0 2029 01515 2029 10 7
+buttontileart 95 280 0918 0919 1 0 2030 01515 2030 10 7
+buttontileart 175 280 0918 0919 1 0 2031 01515 2031 10 7
+buttontileart 255 280 0918 0919 1 0 2032 01515 2032 10 7
+buttontileart 335 280 0918 0919 1 0 2033 01515 2033 10 7
+buttontileart 415 280 0918 0919 1 0 2034 01515 2034 10 7
+buttontileart 495 280 0918 0919 1 0 2035 01515 2035 10 7
+buttontileart 15 340 0918 0919 1 0 2036 01515 2036 10 7
+buttontileart 95 340 0918 0919 1 0 2037 01515 2037 10 7
+buttontileart 175 340 0918 0919 1 0 2038 01515 2038 10 7
+buttontileart 255 340 0918 0919 1 0 2039 01515 2039 10 7
+buttontileart 335 340 0918 0919 1 0 2040 01515 2040 10 7
+buttontileart 415 340 0918 0919 1 0 2041 01515 2041 10 7
+buttontileart 495 340 0918 0919 1 0 2160 01515 2160 10 7
+
+dhtmlgump 55 416 175 30 0 0 Previous Page
+  button 20 415 4014 4016 0 1 0 // Last
+//dhtmlgump 480 416 175 30 0 0 Next Page
+//  button 543 415 4005 4007 0 3 0 // Next
+
+
+[DIALOG D_GUILD_CLOAK_DYE BUTTON]
+ON=1 9999
+      IF !(<SRC.MEMORYFINDTYPE.MEMORY_GUILD>)
+         SRC.SYSMESSAGE @07a0 Err, you shouldn't see this you non-guild type!
+         SERV.LOG ::ERROR:: Guild Cape Dye - Non-Member tried to do it! <SRC.UID>:<SRC.NAME>
+      ELSEIF !(<SRC.MEMORYFINDTYPE.MEMORY_GUILD.LINK.MASTERUID> = <SRC.UID>)
+         SRC.SYSMESSAGE @07a0 Only the guildmaster, <UID.<SRC.MEMORYFINDTYPE.MEMORY_GUILD.LINK.MASTER>.NAME>, can change cape colours!
+      ELSEIF (<SRC.MEMORYFINDTYPE.MEMORY_GUILD.LINK.MASTERUID> = <SRC.UID>)
+         LOCAL.GUILDMEMBERS=<SRC.MEMORYFINDTYPE.MEMORY_GUILD.LINK.MEMBER.COUNT>
+         SRC.CONSUMEGOLD_EVERYWHERE 15000
+	 IF ( <VAR.CONSUMEGOLD> > 0 )
+	    SRC.SYSMESSAGE @07a0 You are <eval <VAR.CONSUMEGOLD>>gp short of the fee required.
+	 ELSE
+	    SRC.SYSMESSAGE @07a0 You pay the fee for your new guild cape colour. All members capes have changed.
+	    SRC.MEMORYFINDTYPE.MEMORY_GUILD.LINK.TAG.CAPECOLOUR=<ARGN1>
+            FOR <LOCAL.GUILDMEMBERS>
+               IF (<UID.<UID.<UID.<SRC.MEMORYFINDTYPE.MEMORY_GUILD.LINK>.MEMBER.<EVAL <LOCAL._FOR> - 1>.UID>.TAG.MYGUILDCAPE>.BASEID> == i_guild_cape)
+                  UID.<UID.<UID.<SRC.MEMORYFINDTYPE.MEMORY_GUILD.LINK>.MEMBER.<EVAL <LOCAL._FOR> - 1>.UID>.TAG.MYGUILDCAPE>.COLOR = <ARGN1>
+               ELSE
+                  SERV.LOG ::ERROR:: Guild Cape Dye - Item <UID.<UID.<UID.<SRC.MEMORYFINDTYPE.MEMORY_GUILD.LINK>.MEMBER.<EVAL <LOCAL._FOR> - 1>.UID>.TAG.MYGUILDCAPE>.UID>:<UID.<UID.<UID.<SRC.MEMORYFINDTYPE.MEMORY_GUILD.LINK>.MEMBER.<EVAL <LOCAL._FOR> - 1>.UID>.TAG.MYGUILDCAPE>.NAME> is not a guild cape!
+               ENDIF
+               //SERV.B DUDE <SRC.NAME>
+               //SERV.B BLAH <LOCAL.GUILDMEMBERS> - <UID.<SRC.MEMORYFINDTYPE.MEMORY_GUILD.LINK>.MEMBER.<EVAL <LOCAL._FOR> - 1>.NAME>
+               //SERV.B BLAH <LOCAL.GUILDMEMBERS> - <UID.<UID.<SRC.MEMORYFINDTYPE.MEMORY_GUILD.LINK>.MEMBER.<EVAL <LOCAL._FOR> - 1>.UID>.TAG.MYGUILDCAPE>
+               //SERV.B GUILD CAPE COLOUR <LOCAL.GUILDMEMBERS> - <UID.<UID.<UID.<SRC.MEMORYFINDTYPE.MEMORY_GUILD.LINK>.MEMBER.<EVAL <LOCAL._FOR> - 1>.UID>.TAG.MYGUILDCAPE>.COLOR>
+            ENDFOR
+         ENDIF
+      ELSE
+         SRC.SYSMESSAGE @07a0 YOU BROKE THE SYSTEM!
+         SERV.LOG ::ERROR:: Guild Cape Dye - <SRC.UID>,<SRC.NAME> broke the function!
+      ENDIF
+   

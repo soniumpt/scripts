@@ -1,0 +1,146 @@
+[FUNCTION ammo_select]
+   if ( 0 )
+   elseif ( <TYPE> == t_weapon_arrow )
+      src.sysmessage @66 Selected <NAME> as default bow ammo.
+      SRC.TAG.AMMO.t_weapon_bow.BASEID		= <BASEID>
+      SRC.TAG.AMMO.t_weapon_bow.NAME		= <NAME>
+   elseif ( <TYPE> == t_weapon_bolt )
+      src.sysmessage @66 Selected <NAME> as default crossbow ammo .
+      SRC.TAG.AMMO.t_weapon_xbow.BASEID		= <BASEID>
+      SRC.TAG.AMMO.t_weapon_xbow.NAME		= <NAME>
+   else
+      src.sysmessage That's not propper ammo.
+   endif
+
+
+[ITEMDEF 01bfb]
+// Crossbow Bolt
+//DEFNAME2=BOLTS
+DEFNAME=i_xbolt
+TYPE=T_WEAPON_BOLT
+FLIP=1
+REPLICATE=1		// << replicate 0
+RESOURCES=1 i_arrow_shaft, 1 i_feather
+SKILLMAKE=17.8 BOWCRAFT
+WEIGHT=0.1
+VALUE = 7
+CATEGORY=Items by Professions
+SUBSECTION=Archers/Bowyers
+DESCRIPTION=Crossbow Bolt
+DUPELIST=01bfc,01bfd,01bfe
+ON = @DClick
+   ammo_select
+   return 1
+
+[ITEMDEF 0f3f]
+//Arrow
+DEFNAME=i_arrow
+NAME=arrow%s
+TYPE=T_WEAPON_ARROW
+FLIP=1
+RESOURCES=1 i_arrow_shaft, 1 i_feather
+REPLICATE=1		// << replicate 0
+VALUE = 7
+SKILLMAKE=1.0 BOWCRAFT
+WEIGHT=0.1
+CATEGORY=Items by Professions
+SUBSECTION=Archers/Bowyers
+DESCRIPTION=Arrow
+DUPELIST=0f40,0f41,0f42
+ON = @DClick
+   ammo_select
+   return 1
+
+
+[ITEMDEF 01bd4]
+//Shaft listed as "shafts"
+//DEFNAME=i_ARROW_SHAFTS
+DEFNAME=i_arrow_shaft
+TYPE=T_SHAFT
+RESOURCES=i_log_pine
+REPLICATE=1		// << replicate 0
+SKILLMAKE=9.8 BOWCRAFT
+WEIGHT=.1
+VALUE = 3
+CATEGORY=Items by Professions
+SUBSECTION=Archers/Bowyers
+DESCRIPTION=Shaft
+DUPELIST=01bd5,01bd6
+
+
+
+
+[ITEMDEF 0f64]	//player torch
+DEFNAME=i_torch
+TYPE=T_LIGHT_OUT
+TDATA3=i_torch_lit
+RESOURCES=1 i_LOG
+WEIGHT=1
+VALUE=1
+CATEGORY=Decoration - Lightsources
+SUBSECTION=Torches
+DESCRIPTION=Torch (Unlit)
+DUPELIST=0f6b
+
+ON=@Create
+MOREZ=1
+
+ON=@UNEquip
+   AMOUNT	= 1
+
+ON=@Equip
+   if ( <AMOUNT> > 1 )
+     SRC.NEWITEM <BASEID>
+     SRC.ACT.AMOUNT	= (<AMOUNT> -1)
+     SRC.ACT.MOREP	= <MOREP>
+     SRC.ACT.MORE1	= <MORE1>
+     SRC.ACT.MORE2	= <MORE2>
+     SRC.ACT.BOUNCE
+   endif
+   AMOUNT		= 1
+
+
+[ITEMDEF 0a28]
+DEFNAME=i_candle
+TYPE=T_LIGHT_OUT
+LAYER=layer_hand2	// problem in TILEDATA.MUL
+TDATA3=i_candle_lit
+RESOURCES=1 i_BEESWAX, 1 I_CLOTH
+VALUE=1
+CATEGORY=Decoration - Lightsources
+SUBSECTION=Candles
+DESCRIPTION=Candle (Unlit)
+
+ON=@Create
+MOREZ=1
+
+ON=@UNEquip
+   AMOUNT	= 1
+
+ON=@Equip
+   if ( <AMOUNT> > 1 )
+     SRC.NEWITEM <BASEID>
+     SRC.ACT.AMOUNT	= (<AMOUNT> -1)
+     SRC.ACT.MOREP	= <MOREP>
+     SRC.ACT.MORE1	= <MORE1>
+     SRC.ACT.MORE2	= <MORE2>
+     SRC.ACT.BOUNCE
+   endif
+   AMOUNT		= 1
+
+
+
+[ITEMDEF 01f2b]
+DEFNAME=i_brazier
+TYPE=T_NORMAL
+RESOURCES=10 I_EMBER, 12 i_ingot_iron
+WEIGHT=15
+CATEGORY=Decoration - Lightsources
+SUBSECTION=Brazier
+DESCRIPTION=Brazier
+
+
+
+[EOF]
+
+

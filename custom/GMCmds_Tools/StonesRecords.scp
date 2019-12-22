@@ -1,0 +1,526 @@
+//********************************************************************//
+//                         HOME STONES                        //
+//                           SCRIPTED BY BOO                          //
+//********************************************************************//
+
+
+//[itemdef i_home_stone]
+//Name= Home Stone
+//ID=i_guildstone
+//Type=T_Normal
+
+//On=@Create
+//   color=007a3
+
+//On=@Click
+//	DB.QUERY SELECT `population` FROM `towns` WHERE `name` = "<REGION.NAME>"
+//	IF (0<DB.ROW.NUMROWS>)
+//		FOR CURRENTROW 0 <eval <DB.ROW.NUMROWS>-1>
+//			IF (0<DB.ROW.<eval <LOCAL.CURRENTROW>>.total>==0)
+//				SAY Population:  <DB.ROW.<eval <LOCAL.CURRENTROW>>.population>
+//			ELSE 
+//				SAY Population: Unknown
+//			ENDIF
+//		END
+//	ENDIF
+//	RETURN 1
+// 
+//on=@Dclick
+//	IF (<SRC.ISGM>)
+//		RETURN 1
+//	ENDIF
+//	IF (STRMATCH(<SRC.TAG.HOMETOWN>,<REGION.NAME>))
+//		SRC.SYSMESSAGE You are already a citizen of this town.
+//	ELSE
+//		DB.EXECUTE UPDATE `towns` SET `population`=population+1 WHERE `name`="<REGION.NAME>"
+//		DB.EXECUTE UPDATE `towns` SET `population`=population-1 WHERE `name`="<SRC.TAG.HOMETOWN>"
+//	   SRC.SYSMESSAGE You have changed your home town to <REGION.NAME>
+//	   SRC.TAG.HOME = <EVAL (<P.X>+2)>,<P.Y>,<P.Z>,<P.M>
+//	   SRC.TAG.HOMETOWN =  <REGION.NAME>
+//	 ENDIF
+// return 1
+
+
+//********************************************************************//
+//                        PVP ENTRY STONE                             //
+//********************************************************************//
+[itemdef i_famekarma_entry_stone]
+Name= Fame, Karma and Kills Entry Stone
+ID=i_guildstone
+Type=T_Normal
+
+On=@Create
+   color=07a0
+   morep=5196,1214
+
+on=@Dclick
+   src.tag.killsbackup=<src.kills>
+   src.tag.karmabackup=<src.karma>
+   src.tag.famebackup=<src.fame>
+   src.tag.repbackup=<SRC.TAG.REP.ALIGNMENT>
+   src.tag.killtimerbackup=<SRC.FINDID.b_kill_decayer.timer>
+   
+   IF (<SRC.FINDID.i_memory_donatorskills>)
+   src.tag.powertimerbackup=<SRC.FINDID.i_memory_donatorskills.timer>
+   src.findid.i_memory_donatorskills.remove
+   ENDIF
+   
+   src.tag.statsstored = 1
+   src.tag.inevent=1
+   say Fame, Karma & Kills Stored
+   src.go <morep>
+   return 1
+   
+//********************************************************************//
+//                        PVP EXIT STONE                              //
+//********************************************************************//
+
+[itemdef i_famekarma_exit_stone]
+Name= Fame, Karma and Kills Exit Stone
+ID=i_guildstone
+Type=T_Normal
+
+On=@Create
+   COLOR= 0
+   MOREP= 4308,954,10
+   MORE1= 3
+   
+on=@Dclick
+   IF !((<SRC.ISGM>) || (<SRC.ISCOUNS>))
+		If (<src.tag0.statsstored> == 01)
+		
+		  
+			src.kills=<src.tag.killsbackup>
+			src.karma=<src.tag.karmabackup>
+			src.fame=<src.tag.famebackup>
+			src.tag.rep.alignment=<src.tag.repbackup>
+			SRC.FLAGS = <SRC.FLAGS> & ~statf_criminal
+			SRC.FINDID.b_kill_decayer.timer = <src.tag.killtimerbackup>
+				
+			IF (<SRC.TAG.POWERTIMERBACKUP>)
+				SRC.NEWITEM i_memory_donatorskills
+				NEW.TIMER=<src.tag.powertimerbackup>
+				NEW.MORE2=2
+				NEW.EQUIP <SRC.UID>				
+				src.tag.powertimerbackup=
+			ENDIF
+
+			src.tag.karmabackup = 
+			src.tag.famebackup = 
+			src.tag.killsbackup = 
+			src.tag.repbackup=
+			src.tag.statsstored =
+			src.tag.inevent=
+			src.tag.killtimerbackup =
+	
+			src.for_memory f_fkk_peace
+	
+			say Karma & Kills Restored
+				
+			IF (<MORE1>==0)
+				
+				SERV.LOG <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> got no prize from <uid> exit stone
+				SRC.GO <MOREP>
+				
+			ELSEIF (<MORE1>==1)
+							
+				SERV.LOG <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> got one PvP Ticket from <uid> exit stone
+				SERV.NEWITEM i_pvptoken
+				NEW.BOUNCE <SRC.UID>
+				SRC.GO <MOREP>
+				
+			ELSEIF (<MORE1>==2)
+						
+				SERV.LOG <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> got two PvP Ticket from <uid> exit stone
+				SERV.NEWITEM i_pvptoken,{2}
+				NEW.BOUNCE <SRC.UID>
+				SRC.GO <MOREP>
+						
+			ELSE
+			   	SRC.SYSMESSAGE This stone is not proper configured, please ask a Game Master to do so.
+			ENDIF
+			
+			
+		else
+		
+			SRC.FOR_MEMORY f_fkk_peace
+			SRC.FLAGS = <SRC.FLAGS> & ~statf_criminal
+			Say You Have No Stats Stored
+			src.go <morep>
+		ENDIF
+	ELSE
+		DIALOG d_exit_stone
+		RETURN 1
+    ENDIF
+    Return 1
+
+ON=@CLICK
+IF (<MORE1>==0)
+	NAME= Fame, Karma and Kills Exit Stone Without Reward!
+ELSEIF (<MORE1>==1)
+	NAME= Fame, Karma and Kills Exit Stone With Reward!
+ELSEIF (<MORE1>==2)
+	NAME= Fame, Karma and Kills Exit Stone With Double Reward!
+ELSE
+	IF (<SRC.ISGM>) || (<SRC.ISCOUNS>)
+		NAME= Double click the stone to select a reward!
+	ELSE
+		NAME= Fame, Karma and Kills Exit Stone (NOT CONFIGURED)
+	ENDIF
+ENDIF
+
+[FUNCTION f_fkk_peace]
+IF (<UID.<args>.timer> >= 1)
+	SERV.LOG Exiting PvP Via Stone. Removed Memory Object: <UID.<args>.name> 
+	UID.<args>.REMOVE
+ENDIF
+
+
+
+[DIALOG d_exit_stone]
+0,0
+page 0
+resizepic 92 56 3600 180 170
+
+dtext 120 80 137 Select Stone Reward:
+
+dtext 155 110 2300 No Reward
+button 135 115 1209 1210 1 0 1
+
+dtext 155 140 2300 1 PvP Ticket
+button 135 145 1209 1210 1 0 2
+
+dtext 155 170 2300 2 PvP Ticket
+button 135 175 1209 1210 1 0 3
+
+[DIALOG d_exit_stone button]
+ON=1
+MORE1=0
+COLOR=079C
+SRC.SYSMESSAGE You selected "No Reward" as Stone Reward.
+ON=2
+MORE1=1
+COLOR=07B5
+SRC.SYSMESSAGE You selected "1 PvP Ticket" as Stone Reward.
+ON=3
+MORE1=2
+COLOR=0784
+SRC.SYSMESSAGE You selected "2 PvP Ticket" as Stone Reward.
+
+
+[FUNCTION fkk_f_accept]  
+  src.sysmessage removing a memory object
+  TRY SRC.UID.<args>.REMOVE
+  RETURN 1
+  
+//********************************************************************//
+//                    FAME, KARMA AND RESIST STONE                    //
+//                       SCRIPTED BY LIL EDDIE                        //
+//********************************************************************//
+
+[ITEMDEF i_entry_stone_resist]
+ID = 0edd
+NAME = Entry Stone [Resist Storage]
+TYPE = t_eq_script
+WEIGHT = 0
+
+ON=@Create
+COLOR = 07a6
+ATTR = attr_static
+
+ON=@DClick
+IF (0<SRC.TAG.BATTLEGROUNDS_QUE> = 01)
+	src.sysmessage You cannot use this while in the queue for battlegrounds
+	return 1
+endif
+IF (<ACCOUNT.PLEVEL> >=2)
+    SRC.GO 6037 407
+RETURN 1
+ENDIF
+
+IF (<SRC.TAG.KFKSTORED> = 01)                // This should really be the same as standard F,K,K storage stones. IF they use tags at all.. :(
+   SRC.MESSAGE You have already used this stone!
+RETURN 1
+
+ELSE
+MESSAGE Fame, Karma, Kills, Resist - Stored
+SRC.TAG.KFKSTORED=01
+SRC.GO 6037 407
+SRC.TAG.RESISTLEVEL= <SRC.MAGICRESISTANCE>
+SRC.TAG.KARMALEVEL= <SRC.KARMA>
+SRC.TAG.FAMELEVEL= <SRC.FAME>
+SRC.TAG.KILLLEVEL= <SRC.KILLS>
+RETURN 1
+ENDIF
+
+//********************************************************************//
+[ITEMDEF i_exit_stone_resist]
+ID = 0edd
+NAME = Exit Stone [Resist Storage]
+TYPE = t_eq_script
+WEIGHT = 0
+
+ON=@Create
+COLOR = 07a8
+ATTR = attr_static
+
+ON=@DClick
+IF (0<SRC.TAG.BATTLEGROUNDS_QUE> = 01)
+	src.sysmessage You cannot use this while in the queue for battlegrounds
+	return 1
+endif
+IF (<ACCOUNT.PLEVEL> >= 2)
+    SRC.GO LYCAEUM
+RETURN 1
+ENDIF
+
+IF (<SRC.TAG.KFKSTORED> != 01)
+    SRC.MESSAGE You do not have any stats stored!
+RETURN 1
+
+ELSE
+SRC.GO LYCAEUM
+MESSAGE Fame, Karma, Kills, Resist - Returned
+SRC.MAGICRESISTANCE = <SRC.TAG.RESISTLEVEL>
+SRC.KARMA = <SRC.TAG.KARMALEVEL>
+SRC.FAME = <SRC.TAG.FAMELEVEL>
+SRC.KILLS = <SRC.TAG.KILLLEVEL>
+SRC.TAG.RESISTLEVEL=
+SRC.TAG.KARMALEVEL=
+SRC.TAG.FAMELEVEL=
+SRC.TAG.KILLLEVEL=
+RETURN 1
+ENDIF
+
+
+//********************************************************************//
+//                            QUEST RECORDS                           //
+//********************************************************************//
+[ITEMDEF i_quest_record]
+ID	= i_deed
+TYPE	= t_script
+NAME	= questing
+
+ON = @Click
+  if ( <LINK> == 04fffffff )
+     return 0
+  endif
+  MESSAGE quest record ( unassigned, <NAME> )
+  RETURN 1
+
+ON = @DClick  
+  if ( <LINK> == 04fffffff )
+     TARGET Who do you want to record?
+     RETURN 1
+  endif
+
+  SRC.SYSMESSAGE Resetting status for <LINK.NAME>.
+  LINK.KILLS	= <TAG.KILLS>
+  LINK.KARMA	= <TAG.KARMA>
+  LINK.TAG.REP.ALIGNMENT = <TAG.REPBACKUP>
+  LINK.TAG.QUESTNAME	=
+  REMOVE
+  RETURN 1
+
+ON = @Targon_Char
+  LINK		= <SRC.TARG>
+  SRC.SYSMESSAGE Recording status for <LINK.NAME>.
+
+  COLOR		= 0157
+  LINK.TAG.QUESTNAME	= <NAME>
+  NAME		= quest record ( <LINK.NAME>, <NAME> )
+  TAG.KILLS	= <LINK.KILLS>
+  TAG.KARMA	= <LINK.KARMA>
+  TAG.REPBACKUP	= <LINK.TAG.REP.ALIGNMENT>
+  RETURN 1
+
+
+//********************************************************************//
+//                        RESURRECTION STONES                         //
+//********************************************************************//
+[ITEMDEF i_resurrect_stone]
+ID=0ed6
+NAME=Resurrection Stone
+
+CATEGORY=Imperial uo
+SUBSECTION=Custom Items
+DESCRIPTION=Resurrection Stone
+
+ON=@DClick
+   IF !(<SRC.HITS> <= 0)
+      SRC.SYSMESSAGE Check again, you're not dead.
+      RETURN 1
+   ENDIF
+
+   IF <SRC.KILLS> < <MORE1>
+      SRC.SYSMESSAGE This stone doesn't seem to work for one as good as yourself.
+      RETURN 1
+   ENDIF
+
+   IF (<SRC.FINDID.M_Resurrect_Delay>)
+      SRC.SYSMESSAGE You cannot use this stone again yet!
+   ELSE
+      SRC.RESURRECT
+      SRC.SYSMESSAGE You feel life surge through you!
+      SRC.NEWITEM	M_Resurrect_Delay
+      SRC.ACT.EQUIP
+   ENDIF
+   RETURN 1
+
+//********************************************************************//
+[ITEMDEF i_resurrect_stonefull]
+ID=0ed6
+NAME=Resurrection Stone
+
+CATEGORY=Imperial uo
+SUBSECTION=Custom Items
+DESCRIPTION=Resurrection Stone Full hit restore
+
+ON=@DClick
+   IF !(<SRC.HITS> <= 0)
+      SRC.SYSMESSAGE Check again, you're not dead.
+      RETURN 1
+   ENDIF
+
+   IF (<SRC.FINDID.M_Resurrect_Delay>)
+      SRC.SYSMESSAGE You cannot use this stone again yet!
+   ELSE
+      SRC.RESURRECT
+      SRC.SYSMESSAGE You feel life surge through you!
+      SRC.HITS = <SRC.STR>
+      SRC.NEWITEM	M_Resurrect_Delay
+      SRC.ACT.EQUIP
+   ENDIF
+RETURN 1
+
+//********************************************************************//
+[ItemDef M_Resurrect_Delay]
+id=i_memory
+Name=Resurrect Stone Delay
+type=t_eq_script
+
+ON=@Create
+   TIMER    = 30
+
+ON=@Timer
+   Remove 
+   RETURN 1
+
+
+//********************************************************************//
+//                           EVERYTHING FIX                           //
+//    THIS MAY NEVER BE NEEDED ANYMORE...NOT SURE YET...LEFT IN JIC   //
+//********************************************************************//
+
+//NOTE: Damn right this is needed, char_CONTROL has a lovely tendancy
+//      to break :D - Wig
+
+[itemdef i_everything_fix]
+Name= everything Fix
+ID=i_guildstone
+Type=T_Normal
+
+On=@Create
+color=00004
+
+on=@Dclick
+//removed by boo for stone 2
+ //     SRC.findlayer(layer_k_control).TAG.OSTR	= <SRC.STR>
+ //     SRC.findlayer(layer_k_control).TAG.OINT	= <SRC.INT>
+ //     SRC.findlayer(layer_k_control).TAG.ODEX	= <SRC.DEX>
+ //     SRC.MODSTR=0
+ //     SRC.MODINT=0
+ //     SRC.MODDEX=0
+//      IF (0<SRC.TAG.FLUX>)
+//         SRC.ACT.TAG.CAPSTR	= (<SRC.ACT.TAG.CAPSTR> + <SRC.TAG.FLUX>)
+//      ENDIF
+//      SRC.ACT.TAG.AP_MAGERY	= 0
+//      SRC.ACT.TAG.AP_COMBAT	= 0
+//      SRC.ACT.TAG.VERSION	= 1
+ //     src.sysmessage Fixed :D (Or if you're wearing magicals, broken! :D)
+      Return 1
+
+[itemdef i_everything_fix2]
+Name= everything Fix
+ID=i_guildstone
+Type=T_Normal
+
+On=@Create
+color=00004
+
+on=@Dclick
+      SRC.findlayer(layer_k_control).TAG.OSTR	= <SRC.STR>
+      SRC.findlayer(layer_k_control).TAG.CAPSTR = <SRC.STR>
+      SRC.findlayer(layer_k_control).TAG.STR_TMP = <SRC.STR>
+      SRC.findlayer(layer_k_control).TAG.OINT	= <SRC.INT>
+      SRC.findlayer(layer_k_control).TAG.CAPINT = <SRC.INT>
+      SRC.findlayer(layer_k_control).TAG.STR_INT = <SRC.INT>
+      SRC.findlayer(layer_k_control).TAG.ODEX	= <SRC.DEX>
+      SRC.findlayer(layer_k_control).TAG.CAPDEX = <SRC.DEX>
+      SRC.findlayer(layer_k_control).TAG.DEX_TMP = <SRC.DEX>
+      SRC.MODSTR=0
+      SRC.MODINT=0
+      SRC.MODDEX=0
+//      IF (0<SRC.TAG.FLUX>)
+//         SRC.ACT.TAG.CAPSTR	= (<SRC.ACT.TAG.CAPSTR> + <SRC.TAG.FLUX>)
+//      ENDIF
+//      SRC.ACT.TAG.AP_MAGERY	= 0
+//      SRC.ACT.TAG.AP_COMBAT	= 0
+//      SRC.ACT.TAG.VERSION	= 1
+      src.sysmessage Fixed :D (Or if you're wearing magicals, broken! :D)
+      Return 1
+
+//********************************************************************//
+//                        PVP ROBE DISPENCER                          //
+//             GIVES OUT ONE ROBE THE COLOR OF THE STONE              //
+//********************************************************************//
+[itemdef i_stone_pvpclothes]
+id = i_guildstone
+name = PvP Robe Dispencer
+type = t_script
+
+on=@create
+attr = attr_move_never | attr_static
+
+on=@dclick
+   if (<src.account.plevel> > 1)
+       // Clicked by a staff member
+       src.sysmessage Set stone color to set robe color
+   endif
+
+   // Give Robe
+   if (<src.findid.i_stone_pvpclothes_timer.uid> > 0)
+     src.sysmessage You can only obtian pvp clothes once.
+   else
+     src.newitem i_stone_pvpclothes_timer
+     src.act.equip
+     src.i_stone_pvpclothes_giveclothes <color>
+   endif
+   return 1
+
+//********************************************************************//
+[itemdef i_stone_pvpclothes_timer]
+id = i_memory
+type = t_eq_script
+name = stonetimer
+
+on=@create
+   attr = attr_move_never
+
+on=@equip
+   timer = 600
+   return 1
+
+on=@timer
+   remove
+   return 1
+
+//********************************************************************//
+[function i_stone_pvpclothes_giveclothes]
+   newitem i_robe
+   act.color = <args>
+   act.cont = <findlayer(21).uid>
+
+[EOF]
+
+

@@ -1,0 +1,1682 @@
+// #-----------#
+// # CHANGELOG #
+// #-----------#
+//
+// 18/08/18 - Wigifer - Removed random loot from these monsters, ready for conversion to the new f_central_loot table.
+
+//************************NIM'S FACTORY DUNGEON***********************//
+
+//********************************************************************//
+//                               SLAVES                               //
+//********************************************************************//
+[CHARDEF c_slave_escapee_f]
+DEFNAME=c_slave_escapee_f
+NAME=Naomi
+ID=C_WOMAN
+
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK
+
+DESIRES=i_gold,e_notoriety
+AVERSIONS=t_TRAP,t_eerie_stuff
+DAM=2,8
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_needs
+TSPEECH=slave_f
+
+TEVENTS=e_Human_HearUnk
+TEVENTS=e_Human_ConvInit
+TEVENTS=e_Human_Greet
+TEVENTS=e_Human_Space
+TEVENTS=e_Human_Needs
+TEVENTS=e_Human_Refuse
+
+ON=@Create
+   TITLE=Wife of Martin
+   COLOR=colors_skin
+   STR={70 115}
+   DEX={81 95}
+   INT={61 75}
+
+   PARRYING={55.0 78.0}
+   MACEFIGHTING={55.0 90.0}
+   WRESTLING={35.0 58.0}
+   MAGICRESISTANCE={45.0 58.0}
+   TACTICS={60.0 98.0}
+
+   NPC=brain_thief
+   
+   KARMA={-1000 0}
+   FAME={2500 4000}
+
+   ITEMNEWBIE=random_female_hair
+   COLOR=colors_green
+
+ON=@NPCRestock
+   ITEM=random_skirt
+   COLOR=colors_green
+   ITEM=i_shirt_plain
+   COLOR=colors_green
+   ITEM=random_shoes
+   COLOR=colors_green
+   ITEM=loot_newrares_Easy
+   ITEM=i_pickaxe
+   ITEM=i_lantern
+
+ON=@CLICK
+   MESSAGE @05 <NAME>, <TITLE>
+   RETURN 1
+
+On=@NPCSeeNewPlayer 
+   Emote sob and cry 'oh Martin, have you forgotten me'
+
+CATEGORY=Memory UO
+SUBSECTION=Factory
+DESCRIPTION=Slave - Miner(female)
+
+[SPEECH slave_f] 
+on=*Deliver* 
+on=*escape*
+on=*plans* 
+on=*Martin*
+on=*hello*
+on=*hi*
+on=*help*
+on=*what's wrong*
+IF ( <SRC.TAG.NPC_QUEST_START> & NPCQ_EnslavedMiner )
+   IF <SRC.RESTEST I_ESCAPE_PLANS>
+      SRC.consume I_ESCAPE_PLANS
+      EMOTE look at the sketch nodding and wipe her tears bravely.
+      SAY @05 I understand, thank you so much, 
+      IF !( <SRC.RESTEST i_shovel>)
+         SRC.NEWITEM=i_shovel 
+         SRC.ACT.BOUNCE 
+         SAY @05 Please take this SHOVEL back to Martin, he may need it.
+      ELSE
+         SAY @05 Please take that SHOVEL back to Martin, he may need it.  
+      ENDIF
+      SAY @05 I must get back to work now before they become suspicious.
+   ELSE
+      SAY Have you no word from him?
+   ENDIF
+ELSE
+   SAY @05 Oh my beloved Martin, have you seen him? 
+   SAY @05 We were abushed on the highway and brought here...
+   SAY @05 He was taken away from me...oh please say you've seen him.
+ENDIF
+RETURN 1  
+
+on=*I've seen him*
+   SAY @05 have you any news to DELIVER? Please bring me some word from him.
+   RETURN 1
+
+on=*SHOVEL*
+   IF ( <SRC.TAG.NPC_QUEST_START> & NPCQ_EnslavedMiner )
+      IF !( <SRC.RESTEST i_shovel>)
+         SAY @05 Have you lost the first one I gave you? Here take this one.
+         SRC.NEWITEM=i_shovel
+         SRC.ACT.BOUNCE
+      ELSE
+         SAY @05 Please take the Shovel to Martin! Let him know I will be ready.
+      ENDIF
+   ENDIF
+   
+//********************************************************************//
+[CHARDEF c_slave_escapee_m]
+DEFNAME=c_slave_escapee_m
+NAME=Martin
+ID=C_MAN
+
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK
+
+DESIRES=i_gold,e_notoriety
+AVERSIONS=t_TRAP,t_eerie_stuff
+DAM=2,8
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_needs
+TSPEECH=slave_m
+
+TEVENTS=e_Human_HearUnk
+TEVENTS=e_Human_ConvInit
+TEVENTS=e_Human_Greet
+TEVENTS=e_Human_Space
+TEVENTS=e_Human_Needs
+TEVENTS=e_Human_Refuse
+
+ON=@Create
+TITLE=Husband of Naomi
+COLOR=colors_skin
+STR={70 115}
+DEX={81 95}
+INT={61 75}
+
+PARRYING={55.0 78.0}
+MACEFIGHTING={55.0 90.0}
+WRESTLING={35.0 58.0}
+MAGICRESISTANCE={45.0 58.0}
+TACTICS={60.0 98.0}
+
+NPC=brain_thief
+
+KARMA={-1000 0}
+FAME={2500 4000}
+
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+
+ON=@NPCRestock
+ITEM=random_pants
+COLOR=colors_green
+ITEM=random_shoes
+COLOR=colors_green
+ITEM=loot_newrares_Easy
+ITEM=i_pickaxe
+ITEM=i_lantern
+
+ON=@Click
+   MESSAGE @05 <NAME>, <TITLE>
+   RETURN 1
+
+On=@NPCSeeNewPlayer 
+   IF !( <SRC.TAG.NPC_QUEST_START> & NPCQ_EnslavedMiner )
+      SAY @05 Psst, you there...I need your help
+   ELSE
+      SAY @05 Have you delivered my message you Naomi yet? Did she send any message in return?
+   ENDIF
+   
+CATEGORY=Memory UO
+SUBSECTION=Factory
+DESCRIPTION=Slave - Miner(female)
+
+[SPEECH slave_m] 
+on=*quest*
+on=*help*
+on=*Naomi*
+on=*what's wrong*
+on=*deliver*
+IF ( <SRC.TAG.NPC_QUEST_START> & NPCQ_EnslavedMiner )
+   IF ( <SRC.RESTEST i_shovel>)
+      SAY @05 Oh Thank God she's alright.
+      SAY @05 You have done us a great service, keep the SHOVEL, you may find it USEFUL.
+      IF !( <SRC.RESTEST i_bone_chest>)
+         SAY @05 Also, take this.  Maybe it will help you BLEND in. 
+         SAY @05 You probably still need a helmet, but this is a start.
+         SRC.NEWITEM=i_bone_chest
+         SRC.ACT.COLOR=0966
+         SRC.ACT.BOUNCE
+      ELSE
+         SAY @05 Also, some ADVICE...try to dress like the guards to BLEND in...
+      ENDIF
+      SRC.TAG.NPC_QUEST_START = <eval ( <SRC.TAG.NPC_QUEST_START> &~ NPCQ_EnslavedMiner )>
+      SRC.TAG.NPC_QUEST_DONE = <eval ( <SRC.TAG.NPC_QUEST_DONE> | NPCQ_EnslavedMiner )>      
+   ELSE
+      SAY @05 Have you delivered my message you Naomi yet? Did she send any message in return?
+   ENDIF
+ELSE
+   IF (<SRC.RESTEST i_escape_plans>)
+      SAY @05 You must deliver the plans to her, her name is Naomi
+   ELSE
+      SAY @05 My wife and I were ambushed and brought to this horrible place.
+      SAY @05 I think I have a way out though...please DELIVER this to her.  Her name is Naomi.
+      SRC.TAG.NPC_QUEST_START = <eval ( <SRC.TAG.NPC_QUEST_START> | NPCQ_EnslavedMiner )>
+      SRC.NEWITEM=i_escape_plans
+      SRC.ACT.BOUNCE 
+      SAY @05 Please Hurry, I may be able to offer you some ADVICE if you can help me...
+   ENDIF
+ENDIF
+RETURN 1
+
+on=*SHOVEL*
+on=*USEFUL*
+   IF ( <SRC.TAG.NPC_QUEST_DONE> & NPCQ_EnslavedMiner )
+      SAY @05 There is a tunnel near the Waste Disposal Area 
+      SAY @05 I've been digging whenever I'm sent to take out the garbage.
+      SAY @05 You will still need a shovel to uncover the top layer though.
+      IF !( <SRC.RESTEST i_shovel>)
+         SAY @05 Here take this, there are plenty more around here.
+         SRC.NEWITEM=i_shovel
+         SRC.ACT.BOUNCE
+      ENDIF
+   ELSE
+      SAY @05 I will not help you until you help me...
+      SAY @05 I don't generally play that card, but I'm desperate.
+   ENDIF
+   RETURN 1
+
+on=*BLEND*
+on=*GUARDS*
+on=*ADVICE*
+   IF ( <SRC.TAG.NPC_QUEST_DONE> & NPCQ_EnslavedMiner )
+      SAY @05 There are guards posted at some doors.
+      SAY @05 They rarely check who is under the armor though...
+      SAY @05 If they don't recognize you, they may let you in if you ask.
+   ELSE
+      SAY @05 I will not help you until you help me...
+      SAY @05 I don't generally play that card, but I'm desperate.
+   ENDIF
+   RETURN 1
+
+
+//********************************************************************//
+[CHARDEF c_slave_miner_m]
+DEFNAME=c_slave_miner_m
+NAME=#NAMES_HUMANMALE the Enslaved Miner
+ID=C_MAN
+
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK
+
+DESIRES=i_gold,e_notoriety
+AVERSIONS=t_TRAP,t_eerie_stuff
+DAM=2,8
+
+TSPEECH=spk_human_prime
+TSPEECH=jobMageEvil
+TSPEECH=spk_needs
+TSPEECH=spk_rehello
+TSPEECH=spk_human_default
+
+TEVENTS=e_Human_HearUnk
+TEVENTS=e_Human_ConvInit
+TEVENTS=e_Human_Greet
+TEVENTS=e_Human_Space
+TEVENTS=e_Human_Needs
+TEVENTS=e_Human_Refuse
+
+ON=@Create
+COLOR=00
+STR={70 115}
+DEX={81 95}
+INT={61 75}
+
+PARRYING={55.0 78.0}
+MACEFIGHTING={55.0 90.0}
+WRESTLING={35.0 58.0}
+MAGICRESISTANCE={45.0 58.0}
+TACTICS={60.0 98.0}
+
+NPC=brain_thief
+
+KARMA={-3000 -4000}
+FAME={2500 4000}
+
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+
+ON=@NPCRestock
+ITEM=random_pants
+COLOR=colors_green
+ITEM=random_shoes
+COLOR=colors_green
+ITEM=loot_newrares_Easy
+ITEM=i_pickaxe
+ITEM=i_lantern
+
+CATEGORY=Memory UO
+SUBSECTION=Factory
+DESCRIPTION=Slave - Miner(male)
+
+//********************************************************************//
+[CHARDEF c_slave_miner_f]
+DEFNAME=c_slave_miner_f
+NAME=#NAMES_HUMANFEMALE the Enslaved Miner
+ID=C_WOMAN
+
+//ALIGNMENT=EVIL
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK
+
+DESIRES=i_gold,e_notoriety
+AVERSIONS=t_TRAP,t_eerie_stuff
+DAM=2,8
+
+TSPEECH=spk_human_prime
+TSPEECH=jobMageEvil
+TSPEECH=spk_needs
+TSPEECH=spk_rehello
+TSPEECH=spk_human_default
+TEVENTS=e_Human_HearUnk
+
+TEVENTS=e_Human_ConvInit
+TEVENTS=e_Human_Greet
+TEVENTS=e_Human_Space
+TEVENTS=e_Human_Needs
+TEVENTS=e_Human_Refuse
+
+ON=@Create
+COLOR=00
+STR={70 115}
+DEX={81 95}
+INT={61 75}
+
+PARRYING={55.0 78.0}
+MACEFIGHTING={55.0 90.0}
+WRESTLING={35.0 58.0}
+MAGICRESISTANCE={45.0 58.0}
+TACTICS={60.0 98.0}
+
+NPC=brain_thief
+
+KARMA={-3000 -4000}
+FAME={2500 4000}
+
+ITEMNEWBIE=random_female_hair
+COLOR=colors_green
+
+ON=@NPCRestock
+ITEM=random_skirt
+COLOR=colors_green
+ITEM=i_shirt_plain
+COLOR=colors_green
+ITEM=random_shoes
+COLOR=colors_green
+ITEM=loot_newrares_Easy
+ITEM=i_pickaxe
+ITEM=i_lantern
+
+CATEGORY=Memory UO
+SUBSECTION=Factory
+DESCRIPTION=Slave - Miner(female)
+
+//********************************************************************//
+[CHARDEF c_slave_demolitions] 
+DEFNAME=c_slave_demolitions 
+ID=c_man 
+NAME=#NAMES_HUMANMALE the Demolitions Expert   
+CAN=MT_WALK|MT_RUN|MT_USEHANDS|MT_EQUIP 
+DAM=13,21 
+ARMOR=20 
+
+
+TSPEECH=spk_human_prime
+TSPEECH=jobMageEvil
+TSPEECH=spk_needs
+TSPEECH=spk_rehello
+TSPEECH=spk_human_default
+TEVENTS=e_Human_HearUnk
+
+TEVENTS=e_Human_ConvInit
+TEVENTS=e_Human_Greet
+TEVENTS=e_Human_Space
+TEVENTS=e_Human_Needs
+TEVENTS=e_Human_Refuse
+
+ON=@Create 
+COLOR=0
+NPC=brain_human 
+FAME={3000 4999} 
+KARMA={-3000 -4999} 
+
+STR={80 125} 
+DEX={40 60} 
+INT={1 2} 
+
+WRESTLING={25.0 50.0}
+MAGICRESISTANCE={80.0 90.0}
+TACTICS={50.0 70.0}
+Archery={70.0 95.0}
+
+ITEM=i_flask_launcher
+ATTR=00084
+COLOR=0066d
+NAME=Demolition tool
+
+
+ON=@NPCRestock
+ITEMNEWBIE=i_doublet
+COLOR=0066d
+ITEM=i_boots_calf
+ITEMNEWBIE=i_bandana
+COLOR=0066d
+ITEMNEWBIE=i_leather_gloves
+COLOR=0066d
+ITEM=i_pants_long
+COLOR=0066d
+
+ON=@HIT
+SRC.EFFECT 3,036b0,6,15,1
+SRC.DAMAGE <EVAL RAND(25)+ <EVAL 5>>
+IF (<SRC.STAMINA><20)
+SRC.STAMINA=0
+ELSE
+SRC.STAMINA=<SRC.STAMINA>+-20
+END IF
+
+ON=@GETHIT
+FLEE
+RETURN 0
+
+ON=@NPCseenewplayer
+attack
+IF <eval rand(30)> = 1 
+END IF
+RETURN 0
+
+CATEGORY=Memory UO
+SUBSECTION=Factory 
+DESCRIPTION=Demolitions Expert
+
+
+//********************************************************************//
+//                            HELLSMITHS                              //
+//********************************************************************//
+[CHARDEF c_apprentice_hellsmith]
+DEFNAME=c_apprentice_hellsmith
+NAME=#NAMES_HUMANMALE the apprentice hellsmith
+ID=c_man
+SOUND=snd_MONSTER_ETTIN1
+ICON=i_pet_man
+ANIM=078c7f
+DAM=9,19
+ARMOR=20
+CAN=MT_WALK|MT_USEHANDS|MT_EQUIP|MT_RUN
+
+TSPEECH=spk_human_prime
+TSPEECH=jobMageEvil
+TSPEECH=spk_needs
+TSPEECH=spk_rehello
+TSPEECH=spk_human_default
+
+ON=@Create
+COLOR=00488
+NPC=brain_monster
+FAME={600 5000}
+KARMA={-2000 -2999}
+//ALIGNMENT=EVIL
+
+STR={140 180}
+DEX={60 75}
+INT={300 400}
+
+SWORDSMANSHIP={45.0 65.0}
+MACEFIGHTING={55.0 75.0}
+PARRYING={50.0 60.0}
+MAGICRESISTANCE={40.0 55.0}
+TACTICS={50.0 70.0}
+WRESTLING={50.0 60.0}
+
+ON=@NPCRestock
+ITEM={ rich_monster_backpack 3 filthy_rich_monster_backpack 1 }
+ITEM={ average_gold_pile 1 rich_gold_pile 1 }
+ITEM=i_hammer_war
+ITEM=loot_newrares_Easy
+ITEMNEWBIE=i_apron_full
+COLOR=01
+ITEMNEWBIE=i_pants_short
+COLOR=0966
+ITEMNEWBIE=i_mask_tribal_red
+COLOR=00488
+
+CATEGORY=Memory UO
+SUBSECTION=Factory 
+DESCRIPTION=Apprentice Hellsmith
+
+//********************************************************************//
+[CHARDEF c_the_hellsmith]
+DEFNAME=c_the_hellsmith
+NAME=The Hellsmith
+ID=c_Titan
+ICON=i_pet_Titan
+SOUND=snd_MONSTER_ETTIN1
+DAM=25,50
+ARMOR=35
+
+
+TEVENTS=e_thick_skin
+
+RESOURCES=10 i_ribs_raw
+CAN=MT_WALK|MT_USEHANDS
+
+FOODTYPE=15 t_meat_raw
+DESIRES=c_titan
+AVERSIONS=r_civilization
+
+ON=@gethit
+   If (<hits> < 90)
+      IF <RESTEST I_potion_heal> 
+         consume=I_potion_heal
+         Say *Drinks a potion*
+         Say *Drinks a potion*
+         Src.sysmessage *He drank a potion*
+         hits=<hits>+(30)
+         update
+      elseif <RESTEST I_potion_healgreat> 
+         consume=I_potion_healgreat
+         Say *Drinks a potion*
+         Say *Drinks a potion*
+         Src.sysmessage *He drank a potion*
+         hits=<hits>+(60)
+         update
+      else
+         Dorand 3
+            Say Narrgh!
+            Say Unggrt!
+         enddo
+      endif
+   endif
+
+ON=@Create
+   COLOR=00488
+   NPC=brain_monster
+
+   STR={1200 1500}
+   DEX={225 245}
+   INT={500 800}
+ 
+   MAGERY={100.0 100.0}
+   PARRYING={70.0 100.0}
+   MAGICRESISTANCE={90.0 100.0}
+   TACTICS={85.0 120.0}
+   WRESTLING={95.0 100.0}
+
+   FAME={100 4000}
+   KARMA={-5000 -5999}
+
+   ITEM=I_potion_healgreat
+   ITEM=I_potion_heal
+   ITEM=I_apron_full
+   ITEM=I_hellsmith_hammer,R500
+   ITEMNEWBIE=i_spellbook
+   ADDSPELL=s_flamstrike
+   ADDSPELL=s_summon_elem_fire
+
+
+ON = @SpellEffect
+   if ( (<argn1> == 20) || (<argn1> == 39) )
+      emote resist your spell
+      return 1
+   endif
+
+CATEGORY=Memory UO
+SUBSECTION=Factory
+DESCRIPTION=The Hellsmith
+
+
+//********************************************************************//
+//                            CONSTRUCTS                              //
+//********************************************************************//
+[CHARDEF c_flesh_golem_greater]
+DEFNAME=c_flesh_golem_greater
+NAME=Greater Flesh Golem
+SOUND=snd_ELEMENTL_WATREL1
+ID=c_CYCLOPS
+DAM=10,37
+ARMOR=20
+RESOURCES=40 i_ribs_raw
+FOODTYPE=25 t_meat_raw
+CAN=MT_WALK|MT_USEHANDS|MT_EQUIP 
+
+TEVENTS=e_thick_skin
+DESIRES=i_gold
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+ON=@Create
+   COLOR=0667
+   STR={320 390}
+   DEX={95 115}
+   INT={300 400}
+
+   MAGICRESISTANCE={60.0 75.0}
+   PARRYING={75.0 80.0}
+   TACTICS={85.0 100.0}
+   WRESTLING={85.0 110.0}
+
+   NPC=BRAIN_MONSTER
+
+   KARMA={-4000 -6000}
+   FAME={100 2000}
+
+ON=@GetHit 
+   IF !(RAND(2))
+      IF (<SRC.ACT.DISTANCE> > 2) 
+         SRC.NEWNPC c_putrid_flesh
+         EMOTE rip a chunk of putrid flesh from its body.
+         ACT.UPDATE
+      ENDIF
+   ENDIF
+   RETURN 0
+
+ON=@Death
+   NEWNPC c_flesh_golem
+   SRC.ACT.P = <P>
+   RETURN 0
+
+CATEGORY=Memory UO
+SUBSECTION=Factory
+DESCRIPTION=Greater Flesh Golem
+
+//********************************************************************//
+[CHARDEF c_flesh_golem]
+DEFNAME=c_flesh_golem
+ID=c_elem_earth
+NAME=Flesh Golem
+SOUND=snd_ELEMENTL_WATREL1
+ICON=i_pet_elem_earth
+ANIM=078c7f
+DAM=9,24
+ARMOR=22
+RESOURCES=20 i_ribs_raw
+CAN=MT_WALK|MT_USEHANDS|MT_EQUIP
+
+FOODTYPE=15 t_meat_raw
+DESIRES=i_gold
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+ON=@Create
+   COLOR=0667
+   NPC=brain_monster
+   STR={175 225}
+   DEX={50 70}
+   INT={300 400}
+
+   PARRYING={50.0 60.0}
+   MAGICRESISTANCE={45.0 60.0}
+   TACTICS={65.0 85.0}
+   WRESTLING={60.0 75.0}
+
+   FAME={10 5000}
+   KARMA={-2500 -4000}
+
+ON=@GetHit 
+   IF !(RAND(2))
+      IF (<SRC.ACT.DISTANCE> > 2) 
+         SRC.NEWNPC c_putrid_flesh
+         EMOTE rip a chunk of putrid flesh from its body.
+         ACT.UPDATE
+      ENDIF
+   ENDIF
+   RETURN 0
+
+ON=@Death
+   NEWNPC c_flesh_golem_lesser
+   SRC.ACT.P = <P>
+   RETURN 0
+
+CATEGORY=Memory UO
+SUBSECTION=Factory
+DESCRIPTION=Flesh Golem
+
+//********************************************************************//
+[CHARDEF c_flesh_golem_lesser]
+DEFNAME=c_flesh_golem_lesser
+NAME=Lesser Flesh Golem
+SOUND=snd_ELEMENTL_WATREL1
+ID=c_zombie
+ICON=i_pet_zombie
+ANIM=079c7f
+DAM=5,20
+ARMOR=17
+RESOURCES=15 i_ribs_raw
+CAN=MT_WALK|MT_USEHANDS|MT_EQUIP
+
+FOODTYPE=15 t_meat_raw
+DESIRES=i_gold
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+ON=@Create
+   COLOR=0667
+   NPC=brain_monster
+   FAME={1000 6000}
+   KARMA={-3000 -3999}
+
+   STR={125 155}
+   DEX={66 85}
+   INT={300 400}
+
+   PARRYING={40.0 65.0}
+   MAGICRESISTANCE={50.0 95.0}
+   TACTICS={60.0 100.0}
+   WRESTLING={60.0 100.0}
+   MINING=80.0
+
+CATEGORY=Memory UO
+SUBSECTION=Factory
+DESCRIPTION=Lesser Flesh Golem
+
+//********************************************************************//
+[CHARDEF c_bone_construct]
+DEFNAME=c_bone_construct
+NAME=Bone Construct
+ID=c_skeleton_w_sword
+DAM=10,25
+ARMOR=30
+RESOURCES=16 i_reag_bone
+
+
+ON=@Create
+   COLOR=0961
+   NPC=brain_undead
+   FAME={100 2000}
+   KARMA={-3000 -3999}
+   STR={195 250}
+   DEX={76 95}
+   INT={300 400}
+   PARRYING={60.0 95.0}
+   MAGICRESISTANCE={90.0 99.0}
+   TACTICS={85.0 100.0}
+   WRESTLING={90.0 95.0}
+
+ON=@DEATH
+   // Create death explosion to damage those nearby.
+   NEWITEM=i_fx_smoke
+   act.TYPE=T_EXPLOSION
+   act.ATTR=ATTR_MOVE_NEVER | ATTR_CAN_DECAY
+   act.LINK=<uid>
+   act.morex=10 // damage
+   act.morey=090 // wFlags DAMAGE_GENERAL
+   act.morez=2 // iDist
+   act.p=<p>
+   act.TIMERD=1 // immediate decay
+
+CATEGORY=Memory UO
+SUBSECTION=Factory
+DESCRIPTION=Bone Construct
+
+//********************************************************************//
+[CHARDEF c_putrid_flesh]
+DEFNAME=c_putrid_flesh
+NAME=Putrid Flesh
+ID=c_SLIME
+SOUND=snd_MONSTER_SLIME1
+DAM=6,12
+ARMOR=12
+CAN=MT_WALK|MT_RUN
+
+FOODTYPE=35 t_meat_raw
+AVERSIONS=t_TRAP,t_eerie_stuff
+DESIRES=c_SLIME
+
+ON=@Create
+   COLOR=0667
+   STR={25 45}
+   DEX={20 35}
+   INT={300 400}
+
+   PARRYING={25.0 31.0}
+   MAGICRESISTANCE={15.0 20.0}
+   TACTICS={19.0 34.0}
+   WRESTLING={29.0 34.0}
+ 
+   NPC=brain_monster
+
+   FAME={100 2000}
+   KARMA={-4000 -5999}
+
+
+CATEGORY=Memory UO
+SUBSECTION=Factory
+DESCRIPTION=Putrid Flesh
+
+
+//********************************************************************//
+[CHARDEF c_blade_construct]
+DEFNAME=c_blade_construct
+NAME=Blade Construct
+ID=c_blade_spirit
+CAN=MT_WALK|MT_RUN|MT_FLY
+
+TEVENTS=e_blade_creature
+ARMOR=22
+RESOURCES= {1 5} i_ingot_iron
+AVERSIONS=t_TRAP,t_eerie_stuff
+SOUND=snd_WEAPONS_SWORD1
+ICON=i_FX_Blade_Spirit_1
+DAM=4,6
+
+ON=@Create
+   COLOR=00965
+   NPC=brain_MONSTER
+   STR=200
+   DEX=350
+   INT={300 400}
+   TACTICS=200.0
+   WRESTLING=250.0
+
+   FAME={0 100}
+   KARMA={-10 -1200}
+
+CATEGORY=Memory UO
+SUBSECTION=Factory
+DESCRIPTION=Blade Constuct
+
+
+//********************************************************************//
+//                              GUARDS                                //
+//********************************************************************//
+[CHARDEF c_factory_guard_door]
+DEFNAME=c_factory_guard_door
+ID=C_MAN
+NAME=Kruel
+SOUND=snd_HUMAN_M_DIE_01
+
+DAM=12,14
+ARMOR=40
+
+
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+TSPEECH=spk_human_prime
+TSPEECH=jobMageEvil
+TSPEECH=spk_needs
+TSPEECH=spk_rehello
+TSPEECH=spk_human_default
+TSPEECH=factory_guard
+
+ON=@Create
+   TITLE= the Factory Guard
+   COLOR=0485
+   STR={120 150}
+   DEX={100 120}
+   INT={300 400}
+
+   PARRYING={95.0 100.0}
+   SWORDSMANSHIP={95.0 105.0}
+   WRESTLING={67.0 90.0}
+   MAGICRESISTANCE={65.0 88.0}
+   TACTICS={80.0 98.0}
+   POISONING={90.0 100.0}
+   DETECTION={90.0 100.0}
+
+   NPC=brain_monster
+
+   FAME=1000
+   KARMA=-4000
+   
+ON=@NPCRestock
+   ITEMNEWBIE=i_platemail_gloves
+   COLOR=0966
+   ITEMNEWBIE=i_bone_helmet
+   COLOR=0966
+   ITEMNEWBIE=i_platemail_arms
+   COLOR=0966
+   ITEMNEWBIE=i_platemail_gorget
+   COLOR=0966
+   ITEMNEWBIE=i_bone_chest
+   COLOR=0966
+   ITEMNEWBIE=i_platemail_leggings
+   COLOR=0966
+   ITEMNEWBIE=i_bardiche_titanium
+   COLOR=0966
+   ITEMNEWBIE=i_CAPE
+   COLOR=0485
+   ITEMNEWBIE=i_SASH
+   COLOR=0485
+   ITEMNEWBIE=i_apron_half
+   COLOR=0485
+   ITEMNEWBIE=loot_newrares_Med
+
+ON=@CLICK
+   EMOTE watching you suspiciously as you approach.
+   
+ON=@NPCActFight
+   IF <MEMORYFINDTYPE.MEMORY_ISPAWNED.UID>
+      TAG.DOOR=<UID.<MEMORYFINDTYPE.MEMORY_ISPAWNED.LINK>.LINK>
+   ENDIF
+   RETURN 0
+
+ON=@DEATH
+   TRY UID.<TAG.DOOR>.OPENDOORS
+
+CATEGORY=Memory UO
+SUBSECTION=Factory
+DESCRIPTION=Guard - Bardiche
+
+
+[FUNCTION OPENDOORS]
+IF ( <TIMER> = -1 )
+   TYPE=T_DOOR
+   LINK.TYPE=T_DOOR
+   TIMER=1
+   LINK.TIMER=1
+   TYPE=T_DOOR_LOCKED
+   LINK.TYPE=T_DOOR_LOCKED
+ENDIF
+
+[SPEECH factory_guard] 
+on=*let me in*
+on=*hello*
+on=*hi*
+on=*open*
+on=*unlock*
+on=*door*
+   IF (<SRC.FINDLAYER.layer_helm.BASEID>=i_bone_helmet) && (<SRC.FINDLAYER.layer_helm.COLOR>=0966) && (<SRC.FINDLAYER.layer_chest.BASEID>=i_bone_chest) && (<SRC.FINDLAYER.layer_chest.COLOR>=0966)
+      SAY Hmm...Shift change already?
+      IF <MEMORYFINDTYPE.MEMORY_ISPAWNED.UID>
+         TAG.DOOR=<UID.<MEMORYFINDTYPE.MEMORY_ISPAWNED.LINK>.LINK>
+      ENDIF
+      TRY UID.<TAG.DOOR>.OPENDOORS
+      SAY Wait a minute! Where's the rest of your gear!?
+      Emote snatch your helmet away
+      SRC.FINDLAYER.layer_helm.REMOVE
+      SAY GUARDS! An imposter!
+      ATTACK
+   ELSE
+      SAY These barracks are only for the guards and their wards.  Get back to work slave!
+   ENDIF
+   RETURN 1
+
+
+//********************************************************************//
+[CHARDEF c_factory_guard_overseer]
+DEFNAME c_factory_guard_overseer
+NAME=Overseer
+SOUND=snd_MONSTER_TERA_MATRIARCH1
+ID=c_terathan_matriarch
+ICON=i_pet_terathan_war
+ANIM=07fc7f
+DAM=8,20
+ARMOR=30
+CAN=MT_WALK|MT_USEHANDS
+AVERSIONS=r_civilization
+DESIRES=i_gold
+
+
+ON=@Create
+   COLOR=0966
+   NPC=brain_monster
+   FAME={100 2000}
+   KARMA={-100 -5000}
+   STR={350 450}
+   DEX={100 115}
+   INT={500 550}
+   PARRYING={55.0 65.0}
+   MAGERY={90.0 100.0}
+   MAGICRESISTANCE={90.0 100.0}
+   TACTICS={90.0 100.0}
+   WRESTLING={60.0 80.0}
+
+CATEGORY=Memory UO
+SUBSECTION=Factory
+DESCRIPTION=Overseer
+
+//********************************************************************//
+[CHARDEF c_factory_guard_sword]
+DEFNAME=c_factory_guard_sword
+ID=C_MAN
+NAME=#NAMES_DREAD_LORD the Factory Guard
+SOUND=snd_HUMAN_M_DIE_01
+
+DAM=10,12
+ARMOR=30
+
+
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+TSPEECH=spk_human_prime
+TSPEECH=jobMageEvil
+TSPEECH=spk_needs
+TSPEECH=spk_rehello
+TSPEECH=spk_human_default
+
+ON=@Create
+   COLOR=0485
+   STR={120 150}
+   DEX={100 120}
+   INT={300 400}
+
+   PARRYING={75.0 98.0}
+   SWORDSMANSHIP={90.0 105.0}
+   WRESTLING={67.0 90.0}
+   MAGICRESISTANCE={65.0 88.0}
+   TACTICS={80.0 98.0}
+   POISONING={90.0 100.0}
+   DETECTION={90.0 100.0}
+
+   NPC=brain_monster
+
+   FAME=1000
+   KARMA=-4000
+
+ON=@NPCRestock
+   ITEMNEWBIE=i_platemail_gloves
+   COLOR=0966
+   ITEMNEWBIE=i_bone_helmet
+   COLOR=0966   
+   ITEMNEWBIE=i_platemail_arms
+   COLOR=0966
+   ITEMNEWBIE=i_platemail_gorget
+   COLOR=0966
+   ITEMNEWBIE=i_bone_chest
+   COLOR=0966
+   ITEMNEWBIE=i_platemail_leggings
+   COLOR=0966
+   ITEMNEWBIE=i_sword_broad_titanium
+   COLOR=0966
+   ITEMNEWBIE=i_shield_chaos
+   COLOR=0966
+   ITEMNEWBIE=i_CAPE
+   COLOR=0485
+   ITEMNEWBIE=i_SASH
+   COLOR=0485
+   ITEMNEWBIE=i_apron_half
+   COLOR=0485
+   ITEMNEWBIE=loot_newrares_Med
+
+   ITEM={ i_bone_helmet 1 0 4 }
+   COLOR=0966
+   
+CATEGORY=Memory UO
+SUBSECTION=Factory
+DESCRIPTION=Guard - Sword
+
+//********************************************************************//
+[CHARDEF c_factory_guard_mace]
+DEFNAME=c_factory_guard_mace
+ID=C_MAN
+NAME=#NAMES_DREAD_LORD the Factory Guard
+SOUND=snd_HUMAN_M_DIE_01
+
+DAM=10,12
+ARMOR=30
+
+
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+TSPEECH=spk_human_prime
+TSPEECH=jobMageEvil
+TSPEECH=spk_needs
+TSPEECH=spk_rehello
+TSPEECH=spk_human_default
+
+ON=@Create
+   COLOR=0485
+   STR={120 150}
+   DEX={100 120}
+   INT={300 400}
+
+   PARRYING={75.0 98.0}
+   MACEFIGHTING={90.0 105.0}
+   WRESTLING={67.0 90.0}
+   MAGICRESISTANCE={65.0 88.0}
+   TACTICS={80.0 98.0}
+   POISONING={90.0 100.0}
+   DETECTION={90.0 100.0}
+
+   NPC=brain_monster
+
+   FAME=1000
+   KARMA=-4000
+
+ON=@NPCRestock
+   ITEMNEWBIE=i_platemail_gloves
+   COLOR=0966
+   ITEMNEWBIE=i_bone_helmet
+   COLOR=0966
+   ITEMNEWBIE=i_platemail_arms
+   COLOR=0966
+   ITEMNEWBIE=i_platemail_gorget
+   COLOR=0966
+   ITEMNEWBIE=i_bone_chest
+   COLOR=0966
+   ITEMNEWBIE=i_platemail_leggings
+   COLOR=0966
+   ITEMNEWBIE=i_mace_war_titanium
+   COLOR=0966
+   ITEMNEWBIE=i_shield_chaos
+   COLOR=0966
+   ITEMNEWBIE=i_CAPE
+   COLOR=0485
+   ITEMNEWBIE=i_SASH
+   COLOR=0485
+   ITEMNEWBIE=i_apron_half
+   COLOR=0485
+   ITEMNEWBIE=loot_newrares_Med
+
+   ITEM={ i_bone_helmet 1 0 4 }
+   COLOR=0966
+
+CATEGORY=Memory UO
+SUBSECTION=Factory
+DESCRIPTION=Guard - Mace
+
+//********************************************************************//
+[CHARDEF c_factory_guard_bardiche]
+DEFNAME=c_factory_guard_bardiche
+ID=C_MAN
+NAME=#NAMES_DREAD_LORD the Factory Guard
+SOUND=snd_HUMAN_M_DIE_01
+
+DAM=10,12
+ARMOR=30
+
+
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+TSPEECH=spk_human_prime
+TSPEECH=jobMageEvil
+TSPEECH=spk_needs
+TSPEECH=spk_rehello
+TSPEECH=spk_human_default
+
+ON=@Create
+   COLOR=0485
+   STR={120 150}
+   DEX={100 120}
+   INT={300 400}
+
+   PARRYING={75.0 98.0}
+   SWORDSMANSHIP={90.0 105.0}
+   WRESTLING={67.0 90.0}
+   MAGICRESISTANCE={65.0 88.0}
+   TACTICS={80.0 98.0}
+   POISONING={90.0 100.0}
+   DETECTION={90.0 100.0}
+
+   NPC=brain_monster
+
+   FAME=1000
+   KARMA=-4000
+
+ON=@NPCRestock
+   ITEMNEWBIE=i_platemail_gloves
+   COLOR=0966
+   ITEMNEWBIE=i_bone_helmet
+   COLOR=0966
+   ITEMNEWBIE=i_platemail_arms
+   COLOR=0966
+   ITEMNEWBIE=i_platemail_gorget
+   COLOR=0966
+   ITEMNEWBIE=i_bone_chest
+   COLOR=0966
+   ITEMNEWBIE=i_platemail_leggings
+   COLOR=0966
+   ITEMNEWBIE=i_bardiche_titanium
+   COLOR=0966
+   ITEMNEWBIE=i_CAPE
+   COLOR=0485
+   ITEMNEWBIE=i_SASH
+   COLOR=0485
+   ITEMNEWBIE=i_apron_half
+   COLOR=0485
+   ITEMNEWBIE=loot_newrares_Med
+   ITEM={ i_bone_helmet 1 0 4 }
+   COLOR=0966
+
+CATEGORY=Memory UO
+SUBSECTION=Factory
+DESCRIPTION=Guard - Bardiche
+
+//********************************************************************//
+[CHARDEF c_factory_guard_warhammer]
+DEFNAME=c_factory_guard_warhammer
+ID=C_MAN
+NAME=#NAMES_DREAD_LORD the Factory Guard
+SOUND=snd_HUMAN_M_DIE_01
+
+DAM=10,12
+ARMOR=30
+
+
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+TSPEECH=spk_human_prime
+TSPEECH=jobMageEvil
+TSPEECH=spk_needs
+TSPEECH=spk_rehello
+TSPEECH=spk_human_default
+
+ON=@Create
+   COLOR=0485
+   STR={120 150}
+   DEX={100 120}
+   INT={300 400}
+
+   PARRYING={75.0 98.0}
+   SWORDSMANSHIP={90.0 105.0}
+   WRESTLING={67.0 90.0}
+   MAGICRESISTANCE={65.0 88.0}
+   TACTICS={80.0 98.0}
+   POISONING={90.0 100.0}
+   DETECTION={90.0 100.0}
+
+   NPC=brain_monster
+
+   FAME=1000
+   KARMA=-4000
+
+ON=@NPCRestock
+   ITEMNEWBIE=i_platemail_gloves
+   COLOR=0966
+   ITEMNEWBIE=i_bone_helmet
+   COLOR=0966
+   ITEMNEWBIE=i_platemail_arms
+   COLOR=0966
+   ITEMNEWBIE=i_platemail_gorget
+   COLOR=0966
+   ITEMNEWBIE=i_bone_chest
+   COLOR=0966
+   ITEMNEWBIE=i_platemail_leggings
+   COLOR=0966
+   ITEMNEWBIE=i_hammer_war_titanium
+   COLOR=0966
+   ITEMNEWBIE=i_CAPE
+   COLOR=0485
+   ITEMNEWBIE=i_SASH
+   COLOR=0485
+   ITEMNEWBIE=i_apron_half
+   COLOR=0485
+   ITEMNEWBIE=loot_newrares_Med
+   ITEM={ i_bone_helmet 1 0 4 }
+   COLOR=0966
+   
+CATEGORY=Memory UO
+SUBSECTION=Factory
+DESCRIPTION=Guard - War Hammer
+
+//********************************************************************//
+[CHARDEF c_factory_guard_archer]
+DEFNAME=c_factory_guard_archer
+ID=C_MAN
+NAME=#NAMES_DREAD_LORD the Factory Guard
+SOUND=snd_HUMAN_M_DIE_01
+
+DAM=10,12
+ARMOR=30
+
+
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+TSPEECH=spk_human_prime
+TSPEECH=jobMageEvil
+TSPEECH=spk_needs
+TSPEECH=spk_rehello
+TSPEECH=spk_human_default
+
+ON=@Create
+   COLOR=0485
+   STR={120 150}
+   DEX={100 120}
+   INT={300 400}
+
+   PARRYING={75.0 98.0}
+   ARCHERY={100.0 105.0}
+   WRESTLING={67.0 90.0}
+   MAGICRESISTANCE={65.0 88.0}
+   TACTICS={80.0 98.0}
+   POISONING={90.0 100.0}
+   DETECTION={90.0 100.0}
+
+   NPC=brain_monster
+
+   FAME=1000
+   KARMA=-4000
+
+ON=@NPCRestock
+   ITEMNEWBIE=i_studded_gloves
+   COLOR=0966
+   ITEMNEWBIE=i_bone_helmet
+   COLOR=0966
+   ITEMNEWBIE=i_sleeves_studded
+   COLOR=0966
+   ITEMNEWBIE=i_studded_gorget
+   COLOR=0966
+   ITEMNEWBIE=i_bone_chest
+   COLOR=0966
+   ITEMNEWBIE=i_bone_leggings
+   COLOR=0966
+   ITEMNEWBIE=i_bow_ironwood
+   COLOR=0966
+   ITEMNEWBIE=i_CAPE
+   COLOR=0485
+   ITEMNEWBIE=i_SASH
+   COLOR=0485
+   ITEMNEWBIE=i_apron_half
+   COLOR=0485
+   ITEMNEWBIE=loot_newrares_Med
+   ITEM={ i_bone_helmet 1 0 4 }
+   COLOR=0966
+   
+CATEGORY=Memory UO
+SUBSECTION=Factory
+DESCRIPTION=Guard - archer
+
+//********************************************************************//
+[CHARDEF c_factory_guard_dog]
+DEFNAME=c_factory_guard_dog
+NAME=Guard Dog
+ID=c_wolf
+SOUND=snd_ANIMALS_WOLF1
+DAM=6,25
+ARMOR=25
+CAN=MT_WALK|MT_RUN
+
+
+RESOURCES=6 i_ribs_raw
+FOODTYPE=15 t_meat_raw
+DESIRES=c_daemon,c_daemon_w_sword
+
+ON=@Create
+   NPC=brain_monster
+   COLOR=096a
+   STR={100 200}
+   DEX={80 100}
+   INT={50 75}
+
+   PARRYING=90.0
+   MAGICRESISTANCE=90.0
+   TACTICS=80.0
+   WRESTLING=80.0
+   TAMING=110.0
+   MAGERY=99.0
+
+   FAME={800 1800}
+   KARMA={-3000 -3999}
+
+   ITEMNEWBIE=i_spellbook
+   ADDSPELL=s_clumsy
+   ADDSPELL=s_harm
+   ADDSPELL=s_curse
+
+CATEGORY=Memory UO
+SUBSECTION=Factory
+DESCRIPTION=Guard Dog
+
+
+//********************************************************************//
+//                              MUTANTS                               //
+//********************************************************************//
+[CHARDEF c_mutant]
+DEFNAME= c_mutant
+NAME=Mutant
+ID=c_ZOMBIE
+SOUND=snd_MONSTER_GHOST1
+ICON=i_pet_ZOMBIE
+DAM=20,42
+ARMOR=35,40
+RESOURCES=7 t_eerie_stuff
+CAN=MT_WALK
+DESIRES=i_gold
+
+TEVENTS=e_undead
+
+ON=@Create
+   NPC=brain_undead
+   COLOR=0048a
+   KARMA={-4000 -5000}
+   FAME={1500 3000}
+   STR={600 700}
+   DEX={130 140}
+   INT={300 400}
+   MANA=900
+   MAGERY={100.0,100.0}
+   PARRYING={90.0 100.0}
+   MAGICRESISTANCE={90.0 100.0}
+   TACTICS={75.0 100.0}
+   WRESTLING={80.0 100.0}
+   MEDITATION={80.0 100.0}
+   ITEMNEWBIE=i_spellbook
+   ADDSPELL=s_curse
+   ADDSPELL=s_paralyze
+   ADDSPELL=s_poison
+   ADDSPELL=s_mind_blast
+   NPC=brain_monster
+
+
+CATEGORY=Memory UO
+SUBSECTION=Factory
+DESCRIPTION=Mutant
+
+[CHARDEF c_mutant_wyrm]
+DEFNAME=c_mutant_wyrm
+NAME=Mutant Wyrm
+ID=c_DRAGON_GREEN
+SOUND=snd_MONSTER_DRAGON1
+ICON=i_pet_dragon
+DAM=11,53
+ARMOR=75
+RESOURCES=99 i_ribs_raw,2 i_hide,8 i_reag_dragon_blood, 1 i_dragonhide_drake
+CAN=MT_WALK|MT_FLY
+FOODTYPE=80 t_meat_raw
+DESIRES=i_gold
+AVERSIONS=r_civilization,r_water
+TEVENTS=e_npc_dragon
+
+TEVENTS=e_absorbspell2
+
+ON=@Create
+   NPC=brain_dragon
+   COLOR=0048a
+   FAME={3000 9000}
+   KARMA={-6000 -6999}
+   STR={1095 1185}
+   DEX={86 175}
+   INT={685 775}
+   PARRYING={55.0 95.0}
+   MAGERY= 99.0
+   MAGICRESISTANCE={99.0 100.0}
+   TACTICS={198.0 200.0}
+   WRESTLING={90.0 93.0}
+  
+
+CATEGORY=Memory UO
+SUBSECTION=Factory
+DESCRIPTION=Mutant Wyrm
+
+
+//********************************************************************//
+//                               EVENTS                               //
+//********************************************************************//
+[EVENTS e_thick_skin] 
+ON=@GETHIT 
+   LOCAL.SCALE=<eval RAND(3)> 
+   IF (<LOCAL.SCALE>==0) 
+      SRC.SYSMESSAGE The creatures thick skin absorbs most of the damage. 
+      HITS=<HITS>+-{2 4} 
+      RETURN 0 
+   ELSE 
+      RETURN 0 
+   ENDIF 
+
+[EVENTS e_blade_creature] //does dmg back when hit
+ON=@NPCSeeNewPlayer 
+   attack 
+
+ON=@GETHIT 
+   LOCAL.X=RAND(3) 
+   LOCAL.THORN=<EVAL RAND(2)> 
+   IF (<LOCAL.THORN>==1)&&(<DISTANCE><2)&&(<LOCAL.X>==1) 
+      SRC.SYSMESSAGE The creatures blades tear at your flesh! 
+      SRC.DAMAGE={2,4} 
+      RETURN 0 
+   ELSE 
+      RETURN 0 
+   ENDIF 
+
+
+[EVENTS e_absorbspell2]//Absorbs 50% of all magic! 
+ON=@SpellEffect 
+   IF RAND(2)==1 
+      EMOTE absorb the magic! 
+      HITS=<HITS>+15 
+      MANA=<MANA>+15 
+      STAMINA=<STAMINA>+15 
+      RETURN 1 
+   ENDIF 
+
+
+[EVENTS e_npc_bandage_self_tweaked] 
+on=@gethit 
+   IF (<hits><50) 
+      if (<EVAL RAND(20)> < 10) 
+         if (<restest 1 i_bandage>) 
+            if (<eval <tag.bandaging>>!=01) 
+               src.newitem i_npc_bandage_timer_tweaked 
+               src.act.link=<uid> 
+               findid.i_sword_long.remove 
+               src.act.p=<p> 
+               tag.bandaging=1 
+            endif 
+         endif 
+      endif 
+   endif 
+
+
+//********************************************************************//
+//                               ITEMS                                //
+//********************************************************************//
+[ITEMDEF i_npc_bandage_timer_tweaked] 
+ID=0206a 
+NAME=npc bandage timer - do not remove 
+
+ON=@CREATE 
+   attr=082 
+   TIMER=3 
+
+on=@timer 
+   link.consume 1 i_bandage 
+   link.hits=<link.hits>+<eval {5 30}> 
+   link.emote bandage <link.name> 
+   link.newitem i_sword_long 
+   link.act.p=<link.p> 
+   link.act.cont=<link.uid> 
+   link.tag.bandaging= 
+   remove 
+   return 1
+
+[ITEMDEF I_hellsmith_hammer]
+DEFNAME=i_hellsmith_smith
+NAME=Hellsmith Hammer
+ID=i_hammer_smith
+WEIGHT=8
+TYPE=T_WEAPON_MACE_SMITH
+FLIP=1
+DAM=5,15
+SKILL=Mace Fighting
+REQSTR=70
+TWOHANDS=N
+DUPELIST=013e4
+
+ON=@Create
+   COLOR=00488
+   HITPOINTS={31 60}
+ON = @Targon_ground
+   return = <wpn_targon_ground_blunt>
+ON = @Targon_char
+   return = <wpn_targon_char_blunt>
+ON = @Targon_item
+   return = <wpn_targon_item_blunt>
+ON=@EQUIP
+   SRC.MSG The hammer is hot to touch.
+
+[ITEMDEF i_camou_dye]
+  ID=i_bottle_2
+  WEIGHT=4
+  VALUE=10000
+  NAME=Camouflage Dye
+
+  CATEGORY=Memory UO
+  SUBSECTION=Rare Dyes
+  DESCRIPTION=Camouflage
+
+ON=@CREATE
+   COLOR={0ad4 0adb}
+   IF <COLOR> = 0ad4
+      NAME = Course-grained Dark Camouflauge Dye (1 use)
+   ELSEIF <COLOR> = 0ad5
+      NAME = Course-grained Light Camouflauge Dye (1 use)
+   ELSEIF <COLOR> = 0ad6
+      NAME = Fine-grained Dark Camouflauge Dye (1 use)
+   ELSEIF <COLOR> = 0ad7
+      NAME = Fine-grained Light Camouflauge Dye (1 use)
+   ELSEIF <COLOR> = 0ad8
+      NAME = Shadowed Light Camouflauge Dye (1 use)
+   ELSEIF <COLOR> = 0ad9
+      NAME = Highlighted Dark Camouflauge Dye (1 use)
+   ELSEIF <COLOR> = 0ada
+      NAME = Highlighted Light Camouflauge Dye (1 use)
+   ELSEIF <COLOR> = 0adb
+      NAME = Shadowed Dark Camouflauge Dye (1 use)
+   ENDIF
+   
+ON=@DCLICK
+   TARGET Target the item you wish to dye
+   RETURN 1
+
+ON=@TARGON_ITEM
+IF ( <SRC.TARG.DYE> == 1 )
+   IF ( <SRC.TARG.BASEID> == i_hair_tub )
+      SRC.TARG.COLOR = <COLOR>
+      SRC.TARG.MOREX = 1
+      SRC.TARG.NAME = Dyed Hair Tub
+      SRC.TARG.MOREY = 1
+      SRC.TARG.MOREZ = 0
+      REMOVE
+   ELSEIF (<SRC.TARG.BASEID> == i_dye_tub_backpack)
+      SRC.SYSMESSAGE You transfer the dye to the backpack dye tub.
+      SRC.TARG.COLOR = <HVAL <COLOR>>
+      REMOVE
+   ELSEIF (<SRC.TARG.BASEID> == i_rune_marker)
+      IF ( <SRC.TARG.TOPOBJ.UID> != <SRC.UID> )
+        SRC.SYSMESSAGE You must have it in your pack to dye it.
+        RETURN 1
+      ENDIF
+      SRC.TARG.COLOR = <COLOR>
+      REMOVE
+   ELSEIF (<SRC.TARG.BASEID> == i_robe_donator)
+      IF ( <SRC.TARG.TOPOBJ.UID> != <SRC.UID> )
+        SRC.SYSMESSAGE You must have it in your pack to dye it.
+        RETURN 1
+      ENDIF
+      SRC.TARG.COLOR = <COLOR>
+      REMOVE
+   ELSEIF ( (<SRC.TARG.BASEID> == i_backpack) && (<SRC.TARG.CONT>=<SRC.UID>) )
+      SRC.TARG.COLOR = <COLOR>
+      REMOVE
+   ELSEIF (<SRC.TARG.ATTR>&attr_newbie)
+      SRC.SYSMESSAGE You cannot Dye this!
+   ELSE
+      SRC.TARG.COLOR = <COLOR>
+      REMOVE
+   ENDIF
+ELSE
+   SRC.SYSMESSAGE That item is not dyable.
+ENDIF
+RETURN 1
+   
+
+[ITEMDEF I_ESCAPE_TUNNEL]
+ID=011c2
+TYPE=T_SCRIPT
+
+ON=@CREATE
+   ATTR = 010
+
+ON=@CLICK
+   SRC.SYSMESSAGE There earth here looks to be loose.
+   RETURN 1
+
+ON=@DCLICK
+   IF <SRC.RESTEST i_shovel>
+      SRC.CONSUME i_shovel
+      TIMER=60
+      TYPE=T_TELEPAD
+      DISPID=011c5
+      NUDGEUP
+      NUDGEDOWN
+      SRC.SYSMESSAGE You uncover an escape tunnel.
+   ENDIF
+   RETURN 1
+   
+ON=@TIMER
+   TIMER=-1
+   TYPE=T_SCRIPT
+   DISPID=011c2
+   NUDGEUP
+   NUDGEDOWN
+   RETURN 1
+   
+
+[ITEMDEF I_ESCAPE_PLANS]
+ID=I_MAP
+TYPE=T_SCRIPT
+NAME=Escape Plan
+
+ON=@DCLICK
+   SRC.SYSMESSAGE This looks to be a map to an underground escape tunnel.  It looks to be somewhere near the Waste Disposal Area.
+   RETURN 1
+
+
+[EOF]

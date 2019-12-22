@@ -1,0 +1,276 @@
+// #-----------#
+// # CHANGELOG #
+// #-----------#
+//
+// 15/11/19 - Wigifer - Updated the Shadow Mines to make it more clear what is happening...
+
+[REGIONTYPE r_dungeon_rock t_rock]
+// Dungeon sounds same day or night.
+RESOURCES = 30.0 mr_shadow
+RESOURCES = 30.0 mr_agapite
+RESOURCES = 23.0 mr_copper
+RESOURCES = 13.0 mr_iron
+// RESOURCES = 35.0 mr_stone
+// RESOURCES = 15.0 mr_sandstone
+// RESOURCES = 15.0 mr_gypsum
+
+ON=@REGPERIODIC
+   src.SOUND={021f,1,0243,1,0244,1,0245,1}
+   
+   
+   
+[REGIONTYPE r_shadow_area t_rock]
+// Dungeon sounds same day or night.
+RESOURCES = 75.0 mr_shadow
+RESOURCES = 100.0 mr_copper
+RESOURCES = 100.0 mr_iron
+
+ON=@REGPERIODIC
+   src.SOUND={021f,1,0243,1,0244,1,0245,1}
+   
+  IF ( <SRC.NPC> )
+  	IF ( <src.KARMA> >= -3000 )
+  		SRC.KARMA = <SRC.KARMA> - 25
+  	ENDIF
+  ELSE
+    IF ( <src.KARMA> >= -3000 )
+     	doswitch rand(5)
+               SRC.SYSMESSAGE @030 Your heart darkens, and your karma decreases...
+               SRC.SYSMESSAGE @030 The spirits blacken your soul, and your karma decreases...
+               SRC.SYSMESSAGE @030 Your hope fades, and your karma decreases...
+               SRC.SYSMESSAGE @030 You feel your mind being corrupted, and your karma decreases...
+               SRC.SYSMESSAGE @030 Thoughts of chaos enter your mind, and your karma decreases...
+      	enddo
+      	SRC.KARMA = <SRC.KARMA> - 25
+     ENDIF
+   ENDIF
+ON=@ENTER
+   SRC.SYSMESSAGE @030 You feel your soul darken as you head towards the Shadow Mines...
+ON=@Exit
+   SRC.SYSMESSAGE @030 The spirits of darkness begin to depart as you leave.
+
+[REGIONTYPE r_spooky_rock t_rock]
+// Spooky outdoor area.
+RESOURCES = 30.0 mr_shadow
+RESOURCES = 30.0 mr_agapite
+RESOURCES = 30.0 mr_copper
+RESOURCES = 30.0 mr_iron
+// RESOURCES = 35.0 mr_stone
+// RESOURCES = 15.0 mr_sandstone
+// RESOURCES = 15.0 mr_gypsum
+
+ON=@ENTER
+   if ( <SRC.FLAGS> & ~statf_war )
+	SRC.MUSIC=midi_Approach
+   endif
+
+[REGIONTYPE r_swamp_rock t_rock]
+// Swamp Day and night.
+// Never anything to mine here.
+RESOURCES=20.0 mr_nothing
+
+ON=@REGPERIODIC
+	src.SOUND={0e,1,10,1,0f,1,022,1,023,1,024,1,0267,1}
+
+[REGIONTYPE r_default_rock t_rock]
+RESOURCES =  130 mr_copper
+RESOURCES =  130 mr_iron
+RESOURCES =  100 mr_tin
+RESOURCES =  80 mr_titanium
+RESOURCES =  90 mr_silver
+RESOURCES =  90 mr_gold
+//RESOURCES =  70 mr_terathane
+RESOURCES =  70 mr_shadow
+RESOURCES =  70 mr_agapite
+RESOURCES =  50 mr_verite
+RESOURCES =  50 mr_valorite
+RESOURCES =  10 mr_mytheril
+RESOURCES =  10 mr_blackrock
+RESOURCES =  50 mr_random_gem
+// RESOURCES =  150 mr_stone
+// RESOURCES =  105 mr_sandstone
+// RESOURCES =  25 mr_gypsum
+//RESOURCES =  90 mr_cobalt
+//RESOURCES =  90 mr_manganese
+RESOURCES = 10 mr_syndicate
+
+
+[REGIONTYPE r_wastelands t_rock]
+//RESOURCES =  150 mr_pure_copper
+//RESOURCES =  150 mr_ferrum
+RESOURCES =  70 mr_shadow
+RESOURCES =  100 mr_terathane
+RESOURCES =  50 mr_tin
+RESOURCES =  50 mr_copper
+RESOURCES =  50 mr_silver
+RESOURCES =  50 mr_gold
+RESOURCES =  50 mr_random_gem
+// RESOURCES =  50 mr_stone
+// RESOURCES =  50 mr_sandstone
+// RESOURCES =  60 mr_clay
+// RESOURCES =  60 mr_granite
+// RESOURCES =  25 mr_gypsum
+RESOURCES =  10 mr_syndicate
+//RESOURCES =  90 mr_cobalt
+//RESOURCES =  90 mr_manganese
+
+[REGIONTYPE r_mt_kendall t_rock]
+RESOURCES= 30.0 mr_copper
+RESOURCES =  40.0 mr_iron
+RESOURCES =  50 mr_tin
+// RESOURCES =  30.0 mr_stone
+// RESOURCES =  90 mr_cobalt
+// RESOURCES =  90 mr_manganese
+RESOURCES =  2 mr_syndicate
+
+[REGIONTYPE r_mine_normal t_rock]
+RESOURCES =  170 mr_copper
+RESOURCES =  170 mr_iron
+RESOURCES =  125 mr_tin
+RESOURCES =  100 mr_silver
+RESOURCES =  100 mr_gold
+RESOURCES =  80 mr_titanium
+//RESOURCES =  80 mr_terathane
+RESOURCES =  65 mr_shadow
+RESOURCES =  65 mr_agapite
+RESOURCES =  50 mr_verite
+RESOURCES =  50 mr_valorite
+RESOURCES =  10 mr_mytheril
+RESOURCES =  5 mr_blackrock
+RESOURCES =  7 mr_syndicate
+RESOURCES =  70 mr_random_gem
+RESOURCES =  10 mr_horseshoes
+// RESOURCES =  150 mr_stone
+// RESOURCES =  105 mr_sandstone
+// RESOURCES =  25 mr_gypsum
+// RESOURCES =  90 mr_cobalt
+// RESOURCES =  90 mr_manganese
+
+[REGIONTYPE r_mine_coal t_rock]
+RESOURCES =  150 mr_silver
+RESOURCES =  150 mr_gold
+//RESOURCES =  70 mr_clay
+RESOURCES =  20 mr_fossel
+RESOURCES =  20 mr_Dinosauregg
+
+[REGIONTYPE r_ice_rock t_rock]
+RESOURCES =  500 mr_nothing
+RESOURCES =  500 mr_skargard
+// RESOURCES =  70 mr_granite
+
+[REGIONTYPE r_mine_Silver t_rock]
+RESOURCES =  180 mr_copper
+RESOURCES =  180 mr_iron
+RESOURCES =  180 mr_silver
+RESOURCES =  150 mr_tin
+RESOURCES =  100 mr_titanium
+RESOURCES =  50 mr_gold
+RESOURCES =  50 mr_shadow
+RESOURCES =  50 mr_agapite
+RESOURCES =  50 mr_verite
+RESOURCES =  50 mr_valorite
+RESOURCES =  15 mr_mytheril
+RESOURCES =  5 mr_blackrock
+RESOURCES =  7 mr_syndicate
+RESOURCES =  120 mr_random_gem
+// RESOURCES =  200 mr_stone
+// RESOURCES =  140 mr_sandstone
+// RESOURCES =  25 mr_gypsum
+
+[REGIONTYPE r_mine_destard11 t_rock]
+RESOURCES =  140 mr_copper
+RESOURCES =  130 mr_iron
+RESOURCES =  80 mr_titanium
+RESOURCES =  90 mr_silver
+RESOURCES =  90 mr_gold
+RESOURCES =  80 mr_shadow
+//RESOURCES =  70 mr_terathane
+RESOURCES =  80 mr_agapite
+RESOURCES =  70 mr_verite
+RESOURCES =  70 mr_valorite
+RESOURCES =  20 mr_mytheril
+RESOURCES =  15 mr_blackrock
+RESOURCES =  100 mr_random_gem
+RESOURCES =  16 mr_syndicate
+// RESOURCES =  90 mr_cobalt
+// RESOURCES =  90 mr_manganese
+
+[REGIONTYPE r_mine_shame t_rock]
+// RESOURCES =  120 mr_stone
+// RESOURCES =  120 mr_sandstone
+// RESOURCES =  60 mr_clay
+// RESOURCES =  60 mr_gypsum
+// RESOURCES =  60 mr_granite
+
+[REGIONTYPE r_mine_gem t_rock]
+RESOURCES =  400 mr_iron
+RESOURCES =  150 mr_random_gem
+// RESOURCES =  50 mr_gypsum
+
+
+[REGIONTYPE r_mine_wrong t_rock]
+RESOURCES =  400 mr_iron
+RESOURCES =  50 mr_verite
+RESOURCES =  16 mr_syndicate
+
+
+[REGIONTYPE r_mine_destard t_rock]
+RESOURCES = 400 mr_iron
+RESOURCES = 50 mr_valorite
+RESOURCES = 16 mr_syndicate
+
+[REGIONTYPE r_mine_asd t_rock]
+RESOURCES=400 mr_iron
+RESOURCES=50 mr_valorite
+RESOURCES=16 mr_syndicate
+
+[REGIONTYPE r_mine_fire t_rock]
+RESOURCES=400 mr_copper
+RESOURCES=79 mr_titanium
+RESOURCES=16 mr_syndicate
+
+
+[REGIONTYPE r_agapite_area t_rock]
+RESOURCES = 75.0 mr_agapite
+RESOURCES = 100.0 mr_copper
+RESOURCES = 100.0 mr_iron
+
+  IF ( <SRC.NPC> )
+  	IF ( <src.KARMA> <= 3000 )
+  		SRC.KARMA = <SRC.KARMA> + 25
+  	ENDIF
+  ELSE
+    IF ( <src.KARMA> <= 3000 )
+     	doswitch rand(5)
+               SRC.SYSMESSAGE @030 Your heart brightens, and your karma increases...
+               SRC.SYSMESSAGE @030 The spirits brighten your soul, and your karma increases...
+               SRC.SYSMESSAGE @030 Your hope strengthens, and your karma increases...
+               SRC.SYSMESSAGE @030 You feel your mind being purified, and your karma increases...
+               SRC.SYSMESSAGE @030 Thoughts of order enter your mind, and your karma increases...
+      	enddo
+      	SRC.KARMA = <SRC.KARMA> - 25
+     ENDIF
+   ENDIF
+ON=@ENTER
+   SRC.SYSMESSAGE @030 You feel your soul brighten as you head towards the Agapite Mines...
+ON=@Exit
+   SRC.SYSMESSAGE @030 The spirits of light begin to depart as you leave.
+	
+	
+[REGIONTYPE r_blackrock_area t_rock]
+RESOURCES = 350.0 mr_coal
+RESOURCES = 25.0 mr_blackrock
+
+
+[REGIONTYPE r_tin_area t_rock]
+RESOURCES = 350.0 mr_tin
+RESOURCES = 350.0 mr_coal
+
+
+[REGIONTYPE r_mytheril_area t_rock]
+RESOURCES = 350.0 mr_coal
+RESOURCES = 35.0 mr_mytheril
+
+
+
+[EOF]

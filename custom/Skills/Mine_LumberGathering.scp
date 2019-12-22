@@ -1,0 +1,290 @@
+//Changelog:
+//==========
+// 17/08/2018 - Wigifer - Added WigDebug to the Probe.
+
+[DEFNAME rand_resources]
+rand_stone = {mr_stone 30 mr_sandstone 15 mr_clay 10 mr_gypsum 5 mr_granite 1 }
+rand_ore =   {mr_coal 15 mr_copper 15 mr_iron 10 mr_silver 10 mr_gold 3 mr_silver 3 mr_titanium 1 }
+
+[FUNCTION resource_dclick]
+  if ( <TIMER> > 0 )		// if the pickaxe still has a timer then
+     return 1			//    simply cancel usage. It looks better
+  endif				//     if you don't print anything here
+  SRC.SKILLINIT_STOP
+  return 0
+
+[FUNCTION resource_targon_ground]
+  CONT.DEBUGSAY resource_targon_ground
+  
+  SRC.PLAYERDEBUGSAY ::Mine_LumberGathering:: resource_targon_ground is now starting.
+
+  //Cancel if Mounted
+  if ( <SRC.findlayer(layer_horse).uid> )
+     SRC.SYSMESSAGE You can't reach it while mounted.
+     SRC.SKILLINIT_stop
+     return 1
+  endif
+  
+ 
+
+  //Don't let retarget too fast?
+  if ( <src.findid(i_moveback).uid> )
+     return 1
+  endif
+
+  //Reset char control timer
+  if ( <SRC.ACTION> != -1 )
+     src.findlayer(layer_k_control).timer	= -1
+  endif
+  
+  //Begin the action
+  TIMER	= 2				// set timer on pickaxe, to avoid fast usage
+  SRC.NEWITEM		i_moveback	// Load the probe item that will send us back
+  SRC.ACT.P		= <SRC.TARGP>	// place it at the mining point
+
+  //Check for target being on a multi
+  IF !(0<SRC.ACT.REGION.TYPE>=0)
+     IF ( <UID.<NEW.REGION.UID>.TYPE>=T_MULTI )
+        SRC.SYSMESSAGE You cannot do this on multis. This has been logged.  Frequent attempts may result in jail.
+        SERV.LOG <SRC.NAME>[<SRC.ACCOUNT>] is trying to get resources from a multi at <SRC.TARGP>
+        SRC.SKILLINIT_stop
+        SRC.ACT.REMOVE
+        RETURN 1
+     ENDIF
+  ENDIF
+  
+  // check for distance to mining point
+  If (( <SRC.ACT.DISTANCE> >= 3 ) &! (<SRC.FINDLAYER(2).TYPE>==t_fish_pole))
+     SRC.DEBUGSAY Too Far Away
+     src.sysmessage You are too far away.
+     SRC.SKILLINIT_stop
+     SRC.ACT.REMOVE
+     return 1
+  endif
+  
+  //check for line of sight to mining point
+  if ((!<SRC.ACT.CANSEELOS>) &! (<SRC.FINDLAYER(2).TYPE>==t_fish_pole))
+     src.sysmessage You can't get there.
+     SRC.SKILLINIT_stop
+     SRC.ACT.REMOVE
+     return 1
+  endif
+
+
+// Fishing Pole
+
+  IF (( <SRC.ACT.DISTANCE> >= 6 ) & (<SRC.FINDLAYER(2).TYPE>==t_fish_pole))
+     SRC.DEBUGSAY Too Far Away.
+     SRC.SYSMESSAGE You are too far away.
+     SRC.SKILLINIT_stop
+     SRC.ACT.REMOVE
+     RETURN 1
+  ENDIF
+
+  
+//  IF ((!<SRC.ACT.CANSEELOS>) & (<SRC.FINDLAYER(2).TYPE>==t_fish_pole))
+//     SRC.SYSMESSAGE You can't get there.
+//     SRC.SKILLINIT_stop
+//     SRC.ACT.REMOVE
+//     RETURN 1
+//  ENDIF
+
+  SRC.PLAYERDEBUGSAY ::Mine_LumberGathering:: resource_targon_ground has not returned 1, so should now set world gem properties and add a probe.
+
+  //Set world gem properties and back up position
+  SRC.ACT.ATTR		= <SRC.ACT.ATTR> | attr_invis
+  SRC.ACT.MOREP		= <SRC.P>
+  SRC.ACT.LAYER		= layer_special
+  SRC.ACT.EQUIP
+
+  //Save current position and then move player to worldgem to trigger resource gathering
+  SRC.TAG.PROBE.x	= <SRC.P.x>
+  SRC.TAG.PROBE.y	= <SRC.P.y>
+  SRC.TAG.PROBE		= 0
+  SRC.EVENTS		+e_probe
+  SRC.P			= <SRC.TARGP>	// move the character WITHOUT updating. Notice that
+  					// it'll be moved back in at most 1sec, not noticeable
+
+[ITEMDEF i_moveback]
+//This item moves players back to their original 
+//position after triggering e_probe's itemstep
+ID	= i_memory
+TYPE	= t_eq_script
+NAME	= probe
+LAYER	= layer_special
+
+ON = @Create
+  TIMER		= 1
+  MORE2		= 0
+  ATTR		= attr_move_never
+
+ON = @Timer
+  if ( (<CONT.ACTION> != -1) && (<MORE2> == 0) )
+     MORE2	= 1
+     TIMER	= 1
+     return 1
+  endif
+  CONT.P	= <MOREP>
+  CONT.UPDATE
+  remove
+  return 1
+
+
+
+[EVENTS e_probe]
+ON=@itemStep
+  SRC.PLAYERDEBUGSAY ::Mine_LumberGathering:: e_probe @itemstep has fired.
+  
+  //Make sure we've got worldgem to work off of
+  if ( <SRC.ACT.BASEID> != i_worldgem_bit )
+     SRC.PLAYERDEBUGSAY ::Mine_LumberGathering:: Baseid not a i_worldgem_bit, so returning 0
+     return 0
+  endif
+
+  //Make sure we've targetted a valid resource gathering 
+  if ( 0 )
+  elseif ( <SRC.ACT.TYPE> == t_rock )
+  elseif ( <SRC.ACT.TYPE> == t_tree )
+  elseif ( <SRC.ACT.TYPE> == t_water )
+  else
+     SRC.PLAYERDEBUGSAY ::Mine_LumberGathering:: Baseid not a i_worldgem_bit, so returning 0
+     return 0
+  endif
+
+  //Remove Trigger and move player back to original location
+  SRC.EVENTS	-e_probe
+  SRC.TAG.PROBE		= <SRC.ACT.UID>
+  SRC.P			= <SRC.findid(i_moveback).morep>	// restore original position
+
+  //Remove moveback item and set char control to allow roll
+  SRC.findid(i_moveback).remove
+  src.findlayer(layer_k_control).timer		= 0
+
+  //No hiding and gathering resources in destard or shame
+  IF ( ( <SRC.REGION.DEFNAME>=a_destard_5 ) || ( <SRC.REGION.DEFNAME>=a_shame_7 ) )
+     //Cancel Invisibility Spell and Potions
+     IF <SRC.FINDID.i_rune_invisibility.UID>
+        SRC.FINDID.i_rune_invisibility.REMOVE
+     ENDIF
+              
+     //Unhide people
+     IF <eval (<SRC.flags>&0800000)==0800000> 
+        SRC.SAY 
+     ENDIF  
+  ENDIF
+  
+  SRC.PLAYERDEBUGSAY ::Mine_LumberGathering:: Reached the testing for skill section.
+  
+  // tests for skill here!
+  if (0)  
+    SRC.PLAYERDEBUGSAY ::Mine_LumberGathering:: Test returned with a 0. That's not right.
+  elseif ( <SRC.ACT.TYPE> == t_rock )
+    SRC.PLAYERDEBUGSAY ::Mine_LumberGathering:: Test found a t_rock, running mining and masonry.
+    // special rocks
+    if ( (<SRC.TARG.TYPE> == t_rock) && (<SRC.TARG.MORE1> != 0) )
+       SRC.ACT.MORE1	= <SRC.TARG.MORE1>
+    endif
+
+    //If the player doesn't have masonry give them iron instead of masonry stone
+    if ( (<src.masonry> < 10.0))
+       if ( (<SRC.ACT.MORE1> == mr_sandstone) || (<SRC.ACT.MORE1> == mr_stone) || (<SRC.ACT.MORE1> == mr_granite) || (<SRC.ACT.MORE1> == mr_clay) || (<SRC.ACT.MORE1> == mr_gypsum) )
+         SRC.ACT.MORE1	= mr_iron
+       endif
+    endif
+    
+    if ( 0 )
+    elseif ( <SRC.ACT.MORE1> == mr_monster_shadow )
+       SRC.findlayer(layer_k_control).timer	= -1
+       SRC.ACTION	= -1
+       LOCAL.POSITION	= <SRC.ACT.P>
+       SRC.ACT.REMOVE
+       SRC.NEWNPC	{ c_shadow_slime 1   c_shadow_spider 1  c_shadow_serpent 1  c_shadow_elemental 1 }
+       SRC.ACT.P	= <LOCAL.POSITION>
+       SRC.ACT.HOME	= <LOCAL.POSITION>
+       SRC.ACT.HOMEDIST	= 5
+       SRC.ACT.NEWITEM	= i_mr_monster_remove
+       SRC.ACT.ACT.CONT	= <SRC.ACT.UID>
+       SRC.ACT.ATTACK
+       return 1
+    elseif ( (<SRC.ACT.MORE1> == mr_nothing) )
+    elseif <src.mining> < <serv.regionresource.<SRC.ACT.MORE1>.skill>
+      SRC.DEBUGSAY Not Enough Mining
+    else
+      IF (<SRC.ACT.AMOUNT> > 0)
+         SRC.ACT.TIMER=300
+         SRC.PLAYERDEBUGSAY ::Mine_LumberGathering:: Returning 0 on mining - We can mine bro.
+         RETURN 0		// it's ok, we can mine
+      ENDIF
+    endif
+        
+  elseif ( <SRC.ACT.TYPE> == t_tree )
+    SRC.PLAYERDEBUGSAY ::Mine_LumberGathering:: Test found a t_tree, running carpentry.
+    if ( 0 )
+    elseif ( (<SRC.ACT.MORE1> == mr_myst)
+      IF (<src.lumberjacking> < mr_myst)
+         SRC.ACT.MORE1	= mr_nothing
+      ELSE
+         IF <EVAL RAND(2)> = 1
+ 	     SRC.ACT.REMOVE
+             NEWNPC c_reaper_myst
+             RETURN 1	
+         ELSE
+            SRC.ACT.MORE1	= mr_cherry
+         ENDIF
+      ENDIF
+    elseif ( (<SRC.ACT.MORE1> == mr_nothing) )
+    elseif (<src.lumberjacking> < <serv.regionresource.<SRC.ACT.MORE1>.skill>)
+    else
+      IF (<SRC.ACT.AMOUNT> > 0)
+         // kindling always succeeds
+         SRC.ACT.TIMER=300
+         SRC.ANIM 13
+         return 0 // it's ok, we can lumber
+      ENDIF
+    endif
+    
+    if ( <src.lumberjacking> < <EVAL 0<serv.regionresource.<SRC.ACT.MORE1>.skill>> )
+       SRC.MESSAGE You hit the tree for a while, but it doesn't seem you can get anything but kindling here.
+       SRC.ACT.MORE1	= mr_kindling
+       SRC.ACT.TIMER=300
+    else
+       SRC.ACT.MORE1	= mr_pine
+       SRC.ACT.TIMER=300
+       if ( <SRC.ACT.AMOUNT> > 5 )
+          SRC.ACT.AMOUNT	= 5
+       endif
+    endif
+    
+  elseif ( <SRC.ACT.TYPE> == t_water )
+     SRC.PLAYERDEBUGSAY ::Mine_LumberGathering:: Test found t_water, running fishing!
+     if ( 0 )
+     elseif ( (<SRC.ACT.MORE1> == mr_nothing) )
+     elseif <src.fishing> < <serv.regionresource.<SRC.ACT.MORE1>.skill>
+     else
+        IF (<SRC.ACT.AMOUNT> > 0)
+           SRC.ACT.TIMER=300
+           return 0		// it's ok, we can mine
+        ENDIF    
+     endif
+  endif
+
+  //Stops rolls if there is no resource
+  if ( <SRC.ACT.MORE1> == mr_nothing )
+     SRC.ACT.AMOUNT		= 0
+     src.findlayer(layer_k_control).timer	= -1
+  else
+     SRC.ACT.MORE1		= mr_nothing
+     IF ( <SRC.ACT.AMOUNT> > 1 )
+        SRC.ACT.AMOUNT	= 1
+     ELSE
+        src.findlayer(layer_k_control).timer	= -1     
+     ENDIF
+  endif
+  
+  SRC.PLAYERDEBUGSAY ::Mine_LumberGathering:: Reached the end of e_probe
+  
+  return 0
+
+
+
+[EOF]

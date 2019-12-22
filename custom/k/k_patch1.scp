@@ -1,0 +1,97 @@
+[FUNCTION TOTMESSAGE]
+   SRC.SYSMESSAGE @410 <args>
+
+[ITEMDEF i_totem_luck]
+ID	= 01f18
+NAME	= a totem
+
+ON = @Create
+   ATTR		= attr_move_never
+   TIMER	= 3
+
+ON = @Timer
+   COLOR	= { 02ca 1  0167 1  0215 1  0123 1  05a8 1  0531 1  0307 1  0ab 1  038 1  051c 1 }
+   TIMER	= { 5 8 }
+   if ( <MOREx> > 0 )
+      MOREx	= (<MOREx> - 1)
+   endif
+   return 1
+
+ON = @DClick
+   if ( 0<src.tag.totem_kill> )
+      SRC.TAG.TOTEM_KILL	= 
+      if ( rand(5) && (<SRC.STAM> > 5) )
+         SRC.MANA	= 1
+         SRC.HITS	= 1
+         SRC.STAM	= 1
+      else
+         SRC.KILL
+      endif
+      return 1
+   endif
+
+   if ( <MOREx> < 1 )
+      MOREx	= (<MOREx> + 1)
+      TIMER	= { 1 2 }
+   elseif ( <MOREx> > 0 )
+      return 1
+   endif
+
+   SRC.CONSUME 1 i_gold
+   LOCAL.RAND	= <eval rand(100)>
+   if ( <LOCAL.RAND> < 56 )
+      dorand 4
+         SRC.TOTMESSAGE You pass your hand through the totem, but nothing happens.
+         SRC.TOTMESSAGE The totem seems to be defying you to touch it again.
+         SRC.TOTMESSAGE There is something queer to this...
+         SRC.TOTMESSAGE You don't feel confortable touching it.
+      enddo
+      return 1
+   endif
+
+   if ( <LOCAL.RAND> < 65 )
+      dorand 2
+         SRC.TOTMESSAGE You recall something of an ancient legend about magical totems.
+         SRC.TOTMESSAGE You believe this might indeed be the ancient Totem of Fortune.
+      enddo
+      return 1
+   endif
+
+   if ( (<LOCAL.RAND> > 75) && (<LOCAL.RAND> < 84) )	/ 76 - 83
+      NEWITEM i_gold { 1 5 }
+      ACT.BOUNCE
+   endif
+   if ( (<LOCAL.RAND> > 83) && (<LOCAL.RAND> < 94) )	// 84 - 93
+      SRC.SYSMESSAGE @1 ARGH! Whatever that was, it was NOT good.
+      dorand 4
+        src.spelleffect s_curse		1500
+        src.spelleffect s_weaken	1500
+        src.spelleffect s_clumsy	1500
+        src.spelleffect s_feeblemind	1500
+      enddo
+      return 1
+   endif
+
+   if ( (<LOCAL.RAND> > 93) && (<LOCAL.RAND> < 101) )	// 94 - 100
+      SRC.SYSMESSAGE @90 WOW! You feel blessed!.
+      dorand 4
+        src.spelleffect s_bless		1500
+        src.spelleffect s_strength	1500
+        src.spelleffect s_cunning	1500
+        src.spelleffect s_agility	1500
+      enddo
+      return 1
+   endif
+         
+   
+   // 65 - 89
+   dorand 2
+      SRC.SYSMESSAGE @0 Lucky the human to touch the totem and survive. Dare not try thy luck again...
+      SRC.SYSMESSAGE @0 You feel incredibly blessed with your life.
+   enddo
+   SRC.TAG.TOTEM_KILL	= 1
+   return 1
+
+
+[EOF]
+

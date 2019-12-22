@@ -1,0 +1,1539 @@
+//****************************************************************************
+// SPHERE by : Menasoft ©1997-2009
+// www.sphereserver.net
+// All SPHERE script files and formats are copyright Menasoft & Partners.
+// This file may be freely edited for personal use, but may not be distributed
+// in whole or in part, in any format without express written permission from
+// Menasoft & Partners. All donations and contributions become 
+// the property of Menasoft & Partners.
+//****************************************************************************
+// FILE LAST UPDATED: Sunday January 18th 2009, by Strider/Wiccanian
+
+[FUNCTION necropad]
+add i_multi_pentagram_necro
+
+[ITEMDEF i_multi_pentagram_necro]
+Name=Necromancers Pentagram
+ID=0fea
+TYPE=T_MULTI
+CATEGORY=Multis
+SUBSECTION=Misc
+DESCRIPTION=Necro Pentagram
+MULTIREGION=0,0,0,0
+COMPONENT=0fe6,-1,  0, 0
+COMPONENT=0fe7,-1, -1, 0
+COMPONENT=0fe8, 0, -1, 0
+COMPONENT=0fe9,-1,  1, 0
+COMPONENT=0feb, 1, -1, 0
+COMPONENT=0fec, 0,  1, 0
+COMPONENT=0fed, 1,  1, 0
+COMPONENT=0fee, 1,  0, 0
+
+ON = @Create
+  ATTR	= attr_move_never
+
+[ITEMDEF i_blood_undead]
+ID=i_bottle_empty
+TYPE=T_NORMAL
+VALUE=23
+WEIGHT=1
+NAME=Bottle of undead dust
+
+ON=@Create
+ COLOR=07cb
+ more1=1
+ 
+ON=@DCLICK
+   IF !(<CONT>==<SRC.FINDLAYER.21.UID>)
+      SRC.SYSMESSAGE You must have it in your pack to use it.
+      RETURN 1
+   ENDIF
+     TARGET What would you like to use this on?
+     return 1
+
+ON=@TARGON_ITEM
+     IF ( <SRC.TARG.BASEID> == i_scroll_animate_dead )
+        IF ( !<SRC.TARG.ISIDENTIFIED> )
+           src.sysmessage This needs to be identified.
+           return 1
+        ENDIF
+        IF ( !<SRC.TARG.more1> == 1 ) 
+              src.sysmessage This scroll isnt suitable
+              RETURN 1
+        ENDIF
+        IF ( <SRC.TARG.AMOUNT> > 1 ) 
+              src.sysmessage This can only be used on single scrolls
+              RETURN 1
+        ENDIF
+        SRC.TARG.MORE1 = 2
+        SRC.TARG.COLOR
+        SRC.TARG.ATTR=attr_magic|attr_newbie
+        SRC.CONSUME i_blood_undead
+        SRC.SYSMESSAGE @0021 You splatter the blood across the scroll...
+        src.SKILLCHECK_START		Skill_Necromancy
+        RETURN 1
+     ELSE
+        src.sysmessage That isnt suitable...
+        RETURN 1
+     ENDIF
+
+[ITEMDEF i_blood_murderer]
+ID=i_bottle_empty
+TYPE=T_NORMAL
+VALUE=23
+WEIGHT=1
+NAME=Blood of murderers
+
+ON=@Create
+ COLOR=0bb0
+  more1=2
+  
+ON=@DCLICK
+   IF !(<CONT>==<SRC.FINDLAYER.21.UID>)
+      SRC.SYSMESSAGE You must have it in your pack to use it.
+      RETURN 1
+   ENDIF
+     TARGET What would you like to use this on?
+     return 1
+
+ON=@TARGON_ITEM
+     IF ( <SRC.TARG.BASEID> == i_scroll_vengeful_spirit )
+        IF ( !<SRC.TARG.ISIDENTIFIED> )
+           src.sysmessage This needs to be identified.
+           return 1
+        ENDIF
+        IF ( !<SRC.TARG.more1> == 1 ) 
+              src.sysmessage This scroll isnt suitable
+              RETURN 1
+        ENDIF
+                IF ( <SRC.TARG.AMOUNT> > 1 ) 
+	              src.sysmessage This can only be used on single scrolls
+	              RETURN 1
+        ENDIF
+        SRC.TARG.MORE1 = 2
+        SRC.TARG.COLOR
+                SRC.TARG.ATTR=attr_magic|attr_newbie
+        SRC.CONSUME i_blood_murderer
+        SRC.SYSMESSAGE @0021 You splatter the blood across the scroll...
+        src.SKILLCHECK_START		Skill_Necromancy
+        RETURN 1
+     ELSE
+        src.sysmessage That isnt suitable...
+        RETURN 1
+     ENDIF
+
+[ITEMDEF i_blood_servants]
+ID=i_bottle_empty
+TYPE=T_NORMAL
+VALUE=23
+WEIGHT=1
+NAME=Blood of servants
+
+ON=@Create
+ COLOR=0bb0
+  more1=3
+  
+ON=@DCLICK
+   IF !(<CONT>==<SRC.FINDLAYER.21.UID>)
+      SRC.SYSMESSAGE You must have it in your pack to use it.
+      RETURN 1
+   ENDIF
+     TARGET What would you like to use this on?
+     return 1
+
+ON=@TARGON_ITEM
+     IF ( <SRC.TARG.BASEID> == i_scroll_summon_familiar )
+        IF ( !<SRC.TARG.ISIDENTIFIED> )
+           src.sysmessage This needs to be identified.
+           return 1
+        ENDIF
+        IF ( !<SRC.TARG.more1> == 1 ) 
+              src.sysmessage This scroll isnt suitable
+              RETURN 1
+        ENDIF
+                IF ( <SRC.TARG.AMOUNT> > 1 ) 
+	              src.sysmessage This can only be used on single scrolls
+	              RETURN 1
+        ENDIF
+        SRC.TARG.MORE1 = 2
+        SRC.TARG.COLOR
+                SRC.TARG.ATTR=attr_magic|attr_newbie
+        SRC.CONSUME i_blood_servants
+        SRC.SYSMESSAGE @0021 You splatter the blood across the scroll...
+        src.SKILLCHECK_START		Skill_Necromancy
+        RETURN 1
+     ELSE
+        src.sysmessage That isnt suitable...
+        RETURN 1
+     ENDIF
+
+[ITEMDEF i_blood_own]
+ID=i_bottle_empty
+TYPE=T_NORMAL
+VALUE=23
+WEIGHT=1
+NAME=Blood of your own
+
+ON=@Create
+ COLOR=0bb0
+  more1=4
+  
+ON=@DCLICK
+   IF !(<CONT>==<SRC.FINDLAYER.21.UID>)
+      SRC.SYSMESSAGE You must have it in your pack to use it.
+      RETURN 1
+   ENDIF
+     TARGET What would you like to use this on?
+     return 1
+
+ON=@TARGON_ITEM
+     IF ( <SRC.TARG.BASEID> == i_scroll_evil_omen )
+        IF ( !<SRC.TARG.ISIDENTIFIED> )
+           src.sysmessage This needs to be identified.
+           return 1
+        ENDIF
+        IF ( !<SRC.TARG.more1> == 1 ) 
+              src.sysmessage This scroll isnt suitable
+              RETURN 1
+        ENDIF
+                IF ( <SRC.TARG.AMOUNT> > 1 ) 
+	              src.sysmessage This can only be used on single scrolls
+	              RETURN 1
+        ENDIF
+        SRC.TARG.MORE1 = 2
+        SRC.TARG.COLOR
+                SRC.TARG.ATTR=attr_magic|attr_newbie
+        SRC.CONSUME i_blood_own
+        SRC.SYSMESSAGE @0021 You splatter the blood across the scroll...
+        src.SKILLCHECK_START		Skill_Necromancy
+        RETURN 1
+     ELSE
+        src.sysmessage That isnt suitable...
+        RETURN 1
+     ENDIF
+
+[ITEMDEF i_blood_innocent]
+ID=i_bottle_empty
+TYPE=T_NORMAL
+VALUE=23
+WEIGHT=1
+NAME=Blood of the innocent
+
+ON=@Create
+ COLOR=0bb0
+ more1=5
+ 
+ON=@DCLICK
+   IF !(<CONT>==<SRC.FINDLAYER.21.UID>)
+      SRC.SYSMESSAGE You must have it in your pack to use it.
+      RETURN 1
+   ENDIF
+     TARGET What would you like to use this on?
+     return 1
+
+ON=@TARGON_ITEM
+     IF ( <SRC.TARG.BASEID> == i_scroll_blood_oath )
+        IF ( !<SRC.TARG.ISIDENTIFIED> )
+           src.sysmessage This needs to be identified.
+           return 1
+        ENDIF
+        IF ( !<SRC.TARG.more1> == 1 ) 
+              src.sysmessage This scroll isnt suitable
+              RETURN 1
+        ENDIF
+                IF ( <SRC.TARG.AMOUNT> > 1 ) 
+	              src.sysmessage This can only be used on single scrolls
+	              RETURN 1
+        ENDIF
+        SRC.TARG.MORE1 = 2
+        SRC.TARG.COLOR
+                SRC.TARG.ATTR=attr_magic|attr_newbie
+        SRC.CONSUME i_blood_innocent
+        SRC.SYSMESSAGE @0021 You splatter the blood across the scroll...
+        src.SKILLCHECK_START		Skill_Necromancy
+        RETURN 1
+     ELSE
+        src.sysmessage That isnt suitable...
+        RETURN 1
+     ENDIF
+ 
+[ITEMDEF i_blood_liche]
+ID=i_bottle_empty
+TYPE=T_NORMAL
+VALUE=23
+WEIGHT=1
+NAME=Blood of liche
+
+ON=@Create
+ COLOR=0bb0
+ more1=6
+ 
+ON=@DCLICK
+   IF !(<CONT>==<SRC.FINDLAYER.21.UID>)
+      SRC.SYSMESSAGE You must have it in your pack to use it.
+      RETURN 1
+   ENDIF
+     TARGET What would you like to use this on?
+     return 1
+
+ON=@TARGON_ITEM
+     IF ( <SRC.TARG.BASEID> == i_scroll_lich_transformation )
+        IF ( !<SRC.TARG.ISIDENTIFIED> )
+           src.sysmessage This needs to be identified.
+           return 1
+        ENDIF
+        IF ( !<SRC.TARG.more1> == 1 ) 
+              src.sysmessage This scroll isnt suitable
+              RETURN 1
+        ENDIF
+                IF ( <SRC.TARG.AMOUNT> > 1 ) 
+	              src.sysmessage This can only be used on single scrolls
+	              RETURN 1
+        ENDIF
+        SRC.TARG.MORE1 = 2
+        SRC.TARG.COLOR
+                SRC.TARG.ATTR=attr_magic|attr_newbie
+        SRC.CONSUME i_blood_liche
+        SRC.SYSMESSAGE @0021 You splatter the blood across the scroll...
+        src.SKILLCHECK_START		Skill_Necromancy
+        RETURN 1
+     ELSE
+        src.sysmessage That isnt suitable...
+        RETURN 1
+     ENDIF
+
+[ITEMDEF i_blood_wraith]
+ID=i_bottle_empty
+TYPE=T_NORMAL
+VALUE=23
+WEIGHT=1
+NAME=Dust from a wraith
+
+ON=@Create
+ COLOR=07cb
+ more1=7
+ 
+ON=@DCLICK
+   IF !(<CONT>==<SRC.FINDLAYER.21.UID>)
+      SRC.SYSMESSAGE You must have it in your pack to use it.
+      RETURN 1
+   ENDIF
+     TARGET What would you like to use this on?
+     return 1
+
+ON=@TARGON_ITEM
+     IF ( <SRC.TARG.BASEID> == i_scroll_wraith_form )
+        IF ( !<SRC.TARG.ISIDENTIFIED> )
+           src.sysmessage This needs to be identified.
+           return 1
+        ENDIF
+        IF ( !<SRC.TARG.more1> == 1 ) 
+              src.sysmessage This scroll isnt suitable
+              RETURN 1
+        ENDIF
+                IF ( <SRC.TARG.AMOUNT> > 1 ) 
+	              src.sysmessage This can only be used on single scrolls
+	              RETURN 1
+        ENDIF
+        SRC.TARG.MORE1 = 2
+        SRC.TARG.COLOR
+                SRC.TARG.ATTR=attr_magic|attr_newbie
+        SRC.CONSUME i_blood_wraith
+        SRC.SYSMESSAGE @0021 You splatter the blood across the scroll...
+        src.SKILLCHECK_START		Skill_Necromancy
+        RETURN 1
+     ELSE
+        src.sysmessage That isnt suitable...
+        RETURN 1
+     ENDIF
+ 
+[ITEMDEF i_blood_corpse]
+ID=i_bottle_empty
+TYPE=T_NORMAL
+VALUE=23
+WEIGHT=1
+NAME=Corpse's essence
+
+ON=@Create
+ COLOR=0bb0
+ more1=8
+ 
+ON=@DCLICK
+   IF !(<CONT>==<SRC.FINDLAYER.21.UID>)
+      SRC.SYSMESSAGE You must have it in your pack to use it.
+      RETURN 1
+   ENDIF
+     TARGET What would you like to use this on?
+     return 1
+
+ON=@TARGON_ITEM
+     IF ( <SRC.TARG.BASEID> == i_scroll_corpse_skin )
+        IF ( !<SRC.TARG.ISIDENTIFIED> )
+           src.sysmessage This needs to be identified.
+           return 1
+        ENDIF
+        IF ( !<SRC.TARG.more1> == 1 ) 
+              src.sysmessage This scroll isnt suitable
+              RETURN 1
+        ENDIF
+                IF ( <SRC.TARG.AMOUNT> > 1 ) 
+	              src.sysmessage This can only be used on single scrolls
+	              RETURN 1
+        ENDIF
+        SRC.TARG.MORE1 = 2
+        SRC.TARG.COLOR
+                SRC.TARG.ATTR=attr_magic|attr_newbie
+        SRC.CONSUME i_blood_corpse
+        SRC.SYSMESSAGE @0021 You splatter the blood across the scroll...
+        src.SKILLCHECK_START		Skill_Necromancy
+        RETURN 1
+     ELSE
+        src.sysmessage That isnt suitable...
+        RETURN 1
+     ENDIF
+ 
+[ITEMDEF i_blood_lamb]
+ID=i_bottle_empty
+TYPE=T_NORMAL
+VALUE=23
+WEIGHT=1
+NAME=Bottle of lamb's blood
+
+ON=@Create
+ COLOR=0bb0
+ more1=9
+ 
+ON=@DCLICK
+   IF !(<CONT>==<SRC.FINDLAYER.21.UID>)
+      SRC.SYSMESSAGE You must have it in your pack to use it.
+      RETURN 1
+   ENDIF
+     TARGET What would you like to use this on?
+     return 1
+
+ON=@TARGON_ITEM
+     IF ( <SRC.TARG.BASEID> == i_scroll_curse_weapon )
+        IF ( !<SRC.TARG.ISIDENTIFIED> )
+           src.sysmessage This needs to be identified.
+           return 1
+        ENDIF
+        IF ( !<SRC.TARG.more1> == 1 ) 
+              src.sysmessage This scroll isnt suitable
+              RETURN 1
+        ENDIF
+                IF ( <SRC.TARG.AMOUNT> > 1 ) 
+	              src.sysmessage This can only be used on single scrolls
+	              RETURN 1
+        ENDIF
+        SRC.TARG.MORE1 = 2
+        SRC.TARG.COLOR
+                SRC.TARG.ATTR=attr_magic|attr_newbie
+        SRC.CONSUME i_blood_lamb
+        SRC.SYSMESSAGE @0021 You splatter the blood across the scroll...
+        src.SKILLCHECK_START		Skill_Necromancy
+        RETURN 1
+     ELSE
+        src.sysmessage That isnt suitable...
+        RETURN 1
+     ENDIF
+ 
+[ITEMDEF i_blood_bear]
+ID=i_bottle_empty
+TYPE=T_NORMAL
+VALUE=23
+WEIGHT=1
+NAME=Bottle of bear's blood
+
+ON=@Create
+ COLOR=0bb0
+ more1=10
+ 
+ON=@DCLICK
+   IF !(<CONT>==<SRC.FINDLAYER.21.UID>)
+      SRC.SYSMESSAGE You must have it in your pack to use it.
+      RETURN 1
+   ENDIF
+     TARGET What would you like to use this on?
+     return 1
+
+ON=@TARGON_ITEM
+     IF ( <SRC.TARG.BASEID> == i_scroll_mind_rot )
+        IF ( !<SRC.TARG.ISIDENTIFIED> )
+           src.sysmessage This needs to be identified.
+           return 1
+        ENDIF
+        IF ( !<SRC.TARG.more1> == 1 ) 
+              src.sysmessage This scroll isnt suitable
+              RETURN 1
+        ENDIF
+                IF ( <SRC.TARG.AMOUNT> > 1 ) 
+	              src.sysmessage This can only be used on single scrolls
+	              RETURN 1
+        ENDIF
+        SRC.TARG.MORE1 = 2
+        SRC.TARG.COLOR
+                SRC.TARG.ATTR=attr_magic|attr_newbie
+        SRC.CONSUME i_blood_bear
+        SRC.SYSMESSAGE @0021 You splatter the blood across the scroll...
+        src.SKILLCHECK_START		Skill_Necromancy
+        RETURN 1
+     ELSE
+        src.sysmessage That isnt suitable...
+        RETURN 1
+     ENDIF
+ 
+[ITEMDEF i_blood_cow]
+ID=i_bottle_empty
+TYPE=T_NORMAL
+VALUE=23
+WEIGHT=1
+NAME=Bottle of cow's blood
+
+ON=@Create
+ COLOR=0bb0
+ more1=11
+ 
+ON=@DCLICK
+   IF !(<CONT>==<SRC.FINDLAYER.21.UID>)
+      SRC.SYSMESSAGE You must have it in your pack to use it.
+      RETURN 1
+   ENDIF
+     TARGET What would you like to use this on?
+     return 1
+
+ON=@TARGON_ITEM
+     IF ( <SRC.TARG.BASEID> == i_scroll_pain_spike )
+        IF ( !<SRC.TARG.ISIDENTIFIED> )
+           src.sysmessage This needs to be identified.
+           return 1
+        ENDIF
+        IF ( !<SRC.TARG.more1> == 1 ) 
+              src.sysmessage This scroll isnt suitable
+              RETURN 1
+        ENDIF
+                IF ( <SRC.TARG.AMOUNT> > 1 ) 
+	              src.sysmessage This can only be used on single scrolls
+	              RETURN 1
+        ENDIF
+        SRC.TARG.MORE1 = 2
+        SRC.TARG.COLOR
+                SRC.TARG.ATTR=attr_magic|attr_newbie
+        SRC.CONSUME i_blood_cow
+        SRC.SYSMESSAGE @0021 You splatter the blood across the scroll...
+        src.SKILLCHECK_START		Skill_Necromancy
+        RETURN 1
+     ELSE
+        src.sysmessage That isnt suitable...
+        RETURN 1
+     ENDIF
+ 
+[ITEMDEF i_blood_snake]
+ID=i_bottle_empty
+TYPE=T_NORMAL
+VALUE=23
+WEIGHT=1
+NAME=Bottle of snake's blood
+
+ON=@Create
+ COLOR=0bb0
+ more1=12
+ 
+ON=@DCLICK
+   IF !(<CONT>==<SRC.FINDLAYER.21.UID>)
+      SRC.SYSMESSAGE You must have it in your pack to use it.
+      RETURN 1
+   ENDIF
+     TARGET What would you like to use this on?
+     return 1
+
+ON=@TARGON_ITEM
+     IF ( <SRC.TARG.BASEID> == i_scroll_poison_strike )
+        IF ( !<SRC.TARG.ISIDENTIFIED> )
+           src.sysmessage This needs to be identified.
+           return 1
+        ENDIF
+        IF ( !<SRC.TARG.more1> == 1 ) 
+              src.sysmessage This scroll isnt suitable
+              RETURN 1
+        ENDIF
+                IF ( <SRC.TARG.AMOUNT> > 1 ) 
+	              src.sysmessage This can only be used on single scrolls
+	              RETURN 1
+        ENDIF
+        SRC.TARG.MORE1 = 2
+        SRC.TARG.COLOR
+                SRC.TARG.ATTR=attr_magic|attr_newbie
+        SRC.CONSUME i_blood_snake
+        SRC.SYSMESSAGE @0021 You splatter the blood across the scroll...
+        src.SKILLCHECK_START		Skill_Necromancy
+        RETURN 1
+     ELSE
+        src.sysmessage That isnt suitable...
+        RETURN 1
+     ENDIF
+ 
+[ITEMDEF i_blood_human]
+ID=i_bottle_empty
+TYPE=T_NORMAL
+VALUE=23
+WEIGHT=1
+NAME=Bottle of human's blood
+
+ON=@Create
+ COLOR=0bb0
+ more1=13
+ 
+ON=@DCLICK
+   IF !(<CONT>==<SRC.FINDLAYER.21.UID>)
+      SRC.SYSMESSAGE You must have it in your pack to use it.
+      RETURN 1
+   ENDIF
+     TARGET What would you like to use this on?
+     return 1
+
+ON=@TARGON_ITEM
+     IF ( <SRC.TARG.BASEID> == i_scroll_horrific_beast )
+        IF ( !<SRC.TARG.ISIDENTIFIED> )
+           src.sysmessage This needs to be identified.
+           return 1
+        ENDIF
+        IF ( !<SRC.TARG.more1> == 1 ) 
+              src.sysmessage This scroll isnt suitable
+              RETURN 1
+        ENDIF
+                IF ( <SRC.TARG.AMOUNT> > 1 ) 
+	              src.sysmessage This can only be used on single scrolls
+	              RETURN 1
+        ENDIF
+        SRC.TARG.MORE1 = 2
+        SRC.TARG.COLOR
+                SRC.TARG.ATTR=attr_magic|attr_newbie
+        SRC.CONSUME i_blood_human
+        SRC.SYSMESSAGE @0021 You splatter the blood across the scroll...
+        src.SKILLCHECK_START		Skill_Necromancy
+        RETURN 1
+     ELSE
+        src.sysmessage That isnt suitable...
+        RETURN 1
+     ENDIF
+
+[ITEMDEF i_blood_vampire]
+ID=i_bottle_empty
+TYPE=T_NORMAL
+VALUE=23
+WEIGHT=1
+NAME=Bottle of vampiric blood
+RESOURCES=i_reag_batwing 1, i_blood_innocent 1, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 100.0
+
+ON=@Create
+ COLOR=0bb0
+ more1=14
+ 
+ON=@DCLICK
+   IF !(<CONT>==<SRC.FINDLAYER.21.UID>)
+      SRC.SYSMESSAGE You must have it in your pack to use it.
+      RETURN 1
+   ENDIF
+     TARGET What would you like to use this on?
+     return 1
+
+ON=@TARGON_ITEM
+     IF ( <SRC.TARG.BASEID> == i_scroll_vampiric_embrace )
+        IF ( !<SRC.TARG.ISIDENTIFIED> )
+           src.sysmessage This needs to be identified.
+           return 1
+        ENDIF
+        IF ( !<SRC.TARG.more1> == 1 ) 
+              src.sysmessage This scroll isnt suitable
+              RETURN 1
+        ENDIF
+                IF ( <SRC.TARG.AMOUNT> > 1 ) 
+	              src.sysmessage This can only be used on single scrolls
+	              RETURN 1
+        ENDIF
+        SRC.TARG.MORE1 = 2
+        SRC.TARG.COLOR
+                SRC.TARG.ATTR=attr_magic|attr_newbie
+        SRC.CONSUME i_blood_vampire
+        SRC.SYSMESSAGE @0021 You splatter the blood across the scroll...
+        src.SKILLCHECK_START		Skill_Necromancy
+        RETURN 1
+     ELSE
+        src.sysmessage That isnt suitable...
+        RETURN 1
+     ENDIF
+     
+[ITEMDEF i_blood_wither]
+ID=i_bottle_empty
+TYPE=T_NORMAL
+VALUE=23
+WEIGHT=1
+NAME=Bottle of withered blood
+RESOURCES=i_wool 1, i_blood_undead 1, i_reag_spider_silk 1, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 100.0
+
+ON=@Create
+ COLOR=0bb0
+ more1=14
+ 
+ON=@DCLICK
+   IF !(<CONT>==<SRC.FINDLAYER.21.UID>)
+      SRC.SYSMESSAGE You must have it in your pack to use it.
+      RETURN 1
+   ENDIF
+     TARGET What would you like to use this on?
+     return 1
+
+ON=@TARGON_ITEM
+     IF ( <SRC.TARG.BASEID> == i_scroll_wither )
+        IF ( !<SRC.TARG.ISIDENTIFIED> )
+           src.sysmessage This needs to be identified.
+           return 1
+        ENDIF
+        IF ( !<SRC.TARG.more1> == 1 ) 
+              src.sysmessage This scroll isnt suitable
+              RETURN 1
+        ENDIF
+                IF ( <SRC.TARG.AMOUNT> > 1 ) 
+	              src.sysmessage This can only be used on single scrolls
+	              RETURN 1
+        ENDIF
+        SRC.TARG.MORE1 = 2
+        SRC.TARG.COLOR
+                SRC.TARG.ATTR=attr_magic|attr_newbie
+        SRC.CONSUME i_blood_wither
+        SRC.SYSMESSAGE @0021 You splatter the blood across the scroll...
+        src.SKILLCHECK_START		Skill_Necromancy
+        RETURN 1
+     ELSE
+        src.sysmessage That isnt suitable...
+        RETURN 1
+     ENDIF
+     
+[ITEMDEF i_blood_strangle]
+ID=i_bottle_empty
+TYPE=T_NORMAL
+VALUE=23
+WEIGHT=1
+NAME=Bottle of strangled blood
+RESOURCES=i_blood_cow 1, i_reag_nightshade 1, i_bottle_EMPTY
+SKILLMAKE=ALCHEMY 100.0
+
+ON=@Create
+ COLOR=0bb0
+ more1=14
+ 
+ON=@DCLICK
+   IF !(<CONT>==<SRC.FINDLAYER.21.UID>)
+      SRC.SYSMESSAGE You must have it in your pack to use it.
+      RETURN 1
+   ENDIF
+     TARGET What would you like to use this on?
+     return 1
+
+ON=@TARGON_ITEM
+     IF ( <SRC.TARG.BASEID> == i_scroll_strangle )
+        IF ( !<SRC.TARG.ISIDENTIFIED> )
+           src.sysmessage This needs to be identified.
+           return 1
+        ENDIF
+        IF ( !<SRC.TARG.more1> == 1 ) 
+              src.sysmessage This scroll isnt suitable
+              RETURN 1
+        ENDIF
+                IF ( <SRC.TARG.AMOUNT> > 1 ) 
+	              src.sysmessage This can only be used on single scrolls
+	              RETURN 1
+        ENDIF
+        SRC.TARG.MORE1 = 2
+        SRC.TARG.COLOR
+                SRC.TARG.ATTR=attr_magic|attr_newbie
+        SRC.CONSUME i_blood_strangle
+        SRC.SYSMESSAGE @0021 You splatter the blood across the scroll...
+        src.SKILLCHECK_START		Skill_Necromancy
+        RETURN 1
+     ELSE
+        src.sysmessage That isnt suitable...
+        RETURN 1
+     ENDIF
+
+[ITEMDEF boo_test_book]
+ID=i_board
+NAME=Necromancy Book
+TYPE=t_normal
+WEIGHT=1
+RESOURCES=80 i_parchment,1 i_hide, 1 i_cloth
+VALUE=350
+
+on=@dclick
+src.cast 606
+
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Necromancers
+DESCRIPTION=Necromancy Spellbook
+
+
+
+[ITEMDEF 02253]
+DEFNAME=i_spellbook_necromancy
+NAME=Necromancy Book
+TYPE=t_spellbook_necro
+WEIGHT=1
+RESOURCES=80 i_parchment,1 i_hide, 1 i_cloth
+VALUE=350
+
+ON=@Create
+ATTR=attr_magic|attr_newbie
+morez=100
+
+
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Necromancers
+DESCRIPTION=Necromancy Spellbook
+
+[ITEMDEF 02260]
+DEFNAME=i_scroll_animate_dead
+TYPE=t_scroll
+WEIGHT=1
+RESOURCES=i_scroll_blank, i_reag_blood_spawn, i_reag_obsidian
+SKILLMAKE=INSCRIPTION 50.0, NECROMANCY 40.0
+
+ON=@CREATE
+ATTR=ATTR_MAGIC
+MOREX=s_animate_dead
+more1=1
+color=03c1
+
+on=@click
+TRIGGER @GetItemVars
+
+on=@dclick
+TRIGGER @GetItemVars
+   IF !(<CONT>==<SRC.FINDLAYER.21.UID>)
+      SRC.SYSMESSAGE You must have it in your pack to use it.
+      RETURN 1
+   ENDIF
+   if ( !<ISIDENTIFIED> )
+      src.sysmessage This needs to be identified.
+      return 1
+   endif
+if ( <src.necromancy> <= <TAG.SKILLMIN_Necro> ) 
+         src.sysmessage Your skill isnt high enough for this
+         RETURN 1
+ENDIF
+   if ( !<ISIDENTIFIED> )
+      src.sysmessage This needs to be identified.
+      return 1
+   endif
+if ( <more1> == 1 ) 
+         src.sysmessage This scroll isnt ready yet
+         RETURN 1
+ENDIF
+IF !(<SRC.RESTEST 1 i_reag_blood_spawn> && <SRC.RESTEST 1 i_reag_obsidian>)
+    SRC.SYSMESSAGE You dont have the required reagents
+    RETURN 1
+ENDIF
+
+
+ON=@GetItemVars
+  TAG.SKILLMIN_Necro	= 60.0
+
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - Necromancy
+DESCRIPTION=Animate Dead
+
+[ITEMDEF 02261]
+DEFNAME=i_scroll_blood_oath
+NAME=Blood Oat
+TYPE=t_scroll
+WEIGHT=1
+RESOURCES=i_scroll_blank, i_reag_blackmoor, i_reag_blood_spawn
+SKILLMAKE=INSCRIPTION 30.0, NECROMANCY 20.0
+
+ON=@Create
+ATTR=ATTR_MAGIC
+MOREX=s_blood_oath
+more1=1
+color=03c1
+
+on=@click
+TRIGGER @GetItemVars
+
+on=@dclick
+TRIGGER @GetItemVars
+   IF !(<CONT>==<SRC.FINDLAYER.21.UID>)
+      SRC.SYSMESSAGE You must have it in your pack to use it.
+      RETURN 1
+   ENDIF
+   if ( !<ISIDENTIFIED> )
+      src.sysmessage This needs to be identified.
+      return 1
+   endif
+if ( <src.necromancy> <= <TAG.SKILLMIN_Necro> ) 
+         src.sysmessage Your skill isnt high enough for this
+         RETURN 1
+ENDIF   
+if ( <more1> == 1 ) 
+         src.sysmessage This scroll isnt ready yet
+         RETURN 1
+ENDIF
+IF !(<SRC.RESTEST 1 i_reag_blood_spawn> && <SRC.RESTEST 1 i_reag_blackmoor>)
+    SRC.SYSMESSAGE You dont have the required reagents
+    RETURN 1
+ENDIF
+
+ON=@GetItemVars
+  TAG.SKILLMIN_Necro	= 35.0
+
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - Necromancy
+DESCRIPTION=Blood Oath
+
+[ITEMDEF 02262]
+DEFNAME=i_scroll_corpse_skin
+TYPE=t_scroll
+WEIGHT=1
+RESOURCES=i_scroll_blank, i_reag_brimstone, i_reag_pig_iron
+SKILLMAKE=INSCRIPTION 30.0, NECROMANCY 20.0
+
+ON=@Create
+ATTR=attr_magic
+morex=s_corpse_skin
+more1=1
+color=03c1
+
+on=@click
+TRIGGER @GetItemVars
+
+on=@dclick
+TRIGGER @GetItemVars
+   IF !(<CONT>==<SRC.FINDLAYER.21.UID>)
+      SRC.SYSMESSAGE You must have it in your pack to use it.
+      RETURN 1
+   ENDIF
+   if ( !<ISIDENTIFIED> )
+      src.sysmessage This needs to be identified.
+      return 1
+   endif
+if ( <src.necromancy> <= <TAG.SKILLMIN_Necro> ) 
+         src.sysmessage Your skill isnt high enough for this
+         RETURN 1
+ENDIF   
+if ( <more1> == 1 ) 
+         src.sysmessage This scroll isnt ready yet
+         RETURN 1
+ENDIF
+IF !(<SRC.RESTEST 1 i_reag_brimstone> && <SRC.RESTEST 1 i_reag_pig_iron>)
+    SRC.SYSMESSAGE You dont have the required reagents
+    RETURN 1
+ENDIF
+
+ON=@GetItemVars
+  TAG.SKILLMIN_Necro	= 25.0
+
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - Necromancy
+DESCRIPTION=Corpse Skin
+
+[ITEMDEF 02263]
+DEFNAME=i_scroll_curse_weapon
+TYPE=t_scroll
+WEIGHT=1
+RESOURCES=i_scroll_blank, i_reag_blackmoor, i_reag_obsidian
+SKILLMAKE=INSCRIPTION 5.0, NECROMANCY 0.1
+
+ON=@Create
+ATTR=attr_magic
+morex=s_curse_weapon
+more1=1
+color=03c1
+
+on=@click
+TRIGGER @GetItemVars
+
+on=@dclick
+TRIGGER @GetItemVars
+   IF !(<CONT>==<SRC.FINDLAYER.21.UID>)
+      SRC.SYSMESSAGE You must have it in your pack to use it.
+      RETURN 1
+   ENDIF
+   if ( !<ISIDENTIFIED> )
+      src.sysmessage This needs to be identified.
+      return 1
+   endif
+if ( <src.necromancy> <= <TAG.SKILLMIN_Necro> ) 
+         src.sysmessage Your skill isnt high enough for this
+         RETURN 1
+ENDIF   
+if ( <more1> == 1 ) 
+         src.sysmessage This scroll isnt ready yet
+         RETURN 1
+ENDIF
+IF !(<SRC.RESTEST 1 i_reag_blackmoor> && <SRC.RESTEST 1 i_reag_obsidian>)
+    SRC.SYSMESSAGE You dont have the required reagents
+    RETURN 1
+ENDIF
+
+ON=@GetItemVars
+  TAG.SKILLMIN_Necro	= 10.0
+
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - Necromancy
+DESCRIPTION=Curse Weapon
+
+[ITEMDEF 02264]
+DEFNAME=i_scroll_evil_omen
+TYPE=t_scroll
+WEIGHT=1
+RESOURCES=i_scroll_blank, i_reag_obsidian, i_reag_pumice
+SKILLMAKE=INSCRIPTION 30.0, NECROMANCY 20.0
+
+ON=@Create
+ATTR=attr_magic
+morex=s_evil_omen
+more1=1
+color=03c1
+
+on=@click
+TRIGGER @GetItemVars
+
+on=@dclick
+TRIGGER @GetItemVars
+   IF !(<CONT>==<SRC.FINDLAYER.21.UID>)
+      SRC.SYSMESSAGE You must have it in your pack to use it.
+      RETURN 1
+   ENDIF
+   if ( !<ISIDENTIFIED> )
+      src.sysmessage This needs to be identified.
+      return 1
+   endif
+if ( <src.necromancy> <= <TAG.SKILLMIN_Necro> ) 
+         src.sysmessage Your skill isnt high enough for this
+         RETURN 1
+ENDIF 
+if ( <more1> == 1 ) 
+         src.sysmessage This scroll isnt ready yet
+         RETURN 1
+ENDIF
+IF !(<SRC.RESTEST 1 i_reag_pumice> && <SRC.RESTEST 1 i_reag_obsidian>)
+    SRC.SYSMESSAGE You dont have the required reagents
+    RETURN 1
+ENDIF
+
+ON=@GetItemVars
+  TAG.SKILLMIN_Necro	= 30.0
+
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - Necromancy
+DESCRIPTION=Evil Omen
+
+[ITEMDEF 02265]
+DEFNAME=i_scroll_horrific_beast
+TYPE=t_scroll
+WEIGHT=1
+RESOURCES=i_scroll_blank, i_reag_batwing, i_reag_blackmoor
+SKILLMAKE=INSCRIPTION 50.0, NECROMANCY 40.0
+
+ON=@Create
+ATTR=attr_magic
+morex=s_horrific_beast
+more1=1
+color=03c1
+
+on=@click
+TRIGGER @GetItemVars
+
+on=@dclick
+TRIGGER @GetItemVars
+TRIGGER @GetItemVars
+   IF !(<CONT>==<SRC.FINDLAYER.21.UID>)
+      SRC.SYSMESSAGE You must have it in your pack to use it.
+      RETURN 1
+   ENDIF
+   if ( !<ISIDENTIFIED> )
+      src.sysmessage This needs to be identified.
+      return 1
+   endif
+if ( <src.necromancy> <= <TAG.SKILLMIN_Necro> ) 
+         src.sysmessage Your skill isnt high enough for this
+         RETURN 1
+ENDIF 
+if ( <more1> == 1 ) 
+         src.sysmessage This scroll isnt ready yet
+         RETURN 1
+ENDIF
+IF !(<SRC.RESTEST 1 i_reag_batwing> && <SRC.RESTEST 1 i_reag_blackmoor>)
+    SRC.SYSMESSAGE You dont have the required reagents
+    RETURN 1
+ENDIF
+
+ON=@GetItemVars
+  TAG.SKILLMIN_Necro	= 65.0
+
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - Necromancy
+DESCRIPTION=Horrific Beast
+
+[ITEMDEF 02266]
+DEFNAME=i_scroll_lich_transformation
+TYPE=t_scroll
+WEIGHT=1
+RESOURCES=i_scroll_blank, i_reag_batwing, i_reag_blackmoor, i_reag_pig_iron
+SKILLMAKE=INSCRIPTION 80.0, NECROMANCY 70.0
+
+ON=@Create
+ATTR=attr_magic
+morex=s_liche_form
+more1=1
+color=03c1
+
+on=@click
+TRIGGER @GetItemVars
+
+on=@dclick
+TRIGGER @GetItemVars
+   IF !(<CONT>==<SRC.FINDLAYER.21.UID>)
+      SRC.SYSMESSAGE You must have it in your pack to use it.
+      RETURN 1
+   ENDIF
+   if ( !<ISIDENTIFIED> )
+      src.sysmessage This needs to be identified.
+      return 1
+   endif
+if ( <src.necromancy> <= <TAG.SKILLMIN_Necro> ) 
+         src.sysmessage Your skill isnt high enough for this
+         RETURN 1
+ENDIF   
+if ( <more1> == 1 ) 
+         src.sysmessage This scroll isnt ready yet
+         RETURN 1
+ENDIF
+IF !(<SRC.RESTEST 1 i_reag_batwing> && <SRC.RESTEST 1 i_reag_blackmoor> && <SRC.RESTEST 1 i_reag_pig_iron>)
+    SRC.SYSMESSAGE You dont have the required reagents
+    RETURN 1
+ENDIF
+
+ON=@GetItemVars
+  TAG.SKILLMIN_Necro	= 70.0
+
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - Necromancy
+DESCRIPTION=Liche transformation
+
+[ITEMDEF 02267]
+DEFNAME=i_scroll_mind_rot
+TYPE=t_scroll
+WEIGHT=1
+RESOURCES=i_scroll_blank, i_reag_blackmoor, i_reag_pumice, i_reag_serpent_scale
+SKILLMAKE=INSCRIPTION 40.0, NECROMANCY 30.0
+
+ON=@Create
+ATTR=attr_magic
+morex=s_mind_rot
+more1=1
+color=03c1
+
+on=@click
+TRIGGER @GetItemVars
+
+on=@dclick
+TRIGGER @GetItemVars
+   IF !(<CONT>==<SRC.FINDLAYER.21.UID>)
+      SRC.SYSMESSAGE You must have it in your pack to use it.
+      RETURN 1
+   ENDIF
+   if ( !<ISIDENTIFIED> )
+      src.sysmessage This needs to be identified.
+      return 1
+   endif
+if ( <src.necromancy> <= <TAG.SKILLMIN_Necro> ) 
+         src.sysmessage Your skill isnt high enough for this
+         RETURN 1
+ENDIF 
+if ( <more1> == 1 ) 
+         src.sysmessage This scroll isnt ready yet
+         RETURN 1
+ENDIF
+IF !(<SRC.RESTEST 1 i_reag_pumice> && <SRC.RESTEST 1 i_reag_blackmoor> && <SRC.RESTEST 1 i_reag_serpent_scale>)
+    SRC.SYSMESSAGE You dont have the required reagents
+    RETURN 1
+ENDIF
+
+ON=@GetItemVars
+  TAG.SKILLMIN_Necro	= 50.0
+
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - Necromancy
+DESCRIPTION=Mind Rot
+
+[ITEMDEF 02268]
+DEFNAME=i_scroll_pain_spike
+TYPE=t_scroll
+WEIGHT=1
+RESOURCES=i_scroll_blank, i_reag_brimstone, i_reag_serpent_scale
+SKILLMAKE=INSCRIPTION 30.0, NECROMANCY 20.0
+
+ON=@Create
+ATTR=attr_magic
+morex=s_pain_Spike
+more1=1
+color=03c1
+
+on=@click
+TRIGGER @GetItemVars
+
+on=@dclick
+TRIGGER @GetItemVars
+   IF !(<CONT>==<SRC.FINDLAYER.21.UID>)
+      SRC.SYSMESSAGE You must have it in your pack to use it.
+      RETURN 1
+   ENDIF
+   if ( !<ISIDENTIFIED> )
+      src.sysmessage This needs to be identified.
+      return 1
+   endif
+if ( <src.necromancy> <= <TAG.SKILLMIN_Necro> ) 
+         src.sysmessage Your skill isnt high enough for this
+         RETURN 1
+ENDIF   
+if ( <more1> == 1 ) 
+         src.sysmessage This scroll isnt ready yet
+         RETURN 1
+ENDIF
+IF !(<SRC.RESTEST 1 i_reag_brimstone> && <SRC.RESTEST 1 i_reag_serpent_scale>)
+    SRC.SYSMESSAGE You dont have the required reagents
+    RETURN 1
+ENDIF
+
+ON=@GetItemVars
+  TAG.SKILLMIN_Necro	= 20.0
+
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - Necromancy
+DESCRIPTION=Pain Spike
+
+[ITEMDEF 02269]
+DEFNAME=i_scroll_poison_strike
+TYPE=t_scroll
+WEIGHT=1
+RESOURCES=i_scroll_blank, i_reag_brimstone, i_reag_serpent_scale
+SKILLMAKE=INSCRIPTION 60.0, NECROMANCY 50.0
+
+ON=@Create
+ATTR=attr_magic
+morex=s_poison_strike
+more1=1
+color=03c1
+
+on=@click
+TRIGGER @GetItemVars
+
+on=@dclick
+TRIGGER @GetItemVars
+   IF !(<CONT>==<SRC.FINDLAYER.21.UID>)
+      SRC.SYSMESSAGE You must have it in your pack to use it.
+      RETURN 1
+   ENDIF
+   if ( !<ISIDENTIFIED> )
+      src.sysmessage This needs to be identified.
+      return 1
+   endif
+if ( <src.necromancy> <= <TAG.SKILLMIN_Necro> ) 
+         src.sysmessage Your skill isnt high enough for this
+         RETURN 1
+ENDIF 
+if ( <more1> == 1 ) 
+         src.sysmessage This scroll isnt ready yet
+         RETURN 1
+ENDIF
+IF !(<SRC.RESTEST 1 i_reag_brimstone> && <SRC.RESTEST 1 i_reag_serpent_scale>)
+    SRC.SYSMESSAGE You dont have the required reagents
+    RETURN 1
+ENDIF
+
+ON=@GetItemVars
+  TAG.SKILLMIN_Necro	= 80.0
+
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - Necromancy
+DESCRIPTION=Poison Strike
+
+[ITEMDEF 0226a]
+DEFNAME=i_scroll_strangle
+TYPE=t_scroll
+WEIGHT=1
+RESOURCES=i_scroll_blank, i_reag_obsidian, i_reag_serpent_scale
+SKILLMAKE=INSCRIPTION 75.0, NECROMANCY 65.0
+
+ON=@Create
+ATTR=attr_magic
+morex=s_strangle
+more1=1
+color=03c1
+
+on=@click
+TRIGGER @GetItemVars
+
+on=@dclick
+TRIGGER @GetItemVars
+   IF !(<CONT>==<SRC.FINDLAYER.21.UID>)
+      SRC.SYSMESSAGE You must have it in your pack to use it.
+      RETURN 1
+   ENDIF
+   if ( !<ISIDENTIFIED> )
+      src.sysmessage This needs to be identified.
+      return 1
+   endif
+if ( <src.necromancy> <= <TAG.SKILLMIN_Necro> ) 
+         src.sysmessage Your skill isnt high enough for this
+         RETURN 1
+ENDIF   
+if ( <more1> == 1 ) 
+         src.sysmessage This scroll isnt ready yet
+         RETURN 1
+ENDIF
+IF !(<SRC.RESTEST 1 i_reag_obsidian> && <SRC.RESTEST 1 i_reag_serpent_scale>)
+    SRC.SYSMESSAGE You dont have the required reagents
+    RETURN 1
+ENDIF
+
+ON=@GetItemVars
+  TAG.SKILLMIN_Necro	= 70.0
+
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - Necromancy
+DESCRIPTION=Strangulation
+
+[ITEMDEF 0226b]
+DEFNAME=i_scroll_summon_familiar
+TYPE=t_scroll
+WEIGHT=1
+RESOURCES=i_scroll_blank, i_reag_batwing, i_reag_blood_spawn, i_reag_pig_iron
+SKILLMAKE=INSCRIPTION 40.0, NECROMANCY 30.0
+
+ON=@Create
+ATTR=attr_magic
+morex=s_summon_familiar
+more1=1
+color=03c1
+
+on=@click
+TRIGGER @GetItemVars
+
+on=@dclick
+TRIGGER @GetItemVars
+   IF !(<CONT>==<SRC.FINDLAYER.21.UID>)
+      SRC.SYSMESSAGE You must have it in your pack to use it.
+      RETURN 1
+   ENDIF
+   if ( !<ISIDENTIFIED> )
+      src.sysmessage This needs to be identified.
+      return 1
+   endif
+if ( <src.necromancy> <= <TAG.SKILLMIN_Necro> ) 
+         src.sysmessage Your skill isnt high enough for this
+         RETURN 1
+ENDIF   
+if ( <more1> == 1 ) 
+         src.sysmessage This scroll isnt ready yet
+         RETURN 1
+ENDIF
+IF !(<SRC.RESTEST 1 i_reag_batwing> && <SRC.RESTEST 1 i_reag_blood_spawn> && <SRC.RESTEST 1 i_reag_pig_iron>)
+    SRC.SYSMESSAGE You dont have the required reagents
+    RETURN 1
+ENDIF
+
+ON=@GetItemVars
+  TAG.SKILLMIN_Necro	= 50.0
+
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - Necromancy
+DESCRIPTION=Summon Familiar
+
+[ITEMDEF 0226c]
+DEFNAME=i_scroll_vampiric_embrace
+TYPE=t_scroll
+WEIGHT=1
+RESOURCES=i_scroll_blank, i_reag_batwing, i_reag_blood_spawn, i_reag_serpent_scale
+SKILLMAKE=INSCRIPTION 100.0, NECROMANCY 99.0
+
+ON=@Create
+ATTR=attr_magic
+morex=s_vampiric_embrace
+more1=1
+color=03c1
+
+on=@click
+TRIGGER @GetItemVars
+
+on=@dclick
+TRIGGER @GetItemVars
+   IF !(<CONT>==<SRC.FINDLAYER.21.UID>)
+      SRC.SYSMESSAGE You must have it in your pack to use it.
+      RETURN 1
+   ENDIF
+   if ( !<ISIDENTIFIED> )
+      src.sysmessage This needs to be identified.
+      return 1
+   endif
+if ( <src.necromancy> <= <TAG.SKILLMIN_Necro> ) 
+         src.sysmessage Your skill isnt high enough for this
+         RETURN 1
+ENDIF  
+if ( <more1> == 1 ) 
+         src.sysmessage This scroll isnt ready yet
+         RETURN 1
+ENDIF
+IF !(<SRC.RESTEST 1 i_reag_batwing> && <SRC.RESTEST 1 i_reag_blood_spawn> && <SRC.RESTEST 1 i_reag_pig_iron>)
+    SRC.SYSMESSAGE You dont have the required reagents
+    RETURN 1
+ENDIF
+
+ON=@GetItemVars
+  TAG.SKILLMIN_Necro	= 100.0
+
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - Necromancy
+DESCRIPTION=Vampiric Embrace
+
+[ITEMDEF 0226d]
+DEFNAME=i_scroll_vengeful_spirit
+TYPE=t_scroll
+WEIGHT=1
+RESOURCES=i_scroll_blank, i_reag_batwing, i_reag_blood_spawn, i_reag_obsidian
+SKILLMAKE=INSCRIPTION 90.0, NECROMANCY 80.0
+
+ON=@Create
+ATTR=attr_magic
+morex=s_vengeful_spirit
+more1=1
+color=03c1
+
+on=@click
+TRIGGER @GetItemVars
+
+on=@dclick
+TRIGGER @GetItemVars
+   IF !(<CONT>==<SRC.FINDLAYER.21.UID>)
+      SRC.SYSMESSAGE You must have it in your pack to use it.
+      RETURN 1
+   ENDIF
+   if ( !<ISIDENTIFIED> )
+      src.sysmessage This needs to be identified.
+      return 1
+   endif
+if ( <src.necromancy> <= <TAG.SKILLMIN_Necro> ) 
+         src.sysmessage Your skill isnt high enough for this
+         RETURN 1
+ENDIF  
+if ( <more1> == 1 ) 
+         src.sysmessage This scroll isnt ready yet
+         RETURN 1
+ENDIF
+IF !(<SRC.RESTEST 1 i_reag_batwing> && <SRC.RESTEST 1 i_reag_blood_spawn> && <SRC.RESTEST 1 i_reag_obsidian>)
+    SRC.SYSMESSAGE You dont have the required reagents
+    RETURN 1
+ENDIF
+
+ON=@GetItemVars
+  TAG.SKILLMIN_Necro	= 80.0
+
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - Necromancy
+DESCRIPTION=Vengeful Spirit
+
+[ITEMDEF 0226e]
+DEFNAME=i_scroll_wither
+TYPE=t_scroll
+WEIGHT=1
+RESOURCES=i_scroll_blank, i_reag_brimstone, i_reag_pumice
+SKILLMAKE=INSCRIPTION 70.0, NECROMANCY 60.0
+
+ON=@Create
+ATTR=attr_magic
+morex=s_wither
+more1=1
+color=03c1
+
+on=@click
+TRIGGER @GetItemVars
+
+on=@dclick
+TRIGGER @GetItemVars
+   IF !(<CONT>==<SRC.FINDLAYER.21.UID>)
+      SRC.SYSMESSAGE You must have it in your pack to use it.
+      RETURN 1
+   ENDIF
+   if ( !<ISIDENTIFIED> )
+      src.sysmessage This needs to be identified.
+      return 1
+   endif
+if ( <src.necromancy> <= <TAG.SKILLMIN_Necro> ) 
+         src.sysmessage Your skill isnt high enough for this
+         RETURN 1
+ENDIF  
+if ( <more1> == 1 ) 
+         src.sysmessage This scroll isnt ready yet
+         RETURN 1
+ENDIF
+IF !(<SRC.RESTEST 1 i_reag_brimstone> && <SRC.RESTEST 1 i_reag_pumice>)
+    SRC.SYSMESSAGE You dont have the required reagents
+    RETURN 1
+ENDIF
+
+ON=@GetItemVars
+  TAG.SKILLMIN_Necro	= 90.0
+
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - Necromancy
+DESCRIPTION=Wither
+
+[ITEMDEF 0226f]
+DEFNAME=i_scroll_wraith_form
+TYPE=t_scroll
+WEIGHT=1
+RESOURCES=i_scroll_blank, i_reag_batwing, i_reag_obsidian
+SKILLMAKE=INSCRIPTION 30.0, NECROMANCY 20.0
+
+ON=@Create
+ATTR=attr_magic
+morex=s_wraith_form
+more1=1
+color=03c1
+
+on=@Click
+src.sysmessage woo
+TRIGGER @GetItemVars
+
+on=@dclick
+TRIGGER @GetItemVars
+   IF !(<CONT>==<SRC.FINDLAYER.21.UID>)
+      SRC.SYSMESSAGE You must have it in your pack to use it.
+      RETURN 1
+   ENDIF
+   if ( !<ISIDENTIFIED> )
+      src.sysmessage This needs to be identified.
+      return 1
+   endif
+if ( <src.necromancy> <= <TAG.SKILLMIN_Necro> ) 
+         src.sysmessage Your skill isnt high enough for this
+         RETURN 1
+ENDIF  
+if ( <more1> == 1 ) 
+         src.sysmessage This scroll isnt ready yet
+         RETURN 1
+ENDIF
+IF !(<SRC.RESTEST 1 i_reag_batwing> && <SRC.RESTEST 1 i_reag_obsidian>)
+    SRC.SYSMESSAGE You dont have the required reagents
+    RETURN 1
+ENDIF
+
+ON=@GetItemVars
+  TAG.SKILLMIN_Necro	= 40.0
+
+CATEGORY=Provisions - Alchemy & Magic
+SUBSECTION=Scrolls - Necromancy
+DESCRIPTION=Wraith Form
+
+[EOF]

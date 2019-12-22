@@ -1,0 +1,170 @@
+//Quest by Sqweak
+// Traders Quest
+
+[CHARDEF C_Q_merchant] 
+   DEFNAME=C_q_merchant 
+   NAME=Garth
+   ID=C_MAN 
+   DAM=15,20 
+   ARMOR=20 
+
+   TSPEECH=jobreturn 
+
+TEVENTS=e_npc_quest
+ON=@Create
+   TITLE= The Merchant 
+   NPC=brain_human 
+   COLOR=colors_skin 
+   STR={151 165} 
+   DEX={151 165} 
+   INT={151 165} 
+
+   NECROMANCY= 0
+   SWORDSMANSHIP={90.0 100.0} 
+
+   ITEMNEWBIE=random_male_hair 
+   COLOR=colors_hair 
+   ITEMNEWBIE=random_facial_hair 
+   COLOR=match_hair 
+
+on=@hit 
+   FLAGS=000000005 
+   return 1 
+
+on=@gethit 
+   FLAGS=000000005 
+   return 1 
+
+on=@damage 
+   FLAGS=000000005 
+   return 1 
+ 
+ON=@NPCRestock
+   ITEM=i_shirt_fancy 
+   COLOR=colors_all 
+   ITEM=i_pants_long 
+   COLOR=colors_all 
+   ITEM=i_cape 
+   COLOR=colors_all 
+   ITEM=random_boots 
+
+On=@NPCSeeNewPlayer 
+   say <SRC.SEX Sir/Lady> Please help! 
+
+CATEGORY=Imperial uo
+SUBSECTION=Quests 
+DESCRIPTION=(Brig) Garth the Merchant
+
+
+[SPEECH jobreturn] 
+on=hi 
+on=hello
+on=hail
+on=sawat dee
+on=Greetings
+   SAY <SRC.SEX Sir/Lady> Please help! 
+
+ON=how 
+on=*quest*
+on=*help*
+   SAY I am a merchant with many caravans. 
+   SAY Brigands have been robbing my caravans on the roads as I travel toward Minoc. 
+   SAY Slay the brigands and return my magically sealed bags to me for a reward. 
+   SAY Say "agree" to me to take up this quest! 
+
+ON=agree 
+   IF ( 0<SRC.TAG.NPC_QUEST_START> & NPCQ_Merchant )
+      SAY You have allready agreed to help me! 
+   ELSE 
+      SAY Thank you for helping me. return my magically sealed bag to me by saying "collect". 
+      SRC.TAG.NPC_QUEST_START = <eval ( 0<SRC.TAG.NPC_QUEST_START> | NPCQ_Merchant )> 
+   endif 
+   RETURN 1
+   
+on=*reward* 
+on=*collect* 
+   IF !( 0<SRC.TAG.NPC_QUEST_START> & NPCQ_Merchant )
+      SAY I must know if you will help me before I give you the
+      SAY information <SRC.SEX milord/milady>
+   ELSEIF (( 0<SRC.TAG.NPC_QUEST_START> & NPCQ_Merchant ) && !<SRC.RESTEST 1 i_magic_bag>)
+      SAY You do not have my magic bags! Do not return untill you do! 
+   ELSEIF <SRC.RESTEST 1 i_magic_bag> 
+      SRC.NEWITEM=i_gold 
+      SRC.ACT.AMOUNT=750
+      SRC.ACT.BOUNCE 
+      SOUND=01FC 
+      SRC.SYSMESSAGE=You are now 750 gps richer. 
+      SRC.consume i_magic_bag 
+      SRC.TAG.NPC_QUEST_START = <eval ( 0<SRC.TAG.NPC_QUEST_START> &~ NPCQ_Merchant )>
+      SRC.TAG.NPC_QUEST_DONE = <eval ( 0<SRC.TAG.NPC_QUEST_DONE> | NPCQ_Merchant )>      
+      SAY Here is your reward!
+      ANNOUNCE <SRC.NAME> has helped trade flow more freely...
+      REMOVE 
+   ENDIF
+
+
+[CHARDEF C_q_Briggand_leader] 
+   DEFNAME=C_q_Brigand_leader 
+   NAME=Nhazrar the Brigand Leader
+   ID=C_MAN 
+   DAM=15,20 
+   ARMOR=20 
+
+   
+
+   CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_RUN 
+
+ON=@Create 
+   TITLE=Brigand Leader
+   NPC=brain_monster 
+   COLOR=colors_skin 
+   STR={150 160} 
+   DEX={80 90} 
+   INT={51 65} 
+   KARMA={-3000 -3999} 
+
+   DETECTION={90.0 100.0} 
+   FENCING={90.0 100.0} 
+   PARRYING={100.0 100.0} 
+   SWORDSMANSHIP={90.0 100.0} 
+   WRESTLING={90.0 100.0} 
+   MACEFIGHTING={90.0 100.0} 
+   MAGICRESISTANCE={90.0 100.0} 
+   TACTICS={90.0 100.0} 
+
+   ITEMNEWBIE=random_male_hair 
+   COLOR=colors_hair 
+   ITEMNEWBIE=random_facial_hair 
+   COLOR=match_hair 
+
+ON=@NPCRestock
+   ITEMNEWBIE=i_sword_long_copper
+   ITEM=i_shirt_fancy 
+   COLOR=colors_all 
+   ITEM=i_pants_long 
+   COLOR=colors_all 
+   ITEM=i_cape 
+   COLOR=colors_all 
+   ITEM=random_boots 
+   ITEM=i_gold,{50 200} 
+   ITEM=i_magic_bag 
+
+On=@NPCSeeNewPlayer 
+   say <SRC.SEX Sir/Lady> Drop your arms and be robed or taste my steel! 
+
+CATEGORY=Imperial uo
+SUBSECTION=Quests 
+DESCRIPTION=(Brig)Nhazrar
+
+
+
+[ITEMDEF i_magic_bag] 
+   ID=i_bag 
+   TYPE=t_script
+   NAME=Magic Bag 
+
+ON=@DClick 
+   return 1 
+
+
+[EOF]

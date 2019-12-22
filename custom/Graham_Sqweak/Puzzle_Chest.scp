@@ -1,0 +1,749 @@
+[itemdef i_puzzle_mem] //the heart of the interface 
+id=i_memory 
+name=puzzle memory 
+type=t_eq_script 
+layer=30 
+
+on=@equip 
+   attr=02 
+   timer=900 //15 minutes 
+   //make the secret combo and store in MORE2 
+   var.y=<eval rand(8)> 
+   more2=<var.y> 
+   var.y=<eval rand(8)> 
+   more2=<more2>|(<var.y> * 16) 
+   var.y=<eval rand(8)> 
+   more2=<more2>|(<var.y> * 256) 
+   var.y=<eval rand(8)> 
+   more2=<more2>|(<var.y> * 4096) 
+   var.y=<eval rand(8)> 
+   more2=<more2>|(<var.y> * 65536) 
+
+
+[itemdef i_puzzle_chest_2] //the opened chest 
+id=i_chest_metal 
+flip=0 
+name=puzzle chest [unlocked] 
+
+on=@create 
+   attr=010 
+   timer=3600 //puzzle chest regen is 60 minutes 
+
+on=@click 
+   message puzzle chest [unlocked] 
+   return 1 
+
+on=@dclick //add contents here 
+   if !(<morem>) 
+      src.newitem tm_bag_o_regs 
+      src.act.cont=<uid> 
+      src.newitem tm_loot_puzzle 
+      src.act.cont=<uid> 
+      morem=1 
+   endif 
+   return 1
+
+on=@timer 
+   empty //make sure nothing caries over 
+   id=i_puzzle_chest //switch back to puzzle box 
+   link=04fffffff //make sure a new player will be allowed to play 
+   name=puzzle chest 
+   updatex 
+   return 1 
+
+
+[itemdef i_puzzle_chest] //the main puzzle chest 
+id=i_chest_metal 
+flip=0 
+name=puzzle chest 
+
+on=@create 
+   attr=010 
+   COLOR=065a
+
+on=@dclick 
+   if (<link>==04fffffff) //only 1 player can play at a time 
+      link=<src.uid> //store the uid of the player 
+      timer=120 //lock out for 120 seconds 
+   elseif (<link> != <src.uid>) //somebody already working on it 
+      src.message <link.name> is currently trying to solve the puzzle 
+      return 1 
+   endif 
+   if (<src.findid.i_puzzle_mem.link> != <uid>) // is the current mem for this puzzle? 
+      src.findid.i_puzzle_mem.remove //remove 
+   endif 
+   if !(<src.findid.i_puzzle_mem.uid>) //no puzzle mem yet? 
+      src.newitem i_puzzle_mem //make one 
+      src.act.link=<uid> //make sure it gets linked to this puzzle 
+      src.act.equip 
+   endif 
+   puzzleinit 
+   dialog d_puzzlebox //open the actual dialog 
+   return 1 
+
+on=@timer //free up puzzle for others to try 
+   link=04fffffff 
+   return 1 
+
+
+//--------------------------------------- 
+// dialog section 
+//--------------------------------------- 
+
+[dialog d_puzzlebox] 
+0,0 
+resizepic 10 10 5120 450 350 //dark grey 
+croppedtext <eval <var.xpos>> 40 <eval <var.tsize>> 25 300 0 //tinkering text 
+croppedtext <eval <var.xpos>> 70 <eval <var.tsize>> 25 300 1 
+croppedtext <eval <var.xpos1>> 100 <eval <var.tsize1>> 25 300 2 
+tilepic <eval <var.xpos3>> 75 <eval <var.color1>> //hint objects 
+tilepic <eval <var.xpos4>> 75 <eval <var.color2>> 
+tilepic <eval <var.xpos5>> 75 <eval <var.color3>> 
+tilepic <eval <var.xpos2>> 105 <eval <var.firstcol>> 
+resizepic 100 280 5054 200 40 //light grey 
+resizepic 30 30 5054 40 250 //light grey 
+resizepic 90 150 3000 300 100 //white text area 
+gumppic 110 290 209 // 'holes' in which gems reside 
+gumppic 150 290 209 
+gumppic 190 290 209 
+gumppic 230 290 209 
+gumppic 270 290 209 
+checkbox 111 320 56 55 0 1 //the color change check boxes 
+checkbox 151 320 56 55 0 2 
+checkbox 191 320 56 55 0 3 
+checkbox 231 320 56 55 0 4 
+checkbox 271 320 56 55 0 5 
+tilepic 97 294 <eval <var.colord1>> //the actual playing gems 
+tilepic 137 294 <eval <var.colord2>> 
+tilepic 177 294 <eval <var.colord3>> 
+tilepic 217 294 <eval <var.colord4>> 
+tilepic 257 294 <eval <var.colord5>> 
+button 40 40 210 210 1 0 1 // the color change buttons 
+button 40 70 210 210 1 0 2 // these are grey blocks 
+button 40 100 210 210 1 0 3 
+button 40 130 210 210 1 0 4 
+button 40 160 210 210 1 0 5 
+button 40 190 210 210 1 0 6 
+button 40 220 210 210 1 0 7 
+button 40 250 210 210 1 0 8 
+button 320 290 2076 2075 1 0 9 // okay button 
+button 25 290 2033 2032 1 0 10 
+tilepic 28 44 6249 //the graphics for the color buttons 
+tilepic 28 74 6250 
+tilepic 28 104 6251 
+tilepic 28 134 6252 
+tilepic 28 164 6253 
+tilepic 28 194 6254 
+tilepic 28 224 6255 
+tilepic 28 254 6256 
+text 100 170 40 <var.text1>
+text 100 200 40 <var.text2>
+
+
+[dialog d_puzzlebox text] 
+Using your tinkering ability you determine: 
+These colors are used in the puzzle: 
+This color goes into the first slot: 
+You have selected <eval <var.ccolor>> colors correctly 
+and have <eval <var.cplace>> colors in the correct slot 
+
+
+
+[dialog d_puzzlebox button] 
+
+onbutton=1 //color button 1 
+if (<distance> > 3) 
+   return 1 
+endif 
+if <argchk[1]> 
+   var.colord1=6249 
+endif 
+if <argchk[2]> 
+   var.colord2=6249 
+endif 
+if <argchk[3]> 
+   var.colord3=6249 
+endif 
+if <argchk[4]> 
+   var.colord4=6249 
+endif 
+if <argchk[5]> 
+   var.colord5=6249 
+endif 
+storechoice //update graphics 
+puzzleinit2 
+dialog d_puzzlebox //reshow window 
+
+onbutton=2 
+if (<distance> > 3) 
+   return 1 
+endif 
+if <argchk[1]> 
+   var.colord1=6250 
+endif 
+if <argchk[2]> 
+   var.colord2=6250 
+endif 
+if <argchk[3]> 
+   var.colord3=6250 
+endif 
+if <argchk[4]> 
+   var.colord4=6250 
+endif 
+if <argchk[5]> 
+   var.colord5=6250 
+endif 
+storechoice 
+puzzleinit2 
+dialog d_puzzlebox 
+
+onbutton=3 
+if (<distance> > 3) 
+   return 1 
+endif 
+if <argchk[1]> 
+   var.colord1=6251 
+endif 
+if <argchk[2]> 
+   var.colord2=6251 
+endif 
+if <argchk[3]> 
+   var.colord3=6251 
+endif 
+if <argchk[4]> 
+   var.colord4=6251 
+endif 
+if <argchk[5]> 
+   var.colord5=6251 
+endif 
+storechoice 
+puzzleinit2 
+dialog d_puzzlebox 
+
+onbutton=4 
+if (<distance> > 3) 
+   return 1 
+endif 
+if <argchk[1]> 
+   var.colord1=6252 
+endif 
+if <argchk[2]> 
+   var.colord2=6252 
+endif 
+if <argchk[3]> 
+   var.colord3=6252 
+endif 
+if <argchk[4]> 
+   var.colord4=6252 
+endif 
+if <argchk[5]> 
+   var.colord5=6252 
+endif 
+storechoice 
+puzzleinit2 
+dialog d_puzzlebox 
+
+onbutton=5 
+if (<distance> > 3) 
+   return 1 
+endif 
+if <argchk[1]> 
+   var.colord1=6253 
+endif 
+if <argchk[2]> 
+   var.colord2=6253 
+endif 
+if <argchk[3]> 
+   var.colord3=6253 
+endif 
+if <argchk[4]> 
+   var.colord4=6253 
+endif 
+if <argchk[5]> 
+   var.colord5=6253 
+endif 
+storechoice 
+puzzleinit2 
+dialog d_puzzlebox 
+
+onbutton=6 
+if (<distance> > 3) 
+   return 1 
+endif 
+if <argchk[1]> 
+   var.colord1=6254 
+endif 
+if <argchk[2]> 
+   var.colord2=6254 
+endif 
+if <argchk[3]> 
+   var.colord3=6254 
+endif 
+if <argchk[4]> 
+   var.colord4=6254 
+endif 
+if <argchk[5]> 
+   var.colord5=6254 
+endif 
+storechoice 
+puzzleinit2 
+dialog d_puzzlebox 
+
+onbutton=7 
+if (<distance> > 3) 
+   return 1 
+endif 
+if <argchk[1]> 
+   var.colord1=6255 
+endif 
+if <argchk[2]> 
+   var.colord2=6255 
+endif 
+if <argchk[3]> 
+   var.colord3=6255 
+endif 
+if <argchk[4]> 
+   var.colord4=6255 
+endif 
+if <argchk[5]> 
+   var.colord5=6255 
+endif 
+storechoice 
+puzzleinit2 
+dialog d_puzzlebox 
+
+onbutton=8 
+if (<distance> > 3) 
+   return 1 
+endif 
+if <argchk[1]> 
+   var.colord1=6256 
+endif 
+if <argchk[2]> 
+   var.colord2=6256 
+endif 
+if <argchk[3]> 
+   var.colord3=6256 
+endif 
+if <argchk[4]> 
+   var.colord4=6256 
+endif 
+if <argchk[5]> 
+   var.colord5=6256 
+endif 
+storechoice 
+puzzleinit2 
+dialog d_puzzlebox 
+
+onbutton=9 //player hit 'okay' 
+   if (<distance> > 3) 
+      return 1 
+   endif 
+   if (<src.findid.i_puzzle_mem.more1> == <src.findid.i_puzzle_mem.more2>)//correct solution? 
+      src.newitem i_puzzle_chest_2 //put down the opened chest 
+      src.act.p=<p> //at old location 
+      remove //remove the puzzle chest 
+      src.anim 17 //yay! 
+      src.sound 577 // unlocked 
+      return 1 
+   else //wrong combo 
+      src.findid.i_puzzle_mem.timer=900 //reset puzzle timer 
+      checkit //check how many colors are correct and how many gems are in correct position 
+      puzzle_box_event // 'bad' effects if too many tries 
+      dialog d_puzzlebox // reshow window 
+   endif 
+
+onbutton=10 
+   dialog d_puzzle_help 
+   return 1 
+
+
+[dialog d_puzzle_help] 
+40,40 
+resizepic 10 10 5054 300 220 
+text 40 40 100 0 
+htmlgump 40 70 300 30 1 0 0 
+htmlgump 40 90 300 30 2 0 0 
+htmlgump 40 110 300 30 3 0 0 
+htmlgump 40 130 300 30 4 0 0 
+htmlgump 40 150 300 30 5 0 0 
+htmlgump 40 170 300 30 6 0 0 
+htmlgump 40 190 300 30 7 0 0 
+resizepic 73 107 5120 24 27 
+gumppic 78 112 56 
+
+
+[dialog d_puzzle_help text] 
+Puzzle chest help text 
+to open this chest you need to put 
+the correct 5 colors in the correct order. 
+press to select the colors to change. 
+press one of the buttons to the left 
+to change the selection to that color. 
+(you can more then 1 color at once) 
+press 'OKAY' to try your solution. 
+
+
+[dialog d_puzzle_help button] 
+onbutton=0 
+dialog d_puzzlebox 
+return 1 
+
+
+//---------------------------------------- 
+// functions 
+//---------------------------------------- 
+
+[function storechoice] //save the selected combination to puzzle memory 
+var.y=<eval (<var.colord1> - 6249)> 
+src.findid.i_puzzle_mem.more1=<var.y> 
+var.y=<eval (<var.colord2> - 6249)> 
+src.findid.i_puzzle_mem.more1=<src.findid.i_puzzle_mem.more1>|(<var.y> * 16) 
+var.y=<eval (<var.colord3> - 6249)> 
+src.findid.i_puzzle_mem.more1=<src.findid.i_puzzle_mem.more1>|(<var.y> * 256) 
+var.y=<eval (<var.colord4> - 6249)> 
+src.findid.i_puzzle_mem.more1=<src.findid.i_puzzle_mem.more1>|(<var.y> * 4096) 
+var.y=<eval (<var.colord5> - 6249)> 
+src.findid.i_puzzle_mem.more1=<src.findid.i_puzzle_mem.more1>|(<var.y> * 65536) 
+src.findid.i_puzzle_mem.timer=900 
+
+
+[function colornum] // set up the hints when the player has high tinkering levels 
+var.aantal=0 
+if (<src.tinkering> > 500) //hints begin at 50.0 tinkering 
+   var.aantal=1 
+   getcolor1 //set up the first color 
+   var.xpos=90 //visually display the hint 
+   var.tsize=500 
+   var.xpos3=330 
+endif 
+
+if (<src.tinkering> > 700) // second color at 70.0 tinkering 
+   var.aantal=2 
+   var.counter=0 
+   getcolor2 //get that color 
+endif 
+
+if (<src.tinkering> = 1000) //final hint at 100.0 tinkering 
+   if (<var.aantal>==1) //getting the second hint failed 
+      var.color3=0 //then this is not needed 
+      return 0 
+   endif 
+   var.counter=0 
+   var.aantal=3 
+   getcolor3 //get color 3 
+endif 
+
+src.findid.i_puzzle_mem.morey=<var.aantal> //save the number of hints found 
+
+
+[function getcolor1] //get the first hint 
+var.y=(<eval rand(5)>) //select a random position for the hint 
+if (<var.y>==0) 
+   var.color1=<eval ((<src.findid.i_puzzle_mem.more2>&0f) + 6249)> 
+elseif (<var.y>==1) 
+   var.color1=<eval (((<src.findid.i_puzzle_mem.more2>&0f0)/010) + 6249)> 
+elseif (<var.y>==2) 
+   var.color1=<eval (((<src.findid.i_puzzle_mem.more2>&0f00)/0100) + 6249)> 
+elseif (<var.y>==3) 
+   var.color1=<eval (((<src.findid.i_puzzle_mem.more2>&0f000)/01000) + 6249)> 
+elseif (<var.y>==4) 
+   var.color1=<eval (((<src.findid.i_puzzle_mem.more2>&0f0000)/010000) + 6249)> 
+endif 
+//store the hint in morex, so players can't take several hints and find out all colors 
+src.findid.i_puzzle_mem.morex=(<src.findid.i_puzzle_mem.morex>|(<var.color1> - 6249) 
+
+
+[function getcolor2] //get the second hint 
+if (<var.counter> < 15) //only when this function hasn't run 15 times 
+   var.y=(<eval rand(5)>) //select random position 
+   if (<var.y>==0) 
+      var.color2=<eval ((<src.findid.i_puzzle_mem.more2>&0f) + 6249)> 
+   elseif (<var.y>==1) 
+      var.color2=<eval (((<src.findid.i_puzzle_mem.more2>&0f0)/010) + 6249)> 
+   elseif (<var.y>==2) 
+      var.color2=<eval (((<src.findid.i_puzzle_mem.more2>&0f00)/0100) + 6249)> 
+   elseif (<var.y>==3) 
+      var.color2=<eval (((<src.findid.i_puzzle_mem.more2>&0f000)/01000) + 6249)> 
+   elseif (<var.y>==4) 
+      var.color2=<eval (((<src.findid.i_puzzle_mem.more2>&0f0000)/010000) + 6249)> 
+   endif 
+   if (<var.color1>==<var.color2>) //same color as first hint?? 
+      var.counter=(<var.counter> + 1) //try again 
+      getcolor2 
+   endif 
+else //15 tries, no luck 
+   var.aantal=1 
+   var.color2=0 
+   return 0 
+endif 
+// store the second hint in morex 
+src.findid.i_puzzle_mem.morex=(<src.findid.i_puzzle_mem.morex>|((<var.color2> - 6249)*16)) 
+
+
+[function getcolor3] //get the third hint 
+if (<var.counter> < 15) //less than 15 tries 
+   var.y=(<eval rand(5)>) //select random position 
+   if (<var.y>==0) 
+      var.color3=<eval ((<src.findid.i_puzzle_mem.more2>&0f) + 6249)> 
+   elseif (<var.y>==1) 
+      var.color3=<eval (((<src.findid.i_puzzle_mem.more2>&0f0)/010) + 6249)> 
+   elseif (<var.y>==2) 
+      var.color3=<eval (((<src.findid.i_puzzle_mem.more2>&0f00)/0100) + 6249)> 
+   elseif (<var.y>==3) 
+      var.color3=<eval (((<src.findid.i_puzzle_mem.more2>&0f000)/01000) + 6249)> 
+   elseif (<var.y>==4) 
+      var.color3=<eval (((<src.findid.i_puzzle_mem.more2>&0f0000)/010000) + 6249)> 
+   endif 
+   if (<var.color1>==<var.color3>)||(<var.color2>==<var.color3>) //unique color? 
+      var.counter=(<var.counter> + 1) //retry 
+      getcolor3 
+   endif 
+else //15 tries, no luck 
+   var.aantal=2 
+   var.color3=0 
+   return 0 
+endif 
+// store the third hint in morex 
+src.findid.i_puzzle_mem.morex=(<src.findid.i_puzzle_mem.morex>|((<var.color3> - 6249)*256)) 
+
+
+[function setplace] //show the hints 
+if (<src.findid.i_puzzle_mem.morey> > 0) 
+   var.xpos=90 
+   var.tsize=500 
+   var.xpos3=330 
+endif 
+if (<src.findid.i_puzzle_mem.morey> > 1) 
+   var.xpos4=350 
+endif 
+if (<src.findid.i_puzzle_mem.morey> > 2) 
+   var.xpos5=370 
+endif 
+
+
+[function checkit] //check how many gems are correct and check color 
+var.ccolor=0 
+var.cplace=0 
+var.text1=3 //show result text 
+var.text2=4 
+if ((<src.findid.i_puzzle_mem.more1>&0f)==(<src.findid.i_puzzle_mem.more2>&0f)) 
+   var.cplace=(<var.cplace> + 1) 
+endif 
+if ((<src.findid.i_puzzle_mem.more1>&0f0)==(<src.findid.i_puzzle_mem.more2>&0f0)) 
+   var.cplace=(<var.cplace> + 1) 
+endif 
+if ((<src.findid.i_puzzle_mem.more1>&0f00)==(<src.findid.i_puzzle_mem.more2>&0f00)) 
+   var.cplace=(<var.cplace> + 1) 
+endif 
+if ((<src.findid.i_puzzle_mem.more1>&0f000)==(<src.findid.i_puzzle_mem.more2>&0f000)) 
+   var.cplace=(<var.cplace> + 1) 
+endif 
+if ((<src.findid.i_puzzle_mem.more1>&0f0000)==(<src.findid.i_puzzle_mem.more2>&0f0000)) 
+   var.cplace=(<var.cplace> + 1) 
+endif 
+//prepare more1 (selection) and more2 (answer) for comparison 
+var.y=<eval (<src.findid.i_puzzle_mem.more1>&0f)> 
+var.y1=<eval ((<src.findid.i_puzzle_mem.more1>&0f0)/010)> 
+var.y2=<eval ((<src.findid.i_puzzle_mem.more1>&0f00)/0100)> 
+var.y3=<eval ((<src.findid.i_puzzle_mem.more1>&0f000)/01000)> 
+var.y4=<eval ((<src.findid.i_puzzle_mem.more1>&0f0000)/010000)> 
+var.x=<eval (<src.findid.i_puzzle_mem.more2>&0f)> 
+var.x1=<eval ((<src.findid.i_puzzle_mem.more2>&0f0)/010)> 
+var.x2=<eval ((<src.findid.i_puzzle_mem.more2>&0f00)/0100)> 
+var.x3=<eval ((<src.findid.i_puzzle_mem.more2>&0f000)/01000)> 
+var.x4=<eval ((<src.findid.i_puzzle_mem.more2>&0f0000)/010000)> 
+
+//elimate colors that are the same 
+if (<var.y> == <var.y1>)||(<var.y> == <var.y2>)||(<var.y> == <var.y3>)||(<var.y> == <var.y4>) 
+   var.y=0f 
+endif 
+if (<var.y1> == <var.y2>)||(<var.y1> == <var.y3>)||(<var.y1> == <var.y4>) 
+   var.y1=0f 
+endif 
+if (<var.y2> == <var.y3>)||(<var.y2> == <var.y4>) 
+   var.y2=0f 
+endif 
+if (<var.y3> == <var.y4>) 
+   var.y3=0f 
+endif 
+//the actual color check 
+if (<var.y>==<var.x>)||(<var.y>==<var.x1>)||(<var.y>==<var.x2>)||(<var.y>==<var.x3>)||(<var.y>==<var.x4>) 
+   var.ccolor=(<var.ccolor> + 1) 
+endif 
+if (<var.y1>==<var.x>)||(<var.y1>==<var.x1>)||(<var.y1>==<var.x2>)||(<var.y1>==<var.x3>)||(<var.y1>==<var.x4>) 
+   var.ccolor=(<var.ccolor> + 1) 
+endif 
+if (<var.y2>==<var.x>)||(<var.y2>==<var.x1>)||(<var.y2>==<var.x2>)||(<var.y2>==<var.x3>)||(<var.y2>==<var.x4>) 
+   var.ccolor=(<var.ccolor> + 1) 
+endif 
+if (<var.y3>==<var.x>)||(<var.y3>==<var.x1>)||(<var.y3>==<var.x2>)||(<var.y3>==<var.x3>)||(<var.y3>==<var.x4>) 
+   var.ccolor=(<var.ccolor> + 1) 
+endif 
+if (<var.y4>==<var.x>)||(<var.y4>==<var.x1>)||(<var.y4>==<var.x2>)||(<var.y4>==<var.x3>)||(<var.y4>==<var.x4>) 
+   var.ccolor=(<var.ccolor> + 1) 
+endif 
+
+
+[function puzzle_box_event] // making mistakes may prove deadly 
+src.findid.i_puzzle_mem.morez=(<src.findid.i_puzzle_mem.morez> + 1) //store attempts 
+if (<src.findid.i_puzzle_mem.morez> < 4) //no effect the first 3 tries 
+   return 1 
+elseif (<src.findid.i_puzzle_mem.morez> < 11) // lesser undead between 3 and 10 tries 
+   if !(rand(4)) 
+      src.newnpc {c_SPECTRE 1 c_SKELETON_W_AXE 2 c_SKELETON_W_SWORD 2} 
+      src.act.flags=<src.act.flags>|04000000 
+      src.act.p=<src.p> 
+      var.zombie=<src.act.uid> 
+      src.newitem=i_ambush_mem 
+      src.act.link=<uid> 
+      src.act.cont=<var.zombie> 
+      src.update 
+   endif 
+elseif (<src.findid.i_puzzle_mem.morez> < 25) //moderate monster between 11 and 25 
+   if !(rand(4)) 
+      src.newnpc {c_ogre 1 c_ettin 2 c_troll 1} 
+      src.act.flags=<src.act.flags>|04000000 
+      src.act.p=<src.p> 
+      var.zombie=<src.act.uid> 
+      src.newitem=i_ambush_mem 
+      src.act.link=<uid> 
+      src.act.cont=<var.zombie> 
+      src.update 
+   endif 
+elseif (<src.findid.i_puzzle_mem.morez> < 35) //powerful monsters between 25 and 35 
+   if !(rand(3)) 
+      src.newnpc {c_m_mummy 5 c_m_elem_blood 3 c_m_wyvern 1 c_m_icefiend 1} 
+      src.act.flags=<src.act.flags>|04000000 
+      src.act.p=<src.p> 
+      var.zombie=<src.act.uid> 
+      src.newitem=i_ambush_mem 
+      src.act.link=<uid> 
+      src.act.cont=<var.zombie> 
+      src.update 
+   endif 
+else 
+   if !(rand(3)) 
+      src.newnpc {c_dragon_green 1 c_dragon_red 1} //you did it now, pay for your mistakes 
+      src.act.flags=<src.act.flags>|04000000 
+      src.act.p=<src.p> 
+      var.zombie=<src.act.uid> 
+      src.newitem=i_ambush_mem 
+      src.act.link=<uid> 
+      src.act.cont=<var.zombie> 
+      src.update 
+   endif 
+endif 
+
+
+[function puzzleinit] 
+// main gump setup 
+var.text1=5 //hide text 
+var.text2=5 
+var.xpos=50 //hide text 
+var.tsize=1 
+var.xpos1=50 
+var.tsize1=1 
+var.xpos2=30 
+var.xpos3=30 
+var.xpos4=30 
+var.xpos5=30 
+var.firstcol=6249 //dark blue, default 
+if (<src.tinkering> > 800) //high tinkering level? 
+   var.xpos1=90 //reveal the color in first location 
+   var.xpos2=320 
+   var.tsize1=500 
+   var.firstcol=((<src.findid.i_puzzle_mem.more2>&0f) + 6249) 
+endif 
+//setup colors according previous try 
+var.colord1=((<src.findid.i_puzzle_mem.more1>&0f) + 6249) 
+var.colord2=(((<src.findid.i_puzzle_mem.more1>&0f0)/010) + 6249) 
+var.colord3=(((<src.findid.i_puzzle_mem.more1>&0f00)/0100) + 6249) 
+var.colord4=(((<src.findid.i_puzzle_mem.more1>&0f000)/01000) + 6249) 
+var.colord5=(((<src.findid.i_puzzle_mem.more1>&0f0000)/010000) + 6249) 
+if !(<src.findid.i_puzzle_mem.morex>) 
+   colornum //setup hints, according tinkering level 
+else //you were already given hints 
+   var.color1=<eval ((<src.findid.i_puzzle_mem.morex>&0f) + 6249)> //show them 
+   var.color2=<eval (((<src.findid.i_puzzle_mem.morex>&0f0)/010) + 6249)> 
+   var.color3=<eval (((<src.findid.i_puzzle_mem.morex>&0f00)/0100) + 6249)> 
+endif 
+setplace //actually set up hints visually 
+
+
+[function puzzleinit2] 
+// main gump setup while playing 
+// this allows for totally independant playing of multiple players, 
+// in case you want to allow multiple players to work on the puzzle 
+// all players will have a different solution though 
+// well, actually they can have the same solution, but the chance is 
+// approximately 1 in 32000 :-) 
+var.xpos=50 //hide text 
+var.tsize=1 
+var.xpos1=50 
+var.tsize1=1 
+var.xpos2=30 
+var.xpos3=30 
+var.xpos4=30 
+var.xpos5=30 
+var.firstcol=6249 //dark blue, default 
+if (<src.tinkering> > 800) //high tinkering level? 
+   var.xpos1=90 //reveal the color in first location 
+   var.xpos2=320 
+   var.tsize1=500 
+   var.firstcol=((<src.findid.i_puzzle_mem.more2>&0f) + 6249) 
+endif 
+//setup colors according previous try 
+var.colord1=((<src.findid.i_puzzle_mem.more1>&0f) + 6249) 
+var.colord2=(((<src.findid.i_puzzle_mem.more1>&0f0)/010) + 6249) 
+var.colord3=(((<src.findid.i_puzzle_mem.more1>&0f00)/0100) + 6249) 
+var.colord4=(((<src.findid.i_puzzle_mem.more1>&0f000)/01000) + 6249) 
+var.colord5=(((<src.findid.i_puzzle_mem.more1>&0f0000)/010000) + 6249) 
+if !(<src.findid.i_puzzle_mem.morex>) 
+   colornum //setup hints, according tinkering level 
+else //you were already given hints 
+   var.color1=<eval ((<src.findid.i_puzzle_mem.morex>&0f) + 6249)> //show them 
+   var.color2=<eval (((<src.findid.i_puzzle_mem.morex>&0f0)/010) + 6249)> 
+   var.color3=<eval (((<src.findid.i_puzzle_mem.morex>&0f00)/0100) + 6249)> 
+endif 
+setplace //actually set up hints visually 
+
+
+[itemdef i_ambush_mem] 
+name=ambush mem 
+id=i_rune_summon_creature 
+type=t_spell 
+layer=41 
+
+on=@create 
+morex=40 
+morey=900 
+timer=100 
+attr=026 
+
+
+[template tm_bag_o_regs] 
+CONTAINER=i_bag 
+ITEM=i_reag_black_pearl,{10 30} 
+ITEM=i_reag_blood_moss,{10 30} 
+ITEM=i_reag_garlic,{10 30} 
+ITEM=i_reag_ginseng,{10 30} 
+ITEM=i_reag_mandrake_root,{10 30} 
+ITEM=i_reag_nightshade,{10 30} 
+ITEM=i_reag_sulfur_ash,{10 30} 
+ITEM=i_reag_spider_silk,{10 30} 
+ITEM=i_reag_blackmoor,{10 30} 
+ITEM=i_reag_blood_vial,{10 30} 
+ITEM=i_reag_bone,{10 30} 
+ITEM=i_reag_dragon_blood,{10 30} 
+ITEM=i_reag_executioners_cap,{10 30} 
+ITEM=i_reag_eye_of_newt,{10 30} 
+ITEM=i_reag_worm_heart,{10 30} 
+
+
+[TEMPLATE tm_loot_puzzle] 
+DEFNAME=loot_puzzle 
+ITEM=i_rune_khaldun_exit
+ITEM=i_gold,{20000 30000} 
+
+[EOF]

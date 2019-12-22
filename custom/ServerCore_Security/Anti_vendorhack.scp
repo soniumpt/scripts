@@ -1,0 +1,101 @@
+//19 07 2005 Raist added a more protections against vendorhack and change way performs with death
+
+[ITEMDEF i_teot_killer]
+DEFNAME=i_teot_killer
+ID=i_gravestone
+NAME=Teot Killer Do NOT REMOVE!
+WEIGHT=5000
+Type=t_normal
+
+ON=@CREATE
+    Type=t_normal
+    Color=07ad
+    Timer=-1
+    ATTR=08010
+
+ON=@TIMER
+   serv.allclients f_vendorhack_detecter
+   TIMER=25
+   RETURN 1
+
+
+[FUNCTION f_vendorhack_detecter_cont]
+FORCONT <args>
+   IF (<AMOUNT>=0)  
+        SERV.WRITEFILE c:\TheUOProject\sphere\polls\teot.txt <SERV.RTIME> account: - <TOPOBJ.ACCOUNT> char: - <TOPOBJ.NAME> - uid: <TOPOBJ.UID> - at coords: <TOPOBJ.P> is in possession of <NAME> which had 0 amount.
+        SERV.LOG account: - <TOPOBJ.ACCOUNT> char: - <TOPOBJ.NAME> - uid: <TOPOBJ.UID> - at coords: <TOPOBJ.P> is in possession of <NAME> which had 0 amount.
+        serv.allclients f_to_staff125a Account:<TOPOBJ.ACCOUNT>, Name:<TOPOBJ.NAME> was using 0 amount exploit, go get him. 
+        TOPOBJ.JAIL
+        TOPOBJ.STONE=1
+      REMOVE
+   ELSEIF (<TYPE>=t_container)
+        f_vendorhack_detecter_cont <UID>
+   ENDIF
+ENDFOR
+RETURN 1
+
+
+[FUNCTION f_vendorhack_detecter]
+FORCONT <FINDLAYER.21.UID>
+   IF (<AMOUNT>=0)  
+        //SERV.WRITEFILE c:\TheUOProject\sphere\polls\teot.txt <SERV.RTIME> account: - <TOPOBJ.ACCOUNT> char: - <TOPOBJ.NAME> - uid: <TOPOBJ.UID> - at coords: <TOPOBJ.P> is in possession of <NAME> which had 0 amount.
+        SERV.LOG account: - <TOPOBJ.ACCOUNT> char: - <TOPOBJ.NAME> - uid: <TOPOBJ.UID> - at coords: <TOPOBJ.P> is in possession of <NAME> which had 0 amount.
+        serv.allclients f_to_staff125a Account:<TOPOBJ.ACCOUNT>, Name:<TOPOBJ.NAME> was using 0 amount exploit, go get him. 
+        TOPOBJ.JAIL
+        TOPOBJ.STONE=1
+      REMOVE
+   ELSEIF (<TYPE>=t_container)
+        f_vendorhack_detecter_cont <UID>
+   ENDIF
+ENDFOR
+RETURN 1
+
+
+[FUNCTION f_vendorhack_detecter_body]
+local.body=<args>
+
+Forcont <uid.(<local.body>).uid>
+
+	IF (<AMOUNT>=0)  
+	      SERV.WRITEFILE c:\TheUOProject\sphere\polls\teot.txt <SERV.RTIME> account: - <SRC.ACCOUNT> char: - <SRC.NAME> - uid: <SRC.UID> - at coords: <SRC.P> is in possession of <NAME> which had 0 amount. Was hiding in body.
+  	      SERV.LOG account: - <SRC.ACCOUNT> char: - <SRC.NAME> - uid: <SRC.UID> - at coords: <SRC.P> is in possession of <NAME> which had 0 amount. Was hiding in body.
+  	      serv.allclients f_to_staff125a Account:<SRC.ACCOUNT>, Name:<SRC.NAME> was using 0 amount exploit , go get him. 
+	      SRC.JAIL
+	      SRC.STONE=1
+	      REMOVE
+	      RETURN 1
+	ENDIF
+ENDFOR
+
+Forcont <uid.(<src.findlayer.21>).UID>
+
+	IF (<AMOUNT>=0)  
+	      SERV.WRITEFILE c:\TheUOProject\sphere\polls\teot.txt <SERV.RTIME> account: - <SRC.ACCOUNT> char: - <SRC.NAME> - uid: <SRC.UID> - at coords: <SRC.P> is in possession of <NAME> which had 0 amount. Was hiding in body.
+  	      SERV.LOG account: - <SRC.ACCOUNT> char: - <SRC.NAME> - uid: <SRC.UID> - at coords: <SRC.P> is in possession of <NAME> which had 0 amount. Was hiding in body.
+  	      serv.allclients f_to_staff125a Account:<SRC.ACCOUNT>, Name:<SRC.NAME> was using 0 amount exploit , go get him.
+	      SRC.JAIL
+	      SRC.STONE=1
+	      REMOVE
+	ELSEIF (<TYPE>=t_container)
+	      f_vendorhack_detecter_cont <UID>
+	ENDIF
+ENDFOR
+RETURN 1
+
+
+[FUNCTION f_vendorhack_container_dupe]
+   FORCONT <args> 
+      IF (<TYPE>==t_container) 
+         IF (<COUNT>) 
+            SERV.LOG <SRC.NAME> - (<SRC.ACCOUNT> - <SRC.UID>) tried to dupe via buying a <NAME> - <UID> with items inside'
+	    SERV.WRITEFILE c:\TheUOProject\sphere\polls\teot.txt <SERV.RTIME>: <SRC.NAME> - (<SRC.ACCOUNT> - <SRC.UID>) tried to buy a <NAME> - <UID> with items inside'
+            serv.allclients f_to_staff125a <SRC.NAME> - (<SRC.ACCOUNT> - <SRC.UID>) tried to buy a <NAME> - <UID> with items inside'
+   	    TRY UID.<uid>.cont=043ecb8e2
+         ENDIF 
+         f_vendorhack_container_dupe <UID>
+      ENDIF 
+   ENDFOR
+
+
+
+[EOF]

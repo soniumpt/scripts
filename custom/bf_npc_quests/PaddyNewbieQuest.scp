@@ -1,0 +1,165 @@
+//Quest by Sqweak
+//// Trinsic Dungeon Quest
+
+[CHARDEF c_hat_troll]
+   ID=c_troll_w_axe
+   NAME=Troll
+   SOUND=snd_MONSTER_TROLL1
+   ICON=i_pet_TROLL
+   ANIM=078c7f
+   DAM=10,25
+   ARMOR=20
+   RESOURCES=10 i_ribs_raw
+   CAN=MT_WALK|MT_USEHANDS
+   
+   FOODTYPE=15 t_meat_raw
+   DESIRES=i_gold
+   AVERSIONS=r_civilization
+
+ON=@Create
+   NPC=brain_monster
+   STR={120 175}
+   DEX={46 65}
+   INT={46 70}
+
+   SWORDSMANSHIP={50.0 70.0}
+   PARRYING={45.0 60.0}
+   MAGICRESISTANCE={45.0 60.0}
+   TACTICS={50.0 70.0}
+   WRESTLING={50.0 70.0}
+
+   FAME={500 5000}
+   KARMA={-3000 -3999}
+
+ON=@NPCRestock
+   ITEM=i_lucky_hat
+   
+CATEGORY=Imperial uo
+SUBSECTION=Quests 
+DESCRIPTION=(Lucky Hat) Troll
+
+
+[ITEMDEF i_lucky_hat]
+   NAME=Paddys Lucky Hat
+   ID=01714
+
+ON=@CREATE
+   COLOR=009e
+
+CATEGORY=Imperial uo
+SUBSECTION=Quests 
+DESCRIPTION=(Trinsic Dun) Lucky Hat
+
+
+[CHARDEF C_H_Paddy_trinsic] 
+   DEFNAME=C_H_Paddy_trinsic
+   NAME=Paddy
+   ID=C_MAN 
+   DAM=15,20 
+   ARMOR=20 
+
+   TSPEECH=jobPaddytrinsic
+   
+
+ON=@Create 
+   TITLE=Nice Bloke
+   NPC=brain_human 
+   COLOR=colors_skin 
+   STR={151 165} 
+   DEX={80 120} 
+   INT={151 165} 
+
+on=@hit 
+   FLAGS=000000005 
+   return 1 
+
+on=@gethit 
+   FLAGS=000000005 
+   return 1 
+
+on=@damage 
+   FLAGS=000000005 
+   return 1 
+
+   DETECTION={90.0 100.0} 
+   FENCING={90.0 100.0} 
+   PARRYING={90.0 100.0} 
+   SWORDSMANSHIP={90.0 100.0} 
+   WRESTLING={90.0 100.0} 
+   MACEFIGHTING={90.0 100.0} 
+   MAGICRESISTANCE={90.0 100.0} 
+   TACTICS={90.0 100.0} 
+
+   ITEMNEWBIE=random_male_hair 
+   COLOR=colors_hair 
+   ITEMNEWBIE=random_facial_hair 
+   COLOR=match_hair 
+
+ON=@NPCRestock
+   ITEM=i_shirt_plain 
+   COLOR=009e 
+   ITEM=random_pants 
+   COLOR=009e
+   ITEM=01710
+   COLOR=009e
+
+On=@NPCSeeNewPlayer 
+   say <SRC.SEX Sir/Lady> Please can you help me, My hats been stolen.
+
+CATEGORY=Imperial uo
+SUBSECTION=Quests 
+DESCRIPTION=(lucky hat) Paddy
+
+
+[SPEECH jobPaddytrinsic] 
+on=hi 
+on=hello
+on=hail
+on=sawat dee
+on=Greetings
+on=*accept*
+on=hat
+   IF ( 0<SRC.TAG.NPC_QUEST_DONE> & NPCQ_Paddy )
+      SAY You Have done this quest! 
+   ELSEIF ( 0<SRC.TAG.NPC_QUEST_START> & NPCQ_Paddy )
+      SAY You are already on this quest! 
+   ELSE 
+      SAY Top of the morning to You, an nasty troll has stolen my lucky hat. 
+      SAY Can you get it for me?. He took it down there. 
+      SAY Comeback with the hat and say "Reward" and I will pay you.
+      SRC.TAG.NPC_QUEST_START = <eval ( 0<SRC.TAG.NPC_QUEST_START> | NPCQ_Paddy )>
+   ENDIF
+   RETURN 1
+
+on=where
+on=ti nai
+   SAY I think he went along the coast line to the Goblin fortress.
+
+On=ok
+on=sure
+   SAY=Oh! Thank you.
+
+on=reward
+on=rangval 
+on=collect 
+on=sa soam
+   IF !( 0<SRC.TAG.NPC_QUEST_START> & NPCQ_Paddy )
+      SAY I must know if you will help me before I give you the
+      SAY information <SRC.SEX milord/milady>
+   ELSEIF (( 0<SRC.TAG.NPC_QUEST_START> & NPCQ_Paddy ) && !<SRC.RESTEST 1 i_lucky_hat>)
+      SAY You don't have the have the Hat!! 
+   ELSEIF <SRC.RESTEST 1 i_lucky_hat> 
+      SRC.NEWITEM=i_gold 
+      SRC.ACT.AMOUNT=500
+      SRC.ACT.BOUNCE 
+      SOUND=01FC 
+      SRC.SYSMESSAGE=You are now 500 gps richer. 
+      SRC.consume i_lucky_hat
+      SRC.TAG.NPC_QUEST_START = <eval ( 0<SRC.TAG.NPC_QUEST_START> &~ NPCQ_Paddy )>
+      SRC.TAG.NPC_QUEST_DONE = <eval ( 0<SRC.TAG.NPC_QUEST_DONE> | NPCQ_Paddy )>
+      ANNOUNCE Luck shines down on <SRC.NAME>.
+      Remove
+   ENDIF
+   RETURN 1
+
+[EOF]

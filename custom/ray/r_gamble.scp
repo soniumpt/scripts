@@ -1,0 +1,927 @@
+///////////////////
+// Claw Machine //
+/////////////////
+
+[defname claw_machine_settings]
+cm_default_cost   10 // base cost to play if tag0.cost is not set on the item.
+cm_default_diff   2 // difficulty: 1 - 4. easy, normal, hard, very hard
+cm_delay   10 // Play time delay. 0 - <whatever>; don't use a negative value.
+cm_currency   i_gold // Could be tokens if you wanted.
+cm_name_1   "Claw Machine [Easy]"
+cm_name_2   "Claw Machine [Normal]"
+cm_name_3   "Claw Machine [Hard]"
+cm_name_4   "Claw Machine [Very Hard]"
+
+[defname claw_machine_messages]
+cm_msg_lose   "You didn't manage to get anything from the claw machine."
+cm_msg_win   "You seem to have grabbed an item!"
+cm_msg_prize   "You have put <new.name> in your backpack."
+cm_msg_begin   "You begin to manuever the claw inside the claw machine..."
+cm_msg_lack_funds  "You lack the funds to use the claw machine."
+cm_msg_pay   "You put <tag0.cost> <<def.cm_currency>.name> in the machine."
+
+[itemdef i_claw_machine]
+id=i_gravestone
+name=claw machine
+type=t_claw_machine
+can=can_i_blocklos|can_i_block
+weight=255
+
+category=Imperial uo
+subsection=Systems - Gambling
+description=Claw Machine
+
+on=@Create
+color=
+tag0.cost=
+tag0.difficulty=
+
+[typedef t_claw_machine]
+on=@DClick
+if (<src.tag.playing.cm> == 1)
+ src.smsg You cannot do this while you are trying to play.
+ return 1
+endif
+
+if (<tag0.cost> == 0)
+ tag0.cost=<ddef.cm_default_cost>
+endif
+
+if (<tag0.difficulty> == 0)
+ tag0.difficulty=<ddef.cm_default_diff>
+endif
+
+if restest <eval <tag0.cost>> <def.cm_currency>
+ src.consume <eval <tag0.cost>> <def.cm_currency>
+ src.msg <def.cm_msg_pay>
+ src.msg <def.cm_msg_begin>
+ src.timerf <ddef.cm_delay>,grab_prize_<tag0.difficulty>
+ src.tag.playing.cm=1
+ src.flags |statf_freeze
+ return 1
+ endif
+else
+ src.msg <def.cm_msg_lack_funds>
+ return 1
+endif
+
+on=@ClientToolip
+if (<src.reslevel> > 2)
+ local.name=<def.cm_name_<tag0.difficulty>>
+ src.addcliloc 1114057,<local.name>
+ src.addcliloc 1043304,<tag0.cost> <def.cm_currency> //Price: ~1_COST~
+ return 1
+else
+ return 1
+endif
+
+on=@Click
+if (<src.reslevel> < 3)
+ msg <def.cm_name_<tag0.difficulty>>
+ msg Price: <tag0.cost> <def.cm_currency>
+ return 1
+else
+ return 1
+endif
+
+// Easy Prize
+[function grab_prize_1]
+local.prize={ random_uncommon_trinket 200 random_common_trinket 500 0 300 }
+if (<local.prize> != 0)
+ src.msg <def.cm_msg_win>
+ serv.newitem <local.prize>,,<src>
+ src.msg <def.cm_msg_prize>
+else
+ src.msg <def.cm_msg_lose>
+endif
+src.flags &~statf_freeze
+src.tag.playing.cm=
+return 1
+
+// Normal Prize
+[function grab_prize_2]
+local.prize={ random_rare_trinket 50 random_uncommon_trinket 150 random_common_trinket 400 0 400 }
+if (<local.prize> != 0)
+ src.msg <def.cm_msg_win>
+ serv.newitem <local.prize>,,<src>
+ src.msg <def.cm_msg_prize>
+else
+ src.msg <def.cm_msg_lose>
+endif
+src.flags &~statf_freeze
+src.tag.playing.cm=
+return 1
+
+// Hard Prize
+[function grab_prize_3]
+local.prize={ random_very_rare_trinket 20 random_rare_trinket 30 random_uncommon_trinket 150 random_common_trinket 400 0 400 }
+if (<local.prize> != 0)
+ src.msg <def.cm_msg_win>
+ serv.newitem <local.prize>,,<src>
+ src.msg <def.cm_msg_prize>
+else
+ src.msg <def.cm_msg_lose>
+endif
+src.flags &~statf_freeze
+src.tag.playing.cm=
+return 1
+
+// Very Hard Prize
+[function grab_prize_4]
+local.prize={ random_artifact 10 random_very_rare_trinket 25 random_rare_trinket 40 random_uncommon_trinket 125 random_common_trinket 350 0 450 }
+if (<local.prize> != 0)
+ src.msg <def.cm_msg_win>
+ serv.newitem <local.prize>,,<src>
+ src.msg <def.cm_msg_prize>
+else
+ src.msg <def.cm_msg_lose>
+endif
+src.flags &~statf_freeze
+src.tag.playing.cm=
+return 1
+
+
+//////////////////
+// Memory Game //
+////////////////
+
+
+//[PLEVEL 1]
+//memory
+
+[FUNCTION memory]
+memoryGame memoryGame_playerWon, memoryGame_playerLost
+//memoryGame 50,memoryGame_playerWon, memoryGame_playerLost
+//memoryGame 99
+
+[FUNCTION memoryGame_playerWon]
+CONT.SYSMESSAGE @1153 You've won!
+
+[FUNCTION memoryGame_playerLost]
+CONT.SYSMESSAGE @1153 You've lost.
+
+[COMMENT memoryGame]
+MOREX: TAG.matches
+MOREY: TAG.movesLeft
+MOREZ: TAG.firstFlipped
+MOREM: TAG.secondFlipped
+
+[DEFNAME memoryGame]
+memoryGame_backSide 01b91               // the gump id of the back of the cards
+memoryGame_iconStart 01b7f              // there are 24 different cards, starting at this gump id
+memoryGame_backSideSubstitute 01b7f     // if one of those 24 cards would be the same as backSide, use this instead for that card
+memoryGame_maxFails 50                  // how many fails the player is allowed before they lose
+
+[ITEMDEF i_memoryGame]
+ID=i_memory
+TYPE=t_eq_script
+NAME=Memory Game
+
+ON=@Create
+       DISPID i_game_board     // this is really nice for people doing a .edit or .xedit, use it in your own scripts!
+
+ON=@Timer
+       IF <MOREX> == 24        // won
+               IF !<ISEMPTY <TAG.onWinFunction>>
+                       IF <<TAG.onWinFunction>> != 1   // it's necessary to repeat code here because combining this with the line above can result in a "Can't resolve <>" error because Sphere doesn't short-circuit operators
+                               TRYSRC <CONT.UID> DIALOGCLOSE d_memoryGame -1
+                               REMOVE  // I could remove the -1 above, and this REMOVE here, and it be handled on the ON 0 below, but I think the "call a button when closing via script" may be gone in newer versions of Sphere
+                       ENDIF
+               ELSE
+                       TRYSRC <CONT.UID> DIALOGCLOSE d_memoryGame -1
+                       REMOVE
+               ENDIF
+               RETURN 1
+       ENDIF
+
+       // this down here is for a mismatch
+       MOREY -= 1      // decrement moves left
+       IF !<MOREY>     // lost
+               IF !<ISEMPTY <TAG.onLoseFunction>>
+                       IF <<TAG.onLoseFunction>> != 1
+                               TRYSRC <CONT.UID> DIALOGCLOSE d_memoryGame -1
+                               REMOVE
+                               RETURN 1
+                       ENDIF
+               ELSE
+                       TRYSRC <CONT.UID> DIALOGCLOSE d_memoryGame -1   // this is as above
+                       REMOVE
+                       RETURN 1
+               ENDIF
+       ENDIF
+
+       TRY TAG.card<MOREM> <TAG.card<MOREM>> & ~020    // unflip       &= might be implemented in some version...
+       TRY TAG.card<MOREZ> <TAG.card<MOREZ>> & ~020    // unflip
+       MOREZ                   // set no card flipped (first card.. don't need to unset second card morem)
+
+       TRYSRC <CONT.UID> DIALOG d_memoryGame
+       RETURN 1
+
+[FUNCTION memoryGame]
+NEW <FINDID.i_memoryGame>
+IF <NEW.UID>
+       NEW.DIALOG d_memoryGame // lookie!  It resumes right where it left off! (if there's a client crash) if the user closes it, the item is removed to help memory consumption (haha PUN!)
+       RETURN 0
+ENDIF
+
+NEWITEM i_memoryGame
+IF <ISNUM <ARGV[0]>>
+       NEW.MOREY <ARGV[0]>
+       NEW.TAG.onWinFunction <ARGV[1]>
+       NEW.TAG.onLoseFunction <ARGV[2]>
+ELSE
+       NEW.MOREY <DEF.memoryGame_maxFails>
+       NEW.TAG.onWinFunction <ARGV[0]>
+       NEW.TAG.onLoseFunction <ARGV[1]>
+ENDIF
+
+// this whole code section that randomizes the list using a container (linked list)
+// is going to be replaced/updated as soon as I come up with something better... feel free to give me suggestions
+OBJ <NEW.UID>
+NEWITEM i_bag
+OBJ.LINK <NEW.UID>
+FOR 24
+       IF <LOCAL._FOR> == memoryGame_backSide - memoryGame_iconStart   // evaluation order is right to left remember, so this is valid :P (death to paranthesis! :P) This actually helps remind me of when paranthesis *are* required and I wouldn't expect them to be (like the fact that 3 * 2 + 4 = 18 in Sphere, 10 elsewhere)
+               LOCAL._FOR memoryGame_backSideSubstitute - memoryGame_iconStart
+       ENDIF
+       NEWITEM i_deed  // non stackable... this is a lame method, find something better :p
+       NEW.MOREZ <LOCAL._FOR>
+       NEW.CONT <OBJ.LINK>
+       NEWITEM i_deed
+       NEW.MOREZ <LOCAL._FOR>
+       NEW.CONT <OBJ.LINK>
+ENDFOR
+WHILE <OBJ.LINK.RESCOUNT>       // here we randomly remove an item from the container, until they're all gone...
+       NEW <OBJ.LINK.FINDCONT.<EVAL {0 (<OBJ.LINK.RESCOUNT> - 1)}>.UID>
+       TRY OBJ.TAG.card<OBJ.LINK.RESCOUNT> <NEW.MOREZ>
+       NEW.REMOVE
+ENDWHILE
+OBJ.LINK.REMOVE
+OBJ.LINK        // wouldn't want "bad link" console errors :)
+OBJ.CONT <UID>
+
+OBJ.DIALOG d_memoryGame
+
+[DIALOG d_memoryGame]
+70,40
+SRC.DIALOGCLOSE d_memoryGame -1 // sounds like in versions set not to fire a button press (0 default) when closing via script command this -1 isn't needed
+resizepic 0 0 3600 659 520
+dtext 160 15 481 6 * 8 Memory!     <MOREX> Matches     <MOREY> Moves Left
+dorigin -65 35
+
+FOR 6   // rows
+       LOCAL.row <LOCAL._FOR>
+       FOR 8   // columns
+               LOCAL.index ((<LOCAL.row> - 1) * 8) + <LOCAL._FOR>
+               IF <TAG.card<EVAL <LOCAL.index>>> & 020 // if the card is flipped
+                       gumppic *80 +0 ((<TAG.card<EVAL <LOCAL.index>>> & ~020) + <DEF.memoryGame_iconStart>)
+               ELSE
+                       button *80 +0 <DEF.memoryGame_backSide> <DEF.memoryGame_backSide> 1 0 <LOCAL.index>
+               ENDIF
+       ENDFOR
+       dorigin -65 *80
+ENDFOR
+
+[DIALOG d_memoryGame BUTTON]
+ON 0
+       REMOVE  // this is *NICE*... the item need not stick around when the player purposefully closes the dialog, so there won't be tons of permanent tags on players!
+ON 1 48
+       IF <TIMER> > -1
+               DIALOG d_memoryGame
+               RETURN 0
+       ENDIF
+
+       TRY TAG.card<ARGN1> <TAG.card<ARGN1>> | 020     // flip the card
+       IF !<MOREZ>     // no card flipped
+               MOREZ <ARGN1>   // set first card flipped
+       ELIF <TAG.card<MOREZ>> == <TAG.card<ARGN1>>             // match
+               MOREZ
+               MOREX += 1      // increment matches
+               IF <MOREX> == 24        // won
+                       TIMER 1
+               ELSE
+                       SRC.SYSMESSAGE @1153 Match!
+               ENDIF
+       ELSE                                                    // failed
+               MOREM <ARGN1>   // set the second card here so the timer can flip it back over... only use of reference to second card
+               TIMERD 5
+       ENDIF
+       DIALOG d_memoryGame
+
+
+///////////////////
+// Slot Machine //
+/////////////////
+
+
+[ITEMDEF i_slot_machine]
+ID=i_grave_stone_4
+TYPE=t_normal
+NAME=Slot Machine
+
+ON=@CREATE
+ATTR 010
+COLOR 0788
+
+ON=@DCLICK
+if (<distance>>1)
+src.SYSMESSAGE @,3,1 You can't reach that.
+return 1
+endif
+IF !(<SRC.TAG0.BETNUM>)
+SRC.TAG.BETNUM 1
+ENDIF
+SRC.CTAG.SLOTUID <SRC.TARG.UID>
+SRC.DIALOG d_slot_main
+RETURN 1
+
+
+[DIALOG d_slot_main]
+
+40, 40        // this is always the size.
+page 0
+resizepic 80 20 3600 300 190
+dtext 150 47 031 <serv.name> Slot Machine
+
+button 125 85 4005 4006 1 0 1
+button 125 125 4005 4006 1 0 2
+button 125 165 4005 4006 1 0 3
+dtext 170 86 0a6 Slot Machine FAQ
+dtext 170 126 0a6 Change your bet (Current=<dSRC.TAG0.BETNUM>)
+dtext 170 166 0a6 Play
+
+[DIALOG d_slot_main BUTTON]
+ON=1
+DIALOG d_slot
+ON=2
+DIALOG d_slot_Bet
+ON=3
+IF <SRC.TAG.SLOTING>
+    SRC.SYSMESSAGE @,3,1 You are already playing.
+ELSE
+    LOCAL.MINGOLD <eval(500 * <dSRC.TAG0.BETNUM>)>
+    IF <SRC.RESCOUNT i_gold> < <dLOCAL.MINGOLD>
+        SRC.SYSMESSAGE @,3,1 You dont have the gold.
+    ELSE
+        TRY UID.<SRC.CTAG.SLOTUID>.TAG0.JACKPOT = <UID.<SRC.CTAG.SLOTUID>.TAG0.JACKPOT> + 50
+        SRC.CONSUME <dLOCAL.MINGOLD> i_gold
+        SRC.TAG.SLOTING 1
+        TIMERF 2,f_call_slot125a <SRC.CTAG.SLOTUID>
+        SRC.EMOTE pull the lever.
+    ENDIF
+ENDIF
+
+[DIALOG d_slot_bet]
+40, 40        // this is always the size.
+page 0
+resizepic 80 20 3600 300 190
+dtext 180 47 031 BET MENU
+
+button 125 85 4005 4006 1 0 1
+button 125 125 4005 4006 1 0 2
+button 125 165 4005 4006 1 0 3
+dtext 170 86 0a6 One Row(500gp)
+dtext 170 126 0a6 Two Rows (1000gp)
+dtext 170 166 0a6 Three Rows (1500gp)
+
+[DIALOG d_slot_bet BUTTON]
+ON=1 3
+SRC.TAG.BETNUM <ARGN>
+
+[FUNCTION f_call_slot125a]
+SRC.TAG.SLOTING
+OBJ <ARGV[0]>
+DIALOG d_slot_machine
+
+[DIALOG d_slot_machine]
+250,100
+dialogclose d_slot_machine
+PAGE 0
+resizepic 80 20 3600 430 410
+
+FOR 29
+gumppic <EVAL (<LOCAL._FOR>*15)+15> 15 0280a
+IF (<LOCAL._FOR> < 29)
+gumppic <EVAL (<LOCAL._FOR>*15)+13> 420 0280a
+ENDIF
+ENDFOR
+gumppic 445 420 0280a
+
+gumppic 415 30 203
+gumppic 415 75 203
+gumppic 415 105 203
+FOR 13
+gumppic 415 <EVAL (<LOCAL._FOR>*30)+2> 10460
+ENDFOR
+
+gumppic 30 30 202
+gumppic 30 75 202
+gumppic 30 105 202
+gumppic 29 105 0242f
+FOR 13
+gumppic 45 <EVAL (<LOCAL._FOR>*30)+2> 10460
+ENDFOR
+
+gumppic 425 300 028ac
+gumppic 425 150 028ab
+gumppic 425 0 028aa
+
+gumppic -5 10 028b5
+gumppic 25 0 028b4
+gumppic 45 130 028ab
+gumppic -22 280 028a2
+
+gumppic 368 50 0589
+gumppic 377 60 01580
+
+gumppic 85 35 0232d
+dtext 128 45 025 Slot Machine
+dtext 180 90 0431 JackPot: <UID.<SRC.CTAG.SLOTUID>.dTAG0.JACKPOT> gold pieces.
+gumppictiled 125 65 155 1 9101
+checkertrans 150 140 190 170
+
+///////////////////////
+///// ID das Figuras //
+///////////////////////
+
+LOCAL.G1 08c1
+LOCAL.G2 08c1
+LOCAL.G3 08c4
+LOCAL.G4 08c5
+LOCAL.G5 08cd
+LOCAL.G6 08e7
+LOCAL.G7 08ea
+LOCAL.G8 08f2
+LOCAL.G9 08f6
+LOCAL.G10 08f9
+LOCAL.G11 08fa
+LOCAL.G12 08fc
+
+
+///////////////////////
+//// Premiacao ////////
+///////////////////////
+LOCAL.P3 1500
+LOCAL.P4 2500
+LOCAL.P5 4000
+LOCAL.P6 6500
+LOCAL.P7 10000
+LOCAL.P8 15000
+LOCAL.P9 22000
+LOCAL.P10 30000
+LOCAL.P11 50000
+LOCAL.P12 200000
+
+
+
+///////////////////////
+/// Randomizacao //////
+///////////////////////
+
+LOCAL.XSLOT 160
+FOR 1 3
+TRY VAR.NUM<dLOCAL._FOR> = <R1,12>
+gumppic <dLOCAL.XSLOT> 150 <LOCAL.G<dVAR.NUM<dLOCAL._FOR>>>
+LOCAL.XSLOT += 60
+ENDFOR
+
+LOCAL.XSLOT 160
+FOR 4 6
+TRY VAR.NUM<dLOCAL._FOR> = <R1,12>
+gumppic <dLOCAL.XSLOT> 200 <LOCAL.G<dVAR.NUM<dLOCAL._FOR>>>
+LOCAL.XSLOT += 60
+ENDFOR
+
+LOCAL.XSLOT 160
+FOR 7 9
+TRY VAR.NUM<dLOCAL._FOR> = <R1,12>
+gumppic <dLOCAL.XSLOT> 250 <LOCAL.G<dVAR.NUM<dLOCAL._FOR>>>
+LOCAL.XSLOT += 60
+ENDFOR
+CALL f_check_win125a
+
+
+////////////////////////////////
+/////// Botoes das apostas /////
+////////////////////////////////
+LOCAL.Y=215
+for 1 <SRC.TAG0.BETNUM>
+IF <LOCAL._FOR> == 2
+LOCAL.Y -= 50
+ELIF <LOCAL._FOR> == 3
+LOCAL.Y += 100
+ENDIF
+gumppic 130 <dLOCAL.Y> 0846
+endfor
+
+
+
+LOCAL.X2 110
+for 1 12
+LOCAL.Y2 <R348,352>
+LOCAL.X2 += <R15,20>
+IF <R1,2>==1
+tilepic <dLOCAL.X2> <dLOCAL.Y2> 0eef
+ENDIF
+ENDFOR
+LOCAL.X2 110
+for 1 12
+LOCAL.Y2 <R333,336>
+LOCAL.X2 += <R15,20>
+IF <R1,2>==1
+tilepic <dLOCAL.X2> <dLOCAL.Y2> 0eef
+ENDIF
+ENDFOR
+LOCAL.X2 110
+for 1 12
+LOCAL.Y2 <R320,322>
+LOCAL.X2 += <R15,20>
+IF <R1,2>==1
+tilepic <dLOCAL.X2> <dLOCAL.Y2> 0eef
+ENDIF
+ENDFOR
+LOCAL.X2 110
+for 1 12
+LOCAL.Y2 <R360,363>
+LOCAL.X2 += <R15,20>
+IF <R1,2>==1
+tilepic <dLOCAL.X2> <dLOCAL.Y2> 0eef
+ENDIF
+ENDFOR
+
+
+
+button 310 400 02eec 02eed 1 0 0
+button 100 390 026af 026b0 1 0 1
+dtext 130 390 0466 Play Again
+
+[DIALOG d_slot_machine BUTTON]
+ON=1
+IF <SRC.TAG.SLOTING>
+    SRC.SYSMESSAGE @,3,1 You are already playing.
+ELSE
+    LOCAL.MINGOLD <eval(500 * <dSRC.TAG0.BETNUM>)>
+    IF <SRC.RESCOUNT i_gold> < <dLOCAL.MINGOLD>
+        SRC.SYSMESSAGE @,3,1 You dont have the gold.
+    ELSE
+        TRY UID.<SRC.CTAG.SLOTUID>.TAG0.JACKPOT = <UID.<SRC.CTAG.SLOTUID>.TAG0.JACKPOT> + 50
+        SRC.CONSUME <dLOCAL.MINGOLD> i_gold
+        SRC.TAG.SLOTING 1
+        TIMERF 2,f_call_slot125a <SRC.CTAG.SLOTUID>
+        SRC.EMOTE pull the lever.
+    ENDIF
+ENDIF
+
+
+
+[FUNCTION f_check_win125a]
+IF <SRC.TAG0.BETNUM> > 0
+
+    IF ((<VAR.NUM4>==1) || (<VAR.NUM4>==2))
+        IF ((<VAR.NUM5>==1) || (<VAR.NUM5>==2))
+            LOCAL.TOTALGOLD +=750
+        ELSE
+            LOCAL.TOTALGOLD +=500    
+        ENDIF
+    ELSE
+        IF (STRMATCH('<VAR.NUM4>','<VAR.NUM5>') && (STRMATCH('<VAR.NUM4>','<VAR.NUM6>')
+            LOCAL.TOTALGOLD += <dLOCAL.P<dVAR.NUM4>>
+        ENDIF
+    ENDIF
+ENDIF
+IF <SRC.TAG0.BETNUM> > 1
+    IF ((<VAR.NUM1>==1) || (<VAR.NUM1>==2))
+        IF ((<VAR.NUM2>==1) || (<VAR.NUM2>==2))
+            LOCAL.TOTALGOLD +=750
+        ELSE
+            LOCAL.TOTALGOLD +=500    
+        ENDIF
+    ELSE
+        IF (STRMATCH('<VAR.NUM1>','<VAR.NUM2>') && (STRMATCH('<VAR.NUM1>','<VAR.NUM3>')
+            LOCAL.TOTALGOLD += <dLOCAL.P<dVAR.NUM1>>
+        ENDIF
+    ENDIF
+ENDIF
+IF <SRC.TAG0.BETNUM> > 2
+    IF ((<VAR.NUM7>==1) || (<VAR.NUM7>==2))
+        IF ((<VAR.NUM8>==1) || (<VAR.NUM8>==2))
+            LOCAL.TOTALGOLD +=750
+        ELSE
+            LOCAL.TOTALGOLD +=500    
+        ENDIF
+    ELSE
+        IF (STRMATCH('<VAR.NUM7>','<VAR.NUM8>') && (STRMATCH('<VAR.NUM7>','<VAR.NUM9>')
+            LOCAL.TOTALGOLD += <dLOCAL.P<dVAR.NUM7>>
+        ENDIF
+    ENDIF
+ENDIF
+
+
+IF <LOCAL.TOTALGOLD> > 0
+SRC.NEWGOLD <dLOCAL.TOTALGOLD>
+SRC.SYSMESSAGE @,3,1 You won <dLOCAL.TOTALGOLD> gps
+ENDIF
+
+
+IF <r2000>==1
+SRC.SYSMESSAGE @,3,1 @026 You win the JACKPOT!!!
+SERV.B <SRC.NAME> won the jackpot of <UID.<SRC.CTAG.SLOTUID>.dTAG0.JACKPOT> gps !!!
+SRC.NEWGOLD <UID.<SRC.CTAG.SLOTUID>.dTAG0.JACKPOT>
+TRY UID.<SRC.CTAG.SLOTUID>.TAG.JACKPOT = 0
+ENDIF
+
+
+[DIALOG d_slot]
+40, 40        // this is always the size.
+page 0
+
+resizepic 80 20 3600 600 380
+dtext 280 47 031 SLOT MACHINE FAQ
+gumppic 120 90 08c1
+dtext 270 102 055  =   500gp
+gumppic 120 140 08c1
+gumppic 170 140 08c1
+dtext 270 152 055  =   750gp
+gumppic 120 190 08c4
+gumppic 170 190 08c4
+gumppic 220 190 08c4
+dtext 270 202 055 =   1500gp
+gumppic 120 240 08c5
+gumppic 170 240 08c5
+gumppic 220 240 08c5
+dtext 270 252 055  =   2500gp
+gumppic 120 290 08cd
+gumppic 170 290 08cd
+gumppic 220 290 08cd
+dtext 270 302 055  =   4000gp
+gumppic 120 340 08e7
+gumppic 170 340 08e7
+gumppic 220 340 08e7
+dtext 270 352 055  =   6500gp
+gumppic 420 90 08ea
+gumppic 470 90 08ea
+gumppic 520 90 08ea
+dtext 570 102 055  =   10000gp
+gumppic 420 140 08f2
+gumppic 470 140 08f2
+gumppic 520 140 08f2
+dtext 570 152 055  =   15000gp
+gumppic 420 190 08f6
+gumppic 470 190 08f6
+gumppic 520 190 08f6
+dtext 570 202 055 =   22000gp
+gumppic 420 240 08fa
+gumppic 470 240 08fa
+gumppic 520 240 08fa
+dtext 570 252 055  =   30000gp
+gumppic 420 290 08f9
+gumppic 470 290 08f9
+gumppic 520 290 08f9
+dtext 570 302 055  =   50000gp
+gumppic 420 340 08fc
+gumppic 470 340 08fc
+gumppic 520 340 08fc
+dtext 570 352 055  =   200000gp
+
+[DIALOG d_slot BUTTON]
+ON=0
+dialog d_slot_main 
+
+
+
+[defname slot_machine_symbols]
+slot_jackpot		75	//Jackpot =  DEF.slot_jackpot * TAG0.my_slot_bet
+slot_house_favor	1	//slots house favor, 0 disables, never exceed 3 (will break slots)
+slot_min_bet		50	//minimum bet for slots
+slot_max_bet		1600	//maximum bet for slots
+
+slot_symbol_1		2513	//grapes
+slot_symbol_1_2x	50	//% payout for 2x of this symbol
+slot_symbol_1_3x	50	//% payout for 3x of this symbol
+
+slot_symbol_2		2512	//apple
+slot_symbol_2_2x	60
+slot_symbol_2_3x	100
+
+slot_symbol_3		5920	//banana
+slot_symbol_3_2x	70
+slot_symbol_3_3x	150
+
+slot_symbol_4		5932	//peach
+slot_symbol_4_2x	80
+slot_symbol_4_3x	200
+
+slot_symbol_5		5930	//lime
+slot_symbol_5_2x	90
+slot_symbol_5_3x	250
+
+slot_symbol_6		7959	//recall rune
+slot_symbol_6_2x	100
+slot_symbol_6_3x	300
+	
+slot_symbol_7		3642	//scroll
+slot_symbol_7_2x	110
+slot_symbol_7_3x	350
+
+slot_symbol_8		3834	//spellbook
+slot_symbol_8_2x	120
+slot_symbol_8_3x	400
+
+slot_symbol_9		5364	//model ship
+slot_symbol_9_2x	140
+slot_symbol_9_3x	450
+
+slot_symbol_10		7107	//chaos shield
+slot_symbol_10_2x	150
+slot_symbol_10_3x	500
+
+//these are all null and just are there to make it harder for the player
+
+slot_symbol_11		6884	//skull
+slot_symbol_12		3850	//poison potion
+slot_symbol_13		7393	//severed head
+
+
+[itemdef i_slot_machine2]
+name=Slot Machine
+id=i_gravestone_8
+type=t_eq_script
+
+on=@create
+attr=010
+color=0489
+
+on=@click
+message @0489 One Armed Bandit
+return 1
+
+on=@dclick
+dialog slot_machine
+return 1
+
+[DIALOG slot_machine]
+0,0
+page 0
+
+resizepic 26 10 9270 452 436	//base backgrounds and sections
+resizepic 37 20 9200 430 38
+resizepic 37 62 9200 430 268
+resizepic 37 335 9200 430 45
+resizepic 37 384 9200 430 51
+
+
+dtext 150 20 455 <serv.serv.name> Slot Machine
+dtext 170 35 036 JACKPOT: <eval (<src.ctag0.my_slot_bet>*<def0.slot_jackpot>)>
+
+
+for 10		//payout descriptions and symbol chart below
+tilepic 30 <eval (45+(<local._for>*25))> <def0.slot_symbol_<eval <local._for>>>
+tilepic 40 <eval (45+(<local._for>*25))> <def0.slot_symbol_<eval <local._for>>>
+dtext 80 <eval (45+(<local._for>*25))> 455 <eval <def0.slot_symbol_<eval <local._for>>_2x>>% Winnings
+
+tilepic 170 <eval (45+(<local._for>*25))> <def0.slot_symbol_<eval <local._for>>>
+tilepic 180 <eval (45+(<local._for>*25))> <def0.slot_symbol_<eval <local._for>>>
+tilepic 190 <eval (45+(<local._for>*25))> <def0.slot_symbol_<eval <local._for>>>
+dtext 230 <eval (45+(<local._for>*25))> 455 <eval <def0.slot_symbol_<eval <local._for>>_3x>>% Winnings
+endfor		//payout descriptions and symbol chart above
+
+tilepic 330 70 <def0.slot_symbol_10>
+tilepic 340 70 <def0.slot_symbol_10>
+tilepic 350 70 <def0.slot_symbol_10>
+tilepic 360 70 <def0.slot_symbol_10>
+dtext 400 70 455 Jackpot
+
+if (<def0.slot_house_favor>>0)
+tilepic 330 95 <def0.slot_symbol_11>
+dtext 370 95 455 Bad Luck
+endif
+if (<def0.slot_house_favor>>1)
+tilepic 330 120 <def0.slot_symbol_12>
+dtext 370 120 455 Bad Luck
+endif
+if (<def0.slot_house_favor>>2)
+tilepic 330 145 <def0.slot_symbol_13>
+dtext 370 145 455 Bad Luck
+endif
+
+dtext 80 385 455 My Bet
+button 40 405 9909 9910 1 0 1
+dtext 70 405 455 <eval <src.ctag0.my_slot_bet>> gold
+button 140 405 9903 9904 1 0 2
+
+button 382 389 247 248 1 0 3	//pull the lever and bet
+dtext 296 390 455 Pull the lever
+
+resizepic 66 339 9350 43 36	//display the slot symbols selected
+tilepic 66 344 <def0.slot_symbol_<eval <src.ctag0.slot_1>>>
+resizepic 114 339 9350 43 36
+tilepic 114 344 <def0.slot_symbol_<eval <src.ctag0.slot_2>>>
+resizepic 159 339 9350 43 36
+tilepic 159 344 <def0.slot_symbol_<eval <src.ctag0.slot_3>>>
+resizepic 206 339 9350 43 36
+tilepic 206 344 <def0.slot_symbol_<eval <src.ctag0.slot_4>>>
+
+if (<src.ctag0.slot_winner>)
+dtext 300 340 036 WINNER WINNER
+dtext 310 355 036 <eval <src.ctag0.winnings>> gold
+else
+dtext 335 340 026 LOST
+endif
+
+
+[DIALOG slot_machine button]
+onbutton=0
+
+onbutton=1
+src.ctag0.my_slot_bet=<eval (<src.ctag0.my_slot_bet>/2)>
+if (<src.ctag0.my_slot_bet><<def0.slot_min_bet>)
+src.ctag0.my_slot_bet=<def0.slot_min_bet>
+src.sysmessage @0482 Minumum bet allowed is <eval <def0.slot_min_bet>> gold.
+endif
+sdialog slot_machine
+
+onbutton=2
+src.ctag0.my_slot_bet=<eval (<src.ctag0.my_slot_bet>*2)>
+if (<src.ctag0.my_slot_bet><<def0.slot_min_bet>)	//this is just here incase they start at 0, which everyone does.
+src.ctag0.my_slot_bet=<def0.slot_min_bet>
+endif
+if (<src.ctag0.my_slot_bet>><def0.slot_max_bet>)
+src.ctag0.my_slot_bet=<def0.slot_max_bet>
+src.sysmessage @0482 Maximum bet allowed is <eval <def0.slot_max_bet>> gold.
+endif
+sdialog slot_machine
+
+onbutton=3
+src.ctag0.slot_winner=	//clear slot winner
+
+if !(<src.ctag0.my_slot_bet>)
+src.sysmessage @0482 You must make a bet in order to play the slot machine.
+sdialog slot_machine
+return 1
+endif
+
+if (<src.gold><<src.ctag0.my_slot_bet>)
+src.sysmessage @0482 You do not have enough gold to cover your bet.
+sdialog slot_machine
+return 1
+endif
+
+src.sound 75
+src.ctag0.house_favor=<eval {0 <def0.slot_house_favor>}>
+src.ctag0.slot_1=<eval {1 (10+<src.ctag0.house_favor>)}>
+src.ctag0.slot_2=<eval {1 (10+<src.ctag0.house_favor>)}>
+src.ctag0.slot_3=<eval {1 (10+<src.ctag0.house_favor>)}>
+src.ctag0.slot_4=<eval {1 (10+<src.ctag0.house_favor>)}>
+
+src.consumegold <src.ctag0.my_slot_bet>
+
+if (<src.slot_matches>!=0)
+   if (<eval <src.slot_matches>>==99)
+	for 5
+	 make_fireworks
+	make_fireworks
+	make_fireworks
+	sound 54
+	endfor
+   sound 523
+   say @036 !!!JACKPOT!!!
+   src.newgold <eval (<src.ctag0.my_slot_bet>*<def0.slot_jackpot>)>
+   src.ctag0.slot_winner=1
+   src.ctag0.winnings=<eval (<src.ctag0.my_slot_bet>*<def0.slot_jackpot>)>
+   sdialog slot_machine
+   return 1
+   endif
+src.collect_slot_winnings <src.slot_matches>
+src.ctag0.slot_winner=1
+endif
+sdialog slot_machine
+
+[function slot_matches]
+if (<src.ctag0.slot_1>==10) && (<src.ctag0.slot_2>==10) && (<src.ctag0.slot_3>==10) && (<src.ctag0.slot_4>==10)
+return 99
+endif
+for 1 4
+  local.slot_compare=<local._for>
+   if !(<ctag0.slot_<eval <local.slot_compare>>> > 10)
+    for 1 4
+        if (<ctag0.slot_<eval <local._for>>> = <ctag0.slot_<eval <local.slot_compare>>>) && (<local._for> != <local.slot_compare>) && (<local._for>!=13)
+	    local.matches += 1
+            if !(<ctag0.slot_<eval <local.slot_compare>>> < <local.matching_symbol>)
+            local.matching_symbol=<ctag0.slot_<eval <local.slot_compare>>>
+	    endif        
+	endif
+     endfor
+    endif
+if (<local.matches>)
+return <eval (<local.matches>+1)>,<eval <local.matching_symbol>>
+endif
+endfor
+
+
+[function collect_slot_winnings]
+sound 50
+ctag0.winnings=<eval (<ctag0.my_slot_bet>+ ((<def0.slot_symbol_<eval <argv[1]>>_<eval <argv[0]>>x>*<ctag0.my_slot_bet>)/100))>
+newgold <ctag0.winnings>
+fix
+
+[EOF]

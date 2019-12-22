@@ -1,0 +1,2948 @@
+// Colar isto em cada monstro que vai dropar a chave
+ 
+//ON=@DEATH
+//IF (RAND(100) < 10) // Chance de Dropar. Assim é 10%
+//SERV.NEWITEM=i_rare_chest_1_key  // ID da chave que vai dropar
+//NEW.CONT=<SRC.UID>
+//ENDIF
+ 
+[DEFNAME rare_chests]
+rare_chests_timer 300 // Tempo que o chest vai ficar aberto para alguem depois de o abrir a primeira vez
+rare_chests_restock 300 // Tempo que o chest demora a dar restock depois de quem o abriu nao poder usar mais (depois de passar o timer que está em cima deste)
+ 
+// Items que vao estar no chest
+ 
+[TEMPLATE tm_rare_chest_newbie_dungeon]
+CONTAINER=i_bag
+ITEM=i_axe_exec_bronze,R10  // Mudar todos estes items, entre parenteses é o amount que dropa de cada
+ITEM=i_katana_bronze,R10
+ITEM=i_maul_bronze,R10
+ITEM=i_platemail_leggings_bronze,R10
+ITEM=i_platemail_arms_bronze,R10
+ITEM=i_platemail_helm_bronze,R10
+ITEM=i_bascinet_bronze,R10
+ITEM=i_platemail_chest_bronze,R10
+ITEM=i_armor_female_plate_bronze,R10
+ITEM=i_platemail_gorget_bronze,R10
+ITEM=i_spear_short_bronze,R10
+ITEM=i_spear_bronze,R10
+ITEM=i_shield_heater_bronze,R10
+ITEM=i_platemail_gloves_bronze,R10
+ITEM=i_bow_holly,R10
+ITEM=i_staff_quarter_holly,R10
+ITEM=i_shield_heater_bronze,R10
+ITEM=i_reag_black_pearl,{ 4 8 }  
+ITEM=i_reag_blood_moss,{ 4 8  }
+ITEM=i_reag_garlic,{ 4 8  }
+ITEM=i_reag_ginseng,{ 4 8  }
+ITEM=i_reag_mandrake_root,{ 4 8  }
+ITEM=i_reag_nightshade,{ 4 8  }
+ITEM=i_reag_sulfur_ash,{ 4 8  }
+ITEM=i_reag_spider_silk,{ 4 8  }
+ITEM=i_dye_tub_backpack,R35
+ITEM=I_SCROLL_EARTHQUAKE,R20
+ITEM=I_SCROLL_ENERGY_VORTEX,R20
+ITEM=I_SCROLL_RESURRECTION,R20
+ITEM=I_SCROLL_SUMMON_DAEMON,R20
+ITEM=I_SCROLL_SUMMON_ELEM_EARTH,R20
+ITEM=I_SCROLL_SUMMON_ELEM_AIR,R20
+ITEM=I_SCROLL_SUMMON_ELEM_FIRE,R20
+ITEM=I_SCROLL_SUMMON_ELEM_WATER,R20
+ITEM=i_unique_NEWBIE,R25
+ITEM=i_luck_stone,R10
+ITEM=I_SOFTPERP_DYE,R25
+
+
+ 
+ 
+// Chest
+ 
+[ITEMDEF i_rare_chest_newbie_dungeon] // Copiar o script todo deste chest e mudar o ID para ser outro chest, tipo i_rare_chest_2
+ID=i_chest_metal_brass
+NAME=@01b9 Imperial Newbie Dungeon Chest // Mudar o nome do chest
+TYPE=t_container
+DUPELIST=0e41
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Newbie Dungeon Rare Chest
+ 
+ON=@CREATE
+COLOR=01b9
+MORE1=1
+TIMER=1
+ATTR=08010
+ 
+ON=@DCLICK
+IF !(<SRC.ISGM>)
+        IF (<EVAL <MORE1>>==0)
+                IF !(STRMATCH("<TAG.UID>",""))
+                        IF !(<TAG0.UID>==<SRC.UID>)
+                                SRC.SYSMESSAGE This Imperial Chest has already been open by another Player.
+                                RETURN 1
+                        ENDIF
+                ELSE
+                        IF (<SRC.RESTEST 1 i_rare_chest_newbie_dungeon_key>) // Mudar ID da chave, tipo i_rare_chest_2_key pa abrir o chest 2
+                                SRC.SYSMESSAGE You've opened the Imperial Newbie Dungeon Chest. You will be able to use it for the next <EVAL (<DEF.rare_chests_timer>/60)> minutes. // Mudar a mensagem pa outro chest
+                                SRC.CONSUME 1 i_rare_chest_newbie_dungeon_key  // Mudar ID da chave
+                                TAG.UID=<SRC.UID>
+                                TIMER=<DEF.rare_chests_timer>
+                        ELSE
+                                SRC.SYSMESSAGE You need a Imperial Newbie Dungeon Key in order to open this Imperial Chest. // Mudar a mensagem pa outro chest
+                                RETURN 1
+                        ENDIF
+                ENDIF
+        ELSE
+                SRC.SYSMESSAGE You don't think there is anything worth inside of this chest.
+                RETURN 1
+        ENDIF
+ENDIF
+ 
+ON=@TIMER
+f_rare_chest_restock125a tm_rare_chest_newbie_dungeon // Mudar os items que vai dropar, por exemplo "tm_rare_chest_2"
+RETURN 1
+ 
+ON=@DROPON_SELF
+SRC.SYSMESSAGE You are not allowed to drop any item into this chest.
+RETURN 1
+ 
+ON=@CLICK
+MESSAGE=<NAME>
+RETURN 1
+ 
+ 
+// Chave
+ 
+[ITEMDEF i_rare_chest_newbie_dungeon_key] // Copiar o script todo desta key e mudar o ID para ser outra key, tipo i_rare_chest_2_key
+ID=i_key_copper
+NAME=@01b9 Imperial Newbie Dungeon Chest Key // Mudar nome da chave
+TYPE=t_script
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Rare Newbie Dungeon Chest Key
+ 
+ON=@CREATE
+COLOR=01b9 // Mudar cor
+ 
+ON=@DCLICK
+SRC.SYSMESSAGE Double-click a Imperial Newbie Dungeon Chest Key in order to open it. // Mudar mensagem
+RETURN 1
+ 
+ 
+// Esta function nao é preciso mexer, basta haver so uma
+ 
+[FUNCTION f_rare_chest_restock125a]
+IF (<EVAL <MORE1>>==0)
+        IF (<COUNT> > 0)
+                FORCONT <UID> 0
+                        REMOVE
+                ENDFOR
+        ENDIF
+        TAG.UID=
+        MORE1=1
+        TIMER=<DEF.rare_chests_restock>
+ELSE
+        SERV.NEWITEM <ARGS>
+        NEW.CONT=<UID>
+        LOCAL.UID1=<UID>
+        FORCONT <LOCAL.UID1> 0
+                IF (<BASEID>==i_bag)
+                        LOCAL.UID2=<UID>
+                        FORCONT <LOCAL.UID2> 0
+                                CONT=<LOCAL.UID1>
+                        ENDFOR
+                        REMOVE
+                ENDIF                  
+        ENDFOR
+        MORE1=0
+        TIMER=-1
+ENDIF
+
+
+
+
+
+//   // // //  // // // // // // // // //
+//  // // //  Bird Chest  // // // // // 
+// // // //  // // // // // // // // //
+
+
+[TEMPLATE tm_imperial_BIRD_chest]
+CONTAINER=i_bag
+ITEM=i_unique_STATUE,R20
+ITEM=i_feather_phoenix
+ITEM=i_feather_phoenix,R2
+ITEM=i_feather_phoenix,R5
+ITEM=i_feather_phoenix,R10
+ITEM=i_book_PHOENIX,R10
+ITEM=i_snow_globe_trinsic,R10
+
+
+
+
+
+[ITEMDEF i_imperial_BIRD_chest] // Copiar o script todo deste chest e mudar o ID para ser outro chest, tipo i_rare_chest_2
+ID=i_chest_metal_brass
+NAME=@07ad Imperial Bird Chest // Mudar o nome do chest
+TYPE=t_container
+DUPELIST=0e41
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Newbie Dungeon Rare Chest
+ 
+ON=@CREATE
+COLOR=07ad
+MORE1=1
+TIMER=1
+ATTR=08010
+ 
+ON=@DCLICK
+IF !(<SRC.ISGM>)
+        IF (<EVAL <MORE1>>==0)
+                IF !(STRMATCH("<TAG.UID>",""))
+                        IF !(<TAG0.UID>==<SRC.UID>)
+                                SRC.SYSMESSAGE This Imperial Chest has already been open by another Player.
+                                RETURN 1
+                        ENDIF
+                ELSE
+                        IF (<SRC.RESTEST 1 i_imperial_BIRD_key>) // Mudar ID da chave, tipo i_rare_chest_2_key pa abrir o chest 2
+                                SRC.SYSMESSAGE You've opened the Imperial Bird Chest. You will be able to use it for the next <EVAL (<DEF.rare_chests_timer>/60)> minutes. // Mudar a mensagem pa outro chest
+                                SRC.CONSUME 1 i_imperial_BIRD_key // Mudar ID da chave
+                                TAG.UID=<SRC.UID>
+                                TIMER=<DEF.rare_chests_timer>
+                        ELSE
+                                SRC.SYSMESSAGE You need a Imperial Bird Chest Key in order to open this Imperial Chest. // Mudar a mensagem pa outro chest
+                                RETURN 1
+                        ENDIF
+                ENDIF
+        ELSE
+                SRC.SYSMESSAGE You don't think there is anything worth inside of this chest.
+                RETURN 1
+        ENDIF
+ENDIF
+ 
+ON=@TIMER
+f_rare_chest_restock125a tm_imperial_BIRD_chest // Mudar os items que vai dropar, por exemplo "tm_rare_chest_2"
+RETURN 1
+ 
+ON=@DROPON_SELF
+SRC.SYSMESSAGE You are not allowed to drop any item into this chest.
+RETURN 1
+ 
+ON=@CLICK
+MESSAGE=<NAME>
+RETURN 1
+
+
+
+[ITEMDEF i_imperial_BIRD_key] // Copiar o script todo desta key e mudar o ID para ser outra key, tipo i_rare_chest_2_key
+ID=i_key_copper
+NAME=@07aD Imperial Bird Chest Key // Mudar nome da chave
+TYPE=t_script
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Rare Newbie Dungeon Chest Key
+ 
+ON=@CREATE
+COLOR=07ad // Mudar cor
+ 
+ON=@DCLICK
+SRC.SYSMESSAGE Double-click a Imperial Bird Chest Key in order to open it. // Mudar mensagem
+RETURN 1
+
+
+
+//   // // //  // // // // // // // // // //
+//  // // //  Cattle Chest   // // // // // 
+// // // //  // // // // // // // // // //
+
+
+[TEMPLATE tm_imperial_CATTLE_chest]  // Mudar o nome
+CONTAINER=i_bag
+ITEM=i_book_IRON,R8
+ITEM=i_unique_CATTLE1,R25
+ITEM=i_snow_globe_yew,R5
+ITEM=i_gold,{ 1000 10000 }
+ITEM=i_angel_dye,R10
+ITEM=i_black_Dye,R10
+
+[ITEMDEF i_imperial_CATTLE_chest] // Mudar o Nome
+ID=i_chest_metal_brass
+NAME=@007ef Imperial Cattle Chest // Mudar o nome e cor
+TYPE=t_container
+DUPELIST=0e41
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Newbie Dungeon Rare Chest
+ 
+ON=@CREATE
+COLOR=007ef // Mudar a cor
+MORE1=1
+TIMER=1
+ATTR=08010
+ 
+ON=@DCLICK
+IF !(<SRC.ISGM>)
+        IF (<EVAL <MORE1>>==0)
+                IF !(STRMATCH("<TAG.UID>",""))
+                        IF !(<TAG0.UID>==<SRC.UID>)
+                                SRC.SYSMESSAGE This Imperial Chest has already been open by another Player.
+                                RETURN 1
+                        ENDIF
+                ELSE
+                        IF (<SRC.RESTEST 1 i_imperial_CATTLE_key>) // Mudar ID da chave
+                                SRC.SYSMESSAGE You've opened the Imperial Cattle Chest. You will be able to use it for the next <EVAL (<DEF.rare_chests_timer>/60)> minutes. // Mudar a mensagem.
+                                SRC.CONSUME 1 i_imperial_CATTLE_key // Mudar ID da chave
+                                TAG.UID=<SRC.UID>
+                                TIMER=<DEF.rare_chests_timer>
+                        ELSE
+                                SRC.SYSMESSAGE You need a Imperial Cattle Chest Key in order to open this Imperial Chest. // Mudar a mensagem pa outro chest
+                                RETURN 1
+                        ENDIF
+                ENDIF
+        ELSE
+                SRC.SYSMESSAGE You don't think there is anything worth inside of this chest.
+                RETURN 1
+        ENDIF
+ENDIF
+ 
+ON=@TIMER
+f_rare_chest_restock125a tm_imperial_CATTLE_chest // Mudar o TM_ para o novo _chest
+RETURN 1
+ 
+ON=@DROPON_SELF
+SRC.SYSMESSAGE You are not allowed to drop any item into this chest.
+RETURN 1
+ 
+ON=@CLICK
+MESSAGE=<NAME>
+RETURN 1
+
+
+[ITEMDEF i_imperial_CATTLE_key] // Mudar o nome do ID.
+ID=i_key_copper
+NAME=@007ef Imperial Cattle Chest Key // Mudar nome e a cor
+TYPE=t_script
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Rare Newbie Dungeon Chest Key
+ 
+ON=@CREATE
+COLOR=007ef // Mudar cor
+ 
+ON=@DCLICK
+SRC.SYSMESSAGE Double-click a Imperial Cattle Chest Key in order to open it. // Mudar mensagem
+RETURN 1
+
+
+
+//   // // //  // // // // //  // // // // //
+//  // // //  Chicken Chest   // // // // // 
+// // // //  // // // // //  // // // // //
+
+
+[TEMPLATE tm_imperial_CHICKEN_chest]  // Mudar o nome
+CONTAINER=i_bag
+ITEM=i_unique_CHICKEN,R25
+ITEM=i_spectre_dye,R15
+ITEM=i_purple_dye,R10
+ITEM=i_snow_globe_ocllo,R10
+ITEM=i_pet_chicken
+ITEM=i_pet_chicken,R2
+ITEM=i_pet_chicken,R5
+ITEM=i_pet_chicken,R2
+ITEM=i_pet_chicken,R5
+ITEM=i_pet_chicken,R2
+ITEM=i_book_VERITE,R10
+
+
+
+
+[ITEMDEF i_imperial_CHICKEN_chest] // Mudar o Nome
+ID=i_chest_metal_brass
+NAME=@00092 Imperial Chicken Chest // Mudar o nome e cor
+TYPE=t_container
+DUPELIST=0e41
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Newbie Dungeon Rare Chest
+ 
+ON=@CREATE
+COLOR=00092 // Mudar a cor
+MORE1=1
+TIMER=1
+ATTR=08010
+ 
+ON=@DCLICK
+IF !(<SRC.ISGM>)
+        IF (<EVAL <MORE1>>==0)
+                IF !(STRMATCH("<TAG.UID>",""))
+                        IF !(<TAG0.UID>==<SRC.UID>)
+                                SRC.SYSMESSAGE This Imperial Chest has already been open by another Player.
+                                RETURN 1
+                        ENDIF
+                ELSE
+                        IF (<SRC.RESTEST 1 i_imperial_CHICKEN_key>) // Mudar ID da chave
+                                SRC.SYSMESSAGE You've opened the Imperial Chicken Chest. You will be able to use it for the next <EVAL (<DEF.rare_chests_timer>/60)> minutes. // Mudar a mensagem.
+                                SRC.CONSUME 1 i_imperial_CHICKEN_key // Mudar ID da chave
+                                TAG.UID=<SRC.UID>
+                                TIMER=<DEF.rare_chests_timer>
+                        ELSE
+                                SRC.SYSMESSAGE You need a Imperial Chicken Chest Key in order to open this Imperial Chest. // Mudar a mensagem pa outro chest
+                                RETURN 1
+                        ENDIF
+                ENDIF
+        ELSE
+                SRC.SYSMESSAGE You don't think there is anything worth inside of this chest.
+                RETURN 1
+        ENDIF
+ENDIF
+ 
+ON=@TIMER
+f_rare_chest_restock125a tm_imperial_CHICKEN_chest // Mudar o TM_ para o novo _chest
+RETURN 1
+ 
+ON=@DROPON_SELF
+SRC.SYSMESSAGE You are not allowed to drop any item into this chest.
+RETURN 1
+ 
+ON=@CLICK
+MESSAGE=<NAME>
+RETURN 1
+
+
+[ITEMDEF i_imperial_CHICKEN_key] // Mudar o nome do ID.
+ID=i_key_copper
+NAME=@00092 Imperial Chicken Chest Key // Mudar nome e a cor
+TYPE=t_script
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Rare Newbie Dungeon Chest Key
+ 
+ON=@CREATE
+COLOR=00092 // Mudar cor
+ 
+ON=@DCLICK
+SRC.SYSMESSAGE Double-click a Imperial Chicken Chest Key in order to open it. // Mudar mensagem
+RETURN 1
+
+
+
+  // // // //  // // // //  // // // // // 
+ // // // //  Sheep Chest  // // // // // 
+// // // //  // // // //  // // // // //
+
+
+[TEMPLATE tm_imperial_SHEEP_chest]  // Mudar o nome
+CONTAINER=i_bag
+ITEM=i_deepseablue_dye,R10
+ITEM=i_unique_rope3,R25
+ITEM=i_softperp_dye,R10
+ITEM=i_snow_globe_minoc,R5
+ITEM=i_wool,{ 25 55 } 
+ITEM=i_gold,{ 1000 10000 }
+ITEM=i_log_holly,{ 12 50 }
+
+
+[ITEMDEF i_imperial_SHEEP_chest] // Mudar o Nome
+ID=i_chest_metal_brass
+NAME=@003a3 Imperial Sheep Chest // Mudar o nome e cor
+TYPE=t_container
+DUPELIST=0e41
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Newbie Dungeon Rare Chest
+ 
+ON=@CREATE
+COLOR=003a3 // Mudar a cor
+MORE1=1
+TIMER=1
+ATTR=08010
+ 
+ON=@DCLICK
+IF !(<SRC.ISGM>)
+        IF (<EVAL <MORE1>>==0)
+                IF !(STRMATCH("<TAG.UID>",""))
+                        IF !(<TAG0.UID>==<SRC.UID>)
+                                SRC.SYSMESSAGE This Imperial Chest has already been open by another Player.
+                                RETURN 1
+                        ENDIF
+                ELSE
+                        IF (<SRC.RESTEST 1 i_imperial_SHEEP_key>) // Mudar ID da chave
+                                SRC.SYSMESSAGE You've opened the Imperial Sheep Chest. You will be able to use it for the next <EVAL (<DEF.rare_chests_timer>/60)> minutes. // Mudar a mensagem.
+                                SRC.CONSUME 1 i_imperial_SHEEP_key // Mudar ID da chave
+                                TAG.UID=<SRC.UID>
+                                TIMER=<DEF.rare_chests_timer>
+                        ELSE
+                                SRC.SYSMESSAGE You need a Imperial Sheep Chest Key in order to open this Imperial Chest. // Mudar a mensagem pa outro chest
+                                RETURN 1
+                        ENDIF
+                ENDIF
+        ELSE
+                SRC.SYSMESSAGE You don't think there is anything worth inside of this chest.
+                RETURN 1
+        ENDIF
+ENDIF
+ 
+ON=@TIMER
+f_rare_chest_restock125a tm_imperial_SHEEP_chest // Mudar o TM_ para o novo _chest
+RETURN 1
+ 
+ON=@DROPON_SELF
+SRC.SYSMESSAGE You are not allowed to drop any item into this chest.
+RETURN 1
+ 
+ON=@CLICK
+MESSAGE=<NAME>
+RETURN 1
+
+
+[ITEMDEF i_imperial_SHEEP_key] // Mudar o nome do ID.
+ID=i_key_copper
+NAME=@003a3 Imperial Sheep Chest Key // Mudar nome e a cor
+TYPE=t_script
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Rare Newbie Dungeon Chest Key
+ 
+ON=@CREATE
+COLOR=003a3 // Mudar cor
+ 
+ON=@DCLICK
+SRC.SYSMESSAGE Double-click a Imperial Sheep Chest Key in order to open it. // Mudar mensagem
+RETURN 1
+
+
+
+  // // // //  // // // //  // // // // // 
+ // // // //  Swine Chest  // // // // // 
+// // // //  // // // //  // // // // //
+
+
+[TEMPLATE tm_imperial_SWINE_chest]  // Mudar o nome
+CONTAINER=i_bag
+ITEM=i_unique_GUILLOTINE,R25
+ITEM=i_log_rose,{10 29}
+ITEM=i_pet_llama_pack,R5
+ITEM=i_luck_stone
+
+
+
+
+[ITEMDEF i_imperial_SWINE_chest] // Mudar o Nome
+ID=i_chest_metal_brass
+NAME=@0015f Imperial Swine Chest // Mudar o nome e cor
+TYPE=t_container
+DUPELIST=0e41
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Newbie Dungeon Rare Chest
+ 
+ON=@CREATE
+COLOR=0015f // Mudar a cor
+MORE1=1
+TIMER=1
+ATTR=08010
+ 
+ON=@DCLICK
+IF !(<SRC.ISGM>)
+        IF (<EVAL <MORE1>>==0)
+                IF !(STRMATCH("<TAG.UID>",""))
+                        IF !(<TAG0.UID>==<SRC.UID>)
+                                SRC.SYSMESSAGE This Imperial Chest has already been open by another Player.
+                                RETURN 1
+                        ENDIF
+                ELSE
+                        IF (<SRC.RESTEST 1 i_imperial_SWINE_key>) // Mudar ID da chave
+                                SRC.SYSMESSAGE You've opened the Imperial Swine Chest. You will be able to use it for the next <EVAL (<DEF.rare_chests_timer>/60)> minutes. // Mudar a mensagem.
+                                SRC.CONSUME 1 i_imperial_SWINE_key // Mudar ID da chave
+                                TAG.UID=<SRC.UID>
+                                TIMER=<DEF.rare_chests_timer>
+                        ELSE
+                                SRC.SYSMESSAGE You need a Imperial Swine Chest Key in order to open this Imperial Chest. // Mudar a mensagem pa outro chest
+                                RETURN 1
+                        ENDIF
+                ENDIF
+        ELSE
+                SRC.SYSMESSAGE You don't think there is anything worth inside of this chest.
+                RETURN 1
+        ENDIF
+ENDIF
+ 
+ON=@TIMER
+f_rare_chest_restock125a tm_imperial_SWINE_chest // Mudar o TM_ para o novo _chest
+RETURN 1
+ 
+ON=@DROPON_SELF
+SRC.SYSMESSAGE You are not allowed to drop any item into this chest.
+RETURN 1
+ 
+ON=@CLICK
+MESSAGE=<NAME>
+RETURN 1
+
+
+[ITEMDEF i_imperial_SWINE_key] // Mudar o nome do ID.
+ID=i_key_copper
+NAME=@0015f Imperial Swine Chest Key // Mudar nome e a cor
+TYPE=t_script
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Rare Newbie Dungeon Chest Key
+ 
+ON=@CREATE
+COLOR=0015f // Mudar cor
+ 
+ON=@DCLICK
+SRC.SYSMESSAGE Double-click a Imperial Swine Chest Key in order to open it. // Mudar mensagem
+RETURN 1
+
+
+  // // // //  // // // //  // // // // // // // 
+ // // // //  Skeleton Hero Chest   // // // // 
+// // // //  // // // //  // // // // // // //
+
+
+[TEMPLATE tm_imperial_SHC_chest]  // Mudar o nome
+CONTAINER=i_bag
+ITEM=i_unique_SH1,R20 
+ITEM=i_reag_black_pearl,{ 10 15 }  
+ITEM=i_reag_blood_moss,{ 10 15 }
+ITEM=i_reag_garlic,{ 10 15 }
+ITEM=i_reag_ginseng,{ 10 15 }
+ITEM=i_reag_mandrake_root,{ 10 15 }
+ITEM=i_reag_nightshade,{ 10 15 }
+ITEM=i_reag_sulfur_ash,{ 10 15 }
+ITEM=i_reag_spider_silk,{ 10 15 }
+ITEM=i_classicpassionpink_dye,R10
+ITEM=i_book_STEEL,R7
+ITEM=i_sunset_dye,R13
+ITEM=i_potion_Shrink
+ITEM=i_potion_Shrink,R2
+ITEM=i_potion_Shrink,R5
+ITEM=i_potion_ShrinkGreat,R5
+ITEM=i_potion_ShrinkGreat,R10
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+
+
+[ITEMDEF i_imperial_SHC_chest] // Mudar o Nome
+ID=i_chest_metal_brass
+NAME=@007b5 Imperial Skeleton Hero Chest // Mudar o nome e cor
+TYPE=t_container
+DUPELIST=0e41
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Newbie Dungeon Rare Chest
+ 
+ON=@CREATE
+COLOR=007b5 // Mudar a cor
+MORE1=1
+TIMER=1
+ATTR=08010
+ 
+ON=@DCLICK
+IF !(<SRC.ISGM>)
+        IF (<EVAL <MORE1>>==0)
+                IF !(STRMATCH("<TAG.UID>",""))
+                        IF !(<TAG0.UID>==<SRC.UID>)
+                                SRC.SYSMESSAGE This Imperial Chest has already been open by another Player.
+                                RETURN 1
+                        ENDIF
+                ELSE
+                        IF (<SRC.RESTEST 1 i_imperial_SHC_key>) // Mudar ID da chave
+                                SRC.SYSMESSAGE You've opened the Imperial Skeleton Hero Chest. You will be able to use it for the next <EVAL (<DEF.rare_chests_timer>/60)> minutes. // Mudar a mensagem.
+                                SRC.CONSUME 1 i_imperial_SHC_key // Mudar ID da chave
+                                TAG.UID=<SRC.UID>
+                                TIMER=<DEF.rare_chests_timer>
+                        ELSE
+                                SRC.SYSMESSAGE You need a Imperial Skeleton Hero Chest Key in order to open this Imperial Chest. // Mudar a mensagem pa outro chest
+                                RETURN 1
+                        ENDIF
+                ENDIF
+        ELSE
+                SRC.SYSMESSAGE You don't think there is anything worth inside of this chest.
+                RETURN 1
+        ENDIF
+ENDIF
+ 
+ON=@TIMER
+f_rare_chest_restock125a tm_imperial_SHC_chest // Mudar o TM_ para o novo _chest
+RETURN 1
+ 
+ON=@DROPON_SELF
+SRC.SYSMESSAGE You are not allowed to drop any item into this chest.
+RETURN 1
+ 
+ON=@CLICK
+MESSAGE=<NAME>
+RETURN 1
+
+
+[ITEMDEF i_imperial_SHC_key] // Mudar o nome do ID.
+ID=i_key_copper
+NAME=@007b5 Imperial Skeleton Hero Chest Key // Mudar nome e a cor
+TYPE=t_script
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Rare Newbie Dungeon Chest Key
+ 
+ON=@CREATE
+COLOR=007b5 // Mudar cor
+ 
+ON=@DCLICK
+SRC.SYSMESSAGE Double-click a Imperial Skeleton Hero Chest Key in order to open it. // Mudar mensagem
+RETURN 1
+
+
+  // // // //  // // // //  // // // // // 
+ // // // //  Cyclops Chest   // // // // 
+// // // //  // // // //  // // // // //
+
+
+[TEMPLATE tm_imperial_CYCLOPS_chest]  // Mudar o nome
+CONTAINER=i_bag
+ITEM=i_unique_CYCLOPS,R15
+ITEM=i_book_VERITE,R10 
+ITEM=i_notpink_dye,R15
+ITEM=i_vorpal_dye,R12
+ITEM=i_snow_globe_trinsic,R5
+ITEM=RANDOM_LOWER_MERC
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=i_log_rose,{ 10 45 }
+
+
+
+[ITEMDEF i_imperial_CYCLOPS_chest] // Mudar o Nome
+ID=i_chest_metal_brass
+NAME=@000f8 Imperial Cyclops Chest // Mudar o nome e cor
+TYPE=t_container
+DUPELIST=0e41
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Newbie Dungeon Rare Chest
+ 
+ON=@CREATE
+COLOR=000f8 // Mudar a cor
+MORE1=1
+TIMER=1
+ATTR=08010
+ 
+ON=@DCLICK
+IF !(<SRC.ISGM>)
+        IF (<EVAL <MORE1>>==0)
+                IF !(STRMATCH("<TAG.UID>",""))
+                        IF !(<TAG0.UID>==<SRC.UID>)
+                                SRC.SYSMESSAGE This Imperial Chest has already been open by another Player.
+                                RETURN 1
+                        ENDIF
+                ELSE
+                        IF (<SRC.RESTEST 1 i_imperial_CYCLOPS_key>) // Mudar ID da chave
+                                SRC.SYSMESSAGE You've opened the Imperial Cyclops Chest. You will be able to use it for the next <EVAL (<DEF.rare_chests_timer>/60)> minutes. // Mudar a mensagem.
+                                SRC.CONSUME 1 i_imperial_CYCLOPS_key // Mudar ID da chave
+                                TAG.UID=<SRC.UID>
+                                TIMER=<DEF.rare_chests_timer>
+                        ELSE
+                                SRC.SYSMESSAGE You need a Imperial Cyclops Chest Key in order to open this Imperial Chest. // Mudar a mensagem pa outro chest
+                                RETURN 1
+                        ENDIF
+                ENDIF
+        ELSE
+                SRC.SYSMESSAGE You don't think there is anything worth inside of this chest.
+                RETURN 1
+        ENDIF
+ENDIF
+ 
+ON=@TIMER
+f_rare_chest_restock125a tm_imperial_CYCLOPS_chest // Mudar o TM_ para o novo _chest
+RETURN 1
+ 
+ON=@DROPON_SELF
+SRC.SYSMESSAGE You are not allowed to drop any item into this chest.
+RETURN 1
+ 
+ON=@CLICK
+MESSAGE=<NAME>
+RETURN 1
+
+
+[ITEMDEF i_imperial_CYCLOPS_key] // Mudar o nome do ID.
+ID=i_key_copper
+NAME=@000f8 Imperial Cyclops Chest Key // Mudar nome e a cor
+TYPE=t_script
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Rare Newbie Dungeon Chest Key
+ 
+ON=@CREATE
+COLOR=000f8 // Mudar cor
+ 
+ON=@DCLICK
+SRC.SYSMESSAGE Double-click a Imperial Cyclops Chest Key in order to open it. // Mudar mensagem
+RETURN 1
+
+
+
+  // // // //  // // // //  // // // // // 
+ // // // //   Titan Chest    // // // // 
+// // // //  // // // //  // // // // //
+
+
+[TEMPLATE tm_imperial_TITAN_chest]  // Mudar o nome
+CONTAINER=i_bag
+ITEM=i_unique_TITAN,R15
+ITEM=i_book_VERITE,R10 
+ITEM=i_notpink_dye,R15
+ITEM=i_vorpal_dye,R12
+ITEM=i_snow_globe_trinsic,R5
+ITEM=RANDOM_LOWER_MERC
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=i_log_rose,{ 10 45 }
+
+
+
+
+[ITEMDEF i_imperial_TITAN_chest] // Mudar o Nome
+ID=i_chest_metal_brass
+NAME=@00030 Imperial Titan Chest // Mudar o nome e cor
+TYPE=t_container
+DUPELIST=0e41
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Newbie Dungeon Rare Chest
+ 
+ON=@CREATE
+COLOR=00030 // Mudar a cor
+MORE1=1
+TIMER=1
+ATTR=08010
+ 
+ON=@DCLICK
+IF !(<SRC.ISGM>)
+        IF (<EVAL <MORE1>>==0)
+                IF !(STRMATCH("<TAG.UID>",""))
+                        IF !(<TAG0.UID>==<SRC.UID>)
+                                SRC.SYSMESSAGE This Imperial Chest has already been open by another Player.
+                                RETURN 1
+                        ENDIF
+                ELSE
+                        IF (<SRC.RESTEST 1 i_imperial_TITAN_key>) // Mudar ID da chave
+                                SRC.SYSMESSAGE You've opened the Imperial Titan Chest. You will be able to use it for the next <EVAL (<DEF.rare_chests_timer>/60)> minutes. // Mudar a mensagem.
+                                SRC.CONSUME 1 i_imperial_TITAN_key // Mudar ID da chave
+                                TAG.UID=<SRC.UID>
+                                TIMER=<DEF.rare_chests_timer>
+                        ELSE
+                                SRC.SYSMESSAGE You need a Imperial Titan Chest Key in order to open this Imperial Chest. // Mudar a mensagem pa outro chest
+                                RETURN 1
+                        ENDIF
+                ENDIF
+        ELSE
+                SRC.SYSMESSAGE You don't think there is anything worth inside of this chest.
+                RETURN 1
+        ENDIF
+ENDIF
+ 
+ON=@TIMER
+f_rare_chest_restock125a tm_imperial_TITAN_chest // Mudar o TM_ para o novo _chest
+RETURN 1
+ 
+ON=@DROPON_SELF
+SRC.SYSMESSAGE You are not allowed to drop any item into this chest.
+RETURN 1
+ 
+ON=@CLICK
+MESSAGE=<NAME>
+RETURN 1
+
+
+[ITEMDEF i_imperial_TITAN_key] // Mudar o nome do ID.
+ID=i_key_copper
+NAME=@00030 Imperial Titan Chest Key // Mudar nome e a cor
+TYPE=t_script
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Rare Newbie Dungeon Chest Key
+ 
+ON=@CREATE
+COLOR=00030 // Mudar cor
+ 
+ON=@DCLICK
+SRC.SYSMESSAGE Double-click a Imperial Titan Chest Key in order to open it. // Mudar mensagem
+RETURN 1
+
+
+
+  // // // //  // // // //  // // // // // 
+ // // // //   Scorpion Chest    // // // // 
+// // // //  // // // //  // // // // //
+
+
+[TEMPLATE tm_imperial_SCORPION_chest]  // Mudar o nome
+CONTAINER=i_bag
+ITEM=i_unique_DISPLAY3,R20
+ITEM=RANDOM_LOWER_MERC
+ITEM=RANDOM_LOWER_MERC,R5
+ITEM=i_gem_random
+ITEM=i_gem_random
+ITEM=i_gem_random
+ITEM=i_gem_random
+ITEM=i_gem_random
+ITEM=i_gem_random
+ITEM=i_gem_random
+ITEM=i_gem_random
+ITEM=i_peppermint_dye,R10
+ITEM=i_softblue_dye,R9
+ITEM=i_pet_scorp
+ITEM=i_pet_scorp,R2
+ITEM=i_pet_scorp,R5
+ITEM=i_pet_scorp,R8
+
+
+[ITEMDEF i_imperial_SCORPION_chest] // Mudar o Nome
+ID=i_chest_metal_brass
+NAME=@00154 Imperial Scorpion Chest // Mudar o nome e cor
+TYPE=t_container
+DUPELIST=0e41
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Newbie Dungeon Rare Chest
+ 
+ON=@CREATE
+COLOR=00154 // Mudar a cor
+MORE1=1
+TIMER=1
+ATTR=08010
+ 
+ON=@DCLICK
+IF !(<SRC.ISGM>)
+        IF (<EVAL <MORE1>>==0)
+                IF !(STRMATCH("<TAG.UID>",""))
+                        IF !(<TAG0.UID>==<SRC.UID>)
+                                SRC.SYSMESSAGE This Imperial Chest has already been open by another Player.
+                                RETURN 1
+                        ENDIF
+                ELSE
+                        IF (<SRC.RESTEST 1 i_imperial_SCORPION_key>) // Mudar ID da chave
+                                SRC.SYSMESSAGE You've opened the Imperial Scorpion Chest. You will be able to use it for the next <EVAL (<DEF.rare_chests_timer>/60)> minutes. // Mudar a mensagem.
+                                SRC.CONSUME 1 i_imperial_SCORPION_key // Mudar ID da chave
+                                TAG.UID=<SRC.UID>
+                                TIMER=<DEF.rare_chests_timer>
+                        ELSE
+                                SRC.SYSMESSAGE You need a Imperial Scorpion Chest Key in order to open this Imperial Chest. // Mudar a mensagem pa outro chest
+                                RETURN 1
+                        ENDIF
+                ENDIF
+        ELSE
+                SRC.SYSMESSAGE You don't think there is anything worth inside of this chest.
+                RETURN 1
+        ENDIF
+ENDIF
+ 
+ON=@TIMER
+f_rare_chest_restock125a tm_imperial_SCORPION_chest // Mudar o TM_ para o novo _chest
+RETURN 1
+ 
+ON=@DROPON_SELF
+SRC.SYSMESSAGE You are not allowed to drop any item into this chest.
+RETURN 1
+ 
+ON=@CLICK
+MESSAGE=<NAME>
+RETURN 1
+
+
+[ITEMDEF i_imperial_SCORPION_key] // Mudar o nome do ID.
+ID=i_key_copper
+NAME=@00154 Imperial Scorpion Chest Key // Mudar nome e a cor
+TYPE=t_script
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Rare Newbie Dungeon Chest Key
+ 
+ON=@CREATE
+COLOR=00154 // Mudar cor
+ 
+ON=@DCLICK
+SRC.SYSMESSAGE Double-click a Imperial Scorpion Chest Key in order to open it. // Mudar mensagem
+RETURN 1
+
+
+
+  // // // //  // // // //  // // // // // // // //
+ // // // //   Swamp Chest    // // // // 
+// // // //  // // // //  // // // // // // // //
+
+
+[TEMPLATE tm_imperial_SWAMP_chest]  // Mudar o nome
+CONTAINER=i_bag
+ITEM=i_unique_SWAMP,R20
+ITEM=i_book_VALORITE,R13
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=RANDOM_RARE_2,R10
+ITEM=RANDOM_RARE_2,R5
+ITEM=RANDOM_LOWER_MERC
+ITEM=RANDOM_LOWER_MERC,R5
+ITEM=RANDOM_LOWER_MERC,R10
+ITEM=i_swamp_dye,R10
+ITEM=i_rain_dye,R12
+ITEM=i_snow_globe_trinsic,R5
+
+
+[ITEMDEF i_imperial_SWAMP_chest] // Mudar o Nome
+ID=i_chest_metal_brass
+NAME=@00292 Imperial Swamp Chest // Mudar o nome e cor
+TYPE=t_container
+DUPELIST=0e41
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Newbie Dungeon Rare Chest
+ 
+ON=@CREATE
+COLOR=00292 // Mudar a cor
+MORE1=1
+TIMER=1
+ATTR=08010
+ 
+ON=@DCLICK
+IF !(<SRC.ISGM>)
+        IF (<EVAL <MORE1>>==0)
+                IF !(STRMATCH("<TAG.UID>",""))
+                        IF !(<TAG0.UID>==<SRC.UID>)
+                                SRC.SYSMESSAGE This Imperial Chest has already been open by another Player.
+                                RETURN 1
+                        ENDIF
+                ELSE
+                        IF (<SRC.RESTEST 1 i_imperial_SWAMP_key>) // Mudar ID da chave
+                                SRC.SYSMESSAGE You've opened the Imperial Swamp Chest. You will be able to use it for the next <EVAL (<DEF.rare_chests_timer>/60)> minutes. // Mudar a mensagem.
+                                SRC.CONSUME 1 i_imperial_SWAMP_key // Mudar ID da chave
+                                TAG.UID=<SRC.UID>
+                                TIMER=<DEF.rare_chests_timer>
+                        ELSE
+                                SRC.SYSMESSAGE You need a Imperial Swamp Chest Key in order to open this Imperial Chest. // Mudar a mensagem pa outro chest
+                                RETURN 1
+                        ENDIF
+                ENDIF
+        ELSE
+                SRC.SYSMESSAGE You don't think there is anything worth inside of this chest.
+                RETURN 1
+        ENDIF
+ENDIF
+ 
+ON=@TIMER
+f_rare_chest_restock125a tm_imperial_SWAMP_chest // Mudar o TM_ para o novo _chest
+RETURN 1
+ 
+ON=@DROPON_SELF
+SRC.SYSMESSAGE You are not allowed to drop any item into this chest.
+RETURN 1
+ 
+ON=@CLICK
+MESSAGE=<NAME>
+RETURN 1
+
+
+[ITEMDEF i_imperial_SWAMP_key] // Mudar o nome do ID.
+ID=i_key_copper
+NAME=@00292 Imperial Swamp Chest Key // Mudar nome e a cor
+TYPE=t_script
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Rare Newbie Dungeon Chest Key
+ 
+ON=@CREATE
+COLOR=00292 // Mudar cor
+ 
+ON=@DCLICK
+SRC.SYSMESSAGE Double-click a Imperial Swamp Chest Key in order to open it. // Mudar mensagem
+RETURN 1
+
+
+
+
+
+  // // // //  // // // //  // // // // // // // //
+ // // // //   Acid Dungeon Chest   // // // // // 
+// // // //  // // // //  // // // // // // // //
+
+
+[TEMPLATE tm_imperial_ACID_chest]  // Mudar o nome
+CONTAINER=i_bag
+ITEM=i_unique_ACIDSTATUE,R25
+ITEM=i_book_ACID,R14
+ITEM=RANDOM_LOWER_MERC
+ITEM=RANDOM_UPPER_MERC,R9
+ITEM=RANDOM_RARE_2
+ITEM=RANDOM_RARE_2,R10
+ITEM=RANDOM_RARE_3,R15
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=i_acid_dye,R8
+ITEM=i_heavenlywhite_dye,R10
+ITEM=i_reag_black_pearl,{ 4 8 }  
+ITEM=i_reag_blood_moss,{ 4 8  }
+ITEM=i_reag_garlic,{ 4 8  }
+ITEM=i_reag_ginseng,{ 4 8  }
+ITEM=i_reag_mandrake_root,{ 4 8  }
+ITEM=i_reag_nightshade,{ 4 8  }
+ITEM=i_reag_sulfur_ash,{ 4 8  }
+ITEM=i_reag_spider_silk,{ 4 8  }
+
+[ITEMDEF i_imperial_ACID_chest] // Mudar o Nome
+ID=0e43
+NAME=@0a43 Imperial Acid Dungeon Chest // Mudar o nome e cor
+TYPE=t_container
+DUPELIST=0E42, 0E43
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Newbie Dungeon Rare Chest
+ 
+ON=@CREATE
+COLOR=0a43 // Mudar a cor
+MORE1=1
+TIMER=1
+ATTR=08010
+ 
+ON=@DCLICK
+IF !(<SRC.ISGM>)
+        IF (<EVAL <MORE1>>==0)
+                IF !(STRMATCH("<TAG.UID>",""))
+                        IF !(<TAG0.UID>==<SRC.UID>)
+                                SRC.SYSMESSAGE This Imperial Chest has already been open by another Player.
+                                RETURN 1
+                        ENDIF
+                ELSE
+                        IF (<SRC.RESTEST 1 i_imperial_ACID_key>) // Mudar ID da chave
+                                SRC.SYSMESSAGE You've opened the Imperial Acid Dungeon Chest. You will be able to use it for the next <EVAL (<DEF.rare_chests_timer>/60)> minutes. // Mudar a mensagem.
+                                SRC.CONSUME 1 i_imperial_ACID_key // Mudar ID da chave
+                                TAG.UID=<SRC.UID>
+                                TIMER=<DEF.rare_chests_timer>
+                        ELSE
+                                SRC.SYSMESSAGE You need a Imperial Acid Dungeon Chest Key in order to open this Imperial Chest. // Mudar a mensagem pa outro chest
+                                RETURN 1
+                        ENDIF
+                ENDIF
+        ELSE
+                SRC.SYSMESSAGE You don't think there is anything worth inside of this chest.
+                RETURN 1
+        ENDIF
+ENDIF
+ 
+ON=@TIMER
+f_rare_chest_restock125a tm_imperial_ACID_chest // Mudar o TM_ para o novo _chest
+RETURN 1
+ 
+ON=@DROPON_SELF
+SRC.SYSMESSAGE You are not allowed to drop any item into this chest.
+RETURN 1
+ 
+ON=@CLICK
+MESSAGE=<NAME>
+RETURN 1
+
+
+[ITEMDEF i_imperial_ACID_key] // Mudar o nome do ID.
+ID=i_key_copper
+NAME=@0a43 Imperial Acid Dungeon Chest Key // Mudar nome e a cor
+TYPE=t_script
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Rare Newbie Dungeon Chest Key
+ 
+ON=@CREATE
+COLOR=0a43 // Mudar cor
+ 
+ON=@DCLICK
+SRC.SYSMESSAGE Double-click a Imperial Acid Dungeon Chest Key in order to open it. // Mudar mensagem
+RETURN 1
+
+
+  // // // //  // // // //  // // // // // // // //
+ // // // //   Despise Dungeon Chest   // // // // // 
+// // // //  // // // //  // // // // // // // //
+
+
+[TEMPLATE tm_imperial_DESPISE_chest]  // Mudar o nome
+CONTAINER=i_bag
+ITEM=i_axe_exec_bronze,R10  // Mudar todos estes items, entre parenteses é o amount que dropa de cada
+ITEM=i_katana_bronze,R10
+ITEM=i_maul_bronze,R10
+ITEM=i_platemail_leggings_bronze,R10
+ITEM=i_platemail_arms_bronze,R10
+ITEM=i_platemail_helm_bronze,R10
+ITEM=i_platemail_gloves_bronze,R10
+ITEM=i_bascinet_bronze,R10
+ITEM=i_platemail_chest_bronze,R10
+ITEM=i_armor_female_plate_bronze,R10
+ITEM=i_platemail_gorget_bronze,R10
+ITEM=i_spear_short_bronze,R10
+ITEM=i_spear_bronze,R10
+ITEM=i_shield_heater_bronze,R10
+ITEM=i_bow_holly,R10
+ITEM=i_staff_quarter_holly,R10
+ITEM=i_shield_heater_bronze,R10
+ITEM=i_reag_black_pearl,{ 4 8 }  
+ITEM=i_reag_blood_moss,{ 4 8  }
+ITEM=i_reag_garlic,{ 4 8  }
+ITEM=i_reag_ginseng,{ 4 8  }
+ITEM=i_reag_mandrake_root,{ 4 8  }
+ITEM=i_reag_nightshade,{ 4 8  }
+ITEM=i_reag_sulfur_ash,{ 4 8  }
+ITEM=i_reag_spider_silk,{ 4 8  }
+ITEM=i_dye_tub,R25
+ITEM=I_SCROLL_EARTHQUAKE,R20
+ITEM=I_SCROLL_ENERGY_VORTEX,R20
+ITEM=I_SCROLL_RESURRECTION,R20
+ITEM=I_SCROLL_SUMMON_DAEMON,R20
+ITEM=I_SCROLL_SUMMON_ELEM_EARTH,R20
+ITEM=I_SCROLL_SUMMON_ELEM_AIR,R20
+ITEM=I_SCROLL_SUMMON_ELEM_FIRE,R20
+ITEM=I_SCROLL_SUMMON_ELEM_WATER,R20
+ITEM=i_unique_DESPISE1,R50
+ITEM=i_luck_stone,R10
+ITEM=i_softgreen_dye,R25
+ITEM=i_helm_nose_silver,R20
+ITEM=i_platemail_arms_silver,R20
+ITEM=i_platemail_gorget_Silver,R20
+ITEM=i_shield_heater_titanium,R25
+ITEM=i_platemail_leggings_silver,R20
+ITEM=i_armor_female_plate_silver,R20
+ITEM=i_platemail_chest_silver,R20
+ITEM=i_platemail_gloves_silver,R20
+ITEM=i_katana_titanium,R25
+ITEM=i_maul_titanium,R25
+ITEM=i_pet_llama,R10
+
+
+
+
+[ITEMDEF i_imperial_DESPISE_chest] // Mudar o Nome
+ID=0e43
+NAME=@0482 Imperial Despise Chest // Mudar o nome e cor
+TYPE=t_container
+DUPELIST=0E42, 0E43
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Newbie Dungeon Rare Chest
+ 
+ON=@CREATE
+COLOR=0482 // Mudar a cor
+MORE1=1
+TIMER=1
+ATTR=08010
+ 
+ON=@DCLICK
+IF !(<SRC.ISGM>)
+        IF (<EVAL <MORE1>>==0)
+                IF !(STRMATCH("<TAG.UID>",""))
+                        IF !(<TAG0.UID>==<SRC.UID>)
+                                SRC.SYSMESSAGE This Imperial Chest has already been open by another Player.
+                                RETURN 1
+                        ENDIF
+                ELSE
+                        IF (<SRC.RESTEST 1 i_imperial_DESPISE_key>) // Mudar ID da chave
+                                SRC.SYSMESSAGE You've opened the Imperial Despise Dungeon Chest. You will be able to use it for the next <EVAL (<DEF.rare_chests_timer>/60)> minutes. // Mudar a mensagem.
+                                SRC.CONSUME 1 i_imperial_DESPISE_key // Mudar ID da chave
+                                TAG.UID=<SRC.UID>
+                                TIMER=<DEF.rare_chests_timer>
+                        ELSE
+                                SRC.SYSMESSAGE You need a Imperial Despise Dungeon Chest Key in order to open this Imperial Chest. // Mudar a mensagem pa outro chest
+                                RETURN 1
+                        ENDIF
+                ENDIF
+        ELSE
+                SRC.SYSMESSAGE You don't think there is anything worth inside of this chest.
+                RETURN 1
+        ENDIF
+ENDIF
+ 
+ON=@TIMER
+f_rare_chest_restock125a tm_imperial_DESPISE_chest // Mudar o TM_ para o novo _chest
+RETURN 1
+ 
+ON=@DROPON_SELF
+SRC.SYSMESSAGE You are not allowed to drop any item into this chest.
+RETURN 1
+ 
+ON=@CLICK
+MESSAGE=<NAME>
+RETURN 1
+
+
+[ITEMDEF i_imperial_DESPISE_key] // Mudar o nome do ID.
+ID=i_key_copper
+NAME=@0482 Imperial Despise Dungeon Chest Key // Mudar nome e a cor
+TYPE=t_script
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Rare Newbie Dungeon Chest Key
+ 
+ON=@CREATE
+COLOR=0482 // Mudar cor
+ 
+ON=@DCLICK
+SRC.SYSMESSAGE Double-click a Imperial Despise Dungeon Chest Key in order to open it. // Mudar mensagem
+RETURN 1
+
+
+
+  // // // //  // // // //  // // // // // // // //
+ // // // //   Hythloth Dungeon Chest   // // // // // 
+// // // //  // // // //  // // // // // // // //
+
+
+[TEMPLATE tm_imperial_HYTHLOTH_chest]  // Mudar o nome
+CONTAINER=i_bag
+ITEM=i_unique_Quiver1,R25 
+ITEM=i_reag_black_pearl,{ 4 8 }  
+ITEM=i_reag_blood_moss,{ 4 8  }
+ITEM=i_reag_garlic,{ 4 8  }
+ITEM=i_reag_ginseng,{ 4 8  }
+ITEM=i_reag_mandrake_root,{ 4 8  }
+ITEM=i_reag_nightshade,{ 4 8  }
+ITEM=i_reag_sulfur_ash,{ 4 8  }
+ITEM=i_reag_spider_silk,{ 4 8  }
+ITEM=i_proudly_dye,R15
+ITEM=i_book_COMPOSITE,R10
+ITEM=i_composite_dye,R8
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=i_ingot_mytheril,R5
+ITEM=i_ingot_mytheril,R7
+ITEM=RANDOM_UPPER_MERC
+ITEM=RANDOM_LOWER_MERC,R5
+ITEM=RANDOM_LOWER_MERC,R10
+ITEM=RANDOM_RARE_3,R13
+ITEM=RANDOM_RARE_2
+
+
+
+[ITEMDEF i_imperial_HYTHLOTH_chest] // Mudar o Nome
+ID=0e43
+NAME=@0524 Imperial Hythloth Daemon Chest // Mudar o nome e cor
+TYPE=t_container
+DUPELIST=0E42, 0E43
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Newbie Dungeon Rare Chest
+ 
+ON=@CREATE
+COLOR=0524// Mudar a cor
+MORE1=1
+TIMER=1
+ATTR=08010
+ 
+ON=@DCLICK
+IF !(<SRC.ISGM>)
+        IF (<EVAL <MORE1>>==0)
+                IF !(STRMATCH("<TAG.UID>",""))
+                        IF !(<TAG0.UID>==<SRC.UID>)
+                                SRC.SYSMESSAGE This Imperial Chest has already been open by another Player.
+                                RETURN 1
+                        ENDIF
+                ELSE
+                        IF (<SRC.RESTEST 1 i_imperial_HYTHLOTH_key>) // Mudar ID da chave
+                                SRC.SYSMESSAGE You've opened the Imperial Hythloth Daemon Chest. You will be able to use it for the next <EVAL (<DEF.rare_chests_timer>/60)> minutes. // Mudar a mensagem.
+                                SRC.CONSUME 1 i_imperial_HYTHLOTH_key // Mudar ID da chave
+                                TAG.UID=<SRC.UID>
+                                TIMER=<DEF.rare_chests_timer>
+                        ELSE
+                                SRC.SYSMESSAGE You need a Imperial Hythloth Daemon Chest Key in order to open this Imperial Chest. // Mudar a mensagem pa outro chest
+                                RETURN 1
+                        ENDIF
+                ENDIF
+        ELSE
+                SRC.SYSMESSAGE You don't think there is anything worth inside of this chest.
+                RETURN 1
+        ENDIF
+ENDIF
+ 
+ON=@TIMER
+f_rare_chest_restock125a tm_imperial_HYTHLOTH_chest // Mudar o TM_ para o novo _chest
+RETURN 1
+ 
+ON=@DROPON_SELF
+SRC.SYSMESSAGE You are not allowed to drop any item into this chest.
+RETURN 1
+ 
+ON=@CLICK
+MESSAGE=<NAME>
+RETURN 1
+
+
+[ITEMDEF i_imperial_HYTHLOTH_key] // Mudar o nome do ID.
+ID=i_key_copper
+NAME=@0524 Imperial Hythloth Daemon Chest Key // Mudar nome e a cor
+TYPE=t_script
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Rare Newbie Dungeon Chest Key
+ 
+ON=@CREATE
+COLOR=0524 // Mudar cor
+ 
+ON=@DCLICK
+SRC.SYSMESSAGE Double-click a Imperial Hythloth Daemon Chest Key in order to open it. // Mudar mensagem
+RETURN 1
+
+
+  // // // //  // // // //  // // // // // // // //
+ // // // //   Wrong Dungeon Chest   // // // // // 
+// // // //  // // // //  // // // // // // // //
+
+
+[TEMPLATE tm_imperial_WRONG_chest]  // Mudar o nome
+CONTAINER=i_bag
+ITEM=i_pet_slime
+ITEM=i_pet_slime
+ITEM=i_pet_slime,R5
+ITEM=i_pet_slime,R5
+ITEM=i_pet_slime,R5
+ITEM=i_unique_WRONG1,R22
+ITEM=i_book_MAHOGANY,R10
+ITEM=i_phantom_dye,R8
+ITEM=i_hardpink_dye,R10
+ITEM=RANDOM_RARE_2,R8
+ITEM=RANDOM_RARE_2,R8
+ITEM=RANDOM_LOWER_MERC,R7
+ITEM=i_gem_random
+ITEM=i_gem_random
+ITEM=i_gem_random
+ITEM=i_gem_random
+ITEM=i_gem_random
+ITEM=i_gem_random
+ITEM=i_gem_random
+
+
+
+
+
+[ITEMDEF i_imperial_WRONG_chest] // Mudar o Nome
+ID=0e43
+NAME=@038 Imperial Wrong Chest // Mudar o nome e cor
+TYPE=t_container
+DUPELIST=0E42, 0E43
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Newbie Dungeon Rare Chest
+ 
+ON=@CREATE
+COLOR=038// Mudar a cor
+MORE1=1
+TIMER=1
+ATTR=08010
+ 
+ON=@DCLICK
+IF !(<SRC.ISGM>)
+        IF (<EVAL <MORE1>>==0)
+                IF !(STRMATCH("<TAG.UID>",""))
+                        IF !(<TAG0.UID>==<SRC.UID>)
+                                SRC.SYSMESSAGE This Imperial Chest has already been open by another Player.
+                                RETURN 1
+                        ENDIF
+                ELSE
+                        IF (<SRC.RESTEST 1 i_imperial_WRONG_key>) // Mudar ID da chave
+                                SRC.SYSMESSAGE You've opened the Imperial Wrong Dungeon Chest. You will be able to use it for the next <EVAL (<DEF.rare_chests_timer>/60)> minutes. // Mudar a mensagem.
+                                SRC.CONSUME 1 i_imperial_WRONG_key // Mudar ID da chave
+                                TAG.UID=<SRC.UID>
+                                TIMER=<DEF.rare_chests_timer>
+                        ELSE
+                                SRC.SYSMESSAGE You need a Imperial Wrong Dungeon Chest Key in order to open this Imperial Chest. // Mudar a mensagem pa outro chest
+                                RETURN 1
+                        ENDIF
+                ENDIF
+        ELSE
+                SRC.SYSMESSAGE You don't think there is anything worth inside of this chest.
+                RETURN 1
+        ENDIF
+ENDIF
+ 
+ON=@TIMER
+f_rare_chest_restock125a tm_imperial_WRONG_chest // Mudar o TM_ para o novo _chest
+RETURN 1
+ 
+ON=@DROPON_SELF
+SRC.SYSMESSAGE You are not allowed to drop any item into this chest.
+RETURN 1
+ 
+ON=@CLICK
+MESSAGE=<NAME>
+RETURN 1
+
+
+[ITEMDEF i_imperial_WRONG_key] // Mudar o nome do ID.
+ID=i_key_copper
+NAME=@038 Imperial Wrong Dungeon Chest Key // Mudar nome e a cor
+TYPE=t_script
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Rare Newbie Dungeon Chest Key
+ 
+ON=@CREATE
+COLOR=038 // Mudar cor
+ 
+ON=@DCLICK
+SRC.SYSMESSAGE Double-click a Imperial Wrong Dungeon Chest Key in order to open it. // Mudar mensagem
+RETURN 1
+
+
+  // // // //  // // // //  // // // // // // // //
+ // // // //   Ice Dungeon Chest   // // // // // 
+// // // //  // // // //  // // // // // // // //
+
+
+[TEMPLATE tm_imperial_ID_chest]  // Mudar o nome
+CONTAINER=i_bag
+ITEM=i_unique_SCULPTURE,R25  // Mudar todos estes items, entre parenteses é o amount que dropa de cada
+ITEM=i_reag_black_pearl,{ 4 8 }  
+ITEM=i_reag_blood_moss,{ 4 8  }
+ITEM=i_reag_garlic,{ 4 8  }
+ITEM=i_reag_ginseng,{ 4 8  }
+ITEM=i_reag_mandrake_root,{ 4 8  }
+ITEM=i_reag_nightshade,{ 4 8  }
+ITEM=i_reag_sulfur_ash,{ 4 8  }
+ITEM=i_reag_spider_silk,{ 4 8  }
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=RANDOM_LOWER_MERC,R5
+ITEM=RANDOM_LOWER_MERC,R10
+ITEM=i_book_WHITEOAK,R15
+ITEM=i_whiteoak_dye,R10
+ITEM=i_cardinal_dye,R10
+ITEM=i_luck_stone,R5
+ITEM=i_luck_stone,R4
+ITEM=i_luck_stone
+ITEM=i_potion_ExplosionGreat,{ 4 15 }
+
+
+
+[ITEMDEF i_imperial_ID_chest] // Mudar o Nome
+ID=0e43
+NAME=@060 Imperial Ice Dungeon Fiend Chest // Mudar o nome e cor
+TYPE=t_container
+DUPELIST=0E42, 0E43
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Newbie Dungeon Rare Chest
+ 
+ON=@CREATE
+COLOR=060// Mudar a cor
+MORE1=1
+TIMER=1
+ATTR=08010
+ 
+ON=@DCLICK
+IF !(<SRC.ISGM>)
+        IF (<EVAL <MORE1>>==0)
+                IF !(STRMATCH("<TAG.UID>",""))
+                        IF !(<TAG0.UID>==<SRC.UID>)
+                                SRC.SYSMESSAGE This Imperial Chest has already been open by another Player.
+                                RETURN 1
+                        ENDIF
+                ELSE
+                        IF (<SRC.RESTEST 1 i_imperial_ID_key>) // Mudar ID da chave
+                                SRC.SYSMESSAGE You've opened the Imperial Ice Dungeon Fiend Chest. You will be able to use it for the next <EVAL (<DEF.rare_chests_timer>/60)> minutes. // Mudar a mensagem.
+                                SRC.CONSUME 1 i_imperial_ID_key // Mudar ID da chave
+                                TAG.UID=<SRC.UID>
+                                TIMER=<DEF.rare_chests_timer>
+                        ELSE
+                                SRC.SYSMESSAGE You need a Imperial Ice Dungeon Fiend Chest Key in order to open this Imperial Chest. // Mudar a mensagem pa outro chest
+                                RETURN 1
+                        ENDIF
+                ENDIF
+        ELSE
+                SRC.SYSMESSAGE You don't think there is anything worth inside of this chest.
+                RETURN 1
+        ENDIF
+ENDIF
+ 
+ON=@TIMER
+f_rare_chest_restock125a tm_imperial_ID_chest // Mudar o TM_ para o novo _chest
+RETURN 1
+ 
+ON=@DROPON_SELF
+SRC.SYSMESSAGE You are not allowed to drop any item into this chest.
+RETURN 1
+ 
+ON=@CLICK
+MESSAGE=<NAME>
+RETURN 1
+
+
+[ITEMDEF i_imperial_ID_key] // Mudar o nome do ID.
+ID=i_key_copper
+NAME=@060 Imperial Ice Dungeon Fiend Chest Key // Mudar nome e a cor
+TYPE=t_script
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Rare Newbie Dungeon Chest Key
+ 
+ON=@CREATE
+COLOR=060 // Mudar cor
+ 
+ON=@DCLICK
+SRC.SYSMESSAGE Double-click a Imperial Ice Dungeon Fiend Chest Key in order to open it. // Mudar mensagem
+RETURN 1
+
+
+
+  // // // //  // // // //  // // // // // // // //
+ // // // //   Destard Dungeon Chest   // // // // // 
+// // // //  // // // //  // // // // // // // //
+
+
+[TEMPLATE tm_imperial_DESTARD_chest]  // Mudar o nome
+CONTAINER=i_bag
+ITEM=i_unique_DESTARD,R25 
+ITEM=i_terror_dye,R20
+ITEM=i_vorpal_dye,R10
+ITEM=i_deepseablue_dye,R10
+ITEM=i_book_VERMINARD,R13
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich,R2
+ITEM=ingot_random_rich,R2
+ITEM=ingot_random_rich,R3
+ITEM=i_reag_Dragons_heart
+ITEM=i_reag_Dragons_heart,R4
+ITEM=RANDOM_RARE_2
+ITEM=RANDOM_RARE_2,R5
+ITEM=RANDOM_RARE_2,R10
+ITEM=i_log_oak,{ 5 35 }
+ITEM=i_reag_black_pearl,{ 4 8 }  
+ITEM=i_reag_blood_moss,{ 4 8  }
+ITEM=i_reag_garlic,{ 4 8  }
+ITEM=i_reag_ginseng,{ 4 8  }
+ITEM=i_reag_mandrake_root,{ 4 8  }
+ITEM=i_reag_nightshade,{ 4 8  }
+ITEM=i_reag_sulfur_ash,{ 4 8  }
+ITEM=i_reag_spider_silk,{ 4 8  }
+ITEM=RANDOM_LOWER_MERC
+ITEM=RANDOM_LOWER_MERC,R5
+
+[ITEMDEF i_imperial_DESTARD_chest] // Mudar o Nome
+ID=0e43
+NAME=@079b	 Imperial Destard Dungeon Chest // Mudar o nome e cor
+TYPE=t_container
+DUPELIST=0E42, 0E43
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Newbie Dungeon Rare Chest
+ 
+ON=@CREATE
+COLOR=079b// Mudar a cor
+MORE1=1
+TIMER=1
+ATTR=08010
+ 
+ON=@DCLICK
+IF !(<SRC.ISGM>)
+        IF (<EVAL <MORE1>>==0)
+                IF !(STRMATCH("<TAG.UID>",""))
+                        IF !(<TAG0.UID>==<SRC.UID>)
+                                SRC.SYSMESSAGE This Imperial Chest has already been open by another Player.
+                                RETURN 1
+                        ENDIF
+                ELSE
+                        IF (<SRC.RESTEST 1 i_imperial_DESTARD_key>) // Mudar ID da chave
+                                SRC.SYSMESSAGE You've opened the Imperial Destard Dungeon Chest. You will be able to use it for the next <EVAL (<DEF.rare_chests_timer>/60)> minutes. // Mudar a mensagem.
+                                SRC.CONSUME 1 i_imperial_DESTARD_key // Mudar ID da chave
+                                TAG.UID=<SRC.UID>
+                                TIMER=<DEF.rare_chests_timer>
+                        ELSE
+                                SRC.SYSMESSAGE You need a Imperial Destard Dungeon Chest Key in order to open this Imperial Chest. // Mudar a mensagem pa outro chest
+                                RETURN 1
+                        ENDIF
+                ENDIF
+        ELSE
+                SRC.SYSMESSAGE You don't think there is anything worth inside of this chest.
+                RETURN 1
+        ENDIF
+ENDIF
+ 
+ON=@TIMER
+f_rare_chest_restock125a tm_imperial_DESTARD_chest // Mudar o TM_ para o novo _chest
+RETURN 1
+ 
+ON=@DROPON_SELF
+SRC.SYSMESSAGE You are not allowed to drop any item into this chest.
+RETURN 1
+ 
+ON=@CLICK
+MESSAGE=<NAME>
+RETURN 1
+
+
+[ITEMDEF i_imperial_DESTARD_key] // Mudar o nome do ID.
+ID=i_key_copper
+NAME=@079b Imperial Destard Dungeon Chest Key // Mudar nome e a cor
+TYPE=t_script
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Rare Newbie Dungeon Chest Key
+ 
+ON=@CREATE
+COLOR=079b // Mudar cor
+ 
+ON=@DCLICK
+SRC.SYSMESSAGE Double-click a Imperial Destard Dungeon Chest Key in order to open it. // Mudar mensagem
+RETURN 1
+
+
+  // // // //  // // // //  // // // // // // // //
+ // // // //   Covetous Dungeon Chest   // // // // // 
+// // // //  // // // //  // // // // // // // //
+
+
+[TEMPLATE tm_imperial_COVETOUS_chest]  // Mudar o nome
+CONTAINER=i_bag
+ITEM=i_unique_CAD1,R20  
+ITEM=i_yollord_dye,R15
+ITEM=RANDOM_LOWER_MERC,R2
+ITEM=RANDOM_LOWER_MERC,R3
+ITEM=RANDOM_UPPER_MERC,R8
+ITEM=RANDOM_UPPER_MERC,R15
+ITEM=RANDOM_RARE_2
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich,R2
+ITEM=ingot_random_rich,R3
+ITEM=i_log_holly,{ 15 50 }
+
+
+
+[ITEMDEF i_imperial_COVETOUS_chest] // Mudar o Nome
+ID=0e43
+NAME=@0770 Imperial Covetous Mountain Giant Chest // Mudar o nome e cor
+TYPE=t_container
+DUPELIST=0E42, 0E43
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Newbie Dungeon Rare Chest
+ 
+ON=@CREATE
+COLOR=0770// Mudar a cor
+MORE1=1
+TIMER=1
+ATTR=08010
+ 
+ON=@DCLICK
+IF !(<SRC.ISGM>)
+        IF (<EVAL <MORE1>>==0)
+                IF !(STRMATCH("<TAG.UID>",""))
+                        IF !(<TAG0.UID>==<SRC.UID>)
+                                SRC.SYSMESSAGE This Imperial Chest has already been open by another Player.
+                                RETURN 1
+                        ENDIF
+                ELSE
+                        IF (<SRC.RESTEST 1 i_imperial_COVETOUS_key>) // Mudar ID da chave
+                                SRC.SYSMESSAGE You've opened the Imperial Covetous Mountain Giant Chest. You will be able to use it for the next <EVAL (<DEF.rare_chests_timer>/60)> minutes. // Mudar a mensagem.
+                                SRC.CONSUME 1 i_imperial_COVETOUS_key // Mudar ID da chave
+                                TAG.UID=<SRC.UID>
+                                TIMER=<DEF.rare_chests_timer>
+                        ELSE
+                                SRC.SYSMESSAGE You need a Imperial Covetous Mountain Giant Chest Key in order to open this Imperial Chest. // Mudar a mensagem pa outro chest
+                                RETURN 1
+                        ENDIF
+                ENDIF
+        ELSE
+                SRC.SYSMESSAGE You don't think there is anything worth inside of this chest.
+                RETURN 1
+        ENDIF
+ENDIF
+ 
+ON=@TIMER
+f_rare_chest_restock125a tm_imperial_COVETOUS_chest // Mudar o TM_ para o novo _chest
+RETURN 1
+ 
+ON=@DROPON_SELF
+SRC.SYSMESSAGE You are not allowed to drop any item into this chest.
+RETURN 1
+ 
+ON=@CLICK
+MESSAGE=<NAME>
+RETURN 1
+
+
+[ITEMDEF i_imperial_COVETOUS_key] // Mudar o nome do ID.
+ID=i_key_copper
+NAME=@0770 Imperial Covetous Mountain Giant Chest Key // Mudar nome e a cor
+TYPE=t_script
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Rare Newbie Dungeon Chest Key
+ 
+ON=@CREATE
+COLOR=0770 // Mudar cor
+ 
+ON=@DCLICK
+SRC.SYSMESSAGE Double-click a Imperial Covetous Mountain Giant Chest Key in order to open it. // Mudar mensagem
+RETURN 1
+
+
+
+
+  // // // //  // // // //  // // // // // // // //
+ // // // //   Terathan Dungeon Chest   // // // // // 
+// // // //  // // // //  // // // // // // // //
+
+
+[TEMPLATE tm_imperial_TERATHAN_chest]  // Mudar o nome
+CONTAINER=i_bag
+ITEM=i_unique_MUSH2,R25  // Mudar todos estes items, entre parenteses é o amount que dropa de cada
+ITEM=i_reag_black_pearl,{ 4 8 }  
+ITEM=i_reag_blood_moss,{ 4 8  }
+ITEM=i_reag_garlic,{ 4 8  }
+ITEM=i_reag_ginseng,{ 4 8  }
+ITEM=i_reag_mandrake_root,{ 4 8  }
+ITEM=i_reag_nightshade,{ 4 8  }
+ITEM=i_reag_sulfur_ash,{ 4 8  }
+ITEM=i_reag_spider_silk,{ 4 8  }
+ITEM=i_book_TERATHAN,R15
+ITEM=i_terathane_dye,R10
+ITEM=i_green_dye,R10
+ITEM=i_ingot_terathane
+ITEM=i_ingot_terathane,R2
+ITEM=i_ingot_terathane,R2
+ITEM=i_ingot_terathane,R2
+ITEM=i_ingot_terathane,R2
+ITEM=i_ingot_terathane,R2
+ITEM=i_gem_random
+ITEM=i_gem_random
+ITEM=i_gem_random
+ITEM=i_golem_terathane,R8
+ITEM=i_reag_scales_terathane,R8
+ITEM=i_reag_scales_terathane,R8
+ITEM=i_reag_scales_terathane,R8
+ITEM=i_reag_scales_terathane,R8
+ITEM=i_reag_scales_terathane,R8
+ITEM=i_reag_scales_terathane,R8
+ITEM=i_reag_scales_terathane,R8
+ITEM=i_reag_scales_terathane,R8
+ITEM=i_pet_ostard_zostrich,R14
+ITEM=RANDOM_LOWER_MERC,R5
+ITEM=RANDOM_LOWER_MERC,R5
+
+
+
+
+[ITEMDEF i_imperial_TERATHAN_chest] // Mudar o Nome
+ID=0e43
+NAME=@05a5	 Imperial Terathan Dungeon Chest // Mudar o nome e cor
+TYPE=t_container
+DUPELIST=0E42, 0E43
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Newbie Dungeon Rare Chest
+ 
+ON=@CREATE
+COLOR=05a5// Mudar a cor
+MORE1=1
+TIMER=1
+ATTR=08010
+ 
+ON=@DCLICK
+IF !(<SRC.ISGM>)
+        IF (<EVAL <MORE1>>==0)
+                IF !(STRMATCH("<TAG.UID>",""))
+                        IF !(<TAG0.UID>==<SRC.UID>)
+                                SRC.SYSMESSAGE This Imperial Chest has already been open by another Player.
+                                RETURN 1
+                        ENDIF
+                ELSE
+                        IF (<SRC.RESTEST 1 i_imperial_TERATHAN_key>) // Mudar ID da chave
+                                SRC.SYSMESSAGE You've opened the Imperial Terathan Dungeon Chest. You will be able to use it for the next <EVAL (<DEF.rare_chests_timer>/60)> minutes. // Mudar a mensagem.
+                                SRC.CONSUME 1 i_imperial_TERATHAN_key // Mudar ID da chave
+                                TAG.UID=<SRC.UID>
+                                TIMER=<DEF.rare_chests_timer>
+                        ELSE
+                                SRC.SYSMESSAGE You need a Imperial Terathan Dungeon Chest Key in order to open this Imperial Chest. // Mudar a mensagem pa outro chest
+                                RETURN 1
+                        ENDIF
+                ENDIF
+        ELSE
+                SRC.SYSMESSAGE You don't think there is anything worth inside of this chest.
+                RETURN 1
+        ENDIF
+ENDIF
+ 
+ON=@TIMER
+f_rare_chest_restock125a tm_imperial_TERATHAN_chest // Mudar o TM_ para o novo _chest
+RETURN 1
+ 
+ON=@DROPON_SELF
+SRC.SYSMESSAGE You are not allowed to drop any item into this chest.
+RETURN 1
+ 
+ON=@CLICK
+MESSAGE=<NAME>
+RETURN 1
+
+
+[ITEMDEF i_imperial_TERATHAN_key] // Mudar o nome do ID.
+ID=i_key_copper
+NAME=@05a5 Imperial Terathan Dungeon Chest Key // Mudar nome e a cor
+TYPE=t_script
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Rare Newbie Dungeon Chest Key
+ 
+ON=@CREATE
+COLOR=05a5 // Mudar cor
+ 
+ON=@DCLICK
+SRC.SYSMESSAGE Double-click a Imperial Terathan Dungeon Chest Key in order to open it. // Mudar mensagem
+RETURN 1
+
+
+
+  // // // //  // // // //  // // // // // // // //
+ // // // //   Shame Dungeon Orc Chest   // // // // // 
+// // // //  // // // //  // // // // // // // //
+
+
+[TEMPLATE tm_imperial_S1_chest]  // Mudar o nome
+CONTAINER=i_bag
+ITEM=i_unique_SHAMEORC,R25  // Mudar todos estes items, entre parenteses é o amount que dropa de cada
+ITEM=i_book_AGAPITE,R15
+ITEM=i_agapite_dye,R10
+ITEM=i_fog_dye,R12
+ITEM=i_potion_PermanenceGreat,
+ITEM=i_potion_PermanenceGreat,R5
+ITEM=i_potion_PermanenceGreat,R5
+ITEM=i_potion_EmpowerGreat
+ITEM=i_potion_EmpowerGreat,R5
+ITEM=i_potion_EmpowerGreat,R5
+ITEM=i_pet_horse_brown_dk,R3
+ITEM=RANDOM_RARE_2,R5
+ITEM=RANDOM_RARE_2,R5
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=i_log_pine,{20 90}
+
+
+
+[ITEMDEF i_imperial_S1_chest] // Mudar o Nome
+ID=0e43
+NAME=@07b5	 Imperial Shame Dungeon Orc Chest // Mudar o nome e cor
+TYPE=t_container
+DUPELIST=0E42, 0E43
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Newbie Dungeon Rare Chest
+ 
+ON=@CREATE
+COLOR=07b5// Mudar a cor
+MORE1=1
+TIMER=1
+ATTR=08010
+ 
+ON=@DCLICK
+IF !(<SRC.ISGM>)
+        IF (<EVAL <MORE1>>==0)
+                IF !(STRMATCH("<TAG.UID>",""))
+                        IF !(<TAG0.UID>==<SRC.UID>)
+                                SRC.SYSMESSAGE This Imperial Chest has already been open by another Player.
+                                RETURN 1
+                        ENDIF
+                ELSE
+                        IF (<SRC.RESTEST 1 i_imperial_S1_key>) // Mudar ID da chave
+                                SRC.SYSMESSAGE You've opened the Imperial Shame Dungeon Orc Chest. You will be able to use it for the next <EVAL (<DEF.rare_chests_timer>/60)> minutes. // Mudar a mensagem.
+                                SRC.CONSUME 1 i_imperial_S1_key // Mudar ID da chave
+                                TAG.UID=<SRC.UID>
+                                TIMER=<DEF.rare_chests_timer>
+                        ELSE
+                                SRC.SYSMESSAGE You need a Imperial Shame Dungeon Orc Chest Key in order to open this Imperial Chest. // Mudar a mensagem pa outro chest
+                                RETURN 1
+                        ENDIF
+                ENDIF
+        ELSE
+                SRC.SYSMESSAGE You don't think there is anything worth inside of this chest.
+                RETURN 1
+        ENDIF
+ENDIF
+ 
+ON=@TIMER
+f_rare_chest_restock125a tm_imperial_S1_chest // Mudar o TM_ para o novo _chest
+RETURN 1
+ 
+ON=@DROPON_SELF
+SRC.SYSMESSAGE You are not allowed to drop any item into this chest.
+RETURN 1
+ 
+ON=@CLICK
+MESSAGE=<NAME>
+RETURN 1
+
+
+[ITEMDEF i_imperial_S1_key] // Mudar o nome do ID.
+ID=i_key_copper
+NAME=@07b5 Imperial Shame Dungeon Orc Chest Key // Mudar nome e a cor
+TYPE=t_script
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Rare Newbie Dungeon Chest Key
+ 
+ON=@CREATE
+COLOR=07b5 // Mudar cor
+ 
+ON=@DCLICK
+SRC.SYSMESSAGE Double-click a Imperial Shame Dungeon Orc Chest Key in order to open it. // Mudar mensagem
+RETURN 1
+
+
+  // // // //  // // // //  // // // // // // // //
+ // // // //   Shame Dungeon Chest   // // // // // 
+// // // //  // // // //  // // // // // // // //
+
+
+[TEMPLATE tm_imperial_S2_chest]  // Mudar o nome
+CONTAINER=i_bag
+ITEM=i_unique_SHAME22,R25  // Mudar todos estes items, entre parenteses é o amount que dropa de cada
+ITEM=i_reag_black_pearl,{ 15 25 }  
+ITEM=i_reag_blood_moss,{ 15 25 }
+ITEM=i_reag_garlic,{ 15 25 }
+ITEM=i_reag_ginseng,{ 15 25 }
+ITEM=i_reag_mandrake_root,{ 15 25 }
+ITEM=i_reag_nightshade,{ 15 25 }
+ITEM=i_reag_sulfur_ash,{ 15 25 }
+ITEM=i_reag_spider_silk,{ 15 25 }
+ITEM=i_waycool_dye,R15
+ITEM=i_bubblegum_dye,R15
+ITEM=i_book_TITANIUM,R5
+ITEM=i_book_BLACKROCK,R12
+ITEM=i_book_BLOODROCK,R12
+ITEM=i_black_Dye,R5
+ITEM=ingot_random_filthy_rich,R6
+ITEM=ingot_random_filthy_rich,R8
+ITEM=ingot_random_filthy_rich,R9
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich,R2
+ITEM=ingot_random_rich,R2
+ITEM=ingot_random_rich,R2
+ITEM=ingot_random_rich,R2
+ITEM=ingot_random_rich,R2
+ITEM=ingot_random_rich,R2
+ITEM=ingot_random_rich,R2
+ITEM=ingot_random_rich,R2
+ITEM=ingot_random_rich,R2
+ITEM=ingot_random_rich,R2
+ITEM=ingot_random_rich,R2
+ITEM=ingot_random_rich,R2
+ITEM=RANDOM_RARE_3,R9
+ITEM=RANDOM_RARE_3,R10
+ITEM=RANDOM_RARE_2,R2
+ITEM=RANDOM_RARE_2,R5
+ITEM=RANDOM_USERORSKILL,R5
+ITEM=RANDOM_USERORSKILL,R8
+ITEM=RANDOM_UPPER_MERC
+ITEM=RANDOM_UPPER_MERC,R9
+ITEM=i_snow_globe_britain,R10
+ITEM=i_snow_globe_bucs_den,R10
+ITEM=i_snow_globe_cove,R10
+ITEM=i_snow_globe_jhelom,R10
+ITEM=i_snow_globe_maginicia,R10
+ITEM=i_snow_globe_minoc,R10
+ITEM=i_snow_globe_moonglow,R10
+ITEM=i_snow_globe_nujelm,R10
+ITEM=i_snow_globe_ocllo,R10
+ITEM=i_snow_globe_hold,R10
+ITEM=i_snow_globe_brae,R10
+ITEM=i_snow_globe_trinsic,R10
+ITEM=i_snow_globe_vesper,R10
+ITEM=i_snow_globe_yew,R10
+
+
+
+
+
+
+
+
+[ITEMDEF i_imperial_S2_chest] // Mudar o Nome
+ID=0e43
+NAME=@04c2 Imperial Shame Dungeon Chest // Mudar o nome e cor
+TYPE=t_container
+DUPELIST=0E42, 0E43
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Newbie Dungeon Rare Chest
+ 
+ON=@CREATE
+COLOR=04c2// Mudar a cor
+MORE1=1
+TIMER=1
+ATTR=08010
+ 
+ON=@DCLICK
+IF !(<SRC.ISGM>)
+        IF (<EVAL <MORE1>>==0)
+                IF !(STRMATCH("<TAG.UID>",""))
+                        IF !(<TAG0.UID>==<SRC.UID>)
+                                SRC.SYSMESSAGE This Imperial Chest has already been open by another Player.
+                                RETURN 1
+                        ENDIF
+                ELSE
+                        IF (<SRC.RESTEST 1 i_imperial_S2_key>) // Mudar ID da chave
+                                SRC.SYSMESSAGE You've opened the Imperial Shame Dungeon Chest. You will be able to use it for the next <EVAL (<DEF.rare_chests_timer>/60)> minutes. // Mudar a mensagem.
+                                SRC.CONSUME 1 i_imperial_S2_key // Mudar ID da chave
+                                TAG.UID=<SRC.UID>
+                                TIMER=<DEF.rare_chests_timer>
+                        ELSE
+                                SRC.SYSMESSAGE You need a Imperial Shame Dungeon Chest Key in order to open this Imperial Chest. // Mudar a mensagem pa outro chest
+                                RETURN 1
+                        ENDIF
+                ENDIF
+        ELSE
+                SRC.SYSMESSAGE You don't think there is anything worth inside of this chest.
+                RETURN 1
+        ENDIF
+ENDIF
+ 
+ON=@TIMER
+f_rare_chest_restock125a tm_imperial_S2_chest // Mudar o TM_ para o novo _chest
+RETURN 1
+ 
+ON=@DROPON_SELF
+SRC.SYSMESSAGE You are not allowed to drop any item into this chest.
+RETURN 1
+ 
+ON=@CLICK
+MESSAGE=<NAME>
+RETURN 1
+
+
+[ITEMDEF i_imperial_S2_key] // Mudar o nome do ID.
+ID=i_key_copper
+NAME=@04c2 Imperial Shame Dungeon Chest Key // Mudar nome e a cor
+TYPE=t_script
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Rare Newbie Dungeon Chest Key
+ 
+ON=@CREATE
+COLOR=04c2 // Mudar cor
+ 
+ON=@DCLICK
+SRC.SYSMESSAGE Double-click a Imperial Shame Dungeon Chest Key in order to open it. // Mudar mensagem
+RETURN 1
+
+
+
+  // // // //  // // // //  // // // // // // // //
+ // // // //   Shambling Chest   // // // // // 
+// // // //  // // // //  // // // // // // // //
+
+
+[TEMPLATE tm_imperial_SHAMBLING_chest]  // Mudar o nome
+CONTAINER=i_bag
+ITEM=i_unique_CRYSTAL2,R25
+ITEM=i_book_MYST,R15
+ITEM=i_book_ET,R15
+ITEM=i_enrichedtitanium_dye,R10
+ITEM=i_myst_dye,R10
+ITEM=i_log_cherry,R10
+ITEM=i_log_cherry,R10
+ITEM=i_log_composite,R5
+ITEM=i_log_composite,R5
+ITEM=i_log_myst,R9
+ITEM=i_log_myst,R9
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=RANDOM_RARE_2,R5
+ITEM=i_golem_adamantine,R15
+ITEM=i_golem_copper
+ITEM=i_golem_gold,R5
+ITEM=i_golem_blackrock,R20
+ITEM=i_golem_verminard,R15
+ITEM=i_golem_iron,R5
+
+
+[ITEMDEF i_imperial_SHAMBLING_chest] // Mudar o Nome
+ID=0e43
+NAME=@0852 Imperial Shambling Chest // Mudar o nome e cor
+TYPE=t_container
+DUPELIST=0E42, 0E43
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Newbie Dungeon Rare Chest
+ 
+ON=@CREATE
+COLOR=0852// Mudar a cor
+MORE1=1
+TIMER=1
+ATTR=08010
+ 
+ON=@DCLICK
+IF !(<SRC.ISGM>)
+        IF (<EVAL <MORE1>>==0)
+                IF !(STRMATCH("<TAG.UID>",""))
+                        IF !(<TAG0.UID>==<SRC.UID>)
+                                SRC.SYSMESSAGE This Imperial Chest has already been open by another Player.
+                                RETURN 1
+                        ENDIF
+                ELSE
+                        IF (<SRC.RESTEST 1 i_imperial_SHAMBLING_key>) // Mudar ID da chave
+                                SRC.SYSMESSAGE You've opened the Imperial Shambling Chest. You will be able to use it for the next <EVAL (<DEF.rare_chests_timer>/60)> minutes. // Mudar a mensagem.
+                                SRC.CONSUME 1 i_imperial_SHAMBLING_key // Mudar ID da chave
+                                TAG.UID=<SRC.UID>
+                                TIMER=<DEF.rare_chests_timer>
+                        ELSE
+                                SRC.SYSMESSAGE You need a Imperial Shambling Chest Key in order to open this Imperial Chest. // Mudar a mensagem pa outro chest
+                                RETURN 1
+                        ENDIF
+                ENDIF
+        ELSE
+                SRC.SYSMESSAGE You don't think there is anything worth inside of this chest.
+                RETURN 1
+        ENDIF
+ENDIF
+ 
+ON=@TIMER
+f_rare_chest_restock125a tm_imperial_SHAMBLING_chest // Mudar o TM_ para o novo _chest
+RETURN 1
+ 
+ON=@DROPON_SELF
+SRC.SYSMESSAGE You are not allowed to drop any item into this chest.
+RETURN 1
+ 
+ON=@CLICK
+MESSAGE=<NAME>
+RETURN 1
+
+
+[ITEMDEF i_imperial_SHAMBLING_key] // Mudar o nome do ID.
+ID=i_key_copper
+NAME=@0852 Imperial Shambling Chest Key // Mudar nome e a cor
+TYPE=t_script
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Rare Newbie Dungeon Chest Key
+ 
+ON=@CREATE
+COLOR=0852 // Mudar cor
+ 
+ON=@DCLICK
+SRC.SYSMESSAGE Double-click a Imperial Shambling Chest Key in order to open it. // Mudar mensagem
+RETURN 1
+
+
+
+  // // // //  // // // //  // // // // // // // //
+ // // // //   Nujel'm Chest   // // // // // 
+// // // //  // // // //  // // // // // // // //
+
+
+[TEMPLATE tm_imperial_nujelm_chest]  // Mudar o nome
+CONTAINER=i_bag
+ITEM=i_unique_paint5,R25
+ITEM=i_book_STRONGHOLD,R15
+ITEM=i_book_ADAMANTINE,R11
+ITEM=i_stronghold_dye,R8
+ITEM=i_cardinal_dye,R9
+ITEM=i_golem_stronghold,R8
+ITEM=i_ingot_stronghold
+ITEM=i_ingot_stronghold,R5
+ITEM=i_ingot_stronghold,R10
+ITEM=i_angel_dust
+ITEM=i_angel_dust,R5
+ITEM=i_angel_dust,R10
+ITEM=random_user_ar_low,R14
+ITEM=RANDOM_RARE_3,R12
+
+
+
+[ITEMDEF i_imperial_NUJELM_chest] // Mudar o Nome
+ID=0e43
+NAME=@07a1 Imperial Fallen Angel Chest // Mudar o nome e cor
+TYPE=t_container
+DUPELIST=0E42, 0E43
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Newbie Dungeon Rare Chest
+ 
+ON=@CREATE
+COLOR=07a1// Mudar a cor
+MORE1=1
+TIMER=1
+ATTR=08010
+ 
+ON=@DCLICK
+IF !(<SRC.ISGM>)
+        IF (<EVAL <MORE1>>==0)
+                IF !(STRMATCH("<TAG.UID>",""))
+                        IF !(<TAG0.UID>==<SRC.UID>)
+                                SRC.SYSMESSAGE This Imperial Chest has already been open by another Player.
+                                RETURN 1
+                        ENDIF
+                ELSE
+                        IF (<SRC.RESTEST 1 i_imperial_NUJELM_key>) // Mudar ID da chave
+                                SRC.SYSMESSAGE You've opened the Imperial Fallen Angel Chest. You will be able to use it for the next <EVAL (<DEF.rare_chests_timer>/60)> minutes. // Mudar a mensagem.
+                                SRC.CONSUME 1 i_imperial_NUJELM_key // Mudar ID da chave
+                                TAG.UID=<SRC.UID>
+                                TIMER=<DEF.rare_chests_timer>
+                        ELSE
+                                SRC.SYSMESSAGE You need a Imperial Fallen Angel Chest Key in order to open this Imperial Chest. // Mudar a mensagem pa outro chest
+                                RETURN 1
+                        ENDIF
+                ENDIF
+        ELSE
+                SRC.SYSMESSAGE You don't think there is anything worth inside of this chest.
+                RETURN 1
+        ENDIF
+ENDIF
+ 
+ON=@TIMER
+f_rare_chest_restock125a tm_imperial_NUJELM_chest // Mudar o TM_ para o novo _chest
+RETURN 1
+ 
+ON=@DROPON_SELF
+SRC.SYSMESSAGE You are not allowed to drop any item into this chest.
+RETURN 1
+ 
+ON=@CLICK
+MESSAGE=<NAME>
+RETURN 1
+
+
+[ITEMDEF i_imperial_NUJELM_key] // Mudar o nome do ID.
+ID=i_key_copper
+NAME=@07a1 Imperial Fallen Angel Chest Key // Mudar nome e a cor
+TYPE=t_script
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Rare Newbie Dungeon Chest Key
+ 
+ON=@CREATE
+COLOR=07a1 // Mudar cor
+ 
+ON=@DCLICK
+SRC.SYSMESSAGE Double-click a Imperial Fallen Angel Chest Key in order to open it. // Mudar mensagem
+RETURN 1
+
+
+  // // // //  // // // //  // // // // // // // //
+ // // // //   Shadow Chest   // // // // // 
+// // // //  // // // //  // // // // // // // //
+
+
+[TEMPLATE tm_imperial_SHADOW_chest]  // Mudar o nome
+CONTAINER=i_bag
+ITEM=i_unique_coral3,R25  // Mudar todos estes items, entre parenteses é o amount que dropa de cada
+ITEM=i_reag_black_pearl,{ 4 8 }  
+ITEM=i_reag_blood_moss,{ 4 8 }
+ITEM=i_reag_garlic,{ 4 8 }
+ITEM=i_reag_ginseng,{ 4 8 }
+ITEM=i_reag_mandrake_root,{ 4 8 }
+ITEM=i_reag_nightshade,{ 4 8 }
+ITEM=i_reag_sulfur_ash,{ 4 8 }
+ITEM=i_reag_spider_silk,{ 4 8 }
+ITEM=i_book_SHADOW,R11
+ITEM=i_shadow_dye,R8
+ITEM=i_pinky_dye,R15
+ITEM=RANDOM_RARE_3,R10
+ITEM=random_user_ar_low,R10
+ITEM=RANDOM_UPPER_MERC,R2
+ITEM=RANDOM_UPPER_MERC,R5
+ITEM=i_gem_shadow
+ITEM=i_gem_shadow
+ITEM=i_gem_shadow,R5
+ITEM=i_gem_shadow,R2
+ITEM=i_gem_shadow
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+
+
+
+
+
+
+[ITEMDEF i_imperial_SHADOW_chest] // Mudar o Nome
+ID=0e43
+NAME=@0455 Imperial Shadow Chest // Mudar o nome e cor
+TYPE=t_container
+DUPELIST=0E42, 0E43
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Newbie Dungeon Rare Chest
+ 
+ON=@CREATE
+COLOR=0455// Mudar a cor
+MORE1=1
+TIMER=1
+ATTR=08010
+ 
+ON=@DCLICK
+IF !(<SRC.ISGM>)
+        IF (<EVAL <MORE1>>==0)
+                IF !(STRMATCH("<TAG.UID>",""))
+                        IF !(<TAG0.UID>==<SRC.UID>)
+                                SRC.SYSMESSAGE This Imperial Chest has already been open by another Player.
+                                RETURN 1
+                        ENDIF
+                ELSE
+                        IF (<SRC.RESTEST 1 i_imperial_SHADOW_key>) // Mudar ID da chave
+                                SRC.SYSMESSAGE You've opened the Imperial Shadow Chest. You will be able to use it for the next <EVAL (<DEF.rare_chests_timer>/60)> minutes. // Mudar a mensagem.
+                                SRC.CONSUME 1 i_imperial_SHADOW_key // Mudar ID da chave
+                                TAG.UID=<SRC.UID>
+                                TIMER=<DEF.rare_chests_timer>
+                        ELSE
+                                SRC.SYSMESSAGE You need a Imperial Shadow Chest Key in order to open this Imperial Chest. // Mudar a mensagem pa outro chest
+                                RETURN 1
+                        ENDIF
+                ENDIF
+        ELSE
+                SRC.SYSMESSAGE You don't think there is anything worth inside of this chest.
+                RETURN 1
+        ENDIF
+ENDIF
+ 
+ON=@TIMER
+f_rare_chest_restock125a tm_imperial_SHADOW_chest // Mudar o TM_ para o novo _chest
+RETURN 1
+ 
+ON=@DROPON_SELF
+SRC.SYSMESSAGE You are not allowed to drop any item into this chest.
+RETURN 1
+ 
+ON=@CLICK
+MESSAGE=<NAME>
+RETURN 1
+
+
+[ITEMDEF i_imperial_SHADOW_key] // Mudar o nome do ID.
+ID=i_key_copper
+NAME=@0455 Imperial Shadow Chest Key // Mudar nome e a cor
+TYPE=t_script
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Rare Newbie Dungeon Chest Key
+ 
+ON=@CREATE
+COLOR=0455 // Mudar cor
+ 
+ON=@DCLICK
+SRC.SYSMESSAGE Double-click a Imperial Shadow Chest Key in order to open it. // Mudar mensagem
+RETURN 1
+
+
+  // // // //  // // // //  // // // // // // // //
+ // // // //   Ice Dragon Chest   // // // // // 
+// // // //  // // // //  // // // // // // // //
+
+
+[TEMPLATE tm_imperial_IDC_chest]  // Mudar o nome
+CONTAINER=i_bag
+ITEM=i_unique_ICEDRAGON,R25
+ITEM=i_dragonhide_ice
+ITEM=i_dragonhide_ice,R5
+ITEM=i_azure_dye,R15
+ITEM=i_log_whiteoak
+ITEM=i_log_whiteoak,R7
+ITEM=i_log_whiteoak,R10
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=i_gem_random
+ITEM=i_gem_random
+ITEM=i_gem_random
+ITEM=i_gem_random
+ITEM=i_gem_random
+ITEM=i_gem_random
+ITEM=i_gem_random
+ITEM=i_gem_random
+ITEM=random_user_ar_low,R10
+ITEM=random_user_ar_low,R10
+
+
+
+
+
+
+[ITEMDEF i_imperial_IDC_chest] // Mudar o Nome
+ID=0e43
+NAME=@005bb Imperial Ice Dragon Chest // Mudar o nome e cor
+TYPE=t_container
+DUPELIST=0E42, 0E43
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Newbie Dungeon Rare Chest
+ 
+ON=@CREATE
+COLOR=005bb// Mudar a cor
+MORE1=1
+TIMER=1
+ATTR=08010
+ 
+ON=@DCLICK
+IF !(<SRC.ISGM>)
+        IF (<EVAL <MORE1>>==0)
+                IF !(STRMATCH("<TAG.UID>",""))
+                        IF !(<TAG0.UID>==<SRC.UID>)
+                                SRC.SYSMESSAGE This Imperial Chest has already been open by another Player.
+                                RETURN 1
+                        ENDIF
+                ELSE
+                        IF (<SRC.RESTEST 1 i_imperial_IDC_key>) // Mudar ID da chave
+                                SRC.SYSMESSAGE You've opened the Imperial Ice Dragon Chest. You will be able to use it for the next <EVAL (<DEF.rare_chests_timer>/60)> minutes. // Mudar a mensagem.
+                                SRC.CONSUME 1 i_imperial_IDC_key // Mudar ID da chave
+                                TAG.UID=<SRC.UID>
+                                TIMER=<DEF.rare_chests_timer>
+                        ELSE
+                                SRC.SYSMESSAGE You need a Imperial Ice Dragon Chest Key in order to open this Imperial Chest. // Mudar a mensagem pa outro chest
+                                RETURN 1
+                        ENDIF
+                ENDIF
+        ELSE
+                SRC.SYSMESSAGE You don't think there is anything worth inside of this chest.
+                RETURN 1
+        ENDIF
+ENDIF
+ 
+ON=@TIMER
+f_rare_chest_restock125a tm_imperial_IDC_chest // Mudar o TM_ para o novo _chest
+RETURN 1
+ 
+ON=@DROPON_SELF
+SRC.SYSMESSAGE You are not allowed to drop any item into this chest.
+RETURN 1
+ 
+ON=@CLICK
+MESSAGE=<NAME>
+RETURN 1
+
+
+[ITEMDEF i_imperial_IDC_key] // Mudar o nome do ID.
+ID=i_key_copper
+NAME=@005bb Imperial Ice Dragon Chest Key // Mudar nome e a cor
+TYPE=t_script
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Rare Newbie Dungeon Chest Key
+ 
+ON=@CREATE
+COLOR=005bb // Mudar cor
+ 
+ON=@DCLICK
+SRC.SYSMESSAGE Double-click a Imperial Ice Dragon Chest Key in order to open it. // Mudar mensagem
+RETURN 1
+
+
+  // // // //  // // // //  // // // // // // // //
+ // // // //   Reaper Chest   // // // // // 
+// // // //  // // // //  // // // // // // // //
+
+
+[TEMPLATE tm_imperial_REAPER_chest]  // Mudar o nome
+CONTAINER=i_bag
+ITEM=i_unique_REAPER,R25
+ITEM=i_angel_dye,R25
+ITEM=i_white_dye,R25
+ITEM=i_vorpal_dye,R25
+ITEM=i_sunset_dye,R25
+ITEM=i_spectre_dye,R25
+ITEM=i_softperp_dye,R25
+ITEM=i_softpink_dye,R25
+ITEM=i_softgreen_dye,R25
+ITEM=i_softblue_dye,R25
+ITEM=i_book_BRONZE2,R15
+ITEM=i_book_CHERRY,R15
+ITEM=i_phantom_dye,R25
+ITEM=i_frozenblue_dye,R25
+ITEM=i_potion_Invisibility
+ITEM=i_potion_Invisibility,R5
+ITEM=i_potion_Invisibility,R10
+ITEM=i_green_dye,R25
+ITEM=i_electricblue_dye,R25
+ITEM=i_strongpink_dye,R25
+ITEM=i_camou_dye,R25
+ITEM=i_deepseablue_dye,R25
+ITEM=i_snow_globe_britain,R10
+ITEM=i_snow_globe_bucs_den,R10
+ITEM=i_snow_globe_cove,R10
+ITEM=i_snow_globe_jhelom,R10
+ITEM=i_snow_globe_maginicia,R10
+ITEM=i_snow_globe_minoc,R10
+ITEM=i_snow_globe_moonglow,R10
+ITEM=i_snow_globe_nujelm,R10
+ITEM=i_snow_globe_ocllo,R10
+ITEM=i_snow_globe_hold,R10
+ITEM=i_snow_globe_brae,R10
+ITEM=i_snow_globe_trinsic,R10
+ITEM=i_snow_globe_vesper,R10
+ITEM=i_snow_globe_yew,R10
+
+
+
+[ITEMDEF i_imperial_REAPER_chest] // Mudar o Nome
+ID=0e43
+NAME=@0400 Imperial Reaper Chest // Mudar o nome e cor
+TYPE=t_container
+DUPELIST=0E42, 0E43
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Newbie Dungeon Rare Chest
+ 
+ON=@CREATE
+COLOR=0400// Mudar a cor
+MORE1=1
+TIMER=1
+ATTR=08010
+ 
+ON=@DCLICK
+IF !(<SRC.ISGM>)
+        IF (<EVAL <MORE1>>==0)
+                IF !(STRMATCH("<TAG.UID>",""))
+                        IF !(<TAG0.UID>==<SRC.UID>)
+                                SRC.SYSMESSAGE This Imperial Chest has already been open by another Player.
+                                RETURN 1
+                        ENDIF
+                ELSE
+                        IF (<SRC.RESTEST 1 i_imperial_REAPER_key>) // Mudar ID da chave
+                                SRC.SYSMESSAGE You've opened the Imperial Reaper Chest. You will be able to use it for the next <EVAL (<DEF.rare_chests_timer>/60)> minutes. // Mudar a mensagem.
+                                SRC.CONSUME 1 i_imperial_REAPER_key // Mudar ID da chave
+                                TAG.UID=<SRC.UID>
+                                TIMER=<DEF.rare_chests_timer>
+                        ELSE
+                                SRC.SYSMESSAGE You need a Imperial Reaper Chest Key in order to open this Imperial Chest. // Mudar a mensagem pa outro chest
+                                RETURN 1
+                        ENDIF
+                ENDIF
+        ELSE
+                SRC.SYSMESSAGE You don't think there is anything worth inside of this chest.
+                RETURN 1
+        ENDIF
+ENDIF
+ 
+ON=@TIMER
+f_rare_chest_restock125a tm_imperial_REAPER_chest // Mudar o TM_ para o novo _chest
+RETURN 1
+ 
+ON=@DROPON_SELF
+SRC.SYSMESSAGE You are not allowed to drop any item into this chest.
+RETURN 1
+ 
+ON=@CLICK
+MESSAGE=<NAME>
+RETURN 1
+
+
+[ITEMDEF i_imperial_REAPER_key] // Mudar o nome do ID.
+ID=i_key_copper
+NAME=@0400 Imperial Reaper Chest Key // Mudar nome e a cor
+TYPE=t_script
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Rare Newbie Dungeon Chest Key
+ 
+ON=@CREATE
+COLOR=0400 // Mudar cor
+ 
+ON=@DCLICK
+SRC.SYSMESSAGE Double-click a Imperial Reaper Chest Key in order to open it. // Mudar mensagem
+RETURN 1
+
+
+
+  // // // //  // // // //  // // // // // // // //
+ // // // //   Supplies Boss Shame Chest   // // // // // 
+// // // //  // // // //  // // // // // // // //
+
+
+[TEMPLATE tm_imperial_SUPPLY_chest]  // Mudar o nome
+CONTAINER=i_bag
+ITEM=i_unique_SUPPLIES,R5  // Mudar todos estes items, entre parenteses é o amount que dropa de cada
+ITEM=i_reag_black_pearl,{ 80 140 }  
+ITEM=i_reag_blood_moss,{ 80 140 }
+ITEM=i_reag_garlic,{ 80 140 }
+ITEM=i_reag_ginseng,{ 80 140 }
+ITEM=i_reag_mandrake_root,{ 80 140 }
+ITEM=i_reag_nightshade,{ 80 140 }
+ITEM=i_reag_sulfur_ash,{ 80 140 }
+ITEM=i_reag_spider_silk,{ 80 140 }
+ITEM=i_xbolt,{ 100 200 }
+ITEM=i_bandage,{ 80 120 }
+ITEM=i_book_NEWICE,R2
+ITEM=i_book_SKARGARD,R2
+ITEM=i_salmon_dye,R5
+ITEM=i_legendary_scroll,R12
+ITEM=ingot_random_filthy_rich
+ITEM=ingot_random_filthy_rich
+ITEM=ingot_random_filthy_rich,R2
+ITEM=ingot_random_filthy_rich,R2
+ITEM=ingot_random_filthy_rich,R2
+ITEM=ingot_random_filthy_rich,R2
+ITEM=ingot_random_filthy_rich,R2
+ITEM=ingot_random_filthy_rich,R2
+ITEM=ingot_random_filthy_rich,R3
+ITEM=ingot_random_filthy_rich,R3
+ITEM=ingot_random_filthy_rich,R3
+ITEM=ingot_random_filthy_rich,R3
+ITEM=ingot_random_filthy_rich,R3
+ITEM=ingot_random_filthy_rich,R3
+ITEM=ingot_random_filthy_rich,R3
+ITEM=ingot_random_filthy_rich,R3
+ITEM=ingot_random_filthy_rich,R3
+ITEM=ingot_random_filthy_rich,R3
+ITEM=ingot_random_filthy_rich,R3
+ITEM=ingot_random_filthy_rich,R3
+ITEM=ingot_random_filthy_rich,R3
+ITEM=ingot_random_filthy_rich,R3
+ITEM=ingot_random_filthy_rich,R3
+ITEM=random_user_ar_high
+ITEM=random_user_ar_high,R5
+ITEM=i_golem_bloodrock,R7
+ITEM=i_pet_llama
+ITEM=i_pet_llama
+ITEM=i_pet_llama
+ITEM=i_pet_llama
+ITEM=i_pet_llama
+
+
+
+[ITEMDEF i_imperial_SUPPLY_chest] // Mudar o Nome
+ID=0e43
+NAME=@0798 Imperial Supplies Chest // Mudar o nome e cor
+TYPE=t_container
+DUPELIST=0E42, 0E43
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Newbie Dungeon Rare Chest
+ 
+ON=@CREATE
+COLOR=0798// Mudar a cor
+MORE1=1
+TIMER=1
+ATTR=08010
+ 
+ON=@DCLICK
+IF !(<SRC.ISGM>)
+        IF (<EVAL <MORE1>>==0)
+                IF !(STRMATCH("<TAG.UID>",""))
+                        IF !(<TAG0.UID>==<SRC.UID>)
+                                SRC.SYSMESSAGE This Imperial Chest has already been open by another Player.
+                                RETURN 1
+                        ENDIF
+                ELSE
+                        IF (<SRC.RESTEST 1 i_imperial_SUPPLY_key>) // Mudar ID da chave
+                                SRC.SYSMESSAGE You've opened the Imperial Supplies Chest. You will be able to use it for the next <EVAL (<DEF.rare_chests_timer>/60)> minutes. // Mudar a mensagem.
+                                SRC.CONSUME 1 i_imperial_SUPPLY_key // Mudar ID da chave
+                                TAG.UID=<SRC.UID>
+                                TIMER=<DEF.rare_chests_timer>
+                        ELSE
+                                SRC.SYSMESSAGE You need a Imperial Supplies Chest Key in order to open this Imperial Chest. // Mudar a mensagem pa outro chest
+                                RETURN 1
+                        ENDIF
+                ENDIF
+        ELSE
+                SRC.SYSMESSAGE You don't think there is anything worth inside of this chest.
+                RETURN 1
+        ENDIF
+ENDIF
+ 
+ON=@TIMER
+f_rare_chest_restock125a tm_imperial_SUPPLY_chest // Mudar o TM_ para o novo _chest
+RETURN 1
+ 
+ON=@DROPON_SELF
+SRC.SYSMESSAGE You are not allowed to drop any item into this chest.
+RETURN 1
+ 
+ON=@CLICK
+MESSAGE=<NAME>
+RETURN 1
+
+
+[ITEMDEF i_imperial_SUPPLY_key] // Mudar o nome do ID.
+ID=i_key_copper
+NAME=@0798 Imperial Supplies Chest Key // Mudar nome e a cor
+TYPE=t_script
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Rare Newbie Dungeon Chest Key
+ 
+ON=@CREATE
+COLOR=0798 // Mudar cor
+ 
+ON=@DCLICK
+SRC.SYSMESSAGE Double-click a Imperial Supplies Chest Key in order to open it. // Mudar mensagem
+RETURN 1
+
+
+
+  // // // //  // // // //  // // // // // // // //
+ // // // //   Fire Dungeon Firestarter Chest   // 
+// // // //  // // // //  // // // // // // // //
+
+
+[TEMPLATE tm_imperial_FIRE_chest]  // Mudar o nome
+CONTAINER=i_bag
+ITEM=i_unique_ANT1,R25
+ITEM=i_fire_dye,R8
+ITEM=i_firebrick_dye,R20
+ITEM=random_user_ar_low,R20
+ITEM=RANDOM_RARE_3,R20
+ITEM=RANDOM_RARE_2,R10
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=ingot_random_rich
+ITEM=i_ingot_mytheril,R14
+ITEM=i_book_NEWFIRE,R15
+
+
+
+
+[ITEMDEF i_imperial_FIRE_chest] // Mudar o Nome
+ID=0e43
+NAME=@00152 Imperial Fire Firestarter Chest // Mudar o nome e cor
+TYPE=t_container
+DUPELIST=0E42, 0E43
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Newbie Dungeon Rare Chest
+ 
+ON=@CREATE
+COLOR=00152// Mudar a cor
+MORE1=1
+TIMER=1
+ATTR=08010
+ 
+ON=@DCLICK
+IF !(<SRC.ISGM>)
+        IF (<EVAL <MORE1>>==0)
+                IF !(STRMATCH("<TAG.UID>",""))
+                        IF !(<TAG0.UID>==<SRC.UID>)
+                                SRC.SYSMESSAGE This Imperial Chest has already been open by another Player.
+                                RETURN 1
+                        ENDIF
+                ELSE
+                        IF (<SRC.RESTEST 1 i_imperial_FIRE_key>) // Mudar ID da chave
+                                SRC.SYSMESSAGE You've opened the Imperial Fire Firestarter Chest. You will be able to use it for the next <EVAL (<DEF.rare_chests_timer>/60)> minutes. // Mudar a mensagem.
+                                SRC.CONSUME 1 i_imperial_FIRE_key // Mudar ID da chave
+                                TAG.UID=<SRC.UID>
+                                TIMER=<DEF.rare_chests_timer>
+                        ELSE
+                                SRC.SYSMESSAGE You need a Imperial Fire Firestarter Chest Key in order to open this Imperial Chest. // Mudar a mensagem pa outro chest
+                                RETURN 1
+                        ENDIF
+                ENDIF
+        ELSE
+                SRC.SYSMESSAGE You don't think there is anything worth inside of this chest.
+                RETURN 1
+        ENDIF
+ENDIF
+ 
+ON=@TIMER
+f_rare_chest_restock125a tm_imperial_FIRE_chest // Mudar o TM_ para o novo _chest
+RETURN 1
+ 
+ON=@DROPON_SELF
+SRC.SYSMESSAGE You are not allowed to drop any item into this chest.
+RETURN 1
+ 
+ON=@CLICK
+MESSAGE=<NAME>
+RETURN 1
+
+
+[ITEMDEF i_imperial_FIRE_key] // Mudar o nome do ID.
+ID=i_key_copper
+NAME=@00152 Imperial Fire Firestarter Chest Key // Mudar nome e a cor
+TYPE=t_script
+
+CATEGORY=Imperial uo
+SUBSECTION=Items
+DESCRIPTION=Rare Newbie Dungeon Chest Key
+ 
+ON=@CREATE
+COLOR=00152 // Mudar cor
+ 
+ON=@DCLICK
+SRC.SYSMESSAGE Double-click a Imperial Fire Firestarter Chest Key in order to open it. // Mudar mensagem
+RETURN 1

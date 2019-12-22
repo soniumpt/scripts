@@ -1,0 +1,98 @@
+//furniture and other carpentry stuff breaking for logs.
+
+[ITEMDEF 0fb4]
+//Sledge Hammer
+DEFNAME=i_hammer_sledge
+NAME=Carpentry Hammer
+TYPE=t_carpentry_break
+FLIP=1
+VALUE=2000
+RESOURCES=4 i_ingot_iron
+SKILLMAKE=TINKERING 54.1,t_tinker_tools
+WEIGHT=9
+DUPELIST=0fb5
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Sledge Hammer
+
+[ITEMDEF 0fb5]
+DUPEITEM=0fb4
+
+// DISABLED
+[TYPEDEF t_carpentry_break]
+ON=@DCLICK
+//RETURN <f_carpentry_break>
+RETURN 1
+
+ON=@TARGON_ITEM
+// RETURN <f_carpentry_break_targon>
+RETURN 1
+
+[FUNCTION f_carpentry_break]
+TARGET What piece of wood would you like to break?
+RETURN 1
+
+[FUNCTION f_carpentry_break_targon]
+IF !( <SRC.TARG.TOPOBJ.UID> == <SRC.UID> )
+SRC.SYSMESSAGE The item must be in your pack for you to break it!
+RETURN 1
+ENDIF
+
+IF ((<SRC.TARG.TYPE> == t_armor) || (<SRC.TARG.TYPE> == t_weapon_sword) || (<SRC.TARG.TYPE> == t_weapon_fence) || (<SRC.TARG.TYPE> == t_weapon_mace_sharp) || (<SRC.TARG.TYPE> == t_weapon_axe) || (<SRC.TARG.TYPE> == t_container) || (<SRC.TARG.TYPE> == t_door) || (<SRC.TARG.TYPE> == t_door_locked)) // just a major check here to be sure
+SRC.SYSMESSAGE You cannot break that into pieces!
+RETURN 1
+ENDIF
+
+IF ((<SRC.TARG.COLOR> == color_o_pine) || (<SRC.TARG.COLOR> == color_o_eucalyptus) || (<SRC.TARG.COLOR> == color_o_holly) || (<SRC.TARG.COLOR> == color_o_rose) || (<SRC.TARG.COLOR> == color_o_oak) || (<SRC.TARG.COLOR> == color_o_interleaved) || (<SRC.TARG.COLOR> == color_o_ironwood) || (<SRC.TARG.COLOR> == color_o_mahogany) || (<SRC.TARG.COLOR> == color_o_cherry) || (<SRC.TARG.COLOR> == color_o_composite) || (<SRC.TARG.COLOR> == color_o_imbued) || (<SRC.TARG.COLOR> == color_o_myst) || (<SRC.TARG.COLOR> == color_o_whiteoak))
+SRC.EMOTE start breaking down the <SRC.TARG.NAME> carefully.
+SRC.ANIM 5
+f_carpentry_return_log
+RETURN 1
+ELSE
+SRC.SYSMESSAGE You cannot break that into pieces!
+ENDIF
+RETURN 1
+
+[FUNCTION f_carpentry_return_log]
+
+SERV.LOG ::CARPENTRY BREAK:: <SRC.NAME> is breaking <SRC.TARG.NAME> at <SRC.P>
+SRC.TARG.REMOVE
+
+IF (<SRC.TARG.COLOR> == color_o_pine)
+LOCAL.LOG.TYPE = i_log_pine
+ELSEIF (<SRC.TARG.COLOR> == color_o_eucalyptus)
+LOCAL.LOG.TYPE = i_log_eucalyptus
+ELSEIF (<SRC.TARG.COLOR> == color_o_holly)
+LOCAL.LOG.TYPE = i_log_holly
+ELSEIF (<SRC.TARG.COLOR> == color_o_rose)
+LOCAL.LOG.TYPE = i_log_rose
+ELSEIF (<SRC.TARG.COLOR> == color_o_oak)
+LOCAL.LOG.TYPE = i_log_oak
+ELSEIF (<SRC.TARG.COLOR> == color_o_interleaved)
+LOCAL.LOG.TYPE = i_log_interleaved
+ELSEIF (<SRC.TARG.COLOR> == color_o_ironwood)
+LOCAL.LOG.TYPE = i_log_ironwood
+ELSEIF (<SRC.TARG.COLOR> == color_o_mahogany)
+LOCAL.LOG.TYPE = i_log_mahogany
+ELSEIF (<SRC.TARG.COLOR> == color_o_cherry)
+LOCAL.LOG.TYPE = i_log_cherry
+ELSEIF (<SRC.TARG.COLOR> == color_o_composite)
+LOCAL.LOG.TYPE = i_log_composite
+ELSEIF (<SRC.TARG.COLOR> == color_o_imbued)
+LOCAL.LOG.TYPE = i_imbued_cherry
+ELSEIF (<SRC.TARG.COLOR> == color_o_myst)
+LOCAL.LOG.TYPE = i_log_myst
+ELSEIF (<SRC.TARG.COLOR> == color_o_whiteoak)
+LOCAL.LOG.TYPE = i_log_whiteoak
+ELSE
+SRC.SYSMESSAGE You cannot break that!
+RETURN 1
+ENDIF
+
+LOCAL.LOG.AMOUNT = <EVAL <SRC.TARG.RESOURCES>>
+
+LOCAL.LOG.AMOUNT = <EVAL ((<LOCAL.LOG.AMOUNT> / 3) *2)>
+
+SERV.NEWITEM <LOCAL.LOG.TYPE>
+NEW.AMOUNT <EVAL <LOCAL.LOG.AMOUNT>>
+NEW.BOUNCE

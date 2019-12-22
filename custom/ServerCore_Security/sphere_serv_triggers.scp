@@ -1,0 +1,199 @@
+//****************************************************************************
+//SPHERE by : Menasoft �1997-2007
+//www.sphereserver.net
+// All SPHERE script files and formats are copyright Menasoft & Partners.
+// This file may be freely edited for personal use, but may not be distributed
+// in whole or in part, in any format without express written permission from
+// Menasoft & Partners.  All donations and contributions
+// become the property of Menasoft & Partners.
+//****************************************************************************
+// FILE LAST UPDATED: 16-Nov-2006
+VERSION=0.56b
+// 23/08/2018 - Wigifer - Experimental breaks houses, by quietly adding a MAXHOUSES thing.
+//                        Added to f_onserver_timer an ALLCLIENTS fix for accounts and players.
+//
+// This file contains function that are used as serv triggers.
+//
+
+[PLEVEL 7]
+f_onaccount_login
+f_onaccount_delete
+f_onchar_create
+f_onchar_delete
+f_onserver_start
+f_onserver_save
+f_onserver_save_ok
+f_onserver_save_fail
+f_onserver_save_finished
+f_onserver_exit
+f_onserver_blockip
+
+// This function is called after client entered the password.
+// ARGS --> username of the client logging in
+// ARGO --> the client logging in
+// RETURN
+//	  0 --> normal action (login)
+//	  1 --> disconnect the client
+
+[FUNCTION f_onaccount_login]
+//IF (<ARGN1> != 04) // Differentiates between the login server and the game server...
+//   RETURN 2
+//ENDIF
+
+// This function is called before an account is being deleted.
+// ARGS --> username of the account being deleted.
+// RETURN
+//	  0 --> normal action (delete)
+//	  1 --> account not deleted
+
+[FUNCTION f_onaccount_delete]
+
+
+LIST.<ARGS>_message.CLEAR
+LIST.<ARGS>_sender.CLEAR
+LIST.<ARGS>_time.CLEAR
+LIST.<ARGS>_friends.CLEAR
+
+
+// This function is called after client have created a new char.
+// SRC   --> char being created
+// ARGN1 --> flags
+// ARGN2 --> profession chosen
+// ARGN3 --> elf
+// ARGS  --> account name
+// ARGO  --> the client creating the character
+
+
+[FUNCTION f_onchar_create]
+//if ( <DB.connected> )
+//	DB.EXECUTE "call CreateCharacter('<src.account>', '<src.uid>', '<src.name>', <src.str>, <src.dex>, <src.int>)"
+//ENDIF
+SRC.P = 5239,1392,1,0
+
+// This function is called before client is going to delete a character.
+// SRC  --> char being deleted
+// ARGO --> the client deleting the character
+// RETURN
+//	  0 --> normal action (delete char)
+//	  1 --> denyes deletion
+
+[FUNCTION f_onchar_delete]
+//if ( <DB.connected> )
+SERV.LOG '<SRC.ACCOUNT>' is deleting char '<SRC.NAME>'.	
+//	DB.EXECUTE "call DeleteCharacterByUID('<SRC.UID>')"
+	RETURN 0
+//ENDIF
+
+
+
+// This function is called on server startup
+[FUNCTION f_onserver_start]
+//DB.CONNECT
+//if (<DB.CONNECTED>)
+//serv.log MySQL debug: MySQL successfully connected!
+//DB.EXECUTE "call PurgeLoggedCharacters()"
+//else
+//serv.log MySQL debug: MySQL not connected!
+//endif
+
+// This function is called before server is going to save.
+// ARGN1 --> save is forced (writable)
+// ARGN2 --> save stage (for backgroud save goes 1 to 6146 [sector count + 2])
+// RETURN
+//	  0 --> normal action (save)
+//	  1 --> denyes save
+
+// Update accounts from database
+[function f_acc_update]
+//if ( <DB.connected> )
+  //  DB.QUERY "call GetAccountsToProcess()"
+    //if (<DB.ROW.NUMROWS> > 0)
+      //  for R 0 <eval <DB.ROW.NUMROWS>-1>
+        //    serv.account add <DB.ROW.<eval <LOCAL.R>>.username> <DB.ROW.<eval <LOCAL.R>>.password>
+			//DB.EXECUTE "call SetAccountProcessed(<DB.ROW.<eval <LOCAL.R>>.id>)"
+            //serv.log MySQL Debug: #<eval <LOCAL.R>> Account <DB.ROW.<eval <LOCAL.R>>.username> has been created!
+        //end
+   // endif
+//endif
+
+
+[FUNCTION f_onserver_save]
+SERV.ALLCLIENTS DIALOG D_SAVING_DLG
+//ARGN1=1
+// Added by MSC! >:)
+//IF (<VAR.TEMP.IGNORESAVE>)
+//	RETURN 2
+//ENDIF
+//serv.f_acc_update
+ACCOUNT.UPDATE
+//B World Save Preliminarys initiated!
+LOG Save Stage Started. Forced: <dARGN1>. Stage#: <dARGN2>
+IF !(<ARGN1>)
+	LOG Ensuring background save...
+	ARGN1 = 1
+ENDIF
+IF (<ARGN2> != -1) && (<ARGN2> != 2147483647)
+	LOG Background save detected. Ensuring background saving is disabled.
+	SAVEBACKGROUND = 1
+	SAVEBACKGROUND = 0
+	
+	// Forcing foreground save...
+//	VAR.TEMP.IGNORESAVE = 1
+//	SAVE #
+//	VAR.TEMP.IGNORESAVE
+//	RETURN 1
+ENDIF
+RETURN 2
+
+// This function is called after server has saved correctly (once per stage with background save).
+[FUNCTION f_onserver_save_ok]
+// Added by MSC! >:)
+LOG Save completed OK. Forced: <dARGN1>. Stage#: <dARGN2>
+RETURN 2
+
+
+// This function is called after server hasn't saved correctly (once per stage with background save).
+[FUNCTION f_onserver_save_fail]
+// Added by MSC! >:)
+LOG Save FAILED. Forced: <dARGN1>. Stage#: <dARGN2>
+RETURN 2
+
+
+// This function is called after server completely finished saving (also at end of background save).
+// ARGS --> Time it took to save (in seconds, 4 digit precision)
+[FUNCTION f_onserver_save_finished]
+SERV.ALLCLIENTS CLOSESAVINGDLG
+SERV.SAVESTATICS
+RETURN 2
+
+// This function is called when a server is triggeted a shutdown, after all
+// saves and everything finished
+[FUNCTION f_onserver_exit]
+
+
+// This function is called when an IP is blocked from the server
+// ARGS  --> IP being blocked
+// ARGN1 --> Time to block the IP for in tenths of a second (writable)
+
+[FUNCTION f_onserver_blockip]
+
+[FUNCTION f_onserver_timer]
+SERV.f_acc_update
+ACCOUNT.UPDATE
+// Fix account MAXHOUSES from Experimental branch
+// SERV.ALLCLIENTS MAXHOUSES = 0
+SERV.ALLCLIENTS ACCOUNT.MAXHOUSES = 0
+// Fix hearall bug
+SERV.HEARALL 0
+
+LOCAL.RANDOMNEWS = <EVAL RAND(20)>
+IF (<LOCAL.RANDOMNEWS> == 1)
+   SERV.ALLCLIENTS SYSMESSAGE @26 [SERVER UPDATE (15/11/19)] Respawning of the world is in progress. If anything major is missing, please mention in Discord.
+ELSEIF (<LOCAL.RANDOMNEWS> == 2)
+   SERV.ALLCLIENTS SYSMESSAGE @26 [SERVER NOTIFICATION] To quick join Discord, click (Chat) in your hotbar!
+ELSEIF (<LOCAL.RANDOMNEWS> == 3)
+   SERV.ALLCLIENTS SYSMESSAGE @26 [SERVER NOTIFICATION] Player Vendors are available in West Britain and Minoc. Prices may vary.
+ENDIF
+
+
+[EOF]

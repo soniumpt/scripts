@@ -1,0 +1,406 @@
+//FIRE CUSTOM NPC'S
+//KARL WILLIAMS, 21ST OCTOBER 2003
+//=================================
+// Changelog:
+// 21/10/03 : File first created, Sorcerors of Pyros added
+// 22/10/03 : Sorceress of Pyros added
+// 04/02/05 : Moved Sqweaks Fire monsters in with these
+// 18/08/18 - Wigifer - Removed random loot from these monsters, ready for conversion to the new f_central_loot table.
+
+
+
+//********************************************************************//
+//                                NAMES                               //
+//********************************************************************//
+[NAMES NAMES_CULTMALE]
+15
+Raziel
+Tyranus
+Apolonicus
+Julius
+Tiberius
+Malanthius
+Irenicus
+Dante
+Commodus
+Sanguinius
+Argastes
+Horus
+Zuelos
+Hadelac
+Arenius
+
+
+//********************************************************************//
+//                                PYROS                               //
+//********************************************************************//
+[CHARDEF C_H_Pyros_Mage]
+DEFNAME=c_h_pyros_mage
+ID=C_MAN
+NAME=#NAMES_HUMANMALE Sorceror of Pyros
+DAM=5,13
+ARMOR=15
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_MALE
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_human_default
+
+CATEGORY=Memory UO
+SUBSECTION=Humans
+DESCRIPTION=Sorceror of Pyros
+
+ON=@Create
+   COLOR=00415
+   STR={90,120}
+   DEX={60,75}
+   INT={100,160}
+
+   MAGICRESISTANCE={80.0,85.0}
+   TACTICS={50.0,68.0}
+   WRESTLING={70.0,80.0}
+   MAGERY={80.0,90.0}
+
+   FAME={500 1500}
+   KARMA={-3500 -4999}
+
+   NPC=brain_monster
+
+   ITEMNEWBIE=i_hair_long
+   COLOR=00475
+
+   ITEMNEWBIE=i_spellbook
+   ADDSPELL=s_lightning
+   ADDSPELL=s_paralyze
+   ADDSPELL=s_explosion
+   ADDSPELL=s_mass_dispel
+   ADDSPELL=s_energy_bolt
+
+   ITEMNEWBIE=i_robe
+   COLOR=00785
+   ITEMNEWBIE=i_hat_wizards
+   COLOR=00785
+   ITEMNEWBIE=i_cape
+   COLOR=00026
+   ITEM=i_boots_calf
+   COLOR=1
+
+
+
+//********************************************************************//
+[CHARDEF c_h_pyros_witch]
+DEFNAME=c_h_pyros_witch
+ID=C_WOMAN
+NAME=#NAMES_HUMANFEMALE Sorceress of Pyros
+DAM=15,20
+ARMOR=15,20
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_FEMALE
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_human_default
+
+CATEGORY=Memory UO
+SUBSECTION=Humans
+DESCRIPTION=Sorceress of Pyros
+
+ON=@Create
+   COLOR=0415
+   STR={90 110}
+   DEX={81 95}
+   INT={80 100}
+
+   MAGICRESISTANCE={90.0 95.0}
+   TACTICS={80.0 90.0}
+   WRESTLING={40.0 55.0}
+   MACEFIGHTING={75.0 95.0}
+   MAGERY={85.0 95.0}
+   NPC=BRAIN_HUMAN
+
+   KARMA={-3000 -5000}
+   FAME={2000 4000}
+ 
+   ITEMNEWBIE=i_hair_long
+      COLOR=00475
+
+   ITEMNEWBIE=i_spellbook
+      ADDSPELL=s_lightning
+      ADDSPELL=s_paralyze
+      ADDSPELL=s_explosion
+      ADDSPELL=s_mass_dispel
+      ADDSPELL=s_energy_bolt
+   ITEMNEWBIE=i_dress_plain
+      COLOR=00785
+   ITEMNEWBIE=i_hat_wizards
+      COLOR=00785
+   ITEMNEWBIE=I_STAFF_BLACK
+
+
+//********************************************************************//
+[CHARDEF C_H_Cult_Alch]
+DEFNAME=c_h_cult_alch
+ID=C_MAN
+NAME=#NAMES_CULTMALE the Cult Alchemist
+DAM=5,13
+ARMOR=15
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_MALE
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_human_default
+
+CATEGORY=Memory UO
+SUBSECTION=Humans
+DESCRIPTION=Cultist Alchemist
+
+ON=@Create
+   COLOR=00415
+   STR={90,120}
+   DEX={70,85}
+   INT={100,160}
+
+   TACTICS={50.0,68.0}
+   WRESTLING={70.0,80.0}
+   MACEFIGHTING={80.0,90.0}
+
+   FAME={500 1500}
+   KARMA={-3500 -4999}
+
+   NPC=brain_monster
+
+   ITEMNEWBIE=i_robe
+   COLOR=00025
+
+
+
+//********************************************************************//
+//                         OTHER FIRE MONSTERS                        //
+//********************************************************************//
+[CHARDEF c_m_firestarter]
+DEFNAME=c_m_firestarter
+ID=c_TERATHAN_WARRIOR
+NAME=Firestarter
+SOUND=snd_MONSTER_TERA_WARRIOR1
+ICON=i_pet_terathan_war
+DAM=10,30
+ARMOR=35
+RESOURCES=10 i_ribs_raw
+CAN=MT_WALK|MT_FIRE_IMMUNE|MT_RUN|MT_USEHANDS
+
+FOODTYPE=15 t_meat_raw,t_fire
+DESIRES=t_LAVA
+
+ ON=@NPCRESTOCK
+ITEM=i_fig_ladysnow,R20
+
+ON=@Create
+   COLOR=014d
+   NPC=brain_monster
+   STR={365 645}
+   DEX={80 110}
+   INT={300 450}
+
+   PARRYING={75.0 85.0}
+   MAGERY={110.0 120.0}
+   MAGICRESISTANCE={65.0 80.0}
+   TACTICS={90.0 100.0}
+   WRESTLING={90.0 100.0}
+ 
+   FAME={100 2000}
+   KARMA={-5000 -5999}
+
+   ITEMNEWBIE=i_spellbook
+   ADDSPELL=s_flamestrike
+   ADDSPELL=s_summon_elem_fire
+   ADDSPELL=s_fire_field
+   
+
+
+
+//********************************************************************//
+[CHARDEF c_Fire_Giant]
+DEFNAME=c_Fire_Giant
+ID=c_Titan
+NAME=Fire Giant
+ICON=i_pet_Titan
+SOUND=snd_MONSTER_ETTIN1
+DAM=25,50
+ARMOR=40
+RESOURCES=10 i_ribs_raw
+CAN=MT_WALK|MT_USEHANDS
+FOODTYPE=15 t_meat_raw
+DESIRES=c_titan
+AVERSIONS=r_civilization
+
+CATEGORY=Memory UO
+SUBSECTION=Giants
+DESCRIPTION=Fire Giant
+
+ ON=@NPCRESTOCK
+ITEM=i_fig_ladysnow,R20
+
+ON=@Create
+   COLOR=00785
+   NPC=brain_monster
+   STR={1200 1300}
+   DEX={150 180}
+   INT={600 700}
+
+   MAGERY={100.0 100.0}
+   PARRYING={70.0 100.0}
+   MAGICRESISTANCE={80.0 95.0}
+   TACTICS={80.0 100.0}
+   WRESTLING={90.0 100.0}
+
+   FAME={100 6000}
+   KARMA={-5000 -5999}
+
+   ITEMNEWBIE=i_spellbook
+   ADDSPELL=s_summon_elem_fire
+   ADDSPELL=s_fire_field
+
+
+
+
+//********************************************************************//
+[CHARDEF c_Fire_Giant_Elite]
+DEFNAME=c_Fire_Giant_Elite
+ID=c_Titan
+NAME=Fire Giant Elite
+ICON=i_pet_Titan
+SOUND=snd_MONSTER_ETTIN1
+DAM=25,50
+ARMOR=45
+RESOURCES=10 i_ribs_raw
+CAN=MT_WALK|MT_USEHANDS
+
+FOODTYPE=15 t_meat_raw
+DESIRES=c_titan
+AVERSIONS=r_civilization
+
+CATEGORY=Memory UO
+SUBSECTION=Giants
+DESCRIPTION=Fire Giant Elite
+
+
+ON=@Create
+   COLOR=0002b
+   NPC=brain_monster
+
+   STR={1300 1400}
+   DEX={180 200}
+   INT={650 750}
+
+   MAGERY={100.0 100.0}
+   PARRYING={70.0 100.0}
+   MAGICRESISTANCE={80.0 95.0}
+   TACTICS={80.0 100.0}
+   WRESTLING={90.0 100.0}
+   EVALUATINGINTEL={100.0 120.0}
+
+   FAME={100 6000}
+   KARMA={-5000 -5999}
+
+   ITEMNEWBIE=i_spellbook
+   ADDSPELL=s_summon_elem_fire
+   ADDSPELL=s_summon_daemon
+   ADDSPELL=s_fire_field
+
+
+
+//********************************************************************//
+[CHARDEF c_gargoyle_fire]
+DEFNAME=c_gargoyle_fire
+ID=c_gargoyle
+NAME=Fiery Gargoyle
+SOUND=snd_MONSTER_GARGYL1
+ICON=i_pet_GARG
+CAN=MT_WALK|MT_FLY
+DAM=10,30
+ARMOR=35
+RESOURCES=8 i_ribs_raw, 5 tm_rocks
+TEVENTS=e_npc_daemon
+
+FOODTYPE=2 t_arock, 2 t_meat_raw
+DESIRES=c_m_gargoyle_stone,c_GARGOYLE,t_bone,i_gold,t_wand
+AVERSIONS=r_civilization
+
+CATEGORY=Memory UO
+SUBSECTION=Gargoyles/Daemons 
+DESCRIPTION=Fiery Gargoyle
+
+
+
+ON=@Create
+   COLOR=000ed
+   NPC=brain_monster
+
+   STR={315 395}
+   DEX={120 140}
+   INT={140 165}
+
+   PARRYING={75.0 80.0}
+   MAGERY={100.0 100.0}
+   MAGICRESISTANCE={65.0 80.0}
+   TACTICS={150.0 170.0}
+   WRESTLING={100.0 100.0}
+   EVALUATINGINTEL={100.0 120.0}
+
+   FAME={100 2000}
+   KARMA={-3000 -3999}
+
+   ITEMNEWBIE=i_spellbook
+   ADDSPELL=s_fireball
+   ADDSPELL=s_flamestrike
+
+
+
+//********************************************************************//
+//                           LOOT TEMPLATES                           //
+//********************************************************************//
+[TEMPLATE tm_loot_fire_giant_elite]
+DEFNAME=loot_fire_giant_elite
+CATEGORY=Memory UO
+SUBSECTION=Fire Monster Loot Templates
+DESCRIPTION=Fire Giant Elite
+CONTAINER=i_backpack
+ITEM=random_potion,{ 2 3 }
+ITEM=random_potion,{ 2 3 }
+ITEM=random_reagent,{ 4 6 }
+ITEM=random_reagent,{ 4 6 }
+ITEM=i_scroll_blank,{ 1 2 }
+ITEM=random_rare_3,R250
+ITEM=i_gold,{4500 9700}
+ITEM=loot_newrares_hard
+
+
+//********************************************************************//
+[TEMPLATE tm_loot_fire_giant]
+DEFNAME=loot_fire_giant
+CATEGORY=Memory UO
+SUBSECTION=Fire Monster Loot Templates
+DESCRIPTION=Fire Giant
+CONTAINER=i_backpack
+ITEM=random_potion,{ 2 3 }
+ITEM=random_potion,{ 2 3 }
+ITEM=random_reagent,{ 4 6 }
+ITEM=random_reagent,{ 4 6 }
+ITEM=i_scroll_blank,{ 1 2 }
+ITEM=random_rare_2,R150
+ITEM=i_gold,{3500 3700}
+ITEM=loot_newrares_hard
+
+//********************************************************************//
+[TEMPLATE tm_loot_reagents_easy]
+DEFNAME=loot_reagents_easy
+CATEGORY=Memory UO
+SUBSECTION=Fire Monster Loot Templates
+DESCRIPTION=Reagent Loot
+CONTAINER=i_bag
+ITEM=i_reag_black_pearl,{ 5 15 }
+ITEM=i_reag_blood_moss,{ 5 15 }
+ITEM=i_reag_garlic,{ 5 15 }
+ITEM=i_reag_ginseng,{ 5 15 }
+ITEM=i_reag_mandrake_root,{ 10 15 }
+ITEM=i_reag_nightshade,{ 5 15 }
+ITEM=i_reag_sulfur_ash,{ 5 15 }
+ITEM=i_reag_spider_silk,{ 5 15 }
+
+[EOF]

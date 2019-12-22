@@ -1,0 +1,1308 @@
+//// lucky rare system ///
+
+[ITEMDEF i_luck_stone]
+NAME=Luck Stone
+ID=i_virtstone_3
+WEIGHT = 1
+VALUE=100 
+
+ON=@DCLICK
+
+if (<SRC.RESTEST i_luck_stone>)
+	SRC.SYSMESSAGE You have gained Some Karma and have become blessed
+	SRC.CONSUME i_luck_stone 1
+	SOUND 024a
+	SRC.SPELLEFFECT 17,160.0,0
+	SRC.KARMA = <SRC.KARMA> + 50
+	IF (<SRC.KARMA> > 10000)
+		SRC.KARMA = 10000
+	ENDIF
+	if <eval rand(10)> = 3
+		SRC.NEWITEM=i_GOLD
+		src.act.amount 15000
+		SRC.ACT.BOUNCE
+		SRC.SYSMESSAGE Its your lucky day you have been rewarded 15,000gps
+		SOUND 024a
+	endif
+Else
+src.sysmessage This must be inside your backpack.
+return 1
+ENDIF
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Lottery
+DESCRIPTION=Luck Stone
+
+
+[ITEMDEF i_luckyLOTTO_STONE]
+DEFNAME=i_luckyLOTTO_STONE
+NAME=Luck Storage Stone
+ID=01173
+TYPE=0
+
+on=@create
+color=001dd
+
+on=@click
+SRC.SYSMESSAGE Gamble your luck Stones here.
+
+ON=@DCLICK
+if (<SRC.RESTEST i_luck_stone>)
+SRC.CONSUME i_luck_stone 1
+if <eval rand(10)> = 3
+SRC.NEWITEM=i_GOLD
+src.act.amount 15000
+SRC.ACT.BOUNCE
+SRC.SYSMESSAGE Its your lucky day you have been rewarded 15,000gps
+SOUND 024a
+RETURN 1
+ELSE
+SRC.SYSMESSAGE Its not your lucky day... you do recieve some Karma and become blessed.
+SRC.SPELLEFFECT 17,80.0,0
+ELSE
+SRC.SYSMESSAGE Gamble your luck Stones here.
+ENDIF
+ENdIF
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Lottery
+DESCRIPTION=Luck Reward Stone
+
+/sqweak 2002
+//// Monster rares//////////
+
+[ITEMDEF i_deamon_skull]
+DEFNAME=i_deamon_skull
+NAME=Deamon Skull
+ID=I_HELM_ORC
+TYPE=t_armor_leather
+FLIP=1
+ARMOR=40
+REQSTR=40
+VALUE=1,10
+WEIGHT = 5
+VALUE=500 
+ON=@Create
+HITPOINTS={200 200}
+
+ON=@EQUIP
+SRC.TACTICS=<SRC.TACTICS>+1.0
+SRC.SPELLEFFECT 26 1000
+RETURN 0
+
+ON=@UNEQUIP
+SRC.TACTICS=<SRC.TACTICS>+(-1.0)
+RETURN 0
+
+CATEGORY=Imperial uo
+SUBSECTION=MISL
+DESCRIPTION=Deamon Skull
+
+////////////////////Limited//////////////////////////
+
+[ITEMDEF i_snow_globe_britain] 
+DEFNAME=i_snow_globe_britain
+NAME=Britain Snow Globe
+ID=i_crystal_ball
+TYPE=86
+RESOURCES=i_crystal_ball
+VALUE=500
+WEIGHT = 1
+
+CATEGORY=Imperial uo
+SUBSECTION=LIMITED
+DESCRIPTION=Snow Globe Britain
+
+ON=@DCLICK
+SRC.MESSAGE You see a snowy scene of Britain
+RETURN 0
+
+[ITEMDEF i_snow_globe_bucs_den] 
+DEFNAME=i_snow_globe_bucs_den
+NAME=Bucs Den Snow Globe
+ID=i_crystal_ball
+TYPE=86
+RESOURCES=i_crystal_ball
+VALUE=500
+WEIGHT = 1
+CATEGORY=Imperial uo
+SUBSECTION=LIMITED
+DESCRIPTION=Snow Globe Buc's Den
+
+ON=@DCLICK
+SRC.MESSAGE You see a snowy scene of Buccaneer's Den
+RETURN 0
+
+[ITEMDEF i_snow_globe_cove] 
+DEFNAME=i_snow_globe_cove
+NAME=Cove Snow Globe
+ID=i_crystal_ball
+TYPE=86
+RESOURCES=i_crystal_ball
+VALUE=500
+WEIGHT=1
+CATEGORY=Imperial uo
+SUBSECTION=LIMITED
+DESCRIPTION=Snow Globe Cove
+
+ON=@DCLICK
+SRC.MESSAGE You see a snowy scene of Cove
+RETURN 0
+
+
+[ITEMDEF i_snow_globe_jhelom] 
+DEFNAME=i_snow_globe_jhelom
+NAME=Jhelom Snow Globe
+ID=i_crystal_ball
+TYPE=86
+RESOURCES=i_crystal_ball
+VALUE=500
+WEIGHT=1
+CATEGORY=Imperial uo
+SUBSECTION=LIMITED
+DESCRIPTION=Snow Globe Jhelom
+
+ON=@DCLICK
+SRC.MESSAGE You see a snowy scene of Jhelom
+RETURN 0
+
+[ITEMDEF i_snow_globe_maginicia] 
+DEFNAME=i_snow_globe_maginicia
+NAME=Maginicia Snow Globe
+ID=i_crystal_ball
+TYPE=86
+RESOURCES=i_crystal_ball
+VALUE=500
+WEIGHT=1
+CATEGORY=Imperial uo
+SUBSECTION=LIMITED
+DESCRIPTION=Snow Globe Maginicia
+
+ON=@DCLICK
+SRC.MESSAGE You see a snowy scene of Maginicia
+RETURN 0
+
+[ITEMDEF i_snow_globe_minoc] 
+DEFNAME=i_snow_globe_minoc
+NAME=Minoc Snow Globe
+ID=i_crystal_ball
+TYPE=86
+RESOURCES=i_crystal_ball
+VALUE=500
+WEIGHT=1
+CATEGORY=Imperial uo
+SUBSECTION=LIMITED
+DESCRIPTION=Snow Globe Minoc
+
+ON=@DCLICK
+SRC.MESSAGE You see a snowy scene of Minoc
+RETURN 0
+
+[ITEMDEF i_snow_globe_moonglow] 
+DEFNAME=i_snow_globe_moonglow
+NAME=Moonglow Snow Globe
+ID=i_crystal_ball
+TYPE=86
+RESOURCES=i_crystal_ball
+VALUE=500
+WEIGHT=1
+CATEGORY=Imperial uo
+SUBSECTION=LIMITED
+DESCRIPTION=Snow Globe Moonglow
+
+ON=@DCLICK
+SRC.MESSAGE You see a snowy scene of Moonglow
+RETURN 0
+
+[ITEMDEF i_snow_globe_nujelm] 
+DEFNAME=i_snow_globe_nujelm
+NAME=Nujelm Snow Globe
+ID=i_crystal_ball
+TYPE=86
+RESOURCES=i_crystal_ball
+VALUE=500
+WEIGHT=1
+CATEGORY=Imperial uo
+SUBSECTION=LIMITED
+DESCRIPTION=Snow Globe Nujel'm
+
+ON=@DCLICK
+SRC.MESSAGE You see a snowy scene of Nujel'm
+RETURN 0
+
+[ITEMDEF i_snow_globe_ocllo] 
+DEFNAME=i_snow_globe_ocllo
+NAME=Ocllo Snow Globe
+ID=i_crystal_ball
+TYPE=86
+RESOURCES=i_crystal_ball
+VALUE=500
+WEIGHT=1
+CATEGORY=Imperial uo
+SUBSECTION=LIMITED
+DESCRIPTION=Snow Globe Ocllo
+
+ON=@DCLICK
+SRC.MESSAGE You see a snowy scene of Ocllo
+RETURN 0
+
+[ITEMDEF i_snow_globe_hold] 
+DEFNAME=i_snow_globe_hold
+NAME=Serpent's Hold Snow Globe
+ID=i_crystal_ball
+TYPE=86
+RESOURCES=i_crystal_ball
+VALUE=500
+WEIGHT=1
+CATEGORY=Imperial uo
+SUBSECTION=LIMITED
+DESCRIPTION=Snow Globe Serpent's Hold
+
+ON=@DCLICK
+SRC.MESSAGE You see a snowy scene of Serpent's Hold
+RETURN 0
+
+[ITEMDEF i_snow_globe_brae] 
+DEFNAME=i_snow_globe_brae
+NAME=Skara Brae Snow Globe
+ID=i_crystal_ball
+TYPE=86
+RESOURCES=i_crystal_ball
+VALUE=500
+WEIGHT=1
+CATEGORY=Imperial uo
+SUBSECTION=LIMITED
+DESCRIPTION=Snow Globe Skara Brae
+
+ON=@DCLICK
+SRC.MESSAGE You see a snowy scene of Skara Brae
+RETURN 0
+
+[ITEMDEF i_snow_globe_trinsic] 
+DEFNAME=i_snow_globe_trinsic
+NAME=Trinsic Snow Globe
+ID=i_crystal_ball
+TYPE=86
+RESOURCES=i_crystal_ball
+VALUE=500
+WEIGHT=1
+CATEGORY=Imperial uo
+SUBSECTION=LIMITED
+DESCRIPTION=Snow Globe Trinsic
+
+ON=@DCLICK
+SRC.MESSAGE You see a snowy scene of Trinsic
+RETURN 0
+
+[ITEMDEF i_snow_globe_vesper] 
+DEFNAME=i_snow_globe_vesper
+NAME=Vesper Snow Globe
+ID=i_crystal_ball
+TYPE=86
+RESOURCES=i_crystal_ball
+VALUE=500
+WEIGHT=1
+CATEGORY=Imperial uo
+SUBSECTION=LIMITED
+DESCRIPTION=Snow Globe Vesper
+
+ON=@DCLICK
+SRC.MESSAGE You see a snowy scene of Vesper
+RETURN 0
+
+[ITEMDEF i_snow_globe_yew] 
+DEFNAME=i_snow_globe_yew
+NAME=Yew Snow Globe
+ID=i_crystal_ball
+TYPE=86
+RESOURCES=i_crystal_ball
+VALUE=500
+WEIGHT=1
+CATEGORY=Imperial uo
+SUBSECTION=LIMITED
+DESCRIPTION=Snow Globe Yew
+
+ON=@DCLICK
+SRC.MESSAGE You see a snowy scene of Yew
+RETURN 0
+
+
+[ITEMDEF i_tarot_cardsrare] 
+DEFNAME=i_tarot_cards 
+NAME=set of Magic Tarot Cards
+ID=i_cards_tarot 
+TYPE = 0
+WEIGHT=3
+VALUE=500 
+
+ON=@CLICK
+SRC.SYSMESSAGE I'm a set of Magic Tarot cards. Ask your question then double click me for your answer!
+
+ON=@DCLICK
+VAR.x=RAND(16)
+IF x=0
+SRC.MESSAGE POSSABLY NOT..
+RETURN 1
+ELSEIF x=1
+SRC.MESSAGE YES
+RETURN 1
+ELSEIF x=2
+SRC.MESSAGE NO
+RETURN 1
+ELSEIF x=3
+SRC.MESSAGE ASK LATER
+RETURN 1
+ELSEIF x=4
+SRC.MESSAGE MABY..
+RETURN 1
+ELSEIF x=5
+SRC.MESSAGE COULD BE..
+RETURN 1
+ELSEIF x=6
+SRC.MESSAGE NO WAY!
+RETURN 1
+ELSEIF x=7
+SRC.MESSAGE NOT POSSABLE!
+RETURN 1
+ELSEIF x=8
+SRC.MESSAGE PROBABLY NOT..
+RETURN 1
+ELSEIF x=9
+SRC.MESSAGE FOLLOW YOUR HEART...
+RETURN 1
+ELSEIF x=10
+SRC.MESSAGE THE ANSWER IS ON THE WIND...
+RETURN 1
+ELSEIF x=11
+SRC.MESSAGE THE FUTURE IS UNCLEAR...
+RETURN 1
+ELSEIF x=12
+SRC.MESSAGE YOU DON'T DESERVE AN ANSWER!
+RETURN 1
+ELSEIF x=13
+SRC.MESSAGE NO ANSWER FOR YOU!
+RETURN 1
+ELSEIF x=14
+SRC.MESSAGE ALWAYS FOR SOMEONE LIKE YOU!
+RETURN 1
+ELSEIF x=15
+SRC.MESSAGE BEGONE VILE ONE!
+RETURN 1
+ELSEIF x=16
+SRC.MESSAGE OF COURSE VALIENT ONE!
+RETURN 1
+ELSE
+SRC.MESSAGE YOUR FUTURE IS CLOUDY...
+RETURN 1
+ENDIF
+
+CATEGORY=Imperial uo
+SUBSECTION=LIMITED
+DESCRIPTION=Tarot cards
+
+[ITEMDEF i_wispering_rose]
+DEFNAME=i_wispering_rose
+NAME=Wispering Rose
+ID=i_crop_ginseng
+type=0
+value=1000
+WEIGHT=1
+
+
+ON=@DCLICK
+SRC.MESSAGE I'll tell you a secret...
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=LIMITED
+DESCRIPTION=wispering rose
+
+
+[ITEMDEF i_rarecards] 
+NAME=Playing Cards
+ID=012ab
+WEIGHT=1 
+
+ON=@CLICK 
+SAY A pack of Cards (If you had two packs you could play snap.)
+return 1
+
+ON=@DCLICK 
+DORAND 52
+SRC.SAY Ace of Spades
+SRC.SAY Two of Spades
+SRC.SAY Three of Spades
+SRC.SAY Four of Spades
+SRC.SAY Five of Spades
+SRC.SAY Six of Spades
+SRC.SAY Seven of Spades
+SRC.SAY Eight of Spades
+SRC.SAY Nine of Spades
+SRC.SAY Ten of Spades
+SRC.SAY Jack of Spades
+SRC.SAY Queen of Spades
+SRC.SAY King of Spades
+SRC.SAY Ace of Diamonds
+SRC.SAY Two of Diamonds
+SRC.SAY Three of Diamonds
+SRC.SAY Four of Diamonds
+SRC.SAY Five of Diamonds
+SRC.SAY Six of Diamonds
+SRC.SAY Seven of Diamonds
+SRC.SAY Eight of Diamonds
+SRC.SAY Nine of Diamonds
+SRC.SAY Ten of Diamonds
+SRC.SAY Jack of Diamonds
+SRC.SAY Queen of Diamonds
+SRC.SAY King of Diamonds
+SRC.SAY Ace of Clubs
+SRC.SAY Two of Clubs
+SRC.SAY Three of Clubs
+SRC.SAY Four of Clubs
+SRC.SAY Five of Clubs
+SRC.SAY Six of Clubs
+SRC.SAY Seven of Clubs
+SRC.SAY Eight of Clubs
+SRC.SAY Nine of Clubs
+SRC.SAY Ten of Clubs
+SRC.SAY Jack of Clubs
+SRC.SAY Queen of Clubs
+SRC.SAY King of Clubs
+SRC.SAY Ace of Hearts
+SRC.SAY Two of Hearts
+SRC.SAY Three of Hearts
+SRC.SAY Four of Hearts
+SRC.SAY Five of Hearts
+SRC.SAY Six of Hearts
+SRC.SAY Seven of Hearts
+SRC.SAY Eight of Hearts
+SRC.SAY Nine of Hearts
+SRC.SAY Ten of Hearts
+SRC.SAY Jack of Hearts
+SRC.SAY Queen of Hearts
+SRC.SAY King of Hearts
+ENDDO
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=LIMITED
+DESCRIPTION=Playing Cards
+
+[ITEMDEF i_oldclock]
+ID=i_clock
+NAME =Old Clock
+WEIGHT=2
+TYPE=T_CLOCK
+DUPELIST=0104c
+
+ON = @Click
+   SRC.SHOWTIME
+   return 1
+
+ON = @DClick
+   SRC.SHOWTIME
+EMOTE . Your must late!!!
+   return 1
+
+CATEGORY=Imperial uo
+SUBSECTION=LIMITED
+DESCRIPTION=Old Clock
+
+[ITEMDEF i_gobletrare1]
+Name=Goblet of Fire
+ID=i_goblet
+WEIGHT=1
+VALUE = 1000
+
+ON=@Create 
+//COLOR=0026
+
+COLOR={0ae3 1 09b6 1 07bc 1}
+IF <COLOR>=0ae3
+  NAME=Copper Goblet
+ELSEIF <COLOR>=09b6
+  NAME=Golden Goblet
+ELSEIF <COLOR>=07bc
+  NAME=Silver Goblet
+ENDIF
+
+ON = @Click
+SRC.MESSAGE You Examine the Beautifully Crafted <NAME>.
+   return 1
+
+ON = @DClick
+EMOTE There is a strange inscription on the side of the <NAME>
+   return 1
+
+CATEGORY=Imperial uo
+SUBSECTION=LIMITED
+DESCRIPTION=Goblet of fire
+
+[ITEMDEF I_goldenchest]
+ID		= i_chest_metal_brass
+NAME 		= Golden Chest
+TYPE		= T_CONTAINER
+TDATA2		= 042
+FLIP		= 1
+WEIGHT		= 40
+DUPELIST	= 0e41
+VALUE		= 1000
+
+ON=@Create 
+
+COLOR={08a5 1 09b6 1 07bc 1 0ae3 1}
+
+IF <COLOR>=0ae3
+  NAME = Copper Chest
+ELSEIF <COLOR>=09b6
+  NAME = Shiny Golden Chest
+ELSEIF <COLOR>=07bc
+  NAME = Silver Chest
+ELSEIF <COLOR>=08a5
+  NAME = Golden Chest
+ENDIF
+
+
+ON = @Click
+SRC.MESSAGE Its a Beautifully Crafted <NAME>
+   return 1
+
+CATEGORY=Imperial uo
+SUBSECTION=LIMITED
+DESCRIPTION=Golden Chest
+
+
+[ITEMDEF i_bellrare] 
+NAME=Beautifully Crafted Bell
+ID=01c12 
+type=1 
+
+
+ON=@CREATE 
+COLOR=048d
+
+ON=@DCLICK 
+SOUND 023c
+
+CATEGORY=Imperial uo
+SUBSECTION=LIMITED
+DESCRIPTION=Beautifully Crafted Bell
+
+[ITEMDEF i_die_cuprare] 
+NAME=Dice Cup
+ID=i_dice_cup 
+WEIGHT=1 
+
+ON=@CLICK 
+EMOTE . You notice that the Dice are weighted
+   return 1
+
+ON=@DCLICK 
+SRC.TAG.VAR.dice1=<eval(RAND(4)+3)> 
+SRC.TAG.VAR.dice2=<eval(RAND(4)+3)> 
+SRC.SAYU <SRC.NAME> shakes the cup and spills the dice. The dice come to a stop showing a <EVAL(<SRC.TAG.VAR.dice1>)> and a <eval(<SRC.TAG.VAR.dice2>)> for a total of <EVAL(<SRC.TAG.VAR.dice1>)+(<SRC.TAG.VAR.dice2>)> 
+SRC.TAG.VAR.dice1= 
+SRC.TAG.VAR.dice2= 
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=LIMITED
+DESCRIPTION=Loaded Dice
+
+////////////////////Rare//////////////////////////
+[ITEMDEF i_WRESTLING1]
+Name=pair of Magical Bladed gloves
+ID=01455
+TYPE=13
+DAM=5-15
+SPEED=55
+SKILL=WRESTLING
+REQSTR=30
+TWOHANDS=n
+WEIGHT=10
+
+ON=@CREATE
+COLOR=14d
+HITPOINTS=200
+
+ON=@EQUIP
+  SRC.WRESTLING= (<SRC.WRESTLING>+1.0)
+  RETURN 0
+ON=@UNEQUIP
+  SRC.WRESTLING= (<SRC.WRESTLING>+(-1.0)
+  RETURN 0
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=RARE
+DESCRIPTION=Magical Bladed gloves
+
+
+[ITEMDEF i_Animallore1]
+NAME	= Magical Cap of Creature Contact
+ID	= 01715
+TYPE	= t_armor
+DYE	= 0
+ARMOR	= 5
+WEIGHT	= 1
+ON=@Create 
+HITPOINTS={31 100} 
+COLOR=089f
+
+ON=@EQUIP 
+SRC.AnimalLore=(<SRC.AnimalLore> + 1.0) 
+SRC.MESSAGE As you wear the cap, you feel an affinity with nature. 
+ON=@UNEQUIP 
+SRC.AnimalLore=(<SRC.AnimalLore> + -1.0) 
+SRC.MESSAGE As you take off the cap, you feel an affinity with nature diminish. 
+
+CATEGORY=Imperial uo
+SUBSECTION=RARE
+DESCRIPTION=Magical Cap of Creature Contact
+
+[ITEMDEF i_taming1]
+ID = 013f4
+NAME = Magical Crook of Animal Empathy 
+WEIGHT = 5
+TYPE = T_WEAPON_MACE_CROOK
+FLIP = 1
+DAM = 0, 10
+//SPEED = 70
+REQSTR = 10
+TWOHANDS = Y
+DUPELIST = 013f5
+VALUE=10000
+
+ON = @Create
+HITPOINTS = 18
+COLOR=089f
+
+ON = @DClick
+return = <wpn_dclick_staff>
+ON = @Targon_ground
+return = <wpn_targon_ground_staff>
+ON = @Targon_item
+return = <wpn_targon_item_staff>
+
+ON=@EQUIP 
+SRC.TAMING=(<SRC.taming> + 1.0) 
+SRC.MESSAGE As you hold the crook in hand, you feel your command of nature increase. 
+ON=@UNEQUIP 
+SRC.TAMING=(<SRC.taming> + -1.0) 
+SRC.MESSAGE As you unequip the crook, you feel your command of nature diminish. 
+
+CATEGORY=Imperial uo
+SUBSECTION=RARE
+DESCRIPTION=Magical Crook of Animal Empathy 
+
+[ITEMDEF i_stealing1]
+NAME=Magical Gloves of Feather Fingers
+ID=i_bone_gloves
+TYPE=t_armor_leather
+FLIP=1
+WEIGHT=3
+ARMOR=20
+REQSTR=40
+DUPELIST=01455
+
+ON=@Create
+COLOR=04d5
+HITPOINTS={26 30 }
+
+ON=@EQUIP 
+SRC.stealing=(<SRC.stealing> + 1.0) 
+SRC.MESSAGE As you wear the gloves, you become light fingered. 
+ON=@UNEQUIP 
+SRC.stealing=(<SRC.stealing> + -1.0) 
+SRC.MESSAGE As you unequip the gloves, you feel more heavy handed. 
+
+CATEGORY=Imperial uo
+SUBSECTION=RARE
+DESCRIPTION=Magical Gloves of Feather Fingers
+
+[ITEMDEF i_stealth1]
+NAME=Magical Cloak of The Wind 
+ID=01530
+TYPE=T_CLOTHING
+WEIGHT=3
+ARMOR=10
+REQSTR=20
+DUPELIST=01455
+
+ON=@Create
+COLOR=0782
+HITPOINTS={26 30 }
+
+ON=@EQUIP 
+SRC.stealth=(<SRC.stealth> + 1.0) 
+SRC.MESSAGE As you wear the Cloak, you move more freely. 
+ON=@UNEQUIP 
+SRC.stealth=(<SRC.stealth> + -1.0) 
+SRC.MESSAGE As you unequip the Cloak, you feel heavy footed. 
+
+CATEGORY=Imperial uo
+SUBSECTION=RARE
+DESCRIPTION=Magical Cloak of The Wind 
+
+[ITEMDEF i_cooking1]
+Name=Magical Apron of Cooking
+ID=i_apron_half
+WEIGHT=2
+TYPE=T_CLOTHING
+DYE=1
+ARMOR=4
+
+ON=@Create
+COLOR=0020
+HITPOINTS={21 30}
+
+ON=@EQUIP 
+SRC.cooking=(<SRC.cooking> + 1.0) 
+SRC.MESSAGE As you wear the Apron, you become more creative. 
+ON=@UNEQUIP 
+SRC.cooking=(<SRC.cooking> + -1.0) 
+SRC.MESSAGE As you unequip the Apron, you become less creative. 
+
+CATEGORY=Imperial uo
+SUBSECTION=RARE
+DESCRIPTION=Magical Apron of Cooking
+
+[ITEMDEF i_hiding1]
+NAME=Magical Robe of The Shadows 
+ID=i_robe
+WEIGHT=3
+TYPE=T_CLOTHING
+DYE=1
+ARMOR=7
+DUPELIST=01f04
+
+ON=@Create
+COLOR=0591
+HITPOINTS={21 30}
+
+ON=@EQUIP 
+SRC.hiding=(<SRC.hiding> + 1.0) 
+SRC.MESSAGE As you wear the Robe, you become harder to see. 
+ON=@UNEQUIP 
+SRC.hiding=(<SRC.hiding> + -1.0) 
+SRC.MESSAGE As you unequip the Apron, you become easier to see. 
+
+CATEGORY=Imperial uo
+SUBSECTION=RARE
+DESCRIPTION=Magical Robe of The Shadows 
+
+[ITEMDEF i_Alchemy1]
+Name=Magical Apron of The Alchemist 
+ID=i_apron_full
+WEIGHT=2
+TYPE=T_CLOTHING
+DYE=1
+ARMOR=4
+
+ON=@Create
+COLOR=0031
+HITPOINTS={21 30}
+
+ON=@EQUIP 
+SRC.Alchemy=(<SRC.Alchemy> + 1.0) 
+SRC.MESSAGE As you wear the Apron, you become more creative. 
+ON=@UNEQUIP 
+SRC.Alchemy=(<SRC.Alchemy> + -1.0) 
+SRC.MESSAGE As you unequip the Apron, you become less creative. 
+
+CATEGORY=Imperial uo
+SUBSECTION=RARE
+DESCRIPTION=Magical Apron of The Alchemist 
+
+[ITEMDEF i_carpentry1]
+NAME=Magical Apron of Carpentry
+ID=i_Apron_full
+TYPE=T_CLOTHING
+WEIGHT=1
+DUPELIST=01029
+
+ON=@Create
+COLOR=001e
+HITPOINTS={21 23}
+
+ON=@EQUIP 
+SRC.Carpentry=(<SRC.Carpentry> + 1.0) 
+SRC.MESSAGE As you wear the apron, you become more creative. 
+ON=@UNEQUIP 
+SRC.Carpentry=(<SRC.Carpentry> + -1.0) 
+SRC.MESSAGE As you unequip the apron, you become less creative. 
+
+CATEGORY=Imperial uo
+SUBSECTION=RARE
+DESCRIPTION=Magical Apron of Carpentry
+
+
+
+///////////////// more items RARE //////////////////////////
+
+
+
+////////////////////V RARE//////////////////////////
+
+[ITEMDEF i_WRESTLING2]
+Name=pair of Ancient Bladed gloves
+ID=01455
+TYPE=13
+DAM=5-15
+SPEED=55
+SKILL=WRESTLING
+REQSTR=30
+TWOHANDS=n
+WEIGHT=10
+
+ON=@CREATE
+COLOR=14d
+HITPOINTS={150 200}
+
+ON=@EQUIP
+  SRC.WRESTLING= (<SRC.WRESTLING>+2.0)
+  RETURN 0
+ON=@UNEQUIP
+  SRC.WRESTLING= (<SRC.WRESTLING>+(-2.0)
+  RETURN 0
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=RARE
+DESCRIPTION=Ancient Bladed gloves
+
+[ITEMDEF i_Animallore2]
+NAME	= Ancient Cap of Creature Contact
+ID	= 01715
+TYPE	= t_armor
+DYE	= 0
+ARMOR	= 5
+WEIGHT	= 1
+ON=@Create 
+HITPOINTS={31 100} 
+COLOR=089f
+
+ON=@EQUIP 
+SRC.AnimalLore=(<SRC.AnimalLore> + 2.0) 
+SRC.MESSAGE As you wear the cap, you feel an affinity with nature.
+ON=@UNEQUIP 
+SRC.AnimalLore=(<SRC.AnimalLore> + -2.0) 
+SRC.MESSAGE As you take off the cap, you feel an affinity with nature diminish. 
+
+CATEGORY=Imperial uo
+SUBSECTION=V RARE
+DESCRIPTION=Ancient Cap of Creature Contact
+
+[ITEMDEF i_taming2]
+ID = 013f4
+NAME = Ancient Crook of Animal Empathy
+WEIGHT = 5
+TYPE = T_WEAPON_MACE_CROOK
+FLIP = 1
+DAM = 0, 10
+//SPEED = 70
+REQSTR = 10
+TWOHANDS = Y
+DUPELIST = 013f5
+
+ON = @Create
+HITPOINTS = 18
+COLOR=089f
+
+ON = @DClick
+return = <wpn_dclick_staff>
+ON = @Targon_ground
+return = <wpn_targon_ground_staff>
+ON = @Targon_item
+return = <wpn_targon_item_staff>
+
+ON=@EQUIP 
+SRC.TAMING=(<SRC.taming> + 2.0) 
+SRC.MESSAGE As you wear the cap, you feel an affinity with nature. 
+ON=@UNEQUIP 
+SRC.TAMING=(<SRC.taming> + -2.0) 
+SRC.MESSAGE As you take off the cap, you feel an affinity with nature diminish. 
+
+CATEGORY=Imperial uo
+SUBSECTION=V RARE
+DESCRIPTION=Ancient Crook of Animal Empathy
+
+[ITEMDEF i_stealing2]
+NAME=Ancient Gloves of Feather Fingers
+ID=i_bone_gloves
+TYPE=t_armor_leather
+FLIP=1
+WEIGHT=3
+ARMOR=20
+REQSTR=40
+DUPELIST=01455
+
+ON=@Create
+COLOR=04d5
+HITPOINTS={26 30 }
+
+ON=@EQUIP 
+SRC.stealing=(<SRC.stealing> + 2.0) 
+SRC.MESSAGE As you wear the gloves, you become light fingered. 
+ON=@UNEQUIP 
+SRC.stealing=(<SRC.stealing> + -2.0) 
+SRC.MESSAGE As you unequip the gloves, you feel more heavy handed. 
+
+CATEGORY=Imperial uo
+SUBSECTION=V RARE
+DESCRIPTION=Ancient Gloves of Feather Fingers
+
+[ITEMDEF i_stealth2]
+NAME=Ancient Cloak of The Wind
+ID=01530
+TYPE=T_CLOTHING
+WEIGHT=3
+ARMOR=10
+REQSTR=20
+DUPELIST=01455
+
+ON=@Create
+COLOR=0782
+HITPOINTS={26 30 }
+
+ON=@EQUIP 
+SRC.stealth=(<SRC.stealth> + 2.0) 
+SRC.MESSAGE As you wear the gloves, you become light fingered. 
+ON=@UNEQUIP 
+SRC.stealth=(<SRC.stealth> + -2.0) 
+SRC.MESSAGE As you unequip the gloves, you feel more heavy handed. 
+
+CATEGORY=Imperial uo
+SUBSECTION=V RARE
+DESCRIPTION=Ancient Cloak of The Wind
+
+[ITEMDEF i_cooking2]
+ID=i_apron_half
+Name=Ancient Apron of Cooking
+WEIGHT=2
+TYPE=T_CLOTHING
+DYE=1
+ARMOR=4
+VALUE=29
+DUPELIST=0153e
+
+ON=@Create
+COLOR=0020
+HITPOINTS={21 30}
+
+ON=@EQUIP 
+SRC.cooking=(<SRC.cooking> + 2.0) 
+SRC.MESSAGE As you wear the Apron, you become more creative. 
+ON=@UNEQUIP 
+SRC.cooking=(<SRC.cooking> + -2.0) 
+SRC.MESSAGE As you unequip the Apron, you become less creative. 
+
+CATEGORY=Imperial uo
+SUBSECTION=V RARE
+DESCRIPTION=Ancient Apron of Cooking
+
+[ITEMDEF i_hiding2]
+NAME=Ancient Robe of The Shadows
+ID=i_robe
+WEIGHT=3
+TYPE=T_CLOTHING
+DYE=1
+ARMOR=7
+DUPELIST=01f04
+
+ON=@Create
+COLOR=0591
+HITPOINTS={21 30}
+
+ON=@EQUIP 
+SRC.hiding=(<SRC.hiding> + 2.0) 
+SRC.MESSAGE As you wear the Robe, you become harder to see. 
+ON=@UNEQUIP 
+SRC.hiding=(<SRC.hiding> + -2.0) 
+SRC.MESSAGE As you unequip the Apron, you become easier to see. 
+
+CATEGORY=Imperial uo
+SUBSECTION=V RARE
+DESCRIPTION=Ancient Robe of The Shadows
+
+[ITEMDEF i_Alchemy2]
+Name=Ancient Apron of The Alchemist 
+ID=i_apron_full
+WEIGHT=2
+TYPE=T_CLOTHING
+DYE=1
+ARMOR=4
+
+ON=@Create
+COLOR=0031
+HITPOINTS={21 30}
+
+ON=@EQUIP 
+SRC.Alchemy=(<SRC.Alchemy> + 2.0) 
+SRC.MESSAGE As you wear the Apron, you become more creative. 
+ON=@UNEQUIP 
+SRC.Alchemy=(<SRC.Alchemy> + -2.0) 
+SRC.MESSAGE As you unequip the Apron, you become less creative. 
+
+CATEGORY=Imperial uo
+SUBSECTION=V RARE
+DESCRIPTION=Ancient Apron of The Alchemist 
+
+[ITEMDEF i_carpentry2]
+NAME=Ancient Apron of Carpentry
+ID=i_Apron_full
+TYPE=T_CLOTHING
+WEIGHT=1
+DUPELIST=01029
+
+ON=@Create
+COLOR=00e1
+HITPOINTS={21 23}
+
+ON=@EQUIP 
+SRC.Carpentry=(<SRC.Carpentry> + 2.0) 
+SRC.MESSAGE As you wear the apron, you become more creative. 
+ON=@UNEQUIP 
+SRC.Carpentry=(<SRC.Carpentry> + -2.0) 
+SRC.MESSAGE As you unequip the apron, you become less creative. 
+
+CATEGORY=Imperial uo
+SUBSECTION=V RARE
+DESCRIPTION=Ancient Apron of Carpentry
+
+////////////////////EXTREMLY RARE//////////////////////////
+
+[ITEMDEF i_WRESTLING3]
+Name=pair of Bladed gloves
+ID=01455
+TYPE=13
+DAM=5-15
+SPEED=55
+SKILL=WRESTLING
+REQSTR=30
+TWOHANDS=n
+WEIGHT=10
+
+ON=@CREATE
+COLOR=14d
+HITPOINTS={150 200}
+
+ON=@EQUIP
+  SRC.WRESTLING= (<SRC.WRESTLING>+3.0)
+  RETURN 0
+ON=@UNEQUIP
+  SRC.WRESTLING= (<SRC.WRESTLING>+(-3.0)
+  RETURN 0
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=RARE
+DESCRIPTION=Mystical Bladed gloves
+
+[ITEMDEF i_Animallore3]
+NAME	= Mystical Cap of Creature Contact
+ID	= 01715
+TYPE	= t_armor
+DYE	= 0
+ARMOR	= 5
+WEIGHT	= 1
+
+ON=@Create 
+HITPOINTS={31 100} 
+COLOR=089f
+
+ON=@EQUIP 
+SRC.AnimalLore=(<SRC.AnimalLore> + 3.0) 
+SRC.MESSAGE As you wear the cap, you feel an affinity with nature.
+ON=@UNEQUIP 
+SRC.AnimalLore=(<SRC.AnimalLore> + -3.0) 
+SRC.MESSAGE As you take off the cap, you feel an affinity with nature diminish. 
+
+CATEGORY=Imperial uo
+SUBSECTION=E RARE
+DESCRIPTION=Mystical Cap of Creature Contact
+
+[ITEMDEF i_taming3]
+ID = 013f4
+NAME = Mystical Crook of Animal Empathy
+WEIGHT = 5
+TYPE = T_WEAPON_MACE_CROOK
+FLIP = 1
+DAM = 0, 10
+//SPEED = 70
+REQSTR = 10
+TWOHANDS = Y
+DUPELIST = 013f5
+
+ON = @Create
+HITPOINTS = 18
+COLOR=089f
+
+ON = @DClick
+return = <wpn_dclick_staff>
+ON = @Targon_ground
+return = <wpn_targon_ground_staff>
+ON = @Targon_item
+return = <wpn_targon_item_staff>
+
+
+ON=@EQUIP 
+SRC.TAMING=(<SRC.taming> + 3.0) 
+SRC.MESSAGE As you wear the cap, you feel an affinity with nature. 
+ON=@UNEQUIP 
+SRC.TAMING=(<SRC.taming> + -3.0) 
+SRC.MESSAGE As you take off the cap, you feel an affinity with nature diminish. 
+
+CATEGORY=Imperial uo
+SUBSECTION=E RARE
+DESCRIPTION=Mystical Crook of Animal Empathy
+
+[ITEMDEF i_stealing3]
+NAME=Mystical Gloves of Feather Fingers
+ID=i_bone_gloves
+TYPE=t_armor_leather
+FLIP=1
+WEIGHT=3
+ARMOR=20
+REQSTR=40
+DUPELIST=01455
+
+ON=@Create
+COLOR=04d5
+HITPOINTS={26 30 }
+
+ON=@EQUIP 
+SRC.stealing=(<SRC.stealing> + 3.0) 
+SRC.MESSAGE As you wear the gloves, you become light fingered. 
+ON=@UNEQUIP 
+SRC.stealing=(<SRC.stealing> + -3.0) 
+SRC.MESSAGE As you unequip the gloves, you feel more heavy handed. 
+
+CATEGORY=Imperial uo
+SUBSECTION=E RARE
+DESCRIPTION=Mystical Gloves of Feather Fingers
+
+
+[ITEMDEF i_stealth3]
+NAME=Mystical Cloak of The Wind
+ID=01530
+TYPE=T_CLOTHING
+WEIGHT=3
+ARMOR=10
+REQSTR=20
+DUPELIST=01455
+
+ON=@Create
+COLOR=0782
+HITPOINTS={26 30 }
+
+ON=@EQUIP 
+SRC.stealth=(<SRC.stealth> + 3.0) 
+SRC.MESSAGE As you wear the gloves, you become light fingered. 
+ON=@UNEQUIP 
+SRC.stealth=(<SRC.stealth> + -3.0) 
+SRC.MESSAGE As you unequip the gloves, you feel more heavy handed. 
+
+CATEGORY=Imperial uo
+SUBSECTION=E RARE
+DESCRIPTION=Mystical Cloak of The Wind
+
+[ITEMDEF i_cooking3]
+ID=i_apron_half
+Name=Mystical Apron of Cooking
+WEIGHT=2
+TYPE=T_CLOTHING
+DYE=1
+ARMOR=4
+VALUE=29
+DUPELIST=0153e
+
+ON=@Create
+COLOR=0020
+HITPOINTS={21 30}
+
+ON=@EQUIP 
+SRC.cooking=(<SRC.cooking> + 3.0) 
+SRC.MESSAGE As you wear the Apron, you become more creative. 
+ON=@UNEQUIP 
+SRC.cooking=(<SRC.cooking> + -3.0) 
+SRC.MESSAGE As you unequip the Apron, you become less creative. 
+
+CATEGORY=Imperial uo
+SUBSECTION=E RARE
+DESCRIPTION=Mystical Apron of Cooking
+
+[ITEMDEF i_hiding3]
+NAME=Mystical Robe of The Shadows
+ID=i_robe
+WEIGHT=3
+TYPE=T_CLOTHING
+DYE=1
+ARMOR=7
+DUPELIST=01f04
+
+ON=@Create
+COLOR=0591
+HITPOINTS={21 30}
+
+ON=@EQUIP 
+SRC.hiding=(<SRC.hiding> + 3.0) 
+SRC.MESSAGE As you wear the Robe, you become harder to see. 
+ON=@UNEQUIP 
+SRC.hiding=(<SRC.hiding> + -3.0) 
+SRC.MESSAGE As you unequip the Apron, you become easier to see. 
+
+CATEGORY=Imperial uo
+SUBSECTION=E RARE
+DESCRIPTION=Mystical Robe of The Shadows
+
+[ITEMDEF i_Alchemy3]
+Name=Mystical Apron of The Alchemist 
+ID=i_apron_full
+WEIGHT=2
+TYPE=T_CLOTHING
+DYE=1
+ARMOR=4
+
+ON=@Create
+COLOR=0031
+HITPOINTS={21 30}
+
+ON=@EQUIP 
+SRC.Alchemy=(<SRC.Alchemy> + 3.0) 
+SRC.MESSAGE As you wear the Apron, you become more creative. 
+ON=@UNEQUIP 
+SRC.Alchemy=(<SRC.Alchemy> + -3.0) 
+SRC.MESSAGE As you unequip the Apron, you become less creative. 
+
+CATEGORY=Imperial uo
+SUBSECTION=E RARE
+DESCRIPTION=Mystical Apron of The Alchemist 
+
+[ITEMDEF i_carpentry3]
+NAME=Ancient Apron of Carpentry
+ID=i_Apron_full
+TYPE=T_CLOTHING
+WEIGHT=1
+DUPELIST=01029
+
+ON=@Create
+COLOR=0035
+HITPOINTS={21 23}
+
+ON=@EQUIP 
+SRC.Carpentry=(<SRC.Carpentry> + 3.0) 
+SRC.MESSAGE As you wear the apron, you become more creative. 
+ON=@UNEQUIP 
+SRC.Carpentry=(<SRC.Carpentry> + -3.0) 
+SRC.MESSAGE As you unequip the apron, you become less creative. 
+
+CATEGORY=Imperial uo
+SUBSECTION=RARE
+DESCRIPTION=Apron of Carpentry
+
+
+
+[EOF]

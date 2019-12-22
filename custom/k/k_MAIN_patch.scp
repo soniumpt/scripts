@@ -1,0 +1,172 @@
+[DIALOG d_patch]
+100, 75
+NOMOVE
+  resizepic 0 0 5120 460 470
+
+  button 380 120 27 27 1 0 1 // Patch confirm
+
+  TEXT 20  20 0  0
+  TEXT 20  35 0  1
+  TEXT 20  50 0  2
+
+  TEXT 20  85 0  4
+  TEXT 20 100 0  5
+  TEXT 20 115 0  6
+  TEXT 20 130 0  7
+
+  TEXT 20 165 0  9
+  TEXT 20 180 0 10
+  TEXT 20 195 0 11
+  TEXT 20 210 0 12
+  TEXT 20 225 0 13
+  
+  TEXT 20 260 0 24
+  TEXT 20 275 0 25
+  TEXT 20 290 0 26
+
+  TEXT 20 330 0 15
+  TEXT 20 345 0 16
+
+  TEXT 20 360 0 17
+  TEXT 20 375 0 18
+  TEXT 20 390 0 19
+  TEXT 20 405 0 20
+  TEXT 20 420 0 21
+  TEXT 20 435 0 22
+
+
+//  button 300 60 51025 51025 1 0 1
+  
+  button 370 200 4029 4030 1 0 2
+  
+  button 370 280 4011 4012 1 0 3
+
+[DIALOG d_patch TEXT]
+To play on  UOProject,  and take full advantage of all
+the new and/or modified skills, you MUST install the
+UOProject Patch via UOGateway, and have AoS or better.
+.
+If you have The UO Project Patch 2.0 installed,
+you should see a picture besides this text,
+which you can click to close this window,
+thus confirming that you have the patch.
+.
+If you want to download the patch now, you
+can do so by pressing the button to the right,
+which will launch your default web browser
+directly to the links you will require to play
+on The UO Project.
+//If you chose to play without the patch, do so with the
+//following in mind:
+//* skill names will not show up properly, and some won't
+//  even be usable at all
+//* colours might display wrong
+//* dialogs might display wrong [specially the new books]
+//* houses and other original structures be visible
+//* some items won't be visible [although rare]
+.
+You can now no longer play without the patch.
+This is due to the security issues involved
+were players to play without it, as well as
+to further enhance every players enjoyment
+of the game.
+If you have any problems with the patch,
+try resetting your patch files in UOG...
+.
+For detailed information on the Patch...
+If you have any patch issues, please visit
+the main website, at http:\\uo.UOProject.net
+.
+
+[DIALOG d_patch BUTTON]
+ON = 0
+   SYSMESSAGE @37 You MUST download the patch if you wish to play. You can download this via UOGateway.
+   WEBLINK=uo.UOProject.net/forums/index.php?act=ST&f=2&t=14500&st=0#entry184114
+   DISCONNECT_NOW
+ON = 1
+   SYSMESSAGE @67 You successfully confirmed that you have the required patch. Have fun. :)
+   TAG.PATCH=100
+   ACCOUNT.RESDISP=7
+ON = 2
+   WEBLINK=uo.UOProject.net/forums/index.php?act=ST&f=2&t=14500&st=0#entry184114
+   DISCONNECT_NOW
+   
+ON = 3
+   WEBLINK=uo.UOProject.net/forums/index.php?act=ST&f=2&t=14500&st=0#entry184114
+   DIALOG d_patch
+   
+// [FUNCTION pt]
+//   check_patch
+   
+[FUNCTION check_patch]
+   SERV.NEWITEM i_check_patch
+   NEW.CONT	= <UID>
+   NEW.TIMER	= 5
+   
+[ITEMDEF i_check_patch]
+ID	= i_memory
+TYPE	= t_eq_script
+LAYER	= layer_special
+
+
+ON = @Timer
+   LINK	= <CONT>
+   P	= <LINK.P>
+   RETURN 1
+
+ON = @Step
+   if ( (<EVAL <SRC.TIME>> - <EVAL <SRC.TAG.LASTSHARDVOTE>>) > 10 * 60 * 60 * 24 * 2 )
+      SRC.SYSMESSAGE @26 Please take a few seconds to vote on the UO Top 100 list. You can find the link in the main UOProject webpage.
+   endif
+
+   if ( 0<SRC.TAG.PATCH> == 0 )
+   elseif ( <SRC.TAG.PATCH> == 100 )
+      REMOVE
+      return 1
+   endif
+   SRC.DIALOG d_patch
+
+   REMOVE
+   return 1
+
+
+[ITEMDEF i_disconnect_now]
+ID	= i_memory
+TYPE	= t_eq_script
+
+ON = @Create
+   TIMER	= 1
+
+ON = @Timer
+   CONT.SYSMESSAGE Disconnecting...
+   CONT.UPDATE
+   CONT.DISCONNECT
+   CONT.DISCONNECT
+   REMOVE
+   return 1
+
+[FUNCTION DISCONNECT_NOW]
+   NEWITEM i_disconnect_now
+   ACT.EQUIP
+   
+[ITEMDEF i_block_now]
+ID	= i_memory
+TYPE	= t_eq_script
+
+ON = @Create
+   TIMER	= 1
+
+ON = @Timer
+   CONT.SYSMESSAGE Disconnecting...
+   CONT.UPDATE
+   SERV.ACCOUNT <CONT.ACCOUNT> block 1
+   CONT.DISCONNECT
+   CONT.DISCONNECT
+   REMOVE
+   return 1
+
+[FUNCTION BLOCK_NOW]
+   NEWITEM i_block_now
+   ACT.EQUIP   
+
+[EOF]

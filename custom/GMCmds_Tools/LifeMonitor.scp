@@ -1,0 +1,156 @@
+//Life Monitor -- scripted by Wren (Jessica Graham)
+//When linked to a player turns red when the player dies and dclk will take you to them.
+
+[ITEMDEF i_life_monitor]
+ID	= i_deed
+TYPE	= t_script
+NAME	= Life Monitor
+
+ON=@Create
+  //Set link to blank
+  LINK = 04fffffff
+  TAG.ALIVE = 1
+
+ON=@Click
+  //Display linked player's name if their stats have been saved on this scroll
+  IF ( <LINK> == 04fffffff )
+     MESSAGE Life Monitor (unassigned)
+  ELSE
+     MESSAGE Life Monitor ( <LINK.NAME> - <EVAL 0<TAG.TIMESDIED>> Deaths)
+  ENDIF
+  RETURN 1
+
+ON=@DClick
+  //If unassigned link to player
+  IF ( <LINK> = 04fffffff )
+     TARGET Who do you want to monitor?
+
+  //If color is red go to link, reset their stats, and remove this scroll
+  ELSEIF ( <COLOR> = 025)
+     SRC.GO <LINK.P>
+     SRC.SYSMESSAGE <LINK.NAME> has died <EVAL 0<TAG.DIED>> times.     
+  ELSE
+      //Allows you to go to the player even if they're not dead
+     SRC.GO <LINK.P>
+  ENDIF
+  RETURN 1
+
+ON=@Targon_Char
+  //Set timer to 10 seconds, make link, and save stats
+  LINK		= <SRC.TARG>
+  SRC.SYSMESSAGE Now Monitoring <LINK.NAME>.
+  SRC.NEWITEM M_LifeMonitor_Timer
+  SRC.ACT.LINK=<UID>
+  SRC.EQUIP <SRC.ACT>
+  RETURN 1
+
+
+
+[ItemDef M_LifeMonitor_Timer]
+id=i_memory
+Name=Life Monitor Timer
+type=t_eq_script
+
+ON=@Create
+   TIMER=10
+
+ON=@Timer
+   //If the link's link is dead turn red otherwise set timer to 10
+   IF !( <LINK.LINK> = 04fffffff )
+      IF ( <LINK.LINK.HITS> = 0 )
+         LINK.COLOR = 025
+         IF (0<LINK.TAG.ALIVE> = 01)
+            LINK.TAG.TIMESDIED = <EVAL (0<LINK.TAG.TIMESDIED>+1)>
+            LINK.TAG.ALIVE=0
+         ENDIF
+         TIMER=10
+      ELSE
+         LINK.COLOR = 0
+         IF (0<LINK.TAG.ALIVE> = 00)
+            LINK.TAG.ALIVE=1
+         ENDIF
+         TIMER=10
+      ENDIF
+   ELSE
+      REMOVE
+   ENDIF
+   RETURN 1
+
+
+[itemdef i_LifeMonitor_stone]
+Name= Life Monitor Stone
+ID=i_guildstone
+Type=T_Normal
+
+ON=@Create
+   //Set link to blank
+   LINK	= 04fffffff
+
+ON=@DClick
+   IF (<SRC.ACCOUNT.PLEVEL> > 1)  
+      LINK=<SRC.UID>
+      SRC.SYSMESSAGE You have been linked to the Life Monitor Stone.
+   ELSE
+      IF !( <LINK> = 04fffffff )
+
+         LINK.NEWITEM i_life_monitor
+         LINK.ACT.LINK=<SRC.UID>
+         LINK.EQUIP <LINK.ACT>
+
+         LOCAL.LifeMonitorUID	 = <LINK.ACT.UID>
+
+         LINK.NEWITEM M_LifeMonitor_Timer
+         LINK.ACT.LINK=<LOCAL.LifeMonitorUID>
+         LINK.ACT.NAME=<LINK.ACT.LINK.NAME> 's Life Monitor Timer
+         LINK.EQUIP <LINK.ACT> 
+         
+         IF (<EVAL <MOREP>>=0)
+            DOSWITCH <EVAL RAND(35)>
+               SRC.GO 3734,1278,0,1
+               SRC.GO 3724,1244,0,1
+               SRC.GO 3746,1218,0,1
+               SRC.GO 3775,1188,0,1
+               SRC.GO 3812,1219,0,1
+               SRC.GO 3767,1263,0,1
+               SRC.GO 3799,1300,0,1
+               SRC.GO 3763,1323,0,1
+               SRC.GO 3739,1308,20,1
+               SRC.GO 3728,1379,5,1
+      	       SRC.GO 3716,1409,0,1
+	       SRC.GO 3686,1364,0,1
+	       SRC.GO 3681,1318,0,1
+	       SRC.GO 3637,1307,0,1
+	       SRC.GO 3693,1279,40,1
+	       SRC.GO 3678,1239,0,1
+	       SRC.GO 3682,1188,0,1
+	       SRC.GO 3638,1205,0,1
+	       SRC.GO 3595,1211,0,1
+	       SRC.GO 3538,1210,0,1
+	       SRC.GO 3536,1157,20,1
+	       SRC.GO 3509,1147,30,1
+	       SRC.GO 3520,1109,20,1
+ 	       SRC.GO 3658,1099,0,1
+	       SRC.GO 3692,1130,0,1
+	       SRC.GO 3639,1146,0,1
+	       SRC.GO 3764,1156,0,1
+	       SRC.GO 3786,1122,20,1
+	       SRC.GO 3700,1180,20,1
+	       SRC.GO 3765,1187,30,1
+	       SRC.GO 3770,1231,0,1
+	       SRC.GO 3768,1263,20,1
+	       SRC.GO 3755,1280,5,1
+	       SRC.GO 3733,1253,0,1
+	       SRC.GO 3729,1232,0,1
+            ENDDO
+         ELSE
+            SRC.GO <MOREP>
+         ENDIF
+         SRC.FIX
+      ELSE
+         SRC.SYSMESSAGE The stone has not been linked to a staff member yet.
+      ENDIF
+   ENDIF
+   RETURN 1
+   
+  
+[eof]

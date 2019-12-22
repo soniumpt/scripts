@@ -1,0 +1,155 @@
+//Quest by Sqweak
+////murder brit
+
+[CHARDEF c_h_Deberg] 
+   DEFNAME=c_h_Deberg
+   NAME=De Berg the Murderer 
+   ID=C_MAN 
+   CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_MALE|MT_RUN|MT_FIRE_IMMUNE 
+   DAM=20,45 
+   ARMOR=45 
+   
+   TEVENTS=e_npc_daemon
+
+ON=@Create 
+   TITLE=Wanted Man
+   COLOR=colors_skin 
+   STR=400 
+   DEX=105
+   INT=100 
+
+   MAGICRESISTANCE=500.0 
+   TACTICS=70.0 
+   WRESTLING=70.0 
+   SWORDSMANSHIP=70.0 
+   MAGERY=100.0 
+
+   NPC=BRAIN_HUMAN 
+
+   KARMA={-3000 -4000} 
+   FAME={2500 4000} 
+
+ON=@NPCRestock
+   ITEMNEWBIE=i_hair_long
+   ITEMNEWBIE=i_sword_long_steel
+   ITEMNEWBIE=i_PLATEMAIL_chest_Steel
+   ITEMNEWBIE=i_PLATEMAIL_gloves_Steel
+   ITEMNEWBIE=i_PLATEMAIL_gorget_Steel
+   ITEMNEWBIE=i_PLATEMAIL_helm_Steel
+   ITEMNEWBIE=i_PLATEMAIL_leggings_Steel
+   ITEMNEWBIE=i_Shield_buckler_steel
+   ITEM=i_Deberg
+
+CATEGORY=Imperial uo
+SUBSECTION=Quests 
+DESCRIPTION=(murder) DeBerg
+
+[ITEMDEF i_Deberg] 
+   id=I_FLESH_HEAD2 
+   name=Head of De Berg the Murderer 
+   TYPE=T_NORMAL 
+   WEIGHT=5 
+
+[CHARDEF C_q_GUARD] 
+   DEFNAME=C_q_GUARD 
+   NAME=Knobbler
+   ID=C_MAN 
+   DAM=15,20 
+   ARMOR=20 
+   TSPEECH=jobmurder 
+   
+
+CATEGORY=Imperial uo
+SUBSECTION=Quests 
+DESCRIPTION=(murder) Knobbler the Sheriff 
+
+TEVENTS=e_npc_quest
+
+ON=@Create 
+   Title=Sheriff
+   NPC=brain_human 
+   COLOR=colors_skin 
+   STR={151 165} 
+   DEX={80 120} 
+   INT={151 165} 
+
+   DETECTION={90.0 100.0} 
+   FENCING={90.0 100.0} 
+   PARRYING={70.0 80.0} 
+   SWORDSMANSHIP={80.0 90.0} 
+   WRESTLING={80.0 90.0} 
+   MACEFIGHTING={80.0 90.0} 
+   MAGICRESISTANCE={90.0 100.0} 
+   TACTICS={80.0 90.0} 
+
+ITEMNEWBIE=random_male_hair 
+COLOR=colors_hair 
+ITEMNEWBIE=random_facial_hair 
+COLOR=match_hair 
+
+on=@hit 
+   FLAGS=000000005 
+   return 1 
+
+on=@gethit 
+   FLAGS=000000005 
+   return 1 
+
+on=@damage 
+   FLAGS=000000005 
+   return 1 
+
+ON=@NPCRestock
+   ITEM=i_shirt_plain 
+   COLOR=colors_all 
+   ITEM=random_pants 
+   COLOR=colors_all 
+   ITEM=i_platemail_chest 
+   ITEM=i_platemail_leggings 
+   ITEM=i_platemail_arms 
+   ITEM=random_over_armor 
+   COLOR=colors_all 
+   ITEM=i_halberd 
+
+[SPEECH jobmurder] 
+on=hi 
+on=hello
+on=hail
+on=sawat dee
+on=Greetings
+on=*quest*
+   IF ( <SRC.TAG.NPC_QUEST_DONE> & NPCQ_DeBerg )
+      SAY You have already done this quest! 
+   ELSEIF ( <SRC.TAG.NPC_QUEST_START> & NPCQ_DeBerg )
+      SAY You are already on this quest! Bring me the head of that evil murderer, De Berg.  You should be headed North East of Britain by now!
+   ELSE 
+      SAY De Berg is an evil murderer of the townspeople of Brit. Seek him out North East of Brit, somewhere in the forest. Bring his head back to me and say "reward" to collect your reward! 
+      SRC.TAG.NPC_QUEST_START = <eval ( <SRC.TAG.NPC_QUEST_START> | NPCQ_DeBerg )>
+   ENDIF
+   RETURN 1
+
+ 
+on=rangval
+on=collect
+on=sa soam 
+on=*reward*
+   IF !( <SRC.TAG.NPC_QUEST_START> & NPCQ_DeBerg )
+      SAY I must know if you will help me before I give you the
+      SAY information <SRC.SEX milord/milady>
+   ELSEIF (( <SRC.TAG.NPC_QUEST_START> & NPCQ_DeBerg ) && !<SRC.RESTEST 1 i_Deberg>)
+      SAY Hand me the murderer's head, brave adventurer and claim your reward.
+   ELSEIF <SRC.RESTEST 1 i_Deberg>
+      SRC.NEWITEM=i_gold 
+      SRC.ACT.AMOUNT=15000
+      SRC.ACT.BOUNCE 
+      SOUND=01FC 
+      SRC.SYSMESSAGE=You are now 15000 gps richer. 
+      SRC.consume i_Deberg
+      SRC.TAG.NPC_QUEST_START = <eval ( <SRC.TAG.NPC_QUEST_START> &~ NPCQ_DeBerg )>
+      SRC.TAG.NPC_QUEST_DONE = <eval ( <SRC.TAG.NPC_QUEST_DONE> | NPCQ_DeBerg )>
+      ANNOUNCE <SRC.NAME> has brought a little more justice to the world...
+      Remove
+   ENDIF
+   RETURN 1
+
+[EOF]

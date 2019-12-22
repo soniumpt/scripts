@@ -1,0 +1,244 @@
+//Changelog:
+//==========
+//26/07/2005 - Wren - Removed punishs, made smoking boots a function, and fixed board uid
+//22/04/2003 - Firefly - xjailtime changed to jailtimex so that it works!
+
+//Original Script by Firefly
+//.PUNISH <time in hours> jails a player, a post is added to a "jail board" which shows all jail sentances 
+//Also includes Smoking Boots!
+
+[Plevel 1]
+jailtime
+
+[Plevel 2]
+punish
+unpunish
+//jailtimex // disabled by pink panther, causes jailtime to increase
+accountnotes
+
+
+[Function jailtime]
+   if (<src.findid(i_punished_timer).uid>)
+      LOCAL.HOURS = <eval (<src.findid(i_punished_timer).timer> / 3600)>
+      LOCAL.HOURS = <LOCAL.HOURS> * 60 * 60
+      SRC.SYSMESSAGE @55 You have <eval (<src.findid(i_punished_timer).timer> / 3600)> hours and <eval ((<src.findid(i_punished_timer).timer> - <LOCAL.HOURS>) / 60)> minutes left in jail.
+   endif
+
+
+[Function jailtimex]
+src.sysmessage disabled
+return 1
+   SRC.NEWITEM i_jailtime
+   SRC.ACT.TARGET Who do you wish to check the jail time on?
+   RETURN 1
+
+
+[ITEMDEF i_jailtime]
+NAME=Jailtime Targetter
+ID=i_memory
+TYPE=T_EQ_SCRIPT
+LAYER=30
+
+ON=@CREATE
+   ATTR=attr_decay
+   TIMER=10
+
+On=@TARGON_Char
+   if (<src.targ.findid(i_punished_timer).uid>)
+      LOCAL.HOURS = <eval (<src.targ.findid(i_punished_timer).timer> / 3600)>
+      LOCAL.HOURS = <LOCAL.HOURS> * 60 * 60
+      SRC.SYSMESSAGE @55 They have <eval (<src.targ.findid(i_punished_timer).timer> / 3600)> hours and <eval ((<src.targ.findid(i_punished_timer).timer> - <LOCAL.HOURS>) / 60)> minutes left in jail.
+   endif
+   REMOVE
+
+On=@Timer
+   Remove
+
+
+[FUNCTION punish]
+  if ( <ARGS> < 0 )
+     SRC.SYSMESSAGE You can't punish someone for negative time!
+     return 1
+  endif
+
+  SRC.NEWITEM i_punish
+  SRC.ACT.MORE1 = <args>
+  SRC.ACT.TARGET Who do you wish to punish for <eval <SRC.ACT.MORE1>> hours?
+  RETURN 1
+
+
+[Function unpunish]
+  SRC.NEWITEM i_unpunish
+  SRC.ACT.TARGET Who do you wish to let go/forgive?
+  RETURN 1
+
+
+[Itemdef i_unpunish]
+NAME=Punish Targetter
+ID=i_memory
+TYPE=T_EQ_SCRIPT
+LAYER=30
+
+ON=@CREATE
+   ATTR=attr_decay
+
+ON=@TARGON_CHAR
+   if (<src.targ.findid(i_punished_timer).uid>)
+      src.targ.findid(i_punished_timer).timer = 1 // set timer to 1 (removes post on jail board too!)
+      src.sysmessage @55 You have released <src.targ.name>
+      remove   
+   else
+      src.sysmessage @55 You cannot unpunish that character as it was not punished in the first place!
+   endif
+   return 1
+   
+ON=@TARGON_ITEM
+  SRC.SYSMESSAGE You can't unpunish an item!
+  TIMER=1
+  REMOVE
+  RETURN 1
+
+ON=@TARGON_GROUND
+  SRC.SYSMESSAGE You can't unpunish the ground!
+  TIMER=1
+  REMOVE
+  RETURN 1
+
+
+[ITEMDEF i_punish]
+NAME=Punish Targetter
+ID=i_memory
+TYPE=T_EQ_SCRIPT
+LAYER=30
+
+ON=@CREATE
+   ATTR=attr_decay
+
+ON=@TARGON_CHAR
+   if (<src.targ.findid(i_punished_timer).uid>)
+      src.message They have already been punished!
+      Return 1
+   endif
+	  SRC.TARG.STONE
+      SRC.TAG.jchar=<SRC.TARG.NAME>
+      SRC.TAG.jaccount=<SRC.TARG.ACCOUNT>
+      SRC.TAG.jtime=<eval <more1>> hours.
+      SRC.TAG.juid=<SRC.TARG.UID>
+      SRC.TAG.jip=<SRC.TARG.ACCOUNT.LASTIP>
+      SRC.TAG.jdate=<SERV.RTIME> by <SRC.NAME>
+      SRC.TAG.jwho=Jailed by <SRC.ACCOUNT>
+      src.ctag.juid=<SRC.TARG.UID>
+      src.targ.act.update
+   DIALOG jailcomment
+   //REMOVE
+   RETURN 1
+
+ON=@TARGON_ITEM
+  SRC.SYSMESSAGE You can't punish an item!
+  TIMER=1
+  REMOVE
+  RETURN 1
+
+ON=@TARGON_GROUND
+  SRC.SYSMESSAGE You can't punish the ground!
+  TIMER=1
+  REMOVE
+  RETURN 1
+
+
+[DIALOG jailcomment]
+200,200 
+resizepic 0 0 3600 330 300 
+page 0 
+dtext 20 20 1152 Enter your comment for <src.tag.jchar>
+gumppictiled 40 52 250 180 3004 
+dtextentry  40 52 250 180 0 0
+button 120 260 249 248 1 0 5 //okay 
+button 210 260 243 241 1 0 6 //cancel 
+
+[DIALOG jailcomment button] 
+
+ON=0
+SRC.TARG.STONE
+SRC.SYSMESSAGE @0799 Jailing Cancelled.
+RETURN 1
+
+ON=5
+//local.oldobj=<obj>
+obj=<src.ctag.juid>
+TRYSRV obj.account.tag.numnotes=<eval <obj.account.tag0.numnotes> + 1>
+TRYSRV obj.account.tag.note_<eval <obj.account.tag0.numnotes>>=<argtxt[0]>
+TRYSRV obj.account.tag.note_<eval <obj.account.tag0.numnotes>>_by=<src.name>
+TRYSRV obj.account.tag.note_<eval <obj.account.tag0.numnotes>>_time=<serv.rtime>
+src.sysmessage Note added to account <obj.account.name>!
+serv.log <src.name> <src.account> added note to account <obj.account.name> [<argtxt[0]>]
+obj=
+//serv.log db execute
+//DB.EXECUTE "INSERT INTO `jaildatabase` (`name`, `account`, `jaildate`, `jailtime`, `uid`, `ip`, `reason`, `notes`) VALUES ('<SRC.TAG.jchar>','<SRC.TAG.jaccount>','<SRC.TAG.jdate>','<SRC.TAG.jtime>','<SRC.TAG.juid>','<SRC.TAG.jip>','<argtxt[0]>','<SRC.TAG.jwho>')"
+SRC.SMOKINGBOOTS
+
+   src.targ.newitem i_punished_timer
+   src.targ.act.cont = <src.targ.uid>
+   src.targ.tag.prepunishpos = <src.targ.p>
+   src.sysmessage @55 You have punished <src.targ.name> for <eval <more1>> hours.
+   src.targ.sysmessage @55 You have been punished for <eval <more1>> hours.
+   src.targ.sysmessage @55 Reason: <argtxt[0]>
+   src.targ.stone
+   SERV.LOG <src.account> has punished <src.targ.name> of <src.targ.account> for <eval <more1>> hours.
+   src.targ.act.timer = <more1> * 60 * 60
+   //f_post_jailmessage
+   UID.<SRC.TAG.juid>.jail
+   	 SRC.TAG.jchar=
+         SRC.TAG.jaccount=
+         SRC.TAG.jtime=
+         SRC.TAG.juid=
+         SRC.TAG.jip=
+         SRC.TAG.jdate=
+         SRC.TAG.jwho=
+         src.ctag.juid=
+      
+RETURN 1
+
+ON=6
+SRC.SYSMESSAGE @0799 Jailing Cancelled.
+RETURN 1
+
+
+[Itemdef i_punished_timer]
+Name=Punished Timer
+id=i_memory
+layer= 30
+TYPE=t_eq_script
+
+On=@timer
+   cont.forgive
+   cont.go <cont.tag.prepunishpos>
+   cont.tag.prepunishpos=
+   cont.sysmessage @55 You have been forgiven.
+   remove
+   return 0
+
+
+[FUNCTION SMOKINGBOOTS]
+   SRC.SOUND snd_spell_lightning 
+   SRC.TARG.EFFECT 1,1 
+   SRC.NEWITEM i_boots_calf 
+   SRC.ACT.ATTR attr_static|attr_decay 
+   SRC.ACT.TIMER 10 
+   SRC.ACT.P <SRC.TARG.P> 
+   SRC.ACT.SAY *sizzle* 
+   SRC.NEWITEM i_fx_smoke_small 
+   SRC.ACT.ATTR attr_static|attr_decay 
+   SRC.ACT.TIMER 10 
+   SRC.ACT.P <SRC.TARG.P> 
+   SRC.ACT.MOVE 0 0 1 
+
+   
+[FUNCTION accountnotes]
+src.sysmessage Total Notes: <eval <account.tag0.numnotes>>
+
+FOR <eval <account.tag0.numnotes>>
+src.sysmessage <dLOCAL._FOR>) <account.tag.note_<dLOCAL._FOR>>,  added by <account.tag.note_<dLOCAL._FOR>_by>
+ENDFOR
+
+[eof]

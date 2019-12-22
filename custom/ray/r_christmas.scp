@@ -1,0 +1,978 @@
+// Christmas Dungeon
+// Imperial UO - 2013
+
+//Functions
+
+[FUNCTION santa_killer]
+IF (<OBJ.TAG0.SANTAKILLER> == 0)
+OBJ.TAG.SANTAKILLER = 1
+ELSE
+OBJ.TAG.SANTAKILLER = <EVAL <SRC.TAG.SANTAKILLER> +1>
+ENDIF
+RETURN 1
+
+[FUNCTION explosion_death]
+NEWITEM=i_fx_explode
+ACT.COLOR=079c
+ACT.TYPE=T_EXPLOSION
+ACT.ATTR=ATTR_MOVE_NEVER|ATTR_CAN_DECAY
+ACT.LINK=<uid>
+ACT.MOREx=30
+ACT.MOREy=090
+ACT.MOREz=2
+ACT.P=<p>
+ACT.TIMERD=1
+
+[FUNCTION fire_damage_all]
+FORCHARS 12
+IF (<UID>!=<SRC>)
+EFFECT 3, 03382, 1, 12, 0, 0
+SPELLEFFECT S_FLAMESTRIKE ,800,<uid>
+SRC.RED_SYSMSG A deadly flame embraces you.
+ENDIF
+ENDFOR
+
+[EVENTS e_mini_boss]
+ON=@CLICK
+MESSAGE @0480 [Mini Boss]
+
+// Basic Monsters
+
+//Evil Spirit
+
+[CHARDEF c_christmas_spirit]
+DEFNAME=c_christmas_spirit
+ID=c_wisp
+NAME=Evil Christmas Spirit
+SOUND=snd_MONSTER_WISP1
+ICON=i_pet_WISP
+ANIM=078c7f
+DAM=15,20
+ARMOR=40
+CAN=MT_WALK|MT_FLY|MT_FIRE_IMMUNE|MT_USEHANDS
+FOODTYPE=t_spell
+RESOURCES=t_magic
+
+TEVENTS=e_dispeller
+
+ON=@Create
+STR={150 170}
+DEX={195 225}
+INT={195 225}
+
+PARRYING=80.0
+MAGERY=160.0
+MAGICRESISTANCE=80.0
+TACTICS=80.0
+WRESTLING=80.0
+
+COLOR=079c
+NPC=brain_animal
+FAME={100 200}
+KARMA=-3000
+
+ITEMNEWBIE=i_spellbook
+ADDSPELL=s_paralyze
+ADDSPELL=s_harm
+ITEMNEWBIE=i_light_source
+
+ON=@NPCRestock
+ITEM=i_gold,{100 200}
+ITEM={i_christmas_wisp 1 0 25}
+
+ON=@Death
+explosion_death
+
+// 9 Reindeers
+
+[CHARDEF c_christmas_reindeer]
+DEFNAME=c_christmas_reindeer
+ID=c_stag
+NAME=Rudolph Reindeer
+SOUND=snd_ANIMALS_DEER3
+ICON=i_pet_DEER
+ANIM=01fff
+DAM=4,10
+ARMOR=12
+RESOURCES=30 i_ribs_raw, 8 i_hide
+CAN=MT_WALK|MT_RUN
+FOODTYPE=25 t_crops, 64 t_grass
+
+TEVENTS=e_dispeller
+TEVENTS=e_mini_boss
+
+ON=@Create
+NPC=brain_animal
+STR={500 550}
+DEX={200 250}
+INT={300 350}
+
+PARRYING=80.0
+MAGERY=160.0
+MAGICRESISTANCE=80.0
+TACTICS=80.0
+WRESTLING=80.0
+
+COLOR=079c
+NPC=brain_animal
+FAME={100 200}
+KARMA=-3000
+
+ITEMNEWBIE=i_spellbook
+ADDSPELL=s_paralyze
+ADDSPELL=s_harm
+
+ON=@NPCRestock
+ITEM=i_gold,{250 400}
+ITEM=i_christmas_key
+ITEM={i_christmas_head 1 0 20} // 5%
+
+ON=@Death
+explosion_death
+
+[ITEMDEF i_christmas_head]
+ID=15673
+NAME=Head Trophy (Rudolf)
+TYPE=t_normal
+WEIGHT=12
+
+ON=@CREATE
+COLOR=079c
+
+ON=@CLICK
+MESSAGE @0480 [Christmas Dungeon 2013]
+
+[ITEMDEF i_christmas_key]
+ID=i_rune_marker
+TYPE=T_NORMAL
+NAME=Christmas Key (Rudolf)
+
+ON=@Create
+COLOR=079c
+
+//
+
+[CHARDEF c_christmas_reindeer2]
+DEFNAME=c_christmas_reindeer2
+ID=c_stag
+NAME=Dasher Reindeer
+SOUND=snd_ANIMALS_DEER3
+ICON=i_pet_DEER
+ANIM=01fff
+DAM=4,10
+ARMOR=12
+RESOURCES=30 i_ribs_raw, 8 i_hide
+CAN=MT_WALK|MT_RUN
+FOODTYPE=25 t_crops, 64 t_grass
+
+TEVENTS=e_dispeller
+TEVENTS=e_mini_boss
+
+ON=@Create
+NPC=brain_animal
+STR={500 550}
+DEX={200 250}
+INT={300 350}
+
+PARRYING=80.0
+MAGERY=160.0
+MAGICRESISTANCE=80.0
+TACTICS=80.0
+WRESTLING=90.0
+
+COLOR=0790
+NPC=brain_animal
+FAME={100 200}
+KARMA=-3000
+
+ITEMNEWBIE=i_spellbook
+ADDSPELL=s_paralyze
+ADDSPELL=s_harm
+
+ON=@NPCRestock
+ITEM=i_gold,{250 400}
+ITEM=i_christmas_key2
+ITEM={i_christmas_head2 1 0 5} // 20%
+
+ON=@Death
+explosion_death
+
+[ITEMDEF i_christmas_head2]
+ID=15673
+NAME=Head Trophy (Dasher)
+TYPE=t_normal
+WEIGHT=12
+
+ON=@CREATE
+COLOR=0790
+
+ON=@CLICK
+MESSAGE @0480 [Christmas Dungeon 2013]
+
+[ITEMDEF i_christmas_key2]
+ID=i_rune_marker
+TYPE=T_NORMAL
+NAME=Christmas Key (Dasher)
+
+ON=@Create
+COLOR=0790
+
+//
+
+[CHARDEF c_christmas_reindeer3]
+DEFNAME=c_christmas_reindeer3
+ID=c_stag
+NAME=Dancer Reindeer
+SOUND=snd_ANIMALS_DEER3
+ICON=i_pet_DEER
+ANIM=01fff
+DAM=4,10
+ARMOR=12
+RESOURCES=30 i_ribs_raw, 8 i_hide
+CAN=MT_WALK|MT_RUN
+FOODTYPE=25 t_crops, 64 t_grass
+
+TEVENTS=e_dispeller
+TEVENTS=e_mini_boss
+
+ON=@Create
+NPC=brain_animal
+STR={500 550}
+DEX={200 250}
+INT={300 350}
+
+PARRYING=80.0
+MAGERY=160.0
+MAGICRESISTANCE=80.0
+TACTICS=80.0
+WRESTLING=90.0
+
+COLOR=063e
+NPC=brain_animal
+FAME={100 200}
+KARMA=-3000
+
+ITEMNEWBIE=i_spellbook
+ADDSPELL=s_paralyze
+ADDSPELL=s_harm
+
+ON=@NPCRestock
+ITEM=i_gold,{250 400}
+ITEM=i_christmas_key3
+ITEM={i_christmas_head3 1 0 10} // 10%
+
+ON=@Death
+explosion_death
+
+[ITEMDEF i_christmas_head3]
+ID=15673
+NAME=Head Trophy (Dancer)
+TYPE=t_normal
+WEIGHT=12
+
+ON=@CREATE
+COLOR=063e
+
+ON=@CLICK
+MESSAGE @0480 [Christmas Dungeon 2013]
+
+[ITEMDEF i_christmas_key3]
+ID=i_rune_marker
+TYPE=T_NORMAL
+NAME=Christmas Key (Dancer)
+
+ON=@Create
+COLOR=063e
+
+//
+
+[CHARDEF c_christmas_reindeer4]
+DEFNAME=c_christmas_reindeer4
+ID=c_stag
+NAME=Prancer Reindeer
+SOUND=snd_ANIMALS_DEER3
+ICON=i_pet_DEER
+ANIM=01fff
+DAM=4,10
+ARMOR=12
+RESOURCES=30 i_ribs_raw, 8 i_hide
+CAN=MT_WALK|MT_RUN
+FOODTYPE=25 t_crops, 64 t_grass
+
+TEVENTS=e_dispeller
+TEVENTS=e_mini_boss
+
+ON=@Create
+NPC=brain_animal
+STR={500 550}
+DEX={200 250}
+INT={300 350}
+
+PARRYING=80.0
+MAGERY=160.0
+MAGICRESISTANCE=80.0
+TACTICS=80.0
+WRESTLING=90.0
+
+COLOR=0481
+NPC=brain_animal
+FAME={100 200}
+KARMA=-3000
+
+ITEMNEWBIE=i_spellbook
+ADDSPELL=s_paralyze
+ADDSPELL=s_harm
+
+ON=@NPCRestock
+ITEM=i_gold,{250 400}
+ITEM=i_christmas_key4
+ITEM={i_christmas_head4 1 0 10} // 10%
+
+ON=@Death
+explosion_death
+
+[ITEMDEF i_christmas_head4]
+ID=15673
+NAME=Head Trophy (Prancer)
+TYPE=t_normal
+WEIGHT=12
+
+ON=@CREATE
+COLOR=0481
+
+ON=@CLICK
+MESSAGE @0480 [Christmas Dungeon 2013]
+
+[ITEMDEF i_christmas_key4]
+ID=i_rune_marker
+TYPE=T_NORMAL
+NAME=Christmas Key (Prancer)
+
+ON=@Create
+COLOR=0481
+
+//*********************************//
+
+[CHARDEF c_christmas_reindeer5]
+DEFNAME=c_christmas_reindeer5
+ID=c_stag
+NAME=Vixen Reindeer
+SOUND=snd_ANIMALS_DEER3
+ICON=i_pet_DEER
+ANIM=01fff
+DAM=4,10
+ARMOR=12
+RESOURCES=30 i_ribs_raw, 8 i_hide
+CAN=MT_WALK|MT_RUN
+FOODTYPE=25 t_crops, 64 t_grass
+
+TEVENTS=e_dispeller
+TEVENTS=e_mini_boss
+
+ON=@Create
+NPC=brain_animal
+STR={500 550}
+DEX={200 250}
+INT={300 350}
+
+PARRYING=80.0
+MAGERY=160.0
+MAGICRESISTANCE=80.0
+TACTICS=80.0
+WRESTLING=90.0
+
+COLOR=07a0
+NPC=brain_animal
+FAME={100 200}
+KARMA=-3000
+
+ITEMNEWBIE=i_spellbook
+ADDSPELL=s_paralyze
+ADDSPELL=s_harm
+
+ON=@NPCRestock
+ITEM=i_gold,{250 400}
+ITEM=i_christmas_key5
+ITEM={i_christmas_head5 1 0 5} // 20%
+
+ON=@Death
+explosion_death
+
+[ITEMDEF i_christmas_head5]
+ID=15673
+NAME=Head Trophy (Vixen)
+TYPE=t_normal
+WEIGHT=12
+
+ON=@CREATE
+COLOR=07a0
+
+ON=@CLICK
+MESSAGE @0480 [Christmas Dungeon 2013]
+
+[ITEMDEF i_christmas_key5]
+ID=i_rune_marker
+TYPE=T_NORMAL
+NAME=Christmas Key (Vixen)
+
+ON=@Create
+COLOR=07a0
+
+//
+
+[CHARDEF c_christmas_reindeer6]
+DEFNAME=c_christmas_reindeer6
+ID=c_stag
+NAME=Comet Reindeer
+SOUND=snd_ANIMALS_DEER3
+ICON=i_pet_DEER
+ANIM=01fff
+DAM=4,10
+ARMOR=12
+RESOURCES=30 i_ribs_raw, 8 i_hide
+CAN=MT_WALK|MT_RUN
+FOODTYPE=25 t_crops, 64 t_grass
+
+TEVENTS=e_dispeller
+TEVENTS=e_mini_boss
+
+ON=@Create
+NPC=brain_animal
+STR={500 550}
+DEX={200 250}
+INT={300 350}
+
+PARRYING=80.0
+MAGERY=160.0
+MAGICRESISTANCE=80.0
+TACTICS=80.0
+WRESTLING=90.0
+
+COLOR=07ea
+NPC=brain_animal
+FAME={100 200}
+KARMA=-3000
+
+ITEMNEWBIE=i_spellbook
+ADDSPELL=s_paralyze
+ADDSPELL=s_harm
+
+ON=@NPCRestock
+ITEM=i_gold,{250 400}
+ITEM=i_christmas_key6
+ITEM={i_christmas_head6 1 0 20} // 5%
+
+ON=@Death
+explosion_death
+
+[ITEMDEF i_christmas_head6]
+ID=15673
+NAME=Head Trophy (Comet)
+TYPE=t_normal
+WEIGHT=12
+
+ON=@CREATE
+COLOR=07ea
+
+ON=@CLICK
+MESSAGE @0480 [Christmas Dungeon 2013]
+
+[ITEMDEF i_christmas_key6]
+ID=i_rune_marker
+TYPE=T_NORMAL
+NAME=Christmas Key (Comet)
+
+ON=@Create
+COLOR= 07ea
+
+//
+
+[CHARDEF c_christmas_reindeer7]
+DEFNAME=c_christmas_reindeer7
+ID=c_stag
+NAME=Cupid Reindeer
+SOUND=snd_ANIMALS_DEER3
+ICON=i_pet_DEER
+ANIM=01fff
+DAM=4,10
+ARMOR=12
+RESOURCES=30 i_ribs_raw, 8 i_hide
+CAN=MT_WALK|MT_RUN
+FOODTYPE=25 t_crops, 64 t_grass
+
+TEVENTS=e_dispeller
+TEVENTS=e_mini_boss
+
+ON=@Create
+NPC=brain_animal
+STR={500 550}
+DEX={200 250}
+INT={300 350}
+
+PARRYING=80.0
+MAGERY=160.0
+MAGICRESISTANCE=80.0
+TACTICS=80.0
+WRESTLING=90.0
+
+COLOR=0480
+NPC=brain_animal
+FAME={100 200}
+KARMA=-3000
+
+ITEMNEWBIE=i_spellbook
+ADDSPELL=s_paralyze
+ADDSPELL=s_harm
+
+ON=@NPCRestock
+ITEM=i_gold,{250 400}
+ITEM=i_christmas_key7
+ITEM={i_christmas_head7 1 0 20} // 5%
+
+ON=@Death
+explosion_death
+
+[ITEMDEF i_christmas_head7]
+ID=15673
+NAME=Head Trophy (Cupid)
+TYPE=t_normal
+WEIGHT=12
+
+ON=@CREATE
+COLOR=0480
+
+ON=@CLICK
+MESSAGE @0480 [Christmas Dungeon 2013]
+
+[ITEMDEF i_christmas_key7]
+ID=i_rune_marker
+TYPE=T_NORMAL
+NAME=Christmas Key (Cupid)
+
+ON=@Create
+COLOR=0480
+
+//
+
+[CHARDEF c_christmas_reindeer8]
+DEFNAME=c_christmas_reindeer8
+ID=c_stag
+NAME=Donner Reindeer
+SOUND=snd_ANIMALS_DEER3
+ICON=i_pet_DEER
+ANIM=01fff
+DAM=4,10
+ARMOR=12
+RESOURCES=30 i_ribs_raw, 8 i_hide
+CAN=MT_WALK|MT_RUN
+FOODTYPE=25 t_crops, 64 t_grass
+
+TEVENTS=e_dispeller
+TEVENTS=e_mini_boss
+
+ON=@Create
+NPC=brain_animal
+STR={500 550}
+DEX={200 250}
+INT={300 350}
+
+PARRYING=80.0
+MAGERY=160.0
+MAGICRESISTANCE=80.0
+TACTICS=80.0
+WRESTLING=90.0
+
+COLOR=077b
+NPC=brain_animal
+FAME={100 200}
+KARMA=-3000
+
+ITEMNEWBIE=i_spellbook
+ADDSPELL=s_paralyze
+ADDSPELL=s_harm
+
+ON=@NPCRestock
+ITEM=i_gold,{250 400}
+ITEM=i_christmas_key8
+ITEM={i_christmas_head8 1 0 10} // 10%
+
+ON=@Death
+explosion_death
+
+[ITEMDEF i_christmas_head8]
+ID=15673
+NAME=Head Trophy (Donner)
+TYPE=t_normal
+WEIGHT=12
+
+ON=@CREATE
+COLOR=077b
+
+ON=@CLICK
+MESSAGE @0480 [Christmas Dungeon 2013]
+
+[ITEMDEF i_christmas_key8]
+ID=i_rune_marker
+TYPE=T_NORMAL
+NAME=Christmas Key (Donner)
+
+ON=@Create
+COLOR=077b
+
+//
+
+[CHARDEF c_christmas_reindeer9]
+DEFNAME=c_christmas_reindeer9
+ID=c_stag
+NAME=Blitzen Reindeer
+SOUND=snd_ANIMALS_DEER3
+ICON=i_pet_DEER
+ANIM=01fff
+DAM=4,10
+ARMOR=12
+RESOURCES=30 i_ribs_raw, 8 i_hide
+CAN=MT_WALK|MT_RUN
+FOODTYPE=25 t_crops, 64 t_grass
+
+TEVENTS=e_dispeller
+TEVENTS=e_mini_boss
+
+ON=@Create
+NPC=brain_animal
+STR={500 550}
+DEX={200 250}
+INT={300 350}
+
+PARRYING=80.0
+MAGERY=160.0
+MAGICRESISTANCE=80.0
+TACTICS=80.0
+WRESTLING=90.0
+
+COLOR=07b5
+NPC=brain_animal
+FAME={100 200}
+KARMA=-3000
+
+ITEMNEWBIE=i_spellbook
+ADDSPELL=s_paralyze
+ADDSPELL=s_harm
+
+ON=@NPCRestock
+ITEM=i_gold,{250 400}
+ITEM=i_christmas_key9
+ITEM={i_christmas_head9 1 0 10} // 10%
+
+ON=@Death
+explosion_death
+
+[ITEMDEF i_christmas_head9]
+ID=15673
+NAME=Head Trophy (Blitzen)
+TYPE=t_normal
+WEIGHT=12
+
+ON=@CREATE
+COLOR=07b5
+
+ON=@CLICK
+MESSAGE @0480 [Christmas Dungeon 2013]
+
+[ITEMDEF i_christmas_key9]
+ID=i_rune_marker
+TYPE=T_NORMAL
+NAME=Christmas Key (Blitzen)
+
+ON=@Create
+COLOR=07b5
+
+//*******************************************//
+
+[ITEMDEF i_christmas_robe]
+NAME=Christmas Saver
+ID=i_robe
+WEIGHT=2
+TYPE=T_CLOTHING
+VALUE=5000
+
+ON=@CLICK
+MESSAGE @0480 [Christmas Dungeon 2013]
+
+ON=@Create
+COLOR=05b7
+HITPOINTS={75 100}
+
+//*******************************************//
+
+[ITEMDEF i_christmas_wisp]
+NAME=Good Christmas Spirit
+ID=i_pet_wisp
+WEIGHT=2
+ARMOR=5
+TYPE=T_NORMAL
+VALUE=5000
+
+ON=@CLICK
+MESSAGE @0480 [Christmas Dungeon 2013]
+
+ON=@Create
+COLOR=07ea
+
+//*******************************************//
+
+[ITEMDEF i_christmas_gate]
+NAME=Gate to Evil Santa
+ID=0357f
+TYPE=t_light_lit
+
+ON=@CREATE
+COLOR=03a
+ATTR=attr_move_never|attr_can_decay
+MOREP=5700,305,0,50
+
+ON=@DCLICK
+
+IF (<COLOR> = 079c)
+SRC.RED_SYSMSG There is someone else in the room. Your entry is blocked.
+RETURN 1
+
+ELSEIF (<SRC.TAG0.XMASFIGHT> > 2)
+SRC.RED_SYSMSG You have killed the Evil Santa Claus 3 times. Your entry is now blocked.
+RETURN 1
+
+ELSEIF (<SRC.RESTEST 1 i_christmas_key> && <SRC.RESTEST 1 i_christmas_key2> && <SRC.RESTEST 1 i_christmas_key3> && <SRC.RESTEST 1 i_christmas_key4> && <SRC.RESTEST 1 i_christmas_key5> && <SRC.RESTEST 1 i_christmas_key6> && <SRC.RESTEST 1 i_christmas_key7> && <SRC.RESTEST 1 i_christmas_key8> && <SRC.RESTEST 1 i_christmas_key9>)
+SRC.CONSUME i_christmas_key
+SRC.CONSUME i_christmas_key2
+SRC.CONSUME i_christmas_key3
+SRC.CONSUME i_christmas_key4
+SRC.CONSUME i_christmas_key5
+SRC.CONSUME i_christmas_key6
+SRC.CONSUME i_christmas_key7
+SRC.CONSUME i_christmas_key8
+SRC.CONSUME i_christmas_key9
+SERV.NEWITEM m_christmas_timer
+NEW.EQUIP <SRC.UID>
+NEW.LINK = <SRC.UID>
+NEW.TIMER = 600
+SRC.TAG0.XMASFIGHT = <EVAL <SRC.TAG0.XMASFIGHT> + 1>
+
+//MOREP=5700,305,0,50
+//TYPE=T_TELEPAD
+
+SRC.GO 5700,305,0,50
+SRC.RED_SYSMSG You have 10 minutes to defeat Evil Santa Claus. Good luck!
+
+TIMER=600
+COLOR=079c
+RETURN 1
+
+ELSE
+SRC.RED_SYSMSG Your entry is blocked.
+RETURN 1
+ENDIF
+
+ON=@TIMER
+
+//ATTR=attr_move_never|attr_can_decay
+//TYPE=t_light_lit
+COLOR=03a
+//MOREP=5700,305,0,50
+
+//*******************************************//
+
+[ITEMDEF m_christmas_timer]
+ID=i_memory
+Name=Christmas Boss Timer
+type=t_eq_script
+
+ON=@CREATE
+ATTR=attr_decay
+
+ON=@EQUIP
+TIMER=900
+
+ON=@Timer
+IF !(STRCMP(<CONT.REGION.NAME>, Christmas Dungeon [Boss Room]))
+TRYSRC <LINK.UID> SRC.GO Christmas Dungeon
+REMOVE
+ELSE
+REMOVE
+RETURN 1
+ENDIF
+
+//*******************************************//
+
+[ITEMDEF i_christmas_gate2]
+ID=0357f
+NAME=Gate to Christmas Dungeon
+TYPE=T_NORMAL
+
+ON=@CREATE
+COLOR=0480
+
+ON=@STEP
+IF (<SRC.FINDID.m_christmas_timer>)
+SRC.FINDID.m_christmas_timer.remove
+ENDIF
+SRC.GO Christmas Dungeon
+
+//*******************************************//
+
+[CHARDEF c_christmas_evil_santa]
+DEFNAME = c_christmas_evil_santa
+NAME=Evil Santa Claus
+ID=C_MAN
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_MALE|MT_RUN
+DAM={4 5}
+ARMOR=20
+
+TEVENTS=e_dispeller
+TEVENTS=e_satan
+
+ON=@Create
+STR={200 250}
+DEX={100 120}
+INT={200 250}
+MAXHITS=<EVAL <STR> * 3>
+HITS=<MAXHITS>
+
+COLOR=1
+
+MAGICRESISTANCE=200.0
+TACTICS=100.0
+WRESTLING=100.0
+SWORDSMANSHIP=100.0
+MACEFIGHTING=100.0
+PARRYING=70.0
+NPC=BRAIN_HUMAN
+KARMA={-4500 -6500}
+FAME={4000 5500}
+
+ITEMNEWBIE=i_hair_long
+COLOR=0799
+ITEMNEWBIE=i_beard_long
+COLOR=0799
+ITEMNEWBIE=i_spellbook
+ADDSPELL=s_paralyze
+ADDSPELL=s_earthquake
+
+ITEMNEWBIE = { i_ringmail_gloves_titanium 1 i_platemail_gloves_titanium 1 }
+COLOR=0799
+ITEMNEWBIE = { i_ringmail_sleeves_titanium 1 i_platemail_arms_titanium 1 }
+COLOR=0799
+ITEMNEWBIE = i_platemail_gorget_titanium
+COLOR=0799
+ITEMNEWBIE = { i_chainmail_tunic_titanium 1 i_platemail_chest_titanium 1 }
+COLOR=0799
+ITEMNEWBIE = { i_chainmail_leggings_titanium 1 i_platemail_leggings_titanium 1 }
+COLOR=0799
+ITEMNEWBIE = { i_sword_long_b_titanium 2  i_mace_war_titanium 1  i_halberd_titanium 1 }
+COLOR=0799
+ITEMNEWBIE = { i_shield_round_titanium 1  i_shield_heater_titanium 1 }
+COLOR=0799
+ITEMNEWBIE = i_CAPE
+COLOR=1
+ITEMNEWBIE=i_mt_skeletal_mount
+COLOR=0799
+
+ON=@NPCRestock
+ITEM=i_gold,{1000 1500}
+ITEM={i_luck_stone 1 0 2}
+ITEM={i_snow_globe_britain 1 0 22}
+ITEM={i_snow_globe_bucs_den 1 0 22}
+ITEM={i_snow_globe_minoc 1 0 22}
+ITEM={i_snow_globe_yew 1 0 22}
+ITEM={i_snow_globe_trinsic 1 0 22}
+
+ITEM={i_snow_globe_cove 1 0 12}
+ITEM={i_snow_globe_jhelom 1 0 12}
+ITEM={i_snow_globe_maginicia 1 0 12}
+ITEM={i_snow_globe_moonglow 1 0 12}
+ITEM={i_snow_globe_nujelm 1 0 12}
+ITEM={i_snow_globe_ocllo 1 0 12}
+ITEM={i_snow_globe_hold 1 0 12}
+ITEM={i_snow_globe_brae 1 0 12}
+ITEM={i_snow_globe_vesper 1 0 12}
+
+ITEM={i_gobletrare1 1 0 20}
+ITEM={i_wispering_rose 1 0 20}
+ITEM={i_wreath 1 0 20}
+ITEM={b_snowball 1 0 20}
+ITEM={i_winter_frozentree2 1 0 25} // 4%
+ITEM={i_custom_snowman 1 0 25} // 4%
+ITEM={reward_polar_bear 1 0 25} // 4%
+ITEM={i_xmas_socks 1 0 30} // 3%
+ITEM={i_xmas_gift 1 0 30} // 3%
+
+ITEM={i_christmas_robe 1 0 5}
+
+ON=@DEATH
+fire_damage_all
+VAR.XMASBOSS = <EVAL <VAR0.XMASBOSS> +1>
+
+//*******************************************//
+
+[FUNCTION santakill]
+SRC.GREEN_SYSMSG <EVAL <VAR0.XMASBOSS>> were killed at this moment.
+RETURN 1
+
+[FUNCTION santareset]
+VAR.XMASBOSS =
+SRC.GREEN_SYSMSG Reseted successfully. :)
+RETURN 1
+
+//*******************************************//
+
+[ITEMDEF i_xmas_socks]
+NAME=Santa's Socks
+ID=i_boots_calf
+RESOURCES=8 i_hides_cut
+WEIGHT=3
+TYPE=T_CLOTHING
+DYE=0
+
+ON=@CREATE
+COLOR=0481
+
+ON=@CLICK
+MESSAGE @0480 [Christmas Dungeon 2013]
+
+//*******************************************//
+
+[ITEMDEF i_xmas_gift]
+ID=i_giftbox
+NAME=Stolen Gift
+TYPE=t_normal
+
+ON=@CREATE
+COLOR=05b7
+
+ON=@CLICK
+MESSAGE @0480 [Christmas Dungeon 2013]
+
+//*******************************************//
+
+[TEMPLATE all_christmas_runes]
+CONTAINER=i_bag
+ITEM=i_christmas_key
+ITEM=i_christmas_key2
+ITEM=i_christmas_key3
+ITEM=i_christmas_key4
+ITEM=i_christmas_key5
+ITEM=i_christmas_key6
+ITEM=i_christmas_key7
+ITEM=i_christmas_key8
+ITEM=i_christmas_key9
+
+
+[TEMPLATE all_christmas_heads]
+CONTAINER=i_bag
+ITEM=i_christmas_head
+ITEM=i_christmas_head2
+ITEM=i_christmas_head3
+ITEM=i_christmas_head4
+ITEM=i_christmas_head5
+ITEM=i_christmas_head6
+ITEM=i_christmas_head7
+ITEM=i_christmas_head8
+ITEM=i_christmas_head9

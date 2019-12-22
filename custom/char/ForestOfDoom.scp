@@ -1,0 +1,203 @@
+// #-----------#
+// # CHANGELOG #
+// #-----------#
+//
+// 18/08/18 - Wigifer - Removed random loot from these monsters, ready for conversion to the new f_central_loot table.
+
+/// SQWEAKS FOREST OF DOOM /////
+
+
+[CHARDEF c_m_Elder_reaper]
+NAME=Elder Reaper
+ID=c_reaper
+SOUND=snd_MONSTER_REAPER1
+ICON=i_pet_REAPER
+ANIM=078c7f
+CAN=MT_WALK|MT_USEHANDS|MT_FIRE_IMMUNE
+DAM=10,30
+ARMOR=50
+RESOURCES=16 i_reag_bone
+FOODTYPE=30 t_meat_raw
+DESIRES=r_foliage
+
+
+ON=@CREATE
+     NPC=brain_monster
+     COLOR=colors_black
+     STR={1000 1200}
+     DEX={75 95}
+     INT={535 675}
+     PARRYING={65.0 95.0}
+     MAGERY={200.0 275.0}
+     MAGICRESISTANCE={70.0 95.0}
+     TACTICS={60.0 75.0}
+     WRESTLING={80.0 90.0}
+
+     FAME={1200 1400}
+     KARMA={-6000 -8999}
+
+     ITEMNEWBIE=i_spellbook
+     ADDSPELL=s_lightning
+
+
+
+CATEGORY	= Memory UO
+SUBSECTION	= Forest of Doom
+DESCRIPTION	= Elder Reaper
+
+
+[CHARDEF c_m_Moon_dragon]
+DEFNAME		= c_m_Moon_dragon
+NAME		= Moon Dragon
+ID		= c_DRAGON_RED
+DAM		= 10,46
+ARMOR		= 65
+RESOURCES	= 50 i_ribs_raw
+FOODTYPE	= 25 t_meat_raw
+DESIRES		= i_gold
+AVERSIONS	= r_civilization,r_water
+CAN		= MT_WALK|MT_FLY|MT_RUN|MT_USEHANDS
+
+ON = @Create
+COLOR = 0579
+  NPC		= brain_dragon
+  FAME		= {3000 9000}
+  KARMA		= {-5000 -5999}
+  STR		= {1000 1230}
+  DEX		= {153 172}
+  INT		= {51 90}
+  PARRYING	= {65.0 80.0}
+  MAGICRESISTANCE={80.0 100.0}
+  TACTICS	= {165.0 190.0}
+  WRESTLING	= {75.0 90.0}
+  MAGERY=160.0
+
+ITEMNEWBIE=i_spellbook
+ADDSPELL=s_invisibility
+
+
+on=@DEATH
+NEWNPC=c_lurking_spirit
+NEWNPC=c_lurking_spirit
+NEWNPC=c_lurking_spirit
+NEWNPC=c_lurking_spirit
+SAY Your Free The trapped Souls...
+
+CATEGORY	= Memory UO
+SUBSECTION	= Forest of Doom
+DESCRIPTION	= Moon Dragon
+
+
+[CHARDEF c_lurking_spirit]
+DEFNAME=c_lurking_spirit
+ID=c_wisp
+NAME=Lurking Spirit
+SOUND=snd_MONSTER_WISP1
+ICON=i_pet_WISP
+ANIM=078c7f
+DAM=15,20
+ARMOR=40
+CAN=MT_WALK|MT_FLY|MT_FIRE_IMMUNE|MT_USEHANDS
+FOODTYPE=t_spell
+RESOURCES=t_magic
+AVERSIONS=r_civilization
+
+ON=@Create
+STR={300 400}
+DEX={195 225}
+INT={195 225}
+
+PARRYING=80.0
+MAGERY=160.0
+MAGICRESISTANCE=80.0
+TACTICS=80.0
+WRESTLING=80.0
+
+COLOR = 079c
+NPC=brain_animal
+FAME={0 100}
+KARMA=-3000
+
+ITEMNEWBIE=i_spellbook
+ADDSPELL=s_paralyze
+
+
+ITEMNEWBIE=i_light_source
+
+ON=@NPCRestock
+ITEM=i_gold,{250 400}
+
+
+CATEGORY	= Memory UO
+SUBSECTION	= Forest of Doom
+DESCRIPTION	= Lurking spirit
+
+
+[CHARDEF c_phase_spider]
+NAME		= Phase Spider
+ID              = C_spider_giant
+SOUND		= snd_MONSTER_GISPIDR1
+ICON		= i_pet_SPIDER_GIANT
+ANIM		= 078c7f
+DAM		= 10, 30
+ARMOR		= 32
+RESOURCES	= { 10 12 } i_reag_spider_silk
+CAN		= MT_WALK|MT_FLY|MT_RUN|MT_USEHANDS
+
+FOODTYPE	= 15 t_meat_raw
+
+
+ON=@Create
+COLOR = 0582
+
+  STR	= {200 300}
+  DEX	= {400 500}
+  INT	= {36 60}
+  NPC	= brain_monster
+
+  PARRYING={35.0 55.0}
+  MAGICRESISTANCE={25.0 40.0}
+  TACTICS={35.0 50.0} 
+  WRESTLING={50.0 65.0}
+  POISONING={200.0 250.0}
+MAGERY=160.0
+
+  FAME	= {300 1000}
+  KARMA	= {-1999 -2999}
+
+ITEMNEWBIE=i_spellbook
+ADDSPELL=s_teleport
+
+
+ON=@GetHit
+
+IF !(RAND(10))
+   tele_place	 0,  0
+endif
+
+CATEGORY	= Memory UO
+SUBSECTION	= Forest of Doom
+DESCRIPTION	= Phase Spider
+
+
+[ITEMDEF i_moondragon_eye]
+NAME= Eye of the Moondragon
+ID=i_virtstone_2
+WEIGHT=1
+
+ON = @Create
+COLOR = 0579
+
+on=@click
+SRC.SAY Moon Dragon eyes.
+RETURN 1
+
+on=@DCLICK
+SRC.SAY Pride fills your heart and memories of a great deed.
+RETURN 1
+
+CATEGORY	= Memory UO
+SUBSECTION	= Forest of Doom
+DESCRIPTION	= Lurking spirit
+
+[eof]

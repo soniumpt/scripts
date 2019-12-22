@@ -1,0 +1,77 @@
+[ITEMDEF i_house_line]
+id=i_floor_slate_grey
+name=No houses within this line
+
+on=@create
+	color=0301
+
+[DEFNAME bb_ids]
+bb_house_uid	= 043e3cea6
+bb_house_1	= 043e67847
+bb_house_2	= 043e661ca
+bb_house_3	= 043fa835f
+bb_house_4	= 043e66fd3
+bb_house_5	= 043e67405
+bb_house_6	= 043e68160
+bb_house_7	= 043e69a36
+bb_house_8	= 043f37f0e
+bb_house_9	= 043f1267e
+bb_house_10	= 043e66df7
+bb_house_11	= 043f38522
+bb_house_12	= 043f75cb2
+bb_house_13	= 043f12a6f
+bb_house_14	= 043e6d579
+bb_house_15	= 043f3623f
+bb_house_16	= 043e69923
+bb_house_17	= 043e664a9
+bb_house_18	= 043e6920e
+bb_house_19	= 043f12451
+bb_house_20	= 043e69148
+bb_house_21	= 043f36782
+bb_house_22	= 043dbdd35
+bb_house_23	= 045ded2e6
+
+
+[FUNCTION COUNT_BB_HOUSES]
+   LOCAL.NUM_BB_HOUSES=0
+   FOR 0 4
+      IF (<UID.<ARGS>.ACCOUNT.CHARS> > <dLOCAL._FOR>)
+         OBJ=<UID.<ARGS>.ACCOUNT.CHAR.<dLOCAL._FOR>.UID>
+         LOCAL.NUM_BB_HOUSES=<LOCAL.NUM_BB_HOUSES>+<OWNS_BB_HOUSE <OBJ.UID>>
+      ENDIF      
+   ENDFOR
+   RETURN <dLOCAL.NUM_BB_HOUSES>
+
+
+[FUNCTION OWNS_BB_HOUSE]
+   IF (<ISEMPTY <ARGS>>)
+      RETURN 0
+   ENDIF
+   
+   FOR 1 23
+      IF ( <UID.bb_house_<dLOCAL._FOR>.MORE1> = <ARGS> )
+         RETURN 1
+      ENDIF
+   ENDFOR
+   RETURN 0
+   
+
+[FUNCTION COUNT_BB_TRUSTS]
+   IF (<ISEMPTY <ARGS>>)
+      RETURN 0
+   ENDIF
+
+   LOCAL.NUM_BB_HOUSES=0
+   FOR 1 23  
+      OBJ=<UID.bb_house_<dLOCAL._FOR>.TAG.FRIENDS.UID>      
+      IF ( <OBJ.RESCOUNT> )
+         FORCONT <OBJ> 0
+            IF ((<LINK.UID>==<ARGS>) && (<MOREx>=1))
+               LOCAL.NUM_BB_HOUSES=<LOCAL.NUM_BB_HOUSES>+1
+            ENDIF
+         ENDFOR
+      ENDIF
+   ENDFOR
+   RETURN <dLOCAL.NUM_BB_HOUSES>
+
+[EOF]

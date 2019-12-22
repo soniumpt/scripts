@@ -1,0 +1,717 @@
+[CHARDEF c_master_havoc]
+ID=c_man
+NAME=Edward, the Master Hunter
+DEFNAME=c_master_havoc
+CAN=MT_NONMOVER
+CATEGORY=Imperial uo
+SUBSECTION=PvM Quests - Despise
+DESCRIPTION=Harriet
+
+TSPEECH=spk_master_havoc
+
+on=@create
+FLAGS |= statf_invul
+title=the Hunter
+str=100
+dex=100
+int=100
+ITEMNEWBIE=i_robe
+COLOR=026
+ITEMNEWBIE=i_hair_long
+COLOR=05f7
+ITEMNEWBIE=i_hat_straw_tall
+ITEMNEWBIE=i_spellbook
+ITEMNEWBIE=i_sword_great
+ITEMNEWBIE=i_helm_nose_adamantine
+ITEMNEWBIE=i_ringmail_gloves_adamantine
+ITEMNEWBIE=i_boots_calf
+
+
+on=@gethit
+return 1
+
+on=@spelleffect
+return 1
+
+
+[SPEECH spk_master_havoc]
+ON=*info*
+serv.log db query
+DB.QUERY "SELECT `total`, `master_havoc` FROM `quests` WHERE `uid` = '<SRC.UID>'"
+
+IF (0<DB.ROW.NUMROWS>)
+    FOR CURRENTROW 0 <eval <DB.ROW.NUMROWS>-1>
+	//Player has completed the quest if var=10
+        IF (<DB.ROW.<eval <LOCAL.CURRENTROW>>.master_havoc>==10)
+            SAY @07a0 You have already proven yourself to me!
+	    RETURN 1
+        ELSE
+	//Player has not started the quest
+            SDIALOG D_HAVOC_MASTER
+        ENDIF
+     END
+	 ELSE
+	//Player has not started the quest
+            SDIALOG D_HAVOC_MASTER
+ENDIF
+
+
+RETURN 1
+
+ON=*accept*
+
+IF (<FINDID(i_mem_havoc2).tag.busy> == 01)
+SAY @07a0 I am busy focusing..
+RETURN 1
+
+ELSE
+//see if the player has already done the quest (select despise_todd var from quests where uid=src.uid)
+serv.log db query
+DB.QUERY "SELECT `total`, `despise_todd`, `despise_harriet`, `master_havoc` FROM `quests` WHERE `uid` = '<SRC.UID>'"
+
+IF (0<DB.ROW.NUMROWS>)
+    FOR CURRENTROW 0 <eval <DB.ROW.NUMROWS>-1>
+    	//Player has not yet completed Todd quest
+    	IF !(<DB.ROW.<eval <LOCAL.CURRENTROW>>.despise_todd>==10)
+	            SAY @07a0 Leave me alone, I am busy!
+		    RETURN 1
+	ENDIF
+	//Player has completed the quest if var=10
+        IF !(<DB.ROW.<eval <LOCAL.CURRENTROW>>.despise_harriet>==10)
+            SAY @07a0 Leave me alone, I am busy!
+	    RETURN 1
+	ENDIF
+	IF (<DB.ROW.<eval <LOCAL.CURRENTROW>>.master_havoc>==10)
+	            SAY @07a0 You are truely a great hunter. Soon you will learn the secrets of that key.
+		    RETURN 1
+	ENDIF
+	//Player has started the quest if var=1
+	IF (<DB.ROW.<eval <LOCAL.CURRENTROW>>.master_havoc>==1)
+	    SAY @07a0 This enchantment may take some time, please bare with me!
+	    SERV.LOG <SRC.ACCOUNT> - <SRC.NAME>: Has begun the Havoc Instance
+	    ANIM 17
+	    SERV.NEWITEM i_havoc_rune
+	    SERV.LASTNEWITEM.P = <P>
+	    SERV.LASTNEWITEM.MOVE S 1
+	    SERV.LASTNEWITEM.ATTR = 08090
+	    SERV.LASTNEWITEM.TIMER = 5
+	    SERV.NEWITEM i_mem_havoc
+	    SERV.LASTNEWITEM.TAG.stage=01
+	    SERV.LASTNEWITEM.TIMER = 86400
+   	    SERV.LASTNEWITEM.EQUIP <SRC.UID>
+    	    SERV.NEWITEM i_mem_havoc2
+   	    SERV.LASTNEWITEM.TAG.BUSY=01
+   	    SERV.LASTNEWITEM.TIMER = 3600
+   	    EQUIP <NEW.UID>
+	    RETURN 1
+        ELSE
+	//Player has not started the quest
+	serv.log db execute
+            DB.EXECUTE "UPDATE `quests` SET `master_havoc`='1' WHERE `uid`='<SRC.UID>';"
+	    SAY @07a0 This enchantment may take some time, please bare with me!
+	    SERV.LOG <SRC.ACCOUNT> - <SRC.NAME>: Has begun the Havoc Instance
+	    	 ANIM 17
+	    	 SERV.NEWITEM i_havoc_rune
+		 SERV.LASTNEWITEM.P = <P>
+		 SERV.LASTNEWITEM.MOVE S 2
+		 SERV.LASTNEWITEM.ATTR = 08090
+		 SERV.LASTNEWITEM.TIMER = 5
+    		 SERV.NEWITEM i_mem_havoc
+   		 SERV.LASTNEWITEM.TAG.stage=01
+   		 SERV.LASTNEWITEM.TIMER = 86400
+   		 SERV.LASTNEWITEM.EQUIP <SRC.UID>
+    		 SERV.NEWITEM i_mem_havoc2
+   		 SERV.LASTNEWITEM.TAG.BUSY=01
+   		 SERV.LASTNEWITEM.TIMER = 3600
+   		 EQUIP <NEW.UID>
+   		 RETURN 1
+        ENDIF
+     END
+ELSE
+    SAY @07a0 You do not look even close to being a Master like myself, leave this place at once!
+ENDIF
+ENDIF
+
+
+
+
+
+
+
+
+// ---------------------
+//    DEATH EVENTS
+// ---------------------
+
+[EVENTS e_havoc_minion1]
+ON=@DEATH
+FORITEMS 100
+    IF (<BASEID>==i_timer_havoc)
+       IF (<MORE1>==010)
+       MORE1=011
+       TIMER=1
+       ELIF (<MORE1>==011)
+       MORE1=012
+       TIMER=1
+       ELSE
+       MORE1=010
+       TIMER=1      
+       ENDIF
+ENDFOR
+
+[EVENTS e_havoc_minion2]
+ON=@DEATH
+FORITEMS 100
+    IF (<BASEID>==i_timer_havoc)
+       IF (<MORE1>==020)
+       MORE1=021
+       TIMER=1
+       ELSE
+       MORE1=020
+       TIMER=1      
+       ENDIF
+ENDFOR
+
+[EVENTS e_havoc_minion3]
+ON=@DEATH
+FORITEMS 100
+    IF (<BASEID>==i_timer_havoc)
+       MORE1=030
+       TIMER=3
+       ENDIF
+ENDFOR
+
+[EVENTS e_havoc_boss]
+ON=@Death
+TRY UID.043f1968d.move n
+SERV.LOG Someone Has killed the Havoc Instance boss.
+
+
+// ---------------------
+//    DIALOGS
+// ---------------------
+
+[DIALOG D_HAVOC_MASTER]
+200,180
+PAGE 1
+resizepic 20 20 3500 350 170
+checkertrans 20 20 350 170
+dhtmlgump 60 40 280 120 1 1 <DEF.BFONT_DRED>Hail! How might you be feeling today kind <SRC.SEX sir/lady>?<DEF.BR>I see you have been working hard to aid those in danger within Despise dungeon.<DEF.BR>I would like to personally thank you. In thanks, I would be honoured if you would defeat the Havoc lord for me. He holds a precious key that you may find useful one day.<DEF.BR>I will open a rune gate for you if you ask. However it takes a lot of my energy, and won't last long.<DEF.BFONTE>
+
+
+
+// ---------------------
+//    ITEMS
+// ---------------------
+
+[ITEMDEF i_mem_havoc]
+ID=i_memory
+TYPE=t_eq_script
+NAME=Havoc Quest
+
+on=@Timer
+serv.log db execute
+    DB.EXECUTE "UPDATE `quests` SET `master_havoc`='0' WHERE `uid`='<CONT.UID>';"
+    SERV.LOG <CONT.ACCOUNT> - <CONT.NAME>: Timer decayed on i_mem_havoc. Database record reset.
+    REMOVE
+    RETURN 1
+
+
+[ITEMDEF i_mem_havoc2]
+ID=i_memory
+TYPE=t_eq_script
+NAME=Havoc Quest NPC
+
+on=@Timer
+    SERV.LOG Havoc Instance NPC Has lost timer i_mem_havoc2
+    REMOVE
+    RETURN 1
+
+[ITEMDEF i_timer_havoc]
+ID=i_guildstone
+TYPE=t_eq_script
+NAME=Instance Timer - DO NOT TOUCH
+
+ON=@Create
+ATTR=08090
+
+ON=@Timer
+   IF (<MORE1>==010)
+    FORCHARS 200
+        IF (<BASEID>==c_m_havoc)
+           SAY @0799 Thats just the start!
+        ENDIF
+    ENDFOR
+    //MORE1=0
+    //TIMER=2
+    RETURN 1
+    ENDIF
+    
+    IF (<MORE1>==011)
+        FORCHARS 200
+            IF (<BASEID>==c_m_havoc)
+               SAY @0799 Impressive, but not good enough.
+            ENDIF
+        ENDFOR
+        //MORE1=0
+        //TIMER=2
+        RETURN 1
+        ENDIF
+    
+    IF (<MORE1>==012)
+        FORCHARS 200
+            IF (<BASEID>==c_m_havoc)
+               SAY @0799 Lets see how you like this!
+            ENDIF
+        ENDFOR
+        TIMER=2
+        MORE1=013
+        RETURN 1
+        ENDIF
+    
+        IF (<MORE1>==013)
+	    SERV.LOG Havoc Defenders have been spawned
+                   SERV.NEWNPC c_m_havoc_defender
+		   NEW.TAG.HAVOCNPC=01
+		   NEW.P=5323, 541, 0, 50
+    		       NEW.UPDATE
+                   SERV.NEWNPC c_m_havoc_defender
+		   NEW.TAG.HAVOCNPC=01
+		   NEW.P=5331, 541, 0, 50
+    		       NEW.UPDATE
+            TIMER=-1
+            //MORE1=0
+            RETURN 1
+            ENDIF
+    
+       IF (<MORE1>==020)
+        FORCHARS 200
+            IF (<BASEID>==c_m_havoc)
+               SAY @0799 Ha, good, but still one left.
+            ENDIF
+        ENDFOR
+        //MORE1=0
+        //TIMER=2
+        RETURN 1
+        ENDIF
+        
+        IF (<MORE1>==021)
+            FORCHARS 200
+                IF (<BASEID>==c_m_havoc)
+                   SAY @0799 Good... Good...
+                ENDIF
+            ENDFOR
+            MORE1=022
+            TIMER=2
+            RETURN 1
+            ENDIF
+        
+        IF (<MORE1>==022)
+	    SERV.LOG Havoc Guardian has been spawned
+                   SERV.NEWNPC c_m_havoc_guardian
+		   NEW.TAG.HAVOCNPC=01
+		   NEW.P=5327, 541, 0, 50
+    		       NEW.UPDATE
+            //MORE1=0
+            TIMER=-1
+            RETURN 1
+            ENDIF          
+            
+    
+    IF (<MORE1>==030)
+    FORCHARS 200
+        IF (<BASEID>==c_m_havoc)
+           SAY @0799 No way! Thats impossible!
+        ENDIF
+    ENDFOR
+    MORE1=031
+    TIMER=2
+    RETURN 1
+    ENDIF
+    
+    IF (<MORE1>==031)
+    FORCHARS 200
+            IF (<BASEID>==c_m_havoc)
+               SAY @0799 Thats it. I have had enough of you!
+            ENDIF
+    ENDFOR
+    MORE1=032
+    TIMER=2
+    RETURN 1
+    ENDIF
+    
+    IF (<MORE1>==032)
+    FORCHARS 200
+            IF (<BASEID>==c_m_havoc)
+               SAY @0799 I will kill you myself!
+               FLAGS=000000000
+               GO 5327, 541, 0, 50
+            ENDIF
+    ENDFOR
+    TIMER=-1
+    //MORE1=0
+    RETURN 1
+    ENDIF
+    
+    IF (<MORE1>==040)
+            FORCHARS 200
+                IF (<BASEID>==c_m_havoc)
+                   SAY @0799 You think you can just walk in here?!
+                ENDIF
+            ENDFOR
+            MORE1=041
+            TIMER=2
+            RETURN 1
+            ENDIF
+            
+            IF (<MORE1>==041)
+                FORCHARS 200
+                    IF (<BASEID>==c_m_havoc)
+                       SAY @0799 Your not even worth my time. Minions! Deal with them!
+                    ENDIF
+                ENDFOR
+                MORE1=042
+                TIMER=2
+                RETURN 1
+             ENDIF
+            
+            IF (<MORE1>==042)
+	    SERV.LOG Havoc Minions have been spawned
+                       SERV.NEWNPC c_m_havoc_minion
+    		       SERV.LASTNEWCHAR.TAG.HAVOCNPC=01
+    		       SERV.LASTNEWCHAR.P=5323, 541, 0, 50
+    		       NEW.UPDATE
+                       SERV.NEWNPC c_m_havoc_minion
+    		       SERV.LASTNEWCHAR.TAG.HAVOCNPC=01
+    		       SERV.LASTNEWCHAR.P=5327, 541, 0, 50
+    		       NEW.UPDATE
+                       SERV.NEWNPC c_m_havoc_minion
+    		       SERV.LASTNEWCHAR.TAG.HAVOCNPC=01
+    		       SERV.LASTNEWCHAR.P=5331, 541, 0, 50
+    		       NEW.UPDATE
+                //MORE1=0
+                TIMER=-1
+                RETURN 1
+    ENDIF        
+    
+    //IF (<MORE1>==0)
+    //TIMER=-1
+    ENDIF
+
+
+
+[ITEMDEF i_worldkey_havoc]
+ID=i_key_copper
+TYPE=T_NORMAL
+NAME=Key of Havoc
+
+ON=@Create
+COLOR=020
+//status non trade newbied
+
+[ITEMDEF i_havoc_tile]
+ID=i_floor_marble
+TYPE=T_SCRIPT
+NAME=Door to Havoc
+
+ON=@CREATE
+ATTR=08090
+
+ON=@STEP
+SERV.LOG <SRC.ACCOUNT> - <SRC.NAME>: Has entered the instanced room.
+MOVE S
+SRC.GO 5321, 547, 0, 50
+SERV.NEWITEM i_havoc_rune3
+NEW.P=5300, 547, 0, 50
+NEW.STATIC
+UID.043f1a4f1.move w
+UID.043f1a4f1.ATTR = 08010
+SERV.NEWNPC c_m_havoc
+NEW.TAG.HAVOCNPC=01
+NEW.FLAGS=000000005
+NEW.P=5328, 547, 6, 50
+NEW.FLIP
+NEW.FLIP
+NEW.FLIP
+NEW.FLIP
+NEW.FLIP
+FORITEMS 100
+	IF (<BASEID>==i_timer_havoc)
+		TIMER=3
+		MORE1=040
+	ENDIF
+ENDFOR
+RETURN 1
+
+
+[ITEMDEF i_havoc_rune]
+ID=i_rune_glowing_3
+TYPE=T_SCRIPT
+NAME=Rune Pad
+
+ON=@STEP
+SERV.LOG <SRC.ACCOUNT> - <SRC.NAME>: Has entered the instance.
+IF (<SRC.FINDID(i_mem_havoc).tag.stage> == 01)
+SRC.GO 5300, 547, 0, 50
+TRY UID.043db151e.p = 5319, 547, 0, 50
+SRC.FINDID(i_mem_havoc).remove
+REMOVE
+ENDIF
+
+ON=@TIMER
+IF !(<MORE1>==2)
+ATTR=010
+UPDATE
+EMOTE begins to fade
+TIMER = 30
+MORE1 = 2
+FORCHARS 10
+        IF (<BASEID>==c_master_havoc)
+           ANIM 16
+           SAY @07a0 Be quick, else the rune will fade away. It'll be an hour before I have the engery to make another.
+        ENDIF
+ENDFOR
+ELSE
+REMOVE
+ENDIF
+
+
+[ITEMDEF i_havoc_rune2]
+ID=i_rune_glowing_3
+TYPE=T_SCRIPT
+NAME=Rune Pad
+
+ON=@STEP
+SERV.LOG <SRC.ACCOUNT> - <SRC.NAME>: Has completed the instance: Havoc.
+serv.log db query
+DB.QUERY "SELECT `total` FROM `quests` WHERE `uid` = '<SRC.UID>'"
+IF (0<DB.ROW.NUMROWS>)
+    FOR CURRENTROW 0 <eval <DB.ROW.NUMROWS>-1>
+    IF (<DB.ROW.<eval <LOCAL.CURRENTROW>>.total>==0)
+    LOCAL.QTOTAL=1
+    ELSE
+    LOCAL.QTOTAL=<DB.ROW.<eval <LOCAL.CURRENTROW>>.total>
+    LOCAL.QTOTAL=<EVAL <LOCAL.QTOTAL> + 1>
+    ENDIF
+    END
+ENDIF
+serv.log db execute
+DB.EXECUTE "UPDATE `quests` SET `total`='<eval <LOCAL.QTOTAL>>', `master_havoc`='10' WHERE `uid`='<SRC.UID>';"
+LOCAL.QTOTAL=
+SRC.GO 5254, 21, 12
+TRY UID.043f1968d.p = 5336, 547, 0, 50
+TRY UID.043f1a4f1.p = 5320, 547, 0, 50
+TRY UID.043f1a4f1.ATTR = 08090
+FORCHARS 200
+    IF (<TAG0.HAVOCNPC>)
+       REMOVE
+    ENDIF
+ENDFOR
+FORITEMS 200
+    IF (<BASEID> == i_havoc_rune3)
+        REMOVE
+    ENDIF
+    IF (<BASEID> == i_timer_havoc)
+       TIMER=-1
+       MORE1=0
+    ENDIF
+    IF (<TYPE> == t_corpse)
+            REMOVE
+    ENDIF
+ENDFOR 
+RETURN 1
+//ENDIF
+
+
+[ITEMDEF i_havoc_rune3]
+ID=i_rune_glowing_3
+TYPE=T_SCRIPT
+NAME=Rune Pad
+
+ON=@STEP
+SERV.LOG <SRC.ACCOUNT> - <SRC.NAME>: Has died and left the instanced room.
+SRC.GO 5254, 21, 12
+TRY UID.043f1968d.p = 5336, 547, 0, 50
+TRY UID.043f1a4f1.p = 5320, 547, 0, 50
+TRY UID.043f1a4f1.ATTR = 08090
+FORCHARS 200
+    IF (<TAG0.HAVOCNPC>)
+       REMOVE
+    ENDIF
+ENDFOR
+FORITEMS 200
+    IF (<BASEID> == i_havoc_rune3)
+        REMOVE
+    ENDIF
+    IF (<BASEID> == i_timer_havoc)
+       TIMER=-1
+       MORE1=0
+    ENDIF
+    IF (<TYPE> == t_corpse)
+            REMOVE
+    ENDIF
+ENDFOR 
+REMOVE
+ENDIF
+
+
+
+
+//-------------
+// Havoc Boss
+//-------------
+
+[CHARDEF c_m_havoc]
+ID=c_multicolored_horde_minion
+NAME = Havoc
+DEFNAME=c_m_havoc
+CATEGORY=Imperial uo
+SUBSECTION=PvM Quests - Despise
+DESCRIPTION=Havoc
+
+ON=@Create 
+EVENTS = +e_havoc_boss
+EVENTS = +e_npc_daemon
+KARMA=-2000
+STR=1500
+MAXHITS=2000
+INT=680
+DEX=180 
+MAGICRESISTANCE=135.0
+TACTICS=110.0
+WRESTLING=110.0
+MAGERY=150.0
+
+ON=@HIT
+ IF ( (RAND(100) < 10) )
+      REGION.ALLCLIENTS shadow_earthquake
+ ENDIF
+
+
+ITEMNEWBIE=i_spellbook
+  ADDSPELL	= s_magic_arrow
+  ADDSPELL	= s_poison
+  ADDSPELL	= s_earthquake
+  ADDSPELL	= s_meteor_swarm
+  ADDSPELL	= s_dispel
+  ADDSPELL	= s_lightning
+  ADDSPELL      = s_harm
+  ADDSPELL      = s_curse
+
+
+
+on=@death
+y_region_loot_death
+y_region_loot_calculator
+addlootgold ,<eval (<str>*2)>
+addlootrandom ,2,4,1,random_scroll
+addlootmisc <eval (<str>/10)>, i_reward_ticket
+addlootitem i_worldkey_havoc,1
+
+
+//-------------
+// Havoc Minions
+//-------------
+
+[CHARDEF c_m_havoc_guardian]
+ID=c_Horde_Daemon_Large
+NAME = Guardian of Havoc
+CATEGORY=Imperial uo
+SUBSECTION=PvM Quests - Despise
+DESCRIPTION=Havoc Guardian
+
+ON=@Create
+EVENTS = +e_havoc_minion3
+EVENTS = +e_npc_daemon
+KARMA=-2000
+STR=1000
+MAXHITS=1000
+INT=680
+DEX=180 
+MAGICRESISTANCE=80.0
+TACTICS=100.0
+WRESTLING=100.0
+MAGERY=90.0
+
+ON=@HIT
+
+ITEMNEWBIE=i_spellbook
+  ADDSPELL	= s_magic_arrow
+  ADDSPELL	= s_poison
+  ADDSPELL      = s_harm
+  ADDSPELL	= s_lightning
+  ADDSPELL      = s_curse
+
+on=@death
+y_region_loot_death
+y_region_loot_calculator
+addlootgold ,<eval (<str>*2)>
+addlootrandom ,2,4,1,random_scroll
+addlootmisc <eval (<str>/10)>, i_reward_ticket
+
+
+[CHARDEF c_m_havoc_defender]
+ID=c_Horde_Daemon_Medium
+NAME = Defender of Havoc
+CATEGORY=Imperial uo
+SUBSECTION=PvM Quests - Despise
+DESCRIPTION=Havoc Defender
+
+ON=@Create
+EVENTS = +e_havoc_minion2
+KARMA=-2000
+STR=500
+MAXHITS=500
+INT=380
+DEX=180 
+MAGICRESISTANCE=60.0
+TACTICS=80.0
+WRESTLING=80.0
+MAGERY=60.0
+
+
+ITEMNEWBIE=i_spellbook
+  ADDSPELL	= s_magic_arrow
+  ADDSPELL	= s_poison
+  ADDSPELL      = s_harm
+  ADDSPELL	= s_lightning
+
+on=@death
+y_region_loot_death
+y_region_loot_calculator
+addlootgold ,<eval (<str>*2)>
+addlootrandom ,2,4,1,random_scroll
+addlootmisc <eval (<str>/10)>, i_reward_ticket
+
+
+[CHARDEF c_m_havoc_minion]
+ID=c_horde_minion
+NAME = Minion of Havoc
+CATEGORY=Imperial uo
+SUBSECTION=PvM Quests - Despise
+DESCRIPTION=Havoc Minion
+
+ON=@Create
+EVENTS = +e_havoc_minion1
+KARMA=-2000
+STR=300
+MAXHITS=300
+INT=380
+DEX=180 
+MAGICRESISTANCE=60.0
+TACTICS=80.0
+WRESTLING=80.0
+MAGERY=60.0
+
+
+ITEMNEWBIE=i_spellbook
+  ADDSPELL	= s_magic_arrow
+  ADDSPELL      = s_harm
+
+on=@death
+y_region_loot_death
+y_region_loot_calculator
+addlootgold ,<eval (<str>*2)>
+addlootrandom ,2,4,1,random_scroll
+addlootmisc <eval (<str>/10)>, i_reward_ticket
+[eof]

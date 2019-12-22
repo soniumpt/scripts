@@ -1,0 +1,471 @@
+//
+// *** EVENTS *****
+//
+
+[events e_pvppoly_player]
+on=@spellcast
+   if (<argn> == 41) || (<argn> == 54)
+      sysmessage The spell fizzles, you can't use this spell in this shape.
+      return 1
+   endif
+
+ON=@Death
+   src.hits = 20
+   src.emote die
+   src.f_polypvp_resetplayer125a
+   src.events -e_pvm_monstervend_player
+   return 1
+
+ON=@Login
+   color = <src.tag.t_polypvp_backup_color>
+   tag.t_polypvp_backup_color =
+   tag.pos_base =
+   tag.uid_polyrune =
+   events -e_polypvp_player
+   return 0
+   
+[itemdef i_pvp_polypad]
+id = 0fea
+name = Polymorph arena gate
+type = t_script
+
+on=@step
+    if (0<tag.active> == 0)
+        return 0
+    endif
+
+    src.tag.pos_base = <tag.base_location>
+    src.tag.t_polypvp_backup_color = <src.color>
+    src.events +e_polypvp_player
+    try uid.<tag.remotecontrol>.tag.player<eval <var.playercnt>> = <src.uid>
+    var.playercnt = <eval <var.playercnt> + 1>
+    src.color = <color>
+
+    dorand 6
+       src.f_pvppoly_polymorph @Init_vampire_bat
+       src.f_pvppoly_polymorph @Init_gargoyle
+       src.f_pvppoly_polymorph @Init_Liche
+       src.f_pvppoly_polymorph @Init_zombie
+       src.f_pvppoly_polymorph @Init_daemon
+       src.f_pvppoly_polymorph @Init_Liche_Lord
+    enddo
+
+    var.counter = 0
+    trigger @get_existing_startlocations
+    var.tmp = <eval rand(<eval <var.counter>>)>
+    src.go <tag.rnd_startlocation<eval <var.tmp>>>
+    return 0
+
+on=@create
+    attr = attr_static | attr_move_never
+    tag.active = 0
+
+on=@timer
+    getConstants
+    if (<var.action> == <var.action_gates_active>)
+        try uid.<var.gates_active_sparkle1>.remove
+        try uid.<var.gates_active_sparkle2>.remove
+    try uid.<uid.<tag.remotecontrol>.tag.t_polypad1>.tag.active = 0
+    try uid.<uid.<tag.remotecontrol>.tag.t_polypad2>.tag.active = 0
+        var.action = 0
+        return 1
+    endif
+
+on=@dclick
+    if (<src.account.plevel> > 1)
+        if (!<src.findlayer(21).findid(i_pvp_polyremote)>)
+        src.newitem i_pvp_polyremote
+        src.act.bounce
+        return 1
+    endif
+    menu m_pvp_polypad
+    return 1
+    endif
+    return 0
+
+on=@targon_ground
+    if (<var.action> == <var.targ_startlocation>)
+        src.sysmessage @30 Setting a new random start location at <src.targp>.
+    try tag.rnd_startlocation<eval <tag.startlocation_counter>> = <src.targp>
+    tag.startlocation_counter = <eval <tag.startlocation_counter> + 1>
+    return 1
+    elif (<var.action> == <var.targ_baselocation>)
+        src.sysmessage @31 Setting this teams base location at <src.targp>
+    try tag.base_location = <src.targp>
+    return 1
+    endif
+
+on=@get_existing_startlocations
+    if (<eval <tag.rnd_startlocation<eval <var.counter>>>> == 0)
+        return 1
+    endif
+
+    var.counter = <eval <var.counter> + 1>
+    trigger @get_existing_startlocations
+
+on=@remove_all_startlocations
+    if (<eval <tag.rnd_startlocation<eval <var.counter>>>> == 0)
+        return 1
+    endif
+
+    try tag.rnd_startlocation<eval <var.counter>> =
+    var.counter = <eval <var.counter> + 1>
+    trigger @remove_all_startlocations
+
+
+[itemdef i_pvp_polyremote]
+id = i_hay_sheaf
+name = Polymorph PvP remote control
+type = t_script
+
+on=@create
+    color = 039
+    tag.time_ArenaGatesOpen = 5
+
+on=@targon_item
+    if (<src.account.plevel> <= 1)
+        return 0
+    endif
+
+    if (<src.targ.baseid> != i_pvp_polypad)
+        src.sysmessage Please target only polymorph pvp arena gates.
+    return 1
+    endif
+    if (0<tag.t_polypad1> == 0)
+        try tag.t_polypad1 = <src.targ.uid>
+    else
+    try tag.t_polypad2 = <src.targ.uid>
+    endif
+    try src.targ.tag.remotecontrol = <uid>
+    src.sysmessage @30 The polymorph pvp arena gate has been registered succesfully.
+    return 1
+
+on=@dclick
+    if (<src.account.plevel> <= 1)
+        src.stone 1
+    src.sysmessage @030 You have done a mistake. Page a GM to get free.
+    serv.log <src.name> with uid <src.uid> used a staff remote control for PvPs.
+    return 1
+    endif
+    if (<eval <tag.t_polypad1>> == 0) || (<eval <tag.t_polypad2>> == 0)
+        src.sysmessage Target 2 polymorph pvp entrance gates to set up the remote control.
+    target
+    return 1
+    endif
+
+    menu m_pvp_polyremote
+    return 1
+
+
+//
+// *** MENUS, GUMPS ETC *****
+//
+
+[menu m_pvp_polypad]
+Staff options
+ON=0 Add new starting location
+       getConstants
+       var.action = <var.targ_startlocation>
+       src.sysmessage Please add another random start location.
+       targetg
+       return 1
+ON=0 Set this teams base location (DO THIS ONCE)
+       getConstants
+       var.action = <var.targ_baselocation>
+       src.sysmessage Please set this teams bases location.
+       targetg
+       return 1
+ON=0 Remove all starting locations
+       var.counter = 0
+       trigger @remove_all_startlocations
+       tag.startlocation_counter =
+       src.sysmessage All locations position have been removed.
+       return 1
+
+
+
+[menu m_pvp_polyremote]
+Remote control for polymorph pvp
+ON=0 Activate all entrance gates
+    if (<hval <uid.<tag.t_polypad1>.tag.base_location>> == 0) ||(<hval <uid.<tag.t_polypad2>.tag.base_location>> == 0)
+       src.sysmessage You have not set the base location for one of the teams!
+       return 1
+    endif
+
+    var.playercnt = 0
+
+    try uid.<tag.t_polypad1>.tag.active = 1
+    try uid.<tag.t_polypad2>.tag.active = 1
+    src.sysmessage All arena entrance gates have been activated.
+
+    var.action = <var.action_gates_active>
+    try uid.<tag.t_polypad1>.timer = <tag.time_ArenaGatesOpen>
+    try uid.<tag.t_polypad2>.timer = <tag.time_ArenaGatesOpen>
+
+    serv.newitem i_moongate_red
+    NEW.color = <uid.<tag.t_polypad1>.color>
+    NEW.p = uid.<tag.t_polypad1>.p
+    NEW.p = <uid.<tag.t_polypad1>.p.x> <uid.<tag.t_polypad1>.p.y> <eval <uid.<tag.t_polypad1>.p.z> + 4>
+    NEW.sound snd_SPELL_GATE_TRAVEL
+    var.gates_active_sparkle1 = <NEW.uid>
+
+    serv.newitem i_moongate_red
+    NEW.color = <uid.<tag.t_polypad2>.color>
+    NEW.p = uid.<tag.t_polypad1>.p
+    NEW.p = <uid.<tag.t_polypad2>.p.x> <uid.<tag.t_polypad2>.p.y> <eval <uid.<tag.t_polypad2>.p.z> + 4>
+    NEW.sound snd_SPELL_GATE_TRAVEL
+    var.gates_active_sparkle2 = <NEW.uid>
+    return 1
+
+ON=0 Inactivate all arena gates
+    try uid.<tag.t_polypad1>.tag.active = 0
+    try uid.<tag.t_polypad2>.tag.active = 0
+    src.sysmessage The area gates have been closed.
+    return 1
+
+ON=0 Cancel round. Unpolymorph and teleport everyone back to their base.
+     f_polypvp_resetAllPlayers125a 0
+     return 1
+
+
+
+
+
+
+//
+// *** FUNCTIONS *****
+//
+
+// Kills all players recorded on the remote control
+[function f_polypvp_resetAllPlayers125a]
+    if !(0<tag.player<eval <args>>>)
+       return 1
+    endif
+
+    if (<uid.<tag.player<eval <args>>>.events> == e_polypvp_player)
+       try uid.<tag.player<eval <args>>>.f_polypvp_resetplayer125a
+    endif
+    try uid.<tag.player<eval <args>>>.tag.uid_polyrune =
+    try tag.player<eval <args>> =
+    f_polypvp_resetAllPlayers125a <eval <args> + 1>
+
+
+[function getConstants]
+    var.no_action = 0
+    var.targ_startlocation = 1
+    var.targ_baselocation = 2
+    var.action_gates_active = 4
+    return 1
+
+// Removes all events, unpolymorphs and teleports the player back to his/her base
+// Usage: Call on the player to reset (eg. src.f_polypvp...)
+[function f_polypvp_resetplayer125a]
+   try uid.<tag.uid_polyrune>.remove
+   if (<events> == e_polypvp_player)
+      go <tag.pos_base>
+      color = <src.tag.t_polypvp_backup_color>
+      tag.t_polypvp_backup_color =
+      tag.pos_base =
+      tag.uid_polyrune =
+      events -e_polypvp_player
+   endif
+
+
+[FUNCTION F_PVPPOLY_POLYMORPH]
+   if ( <SRC.findid.i_spell_pvppoly_poly> )
+      if ( <SRC.findid.i_spell_pvppoly_poly.MOREm> )
+         src.sysmessage You are still polymorphing...
+     return 1
+      endif
+   endif
+   SRC.NEWITEM i_spell_pvppoly_poly
+   SRC.ACT.TRIGGER <args>
+src.act.p = <src.p>
+   SRC.ACT.EQUIP
+
+[ITEMDEF i_spell_pvppoly_poly]    //Polymorph
+ID    = i_gold
+//rune_polymorph
+TYPE    = t_eq_script
+LAYER    = layer_special
+NAME    = polymorph
+
+ON = @Create
+  MOREp        = 0, 0, 0
+
+ON = @Equip
+  TIMER    = 1
+  MOREm    = 3
+  SRC.SYSMESSAGE You feel your body starting to change...
+  RECORD_LAYERS
+  TAG.STEED = <VAR.STEED>
+  VAR.STEED =
+  SRC.TAG.uid_polyrune = <uid>
+  SRC.EVENTS +e_pvppoly_player
+
+ON = @Timer
+  if ( <MOREm> <= 0 )
+     REMOVE
+     return 1
+  else
+     MOREm    = (<MOREm> - 1)
+     TIMER    = 2
+     if ( <MOREm> < 1 )
+        CONT.SYSMESSAGE You assume the shape of a <NAME>.
+    CONT.EFFECT    = 3, i_fx_sparkle, 1, 8
+     elseif ( <MOREm> < 2 )
+        CONT.SYSMESSAGE You start assuming the shape of a <NAME>.
+    CONT.EFFECT    = 3, i_fx_sparkle, 1, 8
+    return 1
+     elseif ( <MOREm> < 3 )
+        CONT.EFFECT    = 3, i_fx_sparkle, 1, 8
+    return 1
+     endif
+  endif
+
+  if ( <CONT.FINDLAYER.LAYER_SPELL_Polymorph> )
+     CONT.FINDLAYER.LAYER_SPELL_Polymorph.remove
+  endif
+
+  LAYER        = LAYER_SPELL_Polymorph
+
+  // Forever (-1) or 3 hours (10800)
+  TIMER = 10800
+  CONT.BODY    = <MORE2>
+  MORE2        = <CONT.OBODY>
+  CONT.UPDATE
+  MOREx        = ( <MOREx> - <CONT.STR> )
+  MOREy        = ( <MOREy> - <CONT.DEX> )
+  CONT.STR    = <eval ( <CONT.STR> + <MOREx> )>
+  CONT.DEX    = <eval ( <CONT.DEX> + <MOREy> )>
+  CONT.FIX_HITS
+  CONT.FIX_STAM
+  return 1
+
+ON = @Unequip
+  if ( <MOREm> )
+      return 0
+  endif
+
+  SRC.STR = ( <SRC.STR> - <MOREx> )
+  SRC.DEX = ( <SRC.DEX> - <MOREy> )
+  if ( <MORE2> != <SRC.BODY> )
+     SRC.OBODY = <MORE2>
+  endif
+  SRC.BODY = <SRC.OBODY>
+  SRC.UPDATE
+  SRC.FIX_HITS
+  SRC.FIX_STAM
+
+  IF !<SRC.ISDEAD>
+     EQUIP_RECORDED_LAYERS
+  ENDIF
+  
+  ON = @Init_gargoyle
+    NAME        = gargoyle
+    MORE2        = c_gargoyle_poly
+    MOREx        = { 130 140 }
+    MOREy        = { 85 95 }
+    MOREz        = 0
+  
+  ON = @Init_dragon
+    NAME        = dragon
+    MORE2        = { c_dragon_green_poly 1 c_dragon_red_poly 1 }
+    MOREx        = { 240 260 }
+    MOREy        = { 95 105 }
+    MOREz        = 0
+  
+  ON = @Init_llama
+    NAME        = llama
+    MORE2        = c_llama
+    MOREx        = { 55 60 }
+    MOREy        = { 55 65 }
+    MOREz        = 0
+  
+  ON = @Init_daemon
+    if ( <SRC.MAGERY> < 90.0 )
+       if ( rand(3) )
+          NAME    = daemon
+          MORE2    = c_DAEMON_poly_1
+      MOREx        = { 175 185 }
+      MOREy        = { 90 100 }
+       else
+          NAME    = daemon
+          MORE2    = c_DAEMON_poly_2
+      MOREx        = { 185 195 }
+      MOREy        = { 90 100 }
+       endif
+    elseif ( <SRC.MAGERY> < 95.0 )
+       if ( rand(3) )
+          NAME    = daemon
+          MORE2    = c_DAEMON_poly_2
+      MOREx        = { 195 205 }
+      MOREy        = { 90 100 }
+       else
+          NAME    = greater daemon
+          MORE2    = c_DAEMON_poly_3
+      MOREx        = { 210 220 }
+      MOREy        = { 90 100 }
+       endif
+    else
+       if ( rand(3) )
+          NAME    = greater daemon
+          MORE2    = c_DAEMON_poly_3
+      MOREx        = { 210 220 }
+      MOREy        = { 90 100 }
+       else
+          NAME    = greater daemon
+          MORE2    = c_DAEMON_poly_4
+      MOREx        = { 225 235 }
+      MOREy        = { 90 100 }
+       endif
+    endif
+    MOREz        = 0
+  
+  ON = @Init_vampire_bat
+    NAME        = Vampire Bat
+    MORE2        = c_m_vampire_bat_poly
+    MOREx        = { 105 110 }
+    MOREy        = { 95 105 }
+    MOREz        = 0
+  
+  
+  //********************************************************************//
+  //                        NECROMANCY POLYMORPHS                       //
+  //********************************************************************//
+  ON = @Init_Zombie
+    NAME        = Zombie
+    MORE2        = c_m_zombie_poly
+    MOREx        = { 65 75 }
+    MOREy        = { 45 55 }
+    MOREz        = 1
+  
+  ON = @Init_Liche
+    NAME        = Liche
+    MORE2        = c_m_liche_poly
+    MOREx        = { 140 150 }
+    MOREy        = { 85 95 }
+    MOREz        = 1
+  
+  ON = @Init_Wreched_Corpse
+    NAME        = Wretched Corpse
+    MORE2        = c_m_wrechedcorpse_poly
+    MOREx        = { 180 190 }
+    MOREy        = { 95 105 }
+    MOREz        = 1
+  
+  ON = @Init_Liche_Lord
+    NAME        = Liche Lord
+    MORE2        = c_m_liche_lord_poly
+    MOREx        = { 215 225 }
+    MOREy        = { 95 105 }
+    MOREz        = 1
+  
+  ON = @Init_Undead_Dragon
+    NAME        = Undead Dragon
+    MORE2        = c_m_undead_Dragon_poly
+    MOREx        = { 245 255 }
+    MOREy        = { 105 115 }
+    MOREz        = 1
+
+[eof]

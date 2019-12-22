@@ -1,0 +1,383 @@
+// Skill Nuke Stone
+// Scripted by Charm
+// Modification on Newbie Gate
+
+[ITEMDEF i_stone_skill_nuke]
+ID	= i_guildstone
+TYPE	= t_normal
+
+ON = @Create
+  COLOR	= 078
+  
+ON = @DClick
+   if ( <SRC.SKILLTOTAL> <= 1000.0 )
+	SRC.MESSAGE You are not advanced enough to need to nuke any skill!
+      return 1
+   ENDIF
+   src.sysmessage temporarily disabled
+   IF <SRC.ISGM>
+   SRC.DIALOG d_skill_eddie
+   ENDIF
+   return 1
+
+
+[DIALOG d_skill_eddie]
+200, 50
+NOMOVE
+NODISPOSE
+
+  gumppic    0    0 <eval   0ce>			// top
+  gumppic   44    0 <eval   0c9>
+  gumppic  471    0 <eval   0cf>
+
+  gumppic    0   44 <eval   0ca>			// middle
+  gumppic   44   44 <eval  0a2c>
+  gumppic  471   44 <eval   0cb>
+
+  gumppic    0  360 <eval   0cc>			// bottom
+  gumppic   44  360 <eval   0e9>
+  gumppic  471  360 <eval   0cd>
+
+  dtext 50 40 0 You are clearly a master in your skills. Please 
+  dtext 50 57 0 pick a skill you would like to reduce by 5%.
+
+  button  45 90 <eval 0d7> <eval 0d8> 1 0 10
+  button  45 107 <eval 0d7> <eval 0d8> 1 0 11
+  button  45 124 <eval 0d7> <eval 0d8> 1 0 12
+  button  45 141 <eval 0d7> <eval 0d8> 1 0 13
+  button  45 158 <eval 0d7> <eval 0d8> 1 0 14
+  button  45 175 <eval 0d7> <eval 0d8> 1 0 15
+//button  55 192 <eval 0d7> <eval 0d8> 1 0 16
+  button  45 209 <eval 0d7> <eval 0d8> 1 0 17
+  button  45 226 <eval 0d7> <eval 0d8> 1 0 18 
+//  button  45 243 <eval 0d7> <eval 0d8> 1 0 19
+//  button  45 261 <eval 0d7> <eval 0d8> 1 0 20
+  button  45 278 <eval 0d7> <eval 0d8> 1 0 21
+  button  45 295 <eval 0d7> <eval 0d8> 1 0 22
+  button  45 312 <eval 0d7> <eval 0d8> 1 0 23
+  button  45 329 <eval 0d7> <eval 0d8> 1 0 24
+  button  45 346 <eval 0d7> <eval 0d8> 1 0 25
+  button  45 192 <eval 0d7> <eval 0d8> 1 0 26	// 364
+  
+  button 205  90 <eval 0d7> <eval 0d8> 1 0 27
+  button 205 107 <eval 0d7> <eval 0d8> 1 0 28
+//  button 205 124 <eval 0d7> <eval 0d8> 1 0 29
+  button 205 141 <eval 0d7> <eval 0d8> 1 0 30
+  button 205 158 <eval 0d7> <eval 0d8> 1 0 31
+  button 205 175 <eval 0d7> <eval 0d8> 1 0 32
+  button 205 192 <eval 0d7> <eval 0d8> 1 0 33
+//  button 205 209 <eval 0d7> <eval 0d8> 1 0 34
+  button 205 226 <eval 0d7> <eval 0d8> 1 0 35
+  button 205 243 <eval 0d7> <eval 0d8> 1 0 36
+  button 205 261 <eval 0d7> <eval 0d8> 1 0 37
+//  button 205 278 <eval 0d7> <eval 0d8> 1 0 38
+  button 205 295 <eval 0d7> <eval 0d8> 1 0 39
+//  button 205 312 <eval 0d7> <eval 0d8> 1 0 40
+  button 205 329 <eval 0d7> <eval 0d8> 1 0 41
+//  button 205 346 <eval 0d7> <eval 0d8> 1 0 42
+
+  button 355 329 <eval 0d7> <eval 0d8> 1 0 43 // 220 364
+  
+  button 355  90 <eval 0d7> <eval 0d8> 1 0 44
+  button 355 107 <eval 0d7> <eval 0d8> 1 0 45
+//  button 355 124 <eval 0d7> <eval 0d8> 1 0 46
+  button 355 141 <eval 0d7> <eval 0d8> 1 0 47
+  button 355 158 <eval 0d7> <eval 0d8> 1 0 48
+  button 355 175 <eval 0d7> <eval 0d8> 1 0 49
+  button 355 192 <eval 0d7> <eval 0d8> 1 0 50
+  button 355 209 <eval 0d7> <eval 0d8> 1 0 51
+  button 355 226 <eval 0d7> <eval 0d8> 1 0 52
+  button 355 243 <eval 0d7> <eval 0d8> 1 0 53
+  button 355 261 <eval 0d7> <eval 0d8> 1 0 54
+  button 355 278 <eval 0d7> <eval 0d8> 1 0 55
+  button 355 295 <eval 0d7> <eval 0d8> 1 0 56
+  button 355 312 <eval 0d7> <eval 0d8> 1 0 57
+//button 335 329 <eval 0d7> <eval 0d8> 1 0 58
+
+  dtext  60  90 0 Alchemy
+  dtext  60 107 0 Assessment
+  dtext  60 124 0 Creature lore
+  dtext  60 141 0 Item lore
+  dtext  60 158 0 Arms lore
+  dtext  60 175 0 Shieldfighting
+//dtext  70 192 0 unused
+  dtext  60 209 0 Blacksmithy
+  dtext  60 226 0 Bowery
+//  dtext  60 243 0 Songs of Peace
+//  dtext  60 261 0 Survival
+  dtext  60 278 0 Carpentry
+  dtext  60 295 0 Cartography
+  dtext  60 312 0 Cooking
+  dtext  60 329 0 Detection
+  dtext  60 346 0 Songs of the World
+  dtext  60 192 0 Mystic lore	// 364
+  dtext 220  90 0 Healing
+  dtext 220 107 0 Fishing
+//  dtext 220 124 0 Netherworld lore
+  dtext 220 141 0 Farming/Herding
+  dtext 220 158 0 Hiding
+  dtext 220 175 0 Songs of War
+  dtext 220 192 0 Inscription
+//  dtext 220 209 0 Lockpicking/Traps
+  dtext 220 226 0 Magery
+  dtext 220 243 0 Resist Magic
+  dtext 220 261 0 Tactics
+//  dtext 220 278 0 Snooping
+  dtext 220 295 0 Musicianship
+//  dtext 220 312 0 Poisoning
+  dtext 220 329 0 Archery
+//  dtext 220 346 0 Necromancy
+  dtext 370 329 0 Stealing // 220 364
+  
+  dtext 370  90 0 Tailoring
+  dtext 370 107 0 Taming
+//  dtext 370 124 0 Herbs lore
+  dtext 370 141 0 Tinkering
+  dtext 370 158 0 Tracking
+  dtext 370 175 0 Masonry
+  dtext 370 192 0 Blade weapons
+  dtext 370 209 0 Blunt weapons
+  dtext 370 226 0 Piercing weapons
+  dtext 370 243 0 Unarmed combat
+  dtext 370 261 0 Lumberjacking
+  dtext 370 278 0 Mining
+  dtext 370 295 0 Meditation
+  dtext 370 312 0 Stealth
+//dtext 370 329 0 unused
+//dtext 370 346 0 unused
+//dtext 370 364 0 Stealing
+
+//button 400 350 <eval 047b> <eval 047c> 1 0 60
+  
+
+[DIALOG d_skill_eddie BUTTON]
+ONBUTTON=10 58
+  LOCAL.NUKE=<ARGN1>
+  f_nuke_finish782 <LOCAL.NUKE>
+
+
+[FUNCTION f_nuke_finish782]
+  IF ( <SKILLTOTAL> <= 900.0 )
+    RETURN 1
+  ENDIF
+  sysmessage <ARGS>
+  LOCAL.NUKE	= <eval (<args> - 10)>
+  sysmessage <LOCAL.NUKE>
+  //LOCAL.NUKE = <SERV.SKILL(<LOCAL.NUKE>).KEY>
+  sysmessage <LOCAL.NUKE>
+  show <local.nuke>
+  LOCAL.FDX = <SERV.SKILL(<LOCAL.NUKE>).KEY>
+  
+  if ( <LOCAL.FDX> = 0.0 )
+     sysmessage You do not have any skill to nuke in that profession!
+     return 1
+  endif
+  //IF (src.restest 5000 i_gold)
+  	<LOCAL.NUKE>	=  (<LOCAL.NUKE> - 50)>
+  	SRC.CONSUME 5000 i_gold
+
+ //endif
+ //ELSE
+    	//MESSAGE You do not have enough gold pieces to nuke that skill.
+ //ENDIF
+
+RETURN 1
+
+
+
+//
+// Monsters Throwing Players Script
+// Phenixer
+//
+
+[ITEMDEF i_moongate_summon_boo]
+ID		= i_moongate_blue
+NAME		= moongate
+TIMER = 10
+CATEGORY	= NPC Quests
+SUBSECTION	= Hades Adventure
+DESCRIPTION	= Moongate
+
+ON=@CREATE
+  TIMER=10
+  TYPE		= t_normal
+  COLOR		= 0845
+  TAG.SUMMONED = { 2 15 }
+  
+ON=@Step
+  RETURN 1
+ON=@TIMER
+     IF (<TAG.SUMMONED> == 1)
+             REMOVE
+             RETURN 1
+     ELSEIF (<TAG.SUMMONED> > 1 )
+     TAG.SUMMONED = <EVAL (<TAG.SUMMONED> - 1)>
+	     serv.NEWNPC c_h_lb_scout
+	     NEW.P = <p>
+	     NEW.UPDATE
+	     TIMER = 20
+	     RETURN 1
+     ENDIF
+[ITEMDEF i_moongate_summon_boo2]
+ID		= i_moongate_blue
+NAME		= moongate
+TIMER = 10
+CATEGORY	= NPC Quests
+SUBSECTION	= Hades Adventure
+DESCRIPTION	= Moongate
+
+ON=@CREATE
+  TIMER = 10
+  TYPE		= t_normal
+  COLOR		= 0845
+  TAG.SUMMONED = { 2 15 }
+  
+ON=@Step
+  RETURN 1
+ON=@TIMER
+     IF (<TAG.SUMMONED> == 1)
+             REMOVE
+             RETURN 1
+     ELSEIF (<TAG.SUMMONED> > 1 )
+     TAG.SUMMONED = <EVAL (<TAG.SUMMONED> - 1)>
+	     serv.NEWNPC c_rift_mage
+	     NEW.P = <p>
+	     NEW.UPDATE
+	     TIMER = 20
+	     RETURN 1
+     ENDIF
+
+[CHARDEF C_rift_mage]
+DEFNAME c_rift_mage
+ID=C_MAN
+NAME=Rift Creator
+SOUND=snd_HUMAN_M_DIE_01
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+DAM= 40
+ARMOR= 60
+CAN= MT_WALK|MT_RUN|MT_EQUIP|MT_USEHANDS
+CATEGORY=Civilized
+SUBSECTION=Rift
+Description=Rift Mage
+
+ON=@Create
+  TITLE=Rift Mage
+  COLOR=07a10
+  STR=500
+  DEX=100
+  INT=300
+  NPC=BRAIN_MONSTER
+  FAME=3000
+  KARMA=-5000
+  MAGICRESISTANCE=150.0
+  ANATOMY=100.0
+  EVALUATINGINTEL=100.0
+  TACTICS=100.0
+  MAGERY=130.0
+  
+  ITEMNEWBIE= i_boots_calf
+  ITEMNEWBIE= i_leggings_tera_scale
+  ITEMNEWBIE= i_arms_tera_scale
+  ITEMNEWBIE= i_gorget_tera_scale
+  ITEMNEWBIE= i_tunic_tera_scale
+  ITEMNEWBIE= i_gloves_tera_scale
+  ITEMNEWBIE= i_robe
+  COLOR=07a10
+  
+  item = i_gold,{900 1300}
+
+
+[DEFNAME ThrowingDEFS]
+THROW_RANDOM   10   //Chances that a monster Throw a Player
+THROW_DISTANCE 4   //Distance from where you can be thrown
+THROW_CELLS    16   //How many tiles you will move
+THROW_DAMAGE   40   //Damage you get by hitting a wall
+THROW_TIME     1   //Time before each move, in 1/10 Sec.
+
+MOVE_0    N
+MOVE_1    NE
+MOVE_2    E
+MOVE_3    SE
+MOVE_4    S
+MOVE_5    SW
+MOVE_6    W
+MOVE_7    NW
+
+[EVENTS e_throw_player]
+ON=@HIT
+IF !(RAND(<DEF.THROW_RANDOM>))
+IF (<DISTANCE><=<DEF.THROW_DISTANCE>)
+   SRC.SYSMESSAGE You are thrown away by <NAME>
+   SRC.THROWPLAYER <DIR>
+ENDIF
+ENDIF
+
+[ITEMDEF i_throw_timerD]
+ID=i_gold
+NAME=Throwing TIMERD
+TYPE=t_script
+
+ON=@CREATE
+ATTR=080
+TIMERD=<DEF.THROW_TIME>
+TAG.CELLS=<DEF.THROW_CELLS>
+
+ON=@TIMER
+IF (<TAG0.CELLS> > 0)
+TAG.CELLS -= 1
+LINK.THROW_MOVECHECK <TAG.DIR>
+TIMERD=<DEF.THROW_TIME>
+ELSE
+IF !(<LINK.FINDID(i_rune_paralyze)>)&&(<LINK.FLAGS>&statf_freeze)
+LINK.FLAGS=<LINK.FLAGS>&~statf_freeze
+ENDIF
+REMOVE
+ENDIF
+RETURN 1
+
+[FUNCTION ThrowPlayer]
+//Creates the Item TimerD on ground with Events.
+if <ARGS>
+FLAGS=<FLAGS>|statf_freeze //Paralyse the player
+NEWITEM=i_throw_timerD
+NEW.P=<P>
+NEW.TAG.DIR=<ARGS>
+NEW.LINK=<UID>
+NEW.UPDATE
+ENDIF
+
+[FUNCTION Throw_MoveCheck]
+//Check if the player can move and move Him
+LOCAL.MOVE=<DEF.MOVE_<EVAL <ARGS>>>
+IF (<MOVE <LOCAL.MOVE>>==04)
+MOVE <LOCAL.MOVE>
+ELSE
+DAMAGE <DEF.THROW_DAMAGE>
+ENDIF
+
+FIX
+
+
+
+
+  
+  
+[ITEMDEF i_monster_timer]
+NAME    = Spawn Timer
+ID	= i_memory
+TYPE	= t_eq_script
+LAYER	= layer_special
+
+ON=@Create
+  Timer= 1800
+  
+ON=@Timer
+  CONT.EMOTE disappear
+  CONT.REMOVE
+  RETURN 1
+
+
+
+
+[EOF]

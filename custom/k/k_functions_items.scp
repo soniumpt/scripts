@@ -1,0 +1,174 @@
+//25 NOV 2003 - Wren - Moved cooking functions to w_f_cooking
+
+[FUNCTION ADDITEM_DRESS]
+   NEWITEM	<args>
+   ACT.CONT	= <UID>
+   ACT.ATTR	= attr_identified
+   ACT.EQUIP
+
+[FUNCTION BOUNCEITEM]
+  NEWITEM <args>
+  BOUNCE <ACT.UID>
+
+
+[FUNCTION dclickcancel]
+   if ( <CONT.CONT.UID> = <SRC.UID> )
+      return 0
+   elseif ( <CONT.UID> = <SRC.UID> )
+      return 0
+   endif
+   return 1
+
+[FUNCTION unequipcancel]
+   if ( 0<CONT.TAG.UNEQUIPCANCEL> )
+      CONT.TAG.UNEQUIPCANCEL	=
+      return 1
+   endif
+   return 0
+   
+[FUNCTION equipcancel]
+   if ( !strcmp( "<args>", "0" ) )
+      CONT.TAG.UNEQUIPCANCEL	=
+      return 0
+   endif
+   CONT.SYSMESSAGE <args>
+   CONT.TAG.UNEQUIPCANCEL	= 1
+   CONT	= <CONT.findlayer(layer_pack).uid>
+
+[FUNCTION SETMAGIC]
+   if ( 0<args> == 0 )
+      ATTR	= <ATTR> & ~attr_magic
+   else
+      ATTR	= <ATTR> | attr_magic
+   endif
+
+[FUNCTION ISIDENTIFIED]
+   if ( <ATTR> & attr_identified )
+      return 1
+   endif
+   return 0
+
+[FUNCTION ISMAGIC]
+   if ( <ATTR> & attr_magic )
+      return 1
+   endif
+   return 0
+
+[FUNCTION ISNECRO]
+  if ( 0 )
+  elseif ( <TYPE> == t_necro )
+  else
+     return 0
+  endif
+  return 1
+
+[FUNCTION ISNECROSCROLL]
+  if ( 0 )
+  elseif (<TYPE> == t_scroll )
+    if (<MOREX> >= 600 )
+       RETURN 1
+    ENDIF
+  else
+     return 0
+  endif
+  
+
+[FUNCTION ISPIERCING]
+  if ( 0 )
+  elseif ( <TYPE> == t_weapon_fencing )
+  else
+     return 0
+  endif
+  return 1
+
+
+[FUNCTION ISMACE]
+  if ( 0 )
+  elseif ( <TYPE> == t_weapon_mace_smith )
+  elseif ( <TYPE> == t_weapon_mace_sharp )
+  elseif ( <TYPE> == t_weapon_mace_staff )
+  elseif ( <TYPE> == t_weapon_mace_crook )
+  elseif ( <TYPE> == t_weapon_mace_pick )
+  else
+     return 0
+  endif
+  return 1
+
+
+[FUNCTION ISSWORD]
+   if ( 0 )
+   elseif ( <DISPID> == i_sword_broad )
+   elseif ( <DISPID> == i_sword_long )
+   elseif ( <DISPID> == i_scimitar )
+   elseif ( <DISPID> == i_sword_long_b )
+   elseif ( <DISPID> == i_sword_great )
+   elseif ( <DISPID> == i_katana )
+   elseif ( <DISPID> == i_cutlass )
+   else
+      return 0
+   endif
+   return 1
+
+
+[FUNCTION ISWEAPON]
+  if ( 0 )
+  elseif ( <TYPE> == t_weapon_mace_smith )
+  elseif ( <TYPE> == t_weapon_mace_sharp )
+  elseif ( <TYPE> == t_weapon_mace_staff )
+  elseif ( <TYPE> == t_weapon_mace_crook )
+  elseif ( <TYPE> == t_weapon_mace_pick )
+  elseif ( <TYPE> == t_weapon_sword )
+  elseif ( <TYPE> == t_weapon_fence )
+  elseif ( <TYPE> == t_weapon_axe )
+  elseif ( <TYPE> == t_weapon_bow )
+  elseif ( <TYPE> == t_weapon_xbow )
+  else
+     return 0
+  endif
+  return 1
+
+
+[FUNCTION ISARMOUR]
+  if ( 0 )
+  elseif ( <TYPE> == t_armor )
+  elseif ( <TYPE> == t_armor_leather )
+  else
+     return 0
+  endif
+  return 1
+
+[FUNCTION ISSHIELD]
+  if ( 0 )
+  elseif ( <TYPE> == t_shield )
+  else
+     return 0
+  endif
+  return 1
+
+[FUNCTION CONSUMEONE]
+   if ( <AMOUNT> > 1 )
+      AMOUNT	= (<AMOUNT> -1)
+   else
+      REMOVE
+   endif
+
+[FUNCTION region_skargard]
+   if ( 0 )
+   elseif ( strmatch( "Deceit*", "<REGION.NAME>" ) )
+   elseif ( strmatch( "Road to Deceit*", "<REGION.NAME>" ) )
+   elseif ( strmatch( "Ice Isle*", "<REGION.NAME>" ) )
+   else
+      return 0
+   endif
+   return 1
+   
+[FUNCTION region_ilshenar]
+   if ( 0 )
+   elseif ( <SRC.P.M> == 2 )
+   else
+      return 0
+   endif
+   return 1
+
+[EOF]
+

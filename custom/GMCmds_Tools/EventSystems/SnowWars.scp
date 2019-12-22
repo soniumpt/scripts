@@ -1,0 +1,630 @@
+//////////////////////////////////////////////////////////// 
+///Scripted By: Lord Techno 
+///Script Version .06v 
+///Sphere Server Ver 55i/99? 
+//////////////////////////////////////////////////////////// 
+
+//////////////////////////////////////////////////////////// 
+///Snowball Wars 
+//////////////////////////////////////////////////////////// 
+
+
+[DEFNAME COLOR_snowball] 
+color_o_balls 0481 
+color_o_snowteam1 0480 
+color_o_snowteam2 0481 
+color_o_snowteam3 020 
+color_o_snowteam4 040 
+color_o_snowteam5 0796 
+color_o_snowteam6 0792 
+
+//////////////////////////////////////////////////////////// 
+///Gates 
+//////////////////////////////////////////////////////////// 
+
+[ITEMDEF i_snowwars_gate1] 
+NAME=Snow Team 1 
+ID=0f6c 
+on=@create 
+COLOR=color_o_snowteam1 
+CATEGORY=Imperial uo 
+SUBSECTION=Snow Wars 
+Description=Snow wars Gate 1 
+
+ON=@STEP 
+if <EVAL !<src.tag.snowteam> >=0 
+Src.Message You Can not Pass 
+Src.Message You belong to team <src.tag.snowteam> 
+src.move 1 1 
+TIMER 15 
+RETURN 1 
+else 
+src.tag.snowteam=1 
+src.tag.teampts1=0 
+SRC.tag.bodycolor=<src.color> 
+src.color=color_o_snowteam1 
+src.move 1 1 
+TIMER 15 
+RETURN 1 
+endif 
+ON=@Timer 
+TIMER 15 
+RETURN 1 
+
+[ITEMDEF i_snowwars_gate2] 
+NAME=Snow Team 2 
+ID=0f6c 
+on=@create 
+COLOR=color_o_snowteam2 
+CATEGORY=Imperial uo 
+SUBSECTION=Snow Wars 
+Description=Snow wars Gate 2 
+
+ON=@STEP 
+if <EVAL !<src.tag.snowteam> >=0 
+Src.Message You Can not Pass 
+Src.Message You belong to team <src.tag.snowteam> 
+src.move 1 1 
+TIMER 15 
+RETURN 1 
+else 
+src.tag.snowteam=2 
+src.tag.teampts2=0 
+SRC.tag.bodycolor=<src.color> 
+src.color=color_o_snowteam2 
+src.move 1 1 
+TIMER 15 
+RETURN 1 
+endif 
+ON=@Timer 
+TIMER 15 
+RETURN 1 
+
+[ITEMDEF i_snowwars_gate3] 
+NAME=Snow Team 3 
+ID=0f6c 
+on=@create 
+COLOR=color_o_snowteam3 
+CATEGORY=Imperial uo 
+SUBSECTION=Snow Wars 
+Description=Snow wars Gate 3 
+
+ON=@step 
+if <EVAL !<src.tag.snowteam> >=0 
+Src.Message You Can not Pass 
+Src.Message You belong to team <src.tag.snowteam> 
+src.move 1 1 
+RETURN 1 
+TIMER 15 
+else 
+src.tag.snowteam=3 
+src.tag.teampts3=0 
+SRC.tag.bodycolor=<src.color> 
+src.color=color_o_snowteam3 
+src.move 1 1 
+RETURN 1 
+TIMER 15 
+endif 
+
+ON=@Timer 
+TIMER 15 
+RETURN 1 
+
+[ITEMDEF i_snowwars_gate4] 
+NAME=Snow Team 4 
+ID=0f6c 
+
+on=@create 
+COLOR=color_o_snowteam4 
+
+CATEGORY=Imperial uo 
+SUBSECTION=Snow Wars 
+Description=Snow wars Gate 4 
+
+ON=@STEP 
+if <EVAL !<src.tag.snowteam> >=0 
+Src.Message You Can not Pass 
+Src.Message You belong to team <src.tag.snowteam> 
+src.move 1 1 
+Timer 15 
+RETURN 1 
+else 
+src.tag.snowteam=4 
+src.tag.teampts4=0 
+SRC.tag.bodycolor=<src.color> 
+src.color=color_o_snowteam4 
+src.move 1 1 
+TIMER 15 
+RETURN 1 
+endif 
+
+ON=@Timer 
+TIMER 15 
+RETURN 1 
+
+[ITEMDEF i_snowwars_gate5] 
+NAME=Snowwars tag removal 
+ID=0f6c 
+on=@create 
+COLOR=color_o_snowteam5 
+ATTR=attr_decay 
+CATEGORY=Imperial uo 
+SUBSECTION=Snow Wars 
+Description=Snow wars tag removal 
+
+ON=@STEP 
+TIMER 15 
+src.move 1 1 
+src.tag.snowteam=0 
+src.tag.snowteam.remove 
+src.tag.teampts1=0 
+src.tag.teampts1.remove 
+src.tag.teampts2=0 
+src.tag.teampts2.remove 
+src.tag.teampts3=0 
+src.tag.teampts3.remove 
+src.tag.teampts4=0 
+src.tag.teampts4.remove 
+src.color=<src.tag.bodycolor> 
+src.tag.bodycolor.remove 
+return 1 
+ON=@Timer 
+TIMER 15 
+RETURN 1 
+//////////////////////////////////////////////////////////// 
+///Point Collection Bulletin Board 
+//////////////////////////////////////////////////////////// 
+
+
+[ITEMDEF i_resurrect_1]
+ID=0ed6
+NAME=Resurrection Stone Team 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Custom Items
+DESCRIPTION=Resurrection Stone Full hit restore white
+
+on=@create 
+color=color_o_snowteam1
+
+ON=@DClick
+if (<src.tag.snowteam> == 1 )
+SRC.RESURRECT
+SRC.MESSAGE You feel life surge through you!
+SRC.HITS = <SRC.STR>
+src.color=color_o_snowteam1 
+return 1
+else
+src.sysmessage this isnt ur team stone
+endif
+
+[ITEMDEF i_resurrect_2]
+ID=0ed6
+NAME=Resurrection Stone Team 2
+
+CATEGORY=Imperial uo
+SUBSECTION=Custom Items
+DESCRIPTION=Resurrection Stone Full hit restore white
+
+on=@create 
+color=color_o_snowteam2
+
+ON=@DClick
+if (<src.tag.snowteam> == 2 )
+SRC.RESURRECT
+SRC.MESSAGE You feel life surge through you!
+SRC.HITS = <SRC.STR>
+src.color=color_o_snowteam2 
+return 1
+else
+src.sysmessage this isnt ur team stone
+endif
+
+[ITEMDEF i_resurrect_3]
+ID=0ed6
+NAME=Resurrection Stone Team 3
+
+CATEGORY=Imperial uo
+SUBSECTION=Custom Items
+DESCRIPTION=Resurrection Stone Full hit restore white
+
+on=@create 
+color=color_o_snowteam3
+
+ON=@DClick
+if (<src.tag.snowteam> == 3 )
+SRC.RESURRECT
+SRC.MESSAGE You feel life surge through you!
+SRC.HITS = <SRC.STR>
+src.color=color_o_snowteam3 
+return 1
+else
+src.sysmessage this isnt ur team stone
+endif
+
+[ITEMDEF i_resurrect_4]
+ID=0ed6
+NAME=Resurrection Stone Team 4
+
+CATEGORY=Imperial uo
+SUBSECTION=Custom Items
+DESCRIPTION=Resurrection Stone Full hit restore white
+
+on=@create 
+color=color_o_snowteam4
+
+ON=@DClick
+if (<src.tag.snowteam> == 4 )
+SRC.RESURRECT
+SRC.MESSAGE You feel life surge through you!
+SRC.HITS = <SRC.STR>
+src.color=color_o_snowteam4 
+return 1
+else
+src.sysmessage this isnt ur team stone
+endif
+
+
+[ITEMDEF i_snowwars_bb] 
+NAME=Point Collection 
+//ID=0f6c 
+ID=01e5e 
+type=t_script 
+CATEGORY=Imperial uo 
+SUBSECTION=Snow Wars 
+Description=Snow wars Point 
+
+
+ON=@CREATE 
+ATTR=04050 
+COLOR=color_o_snowteam6 
+tag.teampts1=00 
+tag.teampts2=00 
+tag.teampts3=00 
+tag.teampts4=00 
+tag.gametime=900 
+MORE2=10 
+RETURN 1 
+
+ON=@dclick 
+tag.gametime = <timer> 
+If <src.tag.snowteam>=1 
+tag.teampts1=<tag.teampts1> + <src.tag.teampts1> 
+src.tag.teampts1=0 
+DIALOG d_snowars 
+return 1 
+else 
+If <src.tag.snowteam>=2 
+tag.teampts2=<tag.teampts2> + <src.tag.teampts2> 
+src.tag.teampts2=0 
+DIALOG d_snowars 
+return 1 
+else 
+If <src.tag.snowteam>=3 
+tag.teampts3=<tag.teampts3> + <src.tag.teampts3> 
+src.tag.teampts3=0 
+DIALOG d_snowars 
+return 1 
+else 
+If <src.tag.snowteam>=4 
+tag.teampts4=<tag.teampts4> + <src.tag.teampts4> 
+src.tag.teampts4=0 
+DIALOG d_snowars 
+return 1 
+else 
+DIALOG d_snowars 
+return 1 
+endif 
+
+ON=@TIMER 
+if <more2> >= 1 
+SERV.ALLCLIENTS SYSMESSAGE Game Over Please Collect Points at scoreboard. 
+more2=<more2>-1 
+Timer 2 
+RETURN 1 
+else 
+timer = 0 
+return 1 
+ENDIF 
+
+//////////////////////////////////////////////////////////// 
+///Snowball 
+//////////////////////////////////////////////////////////// 
+
+[ITEMDEF I_PILE_SNOW] 
+ID=017cd
+NAME=pile of snow 
+
+ON=@CREATE 
+COLOR=color_o_balls 
+
+ON=@DCLICK 
+remove 
+SRC.NEWITEM i_snow_ball 
+src.act.bounce 
+RETURN 1 
+
+CATEGORY=Imperial uo 
+SUBSECTION=Snow Wars 
+Description=Pile of snow 
+
+[ITEMDEF I_PILE_SNOW2] 
+ID=017bd
+NAME=pile of snow 
+
+ON=@CREATE 
+COLOR=color_o_balls 
+
+ON=@DCLICK 
+remove 
+SRC.NEWITEM i_snow_ball 
+src.act.bounce 
+RETURN 1 
+
+CATEGORY=Imperial uo 
+SUBSECTION=Snow Wars
+Description=Pile of snow ground
+
+[ITEMDEF i_snow_ball] 
+ID=i_virtstone_7 
+Name=a snow ball 
+
+ON=@CREATE 
+Color=color_o_balls 
+TIMER 15 
+CATEGORY=Imperial uo 
+SUBSECTION=Snow Wars 
+Description=Snowball (white) 
+ATTR=attr_decay 
+
+ON=@DCLICK 
+f_snowball 
+RETURN 1 
+
+ON=@TARGON_CHAR 
+if (<TIMER> = 3) 
+src.sysmessage You missed Your Target. 
+REMoVE 
+RETURN 1 
+else 
+IF (<SRC.TARG.SERIAL> != <SRC.SERIAL> ) 
+IF (<SRC.TARG.TAG.SNOWTEAM>=<SRC.TAG.SNOWTEAM> ) 
+SRC.SYSMESSAGE They are on the same team member 
+else 
+SRC.ANIM 11 
+SRC.TARG.EFFECT=0,i_virtstone_7,7,0,1 
+SRC.TARG.ANIM 20 
+SRC.TARG.HITS=<SRC.TARG.HITS>+ - {1 35} 
+SOUND 0145 
+SRC.SYSMESSAGE=You hit <SRC.TARG.NAME> with a snowball! 
+SRC.TARG.SYSMESSAGE=<src.name> threw a snowball at you! 
+s_points 
+remove 
+RETURN 1 
+ELSE 
+SRC.SYSMESSAGE You can only throw a snowball at something that can throw one back. 
+TIMER 15 
+Return 1 
+ELSE 
+SRC.SYSMESSAGE You cannot throw a snowball at yourself! 
+TIMER 15 
+RETURN 1 
+ENDIF 
+ENDIF 
+ENDIF 
+
+ON=@TARGON_ITEM 
+SRC.SYSMESSAGE That isn't a person!! 
+TIMER=10 
+RETURN 1 
+
+ON=@TARGON_GROUND 
+RETURN 1 
+
+ON=@TIMER 
+MESSAGE The Snowball has melted. 
+REMOVE 
+return 1 
+
+[ITEMDEF i_snow_bb_reset] 
+ID=01eca 
+Name=reset stone 
+
+ON=@CREATE 
+Color=color_o_balls 
+TIMER 15 
+CATEGORY=Imperial uo 
+SUBSECTION=Snow Wars 
+Description=Snow board reset 
+return 1 
+
+ON=@DCLICK 
+target Select Board to reset 
+RETURN 1 
+
+ON=@TARGON_CHAR 
+src.sysmessage Not a board 
+RETURN 1 
+
+ON=@TARGON_ITEM 
+src.targ.tag.gametime=<src.targ.timer> 
+SRC.TARG.MORE2=10 
+SRC.targ.tag.teampts1=0 
+SRC.targ.tag.teampts2=0 
+SRC.targ.tag.teampts3=0 
+SRC.targ.tag.teampts4=0 
+src.targ.TIMER = 900 
+SERV.ALLCLIENTS SYSMESSAGE GAME HAS BEGUN 
+return 1 
+
+ON=@TARGON_GROUND 
+RETURN 1 
+
+//////////////////////////////////////////////////////////// 
+///Snowball functions 
+//////////////////////////////////////////////////////////// 
+
+[function Points] 
+src.sysmessage Team 1 <tag.teampts1> points 
+src.sysmessage Team 2 <tag.teampts2> points 
+src.sysmessage Team 3 <tag.teampts3> points 
+src.sysmessage Team 4 <tag.teampts4> points 
+
+[function f_snowball] 
+IF (<TIMER> >= 8) 
+TARGET Whos getting hit? 
+TIMER 15 
+RETURN 1 
+else (<TIMER> = 7) 
+src.sysmessage The snowball broke in your hands. 
+REMoVE 
+RETURN 1 
+else (<TIMER> >= 4) 
+TARGET Whos getting hit? 
+TIMER 15 
+RETURN 1 
+else (<TIMER> >= 3) 
+src.sysmessage You missed Your Target. 
+REMoVE 
+RETURN 1 
+else (<TIMER> >= 1) 
+TARGET Whos getting hit? 
+TIMER 15 
+RETURN 1 
+else (<TIMER> = 0) 
+REMoVE 
+RETURN 1 
+else 
+RETURN 1 
+endif 
+
+[function s_points] 
+iF (<SRC.TAG.SNOWTEAM> )==1 
+src.tag.teampts1=<src.tag.teampts1> + 1 
+Return 1 
+else 
+iF (<SRC.TAG.SNOWTEAM> )==2 
+src.tag.teampts2=<src.tag.teampts2> + 1 
+Return 1 
+else 
+iF (<SRC.TAG.SNOWTEAM> )==3 
+src.tag.teampts3=<src.tag.teampts3> + 1 
+Return 1 
+else 
+iF (<SRC.TAG.SNOWTEAM> )==4 
+src.tag.teampts4=<src.tag.teampts4> + 1 
+Return 1 
+ENDIF 
+
+
+[function s_reset] 
+Target Select Board to reset 
+
+
+//////////////////////////////////////////////////////////// 
+///Snowball dialogs 
+//////////////////////////////////////////////////////////// 
+
+[DIALOG d_snowars] 
+0, 0 
+PAGE 0 
+resizepic 0 0 3500 325 280 
+gumppic 11 9 1418 
+text 25 17 1313 0 
+text 25 55 102 1 
+text 25 90 102 2 
+text 25 130 102 3 
+text 25 160 102 4 
+text 130 55 102 5 
+text 130 90 102 6 
+text 130 130 102 7 
+text 130 160 102 8 
+text 75 189 95 9 
+text 135 222 95 10 
+
+[DIALOG d_snowars TEXT] 
+Lord Techno's Snowball Wars v1.0 
+Blue Team 
+White Team 
+Red Team 
+Green Team 
+<EVAL 0<tag.teampts1>> 
+<EVAL 0<tag.teampts2>> 
+<EVAL 0<tag.teampts3>> 
+<EVAL 0<tag.teampts4>> 
+Time till game Over 
+<EVAL 0<tag.gametime>> 
+
+[DIALOG d_snowars BUTTON] 
+
+[ITEMDEF i_deed_swallns] 
+DEFNAME=i_deed_swallns 
+NAME=Snow Wall North/South 
+ID=i_deed 
+
+CATEGORY=Imperial uo 
+SUBSECTION=Snow Wars 
+DESCRIPTION=Snow Wall N/S Deed 
+
+ON=@Dclick 
+SRC.NEWITEM i_swallew 
+src.act.bounce 
+remove 
+RETURN 0 
+
+[ITEMDEF i_deed_swallew] 
+DEFNAME=i_deed_swallew 
+NAME=Snow Wall East/West 
+ID=i_deed 
+
+CATEGORY=Imperial uo 
+SUBSECTION=Snow Wars 
+DESCRIPTION=Snow Wall E/W Deed 
+
+ON=@Dclick 
+SRC.NEWITEM i_swallew 
+src.act.bounce 
+remove 
+RETURN 0 
+
+[ITEMDEF i_swallns] 
+DEFNAME=i_swallns 
+ID=088a 
+CATEGORY=Imperial uo 
+SUBSECTION=Snow Wars 
+DESCRIPTION=Snow Wall N/S 
+
+on=@create 
+color=0481 
+
+[ITEMDEF i_swallew] 
+DEFNAME=i_swallew 
+ID=088b 
+CATEGORY=Imperial uo 
+SUBSECTION=Snow Wars 
+DESCRIPTION=Snow Wall E/W 
+
+on=@create 
+color=0481
+
+
+
+
+
+
+[ITEMDEF b_snowball]
+NAME=Snowball
+ID=i_virtstone_7 
+VALUE=300
+WEIGHT=1
+CATEGORY=Imperial uo
+SUBSECTION=GM Items
+DESCRIPTION=snowball
+
+ON=@DClick
+   src.color=<color>
+   src.emote eat a snowball
+   remove
+   RETURN 1
+
+[EOF]

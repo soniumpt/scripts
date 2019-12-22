@@ -1,0 +1,509 @@
+[ITEMDEF i_trophy_farquharsen]
+ID= i_talisman1
+NAME= Lord Farquharsen Trophy
+
+ON=@CREATE
+ATTR=05
+COLOR=0770
+
+[ITEMDEF i_trophy_ferris]
+ID= i_talisman2
+NAME= Ferris Drake Trophy
+ATTR=05
+
+ON=@CREATE
+ATTR=05
+COLOR=07b5
+
+[CHARDEF c_ferris_drake]
+DEFNAME		= c_ferris_drake
+ID		= c_DRAGON_RED
+NAME		= Ferris Drake
+SOUND		= snd_MONSTER_DRAGON1
+ICON		= i_pet_dragon
+DAM		= 30,70
+ARMOR		= 70
+CAN		= MT_WALK|MT_FLY|MT_RUN|MT_FIRE_IMMUNE
+FOODTYPE	= 80 t_meat_raw
+DESIRES		= i_gold
+AVERSIONS	= r_water,r_civilization
+TEVENTS		= e_npc_dragon
+
+
+ON = @Create
+  NPC		= brain_dragon
+  COLOR		= 07b5
+  FAME		= 9000
+  KARMA		= -10000
+  STR		= 500
+  MAXHITS = 10000
+  DEX		= 500
+  INT		= 500
+  SWORDSMANSHIP=150.0
+  WRESTLING=150.0
+  MAGICRESISTANCE=350.0
+  TACTICS=150.0
+  ANATOMY=150.0
+  TAMING=350.0
+  
+ON=@NPCRESTOCK
+ITEM=i_gold,{35000 40000}
+ITEM=i_gold,{35000 40000}
+ITEM=i_gold,{35000 40000}
+ITEM=i_reward_ticket,{7500 10000}
+ITEM=i_reward_ticket,{7500 10000}
+ITEM=i_reward_ticket,{7500 10000}
+ITEM=i_luck_stone,{2 3}
+ITEM= { random_boss_loot3 1 0 3 }
+ITEM= { random_boss_loot3 1 0 3 }
+ITEM= { random_boss_loot1 1 0 9 }
+ITEM= { random_boss_loot2 1 0 6 }
+ITEM= { random_user_all 1 0 6 }
+ITEM= { i_trophy_ferris 1 0 5 }
+
+ON=@HitTry
+  return <try_dispel>
+  
+ON=@Gethit
+    
+   if (<src.findlayer(layer_hand1).type>==t_weapon_bow ) || (<src.findlayer(layer_hand1).type>==t_weapon_xbow ) || (<src.findlayer(layer_hand2).type>==t_weapon_bow ) || (<src.findlayer(layer_hand2).type>==t_weapon_xbow )
+      IF ( RAND(2) == 1)
+         EMOTE roar as the arrow shatters...
+         return 1
+         findlayer(layer_k_control).TRIGGER @SkillFail
+      ENDIF
+   endif
+    
+   return 0
+
+ON=@SPELLEFFECT
+   IF (((<argn> == 20) || (<argn> == 39))
+      SAY The poison is absorbed into Ferris blood...
+      RETURN 1
+   ENDIF
+   
+ON=@DEATH
+//SERV.ALLCLIENTS SYSMESSAGE @07a1 Lord Farquharsen, The Scorpion King has been defeated!
+SERV.LOG :OPENWORLD BOSS: Ferris drake has been defeated.
+
+
+[ITEMDEF i_book_farquharsen]
+ID		= i_book_lg
+NAME		= The Apocalypse Day
+
+ON=@CREATE
+MORE		= b_book_farquharsen
+
+[BOOK b_book_farquharsen]
+  PAGES		= 27
+  TITLE		= The Apocalypse Day
+  AUTHOR	= The Savior
+
+[BOOK b_book_farquharsen 1]
+Chapter 1		    
+
+The Prophecy
+
+[BOOK b_book_farquharsen 2]
+A long time ago, in the 	
+lands of Britain, a child
+was born with great 	
+powers and great
+responsibilities. It was
+said that she would be 	
+the savior of the world 	
+when the judgement day
+
+[BOOK b_book_farquharsen 3]
+arrive. The child was too
+powerful, throwing fire 	
+balls from her eyes and 	
+lightnings from her arse.	
+The story I'm going to 	
+tell you is not about 	
+that child, but about 	
+Farquharsen, the one who
+
+[BOOK b_book_farquharsen 4]
+murdered that child.	
+Farquharsen was born in 	
+a farm, near the big 	
+city, although being poor, 	
+his fate was sealed at 	
+the moment he was born.	
+He knew he would have a 	
+decisive role in the world,
+
+[BOOK b_book_farquharsen 5]
+and when he read a 	
+prophecy about a powerful 	
+child destined to be the 	
+savior, he decided the 	
+best to do was to kill 	
+her. And so he did.
+
+[BOOK b_book_farquharsen 6]
+Chapter 2		  
+
+The Scorpion King
+
+[BOOK b_book_farquharsen 7]
+With the only one that 	
+could stop him dead, he 	
+could finally start his 	
+malefic plan to be one of 	
+the very best and 	
+conquer the whole land.	
+He started by picking a 	
+territory to place his
+
+[BOOK b_book_farquharsen 8]
+new house and to start 	
+recruiting members to 	
+join his army.	
+The main goal of 	
+Farquharsen was to 	
+conquer Britain, and then 	
+the other towns would 	
+surrender to him. He
+
+[BOOK b_book_farquharsen 9]
+decided the best place to 	
+settle was the Desert, 	
+and he started recruiting 	
+as soon as he arrived 	
+there. The first one to 	
+join his army was his 	
+best friend, Spiralmind. 	
+Together they started to
+
+[BOOK b_book_farquharsen 10]
+murder families of 	
+innocent people all across 	
+the land. People were 	
+scared and his army were 	
+rising day after day. 	
+Farquharsen followers 	
+were now named as 	
+Scorpions, and
+
+[BOOK b_book_farquharsen 11]
+he started to be known 	
+as Lord Farquharsen, The 	
+Scorpion King.
+
+[BOOK b_book_farquharsen 12]
+Chapter 3	 	    
+
+The Britain Fight
+
+[BOOK b_book_farquharsen 13]
+Everyone had heard 	
+Farquharsen name already, 	
+and people started to 	
+fear him even more as 	
+his army grew. They were 	
+conquering small towns, 	
+murdering people all over 	
+the place, leaving no
+
+[BOOK b_book_farquharsen 14]
+survivors. Lord 	
+Farquhasen, now also 	
+Chaos Overlord, felt the 	
+army was big enough and 	
+tried to attack Britain. 	
+Him and his fellow 	
+servant Spiralmind led the 	
+army through the hot
+
+[BOOK b_book_farquharsen 15]
+Desert and invaded the 
+city. The fight lasted 	
+for weeks. Some people 	
+died fighting, others 	
+starved to death and 	
+others ran away from 	
+the town. In the end, 	
+Lord British armies won
+
+[BOOK b_book_farquharsen 16]
+the battle. Although,	
+Lord Farquharsen was not 	
+dead and retired to the 	
+Desert again with 	
+Spiralmind. Lord 	
+Farquharsen lost almost 	
+his whole army and would 	
+need a lot of time to re
+
+[BOOK b_book_farquharsen 17]
+gain his honor. The world 	
+was in peace for years.
+
+[BOOK b_book_farquharsen 18]
+Chapter 4		    
+
+The Apocalypse
+
+[BOOK b_book_farquharsen 19]
+Many years have passed 	
+now, since the defeat of 	
+Lord Farquharsen, The 	
+Scorpion King, Chaos 	
+Overlord, Count of Lumiar,	
+but he isn't dead and 	
+is still trying to regroup 	
+his armies. He is still
+
+[BOOK b_book_farquharsen 20]
+around the Desert,
+killing people as they walk
+over his territory.
+He will try to conquer 	
+Britain once more and re 	
+gain his honor.
+
+[BOOK b_book_farquharsen 21]
+The apocalypse is near, 
+consider yourself warned. 	
+Run for your lifes, leave 	
+your home behind. I have 	
+heard storys and rumors, 	
+The Scorpion King is 	
+reuniting his army once 	
+more. They will attack
+
+[BOOK b_book_farquharsen 22]
+from many entries this 	
+time. Spiralmind will 
+lead the main army 	
+through the Britain 	
+Bridge, while Lord 
+Farquharsen will attack 
+from behind and murder 
+anyone in their way. The
+
+[BOOK b_book_farquharsen 23]
+world is not a safe place 	
+anymore, the scorpions 	
+will rise and conquer the 	
+land. This battle can't be 	
+won, not now, not without 	
+an army. Lord 	
+Farquharsen will have his 	
+revenge, he has no
+
+[BOOK b_book_farquharsen 24]
+intentions to lose this 	
+time. There will be no 	
+survivors, houses will be 	
+destroyed and trees will 	
+be burned, The Lord 	
+British reign as come 	
+to an end and there is 	
+nothing we can do about
+
+[BOOK b_book_farquharsen 25]
+it. Lord Farquharsen, The 	
+Scorpion King, Chaos 	
+Overlord, Count of Lumiar 	
+is coming to end our 	
+race. The Scorpions will 	
+rule the world. There is 	
+no hope for us. There 	
+will be no mercy in their
+
+[BOOK b_book_farquharsen 26]
+attack. We are all 	
+doomed. The place is 	
+quiet, the strike will be 	
+silent. This is the deep 	
+breath before the 	
+plunge. Take your family 	
+and run as fast as you 	
+can. Save yourself!
+
+[BOOK b_book_farquharsen 27]
+We are living dark 	times.		
+There is no hope left.
+Is there anyone brave 
+enough to challenge
+such evil person?
+
+You have been warned.
+
+[CHARDEF c_farquharsen]
+DEFNAME=c_farquharsen
+ID=C_scorpion_giant
+NAME=Lord Farquharsen, The Scorpion King
+SOUND=snd_MONSTER_GSCORP1
+DAM=20,30
+ARMOR=20
+TSPEECH=spk_farquharsen
+CAN=MT_WALK|MT_RUN
+
+TEVENTS=e_poison_caster_strong
+
+ON=@Create
+NPC=brain_monster
+STR=500
+MAXHITS=10000
+DEX=250
+INT=1000
+SWORDSMANSHIP=100.0
+WRESTLING=100.0
+MAGICRESISTANCE=350.0
+TACTICS=100.0
+ANATOMY=100.0
+TAMING=350.0
+FAME=9000
+KARMA=-10000
+COLOR=0770
+
+ON=@NPCRESTOCK
+ITEM=i_gold,{35000 40000}
+ITEM=i_gold,{35000 40000}
+ITEM=i_gold,{35000 40000}
+ITEM=i_reward_ticket,{7500 10000}
+ITEM=i_reward_ticket,{7500 10000}
+ITEM=i_reward_ticket,{7500 10000}
+ITEM=i_luck_stone,{2 3}
+ITEM= { random_boss_loot3 1 0 3 }
+ITEM= { random_boss_loot3 1 0 3 }
+ITEM= { random_boss_loot1 1 0 9 }
+ITEM= { random_boss_loot2 1 0 6 }
+ITEM= { random_user_all 1 0 6 }
+ITEM= { i_trophy_farquharsen 1 0 5 }
+
+//ITEM=i_book_farquharsen
+
+ON=@DEATH
+
+Say @07a1 Brb Newbies!
+//SERV.ALLCLIENTS SYSMESSAGE @07a1 Lord Farquharsen, The Scorpion King has been defeated!
+SERV.LOG :OPENWORLD BOSS: Farquharsen has been defeated.
+return 0
+
+ON=@NPCSeeNewPlayer
+Say What do you wan't from here <SRC.NAME>?
+Say Go away or I will bury you in the Desert sands.
+ 
+ON=@HitTry
+  return <try_dispel>
+  
+ON=@Gethit
+  
+   IF (RAND(100) < 30)
+   DORAND 6
+   Say Outch, that was close!
+   SAY Are you out of your mind <SRC.NAME>?
+   SAY No one can defeat me!
+   Say Ah Ah Ah! You don't stand a chance against the almighty Lord Farquharsen!
+   SAY Run while you still can!
+   SAY Go away or I will bury you in the Desert sands, <SRC.NAME>.
+   SAY All hail to the Scorpion King!
+   ENDDO
+   ENDIF
+   
+   IF (<hits> < 5000)
+      IF (<TAG0.SPIRALMIND>==0)
+	  Say @07a1 Spiralmind, help!
+	  NEWNPC=c_spiralmind
+	  tag.spiralmind=1
+	  endif
+   ENDIF
+   
+   if (<src.findlayer(layer_hand1).type>==t_weapon_bow ) || (<src.findlayer(layer_hand1).type>==t_weapon_xbow ) || (<src.findlayer(layer_hand2).type>==t_weapon_bow ) || (<src.findlayer(layer_hand2).type>==t_weapon_xbow )
+      IF ( RAND(2) == 1)
+         EMOTE shatters the arrow...
+         return 1
+         findlayer(layer_k_control).TRIGGER @SkillFail
+      ENDIF
+   endif
+    
+   return 0
+
+ON=@SPELLEFFECT
+   IF (((<argn> == 20) || (<argn> == 39))
+      SAY Poison? The Scorpion King?
+      RETURN 1
+   ENDIF
+	  
+[SPEECH spk_farquharsen]
+
+on=*hi*
+on=*hello*
+Say How do you dare to walk over my sands?
+return 1
+
+on=*fight*
+DORAND 2
+Say Don't make me laugh, get away from my territory!
+Say Go away or I will bury you in the Desert sands.
+ENDDO
+return 1
+
+on=*noob*
+on=*newb*
+on=*newbie*
+on=*brb newbies*
+on=*brb newb*
+Say We shall see who is the noob. 
+
+[CHARDEF c_spiralmind]
+DEFNAME=c_spiralmind
+NAME=General Spiralmind
+ID=C_scorpion_giant
+SOUND=snd_MONSTER_GSCORP1
+ICON=i_pet_SCORP
+ANIM=078c7f
+CAN=MT_WALK|MT_RUN
+TSPEECH=spk_spiralmind
+
+DAM=10,20
+ARMOR=10
+
+TEVENTS=e_poison_caster_medium
+
+ON=@Create
+   NPC=brain_monster
+   STR=2500
+   DEX=500
+   INT=500
+   FAME={100 2000}
+   KARMA={-2000 -2999}
+   PARRYING=150.0
+   MAGICRESISTANCE=150.0
+   TACTICS=150.0
+   WRESTLING=150.0
+   TAMING=350.0
+   COLOR=0770
+   
+ON=@Gethit
+  
+   IF (RAND(100) < 30)
+   DORAND 5
+   Say How do you dare to attack my Lord?
+   Say Are you that strong?
+   Say My Lord requested my presence.
+   Say No battle shall be own without blood spilled.
+   Say Do you still think you can defeat us?
+   ENDDO
+   ENDIF
+   
+   return 0
+
+ON=@DEATH
+	Say I'll be back!
+    RETURN 0
+
+ON=@HitTry
+  return <try_dispel>
+  
+ON=@SPELLEFFECT
+   IF (((<argn> == 20) || (<argn> == 39))
+      SAY The poison is absorbed into Spiralmind blood...
+      RETURN 1
+   ENDIF
+[EOF]

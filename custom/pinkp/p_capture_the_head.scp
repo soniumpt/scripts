@@ -1,0 +1,239 @@
+[ITEMDEF i_cth_collector]
+ID=i_island_totem
+TYPE=t_script
+NAME=Head Collector
+
+ON=@CREATE
+ATTR=08010
+
+ON=@CLICK
+
+MESSAGE=@<COLOR> Total Heads Collected: <EVAL <MORE1>>
+
+IF (<SRC.ISGM>)
+MESSAGE=Double click to reset the score and start the event countdown.
+ENDIF
+RETURN 1
+
+ON=@DCLICK
+
+IF (<SRC.ISGM>)
+	IF (<LINK>==04fffffff)
+		SRC.SYSMESSAGE Please link this Head Collector to another Head Collector first.
+	ELSE
+		IF (<LINK.BASEID>==i_cth_collector)
+			IF !(<SRC.FINDID.m_cth_countdown>)
+				MORE1=0
+				LINK.MORE1=0
+				MORE2=0
+				LINK.MORE2=0
+				SRC.SYSMESSAGE Both Head Collectors successfully resetted and event countdown started.
+				SERV.NEWITEM m_cth_countdown
+				NEW.TAG.COLLECTOR1=<UID>
+				NEW.TAG.COLLECTOR2=<LINK.UID>
+				NEW.EQUIP 
+			ELSE
+				SRC.SYSMESSAGE A CTH Countdown is already going on. Please type .edit and remove the CTH Countdown memory item to start a new countdown.
+			ENDIF
+		ELSE
+			SRC.SYSMESSAGE This doesn't seem to be linked to another Head Collector.
+		ENDIF
+	ENDIF
+ELSE
+	IF !(<LINK>==04fffffff)
+		IF !(<EVAL <MORE2>>==1)
+			IF (<EVAL <SRC.TAG0.BASE>> == <EVAL <TAG0.BASE>>)
+				TARGET Please target the Player Head you want to collect.
+			ELSE
+				SRC.SYSMESSAGE This doesn't seem to be your team's Head Collector.
+			ENDIF
+		ELSE
+			SRC.SYSMESSAGE No more Player Heads can be collected at this time.
+		ENDIF
+	ELSE
+		SRC.SYSMESSAGE The Head Collector is not configured to be used yet.
+	ENDIF
+ENDIF
+RETURN 1
+
+ON=@Targon_item
+IF !(<EVAL <MORE2>>==1)
+	IF (<SRC.TARG.BASEID>==i_flesh_head)
+		IF (<SRC.TARG.TOPOBJ>==<SRC.UID>)	
+			IF !(<DISTANCE> > 3)
+				MORE1 +=1
+				REGION.ALLCLIENTS SYSMESSAGE @<COLOR> <SRC.NAME> has just collected <SRC.TARG.NAME>, for a Total of <EVAL <MORE1>> Heads Collected.
+				SRC.TARG.REMOVE
+			ELSE
+				SRC.SYSMESSAGE You are too far away from the Head Collector to collect a Player Head.
+			ENDIF
+		ELSE
+			SRC.SYSMESSAGE You need to carry this Player Head with yourself in order to collect it.
+		ENDIF
+	ELSE
+		SRC.SYSMESSAGE This is not a Player Head.		
+	ENDIF
+ELSE
+	SRC.SYSMESSAGE No more Player Heads can be collected at this time.
+ENDIF
+
+RETURN 1
+
+ON=@Targon_ground
+SRC.SYSMESSAGE This is not a Player Head.
+RETURN 1
+
+ON=@Targon_char
+SRC.SYSMESSAGE This is not a Player Head.
+RETURN 1
+
+
+[ItemDef m_cth_countdown]
+id=i_memory
+Name=CTH Countdown
+type=t_eq_script
+
+ON=@Create
+TIMER = 300
+
+ON=@Timer
+IF (<EVAL <MORE1>>==0)
+	CONT.REGION.ALLCLIENTS SYSMESSAGE @07ad Capture the Head round ending in 10 minutes.
+	MORE1=1
+	TIMER=300
+ELSEIF (<EVAL <MORE1>>==1)
+	CONT.REGION.ALLCLIENTS SYSMESSAGE @07ad Capture the Head round ending in 5 minutes.
+	MORE1=2
+	TIMER=270
+ELSEIF (<EVAL <MORE1>>==2)
+	CONT.REGION.ALLCLIENTS SYSMESSAGE @07ad Capture the Head round ending in 30 seconds.
+	MORE1=3
+	TIMER=20
+ELSEIF (<EVAL <MORE1>>==3)
+	CONT.REGION.ALLCLIENTS SYSMESSAGE @07ad Capture the Head round ending in 10 seconds.
+	MORE1=4
+	TIMER=10
+ELSEIF (<EVAL <MORE1>>==4)
+	CONT.REGION.ALLCLIENTS SYSMESSAGE @07ad Capture the Head round is now over and no more Player Heads can be collected.
+	TRY UID.<TAG.COLLECTOR1>.MORE2=1
+	TRY UID.<TAG.COLLECTOR2>.MORE2=1
+	CONT.REGION.ALLCLIENTS SYSMESSAGE @<UID.<TAG.COLLECTOR1>.COLOR> Total Heads Collected: <EVAL <UID.<TAG.COLLECTOR1>.MORE1>>
+	CONT.REGION.ALLCLIENTS SYSMESSAGE @<UID.<TAG.COLLECTOR2>.COLOR> Total Heads Collected: <EVAL <UID.<TAG.COLLECTOR2>.MORE1>>
+	REMOVE
+ENDIF
+RETURN 1
+
+ON=@EQUIP
+CONT.REGION.ALLCLIENTS SYSMESSAGE @07ad Capture the Head event has started! Collect as many heads as you can within 15 minutes to be the winner.
+	
+	
+[ITEMDEF i_cth_gate_entry]
+ID=i_moongate_blue
+TYPE=t_script
+NAME=Capture the Head Event Entry Gate
+
+ON=@CREATE
+COLOR=07a0
+ATTR=attr_static
+
+ON=@STEP
+
+IF !(<TAG0.BASE>)
+	SRC.SYSMESSAGE The gate is not configured to be used yet.
+	RETURN 1
+ELSE
+	SRC.EVENTS +e_cth
+	SRC.TAG.BASE=<TAG.BASE>
+	SRC.GO <TAG.BASE>
+	RETURN 1
+ENDIF
+
+[ITEMDEF i_cth_gate_exit]
+ID=i_moongate_blue
+TYPE=t_script
+NAME=Capture the Head Event Exit Gate
+
+ON=@CREATE
+COLOR=07a1
+ATTR=attr_static
+
+ON=@STEP
+IF !((<SRC.ISGM>) || (<SRC.ISCOUNS>))
+	IF (<SRC.ISEVENT.e_cth>)
+		IF !(<SRC.ISDEAD>)
+			SRC.TAG.CTH.EXIT=1
+			SRC.KILL
+			SERV.NEWITEM m_cth_resurrect_delay
+			NEW.EQUIP
+			SRC.SYSMESSAGE @07a1 You will be teleported out and resurrect in 3 seconds, please wait...
+		ELSE
+			SRC.SYSMESSAGE You can't use this gate while dead.
+		ENDIF
+	ELSE
+		SRC.MESSAGE=I'M NOT IN THIS EVENT AND CANT USE THE GATE!
+	ENDIF
+ELSE
+	SRC.GO 5196,1214
+ENDIF
+
+
+[ItemDef m_cth_resurrect_delay]
+id=i_memory
+Name=CTH Resurrect Delay
+type=t_eq_script
+
+ON=@Create
+TIMER = 3
+
+ON=@Timer
+CONT.GO 5196,1214
+CONT.RESURRECT
+CONT.HITS=<CONT.STR>
+CONT.MANA=<CONT.INT>
+CONT.STAM=<CONT.DEX>
+CONT.EVENTS -e_cth
+CONT.TAG.CTH.EXIT=
+CONT.TAG.BASE=
+REMOVE
+
+[EVENTS e_cth]
+
+ON=@DEATHCORPSE
+OBJ=<Argo.uid>
+OBJ.REMOVE
+
+ON=@DEATH
+
+IF !(<EVAL <TAG0.CTH.EXIT>>==1)
+
+LOCAL.KILLER=<ACT.UID>
+
+IF !(<EVAL <SRC.TAG0.BASE>> == <EVAL <ACT.TAG0.BASE>>)
+	IF !(<ACT.FINDID.i_flesh_head>)
+		SERV.NEWITEM i_flesh_head
+		NEW.NAME <NAME>'s Head
+		NEW.CONT <LOCAL.KILLER>
+		ACT.SYSMESSAGE @07a1 You've killed <NAME> and got his head in your backpack.
+		ACT.EMOTE got <SRC.NAME>'s Head
+	ELSE
+		ACT.SYSMESSAGE @07a1 You've killed <NAME> but you already got a head in your back pack.
+	ENDIF
+ELSE
+	ACT.SYSMESSAGE @07a1 You've killed <NAME> but he is a team mate!
+ENDIF
+
+SRC.GO <SRC.TAG.BASE>
+SRC.HITS=<SRC.STR>
+SRC.MANA=<SRC.INT>
+SRC.STAM=<SRC.DEX>
+
+IF (<SRC.FINDID.i_flesh_head>)
+	SRC.FINDID.i_flesh_head.remove
+	SRC.SYSMESSAGE @079c You have been killed by <ACT.NAME> and you are now resurrected, but lost the head you were carrying with yourself.
+ELSE
+	SRC.SYSMESSAGE @079c You have been killed by <ACT.NAME> and you are now resurrected!
+ENDIF
+
+RETURN 1
+
+ENDIF

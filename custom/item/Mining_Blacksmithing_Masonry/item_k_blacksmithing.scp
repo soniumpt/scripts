@@ -1,0 +1,1345 @@
+//Changelog:
+//==========
+//23/11/2019 - Wigifer - Added SRC.TARG.SMELT to f_forge_targon_item to force smelting in 56d. It's a shitty fix, but eh.
+
+[TYPEDEF t_forge_out]
+ON = @Click
+   MESSAGE a burnout <name>
+   return 1
+ON = @DClick
+   MESSAGE The forge is out of coal.
+   return 1
+
+
+[FUNCTION f_forge_timer]
+  TIMER		= 60
+  if ( <MORE2> > 1 )
+     MORE2	= <eval (<MORE2> - 1)>
+     SAY *the coal burns in the forge*
+  elseif ( <TYPE> != t_forge_out )
+     SAY *the forge burns out of coal*
+     TYPE	= t_forge_out
+  endif
+  return 1
+
+[FUNCTION f_forge_click]
+  MESSAGE <name> ( <eval <more2>> coal )
+  return 1
+  
+[FUNCTION f_forge_dclick]
+  if ( <MORE2> < 1 )
+     SAY *the forge burns is of coal*
+     TYPE	= t_forge_out
+     return 1
+  endif
+  TARGET What ore would you like to smelt?
+  return 1
+  
+[FUNCTION f_forge_targon_item]
+  if ( <SRC.TARG.BASEID> == i_coal )
+     src.sysmessage Use the coal on the forge instead.
+     return 1
+  endif
+  if ( <SRC.TARG.BASEID> == i_bottle_empty )
+       src.sysmessage The bottle seems resistant to the heat.
+       return 1
+  endif
+  if ( (<SRC.TARG.BASEID> == i_ore_skargard) && !(<COLOR> == 0486) )
+     SRC.SYSMESSAGE The skargard ore melts instantly.
+     SRC.TARG.REMOVE
+     return 1
+  endif
+  if (<SRC.TARG.TYPE> == t_container)
+     SRC.SYSMESSAGE You dont think thats very wise.
+     return 1
+  endif
+  if !( <SRC.TARG.TOPOBJ.UID> == <SRC.UID> )
+     SRC.SYSMESSAGE The item must be in your pack for you to smelt it!
+     RETURN 1
+  endif
+  if ( (<SRC.TARG.TYPE> == t_armor ) || (<SRC.TARG.TYPE> == t_shield ) || (<SRC.TARG.TYPE> == t_weapon_sword ) || (<SRC.TARG.TYPE> == t_weapon_fence ) || (<SRC.TARG.TYPE> == t_weapon_mace_smith ) || (<SRC.TARG.TYPE> == t_weapon_mace_sharp ) || (<SRC.TARG.TYPE> == t_weapon_axe ) )
+     VAR.GEM = <eval (<SRC.TARG.MOREm> - ((<SRC.TARG.MOREm> / 64)*64) )>
+     IF ( strmatch( "*old copper*", "<SRC.TARG.NAME>" )
+        SRC.SYSMESSAGE You cannot smelt Old Copper pieces at this time...
+        RETURN 1
+     ENDIF
+     IF ( strmatch( "*studded*", "<SRC.TARG.NAME>" )
+        SERV.LOG <SRC.NAME> is cheating and smelting a <SRC.TARG.NAME> for gem number <VAR.GEM>!
+     ENDIF
+     IF ( strmatch( "*skinning*", "<SRC.TARG.NAME>" )
+        SERV.LOG <SRC.NAME> is cheating and smelting a <SRC.TARG.NAME> for gem number <VAR.GEM>!
+     ENDIF
+     IF ( strmatch( "*cleaver*", "<SRC.TARG.NAME>" )
+        SERV.LOG <SRC.NAME> is cheating and smelting a <SRC.TARG.NAME> for gem number <VAR.GEM>!
+     ENDIF
+     IF ( strmatch( "*butcher*", "<SRC.TARG.NAME>" )
+        SERV.LOG <SRC.NAME> is cheating and smelting a <SRC.TARG.NAME> for gem number <VAR.GEM>!
+     ENDIF
+     f_forge_return_ingot
+     IF !(<VAR.INGOT.TYPE>)
+        IF (0<SRC.TAG.DEBUG.SMELT>=1)
+           SRC.SAY No ingot type
+        ENDIF
+        RETURN 1
+     ELSE
+        SRC.EMOTE smelt the <SRC.TARG.NAME>
+        f_forge_return_gem
+        SRC.TARG.REMOVE
+        RETURN 1
+     ENDIF
+  endif
+  if (<SRC.TARG.TYPE> != t_ore)
+     SRC.SYSMESSAGE You cannot smelt that.
+     return 1
+  else
+     SRC.TARG.SMELT
+     RETURN 1
+  endif
+  
+[FUNCTION f_forge_return_gem]
+IF (<VAR.GEM> = 01)
+   SERV.NEWITEM i_gem_star_sapphire, 	4, 	<SRC.FINDLAYER.LAYER_PACK.UID>
+ELSEIF (<VAR.GEM> = 02)
+   SERV.NEWITEM i_gem_emerald, 		4, 	<SRC.FINDLAYER.LAYER_PACK.UID>
+ELSEIF (<VAR.GEM> = 03)
+   SERV.NEWITEM i_gem_sapphire, 	4, 	<SRC.FINDLAYER.LAYER_PACK.UID>
+ELSEIF (<VAR.GEM> = 04)
+   SERV.NEWITEM i_gem_ruby, 		4, 	<SRC.FINDLAYER.LAYER_PACK.UID>
+ELSEIF (<VAR.GEM> = 05)
+   SERV.NEWITEM i_gem_citrine, 		4, 	<SRC.FINDLAYER.LAYER_PACK.UID>
+ELSEIF (<VAR.GEM> = 06)
+   SERV.NEWITEM i_gem_amethyst, 	4, 	<SRC.FINDLAYER.LAYER_PACK.UID>
+ELSEIF (<VAR.GEM> = 07)
+   SERV.NEWITEM i_gem_tourmaline, 	4, 	<SRC.FINDLAYER.LAYER_PACK.UID>
+ELSEIF (<VAR.GEM> = 08)
+   SERV.NEWITEM i_gem_amber, 		4, 	<SRC.FINDLAYER.LAYER_PACK.UID>
+ELSEIF (<VAR.GEM> = 09)
+   SERV.NEWITEM i_gem_diamond, 		4, 	<SRC.FINDLAYER.LAYER_PACK.UID>
+ELSEIF (<VAR.GEM> = 0a)
+   SERV.NEWITEM i_gem_citrine, 		3, 	<SRC.FINDLAYER.LAYER_PACK.UID>
+   SERV.NEWITEM i_gem_sapphire, 	3, 	<SRC.FINDLAYER.LAYER_PACK.UID>
+   SERV.NEWITEM i_gem_emerald, 		3, 	<SRC.FINDLAYER.LAYER_PACK.UID>
+   SERV.NEWITEM i_gem_star_sapphire, 	3, 	<SRC.FINDLAYER.LAYER_PACK.UID>
+ELSEIF (<VAR.GEM> = 0b)
+   SERV.NEWITEM i_gem_citrine, 		9, 	<SRC.FINDLAYER.LAYER_PACK.UID>
+   SERV.NEWITEM i_gem_sapphire, 	9, 	<SRC.FINDLAYER.LAYER_PACK.UID>
+   SERV.NEWITEM i_gem_emerald, 		9, 	<SRC.FINDLAYER.LAYER_PACK.UID>
+   SERV.NEWITEM i_gem_star_sapphire, 	9, 	<SRC.FINDLAYER.LAYER_PACK.UID>
+ENDIF
+
+[FUNCTION f_forge_return_ingot]
+IF (<SRC.TARG.TDATA1> == mat_bloodrk)
+   VAR.INGOT.TYPE=i_ingot_bloodrock
+ELSEIF (<SRC.TARG.TDATA1> == mat_bloodrock)
+   VAR.INGOT.TYPE=i_ingot_bloodrock
+ELSEIF (<SRC.TARG.TDATA1> == mat_blackrock)
+   VAR.INGOT.TYPE=i_ingot_blackrock
+ELSEIF (<SRC.TARG.TDATA1> == mat_mytheril)
+   VAR.INGOT.TYPE=i_ingot_mytheril
+ELSEIF (<SRC.TARG.TDATA1> == mat_copper)
+   VAR.INGOT.TYPE=i_ingot_copper
+ELSEIF (<SRC.TARG.TDATA1> == mat_iron)
+   VAR.INGOT.TYPE=i_ingot_iron
+ELSEIF (<SRC.TARG.TDATA1> == mat_tin)	
+   VAR.INGOT.TYPE=i_ingot_tin
+ELSEIF (<SRC.TARG.TDATA1> == mat_bronze)
+   VAR.INGOT.TYPE=i_ingot_bronze
+ELSEIF (<SRC.TARG.TDATA1> == mat_steel)
+   VAR.INGOT.TYPE=i_ingot_steel
+ELSEIF (<SRC.TARG.TDATA1> == mat_titanium)
+   VAR.INGOT.TYPE=i_ingot_titanium
+ELSEIF (<SRC.TARG.TDATA1> == mat_adamantine)
+   VAR.INGOT.TYPE=i_ingot_adamantine
+ELSEIF (<SRC.TARG.TDATA1> == mat_silver)
+   VAR.INGOT.TYPE=i_ingot_silver
+ELSEIF (<SRC.TARG.TDATA1> == mat_gold)
+   VAR.INGOT.TYPE=i_ingot_gold
+ELSEIF (<SRC.TARG.TDATA1> == mat_phoenix)
+   VAR.INGOT.TYPE=i_ingot_phoenix
+ELSEIF (<SRC.TARG.TDATA1> == mat_celestium)
+   VAR.INGOT.TYPE=i_ingot_celestium
+ELSEIF (<SRC.TARG.TDATA1> == mat_terathane)
+   VAR.INGOT.TYPE=i_ingot_terathane
+ELSEIF (<SRC.TARG.TDATA1> == mat_skargard)
+   VAR.INGOT.TYPE=i_ingot_skargard
+ELSEIF (<SRC.TARG.TDATA1> == mat_verminard)
+   VAR.INGOT.TYPE=i_ingot_verminard
+ELSEIF (<SRC.TARG.TDATA1> == mat_stronghold)
+   VAR.INGOT.TYPE=i_ingot_stronghold
+ELSEIF (<SRC.TARG.TDATA1> == mat_pure_copper)
+   VAR.INGOT.TYPE=i_ingot_pure_copper
+ELSEIF (<SRC.TARG.TDATA1> == mat_ferrum)
+   VAR.INGOT.TYPE=i_ingot_ferrum
+ELSEIF (<SRC.TARG.TDATA1> == mat_brass)
+   VAR.INGOT.TYPE=i_ingot_brass
+ELSEIF (<SRC.TARG.TDATA1> == mat_chrome)
+   VAR.INGOT.TYPE=i_ingot_chrome
+ELSEIF (<SRC.TARG.TDATA1> == mat_agapite)
+   VAR.INGOT.TYPE=i_ingot_agapite
+ELSEIF (<SRC.TARG.TDATA1> == mat_shadow)
+   VAR.INGOT.TYPE=i_ingot_shadow
+ELSEIF (<SRC.TARG.TDATA1> == mat_verite)
+   VAR.INGOT.TYPE=i_ingot_verite
+ELSEIF (<SRC.TARG.TDATA1> == mat_valorite)
+   VAR.INGOT.TYPE=i_ingot_valorite
+ELSEIF (<SRC.TARG.TDATA1> == mat_entit)
+   VAR.INGOT.TYPE=i_ingot_entit
+ELSEIF (<SRC.TARG.TDATA1> == mat_oldcopper)
+   VAR.INGOT.TYPE=i_ingot_old_copper
+ELSEIF (<SRC.TARG.TDATA1> == mat_cobalt)
+   VAR.INGOT.TYPE=i_ingot_cobalt
+ELSEIF (<SRC.TARG.TDATA1> == mat_shakudo)
+   VAR.INGOT.TYPE=i_ingot_shakudo
+ELSEIF (<SRC.TARG.TDATA1> == mat_billon)
+   VAR.INGOT.TYPE=i_ingot_billon
+ELSEIF (<SRC.TARG.TDATA1> == mat_manganese)
+   VAR.INGOT.TYPE=i_ingot_manganese
+ELSEIF (<SRC.TARG.TDATA1> == mat_melancholy)
+   VAR.INGOT.TYPE=i_ingot_melancholy
+ELSEIF (<SRC.TARG.TDATA1> == mat_electrum)
+   VAR.INGOT.TYPE=i_ingot_electrum
+ELSEIF (<SRC.TARG.TDATA1> == mat_phoenicia)
+   VAR.INGOT.TYPE=i_ingot_phoenicia
+ELSEIF (<SRC.TARG.TDATA1> == mat_stellite)
+   VAR.INGOT.TYPE=i_ingot_stellite
+ELSEIF (<SRC.TARG.TDATA1> == mat_stellar)
+   VAR.INGOT.TYPE=i_ingot_stellar
+ELSEIF (<SRC.TARG.TDATA1> == mat_ascension)
+   VAR.INGOT.TYPE=i_ingot_ascension
+ELSEIF (<SRC.TARG.TDATA1> == mat_deathrock)
+   VAR.INGOT.TYPE=i_ingot_deathrock
+ELSEIF (<SRC.TARG.TDATA1> == mat_romancer)
+   VAR.INGOT.TYPE=i_ingot_romancer
+ELSEIF (<SRC.TARG.TDATA1> == mat_mysticite)
+   VAR.INGOT.TYPE=i_ingot_mysticite
+ELSEIF (<SRC.TARG.TDATA1> == mat_ultimatum)
+   VAR.INGOT.TYPE=i_ingot_ultimatum
+ELSEIF (<SRC.TARG.TDATA1> == mat_deity)
+   VAR.INGOT.TYPE=i_ingot_deity
+ELSEIF ( strmatch( "*black rock*", "<SRC.TARG.NAME>"  )
+   VAR.INGOT.TYPE=i_ingot_blackrock
+ELSEIF ( strmatch( "*blood rock*", "<SRC.TARG.NAME>" )
+   VAR.INGOT.TYPE=i_ingot_bloodrock
+ELSEIF ( strmatch( "*blackrock*", "<SRC.TARG.NAME>"  )
+   VAR.INGOT.TYPE=i_ingot_blackrock
+ELSEIF ( strmatch( "*bloodrock*", "<SRC.TARG.NAME>" )
+   VAR.INGOT.TYPE=i_ingot_bloodrock
+ELSEIF ( strmatch( "*mytheril*", "<SRC.TARG.NAME>" )
+   VAR.INGOT.TYPE=i_ingot_mytheril
+ELSEIF ( strmatch( "*iron*", "<SRC.TARG.NAME>" )
+   VAR.INGOT.TYPE=i_ingot_iron
+ELSE
+   SRC.SYSMESSAGE You cannot smelt that!
+   VAR.INGOT.TYPE=
+   RETURN 1
+ENDIF
+IF (<VAR.INGOT.TYPE> == i_ingot_phoenix)
+   VAR.INGOT.AMOUNT = <eval <SRC.TARG.RESOURCES>>
+ELSE
+   VAR.INGOT.AMOUNT = <eval <SRC.TARG.RESOURCES>>
+   VAR.INGOT.AMOUNT = <eval ((<VAR.INGOT.AMOUNT> / 3) * 2)>
+ENDIF
+SERV.NEWITEM <VAR.INGOT.TYPE>, <EVAL <VAR.INGOT.AMOUNT>>, <SRC.FINDLAYER.LAYER_PACK.UID>
+
+[ITEMDEF 0fb1]	// forge
+CATEGORY	= Items by Professions
+SUBSECTION	= Blacksmiths
+DESCRIPTION	= Forge 1
+NAME		= forge
+DEFNAME		= i_forge
+TYPE		= T_FORGE
+RESOURCES	= 20 i_rock_plain, 50 i_coal, 5 i_log
+WEIGHT		= 500
+VALUE		= 15000
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+
+
+// MULTIPART FORGES BELOW
+
+[ITEMDEF 0197a]
+DEFNAME=i_FORGE_BELLOWS_2_part_1_of_3_w
+RESOURCES=1 i_NAILS, 1 I_SPRINGS, 5 i_LOG, 10 i_rock_plain, 10 i_coal
+WEIGHT=18
+TYPE=T_FORGE
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Forge 2 (01/03) (W)
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+
+[ITEMDEF 0197b]
+DEFNAME=i_FORGE_BELLOWS_2_part_1_of_3_w_2
+RESOURCES=1 i_NAILS, 1 I_SPRINGS, 5 i_LOG, 10 i_rock_plain, 10 i_coal
+WEIGHT=18
+TYPE=T_FORGE
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Bellows
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+
+[ITEMDEF 0197c]
+DEFNAME=i_FORGE_BELLOWS_2_part_1_of_3_w_3
+RESOURCES=1 i_NAILS, 1 I_SPRINGS, 5 i_LOG, 10 i_rock_plain, 10 i_coal
+WEIGHT=18
+TYPE=T_FORGE
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Bellows
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+
+[ITEMDEF 0197d]
+DEFNAME=i_FORGE_BELLOWS_2_part_1_of_3_w_4
+RESOURCES=1 i_NAILS, 1 I_SPRINGS, 5 i_LOG, 10 i_rock_plain, 10 i_coal
+WEIGHT=18
+TYPE=T_FORGE
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Bellows
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+
+[ITEMDEF 0197e]
+DEFNAME=i_forge_2_part_2_of_3_w
+RESOURCES=8 i_rock_plain
+WEIGHT=16
+TYPE=T_FORGE
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Forge 2 (02/03) (W)
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+
+[ITEMDEF 0197f]
+DEFNAME=i_forge_2_part_2_of_3_w_2
+RESOURCES=8 i_rock_plain
+WEIGHT=16
+TYPE=T_FORGE
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Forge
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+
+[ITEMDEF 01980]
+DEFNAME=i_forge_2_part_2_of_3_w_3
+RESOURCES=8 i_rock_plain
+WEIGHT=16
+TYPE=T_FORGE
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Forge
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+
+[ITEMDEF 01981]
+DEFNAME=i_forge_2_part_2_of_3_w_4
+RESOURCES=8 i_rock_plain
+WEIGHT=16
+TYPE=T_FORGE
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Forge
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+
+[ITEMDEF 01982]
+DEFNAME=i_forge_2_part_3_of_3_w
+RESOURCES=8 i_rock_plain
+WEIGHT=16
+TYPE=T_FORGE
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Forge
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+
+[ITEMDEF 01983]
+DEFNAME=i_forge_2_part_3_of_3_w_2
+RESOURCES=8 i_rock_plain
+WEIGHT=16
+TYPE=T_FORGE
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Forge 2 (03/03) (W)
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+
+[ITEMDEF 01984]
+DEFNAME=i_forge_2_part_3_of_3_w_3
+RESOURCES=8 i_rock_plain
+WEIGHT=16
+TYPE=T_FORGE
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Forge
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+
+[ITEMDEF 01985]
+DEFNAME=i_forge_2_part_3_of_3_w_4
+RESOURCES=8 i_rock_plain
+WEIGHT=16
+TYPE=T_FORGE
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Forge
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+[ITEMDEF 01986]
+DEFNAME=i_FORGE_BELLOWS_2_part_1_of_3_n
+RESOURCES=1 i_NAILS, 1 I_SPRINGS, 5 i_LOG, 10 i_rock_plain, 10 i_coal
+WEIGHT=18
+TYPE=T_FORGE
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Forge 2 (01/03) (N)
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+[ITEMDEF 01987]
+DEFNAME=i_FORGE_BELLOWS_2_part_1_of_3_n_2
+RESOURCES=1 i_NAILS, 1 I_SPRINGS, 5 i_LOG, 10 i_rock_plain, 10 i_coal
+WEIGHT=18
+TYPE=T_FORGE
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Bellows
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+[ITEMDEF 01988]
+DEFNAME=i_FORGE_BELLOWS_2_part_1_of_3_n_3
+RESOURCES=1 i_NAILS, 1 I_SPRINGS, 5 i_LOG, 10 i_rock_plain, 10 i_coal
+WEIGHT=18
+TYPE=T_FORGE
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Bellows
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+[ITEMDEF 01989]
+DEFNAME=i_FORGE_BELLOWS_2_part_1_of_3_n_4
+RESOURCES=1 i_NAILS, 1 I_SPRINGS, 5 i_LOG, 10 i_rock_plain, 10 i_coal
+WEIGHT=18
+TYPE=T_FORGE
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Bellows
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+[ITEMDEF 0198a]
+DEFNAME=i_forge_2_part_2_of_3_n
+RESOURCES=8 i_rock_plain
+WEIGHT=16
+TYPE=T_FORGE
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Forge 2 (02/03) (N)
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+[ITEMDEF 0198b]
+DEFNAME=i_forge_2_part_2_of_3_n_2
+RESOURCES=8 i_rock_plain
+WEIGHT=16
+TYPE=T_FORGE
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Forge
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+[ITEMDEF 0198c]
+DEFNAME=i_forge_2_part_2_of_3_n_3
+RESOURCES=8 i_rock_plain
+WEIGHT=16
+TYPE=T_FORGE
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Forge
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+[ITEMDEF 0198d]
+DEFNAME=i_forge_2_part_2_of_3_n_4
+RESOURCES=8 i_rock_plain
+WEIGHT=16
+TYPE=T_FORGE
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Forge
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+[ITEMDEF 0198e]
+DEFNAME=i_forge_2_part_3_of_3_n
+RESOURCES=8 i_rock_plain
+WEIGHT=16
+TYPE=T_FORGE
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Forge 2 (03/03) (N)
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+[ITEMDEF 0198f]
+DEFNAME=i_forge_2_part_3_of_3_n_2
+RESOURCES=8 i_rock_plain
+WEIGHT=16
+TYPE=T_FORGE
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Forge
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+[ITEMDEF 01990]
+DEFNAME=i_forge_2_part_3_of_3_n_3
+RESOURCES=8 i_rock_plain
+WEIGHT=16
+TYPE=T_FORGE
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Forge
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+[ITEMDEF 01991]
+DEFNAME=i_forge_2_part_3_of_3_n_4
+RESOURCES=8 i_rock_plain
+WEIGHT=16
+TYPE=T_FORGE
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Forge
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+[ITEMDEF 01992]
+DEFNAME=i_FORGE_BELLOWS_2_part_1_of_3_s
+RESOURCES=1 i_NAILS, 1 I_SPRINGS, 5 i_LOG, 10 i_rock_plain, 10 i_coal
+WEIGHT=18
+TYPE=T_FORGE
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Forge 2 (01/03) (S)
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+[ITEMDEF 01993]
+DEFNAME=i_FORGE_BELLOWS_2_part_1_of_3_s_2
+RESOURCES=1 i_NAILS, 1 I_SPRINGS, 5 i_LOG, 10 i_rock_plain, 10 i_coal
+WEIGHT=18
+TYPE=T_FORGE
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Bellows
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+[ITEMDEF 01994]
+DEFNAME=i_FORGE_BELLOWS_2_part_1_of_3_s_3
+RESOURCES=1 i_NAILS, 1 I_SPRINGS, 5 i_LOG, 10 i_rock_plain, 10 i_coal
+WEIGHT=18
+TYPE=T_FORGE
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Bellows
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+[ITEMDEF 01995]
+DEFNAME=i_FORGE_BELLOWS_2_part_1_of_3_s_4
+RESOURCES=1 i_NAILS, 1 I_SPRINGS, 5 i_LOG, 10 i_rock_plain, 10 i_coal
+WEIGHT=18
+TYPE=T_FORGE
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Bellows
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+[ITEMDEF 01996]
+DEFNAME=i_forge_2_part_2_of_3_s
+RESOURCES=8 i_rock_plain
+WEIGHT=16
+TYPE=T_FORGE
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Forge 2 (02/03) (S)
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+[ITEMDEF 01997]
+DEFNAME=i_forge_2_part_2_of_3_s_2
+RESOURCES=8 i_rock_plain
+WEIGHT=16
+TYPE=T_FORGE
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Forge
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+[ITEMDEF 01998]
+DEFNAME=i_forge_2_part_2_of_3_s_3
+RESOURCES=8 i_rock_plain
+WEIGHT=16
+TYPE=T_FORGE
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Forge
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+[ITEMDEF 01999]
+DEFNAME=i_forge_2_part_2_of_3_s_4
+RESOURCES=8 i_rock_plain
+WEIGHT=16
+TYPE=T_FORGE
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Forge
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+[ITEMDEF 0199a]
+DEFNAME=i_forge_2_part_3_of_3_s
+RESOURCES=8 i_rock_plain
+WEIGHT=16
+TYPE=T_FORGE
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Forge 2 (03/03) (S)
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+[ITEMDEF 0199b]
+DEFNAME=i_forge_2_part_3_of_3_s_2
+RESOURCES=8 i_rock_plain
+WEIGHT=16
+TYPE=T_FORGE
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Forge
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+[ITEMDEF 0199c]
+DEFNAME=i_forge_2_part_3_of_3_s_3
+RESOURCES=8 i_rock_plain
+WEIGHT=16
+TYPE=T_FORGE
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Forge
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+[ITEMDEF 0199d]
+DEFNAME=i_forge_2_part_3_of_3_s_4
+RESOURCES=8 i_rock_plain
+WEIGHT=16
+TYPE=T_FORGE
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Forge
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+[ITEMDEF 0199e]
+DEFNAME=i_FORGE_BELLOWS_2_part_1_of_3_e
+RESOURCES=1 i_NAILS, 1 I_SPRINGS, 5 i_LOG, 10 i_rock_plain, 10 i_coal
+WEIGHT=18
+TYPE=T_FORGE
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Forge 2 (01/03) (E)
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+[ITEMDEF 0199f]
+DEFNAME=i_FORGE_BELLOWS_2_part_1_of_3_e_2
+RESOURCES=1 i_NAILS, 1 I_SPRINGS, 5 i_LOG, 10 i_rock_plain, 10 i_coal
+WEIGHT=18
+TYPE=T_FORGE
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Bellows
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+[ITEMDEF 019a0]
+DEFNAME=i_FORGE_BELLOWS_2_part_1_of_3_e_3
+RESOURCES=1 i_NAILS, 1 I_SPRINGS, 5 i_LOG, 10 i_rock_plain, 10 i_coal
+WEIGHT=18
+TYPE=T_FORGE
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Bellows
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+[ITEMDEF 019a1]
+DEFNAME=i_FORGE_BELLOWS_2_part_1_of_3_e_4
+RESOURCES=1 i_NAILS, 1 I_SPRINGS, 5 i_LOG, 10 i_rock_plain, 10 i_coal
+WEIGHT=18
+TYPE=T_FORGE
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Bellows
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+[ITEMDEF 019a2]
+DEFNAME=i_forge_2_part_2_of_3_e
+RESOURCES=8 i_rock_plain
+WEIGHT=16
+TYPE=T_FORGE
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Forge 2 (02/03) (E)
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+[ITEMDEF 019a3]
+DEFNAME=i_forge_2_part_2_of_3_e_2
+RESOURCES=8 i_rock_plain
+WEIGHT=16
+TYPE=T_FORGE
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Forge
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+[ITEMDEF 019a4]
+DEFNAME=i_forge_2_part_2_of_3_e_3
+RESOURCES=8 i_rock_plain
+WEIGHT=16
+TYPE=T_FORGE
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Forge
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+[ITEMDEF 019a5]
+DEFNAME=i_forge_2_part_2_of_3_e_4
+RESOURCES=8 i_rock_plain
+WEIGHT=16
+TYPE=T_FORGE
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Forge
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+[ITEMDEF 019a6]
+DEFNAME=i_forge_2_part_3_of_3_e
+RESOURCES=8 i_rock_plain
+WEIGHT=16
+TYPE=T_FORGE
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Forge 2 (03/03) (E)
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+[ITEMDEF 019a7]
+DEFNAME=i_forge_2_part_3_of_3_e_2
+RESOURCES=8 i_rock_plain
+WEIGHT=16
+TYPE=T_FORGE
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Forge
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+[ITEMDEF 019a8]
+DEFNAME=i_forge_2_part_3_of_3_e_3
+RESOURCES=8 i_rock_plain
+WEIGHT=16
+TYPE=T_FORGE
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Forge
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+[ITEMDEF 019a9]
+DEFNAME=i_forge_2_part_3_of_3_e_4
+RESOURCES=8 i_rock_plain
+WEIGHT=16
+TYPE=T_FORGE
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Forge
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+
+[ITEMDEF i_elven_forge_bfuo] //ml forge
+ID=02DD8
+NAME=elven forge
+TYPE=T_FORGE
+RESOURCES=12 i_resource_stone,12 i_resource_granite,50 i_coal,
+SKILLMAKE=MASONRY 1000
+WEIGHT=200
+RESLEVEL=2
+RESDISPDNID=0fb1
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=BFUO Elven Forge 
+
+ON=@Create
+  ATTR		= attr_move_never
+  TIMER		= 60
+  MORE2		= 50
+ON=@Timer
+  return <f_forge_timer>
+ON=@Click
+  return <f_forge_click>
+ON=@DClick
+  return <f_forge_dclick>
+ON=@Targon_item
+  return <f_forge_targon_item>
+
+
+
+[ITEMDEF 0faf]	//anvil
+CATEGORY	= Items by Professions
+SUBSECTION	= Blacksmiths
+DESCRIPTION	= Anvil (N)
+DEFNAME		= i_anvil
+TYPE		= T_ANVIL
+SKILLMAKE	= BLACKSMITHING 55.0, TINKERING 56.0, t_tinker_tools
+RESOURCES	= 30 i_ingot_iron, 5 i_LOG
+FLIP		= 1
+WEIGHT		= 255
+DUPELIST	= 0fb0
+VALUE		= 14000
+ON=@Create
+  ATTR	= attr_move_never
+
+ON = @Timer
+  return 1
+
+
+[ITEMDEF 0fb0]	// anvil
+CATEGORY	= Items by Professions
+SUBSECTION	= Blacksmiths
+DESCRIPTION	= Anvil (W)
+DUPEITEM	= 0faf
+
+
+[EOF]

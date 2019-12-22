@@ -1,0 +1,147 @@
+[FUNCTION bandage]
+IF (<FINDID.i_bandage>)
+	FINDID.i_bandage.use
+ELSE
+	SRC.SYSMESSAGE No bandages.
+ENDIF
+
+[FUNCTION potion]
+
+IF (<EVAL <ARGS>> == 1) && (<RESTEST 1 i_potion_HealLess>)
+	FINDID.i_potion_HealLess.USE
+
+ELSEIF (<EVAL <ARGS>> == 2) && (<RESTEST 1 i_potion_Heal>)
+	FINDID.i_potion_Heal.USE
+
+ELSEIF (<EVAL <ARGS>> == 3) && (<RESTEST 1 i_potion_HealGreat>)
+	FINDID.i_potion_healGreat.USE
+
+ELSEIF (<EVAL <ARGS>> = 4) && (<RESTEST 1 i_potion_RefreshLess>)
+	FINDID.i_potion_RefreshLess.USE
+
+ELSEIF (<EVAL <ARGS>> = 5) && (<RESTEST 1 i_potion_Refresh>)
+	FINDID.i_potion_Refresh.USE
+
+ELSEIF (<EVAL <ARGS>> = 6) && (<RESTEST 1 i_potion_RefreshGreat>)
+	FINDID.i_potion_RefreshGreat.USE
+
+ELSEIF (<EVAL <ARGS>> = 7) && (<RESTEST 1 i_potion_ManaLess>)
+	FINDID.i_potion_ManaLess.USE
+
+ELSEIF (<EVAL <ARGS>> = 8) && (<RESTEST 1 i_potion_Mana>)
+	FINDID.i_potion_Mana.USE
+
+ELSEIF (<EVAL <ARGS>> = 9) && (<RESTEST 1 i_potion_ManaGreat>)
+	FINDID.i_potion_ManaGreat.USE
+
+ELSEIF (<EVAL <ARGS>> = 10) && (<RESTEST 1 i_potion_Nightsight>)
+	FINDID.i_potion_Nightsight.USE
+	
+ELSEIF (<EVAL <ARGS>> = 11) && (<RESTEST 1 i_potion_cureless>)
+	FINDID.i_potion_cureless.USE
+
+ELSEIF (<EVAL <ARGS>> = 12) && (<RESTEST 1 i_potion_cure>)
+	FINDID.i_potion_cure.USE
+	
+ELSEIF (<EVAL <ARGS>> = 13) && (<RESTEST 1 i_potion_curegreat>)
+	FINDID.i_potion_curegreat.USE
+	
+ELSEIF (<EVAL <ARGS>> = 14) && (<RESTEST 1 i_potion_invisibility>)
+	FINDID.i_potion_invisibility.USE
+
+ELSEIF (<EVAL <ARGS>> = 0)
+	SRC.SYSMESSAGE @079b To use .potion you must type .potion and a number. For example: .potion 1
+	SRC.SYSMESSAGE @079b 1 = Lesser Heal Potion
+	SRC.SYSMESSAGE @079b 2 = Heal Potion
+	SRC.SYSMESSAGE @079b 3 = Greater Heal Potion
+	SRC.SYSMESSAGE @079b 4 = Lesser Refresh Potion
+	SRC.SYSMESSAGE @079b 5 = Refresh Potion
+	SRC.SYSMESSAGE @079b 6 = Greater Refresh Potion
+	SRC.SYSMESSAGE @079b 7 = Lesser Mana Potion
+	SRC.SYSMESSAGE @079b 8 = Mana Potion
+	SRC.SYSMESSAGE @079b 9 = Greater Mana Potion
+	SRC.SYSMESSAGE @079b 10 = Nightsight Potion
+	SRC.SYSMESSAGE @079b 11 = Lesser Cure Potion
+	SRC.SYSMESSAGE @079b 12 = Cure Potion
+	SRC.SYSMESSAGE @079b 13 = Greater Cure Potion
+	SRC.SYSMESSAGE @079b 14 = Translucency Potion
+
+ELSEIF (<ISEMPTY <ARGS>>)
+	SRC.SYSMESSAGE @079b To use .potion you must type .potion and a number. For example: .potion 1
+	SRC.SYSMESSAGE @079b 1 = Lesser Heal Potion
+	SRC.SYSMESSAGE @079b 2 = Heal Potion
+	SRC.SYSMESSAGE @079b 3 = Greater Heal Potion
+	SRC.SYSMESSAGE @079b 4 = Lesser Refresh Potion
+	SRC.SYSMESSAGE @079b 5 = Refresh Potion
+	SRC.SYSMESSAGE @079b 6 = Greater Refresh Potion
+	SRC.SYSMESSAGE @079b 7 = Lesser Mana Potion
+	SRC.SYSMESSAGE @079b 8 = Mana Potion
+	SRC.SYSMESSAGE @079b 9 = Greater Mana Potion
+	SRC.SYSMESSAGE @079b 10 = Nightsight Potion
+	SRC.SYSMESSAGE @079b 11 = Lesser Cure Potion
+	SRC.SYSMESSAGE @079b 12 = Cure Potion
+	SRC.SYSMESSAGE @079b 13 = Greater Cure Potion
+	SRC.SYSMESSAGE @079b 14 = Translucency Potion
+
+ELSE
+SRC.SYSMESSAGE You are out of pots.
+SRC.SYSMESSAGE For more information type .potion 0
+ENDIF
+RETURN 1
+
+[PLEVEL 1]
+potion
+
+
+[FUNCTION drink]
+	IF !( STRCMPI(<args>,heal))
+		IF (<FINDID.i_potion_healgreat>)
+			FINDID.i_potion_healgreat.DCLICK
+		ELSEIF <FINDID.i_potion_heal>
+			FINDID.i_potion_heal.DCLICK
+		ELSEIF <FINDID.i_potion_healless>
+			FINDID.i_potion_healless.DCLICK
+		ELSE
+			SRC.RED_SYSMSG You don't have any heal potions.
+		ENDIF
+		RETURN 1
+
+	ELSEIF !( STRCMPI(<args>,mana) )
+		IF <FINDID.i_potion_managreat>
+			FINDID.i_potion_managreat.DCLICK
+		ELSEIF <FINDID.i_potion_mana>
+			FINDID.i_potion_mana.DCLICK
+		ELSEIF <FINDID.i_potion_manaless>
+			FINDID.i_potion_manaless.DCLICK
+		ELSE
+			SRC.RED_SYSMSG You don't have any mana potions.
+		ENDIF
+		RETURN 1
+	ELSEIF !( STRCMPI(<args>,cure) )
+		IF <FINDID.i_potion_curegreat>
+			FINDID.i_potion_curegreat.DCLICK
+		ELSEIF <FINDID.i_potion_cure>
+			FINDID.i_potion_cure.DCLICK
+		ELSEIF <FINDID.i_potion_cureless>
+			FINDID.i_potion_cureless.DCLICK
+		ELSE
+			SRC.RED_SYSMSG You don't have any cure potions.
+		ENDIF
+		RETURN 1
+	ELSEIF !( STRCMPI(<args>,refresh) )
+		IF <FINDID.i_potion_refreshgreat>
+			FINDID.i_potion_refreshgreat.DCLICK
+		ELSEIF <FINDID.i_potion_refresh>
+			FINDID.i_potion_refresh.DCLICK
+		ELSEIF <FINDID.i_potion_refreshless>
+			FINDID.i_potion_refreshless.DCLICK
+		ELSE
+			SRC.RED_SYSMSG You don't have any refresh potions.
+		ENDIF
+		RETURN 1
+	ENDIF
+	SRC.RED_SYSMSG .drink (heal, mana, refresh, cure)
+	RETURN 1
+
+
+[EOF]

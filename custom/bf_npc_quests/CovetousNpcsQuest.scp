@@ -1,0 +1,947 @@
+//// COVETOUS ///
+
+[FUNCTION try_wail]
+  if ( <DISTANCE> > 10 )
+     return 0
+  endif
+  SYSMESSAGE The Wailing form the Tortured Soul drains life from you
+  LOCAL.DAM	= <eval( { 6 20 } )>
+  if ( <HITS> < <LOCAL.DAM> )
+     HITS	= 0
+  else
+     HITS	= <eval (<hits> - <LOCAL.DAM>)>
+  endif
+
+  
+[FUNCTION try_wail_one]
+  if ( (<HITS> > ((<STR>*3)/4)) || rand(8) )
+     return 0
+  endif
+  EMOTE wail
+  REGION.ALLCLIENTS try_wail
+
+
+[EVENTS e_npc_Tsoul]
+ON = @HitTry
+  try_wail_one
+ON = @GetHit
+  try_wail_one
+
+
+
+[FUNCTION tele_place]
+   SRC.ACT.P	= <SRC.P>
+   SRC.ACT.MOVE	= <args>
+   SRC.ACT.UPDATEx
+
+[ITEMDEF I_Covetous_lever]
+ID	= 0108c
+NAME	= A lever
+TYPE	= T_Script
+
+ON=@Create
+	Attr = 08010
+	
+ON=@Dclick	
+
+	if <morex> = 0 //Closed
+		MOREX = 1 //Open
+		TIMER = 2 //Have to run to Trigger B in 60 seconds
+		LINK.z -23 //open the door
+		DISPID = 0108e
+		update
+		src.message "You hear a grinding noise.
+SOUND 00f0
+		return 1
+	else
+		MOREX = 0 //Closed
+		Timer = -1 //Always close
+		LINK.Z 0 //Close the door
+		DISPID = 0108c
+		update
+		return 1
+	endif
+	
+ON=@Timer
+	if <morex> = 0 //Closed
+		return 1  //Do nothing
+	else
+		MOREX = 0 //Closed
+		Timer = -1 //Always close
+		LINK.Z 0 //Hide the trigger
+		DISPID = 0108c
+		update
+		return 1
+	endif
+
+CATEGORY=Imperial uo
+SUBSECTION=Coventous Items
+DESCRIPTION=Lever (2 sec)
+
+[ITEMDEF I_Covetous_lever_long]
+ID	= 0108c
+NAME	= A lever
+TYPE	= T_Script
+
+ON=@Create
+	Attr = 08010
+	
+ON=@Dclick	
+
+	if <morex> = 0 //Closed
+		MOREX = 1 //Open
+		TIMER = 1800 //Have to run to Trigger B in 60 seconds
+		LINK.z -23 //open the door
+		DISPID = 0108e
+		update
+		src.message "You hear a grinding noise.
+SOUND 00f0
+		return 1
+	else
+		MOREX = 0 //Closed
+		Timer = -1 //Always close
+		LINK.Z 0 //Close the door
+		DISPID = 0108c
+		update
+		return 1
+	endif
+	
+ON=@Timer
+	if <morex> = 0 //Closed
+		return 1  //Do nothing
+	else
+		MOREX = 0 //Closed
+		Timer = -1 //Always close
+		LINK.Z 0 //Hide the trigger
+		DISPID = 0108c
+		update
+		return 1
+	endif
+
+CATEGORY=Imperial uo
+SUBSECTION=Coventous Items
+DESCRIPTION=Lever (30 mins)
+
+[ITEMDEF i_executioner_QT]
+ID	= 0495
+NAME	= executioner QT
+TYPE	= T_NORMAL
+ARMOR	= 5
+DYE	= 0
+
+ON = @Create
+COLOR=08a5
+ATTR= 0090
+
+ON=@Step
+if ( <SRC.NPC> )
+     return 0
+else
+SRC.MANA = 0
+SRC.SYSMESSAGE = You fear the executioner .. you feel your soul being sucked from your body.
+SRC.EMOTE Fear for Your Soul!.
+return 1
+endif
+
+CATEGORY=Imperial uo
+SUBSECTION=Coventous Items
+DESCRIPTION=QT executioner
+
+[ITEMDEF i_TorturedSouls _QT]
+ID	= 0495
+NAME	= Tortured Souls  QT
+TYPE	= T_NORMAL
+ARMOR	= 5
+DYE	= 0
+
+ON = @Create
+COLOR=08a5
+ATTR= 0090
+
+ON=@Step
+if ( <SRC.NPC> )
+     return 0
+else
+SRC.SYSMESSAGE = As you enter you hear 1,000 Tortured Souls scream out to you.
+SRC.EMOTE Shiver!.
+return 1
+endif
+
+CATEGORY=Imperial uo
+SUBSECTION=Coventous Items
+DESCRIPTION=QT Tortured Souls 
+
+
+/// ITEMS /////
+
+[ITEMDEF i_lich2_key]
+ID	= 01012
+NAME	= Lich Lord Key
+TYPE	= T_SCRIPT
+ARMOR	= 5
+DYE	= 0
+
+
+CATEGORY=Imperial uo
+SUBSECTION=Coventous Items
+DESCRIPTION=Lich Lord Key
+
+[ITEMDEF I_lich2_door]
+ID	= 0241
+NAME	= Lich Lord door
+TYPE	= T_Script
+
+ON=@Create
+	Attr = 08010
+
+on=@click
+src.message You Notice a magically "consealed" secret door.
+	
+ON=@Dclick	
+
+	if ((<morex> = 0) && (<SRC.RESTEST i_lich2_key 1>))
+		MOREX = 1 //Open
+		TIMER = 1800 //Have to run to 30 seconds
+		z -23 //open the door
+		DISPID = 0241
+TYPE	= T_Script
+		update
+		src.message "You open the Door with the key from the Lich Lord.
+		SRC.consume i_lich2_key 1
+SOUND 019c
+		return 1
+	else
+		MOREX = 0 //Closed
+		Timer = -1 //Always close
+		z 0 //Close the door
+		DISPID = 0241
+TYPE	= T_Script
+		update
+		return 1
+	endif
+	
+		src.message The Secret Door is held shut with a magical lock
+
+ON=@Timer
+	if <morex> = 0 //Closed
+		return 1  //Do nothing
+	else
+		MOREX = 0 //Closed
+		Timer = -1 //Always close
+		LINK.z 0 //Hide the trigger
+		DISPID = 0241
+TYPE	= T_Script
+		update
+		return 1
+	endif
+
+CATEGORY=Imperial uo
+SUBSECTION=Coventous Items
+DESCRIPTION=Lich Lord door 2
+
+[ITEMDEF i_lich1_key]
+ID	= 01012
+NAME	= Old Lich Lord Key
+TYPE	= T_SCRIPT
+ARMOR	= 5
+DYE	= 0
+
+
+CATEGORY=Imperial uo
+SUBSECTION=Coventous Items
+DESCRIPTION=Old Lich Lord Key
+
+[ITEMDEF I_lich1_door]
+ID	= 0241
+NAME	= Old Lich Lord door
+TYPE	= T_Script
+
+ON=@Create
+	Attr = 08010
+
+on=@click
+src.message You Notice a magically "consealed" secret door.
+	
+ON=@Dclick	
+
+	if ((<morex> == 0) && (<SRC.RESTEST i_lich1_key 1>))
+		MOREX = 1 //Open
+		TIMER = 1800 //Have to run to 30 seconds
+		z -23 //open the door
+		DISPID = 0241
+TYPE	= T_Script
+		update
+		src.message "You open the Door with the key from the Lich Lord.
+		SRC.consume i_lich1_key 1
+		SOUND 019c
+		return 1
+	else
+		MOREX = 0 //Closed
+		Timer = -1 //Always close
+		z 0 //Close the door
+		DISPID = 0241
+		src.message The Secret Door is held shut with a magical lock
+		TYPE	= T_Script
+		update
+		return 1
+	endif
+	
+
+ON=@Timer
+	if <morex> == 0 //Closed
+		return 1  //Do nothing
+	else
+		MOREX = 0 //Closed
+		Timer = -1 //Always close
+		z 0 //Hide the trigger
+		DISPID = 0241
+TYPE	= T_Script
+		update
+		return 1
+	endif
+
+CATEGORY=Imperial uo
+SUBSECTION=Coventous Items
+DESCRIPTION=Lich Lord door 1
+
+[ITEMDEF i_lichking_key]
+ID	= 01012
+NAME	= Lich king Key
+TYPE	= T_SCRIPT
+ARMOR	= 5
+DYE	= 0
+
+
+CATEGORY=Imperial uo
+SUBSECTION=Coventous Items
+DESCRIPTION=Lich king Key
+
+[ITEMDEF I_lichking_door]
+ID	= 0241
+NAME	= Lich King Door
+TYPE	= T_Script
+
+ON=@Create
+	Attr = 08010
+
+on=@click
+src.message You Notice a magically "consealed" secret door.
+	
+ON=@Dclick	
+
+	if ((<morex> == 0) && (<SRC.RESTEST i_lichking_key 1>))
+		MOREX = 1 //Open
+		TIMER = 1800 //Have to run to 30 seconds
+		z -23 //open the door
+		DISPID = 0241
+		TYPE	= T_Script
+		update
+		src.message "You open the Door with the key from the Lich King.
+		SRC.consume i_lich1_key 1
+		SOUND 019c
+		return 1
+	else
+		MOREX = 0 //Closed
+		Timer = -1 //Always close
+		z 0 //Close the door
+		DISPID = 0241
+		TYPE	= T_Script
+		src.message The Secret Door is held shut with a magical lock
+		update
+		return 1
+	endif
+
+ON=@Timer
+		if (<morex> == 0) //Closed
+		return 1  //Do nothing
+	else
+		MOREX = 0 //Closed
+		Timer = -1 //Always close
+		z 0 //Hide the trigger
+		DISPID = 0241
+TYPE	= T_Script
+		update
+		return 1
+	endif
+
+CATEGORY=Imperial uo
+SUBSECTION=Coventous Items
+DESCRIPTION=Lich King Door
+
+[ITEMDEF i_Executioner_key]
+ID	= 01012
+NAME	= Executioner key
+TYPE	= T_SCRIPT
+ARMOR	= 5
+DYE	= 0
+
+
+CATEGORY=Imperial uo
+SUBSECTION=Coventous Items
+DESCRIPTION=Executioner key
+
+[ITEMDEF I_Executioner_door]
+ID	= 0241
+NAME	= Executioner door
+TYPE	= T_Script
+
+ON=@Create
+	Attr = 08010
+
+on=@click
+src.message You Notice a magically "consealed" secret door.
+	
+ON=@Dclick	
+	if ((<morex> == 0) && (<SRC.RESTEST i_Executioner_key 1>))
+		MOREX = 1 //Open
+		TIMER = 1800 //Have to run to 30 seconds
+		z -23 //open the door
+		DISPID = 0241
+		TYPE	= T_Script
+		update
+		src.message "You open the Door with the key from the Executioner.
+		SRC.consume i_Executioner_key 1
+		SOUND 019c
+		return 1
+	else
+
+		MOREX = 0 //Closed
+		Timer = -1 //Always close
+		z 0 //Close the door
+		DISPID = 0241
+		TYPE	= T_Script
+		src.message The Secret Door is held shut with a magical lock
+		update
+		return 1
+	endif
+	
+
+ON=@Timer
+	if (<morex> == 0) //Closed
+		return 1  //Do nothing
+	else
+		MOREX = 0 //Closed
+		Timer = -1 //Always close
+		z=0 //Hide the trigger
+		DISPID = 0241
+		TYPE	= T_Script
+		update
+		return 1
+	endif
+
+CATEGORY=Imperial uo
+SUBSECTION=Coventous Items
+DESCRIPTION=Executioner Door
+
+[ITEMDEF i_LicheQueen_key]
+ID	= 01012
+NAME	= Liche Queen Key
+TYPE	= T_SCRIPT
+ARMOR	= 5
+DYE	= 0
+
+
+CATEGORY=Imperial uo
+SUBSECTION=Coventous Items
+DESCRIPTION=Liche Queen key
+
+[ITEMDEF I_LicheQueen_door]
+ID	= 0241
+NAME	= Liche Queen door
+TYPE	= T_Script
+
+ON=@Create
+	Attr = 08010
+
+on=@click
+src.message You Notice a magically "consealed" secret door.
+	
+ON=@Dclick	
+
+	if ((<morex> = 0) && (<SRC.RESTEST i_LicheQueen_key 1>))
+		MOREX = 1 //Open
+		TIMER = 1800 //Have to run to 30 seconds
+		z = -23 //open the door
+		DISPID = 0241
+TYPE	= T_Script
+		update
+		src.message "You open the Door with the key from the Liche Queen.
+		SRC.consume i_LicheQueen_key 1
+SOUND 019c
+		return 1
+	else
+		MOREX = 0 //Closed
+		Timer = -1 //Always close
+		Z 0 //Close the door
+		DISPID = 0241
+TYPE	= T_Script
+		update
+		return 1
+	endif
+		src.message The Secret Door is held shut with a maigcal lock	
+
+ON=@Timer
+	if <morex> = 0 //Closed
+		return 1  //Do nothing
+	else
+		MOREX = 0 //Closed
+		Timer = -1 //Always close
+		LINK.Z 0 //Hide the trigger
+		DISPID = 0241
+		update
+		return 1
+	endif
+
+CATEGORY=Imperial uo
+SUBSECTION=Coventous Items
+DESCRIPTION=Liche Queen Door
+
+[ITEMDEF i_robe_Executioner]
+ID	= i_deathshroud
+NAME	= Robe of the Executione
+TYPE	= T_CLOTHING
+ARMOR	= 5
+DYE	= 0
+
+ON = @Create
+  HITPOINTS	= 350
+COLOR=01
+
+
+CATEGORY=Imperial uo
+SUBSECTION=Academy
+DESCRIPTION=Executioner Robe
+
+///// MONSTERS /////
+
+
+[CHARDEF c_m_TorturedSoul]
+DEFNAME		= c_m_TorturedSoul
+NAME		= Tortured Soul
+ID		= c_ZOMBIE
+SOUND		= snd_MONSTER_GHOST1
+ICON		= i_pet_ZOMBIE
+DAM		= 12,29
+ARMOR		= 30
+RESOURCES	= 7 t_eerie_stuff
+CAN		= MT_WALK
+DESIRES		= i_gold
+
+TEVENTS		= e_undead
+TEVENTS		= e_npc_Tsoul
+ON = @Create
+COLOR = 0979
+  NPC		= brain_undead
+  KARMA		= {-3000 -3999}
+  FAME		= {1500 3000}
+  STR		= {345 370}
+  DEX		= {100 135}
+  INT		= {200 300}
+  MAGERY        ={90.0,100.0}
+  PARRYING	= {20.0 60.0}
+  MAGICRESISTANCE={90.0 100.0}
+  TACTICS	= {35.0 50.0}
+  WRESTLING	= {35.0 50.0}
+  MEDITATION    = {50.0 70.0}
+
+NPC=brain_monster
+
+ON=@Death
+loot_MUMMY
+
+CATEGORY=Imperial uo
+SUBSECTION=Coventous Monsters
+DESCRIPTION=Tortured Soul
+
+
+[CHARDEF C_H_Executioner]
+DEFNAME=C_H_Executioner
+NAME=The Executioner
+ID=C_Man
+DESIRES=i_gold,e_notoriety,r_water
+AVERSIONS=t_TRAP,t_eerie_stuff
+DAM		= 6,45
+ARMOR		= 14,21
+CAN		= MT_WALK|MT_GHOST
+FOODTYPE	=
+BLOODCOLOR	= colors_green
+
+TEVENTS		= e_undead
+
+ON=@Create
+  NPC		= brain_undead
+COLOR=07a10
+  FAME		= {2000 3000}
+  KARMA		= {-3001 -3999}
+  STR		= {700 900}
+  DEX		= {300 400}
+  INT		= {36 60}
+  PARRYING	= {75.0 95.0}
+  MAGICRESISTANCE={35.0 70.0}
+  TACTICS	= {45.0 60.0}
+  WRESTLING	= {45.0 65.0}
+
+
+ON=@NPCRestock
+ITEMNEWBIE=i_robe_Executioner
+ITEM = i_axe_exec_steel
+NAME = Executioner Soul Steeler
+ITEM = i_Executioner_key
+ITEM=i_gold,{2000 3500}
+
+
+CATEGORY=Imperial uo
+SUBSECTION=Coventous Monsters
+DESCRIPTION=Executioner
+
+[CHARDEF C_LicheKing]
+name	=Liche King
+ID	=c_Liche
+ICON	=i_pet_LICH
+TEVENTS	= e_npc_daemon
+DAM	=30,42
+ARMOR	=40
+
+CAN	=MT_WALK
+DESIRES	=t_bone,i_gold,t_wand,t_reagent,e_undead
+
+ON=@Create
+NPC	=brain_undead
+STR	={1215 1505}
+DEX	={596 715}
+INT	={500 700}
+COLOR	=08a8
+
+PARRYING	={100.0 120.0}
+MAGERY		={100.0 130.0}
+MAGICRESISTANCE	={120.0 160.0}
+TACTICS		={100.0 130.0}
+WRESTLING	={100.0 100.0}
+
+
+FAME		={6000 7000}
+KARMA		={-9000 -9000}
+
+	ITEMNEWBIE=i_spellbook
+	ADDSPELL S_Lightning	
+	ADDSPELL s_paralyze
+
+ON=@GetHit
+IF !(RAND(20))
+NEWNPC=c_liche
+SAY From the Depths of Hades I summon The Liches From Hell!!!
+ACT.MESSAGE A Liche rips out of the liches King chest!
+ACT.EMOTE Horror!
+ACT.spelleffect s_paralyze, 1000
+EFFECT 3,0375a,1,16,0
+SOUND 019d
+ENDIF
+
+
+ON=@NPCRestock
+ITEM	=i_gold,{4000 6200}
+ITEM	=RANDOM_FILTHY_RICH_MAGIC_LOOT
+ITEM =   i_lichking_key
+
+ON=@Death
+loot_LICH_LORD
+
+
+CATEGORY=Imperial uo
+SUBSECTION=Coventous Monsters
+DESCRIPTION=Liche King
+
+[CHARDEF C_LicheQueen]
+name	=Liche Queen
+ID	=c_Liche
+ICON	=i_pet_LICH
+TEVENTS	= e_npc_daemon
+DAM	=30,42
+ARMOR	=40
+
+CAN	=MT_WALK
+DESIRES	=t_bone,i_gold,t_wand,t_reagent,e_undead
+
+ON=@Create
+
+
+NPC	=brain_undead
+STR	={800 950}
+DEX	={496 515}
+INT	={200 300}
+COLOR	=084d
+
+PARRYING	={100.0 120.0}
+MAGERY		={100.0 130.0}
+MAGICRESISTANCE	={120.0 160.0}
+TACTICS		={100.0 130.0}
+WRESTLING	={100.0 100.0}
+
+
+FAME		={6000 7000}
+KARMA		={-7000 -7000}
+
+	ITEMNEWBIE=i_spellbook
+	ADDSPELL S_Lightning	
+	ADDSPELL s_paralyze
+
+ON=@NPCRestock
+ITEM	=i_gold,{1500 2000}
+ITEM	=RANDOM_FILTHY_RICH_MAGIC_LOOT
+ITEM	=i_LicheQueen_key
+
+on=@Death
+loot_LICH_LORD
+NEWNPC=c_liche
+NEWNPC=c_liche
+NEWNPC=c_liche
+SRC.MESSAGE The dead come to take revenge on you
+SOUND 019c
+
+CATEGORY=Imperial uo
+SUBSECTION=Coventous Monsters
+DESCRIPTION=Liche Queen
+
+[CHARDEF c_m_LesserDeamon]
+DEFNAME=c_m_LesserDeamon
+NAME=Lesser Deamon
+ID=c_gargoyle
+SOUND=snd_MONSTER_GARGYL1
+ICON=i_pet_GARG
+CAN=MT_WALK|MT_FLY
+TEVENTS=e_npc_daemon
+
+
+DAM=10, 35
+ARMOR=38
+FOODTYPE=2 t_arock, 2 t_meat_raw
+DESIRES=c_m_gargoyle_stone,c_GARGOYLE,t_bone,i_gold,t_wand
+
+AVERSIONS=r_civilization
+
+ON=@Create
+COLOR=0659
+STR={296 525}
+DEX={86 105}
+INT={140 165}
+
+//ALIGNMENT=EVIL
+//SPELLCIRCLES=3,6
+
+PARRYING={75.0 85.0}
+MAGERY={80.0 95.0}
+MAGICRESISTANCE={50.0 65.0}
+TACTICS={150.0 170.0}
+WRESTLING={50.0 70.0}
+
+NPC=brain_dragon
+
+FAME={1000 2000}
+KARMA={-3000 -4999}
+
+ON=@NPCRestock
+ITEM=i_gold,{1010 1660}
+
+ON=@DEATH
+   y_region_loot_death
+   y_region_loot_calculator
+   loot_STONE_GARGOYLE
+   
+CATEGORY=Imperial uo
+SUBSECTION=Coventous Monsters
+DESCRIPTION=Lesser Deamon
+
+[CHARDEF c_m_QZail]
+DEFNAME=c_m_QZail
+NAME=Q'Zail
+ID=c_DAEMON_W_SWORD
+SOUND=snd_MONSTER_DAEMON1
+ICON=i_pet_dragon
+DAM=30,45
+ARMOR=75
+RESOURCES=9 i_ribs_raw, 8 i_reag_daemon_bone
+
+//ALIGNMENT=EVIL
+CAN=MT_WALK|MT_FLY
+TEVENTS=e_npc_daemon
+//SPELLCIRCLES=6,8
+DESIRES=c_DAEMON,i_gold,t_wand
+AVERSIONS=r_water,r_mountains
+
+ON=@Create
+COLOR=0659
+STR={1585 1600}
+DEX={175 255}
+INT={15 25}
+
+FAME={4000 7000}
+KARMA={-9000 -9999}
+
+
+PARRYING={90.0 100.0}
+MAGERY={90.0 100.0}
+MAGICRESISTANCE={100.0 150.0}
+TACTICS={90.0 100.0}
+WRESTLING={90.0 100.0}
+
+NPC=brain_monster
+
+
+ON=@NPCRestock
+ITEM=i_gold,{8000 10000}
+
+ON=@GetHit
+IF !(RAND(20))
+SAY *Phase*
+   tele_place	 0,  0
+endif
+
+ON=@death
+loot_newrares_hard
+ANNOUNCE A Great Hero has closed the gates of hell. All hail the New Hero of the hour... The Great <ACT.NAME>.
+
+
+CATEGORY=Imperial uo
+SUBSECTION=Coventous Monsters
+DESCRIPTION=Q'Zail
+
+[CHARDEF c_Phantasm]
+DEFNAME		= c_Waith
+NAME		= Phantasm
+SOUND		= snd_MONSTER_GHOST1
+ICON		= i_pet_GHOUL
+ID		= c_SPECTRE
+ANIM		= 078c7f
+DAM		= 6,31
+ARMOR		= 11,21
+CAN		= MT_WALK|MT_GHOST
+FOODTYPE	=
+BLOODCOLOR	= colors_green
+
+TEVENTS		= e_undead
+
+ON=@Create
+  NPC		= brain_undead
+COLOR=07a10
+  FAME		= {600 2000}
+  KARMA		= {-3001 -3999}
+  STR		= {300 400}
+  DEX		= {300 400}
+  INT		= {36 60}
+  PARRYING	= {75.0 95.0}
+  MAGICRESISTANCE={35.0 50.0}
+  TACTICS	= {45.0 60.0}
+  WRESTLING	= {45.0 65.0}
+ON=@NPCRestock
+  ITEM=i_gold,{510 660}
+
+ON=@GetHit
+IF !(RAND(20))
+ACT.MANA = 0
+Act.MESSAGE The wraith rips Mana from you.
+Act.say *Mana Drain*
+Act.spelleffect s_weaken, 120, 0
+EFFECT 3,0375a,1,16,0
+ENDIF
+
+ON=@Death
+loot_SPECTRE
+
+CATEGORY=Imperial uo
+SUBSECTION=Coventous Monsters
+DESCRIPTION=Phantasm
+
+[CHARDEF c_m_liche_lordkey1]
+DEFNAME		= c_m_liche_lordkey1
+NAME		= Liche Lord
+ID		= c_Liche
+ICON		= i_pet_LICH
+DAM		= 25, 40
+ARMOR		= 50
+RESOURCES	=
+CAN		= MT_WALK
+DESIRES		= t_bone,i_gold,t_wand,t_reagent,e_undead
+
+TEVENTS		= e_undead
+
+ON = @Create
+  NPC		= brain_undead
+  STR		= {515 525}
+  DEX		= {96 115}
+  INT		= {565 655}
+  PARRYING	= {55.0 65.0}
+  MACEFIGHTING	= {60.0 80.0}
+  MAGERY	= {90.0 100.0}
+  NECROMANCY	= {90.0 100.0}
+  MAGICRESISTANCE={90.0 100.0}
+  TACTICS	= {50.0 70.0}
+  WRESTLING	= {60.0 80.0}
+  POISONING	= {70.0 80.0}
+  FAME		= {100 2000}
+  KARMA		= {-5000 -5999}
+ON=@NPCRestock
+  ITEMNEWBIE=i_spellbook
+   ADDSPELL=s_lightning
+   ADDSPELL=s_fire_bolt
+   ADDSPELL=s_poison
+   ADDSPELL=s_curse
+   ADDSPELL=s_paralyze
+   ADDSPELL=s_summon_undead
+   ADDSPELL=s_Hallucination
+ITEM = i_lich1_key
+
+ON=@Death
+loot_LICH_LORD
+
+CATEGORY=Imperial uo
+SUBSECTION=Coventous Monsters
+DESCRIPTION=Lich lord key 1
+
+[CHARDEF c_m_liche_lordkey2]
+DEFNAME		= c_m_liche_lordkey2
+NAME		= Liche Lord
+ID		= c_Liche
+ICON		= i_pet_LICH
+DAM		= 25, 40
+ARMOR		= 50
+RESOURCES	=
+CAN		= MT_WALK
+DESIRES		= t_bone,i_gold,t_wand,t_reagent,e_undead
+
+TEVENTS		= e_undead
+
+ON = @Create
+  NPC		= brain_undead
+  STR		= {515 525}
+  DEX		= {96 115}
+  INT		= {565 655}
+  PARRYING	= {55.0 65.0}
+  MACEFIGHTING	= {60.0 80.0}
+  MAGERY	= {90.0 100.0}
+  NECROMANCY	= {90.0 100.0}
+  MAGICRESISTANCE={90.0 100.0}
+  TACTICS	= {50.0 70.0}
+  WRESTLING	= {60.0 80.0}
+  POISONING	= {70.0 80.0}
+  FAME		= {100 2000}
+  KARMA		= {-5000 -5999}
+ON=@NPCRestock
+  ITEMNEWBIE=i_spellbook
+   ADDSPELL=s_lightning
+   ADDSPELL=s_fire_bolt
+   ADDSPELL=s_poison
+   ADDSPELL=s_curse
+   ADDSPELL=s_paralyze
+   ADDSPELL=s_summon_undead
+   ADDSPELL=s_Hallucination
+ITEM = i_lich2_key
+
+ON=@Death
+loot_LICH_LORD
+
+CATEGORY=Imperial uo
+SUBSECTION=Coventous Monsters
+DESCRIPTION=Lich lord key 2
+
+
+[EOF]

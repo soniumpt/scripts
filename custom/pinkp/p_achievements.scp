@@ -1,0 +1,682 @@
+// Remove Login message from k_main_events
+
+// Remove this from k_custom_houses after DIALOG_house_sign
+
+//IF !(<SRC.ISGM>)
+//  IF (<UID.043f42bb3.TAG.HOUSE> == 0)
+//	TRY UID.043f42bb3.TAG.HOUSE=<SRC.ACCOUNT>, <SRC.NAME> at <SERV.RTIME>
+//	SRC.SYSMESSAGE @07ad Congratulations! You have been the first House Owner!
+//	SRC.SYSMESSAGE @07ad You have been rewarded with a belt.
+//	SERV.ALLCLIENTS SYSMESSAGE @07Ad Congratulations to <SRC.NAME> for being the first House Owner!
+//		SERV.NEWITEM = i_belt_universaluo
+//		NEW.NAME =World's First House Owner!
+//		NEW.TAG.ACCOUNTOWNER=<SRC.ACCOUNT>
+//		NEW.BOUNCE
+//  ENDIF
+//    ENDIF
+
+// Remove this from sphere_guild_types on=@dclick at [TYPEDEF T_STONE_GUILD]
+
+//IF !(<SRC.ISGM>)
+//  IF (<UID.043f42bb3.TAG.GUILD> == 0)
+//	TRY UID.043f42bb3.TAG.GUILD=<SRC.ACCOUNT>, <SRC.NAME> at <SERV.RTIME>
+//	SRC.SYSMESSAGE @07ad Congratulations! You have been the first Guild Master!
+//	SRC.SYSMESSAGE @07ad You have been rewarded with a belt.
+//	SERV.ALLCLIENTS SYSMESSAGE @07Ad Congratulations to <SRC.NAME> for being the first Guild Master!
+//		SERV.NEWITEM = i_belt_universaluo
+//		NEW.NAME =World's First Guild Master!
+//		NEW.TAG.ACCOUNTOWNER=<SRC.ACCOUNT>
+//		NEW.BOUNCE
+//  ENDIF
+//    ENDIF
+
+// Remove this at on=@kill from k_main_events
+
+//IF !(<SRC.ISGM>)
+//	IF (<SRC.KILLS> >=3)
+//		IF (<UID.043f42bb3.TAG.KILLER> == 0)
+//		TRY UID.043f42bb3.TAG.KILLER=<SRC.ACCOUNT>, <SRC.NAME> at <SERV.RTIME>
+//		SRC.SYSMESSAGE @07ad Congratulations! You have been the first Murderer!
+//	SRC.SYSMESSAGE @07ad You have been rewarded with a belt.
+//	SERV.ALLCLIENTS SYSMESSAGE @07Ad Congratulations to <SRC.NAME> for being the first Murderer!
+//		SERV.NEWITEM = i_belt_universaluo
+//		NEW.NAME =World's First Murderer!
+//		NEW.TAG.ACCOUNTOWNER=<SRC.ACCOUNT>
+//		NEW.BOUNCE
+//  ENDIF
+//    ENDIF
+
+// Remove this at on=@skillstart from k_main_events
+
+//IF !(<SRC.ISGM>)
+//IF (<SRC.SKILLTOTAL> >= 1000.0)
+//	IF (<UID.043f42bb3.TAG.SKILLTOTAL> == 0)
+//		TRY UID.043f42bb3.TAG.SKILLTOTAL=<SRC.ACCOUNT>, <SRC.NAME> at <SERV.RTIME>
+//		SRC.SYSMESSAGE @07ad Congratulations! You have been the first to achieve 1000.0 Total Skill Points.
+//		SRC.SYSMESSAGE @07ad You have been rewarded with a belt.
+//		SERV.ALLCLIENTS SYSMESSAGE @07Ad Congratulations to <SRC.NAME> for being the first to get a Full Skilled Character!
+//		SERV.NEWITEM = i_belt_universaluo
+//		NEW.NAME =World's First Full Skilled Character!
+//		NEW.TAG.ACCOUNTOWNER=<SRC.ACCOUNT>
+//		NEW.BOUNCE
+//	ENDIF
+//ENDIF
+//  ENDIF
+
+//IF !(<SRC.ISGM>)
+//IF ((<eval <SRC.ODEX> + <SRC.OINT> + <SRC.OSTR>> >= 275))
+//	IF (<UID.043f42bb3.TAG.STATS> == 0)
+//		IF !(<SRC.FINDID.I_RUNE_BLESS>)
+//		TRY UID.043f42bb3.TAG.STATS=<SRC.ACCOUNT>, <SRC.NAME> at <SERV.RTIME>
+//		SRC.SYSMESSAGE @07ad Congratulations! You have been the first to get full stats!
+//		SRC.SYSMESSAGE @07ad You have been rewarded with a belt.
+//		SERV.ALLCLIENTS SYSMESSAGE @07Ad Congratulations to <SRC.NAME> for being the first to get a Full Stats Character!
+//		SERV.NEWITEM = i_belt_universaluo
+//		NEW.NAME =World's First Full Stats Character!
+//		NEW.TAG.ACCOUNTOWNER=<SRC.ACCOUNT>
+//		NEW.BOUNCE
+//		ENDIF
+//	ENDIF
+//ENDIF
+//ENDIF
+
+
+[DIALOG d_pinkrewards]
+0,0
+page 0
+resizepic 48 66 3600 573 470
+dtext 250 100 347 Imperial UO Achievements
+dtext 75 450 2300 Be the first to achieve one of the above goals and click the blue button for a prize.
+dtext 105 470 2300 Mystery achievements are revealed automatically once someone achieves them.
+dtext 155 490 137 Note: 
+dtext 195 490 2300 Red name achievements have been claimed already.
+IF (<UID.043f42bb3.TAG0.Alchemy> == 0)
+dtext 105 140 2300 100.0 Alchemy
+button 85 143 1209 1210 1 0 1
+ELSE
+dtext 105 140 137 100.0 Alchemy
+ENDIF
+IF strmatch("<UID.043f42bb3.TAG0.Blacksmithing>", "0")
+dtext 105 170 2300 100.0 Blacksmithing
+button 85 173 1209 1210 1 0 2
+ELSE
+dtext 105 170 137 100.0 Blacksmithing
+ENDIF
+IF strmatch("<UID.043f42bb3.TAG0.Bowery>", "0")
+dtext 105 200 2300 100.0 Bowery
+button 85 203 1209 1210 1 0 3
+ELSE
+dtext 105 200 137 100.0 Bowery
+ENDIF
+IF strmatch("<UID.043f42bb3.TAG0.Carpentry>", "0")
+dtext 105 230 2300 100.0 Carpentry
+button 85 233 1209 1210 1 0 4
+ELSE
+dtext 105 230 137 100.0 Carpentry
+ENDIF
+IF strmatch("<UID.043f42bb3.TAG0.Cooking>", "0")
+dtext 105 260 2300 100.0 Cooking
+button 85 263 1209 1210 1 0 5
+ELSE
+dtext 105 260 137 100.0 Cooking
+ENDIF
+IF strmatch("<UID.043f42bb3.TAG0.Fishing>", "0")
+dtext 105 290 2300 100.0 Fishing
+button 85 293 1209 1210 1 0 6
+ELSE
+dtext 105 290 137 100.0 Fishing
+ENDIF
+IF strmatch("<UID.043f42bb3.TAG0.Lumberjacking>", "0")
+dtext 105 320 2300 100.0 Lumberjacking
+button 85 323 1209 1210 1 0 7
+ELSE
+dtext 105 320 137 100.0 Lumberjacking
+ENDIF
+IF strmatch("<UID.043f42bb3.TAG0.Masonry>", "0")
+dtext 105 350 2300 100.0 Masonry
+button 85 353 1209 1210 1 0 8
+ELSE
+dtext 105 350 137 100.0 Masonry
+ENDIF
+IF strmatch("<UID.043f42bb3.TAG0.Mining>", "0")
+dtext 105 380 2300 100.0 Mining
+button 85 383 1209 1210 1 0 9
+ELSE
+dtext 105 380 137 100.0 Mining
+ENDIF
+IF strmatch("<UID.043f42bb3.TAG0.Tailoring>", "0")
+dtext 105 410 2300 100.0 Tailoring
+button 85 413 1209 1210 1 0 10
+ELSE
+dtext 105 410 137 100.0 Tailoring
+ENDIF
+IF strmatch("<UID.043f42bb3.TAG0.Tinkering>", "0")
+dtext 270 140 2300 100.0 Tinkering
+button 250 143 1209 1210 1 0 11
+ELSE
+dtext 270 140 137 100.0 Tinkering
+ENDIF
+IF strmatch("<UID.043f42bb3.TAG0.Cartography", "0")
+dtext 270 170 2300 100.0 Cartography
+button 250 173 1209 1210 1 0 12
+ELSE
+dtext 270 170 137 100.0 Cartography
+ENDIF
+IF strmatch("<UID.043f42bb3.TAG0.Inscription>", "0")
+dtext 270 200 2300 100.0 Inscription
+button 250 203 1209 1210 1 0 13
+ELSE
+dtext 270 200 137 100.0 Inscription
+ENDIF
+IF strmatch("<UID.043f42bb3.TAG0.Taming>", "0")
+dtext 270 230 2300 100.0 Taming
+button 250 233 1209 1210 1 0 14
+ELSE
+dtext 270 230 137 100.0 Taming
+ENDIF
+IF strmatch("<UID.043f42bb3.TAG0.Magery>", "0")
+dtext 270 260 2300 100.0 Magery
+button 250 263 1209 1210 1 0 15
+ELSE
+dtext 270 260 137 100.0 Magery
+ENDIF
+IF strmatch("<UID.043f42bb3.TAG0.Archery>", "0")
+dtext 270 290 2300 100.0 Archery
+button 250 293 1209 1210 1 0 16
+ELSE
+dtext 270 290 137 100.0 Archery
+ENDIF
+IF strmatch("<UID.043f42bb3.TAG0.Swordsmanship>", "0")
+dtext 270 320 2300 100.0 Blade Weapons
+button 250 323 1209 1210 1 0 17
+ELSE
+dtext 270 320 137 100.0 Blade Weapons
+ENDIF
+IF strmatch("<UID.043f42bb3.TAG0.Macefighting>", "0")
+dtext 270 350 2300 100.0 Blunt Weapons
+button 250 353 1209 1210 1 0 18
+ELSE
+dtext 270 350 137 100.0 Blunt Weapons
+ENDIF
+IF strmatch("<UID.043f42bb3.TAG0.Fencing>", "0")
+dtext 270 380 2300 100.0 Fencing
+button 250 383 1209 1210 1 0 19
+ELSE
+dtext 270 380 137 100.0 Fencing
+ENDIF
+IF strmatch("<UID.043f42bb3.TAG0.Wrestling>", "0")
+dtext 270 410 2300 100.0 Wrestling
+button 250 413 1209 1210 1 0 20
+ELSE
+dtext 270 410 137 100.0 Wrestling
+ENDIF
+IF strmatch("<UID.043f42bb3.TAG0.Necromancy>", "0")
+dtext 445 140 2300 100.0 Necromancy
+button 425 143 1209 1210 1 0 21
+ELSE
+dtext 445 140 137 100.0 Necromancy
+ENDIF
+IF strmatch("<UID.043f42bb3.TAG0.Poisoning>", "0")
+dtext 445 170 2300 100.0 Poisoning
+button 425 173 1209 1210 1 0 22
+ELSE
+dtext 445 170 137 100.0 Poisoning
+ENDIF
+IF strmatch("<UID.043f42bb3.TAG0.Musicianship>", "0")
+dtext 445 200 2300 100.0 Musicianship
+button 425 203 1209 1210 1 0 23
+ELSE
+dtext 445 200 137 100.0 Musicianship
+ENDIF
+IF strmatch("<UID.043f42bb3.TAG0.KILLER>", "0")
+dtext 445 290 2300 Mystery Achievement
+ELSE
+dtext 445 290 137 Murderer
+ENDIF
+IF strmatch("<UID.043f42bb3.TAG0.HOUSE>", "0")
+dtext 445 320 2300 Mystery Achievement
+ELSE
+dtext 445 320 137 House Owner
+ENDIF
+IF strmatch("<UID.043f42bb3.TAG0.GUILD>", "0")
+dtext 445 350 2300 Mystery Achievement
+ELSE
+dtext 445 350 137 Guild Master
+ENDIF
+IF strmatch("<UID.043f42bb3.TAG0.STATS>", "0")
+dtext 445 380 2300 Mystery Achievement
+ELSE
+dtext 445 380 137 275 Total Stats
+ENDIF
+//IF strmatch("<UID.043f42bb3.TAG0.skilltotal>", "0")
+//dtext 445 410 2300 Mystery Achievement
+//ELSE
+//dtext 445 410 137 1000.0 Total Skill
+//ENDIF
+
+
+[DIALOG d_pinkrewards button]
+ON=1
+IF (<SRC.Alchemy> >= 100.0)
+	IF (<UID.043f42bb3.TAG.Alchemy> == 0)
+		TRY UID.043f42bb3.TAG.Alchemy=<SRC.ACCOUNT>, <SRC.NAME> at <SERV.RTIME>
+		SRC.SYSMESSAGE @07ad Congratulations! You have been the first Grand Master Alchemist!
+		SRC.SYSMESSAGE @07ad You have been rewarded with a belt.
+		SERV.ALLCLIENTS SYSMESSAGE @07Ad Congratulations to <SRC.NAME> for being the first Grand Master Alchemist!
+		SERV.NEWITEM = i_belt_universaluo
+		NEW.NAME =World's First Grand Master Alchemist!
+		NEW.TAG.ACCOUNTOWNER=<SRC.ACCOUNT>
+		NEW.BOUNCE
+	ENDIF
+ELSE
+SRC.SYSMESSAGE Sorry but you need to have 100.0 Alchemy in order to claim this achievement.
+ENDIF
+
+ON=2
+IF (<SRC.Blacksmithing> >= 100.0)
+	IF (<UID.043f42bb3.TAG.Blacksmithing> == 0)
+		TRY UID.043f42bb3.TAG.Blacksmithing=<SRC.ACCOUNT>, <SRC.NAME> at <SERV.RTIME>
+		SRC.SYSMESSAGE @07ad Congratulations! You have been the first Grand Master Blacksmith!
+		SRC.SYSMESSAGE @07ad You have been rewarded with a belt.
+		SERV.ALLCLIENTS SYSMESSAGE @07Ad Congratulations to <SRC.NAME> for being the first Grand Master Blacksmith!
+		SERV.NEWITEM = i_belt_universaluo
+		NEW.NAME =World's First Grand Master Blacksmith!
+		NEW.TAG.ACCOUNTOWNER=<SRC.ACCOUNT>
+		NEW.BOUNCE
+	ENDIF
+ELSE
+SRC.SYSMESSAGE Sorry but you need to have 100.0 Blacksmithing in order to claim this achievement.
+ENDIF
+
+ON=3
+IF (<SRC.Bowcraft> >= 100.0)
+	IF (<UID.043f42bb3.TAG.Bowery> == 0)
+		TRY UID.043f42bb3.TAG.Bowery=<SRC.ACCOUNT>, <SRC.NAME> at <SERV.RTIME>
+		SRC.SYSMESSAGE @07ad Congratulations! You have been the first Grand Master Bowyer!
+		SRC.SYSMESSAGE @07ad You have been rewarded with a belt.
+		SERV.ALLCLIENTS SYSMESSAGE @07Ad Congratulations to <SRC.NAME> for being the first Grand Master Bowyer!
+		SERV.NEWITEM = i_belt_universaluo
+		NEW.NAME =World's First Grand Master Bowyer!
+		NEW.TAG.ACCOUNTOWNER=<SRC.ACCOUNT>
+		NEW.BOUNCE
+	ENDIF
+ELSE
+SRC.SYSMESSAGE Sorry but you need to have 100.0 Bowery in order to claim this achievement.
+ENDIF
+
+ON=4
+IF (<SRC.Carpentry> >= 100.0)
+	IF (<UID.043f42bb3.TAG.Carpentry> == 0)
+		TRY UID.043f42bb3.TAG.Carpentry=<SRC.ACCOUNT>, <SRC.NAME> at <SERV.RTIME>
+		SRC.SYSMESSAGE @07ad Congratulations! You have been the first Grand Master Carpenter!
+		SRC.SYSMESSAGE @07ad You have been rewarded with a belt.
+		SERV.ALLCLIENTS SYSMESSAGE @07Ad Congratulations to <SRC.NAME> for being the first Grand Master Carpenter!
+		SERV.NEWITEM = i_belt_universaluo
+		NEW.NAME =World's First Grand Master Carpenter!
+		NEW.TAG.ACCOUNTOWNER=<SRC.ACCOUNT>
+		NEW.BOUNCE
+	ENDIF
+ELSE
+SRC.SYSMESSAGE Sorry but you need to have 100.0 Carpentry in order to claim this achievement.
+ENDIF
+
+ON=5
+IF (<SRC.Cooking> >= 100.0)
+	IF (<UID.043f42bb3.TAG.Cooking> == 0)
+		TRY UID.043f42bb3.TAG.Cooking=<SRC.ACCOUNT>, <SRC.NAME> at <SERV.RTIME>
+		SRC.SYSMESSAGE @07ad Congratulations! You have been the first Grand Master Chef!
+		SRC.SYSMESSAGE @07ad You have been rewarded with a belt.
+		SERV.ALLCLIENTS SYSMESSAGE @07Ad Congratulations to <SRC.NAME> for being the first Grand Master Chef!
+		SERV.NEWITEM = i_belt_universaluo
+		NEW.NAME =World's First Grand Master Chef!
+		NEW.TAG.ACCOUNTOWNER=<SRC.ACCOUNT>
+		NEW.BOUNCE
+	ENDIF
+ELSE
+SRC.SYSMESSAGE Sorry but you need to have 100.0 Cooking in order to claim this achievement.
+ENDIF
+
+ON=6
+IF (<SRC.Fishing> >= 100.0)
+	IF (<UID.043f42bb3.TAG.Fishing> == 0)
+		TRY UID.043f42bb3.TAG.Fishing=<SRC.ACCOUNT>, <SRC.NAME> at <SERV.RTIME>
+		SRC.SYSMESSAGE @07ad Congratulations! You have been the first Grand Master Fisherman!
+		SRC.SYSMESSAGE @07ad You have been rewarded with a belt.
+		SERV.ALLCLIENTS SYSMESSAGE @07Ad Congratulations to <SRC.NAME> for being the first Grand Master Fisherman!
+		SERV.NEWITEM = i_belt_universaluo
+		NEW.NAME =World's First Grand Master Fisherman!
+		NEW.TAG.ACCOUNTOWNER=<SRC.ACCOUNT>
+		NEW.BOUNCE
+	ENDIF
+ELSE
+SRC.SYSMESSAGE Sorry but you need to have 100.0 Fishing in order to claim this achievement.
+ENDIF
+
+ON=7
+IF (<SRC.Lumberjacking> >= 100.0)
+	IF (<UID.043f42bb3.TAG.Lumberjacking> == 0)
+		TRY UID.043f42bb3.TAG.Lumberjacking=<SRC.ACCOUNT>, <SRC.NAME> at <SERV.RTIME>
+		SRC.SYSMESSAGE @07ad Congratulations! You have been the first Grand Master Lumberjack!
+		SRC.SYSMESSAGE @07ad You have been rewarded with a belt.
+		SERV.ALLCLIENTS SYSMESSAGE @07Ad Congratulations to <SRC.NAME> for being the first Grand Master Lumberjack!
+		SERV.NEWITEM = i_belt_universaluo
+		NEW.NAME =World's First Grand Master Lumberjack!
+		NEW.TAG.ACCOUNTOWNER=<SRC.ACCOUNT>
+		NEW.BOUNCE
+	ENDIF
+ELSE
+SRC.SYSMESSAGE Sorry but you need to have 100.0 Lumberjacking in order to claim this achievement.
+ENDIF
+
+ON=8
+IF (<SRC.Masonry> >= 100.0)
+	IF (<UID.043f42bb3.TAG.Masonry> == 0)
+		TRY UID.043f42bb3.TAG.Masonry=<SRC.ACCOUNT>, <SRC.NAME> at <SERV.RTIME>
+		SRC.SYSMESSAGE @07ad Congratulations! You have been the first Grand Master Mason!
+		SRC.SYSMESSAGE @07ad You have been rewarded with a belt.
+		SERV.ALLCLIENTS SYSMESSAGE @07Ad Congratulations to <SRC.NAME> for being the first Grand Master Mason!
+		SERV.NEWITEM = i_belt_universaluo
+		NEW.NAME =World's First Grand Master Mason!
+		NEW.TAG.ACCOUNTOWNER=<SRC.ACCOUNT>
+		NEW.BOUNCE
+	ENDIF
+ELSE
+SRC.SYSMESSAGE Sorry but you need to have 100.0 Masonry in order to claim this achievement.
+ENDIF
+
+ON=9
+IF (<SRC.Mining> >= 100.0)
+	IF (<UID.043f42bb3.TAG.Mining> == 0)
+		TRY UID.043f42bb3.TAG.Mining=<SRC.ACCOUNT>, <SRC.NAME> at <SERV.RTIME>
+		SRC.SYSMESSAGE @07ad Congratulations! You have been the first Grand Master Miner!
+		SRC.SYSMESSAGE @07ad You have been rewarded with a belt.
+		SERV.ALLCLIENTS SYSMESSAGE @07Ad Congratulations to <SRC.NAME> for being the first Grand Master Miner!
+		SERV.NEWITEM = i_belt_universaluo
+		NEW.NAME =World's First Grand Master Miner!
+		NEW.TAG.ACCOUNTOWNER=<SRC.ACCOUNT>
+		NEW.BOUNCE
+	ENDIF
+ELSE
+SRC.SYSMESSAGE Sorry but you need to have 100.0 Mining in order to claim this achievement.
+ENDIF
+
+ON=10
+IF (<SRC.Tailoring> >= 100.0)
+	IF (<UID.043f42bb3.TAG.Tailoring> == 0)
+		TRY UID.043f42bb3.TAG.Tailoring=<SRC.ACCOUNT>, <SRC.NAME> at <SERV.RTIME>
+		SRC.SYSMESSAGE @07ad Congratulations! You have been the first Grand Master Tailor!
+		SRC.SYSMESSAGE @07ad You have been rewarded with a belt.
+		SERV.ALLCLIENTS SYSMESSAGE @07Ad Congratulations to <SRC.NAME> for being the first Grand Master Tailor!
+		SERV.NEWITEM = i_belt_universaluo
+		NEW.NAME =World's First Grand Master Tailor!
+		NEW.TAG.ACCOUNTOWNER=<SRC.ACCOUNT>
+		NEW.BOUNCE
+	ENDIF
+ELSE
+SRC.SYSMESSAGE Sorry but you need to have 100.0 Tailoring in order to claim this achievement.
+ENDIF
+
+ON=11
+IF (<SRC.Tinkering> >= 100.0)
+	IF (<UID.043f42bb3.TAG.Tinkering> == 0)
+		TRY UID.043f42bb3.TAG.Tinkering=<SRC.ACCOUNT>, <SRC.NAME> at <SERV.RTIME>
+		SRC.SYSMESSAGE @07ad Congratulations! You have been the first Grand Master Tinker!
+		SRC.SYSMESSAGE @07ad You have been rewarded with a belt.
+		SERV.ALLCLIENTS SYSMESSAGE @07Ad Congratulations to <SRC.NAME> for being the first Grand Master Tinker!
+		SERV.NEWITEM = i_belt_universaluo
+		NEW.NAME =World's First Grand Master Tinker!
+		NEW.TAG.ACCOUNTOWNER=<SRC.ACCOUNT>
+		NEW.BOUNCE
+	ENDIF
+ELSE
+SRC.SYSMESSAGE Sorry but you need to have 100.0 Tinkering in order to claim this achievement.
+ENDIF
+
+ON=12
+IF (<SRC.Cartography> >= 100.0)
+	IF (<UID.043f42bb3.TAG.Cartography> == 0)
+		TRY UID.043f42bb3.TAG.Cartography=<SRC.ACCOUNT>, <SRC.NAME> at <SERV.RTIME>
+		SRC.SYSMESSAGE @07ad Congratulations! You have been the first Grand Master Cartographer!
+		SRC.SYSMESSAGE @07ad You have been rewarded with a belt.
+		SERV.ALLCLIENTS SYSMESSAGE @07Ad Congratulations to <SRC.NAME> for being the first Grand Master Cartographer!
+		SERV.NEWITEM = i_belt_universaluo
+		NEW.NAME =World's First Grand Master Cartographer!
+		NEW.TAG.ACCOUNTOWNER=<SRC.ACCOUNT>
+		NEW.BOUNCE
+	ENDIF
+ELSE
+SRC.SYSMESSAGE Sorry but you need to have 100.0 Cartography in order to claim this achievement.
+ENDIF
+
+ON=13
+IF (<SRC.Inscription> >= 100.0)
+	IF (<UID.043f42bb3.TAG.Inscription> == 0)
+		TRY UID.043f42bb3.TAG.Inscription=<SRC.ACCOUNT>, <SRC.NAME> at <SERV.RTIME>
+		SRC.SYSMESSAGE @07ad Congratulations! You have been the first Grand Master Scribe!
+		SRC.SYSMESSAGE @07ad You have been rewarded with a belt.
+		SERV.ALLCLIENTS SYSMESSAGE @07Ad Congratulations to <SRC.NAME> for being the first Grand Master Scribe!
+		SERV.NEWITEM = i_belt_universaluo
+		NEW.NAME =World's First Grand Master Scribe!
+		NEW.TAG.ACCOUNTOWNER=<SRC.ACCOUNT>
+		NEW.BOUNCE
+	ENDIF
+ELSE
+SRC.SYSMESSAGE Sorry but you need to have 100.0 Inscription in order to claim this achievement.
+ENDIF
+
+ON=14
+IF (<SRC.Taming> >= 100.0)
+	IF (<UID.043f42bb3.TAG.Taming> == 0)
+		TRY UID.043f42bb3.TAG.Taming=<SRC.ACCOUNT>, <SRC.NAME> at <SERV.RTIME>
+		SRC.SYSMESSAGE @07ad Congratulations! You have been the first Grand Master Tamer!
+		SRC.SYSMESSAGE @07ad You have been rewarded with a belt.
+		SERV.ALLCLIENTS SYSMESSAGE @07Ad Congratulations to <SRC.NAME> for being the first Grand Master Tamer!
+		SERV.NEWITEM = i_belt_universaluo
+		NEW.NAME =World's First Grand Master Tamer!
+		NEW.TAG.ACCOUNTOWNER=<SRC.ACCOUNT>
+		NEW.BOUNCE
+	ENDIF
+ELSE
+SRC.SYSMESSAGE Sorry but you need to have 100.0 Taming in order to claim this achievement.
+ENDIF
+
+ON=15
+IF (<SRC.Magery> >= 100.0)
+	IF (<UID.043f42bb3.TAG.Magery> == 0)
+		TRY UID.043f42bb3.TAG.Magery =<SRC.ACCOUNT>, <SRC.NAME> at <SERV.RTIME>
+		SRC.SYSMESSAGE @07ad Congratulations! You have been the first Grand Master Mage!
+		SRC.SYSMESSAGE @07ad You have been rewarded with a belt.
+		SERV.ALLCLIENTS SYSMESSAGE @07Ad Congratulations to <SRC.NAME> for being the first Grand Master Mage!
+		SERV.NEWITEM = i_belt_universaluo
+		NEW.NAME =World's First Grand Master Mage!
+		NEW.TAG.ACCOUNTOWNER=<SRC.ACCOUNT>
+		NEW.BOUNCE
+	ENDIF
+ELSE
+SRC.SYSMESSAGE Sorry but you need to have 100.0 Magery in order to claim this achievement.
+ENDIF
+
+ON=16
+IF (<SRC.Archery> >= 100.0)
+	IF (<UID.043f42bb3.TAG.Archery> == 0)
+		TRY UID.043f42bb3.TAG.Archery=<SRC.ACCOUNT>, <SRC.NAME> at <SERV.RTIME>
+		SRC.SYSMESSAGE @07ad Congratulations! You have been the first Grand Master Archer!
+		SRC.SYSMESSAGE @07ad You have been rewarded with a belt.
+		SERV.ALLCLIENTS SYSMESSAGE @07Ad Congratulations to <SRC.NAME> for being the first Grand Master Archer!
+		SERV.NEWITEM = i_belt_universaluo
+		NEW.NAME =World's First Grand Master Archer!
+		NEW.TAG.ACCOUNTOWNER=<SRC.ACCOUNT>
+		NEW.BOUNCE
+	ENDIF
+ELSE
+SRC.SYSMESSAGE Sorry but you need to have 100.0 Archery in order to claim this achievement.
+ENDIF
+
+ON=17
+IF (<SRC.Swordsmanship> >= 100.0)
+	IF (<UID.043f42bb3.TAG.Swordsmanship> == 0)
+		TRY UID.043f42bb3.TAG.Swordsmanship=<SRC.ACCOUNT>, <SRC.NAME> at <SERV.RTIME>
+		SRC.SYSMESSAGE @07ad Congratulations! You have been the first Grand Master Swordsman!
+		SRC.SYSMESSAGE @07ad You have been rewarded with a belt.
+		SERV.ALLCLIENTS SYSMESSAGE @07Ad Congratulations to <SRC.NAME> for being the first Grand Master Swordsman!
+		SERV.NEWITEM = i_belt_universaluo
+		NEW.NAME =World's First Grand Master Swordsman!
+		NEW.TAG.ACCOUNTOWNER=<SRC.ACCOUNT>
+		NEW.BOUNCE
+	ENDIF
+ELSE
+SRC.SYSMESSAGE Sorry but you need to have 100.0 Blade Weapons in order to claim this achievement.
+ENDIF
+
+ON=18
+IF (<SRC.Macefighting> >= 100.0)
+	IF (<UID.043f42bb3.TAG.Macefighting> == 0)
+		TRY UID.043f42bb3.TAG.Macefighting=<SRC.ACCOUNT>, <SRC.NAME> at <SERV.RTIME>
+		SRC.SYSMESSAGE @07ad Congratulations! You have been the first Grand Master Macefighter!
+		SRC.SYSMESSAGE @07ad You have been rewarded with a belt.
+		SERV.ALLCLIENTS SYSMESSAGE @07Ad Congratulations to <SRC.NAME> for being the first Grand Master Macefighter!
+		SERV.NEWITEM = i_belt_universaluo
+		NEW.NAME =World's First Grand Master Macefighter!
+		NEW.TAG.ACCOUNTOWNER=<SRC.ACCOUNT>
+		NEW.BOUNCE
+	ENDIF
+ELSE
+SRC.SYSMESSAGE Sorry but you need to have 100.0 Blunt Weapons in order to claim this achievement.
+ENDIF
+
+ON=19
+IF (<SRC.Fencing> >= 100.0)
+	IF (<UID.043f42bb3.TAG.Fencing> == 0)
+		TRY UID.043f42bb3.TAG.Fencing=<SRC.ACCOUNT>, <SRC.NAME> at <SERV.RTIME>
+		SRC.SYSMESSAGE @07ad Congratulations! You have been the first Grand Master Fencer!
+		SRC.SYSMESSAGE @07ad You have been rewarded with a belt.
+		SERV.ALLCLIENTS SYSMESSAGE @07Ad Congratulations to <SRC.NAME> for being the first Grand Master Fencer!
+		SERV.NEWITEM = i_belt_universaluo
+		NEW.NAME =World's First Grand Master Fencer!
+		NEW.TAG.ACCOUNTOWNER=<SRC.ACCOUNT>
+		NEW.BOUNCE
+	ENDIF
+ELSE
+SRC.SYSMESSAGE Sorry but you need to have 100.0 Fencing in order to claim this achievement.
+ENDIF
+
+ON=20
+IF (<SRC.Wrestling> >= 100.0)
+	IF (<UID.043f42bb3.TAG.Wrestling> == 0)
+		TRY UID.043f42bb3.TAG.Wrestling=<SRC.ACCOUNT>, <SRC.NAME> at <SERV.RTIME>
+		SRC.SYSMESSAGE @07ad Congratulations! You have been the first Grand Master Wrestler!
+		SRC.SYSMESSAGE @07ad You have been rewarded with a belt.
+		SERV.ALLCLIENTS SYSMESSAGE @07Ad Congratulations to <SRC.NAME> for being the first Grand Master Wrestler!
+		SERV.NEWITEM = i_belt_universaluo
+		NEW.NAME =World's First Grand Master Wrestler!
+		NEW.TAG.ACCOUNTOWNER=<SRC.ACCOUNT>
+		NEW.BOUNCE
+	ENDIF
+ELSE
+SRC.SYSMESSAGE Sorry but you need to have 100.0 Wrestling in order to claim this achievement.
+ENDIF
+
+ON=21
+IF (<SRC.Necromancy> >= 100.0)
+	IF (<UID.043f42bb3.TAG.Necromancy> == 0)
+		TRY UID.043f42bb3.TAG.Necromancy=<SRC.ACCOUNT>, <SRC.NAME> at <SERV.RTIME>
+		SRC.SYSMESSAGE @07ad Congratulations! You have been the first Grand Master Necromancer!
+		SRC.SYSMESSAGE @07ad You have been rewarded with a belt.
+		SERV.ALLCLIENTS SYSMESSAGE @07Ad Congratulations to <SRC.NAME> for being the first Grand Master Necromancer!
+		SERV.NEWITEM = i_belt_universaluo
+		NEW.NAME =World's First Grand Master Necromancer!
+		NEW.TAG.ACCOUNTOWNER=<SRC.ACCOUNT>
+		NEW.BOUNCE
+	ENDIF
+ELSE
+SRC.SYSMESSAGE Sorry but you need to have 100.0 Necromancy in order to claim this achievement.
+ENDIF
+
+ON=22
+IF (<SRC.Poisoning> >= 100.0)
+	IF (<UID.043f42bb3.TAG.Poisoning> == 0)
+		TRY UID.043f42bb3.TAG.Poisoning=<SRC.ACCOUNT>, <SRC.NAME> at <SERV.RTIME>
+		SRC.SYSMESSAGE @07ad Congratulations! You have been the first Grand Master Assassin!
+		SRC.SYSMESSAGE @07ad You have been rewarded with a belt.
+		SERV.ALLCLIENTS SYSMESSAGE @07Ad Congratulations to <SRC.NAME> for being the first Grand Master Assassin!
+		SERV.NEWITEM = i_belt_universaluo
+		NEW.NAME = World's First Grand Master Assassin!
+		NEW.TAG.ACCOUNTOWNER=<SRC.ACCOUNT>
+		NEW.BOUNCE
+	ENDIF
+ELSE
+SRC.SYSMESSAGE Sorry but you need to have 100.0 Poisoning in order to claim this achievement.
+ENDIF
+
+ON=23
+IF (<SRC.Musicianship> >= 100.0)
+	IF (<UID.043f42bb3.TAG.Musicianship> == 0)
+		TRY UID.043f42bb3.TAG.Musicianship=<SRC.ACCOUNT>, <SRC.NAME> at <SERV.RTIME>
+		SRC.SYSMESSAGE @07ad Congratulations! You have been the first Grand Master Bard!
+		SRC.SYSMESSAGE @07ad You have been rewarded with a belt.
+		SERV.ALLCLIENTS SYSMESSAGE @07Ad Congratulations to <SRC.NAME> for being the first Grand Master Bard!
+		SERV.NEWITEM = i_belt_universaluo
+		NEW.NAME = World's First Grand Master Bard!
+		NEW.TAG.ACCOUNTOWNER=<SRC.ACCOUNT>
+		NEW.BOUNCE
+	ENDIF
+ELSE
+SRC.SYSMESSAGE Sorry but you need to have 100.0 Musicianship in order to claim this achievement.
+ENDIF
+
+
+[function achievements]
+SRC.SYSMESSAGE This command is disabled since it is no longer in use.
+RETURN 1
+dialog d_pinkrewards
+
+[ITEMDEF i_belt_universaluo]
+NAME=Imperial UO Belt
+ID=i_leather_ninja_belt
+RESLEVEL=2
+RESDISPDNID=i_sash
+TYPE=t_armor
+WEIGHT=1
+FLIP=1
+DYE=1
+ARMOR=1
+REQSTR=1
+
+ON=@Create
+HITPOINTS={51 57}
+ATTR = 05
+COLOR=0bb0
+
+ON=@CLICK
+
+TYPE=T_ARMOR
+
+IF !(strmatch("<TAG.ACCOUNTOWNER>","<SRC.ACCOUNT>"))
+	SRC.SYSMESSAGE @079C WARNING: This item is not meant to be sold or traded. It can only be used by its first owner!
+ENDIF
+
+ON=@DCLICK
+
+IF !(strmatch("<TAG.ACCOUNTOWNER>","<SRC.ACCOUNT>"))
+	SRC.SYSMESSAGE You don't deserve to wear this belt.
+	RETURN 1
+ENDIF
+
+ON=@EQUIP
+
+IF !(strmatch("<TAG.ACCOUNTOWNER>","<SRC.ACCOUNT>"))
+	SRC.SYSMESSAGE You don't deserve to wear this belt.
+	RETURN 1
+ENDIF
+
+SRC.SYSMESSAGE You feel proud wearing this belt.
+
+ON=@DAMAGE
+RETURN 1
+
+[PLEVEL 1]
+achievements1
+
+
+
+[EOF]

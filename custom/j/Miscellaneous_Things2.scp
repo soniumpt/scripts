@@ -1,0 +1,429 @@
+//Safe rename and password
+//[PLEVEL 1]
+//pass
+
+//[FUNCTION pass]
+//if (!strmatch("*plevel*", "<args>") && !strmatch("*block*", "<args>") && !strmatch("*jail*", "<args>") && !strmatch("",  "<args>") && !strmatch("*eof*", "<args>"))
+//	PASSWORD <args>
+//	//DB.EXECUTE "UPDATE `accounts` SET `password` = MD5('<args>') where `login` = '<SRC.ACCOUNT>';"
+//	// DB.EXECUTE "call SPHERE_UpdatePassword('<SRC.ACCOUNT>','<args>');"
+//	DB.EXECUTE "call ChangeAccountPasswordByUsername('<SRC.ACCOUNT>', '<ARGS>')"
+//else
+//	SYSMESSAGE Invalid password, try another one
+//	RETURN 1	
+//endif
+
+[PLEVEL 2]
+councgo
+
+[FUNCTION councgo]
+TARGET Select the character to move
+
+ON=@TARGON_CHAR
+   SRC.TARG.GO <args>
+
+// By Wigifer
+
+   
+[FUNCTION prisoner_click]
+   IF (0<TAG.PRISONERRUN> = 1)
+      TAG.NAME.SUFFIX =, Escaped Prisoner
+      TAG.NAME.HUE = 0323
+   ENDIF
+
+[ITEMDEF i_prisoner_deed]
+ID	= i_deed
+TYPE	= t_script
+NAME	= Prisoner Hunt
+
+ON=@Create
+  COLOR=0323
+
+ON = @Click
+  if ( <LINK> == 04fffffff )
+     return 0
+  endif
+  MESSAGE Prisoner record ( unassigned, <NAME> )
+  return 1
+
+
+ON = @DClick
+  if !( <SRC.ISGM> || <SRC.ISCOUNS> )
+     SRC.SYSMESSAGE You cannot activate this.
+     return 1
+  endif
+  
+  if ( <LINK> == 04fffffff )
+     TARGET Who do you want to record?
+     return 1
+  endif
+
+  SRC.SYSMESSAGE Resetting status for <LINK.NAME> to original settings.
+  LINK.KILLS	= <TAG.KILLS>
+  LINK.KARMA	= <TAG.KARMA>
+  LINK.FAME	= <TAG.FAME>
+  LINK.TAG.QUESTNAME	=
+  LINK.TAG.PRISONERRUN=0
+  REMOVE
+  return 1
+  
+
+ON = @Targon_Char
+  COLOR		= 
+  LINK		= <SRC.TARG>
+  SRC.SYSMESSAGE Recording status for <LINK.NAME>.
+
+  COLOR		= 0157
+  LINK.TAG.QUESTNAME	= <NAME>
+  NAME		= quest record ( <LINK.NAME>, <NAME> )
+  TAG.KILLS	= <LINK.KILLS>
+  TAG.KARMA	= <LINK.KARMA>
+  TAG.FAME	= <LINK.FAME>
+  LINK.TAG.PRISONERRUN=1
+  LINK.KILLS=999
+  return 1
+
+
+[itemdef i_flux_fix]
+Name=Flux Fixer
+ID=i_guildstone
+Type=T_Normal
+
+On=@Create
+color=00174
+
+on=@Dclick
+   IF (0<SRC.TAG.FLUX.STR>)
+      SRC.findlayer(layer_k_control).TAG.CAPSTR = <eval ( (0<SRC.findlayer(layer_k_control).TAG.CAPSTR>) + (0<SRC.TAG.FLUX.STR>))>
+      SRC.TAG.FLUX = <eval ( (0<SRC.TAG.FLUX>) + (0<SRC.TAG.FLUX.STR>))>
+      SRC.TAG.FLUX.BACKUPSTR = <SRC.TAG.FLUX.STR>      
+      SRC.TAG.FLUX.STR =
+   ENDIF
+   IF (0<SRC.TAG.FLUX.INT>)
+      SRC.findlayer(layer_k_control).TAG.CAPINT = <eval ( (0<SRC.findlayer(layer_k_control).TAG.CAPINT>) + (0<SRC.TAG.FLUX.INT>))>
+      SRC.TAG.FLUX = <eval ( (0<SRC.TAG.FLUX>) + (0<SRC.TAG.FLUX.INT>))>
+      SRC.TAG.FLUX.BACKUPINT = <SRC.TAG.FLUX.INT>
+      SRC.TAG.FLUX.INT =
+   ENDIF
+   IF (0<SRC.TAG.FLUX.DEX>)
+      SRC.findlayer(layer_k_control).TAG.CAPDEX = <eval ( (0<SRC.findlayer(layer_k_control).TAG.CAPDEX>) + (0<SRC.TAG.FLUX.DEX>))>
+      SRC.TAG.FLUX = <eval ( (0<SRC.TAG.FLUX>) + (0<SRC.TAG.FLUX.DEX>))>
+      SRC.TAG.FLUX.BACKUPDEX = <SRC.TAG.FLUX.DEX>
+      SRC.TAG.FLUX.DEX =
+   ENDIF
+   SRC.SYSMESSAGE @43 Fluxes updated
+   RETURN 1
+   
+
+// -------------------------   
+// MEGA-SECRET ARMY SHIZNITZ
+// -------------------------
+   
+   
+[ITEMDEF i_obelisk_promeria]
+ID=0ed6
+NAME=Dark Obelisk
+
+ON=@CREATE
+   TIMER=1
+
+ON=@TIMER
+   IF (0<VAR.PROMERIAUNLOCKED> = 1)
+      IF (<VAR.PSYCHICSKILLED> > <VAR.PSYCHICSKILLED>)
+         ADD c_behemoth_psychic
+         ACT.P=<P>
+         ACT.EMOTE burst forth from the obelisk, seeking vengeance for the fallen psychics...
+         REMOVE
+      ELSE
+         ADD c_behemoth_warrior
+         ACT.P=<P>
+         ACT.EMOTE burst forth from the obelisk, seeking vengeance for the fallen PSYCHICS...
+         REMOVE
+      ENDIF
+   ELSE
+      IF (0<VAR.PSYCHICSKILLED> >= 200)
+         EMOTE fade... Inside something almost looking like it is preparing to break free...
+         VAR.PROMERIAUNLOCKED=1
+         TIMER=5
+      ELSEIF (0<VAR.PSYCHICSKILLED> >= 200)
+         EMOTE fade... Inside something almost looking like it is preparing to break free...
+         VAR.PROMERIAUNLOCKED=1
+         TIMER=5
+      ELSE
+         TIMER=10
+         EMOTE glow... Each fallen warrior and psychic making it shine brighter...
+      ENDIF
+      IF (0<VAR.CURRENTPSYCHICS> < 5)
+         ADD c_psychic_promeria
+         ACT.P=<P>
+         VAR.CURRENTPSYCHICS=(<VAR.CURRENTPSYCHICS> + 1)
+      ENDIF
+      IF (0<VAR.CURRENTPSYCHICS> < 5)
+         ADD c_psychic_promeria
+         ACT.P=<P>
+         VAR.CURRENTPSYCHICS=(<VAR.CURRENTPSYCHICS> + 1)
+      ENDIF
+   ENDIF
+   RETURN 1
+      
+   
+[CHARDEF c_warrior_promeria]
+ID=C_MAN
+NAME=Promerian Warrior
+SOUND=snd_HUMAN_M_DIE_01
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+DAM=20,22
+ARMOR=75
+
+ 
+ON=@Create
+  COLOR=color_skin
+  STR	= 180
+  DEX	= 110
+  INT	= 65
+  NPC	= brain_monster
+  FAME=2000
+  KARMA	= -6000
+  PARRYING	= 100.0
+  SWORDSMANSHIP	= 100.0
+  MAGICRESISTANCE= 100.0
+  EVALUATINGINTEL= 100.0
+  TACTICS	= 100.0
+  ANATOMY       = 100.0
+  MAGERY        = 85.0
+
+  ITEMNEWBIE=i_leather_gloves
+  COLOR=0486
+  ITEMNEWBIE=i_platemail_arms_titanium
+  ITEMNEWBIE=i_platemail_gorget_titanium
+  ITEMNEWBIE=i_tera_scale_tunic
+  ITEMNEWBIE=i_platemail_leggings_titanium
+  ITEMNEWBIE=i_sword_broad_adamantine
+  ITEMNEWBIE=i_shield_heater_adamantine
+  ITEMNEWBIE=i_bandana
+  COLOR=0489
+  ITEMNEWBIE=i_hair_long
+  COLOR=07a1
+  ITEM= i_gold,{150 300}
+
+
+ON=@DEATH
+   VAR.CURRENTPSYCHICS=(<VAR.CURRENTPSYCHICS> - 1)
+   VAR.PSYCHICSKILLED=<eval (0<VAR.PSYCHICSKILLED> + 1)>
+   ACT.EMOTE look upward as the soul of <SRC.NAME> drifts towards the obelisk.
+   
+ON=@SPELLCAST
+   EMOTE raise his sword to the sky and regenerate some health from the winds...
+   HITS=( <HITS> + ( <rand(10)> + 5 ) )
+   IF (<HITS> > <STR> )
+      HITS=<STR>
+   ENDIF
+
+
+[CHARDEF c_psychic_promeria]
+ID=c_man
+NAME=#NAMES_PSYCHIC the Psychic
+SOUND=snd_HUMAN_M_DIE_02
+TITLE=Promeria Psychic
+
+DAM=15,18
+ARMOR=85
+
+ON=@CREATE
+   COLOR=colors_skin
+   STR=320
+   DEX=120
+   INT=600
+   NPC=brain_monster
+   PARRYING=95.0
+   WRESTLING=85.0
+   TACTICS=95.0
+   ANATOMY=100.0
+   MAGERY=100.0
+   EVALUATINGINTEL=100.0
+   FAME=1200
+   KARMA=-5000
+   ITEMNEWBIE=random_male_hair
+   COLOR=colors_hair
+   ITEMNEWBIE=random_facial_hair
+   COLOR=match_hair
+   
+   ITEMNEWBIE=i_shirt_fancy
+   COLOR=01
+   ITEMNEWBIE=i_pants_long
+   COLOR=01
+   ITEMNEWBIE=i_shoes_plain
+   COLOR=07a1
+   
+   ITEMNEWBIE=i_full_spellbook
+   COLOR=01
+   SRC.ACT.EQUIP
+   
+   ITEM=i_bag
+   ACT.ITEM=i_reag_black_pearl,{ 6 15 }
+   ACT.ITEM=i_reag_blood_moss,{ 6 15 }
+   ACT.ITEM=i_reag_garlic,{ 6 15 }
+   ACT.ITEM=i_reag_ginseng,{ 6 15 }
+   ACT.ITEM=i_reag_mandrake_root,{ 6 15 }
+   ACT.ITEM=i_reag_nightshade,{ 6 15 }
+   ACT.ITEM=i_reag_sulfur_ash,{ 6 15 }
+   ACT.ITEM=i_reag_spider_silk,{ 6 15 }
+
+ON=@CLICK
+   SAY I can tell you are looking at me <SRC.NAME>...
+   
+ON=@DEATH
+   VAR.CURRENTPSYCHICS=(<VAR.CURRENTPSYCHICS> - 1)
+   VAR.PSYCHICSKILLED=<eval (0<VAR.PSYCHICSKILLED> + 1)>
+   ACT.EMOTE look upward as the soul of <SRC.NAME> drifts towards the obelisk.
+   
+ON=@SPELLCAST
+   SAY I can see you have <ACT.MANA> and <ACT.HITS> left <ACT.NAME>!
+   SAY You cannot hide your tactics from me!
+   
+[CHARDEF c_behemoth_psychic]
+ID=c_m_balron
+NAME=Psychic Behemoth
+ID=c_DAEMON_W_SWORD
+SOUND=snd_MONSTER_DAEMON1
+ICON=i_pet_dragon
+DAM=30,45
+ARMOR=100
+RESOURCES=9 i_ribs_raw, 1 i_Balron_Bones
+
+//ALIGNMENT=EVIL
+CAN=MT_WALK|MT_FLY
+TEVENTS=e_npc_daemon
+
+//SPELLCIRCLES=6,8
+DESIRES=c_DAEMON,i_gold,t_wand
+AVERSIONS=r_water,r_mountains
+
+ON=@Create
+COLOR=0794
+STR={1985 2185}
+DEX={175 255}
+INT={300 325}
+
+PARRYING={90.0 100.0}
+MAGERY={90.0 100.0}
+MAGICRESISTANCE={150.0 200.0}
+TACTICS={190.0 200.0}
+WRESTLING={90.0 100.0}
+TAMING={298.0 299.0}
+
+NPC=brain_monster
+
+FAME={4000 8000}
+KARMA={-6000 -6999}
+
+ON=@GetHit
+   if (<src.findlayer(layer_hand1).type>==t_weapon_sword )
+      IF ( RAND(2) == 1)
+         EMOTE laugh as the <src.findlayer(layer_hand1).name> bounces off of it's psychic shield...
+         return 1
+         findlayer(layer_k_control).TRIGGER @SkillFail
+      ENDIF
+   endif
+   if (<src.findlayer(layer_hand1).type>==t_weapon_mace_staff )
+      IF ( RAND(2) == 1)
+         EMOTE laugh as the <src.findlayer(layer_hand1).name> bounces off of it's psychic shield...
+         return 1
+         findlayer(layer_k_control).TRIGGER @SkillFail
+      ENDIF
+   endif
+   if (<src.findlayer(layer_hand1).type>==t_weapon_mace_smith )
+      IF ( RAND(2) == 1)
+         EMOTE laugh as the <src.findlayer(layer_hand1).name> bounces off of it's psychic shield...
+         return 1
+         findlayer(layer_k_control).TRIGGER @SkillFail
+      ENDIF
+   endif
+   
+ON=@NPCRestock
+ITEM=loot_newrares_hard
+ITEM=random_rare_3
+
+ON=@Spelleffect
+   if ((<argn> == 20) || (<argn> == 39))
+      SAY The poison is absorbed into the psychic shield
+      return 1
+   endif
+   
+ on=@death
+loot_BALRON
+
+[CHARDEF c_behemoth_warrior]
+ID=c_DAEMON_W_SWORD
+NAME=Behemoth Warrior
+SOUND=snd_MONSTER_DAEMON1
+ICON=i_pet_dragon
+DAM=35,50
+ARMOR=100
+RESOURCES=9 i_ribs_raw, 1 i_Balron_Bones
+
+//ALIGNMENT=EVIL
+CAN=MT_WALK|MT_FLY
+TEVENTS=e_npc_daemon
+
+//SPELLCIRCLES=6,8
+DESIRES=c_DAEMON,i_gold,t_wand
+AVERSIONS=r_water,r_mountains
+
+ON=@Create
+COLOR=0794
+STR={2085 2285}
+DEX={105 155}
+INT={300 325}
+
+PARRYING={90.0 100.0}
+MAGICRESISTANCE={150.0 200.0}
+TACTICS={190.0 200.0}
+WRESTLING={90.0 100.0}
+TAMING={298.0 299.0}
+
+NPC=brain_monster
+
+FAME={4000 8000}
+KARMA={-6000 -6999}
+
+ON=@GetHit
+   if (<src.findlayer(layer_hand1).type>==t_weapon_sword )
+      IF ( RAND(2) == 1)
+         EMOTE laugh as the <src.findlayer(layer_hand1).name> is deflected by it's arm...
+         return 1
+         findlayer(layer_k_control).TRIGGER @SkillFail
+      ENDIF
+   endif
+   if (<src.findlayer(layer_hand1).type>==t_weapon_mace_staff )
+      IF ( RAND(2) == 1)
+         EMOTE laugh as the <src.findlayer(layer_hand1).name> is deflected by it's arm...
+         return 1
+         findlayer(layer_k_control).TRIGGER @SkillFail
+      ENDIF
+   endif
+   if (<src.findlayer(layer_hand1).type>==t_weapon_mace_smith )
+      IF ( RAND(2) == 1)
+         EMOTE laugh as the <src.findlayer(layer_hand1).name> is deflected by it's arm...
+         return 1
+         findlayer(layer_k_control).TRIGGER @SkillFail
+      ENDIF
+   endif
+   
+ON=@NPCRestock
+ITEM=loot_newrares_hard
+ITEM=random_rare_3
+
+ON=@Spelleffect
+   if ((<argn> == 20) || (<argn> == 39))
+      SAY The poison is absorbed into the behemoths blood
+      return 1
+   endif
+   
+ON=@Death
+loot_BALRON
+   
+
+
+[EOF]

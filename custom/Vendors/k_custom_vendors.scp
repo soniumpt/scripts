@@ -1,0 +1,1300 @@
+//Changelog
+//Wren 12-09-03 - Added 0<> to line 116
+//Wigifer 12th June 2005 - Added a typedef for vendor boxes - Anti-Dupe...
+// 04/12/19 - Wigifer - Added death check to purchasing... 
+
+
+//[TYPEDEF t_eq_vendor_box]
+
+//ON=@DROPON_SELF
+//OBJ <ARGO.UID>
+//IF (<OBJ.TYPE>==t_container)
+//   SRC.SYSMESSAGE Sorry but at this time vendors cannot sell containers...
+//   RETURN 1
+//ENDIF
+
+[FUNCTION REMOVE_COINS]
+if ( <FINDLAYER.layer_vendor_stock.findtype.t_gold.uid> )
+   FINDLAYER.layer_vendor_stock.findtype.t_gold.remove
+   remove_coins
+endif
+
+
+[EVENTS e_player_vendor]
+ON=@SpellEffect
+if ( <FLAGS> & statf_war )
+   FLAGS	= (<FLAGS> & ~statf_war)
+endif
+   return 1
+
+ON=@Click
+   FOOD			= 32000
+   TAG.NAME.HUE		= <TAG.VENDOR_COLOR>
+   TAG.NAME.SUFFIX	= " [<TAG.VENDOR_TITLE>]"
+   findlayer.layer_bankbox.timer = -1
+   if ( <FLAGS> & statf_war )
+      FLAGS	= (<FLAGS> & ~statf_war)
+endif
+
+ON = @Hit
+if ( <FLAGS> & statf_war )
+   FLAGS	= (<FLAGS> & ~statf_war)
+endif
+   return 1
+
+ON = @GetHit
+if ( <FLAGS> & statf_war )
+   FLAGS	= (<FLAGS> & ~statf_war)
+endif
+   return 1
+
+
+[SPEECH spk_player_vendor]
+ 
+
+ON=cash
+   if !( <ISMYPET> )
+      return 0
+   endif
+   if ( <findlayer.layer_bankbox.more1> == 0 )
+      SAY I Have no gold in hands.
+      return 1
+   endif
+
+ON=status
+   if !( <ISMYPET> )
+      SAY I have <findlayer.layer_vendor_stock.rescount> items for sale.
+      return 1
+   endif
+   if ( <findlayer.layer_bankbox.more1> == 0 )
+      SAY I have no gold in hands and <findlayer.layer_vendor_stock.rescount> items for sale.
+   else
+      SAY I have <eval <findlayer.layer_bankbox.more1>>gp in hands and <findlayer.layer_vendor_stock.rescount> items for sale.
+   endif
+   return 1
+
+ON=*sell*
+ON=*thou*purchase*
+ON=*you*purchase*
+ON=*you*buy*
+ON=*I*sale*
+   
+   IF (<SRC.FLAGS> & statf_dead)
+      SRC.SYSMESSAGE @025 The dead cannot make transactions, friend...
+      RETURN 1
+   ELSEIF ( <SRC.FAME.INFAMOUS> || <SRC.FAME.OUTLAW> )
+      IF ( <COMPLEXITY.HIGH> )
+        DORAND 3
+	   SAY Doubtless aught thou hast to sell would be stolen goods.
+	   SAY I trust not aught that ye sell, given thy reputation.
+	   SAY Thou wouldst doubtless try to cheat me, wert thou trying to sell me aught.
+        ENDDO
+      ELIF ( <COMPLEXITY.MEDIUM> )
+        DORAND 3
+           SAY I am not a fence, so sell me not thy stolen goods.
+           SAY Thou'rt untrustworthy--anything thou sellest must be bad.
+           SAY Thou wishest to sell aught? I might buy, though I suspect thou'rt a cheat.
+         ENDDO
+       ELSE
+         DORAND 3
+           SAY Thou'rt wantin' to sell to me? I can't afford the price thou wants... the price thou'rt willin' to break me head to get...
+           SAY Thou wants to sell somethin'? 'Tis probably stolen.
+           SAY Thou'rt a cheat, but I might buy from thee anyway.
+        ENDDO
+     ENDIF
+   ELSE
+      IF ( <COMPLEXITY.HIGH> )
+        DORAND 7
+           SAY If thou hast aught to sell, mayhap I am interested--give it to me and I shall value it for thee. Otherwise thou art welcome to buy my goods.
+           SAY Depending on what thou hast to sell, I may be interested in purchasing it to add to my stock. Hand it to me and I shall decide its worth.
+           SAY If thou art interested in selling an item to me, then thou must give it to me and I'll decide if I need it in my stock. Otherwise, thou can buy anything that I sell here.
+           SAY I might be willing to purchase some supplies from thee. Thou wouldst need to hand them to me for appraisal. But if thou wouldst like to buy something, just say so.
+           SAY Let me see what thou art offering to sell me, if indeed that is thy intent. Or thou couldst buy something of mine.
+           SAY I am a <JOB>. I could purchase those things that I supply.
+           SAY If thou dost wish to sell something to me, hand it over and I shall determine its value. Otherwise thou art welcome to buy some of my items.
+        ENDDO
+      ELIF ( <COMPLEXITY.MEDIUM> )
+        DORAND 7
+           SAY I may be interested in what thou have-let me see it. Otherwise thou art welcome to buy my goods.
+           SAY I could be interested in purchasing what thou has to add to my stock. Hand it to me and I shall decide its worth.
+           SAY If thou art interested in selling an item to me, then thou must give it to me and I'll decide if I need it in my stock. Or thou can buy anything that I sell here.
+           SAY I may be willing to purchase some supplies from thee. Hand them to me for appraisal. And if thou wouldst like to buy something from me, just say so.
+           SAY Let me see what thou art offering to sell me, if indeed that is what thou dost mean. Or thou couldst buy something of mine.
+           SAY I am a <JOB>. I could purchase those things that I supply.
+           SAY If thou dost wish to sell something to me, hand it over and I shall determine its value. Otherwise thou art welcome to buy some of my items.
+        ENDDO
+     ELSE
+        DORAND 7
+           SAY What's thou got to sell? Give it here. Or buy somethin'. Or go 'way.
+           SAY If I sell it, I buys it too. Let me see it. Oh, and if thou'rt wantin' to buy somethin', jus' say so.
+           SAY Thee got summat to sell? Give it here.
+           SAY If thou'rt wantin' to but somethin', then say the word.  Buy... that's the word. Or give me what thou'rt wantin' to sell me.
+           SAY Thou wants to sell me somethin'? Hand it over and I'll see if it's worth nothin'.
+           SAY I could take some supplies off thy hands. Give 'em to me for a once-over. And look around abit. Just say thou wants to buy somethin' and I'll see if I got it.
+           SAY I could purchase those things that I supply.
+        ENDDO
+     ENDIF
+  ENDIF
+  SELL
+
+ON=*buy*
+ON=*supplies*
+ON=*wares*
+   IF (0<VAR.VENDOR_ESTOP>=1)
+     IF (<SRC.ACCOUNT.PLEVEL> <= 1)
+        SAY Temporarily Closed due to command of Lord British.
+        RETURN 1
+     ENDIF
+   ENDIF
+
+//   if !( <ISMYPET> )
+//      SAY Vendors are currently only open to their owners for testing. Open to the public soon!
+//      RETURN 1
+//   endif
+
+   IF !(0<SRC.TAG.CURRENTVENDOR>=0)
+      SAY You must finish business with <UID.<SRC.TAG.CURRENTVENDOR>.NAME> before we can deal.
+      RETURN 1
+   ENDIF
+   
+   IF !(0<TAG.CURRENTCUSTOMER>=0)
+      IF (<UID.<TAG.CURRENTCUSTOMER>.TAG.CURRENTVENDOR>=<UID>)
+          SAY I'm sorry <SRC.NAME> but I must finish business with <UID.<TAG.CURRENTCUSTOMER>.NAME> before I can attend to you.
+          RETURN 1            
+      ENDIF
+   ENDIF
+   
+   IF (0<TAG.CLOSED> == 1 )
+   	SAY We are closed
+   	Return 1  	
+   ELSEIF ( <SRC.FAME.INFAMOUS> ) || <SRC.FAME.OUTLAW> )
+      IF ( <SRC.KARMA.WICKED> || <SRC.KARMA.BELLIGERANT> )
+         IF ( <COMPLEXITY.HIGH> )
+            DORAND 3
+              SAY If thou needest to buy something, I can supply things from my wares. No stealing needed.
+              SAY Thou'rt more like to steal than to buy supplies, but nonetheless I can offer thee what I sell.
+              SAY Life is bad enough that I have no qualms about selling my stock to a known <SRC.SEX scoundrel/hussy>.
+           ENDDO
+        ELIF ( <COMPLEXITY.MEDIUM> )
+           DORAND 3
+              SAY 'Twould be just my ill-luck if thou were to steal from me.
+              SAY Prithee, steal not! I can sell thee supplies.
+              SAY Well, I could hardly get in worse trouble... even if I do help a criminal such as thee. I can sell thee supplies.
+           ENDDO
+        ELSE
+           DORAND 3
+              SAY Aww, no stealin', by thy <SRC.SEX lord/lady>ship's leave!
+              SAY Sure, I can sell thee stuff even if thou'rt a bit whiffy.
+              SAY I can sell thee things if thou ain't hurtin' me.
+           ENDDO
+        ENDIF
+     ELSE
+        IF ( <COMPLEXITY.HIGH> )
+           DORAND 3
+              SAY Thou must not steal from me, mind! I can sell thee supplies.
+              SAY If thou needest supplies, why art thou not looking to steal them? I can sell them to thee if thou dost behave.
+              SAY I trust thee not, but will offer to sell thee supplies.
+           ENDDO
+        ELIF ( <COMPLEXITY.MEDIUM> )
+           DORAND 3
+              SAY Prithee, harm me not! I am but a merchant of supplies!
+              SAY Thou'rt speaking of buying, yes? Not of stealing?
+              SAY Thou'rt unsavory, but I am willing to sell to thee.
+           ENDDO
+        ELSE
+           DORAND 3
+              SAY Don' hurt me! I can sell thee stuff.
+              SAY Please, don' steal nothin'.
+              SAY If thou don' beat me up, I can sell to thee.
+           ENDDO
+        ENDIF
+     ENDIF
+  ELSE
+     IF ( <SRC.KARMA.WICKED> || <SRC.KARMA.BELLIGERANT> )
+        IF ( <COMPLEXITY.HIGH> )
+           DORAND 3
+              SAY Thou canst buy supplies from me if thou art willing to waste thy time with one my mine humble station.
+              SAY If thou'rt willing to interact with one as miserable as I, thou canst buy supplies from me.
+              SAY I can sell thee supplies. 'Tis hardly a hardship--not at all like the rest of my hopeless life.
+           ENDDO
+        ELIF ( <COMPLEXITY.MEDIUM> )
+           DORAND 3
+              SAY Thou meanest one such as thee dost not have everything thou needest already?
+              SAY If thou wilt buy from one such as me, I have much to sell.
+              SAY Making money may be th'only thing to cheer my dismal life.
+           ENDDO
+        ELSE
+           DORAND 3
+              SAY Thou wishes to buy from me? Thee? A big <SRC.SEX lord/lady> type?
+              SAY I'm a little worm to thee, but I can make thee spend money in my shop!
+              SAY I could use anythin' to cheer me up. Want to buy from me?
+           ENDDO
+        ENDIF
+     ELSE
+        IF ( <COMPLEXITY.HIGH> )
+           DORAND 3
+              SAY I sell many wares and thou'rt welcome to buy from me!
+              SAY If thou seekest supplies, thou canst buy from me.
+              SAY If thou seekest to buy, I can sell to thee.
+           ENDDO
+        ELIF ( <COMPLEXITY.MEDIUM> )
+           DORAND 3
+              SAY Thou mayst purchase supplies from me.
+              SAY I would gladly sell to thee of my many wares.
+              SAY My shop sells many things.
+           ENDDO
+        ELSE
+           DORAND 3
+              SAY I'm here to sell thee supplies.
+              SAY I got lots to sell!
+              SAY Thou surely wants all the things that I can sell thee.
+           ENDDO
+        ENDIF
+     ENDIF
+  ENDIF
+
+  ACT = <FINDLAYER.layer_vendor_stock.findtype(t_container).uid> 
+  REMOVE_COINS
+  SERV.LOG <SRC.ACCOUNT>-<SRC.NAME>[<SRC.UID>] Commands buy on <UID>.
+  f_call_vendor 0
+
+//ON=randomtestspeech
+//f_call_vendor 0
+
+ON=Hi
+ON=Hello
+ON=Hail
+ON=Greet
+  
+   SAY=Greetings, adventurer.
+
+ON=Bye
+ON=Goodbye
+ON=Farewell
+	SAY=Fare thee well.
+	BYE
+	return 1
+
+ON=open
+  
+   
+   if !( <ISMYPET> )
+      SAY I'm not ready to open the shop yet.
+      return 1
+   endif
+   TAG.CLOSED	= 0
+   SAY *opens the shop*
+   return 1
+
+   
+ON=close
+   if ( 0<TAG.CLOSED> )
+      SAY We're closed allright.
+      return 1
+   endif
+   
+   if !( <ISMYPET> )
+      SAY Why'd I close the shop?
+      return 1
+   endif
+   TAG.CLOSED	= 1
+   SAY *closes the shop*
+   return 1
+
+ON=*stock*
+   if !( <ISMYPET> )
+      SAY My stocks are of the finest!
+      return 1
+   endif
+   if ( <REGION.GUARDED> )
+      SRC.SYSMESSAGE Your bank...
+      SRC.BANKSELF
+   endif
+   return 1
+   
+
+   
+[CHARDEF C_H_PLAYER_VENDOR]
+NAME=#NAMES_HUMANMALE the Vendor
+ID=C_MAN
+CAN=0
+HIREDAYWAGE=0
+FOODTYPE=
+TSPEECH=spk_human_prime
+TSPEECH=spk_player_vendor
+TSPEECH=spk_needs
+TSPEECH=spk_human_default
+TEVENTS=e_player_vendor
+
+TEVENTS=e_Human_ConvInit
+TEVENTS=e_Human_HearUnk
+TEVENTS=e_Human_Greet
+TEVENTS=e_Human_Space
+TEVENTS=e_Human_Refuse
+TEVENTS=e_Human_Environ
+ON=@Create
+  NPC=brain_vendor
+  COLOR=colors_skin
+  FLAGS=028000005
+  NEED=i_gold
+  STR={66 80}
+  DEX=90
+  INT={66 80}
+  FENCING={15.0 38.0}
+  PARRYING={45.0 68.0}
+  SWORDSMANSHIP={15.0 38.0}
+  WRESTLING={15.0 38.0}
+  MACEFIGHTING={15.0 38.0}
+  MAGICRESISTANCE={45.0 68.0}
+  TACTICS={45.0 68.0}
+  ITEMNEWBIE=i_lantern
+  ITEMNEWBIE=random_male_hair
+  COLOR=colors_hair
+  ITEMNEWBIE=random_facial_hair
+  COLOR=match_hair
+ON=@NPCRestock
+  ITEMNEWBIE=i_shirt_plain
+  COLOR=colors_all
+  ITEMNEWBIE=random_pants
+  COLOR=colors_all
+  ITEMNEWBIE=random_shoes
+  COLOR=colors_neutral
+
+
+[CHARDEF C_H_PLAYER_VENDOR_F]
+NAME=#NAMES_HUMANFEMALE the Vendor
+ID=C_WOMAN
+CAN=0
+HIREDAYWAGE=0
+FOODTYPE=
+TSPEECH=spk_human_prime
+TSPEECH=spk_player_vendor
+TSPEECH=spk_needs
+TSPEECH=spk_human_default
+TEVENTS=e_player_vendor
+
+TEVENTS=e_Human_ConvInit
+TEVENTS=e_Human_HearUnk
+TEVENTS=e_Human_Greet
+TEVENTS=e_Human_Space
+TEVENTS=e_Human_Refuse
+TEVENTS=e_Human_Environ
+ON=@Create
+  NPC=brain_vendor
+  COLOR=colors_skin
+  FLAGS=028000005
+  NEED=i_gold
+  STR={66 80}
+  DEX=90
+  INT={66 80}
+  FENCING={15.0 38.0}
+  PARRYING={45.0 68.0}
+  SWORDSMANSHIP={15.0 38.0}
+  WRESTLING={15.0 38.0}
+  MACEFIGHTING={15.0 38.0}
+  MAGICRESISTANCE={45.0 68.0}
+  TACTICS={45.0 68.0}
+  ITEMNEWBIE=i_lantern
+  ITEMNEWBIE=random_female_hair
+  COLOR=colors_hair
+ON=@NPCRestock
+  ITEM=i_shirt_plain
+  COLOR=colors_all
+  ITEM=random_skirt
+  COLOR=colors_all
+  ITEM=random_shoes
+  COLOR=colors_neutral
+  ITEM=random_coin_purse
+
+
+
+[ITEMDEF i_deed_vendor]
+NAME		= Deed to a Vendor
+ID		= i_deed
+VALUE		= 80000
+CATEGORY	= Provisions - Deeds
+SUBSECTION	= Vendor Deeds
+DESCRIPTION	= Player Vendor Deed
+
+
+ON=@DCLICK
+  if ( <MOREX> != 69 )
+     SRC.SYSMESSAGE WARNING: This vendor hasn't been authorized. Contact a GM as soon as possible.
+     return 1
+  endif
+  SRC.MESSAGE Your vendor has been created.
+  SRC.NEWNPC { C_H_PLAYER_VENDOR 1 C_H_PLAYER_VENDOR_F 1 }
+  SRC.ACT.TAG.VENDOR_COLOR	= 010
+  SRC.ACT.TAG.VENDOR_TITLE	= player vendor
+  VAR.VEND = <SRC.ACT.UID> // keep the vendors uid for later use.
+
+  src.act.findlayer(layer_bankbox).more1	= 1500
+  src.act.food					= 32000
+  
+  SRC.NEWITEM=i_memory
+  SRC.ACT.COLOR=memory_ipet
+  SRC.ACT.LINK=<SRC.UID>
+  SRC.ACT.LAYER=layer_special
+  SRC.ACT.CONT=<VAR.VEND>
+
+  REMOVE
+  RETURN 1
+
+
+
+
+[DIALOG d_vendor_nonown]                 // VENDOR NON-OWN  
+150,200
+page 0 
+gumppic 100 10 2070 
+button 165 85 2071 2072 1 0 0 
+text 141 45 0 0 
+button 123 45 208 209 1 0 1 
+
+[DIALOG d_vendor_nonown TEXT]                       
+Remove vendor?
+
+[DIALOG d_vendor_nonown BUTTON]  
+ONBUTTON=0
+ONBUTTON=1
+REMOVE
+SRC.SYSMESSAGE The vendor has been remove from your house.
+RETURN 1
+
+[DIALOG d_vendor_main]                 // VENDOR START MENU  
+150,200
+page 0 
+gumppic 100 10 2070 
+text 150 35 0 0 
+text 150 58 0 1 
+button 125 35 208 209 1 0 1 
+button 125 58 208 209 1 0 2 
+button 165 85 2071 2072 1 0 0 
+
+[DIALOG d_vendor_main TEXT]                       
+See goods
+Customize
+
+[DIALOG d_vendor_main BUTTON]  
+ONBUTTON=0
+ONBUTTON=1
+FINDLAYER.26.OPEN
+SAY Take a look at your goods.
+SRC.SYSMESSAGE For a list of commands for your vendor, say 'Help'.
+RETURN 1
+ONBUTTON=2
+DIALOG d_vendor_customize
+
+[dialog d_vendor_customize]                  // VENDOR CUSTOMIZATION MENU 
+0,0                                          // Position
+
+page 0                                       // Page 0
+resizepic 25 0 2600 500 400                  // Backround
+//resizepic 45 60 5100 450 25                  // Backround Rectangle Top
+//resizepic 45 330 5100 450 25                 // Backround Rectangle Bottom
+text 130 15 995 0                            // Title Text
+button 340 358 242 241 1 0 2                 // Cancel Button 2
+button 410 358 247 248 1 0 1                 // Okay Button 1
+
+page 1
+text 90 95 995 40                            // Short Text
+button 70 95 210 211 1 0 47                  // Short Button
+text 90 120 995 41                           // Long Text
+button 70 120 210 211 1 0 48                 // Long Button
+text 90 145 995 42                           // Pony Tail Text
+button 70 145 210 211 1 0 49                 // Pony Tail Button
+text 90 170 995 43                           // Mohawk Text
+button 70 170 210 211 1 0 50                 // Mohawk Button
+text 90 195 995 44                           // Pageboy Text
+button 70 195 210 211 1 0 51                 // Pageboy Button
+text 90 220 995 45                           // Topknot Text
+button 70 220 210 211 1 0 52                 // Topknot Button
+text 90 245 995 46                           // Curly Text
+button 70 245 210 211 1 0 53                 // Curly Button
+text 90 270 995 47                           // Receeding Text      
+button 70 270 210 211 1 0 54                 // Receeding Button
+text 90 295 995 48                           // 2 Tails Text
+button 70 295 210 211 1 0 55                 // 2 Tails Button
+text 270 95 995 52                           // Moustache Text
+button 250 95 210 211 1 0 56                 // Moustache Button
+text 270 120 995 53                          // Short Beard Text
+button 250 120 210 211 1 0 57                // Short Beard Button
+text 270 145 995 54                          // Short Beard / Moustache Text
+button 250 145 210 211 1 0 58                // Short Beard / Moustache Button
+text 270 170 995 55                          // Long Beard Text
+button 250 170 210 211 1 0 59                // Long Beard Button
+text 270 195 995 56                          // Long Beard / Moustache Text
+button 250 195 210 211 1 0 60                // Long Beard / Moustache Button
+text 270 220 995 57                          // Goatee Text
+button 250 220 210 211 1 0 61                // Goatee Button
+text 270 245 995 58                          // Vandyke Text
+button 250 245 210 211 1 0 62                // Vandyke Button
+//resizepic 85 358 5100 100 25                 // Color Backround Box 
+//text 95 360 0 59                             // Color Text
+//button 150 361 210 211 1 0 63                // Color Button
+//resizepic 190 358 5100 100 25                // Remove Backround Box
+//text 205 360 0 60                            // Remove Text
+//button 260 361 210 211 1 0 64                // Remove Button
+
+
+[dialog d_vendor_customize TEXT]
+VENDOR CUSTOMIZATION MENU
+Upper Torso
+Doublet
+Shirt
+Fancy shirt
+Tunic
+Surcoat
+Plain dress
+Fancy dress
+Robe
+Jester's Robe
+Lower Torso
+Fancy pants
+Kilt
+Skirt
+Over chest
+Body sash
+Half apron
+Full apron
+Hats
+Skullcap
+Bandana
+Floppy
+Wide
+Cap
+Tall
+Straw
+Wizards
+Bonnet
+Feathered
+Tricorne
+Jester's
+Footwear
+Sandals
+Shoes
+Boots
+Thigh Boots
+Back
+Cloak
+Hair
+Short
+Long
+Pony Tail
+Mohawk
+Pageboy
+Topknot
+Curly
+Receding
+2 Tails
+Bald
+Held Items
+None
+Moustache
+Short Beard
+Short Beard / Moustache
+Long Beard
+Long Beard / Moustache
+Goatee
+VanDyke
+Color
+Remove
+Change Name
+Male
+Change Greeting
+Fishing Pole
+Pickaxe
+Pitchfork
+Cleaver
+Mace
+Torch
+Hammer
+Long Sword
+Gnarled Staff
+Crossbow
+War Mace
+Two-Handed Axe
+Spear
+Katana
+Spellbook
+
+[dialog d_vendor_customize BUTTON]
+ONBUTTON=0
+DORAND 10
+SAY Good journeys to you.
+ANIM 32
+SAY Safe travels to you.
+ANIM 32
+SAY The market will surely be good for such fine wares.
+ANIM 32
+SAY I only live to serve thee.
+ANIM 32
+SAY One day, I would like to ride a horse, until then I will wait here and sell goods for you.
+ANIM 32
+SAY I do only thy bidding.
+ANIM 32
+SAY Oh goody!  I get to stand here and sell things.  My life is complete.
+ANIM 32
+SAY It shall be as you say.
+ANIM 32
+SAY Mother told me to become a mage, but no, I wanted a 'people' position.
+ANIM 32
+SAY I love you, fair master.
+ANIM 32
+ENDDO
+ONBUTTON=1
+DORAND 10
+SAY Good journeys to you.
+ANIM 32
+SAY Safe travels to you.
+ANIM 32
+SAY The market will surely be good for such fine wares.
+ANIM 32
+SAY I only live to serve thee.
+ANIM 32
+SAY One day, I would like to ride a horse, until then I will wait here and sell goods for you.
+ANIM 32
+SAY I do only thy bidding.
+ANIM 32
+SAY Oh goody!  I get to stand here and sell things.  My life is complete.
+ANIM 32
+SAY It shall be as you say.
+ANIM 32
+SAY Mother told me to become a mage, but no, I wanted a 'people' position.
+ANIM 32
+SAY I love you, fair master.
+ANIM 32
+ENDDO
+ONBUTTON=2
+DORAND 10
+SAY Good journeys to you.
+ANIM 32
+SAY Safe travels to you.
+ANIM 32
+SAY The market will surely be good for such fine wares.
+ANIM 32
+SAY I only live to serve thee.
+ANIM 32
+SAY One day, I would like to ride a horse, until then I will wait here and sell goods for you.
+ANIM 32
+SAY I do only thy bidding.
+ANIM 32
+SAY Oh goody!  I get to stand here and sell things.  My life is complete.
+ANIM 32
+SAY It shall be as you say.
+ANIM 32
+SAY Mother told me to become a mage, but no, I wanted a 'people' position.
+ANIM 32
+SAY I love you, fair master.
+ANIM 32
+ENDDO
+ONBUTTON=3  //shirt
+FINDLAYER(5).REMOVE
+SRC.NEWITEM 01517
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=4  //fancy shirt
+FINDLAYER(5).REMOVE
+SRC.NEWITEM 01efd
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=5  //plain dress
+FINDLAYER(5).REMOVE
+SRC.NEWITEM 01f01
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=6  //fancy dress
+FINDLAYER(22).REMOVE
+SRC.NEWITEM 01eff
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=7  //robe
+FINDLAYER(22).REMOVE
+SRC.NEWITEM 01f03
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=8                 //  <<<<<-----COLOR BUTTON, ADD GUMP THERE
+ONBUTTON=9
+FINDLAYER(5).REMOVE
+FINDLAYER(22).REMOVE
+RETURN 1
+ONBUTTON=10  //fancy pants
+FINDLAYER(4).REMOVE
+SRC.NEWITEM 01539
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=11  //kilt
+FINDLAYER(23).REMOVE
+SRC.NEWITEM 01537
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=12  //skirt
+FINDLAYER(23).REMOVE
+SRC.NEWITEM 01516
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=13                //  <<<<<-----COLOR BUTTON, ADD GUMP THERE
+ONBUTTON=14
+FINDLAYER(4).REMOVE
+FINDLAYER(23).REMOVE
+RETURN 1
+ONBUTTON=15  //doublet
+FINDLAYER(17).REMOVE
+SRC.NEWITEM 01f7b
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=16  //tunic        
+FINDLAYER(17).REMOVE
+SRC.NEWITEM 01fa1
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=17  //surcoat             
+FINDLAYER(17).REMOVE
+SRC.NEWITEM 01ffd
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=18  //body sash
+FINDLAYER(17).REMOVE
+SRC.NEWITEM 01541
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=19  //half apron
+FINDLAYER(12).REMOVE
+SRC.NEWITEM 0153b
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=20  //full apron
+FINDLAYER(17).REMOVE
+SRC.NEWITEM 0153d
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=21  //jester suit
+FINDLAYER(17).REMOVE
+SRC.NEWITEM 01f9f
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=22                //  <<<<<-----COLOR BUTTON, ADD GUMP THERE
+ONBUTTON=23
+FINDLAYER(12).REMOVE
+FINDLAYER(17).REMOVE
+RETURN 1
+ONBUTTON=24  //skullcap
+FINDLAYER(6).REMOVE
+SRC.NEWITEM 01544
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=25  //bandana
+FINDLAYER(6).REMOVE
+SRC.NEWITEM 0153f
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=26  //floppy
+FINDLAYER(6).REMOVE
+SRC.NEWITEM 01713
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=27  //wide brim
+FINDLAYER(6).REMOVE
+SRC.NEWITEM 01714
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=28  //cap
+FINDLAYER(6).REMOVE
+SRC.NEWITEM 01715
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=29  //tall
+FINDLAYER(6).REMOVE
+SRC.NEWITEM 01716
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=30  //straw
+FINDLAYER(6).REMOVE
+SRC.NEWITEM 01717
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=31  //wizards
+FINDLAYER(6).REMOVE
+SRC.NEWITEM 01718
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=32  //bonet
+FINDLAYER(6).REMOVE
+SRC.NEWITEM 01719
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=33  //feathered
+FINDLAYER(6).REMOVE
+SRC.NEWITEM 0171a
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=34  //tricone
+FINDLAYER(6).REMOVE
+SRC.NEWITEM 0171b
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=35  //jesters
+FINDLAYER(6).REMOVE
+SRC.NEWITEM 0171c
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=36                //  <<<<<-----COLOR BUTTON, ADD GUMP THERE
+ONBUTTON=37
+FINDLAYER(6).REMOVE
+RETURN 1
+ONBUTTON=38  //sandals
+FINDLAYER(3).REMOVE
+SRC.NEWITEM 0170d
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=39  //shoes
+FINDLAYER(3).REMOVE
+SRC.NEWITEM 01710
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=40  //boots
+FINDLAYER(3).REMOVE
+SRC.NEWITEM 0170c
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=41  //thigh boots
+FINDLAYER(3).REMOVE
+SRC.NEWITEM 01712
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=42                //  <<<<<-----COLOR BUTTON, ADD GUMP THERE
+ONBUTTON=43
+FINDLAYER(3).REMOVE
+RETURN 1
+ONBUTTON=44  //cloak
+FINDLAYER(20).REMOVE
+SRC.NEWITEM 01515
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=45                //  <<<<<-----COLOR BUTTON, ADD GUMP THERE
+ONBUTTON=46
+FINDLAYER(20).REMOVE
+RETURN 1
+ONBUTTON=47  //short hair
+FINDLAYER(11).REMOVE
+SRC.NEWITEM 0203b
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=48  //long
+FINDLAYER(11).REMOVE
+SRC.NEWITEM 0203c
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=49  //pony tail
+FINDLAYER(11).REMOVE
+SRC.NEWITEM 0203d
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=50  //mohawk
+FINDLAYER(11).REMOVE
+SRC.NEWITEM 02044
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=51  //pageboy
+FINDLAYER(11).REMOVE
+SRC.NEWITEM 02045
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=52  //topknot
+FINDLAYER(11).REMOVE
+SRC.NEWITEM 0204a
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=53  //curley
+FINDLAYER(11).REMOVE
+SRC.NEWITEM 02047
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=54  //receding
+FINDLAYER(11).REMOVE
+SRC.NEWITEM 02048
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=55  //2 tails
+FINDLAYER(11).REMOVE
+SRC.NEWITEM 02049
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=56  //moustache
+IF (<BODY>==c_Man)
+FINDLAYER(16).REMOVE
+SRC.NEWITEM 02041
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ELSE
+SRC.SYSMESSAGE Female's cannot have facial hair!
+ONBUTTON=57  //short beard
+IF (<BODY>==c_Man)
+FINDLAYER(16).REMOVE
+SRC.NEWITEM 0203f
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ELSE
+SRC.SYSMESSAGE Female's cannot have facial hair!
+ONBUTTON=58  //short beard/moustache
+IF (<BODY>==c_Man)
+FINDLAYER(16).REMOVE
+SRC.NEWITEM 0204b
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ELSE
+SRC.SYSMESSAGE Female's cannot have facial hair!
+ONBUTTON=59  //long beard
+IF (<BODY>==c_Man)
+FINDLAYER(16).REMOVE
+SRC.NEWITEM 0203e
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ELSE
+SRC.SYSMESSAGE Female's cannot have facial hair!
+ONBUTTON=60  //long beard/moustache
+IF (<BODY>==c_Man)
+FINDLAYER(16).REMOVE
+SRC.NEWITEM 0204c
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ELSE
+SRC.SYSMESSAGE Female's cannot have facial hair!
+ONBUTTON=61  //goatee
+IF (<BODY>==c_Man)
+FINDLAYER(16).REMOVE
+SRC.NEWITEM 02040
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ELSE
+SRC.SYSMESSAGE Female's cannot have facial hair!
+ONBUTTON=62  //vandyke
+IF (<BODY>==c_Man)
+FINDLAYER(16).REMOVE
+SRC.NEWITEM 0204d
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ELSE
+SRC.SYSMESSAGE Female's cannot have facial hair!
+ONBUTTON=63                //  <<<<<-----COLOR BUTTON, ADD GUMP THERE
+ONBUTTON=64
+FINDLAYER(11).REMOVE
+FINDLAYER(16).REMOVE
+RETURN 1
+ONBUTTON=65  //fishing pole
+FINDLAYER(2).REMOVE
+SRC.NEWITEM 0dbf
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=66  //pickaxe
+FINDLAYER(2).REMOVE
+SRC.NEWITEM 0e86
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=67  //pitchfork
+FINDLAYER(2).REMOVE
+SRC.NEWITEM 0e87
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=68  //cleaver
+FINDLAYER(1).REMOVE
+SRC.NEWITEM 0ec3
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=69  //mace
+FINDLAYER(1).REMOVE
+SRC.NEWITEM 0f5c
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=70  //torch
+FINDLAYER(2).REMOVE
+SRC.NEWITEM 0f64
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=71  //hammer
+FINDLAYER(1).REMOVE
+SRC.NEWITEM 013e3
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=72  //longsword
+FINDLAYER(1).REMOVE
+SRC.NEWITEM 0f61
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=73  //gnarled staff
+FINDLAYER(2).REMOVE
+SRC.NEWITEM 013f8
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=74  //crossbow
+FINDLAYER(2).REMOVE
+SRC.NEWITEM 013fd
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=75  //war mace
+FINDLAYER(1).REMOVE
+SRC.NEWITEM 01407
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=76  //two-handed axe
+FINDLAYER(2).REMOVE
+SRC.NEWITEM 01443
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=77  //spear
+FINDLAYER(2).REMOVE
+SRC.NEWITEM 0f62
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=78  //katana
+FINDLAYER(1).REMOVE
+SRC.NEWITEM 013ff
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=79  //spellbook
+FINDLAYER(1).REMOVE
+SRC.NEWITEM 0efa
+SRC.ACT.CONT=<SERIAL>
+ACT.EQUIP
+RETURN 1
+ONBUTTON=80
+FINDLAYER(1).REMOVE
+FINDLAYER(2).REMOVE
+RETURN 1
+
+
+
+[SPEECH spk_pvp_vendor]
+ON=*sell*
+ON=*thou*purchase*
+ON=*you*purchase*
+ON=*you*buy*
+ON=*I*sale*
+   IF (<SRC.FLAGS> & statf_dead)
+      SRC.SYSMESSAGE @025 The dead cannot make transactions, friend...
+      RETURN 1
+   ENDIF
+   TAG.VENDORMARKUP -15
+   SECTOR.RESTOCK
+   SELL
+
+
+ON=*buy*
+ON=*supplies*
+ON=*wares*
+   IF (<SRC.FLAGS> & statf_dead)
+      SRC.SYSMESSAGE @025 The dead cannot make transactions, friend...
+      RETURN 1
+   ENDIF
+   TAG.VENDORMARKUP -15
+   SECTOR.RESTOCK
+   BUY
+
+ON=Hi
+ON=Hello
+ON=Hail
+ON=Greet
+  
+   SAY=Greetings, gladiator.
+
+ON=Bye
+ON=Goodbye
+ON=Farewell
+	SAY=Fare thee well.
+	BYE
+	return 1
+	
+ON=open
+  
+   
+   if !( <ISMYPET> )
+      SAY I'm not ready to open the shop yet.
+      return 1
+   endif
+
+   TAG.CLOSED	= 0
+   SAY *opens the shop*
+   return 1
+
+ON=close
+   
+   
+   if !( <SRC.ISGM> )
+      SAY Go about your business!
+      return 1
+   endif
+   TAG.CLOSED	= 1
+   SAY *closes the shop*
+   return 1
+
+ON=*stock*
+   if !( <SRC.ISGM> )
+      SAY Go about your business!
+      return 1
+   endif
+   return 1
+
+
+[FUNCTION ALLMOVE]
+  if ( <findcont(0).uid> )
+     findcont(0).CONT	= <args>
+     ALLMOVE <args>
+  endif
+
+[CHARDEF C_H_PVP_VENDOR]
+NAME=#NAMES_HUMANMALE the Vendor
+ID=C_MAN
+CAN=0
+FOODTYPE=
+TSPEECH=spk_human_prime
+TSPEECH=spk_pvp_vendor
+TSPEECH=spk_needs
+TSPEECH=spk_human_default
+TEVENTS=e_player_vendor
+
+TEVENTS=e_Human_ConvInit
+TEVENTS=e_Human_HearUnk
+TEVENTS=e_Human_Greet
+TEVENTS=e_Human_Space
+TEVENTS=e_Human_Refuse
+TEVENTS=e_Human_Environ
+ON=@Create
+  NPC=brain_vendor
+  COLOR=colors_skin
+  FLAGS=028000005
+  NEED=i_gold
+  STR={66 80}
+  DEX=90
+  INT={66 80}
+  FENCING={15.0 38.0}
+  PARRYING={45.0 68.0}
+  SWORDSMANSHIP={15.0 38.0}
+  WRESTLING={15.0 38.0}
+  MACEFIGHTING={15.0 38.0}
+  MAGICRESISTANCE={45.0 68.0}
+  TACTICS={45.0 68.0}
+  ITEMNEWBIE=i_lantern
+  ITEMNEWBIE=random_male_hair
+  COLOR=colors_hair
+  ITEMNEWBIE=random_facial_hair
+  COLOR=match_hair
+ON=@NPCRestock
+  ITEMNEWBIE=i_shirt_plain
+  COLOR=colors_all
+  ITEMNEWBIE=random_pants
+  COLOR=colors_all
+  ITEMNEWBIE=random_shoes
+  COLOR=colors_neutral
+
+
+[CHARDEF C_H_PVP_VENDOR_F]
+NAME=#NAMES_HUMANFEMALE the Vendor
+ID=C_WOMAN
+CAN=0
+FOODTYPE=
+TSPEECH=spk_human_prime
+TSPEECH=spk_pvp_vendor
+TSPEECH=spk_needs
+TSPEECH=spk_human_default
+TEVENTS=e_player_vendor
+
+TEVENTS=e_Human_ConvInit
+TEVENTS=e_Human_HearUnk
+TEVENTS=e_Human_Greet
+TEVENTS=e_Human_Space
+TEVENTS=e_Human_Refuse
+TEVENTS=e_Human_Environ
+ON=@Create
+  NPC=brain_vendor
+  COLOR=colors_skin
+  FLAGS=028000001
+  NEED=i_gold
+  STR={66 80}
+  DEX=90
+  INT={66 80}
+  FENCING={15.0 38.0}
+  PARRYING={45.0 68.0}
+  SWORDSMANSHIP={15.0 38.0}
+  WRESTLING={15.0 38.0}
+  MACEFIGHTING={15.0 38.0}
+  MAGICRESISTANCE={45.0 68.0}
+  TACTICS={45.0 68.0}
+  ITEMNEWBIE=i_lantern
+  ITEMNEWBIE=random_female_hair
+  COLOR=colors_hair
+ON=@NPCRestock
+  ITEM=i_shirt_plain
+  COLOR=colors_all
+  ITEM=random_skirt
+  COLOR=colors_all
+  ITEM=random_shoes
+  COLOR=colors_neutral
+  ITEM=random_coin_purse
+
+
+
+
+
+[EOF]

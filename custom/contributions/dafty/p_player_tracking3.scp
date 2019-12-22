@@ -1,0 +1,248 @@
+//****************************************//
+// Guild or Party Member Player Tracking //
+//**************************************//
+
+// Type .starttracking followed by the desired player name in order to start tracking  
+// Typing .starttracking without <ARGS> will ask you to manually target the desired player
+// Players must be in your guild or party in order to start tracking them
+// Type .stoptracking to stop tracking a player
+// Type .stoptracker followed by the desired player name in order to stop that player from tracking you
+// Typing .stoptracker without <ARGS> will stop every current tracker from tracking you
+// Logging out will stop any tracking or tracker in progress
+// Left-click the tracking arrow to check the current Region Name of the player you are tracking
+// Right-click the tracking arrow to stop tracking
+// Type .trackerlist to see the list of players currently tracking you
+
+[PLEVEL 1]
+starttracking
+stoptracking
+stoptracker
+trackerlist
+
+[FUNCTION trackerlist]
+IF (<SRC.TAG0.TRACKEDBY>)
+	SRC.SYSMESSAGE Trackers List:
+	FOR <EVAL <SRC.TAG.TRACKEDBY>>
+		SRC.SYSMESSAGE <EVAL <LOCAL._FOR>> - <UID.<SRC.TAG.TRACKEDBYUID<EVAL <LOCAL._FOR>>>.NAME>
+	ENDFOR
+	SRC.SYSMESSAGE Type .stoptracker "Player Name" to stop a player from tracking you or just .stoptracker to stop all trackers.
+ELSE
+	SRC.SYSMESSAGE There are no players tracking you at the moment.
+	RETURN 1
+ENDIF
+	
+
+[FUNCTION starttracking]
+IF !(STRMATCH("<SRC.TAG.TRACKINGUID>",""))
+	SRC.SYSMESSAGE You are already tracking a player. Please first stop tracking by typing .stoptracking and then try to use this command again.
+	RETURN 1
+ENDIF
+
+IF (<ISEMPTY <ARGS>>)
+	SRC.SYSMESSAGE Please target the guild or party member you want to start tracking.
+	TARGETF start_tracking
+	RETURN 1
+ENDIF
+
+IF STRMATCH("<SRC.NAME>","<ARGS>")
+	SRC.SYSMESSAGE You can't track yourself.
+	RETURN 1
+ENDIF
+
+IF (<SRC.ISINPARTY>)
+	FOR 0 <EVAL <SRC.PARTY.MEMBERS>-1>
+		IF (STRMATCH("<SRC.PARTY.MEMBER.<EVAL <LOCAL._FOR>>.NAME>","<ARGS>")) && !(<SRC.PARTY.MEMBER.<EVAL <LOCAL._FOR>>.FINDID.i_rune_incognito.UID>)
+			SRC.f_start_tracking <SRC.PARTY.MEMBER.<EVAL <LOCAL._FOR>>.UID>
+			RETURN 1
+		ENDIF
+	ENDFOR
+ENDIF
+	
+IF (<SRC.MEMORYFINDTYPE.MEMORY_GUILD.LINK.UID> >= 1)
+	OBJ=<SRC.MEMORYFINDTYPE.MEMORY_GUILD.LINK.UID>
+	FOR 0 <EVAL (<OBJ.MEMBER.COUNT>-1)>
+		IF (<OBJ.MEMBER.<EVAL <LOCAL._FOR>>.ISONLINE>)
+			IF (STRMATCH("<OBJ.MEMBER.<EVAL <LOCAL._FOR>>.NAME>","<ARGS>") && !(<OBJ.MEMBER.<EVAL <LOCAL._FOR>>.FINDID.i_rune_incognito.UID>)
+				SRC.f_start_tracking <OBJ.MEMBER.<EVAL <LOCAL._FOR>>.UID>
+				RETURN 1		
+			ENDIF		
+		ENDIF
+	ENDFOR	
+ENDIF
+				
+IF !(<LOCAL.TRACKING>)
+	SRC.SYSMESSAGE This player is neither in your party nor in your guild.
+	RETURN 1
+ENDIF
+
+[FUNCTION start_tracking]
+IF !(<ARGO.ISPLAYER>)
+	SRC.SYSMESSAGE You can only track players.
+	RETURN 1
+ENDIF
+
+IF (<ARGO.UID>==<SRC.UID>)
+	SRC.SYSMESSAGE You can't track yourself.
+	RETURN 1
+ENDIF
+
+IF (<SRC.ISINPARTY>)
+	FOR 0 <EVAL <SRC.PARTY.MEMBERS>-1>
+		IF (<SRC.PARTY.MEMBER.<EVAL <LOCAL._FOR>>.UID>==<ARGO.UID>)
+			SRC.f_start_tracking <SRC.PARTY.MEMBER.<EVAL <LOCAL._FOR>>.UID>
+			RETURN 1
+		ENDIF
+	ENDFOR
+ENDIF
+
+IF (<SRC.MEMORYFINDTYPE.MEMORY_GUILD.LINK.UID> >= 1)
+	OBJ=<SRC.MEMORYFINDTYPE.MEMORY_GUILD.LINK.UID>
+	FOR 0 <EVAL (<OBJ.MEMBER.COUNT>-1)>
+		IF (<OBJ.MEMBER.<EVAL <LOCAL._FOR>>.ISONLINE>)
+			IF (<OBJ.MEMBER.<EVAL <LOCAL._FOR>>.UID>==<ARGO.UID>)
+				SRC.f_start_tracking <OBJ.MEMBER.<EVAL <LOCAL._FOR>>.UID>
+				RETURN 1		
+			ENDIF		
+		ENDIF
+	ENDFOR	
+ENDIF
+
+IF !(<LOCAL.TRACKING>)
+	SRC.SYSMESSAGE This player is neither in your party nor in your guild.
+	RETURN 1
+ENDIF
+	
+[FUNCTION f_start_tracking]
+LOCAL.TRACKING=1
+
+SRC.ARROWQUEST <UID.<ARGS>.P.X>,<UID.<ARGS>.P.Y>
+			
+SRC.EVENTS +e_player_tracking
+UID.<ARGS>.EVENTS +e_player_tracker
+				
+SRC.TAG.TRACKINGUID=<ARGS>
+UID.<ARGS>.TAG0.TRACKEDBY=<EVAL (<UID.<ARGS>.TAG0.TRACKEDBY>+1)>
+UID.<ARGS>.TAG.TRACKEDBYUID<EVAL <UID.<ARGS>.TAG.TRACKEDBY>>=<SRC.UID>
+			
+IF !(<UID.<ARGS>.FINDID.m_player_tracking.UID>)
+	SERV.NEWITEM m_player_tracking
+	UID.<ARGS>.EQUIP <NEW.UID>
+ENDIF
+			
+SRC.SYSMESSAGE You are now tracking <UID.<ARGS>.NAME>. 
+SRC.SYSMESSAGE Type .stoptracking to stop tracking this player.
+UID.<ARGS>.SYSMESSAGE <SRC.NAME> is now tracking you.
+
+[FUNCTION stoptracker]
+IF !(<ISEMPTY <ARGS>>)
+
+	FOR <EVAL <SRC.TAG.TRACKEDBY>>
+		IF STRMATCH("<UID.<SRC.TAG.TRACKEDBYUID<EVAL <LOCAL._FOR>>>.NAME>","<ARGS>") || ((<UID.<SRC.TAG.TRACKEDBYUID<EVAL <LOCAL._FOR>>>.FINDID.i_rune_incognito.UID>) && (STRMATCH("<UID.<SRC.TAG.TRACKEDBYUID<EVAL <LOCAL._FOR>>>.FINDID.i_rune_incognito.NAME>","<ARGS>")))
+			LOCAL.STOPBEINGTRACKED=1
+			SRC.f_stop_tracker <SRC.TAG.TRACKEDBYUID<EVAL <LOCAL._FOR>>>,<EVAL <LOCAL._FOR>>
+			RETURN 1		
+		ENDIF		
+	ENDFOR	
+	
+ELSE
+
+	IF (<SRC.TAG0.TRACKEDBY>)
+		FOR <EVAL <SRC.TAG.TRACKEDBY>>
+			TRY UID.<SRC.TAG.TRACKEDBYUID<EVAL <LOCAL._FOR>>>.ARROWQUEST 0,0
+			TRY UID.<SRC.TAG.TRACKEDBYUID<EVAL <LOCAL._FOR>>>.EVENTS -e_player_tracking
+			TRY UID.<SRC.TAG.TRACKEDBYUID<EVAL <LOCAL._FOR>>>.SYSMESSAGE You are no longer tracking <SRC.NAME>.
+			SRC.SYSMESSAGE <UID.<SRC.TAG.TRACKEDBYUID<EVAL <LOCAL._FOR>>>.NAME> is no longer tracking you.
+			TRY UID.<SRC.TAG.TRACKEDBYUID<EVAL <LOCAL._FOR>>>.TAG.TRACKINGUID=
+			SRC.TAG.TRACKEDBYUID<EVAL <LOCAL._FOR>>=
+		ENDFOR	
+		SRC.EVENTS -e_player_tracker
+		SRC.TAG.TRACKEDBY=
+		SRC.FINDID.m_player_tracking.REMOVE
+		RETURN 1
+	ELSE
+		SRC.SYSMESSAGE There are no players tracking you at the moment.
+		RETURN 1
+	ENDIF
+	
+ENDIF
+
+IF !(<LOCAL.STOPBEINGTRACKED>)
+	SRC.SYSMESSAGE No Player with that name is currently tracking you.
+ENDIF
+	
+
+[FUNCTION stoptracking]
+
+IF !(STRMATCH("<SRC.TAG.TRACKINGUID>",""))
+	FOR <EVAL <UID.<SRC.TAG.TRACKINGUID>.TAG.TRACKEDBY>> 
+		IF STRMATCH("<UID.<SRC.TAG.TRACKINGUID>.TAG.TRACKEDBYUID<EVAL <LOCAL._FOR>>>","<SRC.UID>") 
+			TRY.UID.<SRC.TAG.TRACKINGUID>.TAG.TRACKEDBYUID<EVAL <LOCAL._FOR>>.f_stop_tracker <SRC.UID>,<EVAL <LOCAL._FOR>>
+			RETURN 1
+		ENDIF
+	ENDFOR
+ELSE
+	SRC.SYSMESSAGE You are not tracking anyone at the moment.
+	RETURN 1
+ENDIF
+
+[FUNCTION f_stop_tracker]
+
+TRY UID.<ARGV0>.ARROWQUEST 0,0
+TRY UID.<ARGV0>.EVENTS -e_player_tracking
+TRY UID.<ARGV0>.SYSMESSAGE You are no longer tracking <SRC.NAME>.
+SRC.SYSMESSAGE <UID.<ARGV0>.NAME> is no longer tracking you.
+TRY UID.<ARGV0>.TAG.TRACKINGUID=
+
+LOCAL.TEMP=<ARGV1>
+FOR <EVAL <LOCAL.TEMP>> <EVAL <SRC.TAG.TRACKEDBY>>
+	SRC.TAG.TRACKEDBYUID<EVAL <LOCAL._FOR>>=<SRC.TAG.TRACKEDBYUID<EVAL <LOCAL._FOR>+1>>
+	SRC.TAG.TRACKEDBYUID<EVAL <LOCAL._FOR>+1>=
+ENDFOR	
+SRC.TAG.TRACKEDBY=<EVAL (<SRC.TAG.TRACKEDBY>-1)>
+
+IF (<EVAL <SRC.TAG0.TRACKEDBY>>==0)
+	SRC.EVENTS -e_player_tracker
+	SRC.TAG.TRACKEDBY=
+	SRC.FINDID.m_player_tracking.REMOVE
+ENDIF
+
+[EVENTS e_player_tracking]
+ON=@LOGOUT
+SRC.stoptracking
+
+ON=@DEATH
+SRC.stoptracking
+
+ON=@USERQUESTARROWCLICK
+IF (<ARGN1>==0)
+	SRC.SYSMESSAGE You are tracking <UID.<SRC.TAG.TRACKINGUID>.NAME> whom is currently at <UID.<SRC.TAG.TRACKINGUID>.REGION.NAME>.
+	SRC.SYSMESSAGE Right-Click to stop tracking.
+ELSEIF (<ARGN1>==1)
+	SRC.stoptracking
+ENDIF
+RETURN 1
+
+[EVENTS e_player_tracker]
+ON=@LOGOUT
+SRC.stoptracker
+
+ON=@DEATH
+SRC.stoptracker
+
+[ITEMDEF m_player_tracking]
+ID=I_MEMORY
+NAME=Player Tracker
+TYPE=t_eq_script
+
+ON=@CREATE
+TIMER=0
+
+ON=@TIMER
+FOR <EVAL <CONT.TAG.TRACKEDBY>>
+	TRY UID.<CONT.TAG.TRACKEDBYUID<EVAL <LOCAL._FOR>>>.ARROWQUEST 0,0
+	TRY UID.<CONT.TAG.TRACKEDBYUID<EVAL <LOCAL._FOR>>>.ARROWQUEST <CONT.P.X>,<CONT.P.Y>
+ENDFOR
+TIMER=0
+RETURN 1
+
+

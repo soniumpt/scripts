@@ -1,0 +1,373 @@
+// #-----------#
+// # CHANGELOG #
+// #-----------#
+//
+// 19/08/18 - Wigifer - File reviewed, no further amendments for f_central_loot.
+
+//////////////////////////
+/******Entertainers******/
+//////////////////////////
+
+
+
+
+///////////////////////JESTER///////////////////////
+
+[CHARDEF C_H_JESTER]
+DEFNAME=C_H_JESTER
+NAME=#NAMES_HUMANMALE the Jester
+ID=C_MAN
+DESIRES=i_gold,e_notoriety
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+TSPEECH=spk_human_prime
+TSPEECH=jobjester
+TSPEECH=spk_needs
+TSPEECH=spk_rehello
+TSPEECH=spk_human_default
+
+TEVENTS=e_Human_HearUnk
+TEVENTS=e_Human_Needs
+TEVENTS=e_Human_ConvInit
+TEVENTS=e_Human_Greet
+TEVENTS=e_Human_Space
+TEVENTS=e_Human_Refuse
+TEVENTS=e_Human_Environ
+
+ON=@Create
+COLOR=colors_skin
+STR={36 50}
+DEX={36 50}
+INT={51 65}
+
+EVALUATINGINTEL={25.0 48.0}
+FENCING={15.0 38.0}
+SWORDSMANSHIP={15.0 38.0}
+WRESTLING={15.0 38.0}
+MACEFIGHTING={15.0 38.0}
+TACTICS={25.0 48.0}
+
+NPC=brain_human
+
+ITEM=RANDOM_LIGHT
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+ITEM=i_jester_suit
+COLOR=colors_all
+ITEM=i_hat_jester
+COLOR=colors_all
+ITEM=i_pants_long
+COLOR=colors_all
+ITEM=random_boots
+ITEM=i_dice_cup
+ITEM=backpack_poor
+
+CATEGORY=Civilized
+SUBSECTION=Villagers
+DESCRIPTION=Jester (male)
+
+//----------------------------------------------------------------------------------------
+
+[SPEECH jobjester]
+ON=*job*
+ON=*work*
+ON=*what*do*do*
+ON=*profession*
+ON=*occupation*
+	IF ( <SRC.KARMA.WICKED> || <SRC.KARMA.BELLIGERANT> )
+		DORAND 2
+			SAY I'm the mayor here, and I'd advise thee to remember that.
+			SAY I am, of course, the mayor of this town.
+		ENDDO
+	ELIF ( <SRC.KARMA.NEUTRAL> )
+		DORAND 4
+			SAY I'm the jester.
+			SAY I'm the jester here.
+			SAY I jest here.
+			SAY I tell jokes to brighten up you life.
+		ENDDO
+	ELSE
+		DORAND 2
+			SAY I'm the jest. Welcome to our fair city!
+			SAY I am honored to keep the citizans of this town happy.
+		ENDDO
+	ENDIF
+
+ON=*jester*
+	IF ( <SRC.KARMA.WICKED> || <SRC.KARMA.BELLIGERANT> )
+		DORAND 2
+			SAY There's only one jester here, and that would be me or him I forget which!
+			SAY We don't tolerate sense in these parts.
+		ENDDO
+	ELIF ( <SRC.KARMA.NEUTRAL> )
+		IF ( <COMPLEXITY.HIGH> )
+			DORAND 2
+				SAY By the grace of Lord British, I have been made jester here.
+				SAY As jest, i jest and putting smiles on faces.
+			ENDDO
+		ELIF ( <COMPLEXITY.MEDIUM> )
+			DORAND 2
+				SAY By the grace of Lord British, I tell jokes here.
+				SAY As jester, I think my main job is being here for the people or there for people or over there behind the tree.
+			ENDDO
+		ELSE
+			DORAND 2
+				SAY By the grace of Lord British, I've been made jester here.
+				SAY As jester, I think my main job is givin' folk a good time.
+			ENDDO
+		ENDIF
+	ELSE
+		DORAND 2
+			SAY Ah, jester. It sounds far more impotant than it is! lol!
+			SAY I truly believe this is the finest city of its size in all Britannia!
+		ENDDO
+	ENDIF
+
+//JESTER
+// DEFAULT='Tis a rare occurrence, but I do not understand.
+ON=Hail
+ON=Hi
+ON=Greet
+ON=Hello
+	DORAND 2
+		SAY Greetings, O' twinkled toed one.
+		SAY Hail, oh! fighter of frogs!
+	ENDDO
+
+ON=Job
+ON=What do you do
+	SAY=I, of course, am the jester.  I smile, I laugh and I tell the best jokes?
+
+ON=Bye
+ON=Goodbye
+ON=Farewell
+	SAY=Goodbye, and don't forget, smile and the world smiles with you.
+	BYE
+	return 1
+
+ON=*jest*
+ON=*joke*
+ON=*funny*
+	DORAND 50
+		SAY Whats brown and sticky? ... ... A stick !
+		SAY Why are monsters forgetful? ... ... Because everything goes in one ear and out the others !
+		SAY Why did the monster knit herself three socks? ... ... Because she grew another foot !
+		SAY What do you say when you meet a two headed monster? ... ... Hello hello ! 
+		SAY What is the best way to speak to a monster? ... ... From a long way away !
+		SAY What is a vampire's least favorite meal? ... ... Stake !
+		SAY What does a monster wear when it rains? ... ... His ghoul-oshes !
+		SAY Why wouldn't the skeleton cross the road? ... ... Because he didn't have any guts !
+		SAY What happened to the vampire who tried to gain weight by eating more? ... ... It didn't work... it was all in vein !
+		SAY What is in the red blood cells of monsters? ... ... Hemogoblin !
+		SAY How do you keep a skeleton from laughing? ... ... Take away his funny bone !
+		SAY What is a vampire's favorite fruit? ... ... Neck tarines !
+		SAY Why couldn't the ghost go to the dance? ... ... Because he had no body to take !
+		SAY What kind of mistakes do ghosts make? ... ... Boo Boos !
+		SAY What is the most important safety rule for witches? ... ... Don't fly off the handle !
+		SAY What is a ghost's favorite type of pasta? ... ... Spookgetti !
+		SAY What time is it when ghosts haunt your house? ... ... Time to get a new house !
+		SAY How do you know a vampire is getting a cold? ... ... When he starts coffin !
+		SAY What is a vampire's favorite breed of dog? ... ... Bloodhound !
+		SAY Why didn't Dracula ever get married? ... ... He just never found the right ghoul !
+		SAY What do you call a dumb skeleton? ... ... A Bone Head ! 
+		SAY What did one ghost say to the other ghost? ... ... Do you believe in people !
+		SAY What do you get when you cross a vampire with a dwarf? ... ... A monster that sucks blood out of kneecaps !
+		SAY How do ghosts get through locked doors? ... ... They use skeleton keys !
+		SAY Why do vampires tend to make great artists? ... ... They get lots of practice drawing blood!
+		SAY Where do vampires go to deposit their savings? ... ... Blood bank !
+		SAY What do you call a ghost with a broken leg? ... ... A hobblin goblin !
+		SAY When does Dracula relax at work? ... ... During his coffin break !
+		SAY What is a monster's favorite type of necklace? ... ... A choker !
+		SAY Why doesn't Dracula have any friends? ... ... Because he's a pain in the neck !
+		SAY What did the zombie say to the other zombie? ... ... I want my Mummy !			
+		SAY What subject in school do witches like best? ... ... Spelling !
+		SAY Why does a witch wear a black pointed hat? ... ... To keep her head warm !
+		SAY If a skeleton rings your doorbell is he a dead ringer? 
+		SAY How did the skeleton know it was going to rain? ... ... He could feel it in his bones !
+		SAY What do you call a skeleton that won't get up in the morning? ... ... Lazy bones !
+		SAY What do you call a skeleton snake? ... ... A rattler!
+		SAY Why do demons and ghouls get on so well? ... ... Because demons are a ghouls best friend !
+		SAY What do you call a demon who slurps his food? ... ... A goblin !
+		SAY What is the best way to get rid of a demon? ... ... Exorcise a lot !
+		SAY What do demons have on holiday? ... ... A devil of a time !
+		SAY Mummy, mummy what's a werewolf? ... ... Be quiet and brush your face !
+		SAY Why was the werewolf arrested at the butchers shop? ... ... He was caught chop lifting !
+		SAY Who are some of the werewolves cousins? ... ... The whatwolves and whenwolves !
+		SAY What happened when the wizard turned a boy into a hare? ... ... He's still rabbiting on about it !
+		SAY What is a witch with poison ivy called? ... ... An itchy witchy !
+		SAY What is evil and ugly on the inside and green on the outside? ... ... A witch dressed as a cucumber !
+		SAY What happens if you see twin witches? ... ... You won't be able to see which witch is witch ! 
+		SAY Why did the witch give up fortune telling? ... ... There was no future in it !
+		SAY How did the witch almost lose her baby? ... ... She didn't take it far enough into the woods !
+		SAY When is it unlucky to see a black cat ? ... ... When your a mouse !
+	ENDDO
+ON=*bad*
+	SAY=Its the way I tell them.
+ON=SMILE
+	SAY=Smile and the world smiles with you
+
+
+
+
+
+
+
+
+/////////// Sting don't stand so close to me ///////////////
+
+[CHARDEF c_m_Sting] 
+DEFNAME=c_m_tfool
+NAME=Sting the fool 
+ID=C_MAN 
+DESIRES=i_gold, e_notoriety 
+AVERSIONS=t_TRAP, t_eerie_stuff 
+
+ //TEVENTS=e_narr 
+
+ON=@Create 
+   NPC=brain_vendor 
+   COLOR=colors_skin 
+   FLAGS=028000005 
+   NEED=i_gold 
+
+   STR={66 80} 
+   DEX=90 
+   INT={66 80} 
+
+   ITEMNEWBIE=random_male_hair 
+   COLOR=colors_hair 
+   ITEMNEWBIE=random_facial_hair 
+   COLOR=match_hair 
+   ITEMNEWBIE=i_buch_narr 
+   ITEMNEWBIE=i_shirt_plain 
+   COLOR=colors_all 
+   ITEMNEWBIE=random_pants 
+   COLOR=colors_all 
+   ITEMNEWBIE=random_shoes 
+   COLOR=colors_neutral 
+
+CATEGORY=Memory UO
+SUBSECTION=Buskers
+DESCRIPTION=Sting
+
+
+[ITEMDEF i_beggingbowl_sting] 
+ID=01003
+NAME=begging bowl
+TYPE=t_eq_script 
+
+ON=@DCLICK 
+   IF <SRC.RESTEST i_gold 10> 
+      SOUND=0033
+      SRC.SYSMESSAGE=You drop 10gps into the bowl.
+      SRC.consume i_gold 10
+      Link.say I call this "Don't stand so close to me"
+      Timer=5
+      MORE=0 
+   ELSE
+      Link.say You don't have 10gps in your packpack.
+      RETURN 1
+   ENDIF
+
+On=@Timer  
+   IF <MORE>==0 
+      Link.say young newbie - the subject of thieving fantasy 
+      MORE=1 
+      TIMER=7 
+      RETURN 1  
+   ELSEIF <MORE>==1 
+      Link.Say he snoops her so quickly - and spots her large boat key 
+      MORE=2  
+      TIMER=7 
+      RETURN 1  
+   ELSEIF <MORE>==2 
+      Link.Say she's banking - don't notice - this girl's an open pack  
+      MORE=3  
+      TIMER=7
+   ELSEIF <MORE>==3 
+      Link.Say he recalls to her ship now - he just stole half her sack  
+      MORE=4
+      TIMER=7 
+      RETURN 1  
+   ELSEIF <MORE>==4 
+      Link.Say Don't Bank - Don't Bank So 
+      MORE=5 
+      TIMER=5
+      RETURN 1  
+   ELSEIF <MORE>==5 
+      Link.Say Don't Bank So Close To Me 
+      MORE=6 
+      TIMER=5 
+      RETURN 1  
+   ELSEIF <MORE>==6 
+      Link.Say Don't Bank - Don't Bank So 
+      SOUND=0237 
+      MORE=7 
+      TIMER=5 
+      RETURN 1  
+   ELSEIF <MORE>==7 
+      Link.Don't Bank So Close To Me 
+      MORE=8 
+      TIMER=5 
+      RETURN 1  
+   ELSEIF <MORE>==8 
+      Link.Say Harold approached the princess
+      MORE=9 
+      TIMER=100 
+      RETURN 1  
+   ELSEIF <MORE>==9 
+      Link.Say her guildmate's so pissed now - she knows how Orders get 
+      MORE=10 
+      TIMER=40 
+      RETURN 1  
+   ELSEIF <MORE>==10 
+      Link.Say They where married and the celebrations Lasted for 3 days.
+      MORE=11 
+      TIMER=7
+      RETURN 1  
+   ELSEIF <MORE>==11 
+      Link.Say sometimes it's not so easy - they have a dragon pet 
+      MORE=12 
+      TIMER=7 
+      RETURN 1  
+   ELSEIF <MORE>==12 
+      Link.Say they're searching - he's stealthing - he laughs until he cries 
+      MORE=13 
+      TIMER=7 
+      RETURN 1  
+   ELSEIF <MORE>==13 
+      Link.Say he takes one step too many - he reappears and dies  
+      MORE=14 
+      TIMER=7 
+      RETURN 1  
+   ELSEIF <MORE>==14
+      Link.Say Don't Bank - Don't Bank So 
+      MORE=15 
+      TIMER=5
+      RETURN 1  
+   ELSEIF <MORE>==15 
+      Link.Say Don't Bank So Close To Me 
+      MORE=16 
+      TIMER=5 
+      RETURN 1  
+   ELSEIF <MORE>==16 
+      Link.Say Don't Bank - Don't Bank So 
+      SOUND=0237 
+      MORE=17 
+      TIMER=5 
+      RETURN 1  
+   ELSEIF <MORE>==17 
+      Link.Don't Bank So Close To Me 
+      MORE=0 
+      TIMER=5 
+      RETURN 1  
+   ENDIF 
+ 
+CATEGORY=Memory UO
+SUBSECTION=Buskers
+DESCRIPTION=Sting (bowl)
+
+
+[EOF]

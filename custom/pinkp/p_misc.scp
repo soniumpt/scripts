@@ -1,0 +1,1775 @@
+//*********************************************************************************************************//
+//                 Moonglow Start and Exit gates Created by Pink Panther                                   //
+//*********************************************************************************************************//
+
+
+[ITEMDEF i_moonglow_startgate]
+ID=i_moongate_black
+NAME=Start the Adventure 
+
+
+ON=@CREATE
+COLOR=07a1
+
+ON=@STEP
+IF <SRC.NPC> 
+   RETURN 1
+ENDIF
+
+IF (<SRC.SKILLTOTAL> = 3900)
+  //IF (<EVAL <SRC.ODEX> + <SRC.OSTR> + <SRC.OINT>> = 160) 
+    IF (<EVAL <SRC.TAG0.STARTERKITCLAIMED>> = 1)
+      SRC.GO 1950,2696,20
+	  SRC.TAG.SSSSFIRSTCLICK=
+      SRC.UPDATE
+	  SRC.HITS = <SRC.STR>
+	  src.mana = <src.int>
+	  SRC.STAM = <src.dex>
+    ELSE
+      SRC.SYSMESSAGE Please pick the Starter Kit from the Starter Skills Selector Stone before using this gate.
+      RETURN 1
+    ENDIF
+   //ELSE
+   // SRC.SYSMESSAGE Please first get 160 Total Stats from the Starter Skills and Stats Selector Stone before using this gate.
+   // RETURN 1
+  // ENDIF
+ELSE
+  SRC.SYSMESSAGE Please first get 390.0 Total Skills from the Starter Skills Selector Stone before using this gate.
+   RETURN 1
+ENDIF
+
+
+
+
+
+[ITEMDEF i_moonglow_entrance]
+ID=i_teleporter
+NAME=Moonglow 
+
+
+ON=@STEP
+IF <SRC.NPC> 
+   RETURN 1
+ENDIF
+
+
+IF !(<SRC.FLAGS> & statf_criminal) 
+  IF !(<SRC.MEMORYFINDTYPE.memory_fight>)
+    IF (<SRC.HITS> >= <SRC.STR>)
+       SRC.GO <MOREP>
+       SRC.UPDATE
+    ELSE
+      SRC.SYSMESSAGE You must have full health to use this teleport.
+      RETURN 1
+     ENDIF
+    ELSE
+      SRC.SYSMESSAGE You must be at peace to use this teleport.
+      RETURN 1
+     ENDIF
+ELSE
+  SRC.SYSMESSAGE You must not be criminal to use this teleport.
+  RETURN 1
+ENDIF
+
+
+//*********************************************************************************************************//
+//                              Imperial Travel Stone by Pink Panther                                     //
+//*********************************************************************************************************//
+
+[ITEMDEF i_Imperial_travelstone]
+ID=0ed6
+NAME=Imperial Travel Stone
+TYPE=T_NORMAL
+
+ON=@CREATE
+COLOR=0bb0
+
+ON=@DCLICK
+
+DIALOG d_playertravel
+
+RETURN 1
+
+[DIALOG d_playertravel]
+
+0,0
+PAGE 0
+NODISPOSE
+resizepic 1 1 5054 550 425
+gumppic 10 9 5528
+
+dtext 105 133 455 Britain
+button 118 154 2117 2118 1 0 1
+
+dtext 186 31 455 Minoc
+button 195 51 2117 2118 1 0 2
+
+dtext 210 62 455 Vesper
+button 222 82 2117 2118 1 0 3
+
+dtext 35 75 455 Yew
+button 44 92 2117 2118 1 0 4
+
+dtext 263 175 455 Magincia
+button 280 196 2117 2118 1 0 5
+
+dtext 269 216 455 Ocllo
+button 278 236 2117 2118 1 0 6
+
+dtext 20 180 455 Skara Brae
+button 45 201 2117 2118 1 0 7
+
+dtext 91 332 455 Jhelom
+button 106 350 2117 2118 1 0 8
+
+dtext 193 300 455 Serpent's Hold
+button 225 320 2117 2118 1 0 9
+
+dtext 137 238 455 Trinsic
+button 150 258 2117 2118 1 0 10
+
+dtext 265 102 455 Nujel'm
+button 280 122 2117 2118 1 0 11
+
+dtext 316 89 455 Moonglow
+button 339 112 2117 2118 1 0 12
+
+dtext 165 100 455 Cove
+button 173 116 2117 2118 1 0 13
+
+dtext 186 184 455 Buc's Den
+button 206 203 2117 2118 1 0 14
+
+// Quit Button
+button 157 389 5514 5515 1 0 15
+
+dtext 145 15 455 Wrong
+button 155 35 2117 2118 1 0 16
+
+dtext 80 233 455 Destard
+button 93 253 2117 2118 1 0 17
+
+dtext 409 38 455 Hythloth
+button 393 42 2117 2118 1 0 18
+
+dtext 37 138 455 Shame
+button 47 159 2117 2118 1 0 19
+
+//dtext 302 30 455 Deceit
+//button 312 50 2117 2118 1 0 20
+
+dtext 95 82 455 Despise
+button 105 102 2117 2118 1 0 21
+
+dtext 165 72 455 Covetous
+button 190 92 2117 2118 1 0 22
+
+//dtext 409 99 455 Delucia
+//button 393 102 2117 2118 1 0 23
+
+//dtext 409 78 455 Papua
+//button 393 81 2117 2118 1 0 24
+
+dtext 409 59 455 Ice Dungeon
+button 393 62 2117 2118 1 0 25
+
+//dtext 409 119 455 Terathane Keep
+//button 393 122 2117 2118 1 0 26
+
+dtext 268 325 455 Isle of the Avatar
+button 328 346 2117 2118 1 0 27
+
+dtext 400 19 455 Other Locations:
+
+gumppic 249 167 1418
+
+
+
+
+[DIALOG d_playertravel BUTTON]
+
+ONBUTTON=1
+
+   IF (<DISTANCE> > 3)
+		SRC.SYSMESSAGE You are too far away from the stone
+		RETURN 1
+	ENDIF
+	
+   SERV.LOG :PLAYER TRAVEL: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> is going from <SRC.P> to 1389,1508,10 (Britain) through player travel menu. (<NAME>)
+   SRC.GO 1389,1508,10
+   
+   // Britain
+
+ONBUTTON=2
+
+   IF (<DISTANCE> > 3)
+		SRC.SYSMESSAGE You are too far away from the stone
+		RETURN 1
+	ENDIF
+
+   SERV.LOG :PLAYER TRAVEL: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> is going from <SRC.P> to 2600,653 (Minoc) through player travel menu. (<NAME>)
+   SRC.GO 2600,653
+   
+   // Minoc
+
+ONBUTTON=3
+
+   IF (<DISTANCE> > 3)
+		SRC.SYSMESSAGE You are too far away from the stone
+		RETURN 1
+	ENDIF
+  
+   SERV.LOG :PLAYER TRAVEL: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> is going from <SRC.P> to 2819,703 (Vesper) through player travel menu. (<NAME>)
+   SRC.GO 2819,703
+   
+   // Vesper
+
+ONBUTTON=4
+
+   IF (<DISTANCE> > 3)
+		SRC.SYSMESSAGE You are too far away from the stone
+		RETURN 1
+	ENDIF
+
+   SERV.LOG :PLAYER TRAVEL: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> is going from <SRC.P> to 659,788 (Yew) through player travel menu. (<NAME>)
+   SRC.GO 659,788
+   
+   // Yew
+
+ONBUTTON=5
+
+   IF (<DISTANCE> > 3)
+		SRC.SYSMESSAGE You are too far away from the stone
+		RETURN 1
+	ENDIF
+
+   SERV.LOG :PLAYER TRAVEL: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> is going from <SRC.P> to 3661,2161,20 (Magincia) through player travel menu. (<NAME>)
+   SRC.GO 3661,2161,20
+   
+   // Magincia
+
+ONBUTTON=6
+
+   IF (<DISTANCE> > 3)
+		SRC.SYSMESSAGE You are too far away from the stone
+		RETURN 1
+	ENDIF
+
+   SERV.LOG :PLAYER TRAVEL: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> is going from <SRC.P> to 3682,2515 (Ocllo) through player travel menu. (<NAME>)
+   SRC.GO 3682,2515
+   
+   // Ocllo
+
+ONBUTTON=7
+
+   IF (<DISTANCE> > 3)
+		SRC.SYSMESSAGE You are too far away from the stone
+		RETURN 1
+	ENDIF
+
+   SERV.LOG :PLAYER TRAVEL: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> is going from <SRC.P> to 627,2091 (Skara Brae) through player travel menu. (<NAME>)
+   SRC.GO 627,2091
+   
+   // Skara Brae
+
+
+ONBUTTON=8
+
+   IF (<DISTANCE> > 3)
+		SRC.SYSMESSAGE You are too far away from the stone
+		RETURN 1
+	ENDIF
+   
+   SERV.LOG :PLAYER TRAVEL: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> is going from <SRC.P> to 1483,3785 (Jhelom) through player travel menu. (<NAME>)
+   SRC.GO 1483,3785
+   
+   // Jhelom
+
+
+ONBUTTON=9
+
+   IF (<DISTANCE> > 3)
+		SRC.SYSMESSAGE You are too far away from the stone
+		RETURN 1
+	ENDIF
+ 
+   SERV.LOG :PLAYER TRAVEL: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> is going from <SRC.P> to 2902,3415,35 (Serpent's Hold) through player travel menu. (<NAME>)
+   SRC.GO 2902,3415,35
+   
+   // Serpent's Hold
+
+ONBUTTON=10
+
+   IF (<DISTANCE> > 3)
+		SRC.SYSMESSAGE You are too far away from the stone
+		RETURN 1
+	ENDIF
+
+   SERV.LOG :PLAYER TRAVEL: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> is going from <SRC.P> to 1822,2780 (Trinsic) through player travel menu. (<NAME>)
+   SRC.GO 1822,2780
+   
+   // Trinsic
+
+ONBUTTON=11
+
+   IF (<DISTANCE> > 3)
+		SRC.SYSMESSAGE You are too far away from the stone
+		RETURN 1
+	ENDIF
+   
+   SERV.LOG :PLAYER TRAVEL: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> is going from <SRC.P> to 3779,1142,15 (Nujel'm) through player travel menu. (<NAME>)
+   SRC.GO 3779,1142,15
+   
+   // Nujel'm
+
+
+ONBUTTON=12
+
+   IF (<DISTANCE> > 3)
+		SRC.SYSMESSAGE You are too far away from the stone
+		RETURN 1
+	ENDIF
+
+   SERV.LOG :PLAYER TRAVEL: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> is going from <SRC.P> to 4441,1182 (Moonglow) through player travel menu. (<NAME>)
+   SRC.GO 4441,1182
+   
+   // Moonglow
+
+ONBUTTON=13
+
+   IF (<DISTANCE> > 3)
+		SRC.SYSMESSAGE You are too far away from the stone
+		RETURN 1
+	ENDIF
+
+   SERV.LOG :PLAYER TRAVEL: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> is going from <SRC.P> to 2292,1210 (Cove) through player travel menu. (<NAME>)
+   SRC.GO 2292,1210
+   
+   // Cove
+
+ONBUTTON=14
+
+   IF (<DISTANCE> > 3)
+		SRC.SYSMESSAGE You are too far away from the stone
+		RETURN 1
+	ENDIF
+
+   SERV.LOG :PLAYER TRAVEL: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> is going from <SRC.P> to 2706,2163 (Buccaneer's Den) through player travel menu. (<NAME>)
+   SRC.GO 2706,2163
+   
+   // Buccaneer's Den
+
+ONBUTTON=15
+
+   SRC.SYSMESSAGE Player travel cancelled.
+
+   RETURN 0
+
+ONBUTTON=16
+
+   IF (<DISTANCE> > 3)
+		SRC.SYSMESSAGE You are too far away from the stone
+		RETURN 1
+	ENDIF
+   
+   SERV.LOG :PLAYER TRAVEL: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> is going from <SRC.P> to 2044,238,10 (Wrong) through player travel menu. (<NAME>)
+   SRC.GO 2044,238,10
+   
+   // Wrong
+   
+
+ONBUTTON=17
+
+   IF (<DISTANCE> > 3)
+		SRC.SYSMESSAGE You are too far away from the stone
+		RETURN 1
+	ENDIF
+   
+   SERV.LOG :PLAYER TRAVEL: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> is going from <SRC.P> to 1177,2646 (Destard) through player travel menu. (<NAME>)
+   SRC.GO 1177,2646
+   
+   // Destard
+
+
+ONBUTTON=18
+
+   IF (<DISTANCE> > 3)
+		SRC.SYSMESSAGE You are too far away from the stone
+		RETURN 1
+	ENDIF
+   
+   SERV.LOG :PLAYER TRAVEL: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> is going from <SRC.P> to 4721,3824,0 (Hythloth) through player travel menu. (<NAME>)
+   SRC.GO 4721,3824,0
+   
+   // Hythloth
+
+
+ONBUTTON=19
+
+   IF (<DISTANCE> > 3)
+		SRC.SYSMESSAGE You are too far away from the stone
+		RETURN 1
+	ENDIF
+   
+   SERV.LOG :PLAYER TRAVEL: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> is going from <SRC.P> to 513,1563,0 (Shame) through player travel menu. (<NAME>)
+   SRC.GO 513,1563,0
+   
+   // Shame
+
+ONBUTTON=20
+
+   IF (<DISTANCE> > 3)
+		SRC.SYSMESSAGE You are too far away from the stone
+		RETURN 1
+	ENDIF
+   
+   SERV.LOG :PLAYER TRAVEL: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> is going from <SRC.P> to 4110,434,5 (Deceit) through player travel menu. (<NAME>)
+   SRC.GO 4110,434,5
+   
+   // Deceit
+
+ONBUTTON=21
+
+   IF (<DISTANCE> > 3)
+		SRC.SYSMESSAGE You are too far away from the stone
+		RETURN 1
+	ENDIF
+   
+   SERV.LOG :PLAYER TRAVEL: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> is going from <SRC.P> to 1300,1080,0 (Despise) through player travel menu. (<NAME>)
+   SRC.GO 1300,1080,0
+   
+   // Despise
+
+ONBUTTON=22
+   
+   IF (<DISTANCE> > 3)
+		SRC.SYSMESSAGE You are too far away from the stone
+		RETURN 1
+	ENDIF
+	
+   SERV.LOG :PLAYER TRAVEL: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> is going from <SRC.P> to 2499,921,0 (Covetous) through player travel menu. (<NAME>)
+   SRC.GO 2499,921,0
+   
+   // Covetous
+   
+ONBUTTON=23
+
+   IF (<DISTANCE> > 3)
+		SRC.SYSMESSAGE You are too far away from the stone
+		RETURN 1
+	ENDIF
+   
+   SERV.LOG :PLAYER TRAVEL: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> is going from <SRC.P> to 5172,3981,40 (Delucia) through player travel menu. (<NAME>)
+   SRC.GO 5172,3981,40
+   
+   // Delucia
+   
+ONBUTTON=24
+
+   IF (<DISTANCE> > 3)
+		SRC.SYSMESSAGE You are too far away from the stone
+		RETURN 1
+	ENDIF
+   
+   SERV.LOG :PLAYER TRAVEL: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> is going from <SRC.P> to 5729,3209,-1 (Papua) through player travel menu. (<NAME>)
+   SRC.GO 5729,3209,-1
+   
+   // Papua
+   
+ONBUTTON=25
+
+   IF (<DISTANCE> > 3)
+		SRC.SYSMESSAGE You are too far away from the stone
+		RETURN 1
+	ENDIF
+   
+   SERV.LOG :PLAYER TRAVEL: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> is going from <SRC.P> to 2000,81,6 (Ice Dungeon) through player travel menu. (<NAME>)
+   SRC.GO 2000,81,6
+   
+   // Ice Dungeon
+   
+ONBUTTON=26
+
+   IF (<DISTANCE> > 3)
+		SRC.SYSMESSAGE You are too far away from the stone
+		RETURN 1
+	ENDIF
+   
+   SERV.LOG :PLAYER TRAVEL: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> is going from <SRC.P> to 5430,3116,-60 (Tera Keep) through player travel menu. (<NAME>)
+   SRC.GO 5430,3116,-60
+   
+   // Tera Keep
+
+ONBUTTON=27
+
+   IF (<DISTANCE> > 3)
+		SRC.SYSMESSAGE You are too far away from the stone
+		RETURN 1
+	ENDIF
+   
+   SERV.LOG :PLAYER TRAVEL: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> is going from <SRC.P> to 4270,3704 (Isle of The Avatar) through player travel menu. (<NAME>)
+   SRC.GO 4270,3704
+   
+   // Isle of the Avatar
+
+
+
+//*********************************************************************************************************//
+//         Pad to prevent players from walking in one or several directions created by Pink Panther        //
+//*********************************************************************************************************//
+
+[DEFNAME Block_Pad_Direction]
+W_to_E		00000001
+E_to_W		00000002
+N_to_S		00000004
+S_to_N	    	00000008
+SW_to_NE		00000010
+NW_to_SE		00000020
+NE_to_SW		00000040
+SE_to_NW		00000080
+IS_DEAD		00000100
+IS_ALIVE		00000200
+
+[DIALOG d_block_pad_direction]
+0,0
+page 0
+resizepic 92 56 3600 333 451
+
+dtext 150 75 47 Direction Blocker Pad by Pink Panther
+
+dtext 143 100 1157 Block-able Directions:
+
+IF ( <TAG0.Block_Pad_Direction> & W_to_E )
+	dtext 168 130 137 From W to E
+ELSE
+	dtext 168 130 62 From W to E
+ENDIF
+
+button 143 133 1209 1210 1 0 1
+
+IF ( <TAG0.Block_Pad_Direction> & E_to_W )
+	dtext 168 160 137 From E to W
+ELSE
+	dtext 168 160 62 From E to W
+ENDIF
+
+button 143 163 1209 1210 1 0 2
+
+IF ( <TAG0.Block_Pad_Direction> & N_to_S )
+	dtext 168 190 137 From N to S
+ELSE
+	dtext 168 190 62 From N to S
+ENDIF
+
+button 143 193 1209 1210 1 0 3
+
+IF ( <TAG0.Block_Pad_Direction> & S_to_N )
+	dtext 168 220 137 From S to N
+ELSE
+	dtext 168 220 62 From S to N
+ENDIF
+
+button 143 223 1209 1210 1 0 4
+
+IF ( <TAG0.Block_Pad_Direction> & SW_to_NE )
+	dtext 168 250 137 From SW to NE
+ELSE
+	dtext 168 250 62 From SW to NE
+ENDIF
+
+button 143 253 1209 1210 1 0 5
+
+IF ( <TAG0.Block_Pad_Direction> & NW_to_SE )
+	dtext 168 280 137 From NW to SE
+ELSE
+	dtext 168 280 62 From NW to SE
+ENDIF
+
+button 143 283 1209 1210 1 0 6
+
+IF ( <TAG0.Block_Pad_Direction> & NE_to_SW )
+	dtext 168 310 137 From NE to SW
+ELSE
+	dtext 168 310 62 From NE to SW
+ENDIF
+
+button 143 313 1209 1210 1 0 7
+
+IF ( <TAG0.Block_Pad_Direction> & SE_to_NW )
+	dtext 168 340 137 From SE to NW
+ELSE
+	dtext 168 340 162 From SE to NW
+ENDIF
+
+button 143 343 1209 1210 1 0 8
+
+dtext 143 370 1157 Block-able Players State:
+
+IF ( <TAG0.Block_Pad_Direction> & IS_DEAD )
+	dtext 168 400 137 Dead
+ELSE
+	dtext 168 400 162 Dead
+ENDIF
+
+button 143 403 1209 1210 1 0 9
+
+IF ( <TAG0.Block_Pad_Direction> & IS_ALIVE )
+	dtext 246 400 137 Alive
+ELSE
+	dtext 246 400 162 Alive
+ENDIF
+
+button 221 403 1209 1210 1 0 10
+
+dtext 143 430 1157 Direction Blocker Pad Properties:
+
+IF (<ATTR> & attr_invis)
+	dtext 168 460 137 Invisibile
+ELSE
+	dtext 168 460 162 Visible
+ENDIF
+
+button 143 463 1209 1210 1 0 11
+
+[DIALOG d_block_pad_direction button]
+ON=1
+IF !( <TAG0.Block_Pad_Direction> & W_to_E )
+	TAG.Block_Pad_Direction = <eval ( <TAG.Block_Pad_Direction> | W_to_E )>
+	SRC.SYSMESSAGE From W to E - BLOCKED!
+	DIALOG d_block_pad_direction
+ELSE
+	TAG.Block_Pad_Direction = <eval ( <TAG.Block_Pad_Direction> &~ W_to_E )>
+	SRC.SYSMESSAGE From W to E - UNBLOCKED!
+	DIALOG d_block_pad_direction
+ENDIF
+
+ON=2
+IF !( <TAG0.Block_Pad_Direction> & E_to_W )
+	TAG.Block_Pad_Direction = <eval ( <TAG.Block_Pad_Direction> | E_to_W )>
+	SRC.SYSMESSAGE From E to W - BLOCKED!
+	DIALOG d_block_pad_direction
+ELSE
+	TAG.Block_Pad_Direction = <eval ( <TAG.Block_Pad_Direction> &~ E_to_W )>
+	SRC.SYSMESSAGE From E to W - UNBLOCKED!
+	DIALOG d_block_pad_direction
+ENDIF
+
+ON=3
+IF !( <TAG0.Block_Pad_Direction> & N_to_S )
+	TAG.Block_Pad_Direction = <eval ( <TAG.Block_Pad_Direction> | N_to_S )>
+	SRC.SYSMESSAGE From N to S - BLOCKED!
+	DIALOG d_block_pad_direction
+ELSE
+	TAG.Block_Pad_Direction = <eval ( <TAG.Block_Pad_Direction> &~ N_to_S )>
+	SRC.SYSMESSAGE From S to S - UNBLOCKED!
+	DIALOG d_block_pad_direction
+ENDIF
+
+ON=4
+IF !( <TAG0.Block_Pad_Direction> & S_to_N )
+	TAG.Block_Pad_Direction = <eval ( <TAG.Block_Pad_Direction> | S_to_N )>
+	SRC.SYSMESSAGE From S to N - BLOCKED!
+	DIALOG d_block_pad_direction
+ELSE
+	TAG.Block_Pad_Direction = <eval ( <TAG.Block_Pad_Direction> &~ S_to_N )>
+	SRC.SYSMESSAGE From S to N - UNBLOCKED!
+	DIALOG d_block_pad_direction
+ENDIF
+
+ON=5
+IF !( <TAG0.Block_Pad_Direction> & SW_to_NE )
+	TAG.Block_Pad_Direction = <eval ( <TAG.Block_Pad_Direction> | SW_to_NE )>
+	SRC.SYSMESSAGE From SW to NE - BLOCKED!
+	DIALOG d_block_pad_direction
+ELSE
+	TAG.Block_Pad_Direction = <eval ( <TAG.Block_Pad_Direction> &~ SW_to_NE )>
+	SRC.SYSMESSAGE From SW to NE - UNBLOCKED!
+	DIALOG d_block_pad_direction
+ENDIF
+
+ON=6
+IF !( <TAG0.Block_Pad_Direction> & NW_to_SE )
+	TAG.Block_Pad_Direction = <eval ( <TAG.Block_Pad_Direction> | NW_to_SE )>
+	SRC.SYSMESSAGE From NW to SE - BLOCKED!
+	DIALOG d_block_pad_direction
+ELSE
+	TAG.Block_Pad_Direction = <eval ( <TAG.Block_Pad_Direction> &~ NW_to_SE )>
+	SRC.SYSMESSAGE From NW to SE - UNBLOCKED!
+	DIALOG d_block_pad_direction
+ENDIF
+
+ON=7
+IF !( <TAG0.Block_Pad_Direction> & NE_to_SW )
+	TAG.Block_Pad_Direction = <eval ( <TAG.Block_Pad_Direction> | NE_to_SW )>
+	SRC.SYSMESSAGE From NE to SW - BLOCKED!
+	DIALOG d_block_pad_direction
+ELSE
+	TAG.Block_Pad_Direction = <eval ( <TAG.Block_Pad_Direction> &~ NE_to_SW )>
+	SRC.SYSMESSAGE From NE to SW - UNBLOCKED!
+	DIALOG d_block_pad_direction
+ENDIF
+
+ON=8
+IF !( <TAG0.Block_Pad_Direction> & SE_to_NW )
+	TAG.Block_Pad_Direction = <eval ( <TAG.Block_Pad_Direction> | SE_to_NW )>
+	SRC.SYSMESSAGE From SE to NW - BLOCKED!
+	DIALOG d_block_pad_direction
+ELSE
+	TAG.Block_Pad_Direction = <eval ( <TAG.Block_Pad_Direction> &~ SE_to_NW )>
+	SRC.SYSMESSAGE From SE to NW - UNBLOCKED!
+	DIALOG d_block_pad_direction
+ENDIF
+
+ON=9
+IF !( <TAG0.Block_Pad_Direction> & IS_DEAD)
+	TAG.Block_Pad_Direction = <eval ( <TAG.Block_Pad_Direction> | IS_DEAD )>
+	SRC.SYSMESSAGE Dead players - BLOCKED!
+	DIALOG d_block_pad_direction
+ELSE
+	TAG.Block_Pad_Direction = <eval ( <TAG.Block_Pad_Direction> &~ IS_DEAD )>
+	SRC.SYSMESSAGE Dead players - UNBLOCKED!
+	DIALOG d_block_pad_direction
+ENDIF
+
+ON=10
+IF !( <TAG0.Block_Pad_Direction> & IS_ALIVE)
+	TAG.Block_Pad_Direction = <eval ( <TAG.Block_Pad_Direction> | IS_ALIVE )>
+	SRC.SYSMESSAGE Alive players - BLOCKED!
+	DIALOG d_block_pad_direction
+ELSE
+	TAG.Block_Pad_Direction = <eval ( <TAG.Block_Pad_Direction> &~ IS_ALIVE )>
+	SRC.SYSMESSAGE Alive players - UNBLOCKED!
+	DIALOG d_block_pad_direction
+ENDIF
+
+ON=11
+IF (<ATTR> & attr_invis)
+	ATTR = ( <ATTR> & ~ attr_invis )
+	UPDATEX
+	SRC.SYSMESSAGE Direction Blocker Pad - VISIBLE!
+	DIALOG d_block_pad_direction
+ELSE
+	ATTR = ( <ATTR> | attr_invis )
+	UPDATEX
+	SRC.SYSMESSAGE Direction Blocker Pad - INVISIBLE!
+	DIALOG d_block_pad_direction
+ENDIF
+
+
+[ITEMDEF i_block_pad_direction]
+ID=i_floor_marble
+NAME=Direction Blocker Pad
+
+ON=@CREATE
+ATTR=08010
+COLOR=07a1
+
+ON=@DCLICK
+
+IF (<SRC.ISGM>)
+	DIALOG d_block_pad_direction
+	RETURN 1
+ENDIF
+
+ON=@STEP
+
+IF (( <TAG0.Block_Pad_Direction> & IS_DEAD ) && ( <SRC.ISDEAD> )) || (( <TAG0.Block_Pad_Direction> & IS_ALIVE ) && !( <SRC.ISDEAD> ))
+	IF (<SRC.DIR> = 2) // From W to E
+		IF ( <TAG0.Block_Pad_Direction> & W_to_E )
+			SRC.MOVE -1
+			SRC.SYSMESSAGE You can't walk in this direction.
+		ENDIF
+	ELSEIF (<SRC.DIR> = 6) // From E to W
+		IF ( <TAG0.Block_Pad_Direction> & E_to_W )
+			SRC.MOVE 1
+			SRC.SYSMESSAGE You can't walk in this direction.
+		ENDIF
+	ELSEIF (<SRC.DIR> = 4) // From N to S
+		IF ( <TAG0.Block_Pad_Direction> & N_to_S )
+			SRC.MOVE 0 -1
+			SRC.SYSMESSAGE You can't walk in this direction.
+		ENDIF
+	ELSEIF (<SRC.DIR> = 0) // From S to N
+		IF ( <TAG0.Block_Pad_Direction> & S_to_N )
+			SRC.MOVE 0 1
+			SRC.SYSMESSAGE You can't walk in this direction.
+		ENDIF
+	ELSEIF (<SRC.DIR> = 1) // From SW to NE
+		IF ( <TAG0.Block_Pad_Direction> & SW_to_NE )
+			SRC.MOVE -1 1
+			SRC.SYSMESSAGE You can't walk in this direction.
+		ENDIF
+	ELSEIF (<SRC.DIR> = 3) // From NW to SE
+		IF ( <TAG0.Block_Pad_Direction> & NW_to_SE )
+			SRC.MOVE -1 -1
+			SRC.SYSMESSAGE You can't walk in this direction.
+		ENDIF
+	ELSEIF (<SRC.DIR> = 5) // From NE to SW
+		IF ( <TAG0.Block_Pad_Direction> & NE_to_SW )
+			SRC.MOVE 1 -1
+			SRC.SYSMESSAGE You can't walk in this direction.
+		ENDIF
+	ELSEIF (<SRC.DIR> = 7) // From SE to NW
+		IF ( <TAG0.Block_Pad_Direction> & SE_to_NW )
+			SRC.MOVE 1 1
+			SRC.SYSMESSAGE You can't walk in this direction.
+		ENDIF
+	ENDIF
+ENDIF
+
+
+//*******************************************************************************************************************//
+//         Guild Town Bindback, Resurrection and Travel Stones Created by Pink Panther                               //
+//                                                                                                                   //     
+// - Double click the stones with .gm ON to link the stones to the town key (the key players use to open town doors) //
+// - Only players with the town key can use these stones                                                             //
+//*******************************************************************************************************************//
+
+[ITEMDEF i_guildhome_travelstone]
+ID=0ed6
+NAME=Guild Town Travel Stone
+
+ON=@CREATE
+COLOR=07a0
+ATTR=08010
+
+on=@DCLICK
+
+IF (<SRC.ISGM>)
+	IF (<MORE1>=0)
+		TARGET Please target the desired Guild Town Key.
+		RETURN 1
+	ELSE
+		SRC.SYSMESSAGE This Guild Town Stone is already linked to a Guild Town Key. Set the Stone More1 to 0 if you wan't to re-set it.
+		RETURN 1
+	ENDIF
+ENDIF
+
+IF (<DISTANCE> > 3)
+	SRC.SYSMESSAGE You are too far away.
+	RETURN 1
+ENDIF
+
+IF (<SRC.FINDID.i_key_copper>)
+	IF (<SRC.FINDID.i_key_copper.MORE1>==<MORE1>)
+		IF !(<SRC.ISDEAD>)
+			SRC.DIALOG d_playertravel
+		ELSE
+			SRC.SYSMESSAGE You can't use this stone while dead.
+		ENDIF
+	ELSE
+		SRC.SYSMESSAGE You don't seem to have any Guild Town Key with yourself. Please carry only the Guild Town Key with yourself to use this stone.
+	ENDIF
+ELSE
+	SRC.SYSMESSAGE You don't seem to have any Guild Town Key with yourself.
+	RETURN 1
+ENDIF
+RETURN 1
+
+ON=@TARGON_CHAR
+SRC.SYSMESSAGE You need to target a key with this.
+RETURN 1
+
+ON=@TARGON_GROUND
+SRC.SYSMESSAGE You need to target a key with this.
+RETURN 1
+
+ON=@TARGON_ITEM
+IF (<SRC.TARG.BASEID>=i_key_copper)
+	MORE1=<SRC.TARG.MORE1>
+	SRC.SYSMESSAGE Items successfully linked.
+ELSE
+	SRC.SYSMESSAGE You need to target a key with this.
+	RETURN 1
+ENDIF
+RETURN 1
+
+[ITEMDEF i_guildhome_resstone]
+ID=0ed6
+NAME=Guild Town Resurrection Stone
+
+ON=@CREATE
+COLOR=079c
+ATTR=08010
+
+on=@DCLICK
+
+IF (<SRC.ISGM>)
+	IF (<MORE1>=0)
+		TARGET Please target the desired Guild Town Key.
+		RETURN 1
+	ELSE
+		SRC.SYSMESSAGE This Guild Town Stone is already linked to a Guild Town Key. Set the Stone More1 to 0 if you wan't to re-set it.
+		RETURN 1
+	ENDIF
+ENDIF
+
+IF (<DISTANCE> > 3)
+	SRC.SYSMESSAGE You are too far away.
+	RETURN 1
+ENDIF
+
+IF (<SRC.FINDID.i_key_copper>)
+	IF (<SRC.FINDID.i_key_copper.MORE1>==<MORE1>)
+		IF (<SRC.ISDEAD>)
+			IF (<SRC.FINDID.M_Resurrect_Delay>)
+				SRC.SYSMESSAGE You cannot use this stone again yet!
+			ELSE
+				SRC.RESURRECT
+				SRC.SYSMESSAGE You feel life surge through you!
+				SRC.NEWITEM	M_Resurrect_Delay
+				SRC.ACT.EQUIP
+			ENDIF
+		ELSE
+			SRC.SYSMESSAGE You don't seem to be dead.
+		ENDIF
+	ELSE
+		SRC.SYSMESSAGE You don't seem to have any Guild Town Key with yourself. Please carry only the Guild Town Key with yourself to use this stone.
+	ENDIF
+ELSE
+	SRC.SYSMESSAGE You don't seem to have any Guild Town Key with yourself.
+ENDIF
+RETURN 1
+
+ON=@TARGON_CHAR
+SRC.SYSMESSAGE You need to target a key with this.
+RETURN 1
+
+ON=@TARGON_GROUND
+SRC.SYSMESSAGE You need to target a key with this.
+RETURN 1
+
+ON=@TARGON_ITEM
+IF (<SRC.TARG.BASEID>=i_key_copper)
+	MORE1=<SRC.TARG.MORE1>
+	SRC.SYSMESSAGE Items successfully linked.
+ELSE
+	SRC.SYSMESSAGE You need to target a key with this.
+	RETURN 1
+ENDIF
+RETURN 1
+
+[ITEMDEF i_guildhome_bindstone]
+ID=0ed6
+NAME=Guild Town Bind Stone
+
+ON=@CREATE
+COLOR=07a1
+ATTR=08010
+
+on=@DCLICK
+
+IF (<SRC.ISGM>)
+	IF (<MORE1>=0)
+		TARGET Please target the desired Guild Town Key.
+		RETURN 1
+	ELSE
+		SRC.SYSMESSAGE This Guild Town Stone is already linked to a Guild Town Key. Set the Stone More1 to 0 if you wan't to re-set it.
+		RETURN 1
+	ENDIF
+ENDIF
+
+IF (<DISTANCE> > 3)
+	SRC.SYSMESSAGE You are too far away.
+	RETURN 1
+ENDIF
+
+IF (<SRC.FINDID.i_key_copper>)
+	IF (<SRC.FINDID.i_key_copper.MORE1>==<MORE1>)
+		SRC.SYSMESSAGE You successfully set your Guild Home Location. Type .guildhome to get back here, dead or alive.
+		SRC.TAG.GUILDHOME=<P>
+		SRC.TAG.GUILDHOMEUID=<UID>
+		SRC.FINDID.i_key_copper.TAG.GUILDHOMEUID=<UID>
+	ELSE
+		SRC.SYSMESSAGE You don't seem to have a Guild Town Key with yourself. Please carry only the Guild Town Key with yourself to use this stone.
+	ENDIF
+ELSE
+	SRC.SYSMESSAGE You don't seem to have any Guild Town Key with yourself.
+	RETURN 1
+ENDIF
+RETURN 1
+
+ON=@TARGON_CHAR
+SRC.SYSMESSAGE You need to target a key with this.
+RETURN 1
+
+ON=@TARGON_GROUND
+SRC.SYSMESSAGE You need to target a key with this.
+RETURN 1
+
+ON=@TARGON_ITEM
+IF (<SRC.TARG.BASEID>=i_key_copper)
+	MORE1=<SRC.TARG.MORE1>
+	SRC.SYSMESSAGE Items successfully linked.
+ELSE
+	SRC.SYSMESSAGE You need to target a key with this.
+	RETURN 1
+ENDIF
+RETURN 1
+
+
+[FUNCTION guildhome]
+
+IF !(<SRC.TAG0.GUILDHOME>)
+SRC.SYSMESSAGE You don't seem to have any previously Guild Home Location saved.
+RETURN 1	
+ELSEIF (<SRC.TAG0.INEVENT>)
+SRC.SYSMESSAGE You can't do that from here.
+RETURN 1
+ELSEIF ( <REGION_SKARGARD> )
+SYSMESSAGE @021 You can't do that from here.
+RETURN 1
+ELSEIF ( <FLAGS> & statf_freeze ) 
+SYSMESSAGE @021 You can't do that in your current state.
+RETURN 1
+ELSEIF ( <FLAGS> & statf_war ) 
+SYSMESSAGE @021 You can't do that when in warmode.       
+RETURN 1
+ELSEIF ( <FLAGS> & statf_stone ) 
+SYSMESSAGE @021 You can't do that in your current state.
+RETURN 1
+ELSEIF ( <REGION.FLAGS> & region_antimagic_all )
+SYSMESSAGE @021 You can't do that from here.
+RETURN 1
+ELSEIF (<REGION.FLAGS> & region_antimagic_recall_out)
+SYSMESSAGE @021 You can't do that from here.
+RETURN 1
+ENDIF
+
+IF (<SRC.FINDID.i_key_copper>)
+	IF (<SRC.FINDID.i_key_copper.TAG0.GUILDHOMEUID>==<SRC.TAG0.GUILDHOMEUID>)
+		IF (<SRC.ISDEAD>)
+			SRC.GO <TAG.GUILDHOME>
+		ELSE
+			IF !(<FINDID.memory_guildhome_teleport>)
+				SERV.NEWITEM Memory_guildhome_teleport
+				NEW.EQUIP 
+			ELSE
+				SYSMESSAGE You are already transporting to your Guild Home Location.
+			ENDIF
+		ENDIF
+	ELSE
+		SRC.SYSMESSAGE You don't seem to have a Guild Town Key with yourself. Please carry only the Guild Town Key with yourself to use this stone.
+	ENDIF
+ELSE
+	SRC.SYSMESSAGE You don't seem to have a Guild Town Key with yourself.
+ENDIF
+RETURN 1
+
+
+[ITEMDEF memory_guildhome_teleport]
+ID=i_memory
+NAME=Guild Home
+TYPE=t_eq_script
+
+ON=@Create
+TIMER=1
+MORE1=1
+   
+ON=@Equip
+SRC.SAY @07a1 Kal Ort Por
+   
+ON=@Timer
+
+IF (<MORE1> > 7)
+CONT.GO <CONT.TAG.GUILDHOME>
+REMOVE
+RETURN 1
+
+ELSEIF ( <CONT.REGION_SKARGARD> )
+CONT.SYSMESSAGE You can't do that from here.
+REMOVE
+RETURN 1
+
+ELSEIF ( <CONT.FLAGS> & statf_freeze ) 
+CONT.SYSMESSAGE You can't do that in your current state.
+REMOVE
+RETURN 1
+
+ELSEIF ( <CONT.FLAGS> & statf_war ) 
+CONT.SYSMESSAGE You can't do that when in warmode.
+REMOVE
+RETURN 1
+
+ELSEIF ( <CONT.FLAGS> & statf_stone ) 
+CONT.SYSMESSAGE You can't do that in your current state.
+REMOVE
+RETURN 1
+
+ELSEIF ( <CONT.REGION.FLAGS> & region_antimagic_all )
+CONT.SYSMESSAGE You can't do that from here.
+REMOVE
+RETURN 1
+
+ELSEIF (<CONT.REGION.FLAGS> & region_antimagic_recall_out)
+CONT.SYSMESSAGE You can't do that from here.
+REMOVE
+RETURN 1
+
+ELSEIF (<UID.<CONT.REGION.UID>.TYPE> = T_MULTI)
+CONT.SYSMESSAGE You can't use this command from a house.
+REMOVE
+RETURN 1
+
+ELSE
+CONT.EFFECT=3,i_fx_sparkle,0,22,0,07a1
+MORE1=<MORE1>+1
+TIMER=1
+ENDIF
+RETURN 1
+
+
+//*********************************************************************************************************//
+//                                   Academy Gate Travel, like faction travel stones                       //
+//*********************************************************************************************************//
+[ITEMDEF i_acd_gate_travel]
+ID=i_moongate_blue
+NAME=The Academy Adventure Gate
+TYPE=T_NORMAL
+
+ON=@CREATE
+COLOR=0529
+
+ON=@DCLICK
+
+IF (<SRC.ISACADEMY>)
+SRC.DIALOG d_playertravel
+RETURN 1
+ELSE
+SRC.SYSMESSAGE Only Academy Members can use this gate.
+RETURN 1
+ENDIF
+
+ON=@STEP
+
+IF (<SRC.ISACADEMY>)
+SRC.SYSMESSAGE Please double click the gate to open the Player Travel Menu.
+ENDIF
+
+//*********************************************************************************************************//
+//    Gate to resurrection room and back to the arena, used in Pink Panthers Dock's Arena                  //
+//*********************************************************************************************************//
+
+
+[ITEMDEF i_arena_docks_gate1]
+ID= i_moongate_blue
+NAME= Resurrection Room
+
+ON=@CREATE
+ATTR=08010
+COLOR=07b5
+
+ON=@STEP
+IF (<SRC.ISDEAD>) || (<SRC.ISGM>)
+SRC.GO <MOREP>
+SRC.UPDATE
+ELSE
+SRC.SYSMESSAGE You can only use this gate when dead.
+RETURN 1
+ENDIF
+
+[ITEMDEF i_arena_docks_gate2]
+ID= i_moongate_blue
+NAME= Back to the arena
+
+ON=@CREATE
+ATTR=08010
+COLOR=07b5
+
+ON=@STEP
+IF !(<SRC.ISDEAD>) || (<SRC.ISGM>)
+SRC.GO <MOREP>
+SRC.UPDATE
+ELSE
+SRC.SYSMESSAGE You can only use this gate when alive.
+RETURN 1
+ENDIF
+
+
+
+
+//*********************************************************************************************************//
+// Item to prevent players from getting into Town PvP Pit if engaged on fight Created by Pink Panther        //
+//*********************************************************************************************************//
+[ITEMDEF i_townpit_blockpad]
+ID=i_floor_marble
+NAME=Town Pit Block Pad
+
+ON=@CREATE
+COLOR=079c
+ATTR=08090
+
+ON=@STEP
+IF (<SRC.DIR> = 2) // From W to E
+	IF ((<SRC.MEMORYFINDTYPE(memory_fight).uid>)  || (<SRC.MEMORYFINDTYPE(MEMORY_IAGGRESSOR).uid>) || (<SRC.MEMORYFINDTYPE(memory_harmedby).uid>) || ( <SRC.FLAGS> & statf_war ))
+		SRC.SYSMESSAGE You are too busy defending yourself to enter the PvP Pit right now.
+		SRC.MOVE W
+		RETURN 1
+	ENDIF
+ENDIF
+	  
+
+
+//*********************************************************************************************************//
+//                         Item to remove an weapon jewel Created by Pink Panther                           //
+//*********************************************************************************************************//
+
+[ITEMDEF i_jewel_removal]
+ID=i_deed
+NAME=Weapon Jewel Removal
+
+ON=@CREATE
+ATTR=05
+COLOR=07a1
+
+ON=@DCLICK
+	TARGET Please target the desired weapon to remove the jewel from.
+	RETURN 1
+	
+ON=@Targon_char
+	SRC.SYSMESSAGE You must target an weapon with this.
+	RETURN 1
+	
+ON=@Targon_ground
+	SRC.SYSMESSAGE You must target an weapon with this.
+	RETURN 1
+	
+ON=@Targon_item
+	IF (<SRC.TARG.TYPE>==t_weapon_sword) || (<SRC.TARG.TYPE>==t_weapon_fence) || (<SRC.TARG.TYPE>==t_weapon_mace_smith) || (<SRC.TARG.TYPE>==t_weapon_mace_staff) || (<SRC.TARG.TYPE>==t_weapon_bow) || (<SRC.TARG.TYPE>==t_weapon_xbow)
+		IF (!(strcmpi("<STRSUB 0 7 <SRC.TARG.NAME>>","jeweled")))
+			IF (<SRC.RESTEST 1 <SRC.TARG.BASEID>>)
+				SRC.TARG.MOREP=0,0
+				SRC.TARG.NAME=<SRC.TARG.TYPEDEF.NAME> 
+				SRC.SYSMESSAGE You have successfully removed the jewel from <SRC.TARG.NAME>.
+				REMOVE
+				RETURN 1
+			ELSE
+				SRC.SYSMESSAGE You must have the weapon with yourself to remove its jewel.
+				RETURN 1
+			ENDIF
+		ELSE
+			SRC.SYSMESSAGE This weapon doesn't happear to be jeweled.
+			RETURN 1
+		ENDIF
+	ELSE
+		SRC.SYSMESSAGE You must target an weapon with this.
+		RETURN 1
+	ENDIF
+
+//*********************************************************************************************************//
+//   Random world messages every 30 minutes with shard information Created by Pink Panther                  //
+//*********************************************************************************************************//
+
+[ITEMDEF i_random_message_stone]
+NAME=Automatic World Messages - DO NOT REMOVE
+ID=i_gravestone
+TYPE=t_eq_script
+
+ON=@CREATE
+ATTR=08010
+COLOR=07b5
+TIMERF 5, message_random
+
+[FUNCTION message_random]
+DORAND 22
+SERV.ALLCLIENTS SYSMESSAGE @21 Don't forget to check our forums as often as possible to keep up to date with all our new updates and changes!
+SERV.ALLCLIENTS SYSMESSAGE @21 Don't forget to check our forums as often as possible to keep up to date with all our new updates and changes!
+SERV.ALLCLIENTS SYSMESSAGE @21 Don't forget to check our forums as often as possible to keep up to date with all our new updates and changes!
+SERV.ALLCLIENTS SYSMESSAGE @21 Don't forget to check our forums as often as possible to keep up to date with all our new updates and changes!
+SERV.ALLCLIENTS SYSMESSAGE @21 Want to share an idea, give a suggestion or provide positive/negative feedback about any in-game feature? Dont hesitate to post in our forums!
+SERV.ALLCLIENTS SYSMESSAGE @21 Our shard rewards players for their loyalty. Voting and staying online can get you various rewards! Type .loyalty for more details!
+// SERV.ALLCLIENTS SYSMESSAGE @21 Inviting another player to join us will reward you both with loyalty points! All the new player needs to do is type .referral and target you!
+// SERV.ALLCLIENTS SYSMESSAGE @21 You can contact our Game Masters and Admins in our IRC channel at #imperialuo (@quakenet) if there is none available in game!
+SERV.ALLCLIENTS SYSMESSAGE @21 You can automatically drink potions by typing .potion instead of double-clicking the desired potion manually!
+SERV.ALLCLIENTS SYSMESSAGE @21 When you attend an event, your remaining power hour time will be saved and retrieved upon leaving it!
+SERV.ALLCLIENTS SYSMESSAGE @21 Looking for a place to fight without losing your loot? You may want to check Britain Cowpen for fights with and without provided gear!
+SERV.ALLCLIENTS SYSMESSAGE @21 The World Chat is our community main talking channel, so please make sure you avoid spam and always speak in english through it!
+SERV.ALLCLIENTS SYSMESSAGE @21 Make sure you are aware of all our server rules, by checking the appropriate section in our website!
+SERV.ALLCLIENTS SYSMESSAGE @21 Every hour a new Power Hour starts! Typing .power "password" when the message is displayed will provide you 20x more lucky skill rolls for 1 hour!
+SERV.ALLCLIENTS SYSMESSAGE @21 You can type .chat to enable/disable World Chat or change its text color!
+SERV.ALLCLIENTS SYSMESSAGE @21 By typing .online you can send a message to other online players!
+SERV.ALLCLIENTS SYSMESSAGE @21 Papers are a very usefull menu providing information about everything related to your character! You can access it by typing .papers
+SERV.ALLCLIENTS SYSMESSAGE @21 Every 2 hours a new Quizz starts. Be the first to answer the 3 questions correctly to win a PvP Ticket!
+// SERV.ALLCLIENTS SYSMESSAGE @21 We keep a record of the top 5 players in each faction and in each kind of event! Check out who is in the lead by typing .papers
+SERV.ALLCLIENTS SYSMESSAGE @21 Need Game Master assistance? Don't hesitate to page, making sure you properly explain your problem! A Game Master will come to you as soon as possible.
+// SERV.ALLCLIENTS SYSMESSAGE @21 Companions are normal players with the duty to help others. You can chat with them by using .q "message", as long as you have .comchat enabled!
+SERV.ALLCLIENTS SYSMESSAGE @21 Having a problem you can't find out how to solve? Our site guides, forums and other players may be able to help you if there is no Game Master available!
+SERV.ALLCLIENTS SYSMESSAGE @21 Although AFK Macroing is allowed, you can be Automatically AFK Checked while Mining, Lumbering and Fishing. Failing to answer to this will result in resources removal!
+//SERV.ALLCLIENTS SYSMESSAGE @21 By typing .updates you can check the last updates made in our server, important announcements or upcoming events!
+SERV.ALLCLIENTS SYSMESSAGE @21 Don't forget you have an ingame navigation map! Just type .map to open it!
+ENDDO
+SERV.ALLCLIENTS SYSMESSAGE @21 Also don't forget to vote for our server daily! Besides helping everyone you will also get Loyalty Points! Type .vote to vote now!
+
+TIMERF 1800, message_random
+
+//*********************************************************************************************************//
+//         Mysterious Box with high level rewards Created by Pink Panther                                   //
+//*********************************************************************************************************//
+
+[ITEMDEF i_box_mysterious]
+ID=i_giftbox
+NAME= Mysterious Box
+TYPE=t_normal
+
+ON=@CREATE
+COLOR=079c
+
+ON=@DCLICK
+
+local.mysteriousboxchance = RAND(100)
+
+
+IF (<LOCAL.MYSTERIOUSBOXCHANCE> <= 9)
+	local.mysteriousboxmagicalchance = RAND(100)
+	IF (<LOCAL.MYSTERIOUSBOXMAGICALCHANCE> <= 24)
+		local.mysteriousboxmagicalchance1 = RAND(100)
+		IF (<LOCAL.MYSTERIOUSBOXMAGICALCHANCE1> <= 9)
+			SRC.NEWITEM i_gauntlets_might
+			NEW.MOREz=10
+			NEW.BOUNCE
+			SRC.EMOTE got a Magical Item from the Mysterious Box!
+			SERV.LOG :Mysterious BOX: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> got a +10 Gauntlets from the Mysterious Box <UID>
+			REMOVE
+			return 1
+		ELSEIF (<LOCAL.MYSTERIOUSBOXMAGICALCHANCE1> <= 39)
+			SRC.NEWITEM i_gauntlets_might
+			NEW.MOREz=9
+			NEW.BOUNCE
+			SRC.EMOTE got a Magical Item from the Mysterious Box!
+			SERV.LOG :Mysterious BOX: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> got a +9 Gauntlets from the Mysterious Box <UID>
+			REMOVE
+			return 1	
+		ELSE 
+			SRC.NEWITEM i_gauntlets_might
+			NEW.MOREz=8
+			NEW.BOUNCE
+			SRC.EMOTE got a Magical Item from the Mysterious Box!
+			SERV.LOG :Mysterious BOX: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> got a +8 Gauntlets from the Mysterious Box <UID>
+			REMOVE
+			return 1
+		ENDIF
+	ELSEIF (<LOCAL.MYSTERIOUSBOXMAGICALCHANCE> <= 49) 
+		local.mysteriousboxmagicalchance2 = RAND(100)
+		IF (<LOCAL.MYSTERIOUSBOXMAGICALCHANCE2> <= 9)
+			SRC.NEWITEM i_sash_warrior
+			NEW.MOREz=10
+			NEW.BOUNCE
+			SRC.EMOTE got a Magical Item from the Mysterious Box!
+			SERV.LOG :Mysterious BOX: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> got a +20 Sash of Warriors from the Mysterious Box <UID>
+			REMOVE
+			return 1
+		ELSEIF (<LOCAL.MYSTERIOUSBOXMAGICALCHANCE2> <= 39)
+			SRC.NEWITEM i_sash_warrior
+			NEW.MOREz=9
+			NEW.BOUNCE
+			SRC.EMOTE got a Magical Item from the Mysterious Box!
+			SERV.LOG :Mysterious BOX: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> got a +18 Sash of Warriors from the Mysterious Box <UID>
+			REMOVE
+			return 1
+		ELSE 
+			SRC.NEWITEM i_sash_warrior
+			NEW.MOREz=8
+			NEW.BOUNCE
+			SRC.EMOTE got a Magical Item from the Mysterious Box!
+			SERV.LOG :Mysterious BOX: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> got a +16 Sash of Warriors from the Mysterious Box <UID>
+			REMOVE
+			return 1
+		ENDIF		
+	ELSEIF (<LOCAL.MYSTERIOUSBOXMAGICALCHANCE> <= 74)
+		local.mysteriousboxmagicalchance3 = RAND(100)
+		IF (<LOCAL.MYSTERIOUSBOXMAGICALCHANCE3> <= 9)
+			SRC.NEWITEM i_boots_speed
+			NEW.MOREz=10
+			NEW.BOUNCE
+			SRC.EMOTE got a Magical Item from the Mysterious Box!
+			SERV.LOG :Mysterious BOX: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> got a +10 Boots of Speed from the Mysterious Box <UID>
+			REMOVE
+			return 1
+		ELSEIF (<LOCAL.MYSTERIOUSBOXMAGICALCHANCE3> <= 39)
+			SRC.NEWITEM i_boots_speed
+			NEW.MOREz=9
+			NEW.BOUNCE
+			SRC.EMOTE got a Magical Item from the Mysterious Box!
+			SERV.LOG :Mysterious BOX: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> got a +9 Boots of Speed from the Mysterious Box <UID>
+			REMOVE
+			return 1
+		ELSE 
+			SRC.NEWITEM i_boots_speed
+			NEW.MOREz=8
+			NEW.BOUNCE
+			SRC.EMOTE got a Magical Item from the Mysterious Box!
+			SERV.LOG :Mysterious BOX: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> got a +8 Boots of Speed from the Mysterious Box <UID>
+			REMOVE
+			return 1
+		ENDIF
+	ELSE 
+		local.mysteriousboxmagicalchance4 = RAND(100)
+		IF (<LOCAL.MYSTERIOUSBOXMAGICALCHANCE4> <= 9)		
+			SRC.NEWITEM i_helm_brilliance
+			NEW.MOREz=10
+			NEW.BOUNCE
+			SRC.EMOTE got a Magical Item from the Mysterious Box!
+			SERV.LOG :Mysterious BOX: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> got a +10 Helm of Brilliance from the Mysterious Box <UID>
+			REMOVE
+			return 1
+		ELSEIF (<LOCAL.MYSTERIOUSBOXMAGICALCHANCE4> <= 39)
+			SRC.NEWITEM i_helm_brilliance
+			NEW.MOREz=9
+			NEW.BOUNCE
+			SRC.EMOTE got a Magical Item from the Mysterious Box!
+			SERV.LOG :Mysterious BOX: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> got a +9 Helm of Brilliance from the Mysterious Box <UID>
+			REMOVE
+			return 1
+		ELSE
+			SRC.NEWITEM i_helm_brilliance
+			NEW.MOREz=8
+			NEW.BOUNCE
+			SRC.EMOTE got a Magical Item from the Mysterious Box!
+			SERV.LOG :Mysterious BOX: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> got a +8 Helm of Brilliance from the Mysterious Box <UID>
+			REMOVE
+			return 1
+		ENDIF
+	ENDIF
+ELSEIF (<LOCAL.MYSTERIOUSBOXCHANCE> <= 19)
+	local.mysteriousboxuserchance = RAND(100)
+	IF (<LOCAL.MYSTERIOUSBOXUSERCHANCE> <= 49)
+		local.mysteriousboxuserchance1 = RAND(100)
+		IF (<LOCAL.MYSTERIOUSBOXUSERCHANCE1> <= 9)
+			SRC.NEWITEM i_mage_tunic
+			NEW.BOUNCE
+			SRC.EMOTE got an User Item from the Mysterious Box!
+			SERV.LOG :Mysterious BOX: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> got a Mage Tunic from the Mysterious Box <UID>
+			REMOVE
+			return 1
+		ELSEIF (<LOCAL.MYSTERIOUSBOXUSERCHANCE1> <= 39)
+			SRC.NEWITEM i_mage_hat
+			NEW.BOUNCE
+			SRC.EMOTE got an User Item from the Mysterious Box!
+			SERV.LOG :Mysterious BOX: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> got a Mage Hat from the Mysterious Box <UID>
+			REMOVE
+			return 1
+        ELSE
+			SRC.NEWITEM i_mage_leggings
+			NEW.BOUNCE
+			SRC.EMOTE got an User Item from the Mysterious Box!
+			SERV.LOG :Mysterious BOX: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> got a Mage Leggings from the Mysterious Box <UID>
+			REMOVE
+			return 1
+		ENDIF
+	ELSE		
+		local.mysteriousboxuserchance2 = RAND(100)
+		IF (<LOCAL.MYSTERIOUSBOXUSERCHANCE2> <= 9)
+			SRC.NEWITEM i_warrior_tunic
+			NEW.BOUNCE
+			SRC.EMOTE got an User Item from the Mysterious Box!
+			SERV.LOG :Mysterious BOX: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> got an Warrior Tunic from the Mysterious Box <UID>
+			REMOVE
+			return 1
+		ELSEIF (<LOCAL.MYSTERIOUSBOXUSERCHANCE2> <= 39)
+			SRC.NEWITEM i_warrior_leggings
+			NEW.BOUNCE
+			SRC.EMOTE got an User Item from the Mysterious Box!
+			SERV.LOG :Mysterious BOX: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> got an Warrior Leggings from the Mysterious Box <UID>
+			REMOVE
+			return 1
+        ELSE
+			SRC.NEWITEM i_warrior_sleeves
+			NEW.BOUNCE
+			SRC.EMOTE got an User Item from the Mysterious Box!
+			SERV.LOG :Mysterious BOX: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> got an Warrior Sleeves from the Mysterious Box <UID>
+			REMOVE
+			return 1
+		ENDIF
+	ENDIF	
+ELSEIF (<LOCAL.MYSTERIOUSBOXCHANCE> <= 49)
+	IF (<SRC.STR> >= 120)
+		SRC.NEWITEM i_flux_might
+		NEW.BOUNCE
+		SRC.NEWITEM i_flux_might
+		NEW.BOUNCE
+		SRC.NEWITEM i_flux_might
+		NEW.BOUNCE
+		SRC.NEWITEM i_flux_might
+		NEW.BOUNCE
+		SRC.EMOTE got 4 Fluxs from the Mysterious Box!
+		SERV.LOG :Mysterious BOX: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> got 4 Fluxs of Might from the Mysterious Box <UID>
+		REMOVE
+		RETURN 1
+	ELSEIF (<SRC.INT> >= 120)
+		SRC.NEWITEM i_flux_brilliance
+		NEW.BOUNCE
+		SRC.NEWITEM i_flux_brilliance
+		NEW.BOUNCE
+		SRC.NEWITEM i_flux_brilliance
+		NEW.BOUNCE
+		SRC.NEWITEM i_flux_brilliance
+		NEW.BOUNCE
+		SRC.EMOTE got 4 Fluxs from the Mysterious Box!
+		SERV.LOG :Mysterious BOX: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> got 4 Fluxs of Brilliance from the Mysterious Box <UID>
+		REMOVE
+		RETURN 1
+	ELSEIF (<SRC.DEX> >= 120)
+		SRC.NEWITEM i_flux_haste
+		NEW.BOUNCE
+		SRC.NEWITEM i_flux_haste
+		NEW.BOUNCE
+		SRC.NEWITEM i_flux_haste
+		NEW.BOUNCE
+		SRC.NEWITEM i_flux_haste
+		NEW.BOUNCE
+		SRC.EMOTE got 4 Fluxs from the Mysterious Box!
+		SERV.LOG :Mysterious BOX: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> got 4 Fluxs of Haste from the Mysterious Box <UID>
+		REMOVE
+		RETURN 1
+	ELSE
+		SRC.NEWITEM i_deed
+		NEW.NAME 4 Fluxs Deed - Page to claim your reward
+		NEW.BOUNCE
+		SRC.EMOTE got 4 Fluxs from the Mysterious Box!
+		SERV.LOG :Mysterious BOX: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> got 4 Fluxs from the Mysterious Box <UID>
+		REMOVE
+		return 1
+	ENDIF
+ELSE
+	SRC.NEWITEM i_pvptoken
+	NEW.AMOUNT 10
+	NEW.BOUNCE
+	SRC.EMOTE got 10 PvP Tickets from the Mysterious Box!
+	SERV.LOG :Mysterious BOX: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> got a 10 PvP Tickets from the Mysterious Box <UID>
+	REMOVE
+	RETURN 1
+ENDIF
+return 1
+
+//*********************************************************************************************************//
+//                           Summon Character Wand Created by Pink Panther                                //
+//*********************************************************************************************************//
+
+[ITEMDEF i_wand_summon]
+NAME=Summon Character Wand
+ID=i_wand_3
+TYPE=T_WAND
+WEIGHT=1
+
+ON=@Create
+   COLOR=0785
+   ATTR= 05
+
+ON=@DClick
+   EQUIP
+   TARGET Select the player you would like to summon.
+   RETURN 1
+
+ON=@TARGON_Char
+   SRC.TARG.GO <SRC.P>
+   RETURN 1
+
+ON=@TARGON_item
+    SRC.SYSMESSAGE You can only summon players with this wand.
+    RETURN 1
+
+ON=@TARGON_ground
+   SRC.SYSMESSAGE You can only summon players with this wand.
+   RETURN 1
+
+
+//*********************************************************************************************************//
+//                       Rideable Normal Polar Bear Created by Pink Panther                                //
+//*********************************************************************************************************//
+
+[CHARDEF c_polar_bear_event]
+ID=c_bear_polar
+NAME=Polar Bear
+SOUND=snd_ANIMALS_BEAR1
+ICON=i_pet_bear_polar
+CAN=MT_WALK|MT_RUN
+ANIM=01fff
+DAM=0
+ARMOR=9
+
+RESOURCES=12 i_ribs_raw, 6 i_fur_light
+FOODTYPE=6 t_FISH,5 t_fruit, 15 t_meat_raw
+DESIRES=r_snow
+AVERSIONS=r_civilization
+
+ON=@Create
+NPC=brain_animal
+
+STR=55
+DEX=55
+INT=30
+
+PARRYING=40.0
+MAGICRESISTANCE=20.0
+TACTICS=30.0
+WRESTLING=50.0
+TAMING=200.0
+
+FAME=10
+KARMA=0
+ 
+ON=@DROPON_CHAR
+   SAY <ARGO.NAME>
+   IF (<ARGO.TYPE> == t_food )
+      RETURN 0
+   ELSEIF (<ARGO.TYPE> == t_grain )
+      RETURN 0
+   ELSE
+      RETURN 1
+   ENDIF
+
+ON=@SPELLEFFECT
+   RETURN 1
+
+ON=@ATTACK
+   RETURN 1
+
+ON=@CallGuards
+   RETURN 1
+   
+ON=@HUNGER
+   RETURN 1
+
+
+//*********************************************************************************************************//
+//                                       Block Pad Created by Pink Panther                                //
+//*********************************************************************************************************//
+
+
+// This pad prevents players, dead or alive, from walking through
+
+[ITEMDEF i_block_pad]
+ID=i_floor_marble
+NAME=Block Pad
+
+ON=@CREATE
+ATTR=08090
+
+ON=@STEP
+
+IF (<SRC.DIR> = 2) // From W to E
+	SRC.MOVE -1
+ELSEIF (<SRC.DIR> = 6) // From E to W
+	SRC.MOVE 1
+ELSEIF (<SRC.DIR> = 4) // From N to S
+	SRC.MOVE 0 -1
+ELSEIF (<SRC.DIR> = 0) // From S to N
+    SRC.MOVE 0 1   
+ELSEIF (<SRC.DIR> = 1) // From SW to NE
+    SRC.MOVE -1 1
+ELSEIF (<SRC.DIR> = 3) // From NW to SE
+    SRC.MOVE -1 -1
+ELSEIF (<SRC.DIR> = 5) // From NE to SW
+    SRC.MOVE 1 -1
+ELSEIF (<SRC.DIR> = 7) // From SE to NW
+    SRC.MOVE 1 1
+ENDIF
+
+
+//*********************************************************************************************************//
+//                      Academy Gate Created by Pink Panther                                               //
+//*********************************************************************************************************//
+
+[ITEMDEF i_acd_gate]
+ID=i_moongate_blue
+NAME= Academy Gate
+
+ON=@CREATE
+COLOR=0796
+
+
+ON=@STEP
+
+IF (<SRC.ISACADEMY>) 
+SRC.GO <MOREP>
+ELSE
+SRC.MESSAGE Only Academy Members can use this gate.
+return 1
+ENDIF
+
+[ITEMDEF i_acd_dungeon_gate]
+ID=i_moongate_blue
+NAME= Academy Dungeon Gate
+
+ON=@CREATE
+COLOR=0796
+
+
+ON=@STEP
+
+IF (<SRC.ISACADEMY>) && (<SRC.SKILLTOTAL> < 6500)
+SRC.GO <MOREP>
+ELSE
+SRC.MESSAGE You can no longer enter the Newbie Dungeon.
+return 1
+ENDIF
+
+
+
+//*********************************************************************************************************//
+//                      Door Bell Edited by Pink Panther                                                   //
+//*********************************************************************************************************//
+
+[ITEMDEF i_door_bell]
+ID= i_bell_of_courage
+NAME=Door Bell
+
+ON=@CREATE
+ATTR=08010
+COLOR=07a1
+
+ON=@DClick
+
+// If there is no link yet
+
+IF (!<LINK.UID>) 
+TARGET Select an object to link to.
+RETURN 1
+ENDIF
+
+
+// If there is a bell delay
+
+IF <SRC.FINDID.M_bell_Delay.UID>
+SRC.MESSAGE You can't ring the bell so fast. Try again later.
+RETURN 1
+ENDIF
+
+// Knock at the door
+
+IF <LINK.UID>
+LINK.SYSMESSAGE @07a1 <SRC.NAME> is knocking at your door at <REGION.NAME>!
+SOUND 023c
+src.emote ring at <link.name>'s bell.
+SERV.NEWITEM M_bell_Delay
+SRC.EQUIP <NEW.UID>
+RETURN 1
+ENDIF
+
+// Can't target items
+
+ON=@TargOn_Item
+SRC.SYSMESSAGE You must target this to a player.
+RETURN 1
+
+// Target chars and put the UID of the targeted character into link
+
+ON=@TargOn_Char
+LINK = <SRC.TARG.UID>
+RETURN 1
+
+// Bell delay of 5 minutes
+
+[ItemDef M_bell_Delay]
+id=i_memory
+Name=Bell Delay
+type=t_eq_script
+
+ON=@Create
+TIMER = 360
+
+ON=@Timer
+REMOVE	
+return 1
+
+[EOF]

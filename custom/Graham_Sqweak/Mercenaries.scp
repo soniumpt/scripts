@@ -1,0 +1,1972 @@
+//Changelog
+//=========
+//27-08-03 - Wigifer - Merc 100k contract fix - Tested
+//10/10/2003 - Firefly - Fixed the Merc Res stones - Tested
+//10/10/2003 - Firefly - Fixed all Merc Items - Tested
+//10/10/2003 - Firefly - Changed the merc robe from T_CLOTHING to T_ARMOR - Tested
+//02/02/2004 - Wren - Changed Shrunken merc horse to look like a packhorse :E
+//07/02/2004 - Wren - Changed the Merc horse rank scripts, Some syntax changes in the bindstones, CLEANUP
+//11/02/2004 - Wren - added stats to merc vendor
+//08/06/2004 - Raist - Change the res stones to take the owner when they're created to prevent other people from taking them over
+//08/10/2013 - Ray - Total remake to fit Imperial UO.
+
+///////////////////////////////////////////// MERCENARIES //////////////////////////////////////////////
+
+[ITEMDEF i_resurrect_stone_mercenary]
+ID=0ed6
+NAME=Mercenary Resurrection Stone
+
+ON=@CREATE
+   ATTR=010
+   COLOR=0846
+
+ON=@DClick
+   IF (<SRC.ISMERCENARY>)
+      IF (<SRC.ISDEAD>)
+          SRC.RESURRECT
+          MERCSAY The ways of mercenaries flow through you once more...
+	  ELSE
+		  MERCSAY Check again, you are not dead!
+      ENDIF
+   ELSE
+      MERCSAY Only members of Mercenaries can use this stone.
+   ENDIF
+   RETURN 1
+   
+[FUNCTION MERCSAY]
+SRC.SYSMESSAGE @0846 "<ARGS>"
+
+
+/// FACTION HOME ///
+
+[ITEMDEF Memory_FactionHome_Mercenary]
+ID=i_memory
+NAME=Faction Home
+TYPE=t_eq_script
+
+ON=@Create
+TIMER=1
+MORE1=1
+   
+ON=@Equip
+SRC.SAY @024 Kal Ort Por
+   
+ON=@Timer
+
+IF (<MORE1> > 7)
+CONT.GO 1523,1446,15
+REMOVE
+RETURN 1
+
+ELSEIF ( <CONT.REGION_SKARGARD> )
+CONT.SYSMESSAGE You can't do that from here.
+REMOVE
+RETURN 1
+
+ELSEIF ( <CONT.FLAGS> & statf_freeze ) 
+CONT.SYSMESSAGE You can't do that in your current state.
+REMOVE
+RETURN 1
+
+ELSEIF ( <CONT.FLAGS> & statf_war ) 
+CONT.SYSMESSAGE You can't do that when in warmode.
+REMOVE
+RETURN 1
+
+ELSEIF ( <CONT.FLAGS> & statf_stone ) 
+CONT.SYSMESSAGE You can't do that in your current state.
+REMOVE
+RETURN 1
+
+ELSEIF ( <CONT.REGION.FLAGS> & region_antimagic_all )
+CONT.SYSMESSAGE You can't do that from here.
+REMOVE
+RETURN 1
+
+ELSEIF (<CONT.REGION.FLAGS> & region_antimagic_recall_out)
+CONT.SYSMESSAGE You can't do that from here.
+REMOVE
+RETURN 1
+
+//ELSEIF ( ( (<CONT.MEMORYFINDTYPE(memory_fight).uid>) ) || ( (<CONT.MEMORYFINDTYPE(MEMORY_IAGGRESSOR).uid>) ) )
+//CONT.SYSMESSAGE You are too busy fighting to do that right now.
+//REMOVE
+//RETURN 1
+
+//ELSEIF ( (<CONT.MEMORYFINDTYPE(memory_harmedby).uid>) )
+//CONT.SYSMESSAGE You are too busy defending yourself to do that right now.
+//REMOVE
+//RETURN 1
+
+ELSEIF (<UID.<CONT.REGION.UID>.TYPE> = T_MULTI)
+CONT.SYSMESSAGE You can't use this command from a house.
+REMOVE
+RETURN 1
+
+ELSEIF (<CONT.ISMERCENARY>)
+CONT.EFFECT=3,i_fx_sparkle,0,22,0,079b
+MORE1=<MORE1>+1
+TIMER=1
+RETURN 1
+
+/////////////////////////////////////////////MERC CLOTHING//////////////////////////////////////////////
+
+[ITEMDEF i_robe_merc]
+ID=i_robe
+NAME=Mercenary Robe
+TYPE=T_CLOTHING
+VALUE=175
+ARMOR=17
+DYE=0
+
+ON=@Create
+ATTR=01
+HITPOINTS= 50
+COLOR=0846
+QUALITY=200
+
+ON=@Equip
+IF (<SRC.ISMERCENARY>)
+SRC.MESSAGE @0846 You put on your Mercenary Robe. 
+ELSE 
+SRC.MESSAGE @0846 You are not a member.
+SRC.MESSAGE @0846 You can not wear the Mercenaries Robe.
+UNEQUIP
+ENDIF
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Mercenary Faction Items
+DESCRIPTION=Mercenary Robe
+
+
+[ITEMDEF i_sash_merc]
+NAME=Mercenary Sash
+ID=i_sash
+WEIGHT=1
+TYPE=T_CLOTHING
+DYE=0
+ARMOR=1
+VALUE=175
+
+ON=@Create
+ATTR=01
+HITPOINTS={11 40}
+COLOR=0846
+QUALITY=200
+
+ON=@Equip
+IF (<SRC.ISMERCENARY>)
+SRC.MESSAGE @0846 You put on your Mercenary Sash.
+RETURN 0
+ELSE 
+SRC.MESSAGE @0846 You are not a member.
+SRC.MESSAGE @0846 You can not wear the Mercenaries Sash.
+UNEQUIP
+ENDIF
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Mercenary Faction Items
+DESCRIPTION=Mercenary Sash
+
+[ITEMDEF i_cape_merc]
+ID=i_cape
+NAME=Mercenary Cape
+WEIGHT=3
+TYPE=T_CLOTHING
+DYE=0
+ARMOR=5
+VALUE=175
+
+ON=@Create
+ATTR=01
+HITPOINTS={11 40}
+COLOR=0846
+QUALITY=200
+
+ON=@Equip
+IF (<SRC.ISMERCENARY>)
+SRC.MESSAGE You Put on your Mercenary Cape. 
+RETURN 0
+ELSE
+SRC.MESSAGE @0846 You are not a member.
+SRC.MESSAGE @0846 You can not wear the Mercenaries Cape.
+UNEQUIP
+ENDIF
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Mercenary Faction Items
+DESCRIPTION=Mercenary Cape
+
+[ITEMDEF i_hat_wizards_merc]
+ID=i_hat_wizards
+NAME=Mercenary Wizard's Hat
+WEIGHT=2
+TYPE=T_CLOTHING
+DYE=0
+ARMOR=3
+VALUE=175
+
+ON=@Create
+ATTR=01
+HITPOINTS={21 23}
+COLOR=0846
+QUALITY= 200
+
+ON=@Equip
+IF (<SRC.ISMERCENARY>)
+SRC.MESSAGE You Put on your Mercenary Wizard's Hat.
+RETURN 0
+ELSE
+SRC.MESSAGE @0846 You are not a Member.
+SRC.MESSAGE @0846 You can not wear the Mercenaries Wizard's Hat.
+UNEQUIP
+ENDIF
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Mercenary Faction Items
+DESCRIPTION=Mercenary Wizard's Hat
+
+[ITEMDEF i_surcoat_merc]
+ID=i_surcoat_army
+NAME=Mercenary Surcoat
+WEIGHT=2
+TYPE=T_CLOTHING
+DYE=0
+ARMOR=3
+VALUE=175
+
+ON=@Create
+ATTR=01
+HITPOINTS={21 23}
+COLOR=0846
+QUALITY=200
+
+ON = @Equip
+IF (<SRC.ISMERCENARY>)
+SRC.MESSAGE You Put on your Mercenary Surcoat
+RETURN 0
+ELSE
+SRC.MESSAGE @0846 You are not a member.
+SRC.MESSAGE @0846 You can not wear the Mercenaries Surcoat.
+UNEQUIP
+ENDIF
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Mercenary Faction Items
+DESCRIPTION=Mercenary Surcoat
+
+/////////////////////////////////////////////MERC CONTRACTS//////////////////////////////////////////////
+
+[ITEMDEF i_merc_contract1]
+DEFNAME=i_merc_contract1
+ID=i_scroll_blank
+NAME=Mercenary Contract (10 Points)
+TYPE=t_normal
+VALUE=10000
+
+ON=@CREATE
+COLOR=0846
+
+ON=@DCLICK
+IF ((<SRC.ISMERCENARY>)  && (<SRC.RESTEST i_merc_contract1 1>))
+//SRC.NEWITEM=i_gold 
+//SRC.ACT.AMOUNT=1000
+//SRC.ACT.CONT=<SRC.findlayer(layer_bankbox).uid>
+SRC.CONSUME i_merc_contract1 1
+SOUND=01FC 
+
+
+SERV.LOG :FACTION POINTS: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> has <EVAL <SRC.TAG.REP.ALIGNMENT>> <SRC.TAG.ALIGNMENT> points.
+SRC.TAG0.REP.ALIGNMENT= <EVAL <SRC.TAG0.REP.ALIGNMENT> + 10>
+SERV.LOG :FACTION POINTS: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> now have <EVAL <SRC.TAG.REP.ALIGNMENT>> <SRC.TAG.ALIGNMENT> points.
+SRC.SYSMESSAGE You have gained 10 Faction Points for your efforts.
+
+
+ELSE
+MERCSAY Only Mercenaries can fulfill a contract.
+ENDIF
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Mercenary Faction Items
+DESCRIPTION=Mercenary Contract (10 points)
+
+
+
+[ITEMDEF i_merc_contract2]
+DEFNAME=i_merc_contract2
+ID=i_scroll_blank
+NAME=Mercenary Contract (25 points)
+TYPE=t_normal
+VALUE=20000
+
+ON=@CREATE
+COLOR=0846
+
+ON=@DCLICK
+IF ((<SRC.ISMERCENARY>)  && (<SRC.RESTEST i_merc_contract2 1>))
+//SRC.NEWITEM=i_gold 
+//SRC.ACT.AMOUNT=2000
+//SRC.ACT.CONT=<SRC.findlayer(layer_bankbox).uid>
+SRC.CONSUME i_merc_contract2 1
+SOUND=01FC 
+
+
+SERV.LOG :FACTION POINTS: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> has <EVAL <SRC.TAG.REP.ALIGNMENT>> <SRC.TAG.ALIGNMENT> points.
+SRC.TAG0.REP.ALIGNMENT= <EVAL <SRC.TAG0.REP.ALIGNMENT> + 25>
+SERV.LOG :FACTION POINTS: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> now have <EVAL <SRC.TAG.REP.ALIGNMENT>> <SRC.TAG.ALIGNMENT> points.
+SRC.SYSMESSAGE You have gained 25 Faction Points for your efforts.
+
+
+ELSE
+MERCSAY Only Mercenaries can fulfill a contract.
+ENDIF
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Mercenary Faction Items
+DESCRIPTION=Mercenary Contract (25 points)
+
+
+
+
+[ITEMDEF i_merc_contract3]
+DEFNAME=i_merc_contract3
+ID=i_scroll_blank
+NAME=Mercenary Contract (50 points)
+TYPE=t_normal
+VALUE=50000
+
+ON=@CREATE
+COLOR=0846
+
+ON=@DCLICK
+IF ((<SRC.ISMERCENARY>) && (<SRC.RESTEST i_merc_contract3 1>))
+//SRC.NEWITEM=i_gold 
+//SRC.ACT.AMOUNT=5000
+//SRC.ACT.CONT=<SRC.findlayer(layer_bankbox).uid>
+SRC.CONSUME i_merc_contract3 1
+SOUND=01FC 
+
+SERV.LOG :FACTION POINTS: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> has <EVAL <SRC.TAG.REP.ALIGNMENT>> <SRC.TAG.ALIGNMENT> points.
+SRC.TAG0.REP.ALIGNMENT= <EVAL <SRC.TAG0.REP.ALIGNMENT> + 50>
+SERV.LOG :FACTION POINTS: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> now have <EVAL <SRC.TAG.REP.ALIGNMENT>> <SRC.TAG.ALIGNMENT> points.
+SRC.SYSMESSAGE You have gained 50 Faction Points for your efforts.
+
+
+ELSE
+MERCSAY Only Mercenaries can fulfill a contract.
+ENDIF
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Mercenary Faction Items
+DESCRIPTION=Mercenary Contract (50 points)
+
+
+
+
+[ITEMDEF i_merc_contract4]
+DEFNAME=i_merc_contract4
+ID=i_scroll_blank
+NAME=Mercenary Contract (100 Points)
+TYPE=t_normal
+VALUE=100000
+
+ON=@CREATE
+COLOR=0846
+
+ON=@DCLICK
+IF ((<SRC.ISMERCENARY>)  && (<SRC.RESTEST i_merc_contract4 1>))
+//SRC.NEWITEM=i_gold 
+//SRC.ACT.AMOUNT=10000
+//SRC.ACT.CONT=<SRC.findlayer(layer_bankbox).uid>
+SRC.CONSUME i_merc_contract4 1
+SOUND=01FC 
+
+
+SERV.LOG :FACTION POINTS: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> has <EVAL <SRC.TAG.REP.ALIGNMENT>> <SRC.TAG.ALIGNMENT> points.
+SRC.TAG0.REP.ALIGNMENT= <EVAL <SRC.TAG0.REP.ALIGNMENT> + 100>
+SERV.LOG :FACTION POINTS: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> now have <EVAL <SRC.TAG.REP.ALIGNMENT>> <SRC.TAG.ALIGNMENT> points.
+SRC.SYSMESSAGE You have gained 100 Faction Points for your efforts.
+
+
+ELSE
+MERCSAY Only Mercenaries can fulfill a contract.
+ENDIF
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Mercenary Faction Items
+DESCRIPTION=Mercenary Contract (100 points)
+
+
+
+
+[ITEMDEF i_merc_contract5]
+DEFNAME=i_merc_contract5
+ID=i_scroll_blank
+NAME=Mercenary Contract (200 Points)
+TYPE=t_normal
+VALUE=500000
+
+ON=@CREATE
+COLOR = 0846
+
+ON=@dclick
+IF ((<SRC.ISMERCENARY>)  && (<SRC.RESTEST i_Merc_contract5 1>))
+//SRC.NEWITEM=i_gold 
+//SRC.ACT.AMOUNT=50000
+//SRC.ACT.CONT=<SRC.findlayer(layer_bankbox).uid>
+//SRC.NEWITEM=i_gold 
+//SRC.ACT.AMOUNT=50000
+//SRC.ACT.CONT=<SRC.findlayer(layer_bankbox).uid>
+SRC.CONSUME i_Merc_contract5 1
+SOUND=01FC 
+
+
+SERV.LOG :FACTION POINTS: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> has <EVAL <SRC.TAG.REP.ALIGNMENT>> <SRC.TAG.ALIGNMENT> points.
+SRC.TAG0.REP.ALIGNMENT= <EVAL <SRC.TAG0.REP.ALIGNMENT> + 200>
+SERV.LOG :FACTION POINTS: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> now have <EVAL <SRC.TAG.REP.ALIGNMENT>> <SRC.TAG.ALIGNMENT> points.
+SRC.SYSMESSAGE You have gained 200 Faction Points for your efforts.
+
+
+ELSE
+MERCSAY Only Mercenaries can fulfill a contract.
+ENDIF
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Mercenary Faction Items
+DESCRIPTION=Mercenary Contract (100 points)
+
+////////////////////////////////////////MERC NPCS & SPEECH//////////////////////////////////////////////
+
+[SPEECH mercenary_recruiter] 
+ON=*profile*
+ON=*rank*
+
+IF (<SRC.ISMILITANT>)
+SAY @0846 I am sorry, I cannot help you at this present moment.
+RETURN 1
+ENDIF
+
+IF (<SRC.ISMERCENARY>)
+DIALOG d_mercenary_profile
+ELSE
+SAY @0846 You don't belong to the Mercenaries.
+ENDIF
+
+ON=*hi* 
+ON=*hello*
+ON=*hail*
+ON=*greetings*
+SAY @0846 Welcome to the Mercenaries!
+SAY @0846 If you wish to join us, say "join".
+SAY @0846 If you already belong to us and want more information, say ''rank''.
+
+
+ON=*join*
+
+IF (<SRC.ISMILITANT>)
+SAY @0846 I am sorry, I cannot help you at this present moment.
+RETURN 1
+ENDIF
+
+IF (<SRC.ISACADEMY>)
+SAY @0846 You still belong to the Academy. You can't join us.
+RETURN 1
+
+ELSEIF (<SRC.ISORDER>)
+SAY @0846 You belong to the Order Faction. You can't join us.
+RETURN 1
+
+ELSEIF (<SRC.ISCHAOS>)
+SAY @0846 You belong to the Chaos Faction. You can't join us.
+RETURN 1
+
+ELSEIF (<SRC.ISBROTHERHOOD>)
+SAY @0846 You belong to the Brotherhood. You can't join us.
+RETURN 1
+
+ELSEIF (<SRC.ISSYNDICATE>)
+SAY @0846 You belong to the Syndicate. You can't join us.
+RETURN 1
+
+ELSEIF (<SRC.ISMERCENARY>)
+SAY @0846 You already belong to the Mercenaries!
+RETURN 1
+
+ELSE
+DIALOG d_mercenary_join
+return 1
+ENDIF
+
+
+[CHARDEF c_h_merc_soldier] 
+DEFNAME=c_h_merc_soldier
+NAME=#NAMES_HUMANMALE, the Mercenary Soldier
+ID=C_MAN 
+DAM=25,45 
+ARMOR=60
+
+TSPEECH=spk_mercenary_greeting
+
+CATEGORY=Imperial uo
+SUBSECTION=Mercenary Faction Npc's
+DESCRIPTION=Mercenary Soldier
+
+ON=@Create 
+TAG.NAME.HUE=0846
+TAG.NAME.SUFFIX= , Mercenary Soldier
+TITLE=Mercenary Soldier
+NPC=brain_human
+COLOR=colors_skin 
+STR={451 565} 
+DEX={151 165} 
+INT={151 165} 
+
+FENCING={90.0 100.0} 
+PARRYING={90.0 100.0} 
+SWORDSMANSHIP={90.0 100.0} 
+WRESTLING={90.0 100.0} 
+MACEFIGHTING={90.0 100.0} 
+MAGICRESISTANCE={90.0 100.0} 
+TACTICS={90.0 100.0} 
+ANIMALLORE={90.0 100.0}
+
+ITEMNEWBIE=random_male_hair 
+COLOR=colors_hair 
+ITEMNEWBIE=random_facial_hair 
+COLOR=match_hair 
+
+ON=@NPCRestock 
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+ITEMNEWBIE={i_ringmail_gloves_blackrock 1 i_platemail_gloves_blackrock 1}
+ITEMNEWBIE={i_chainmail_coif_blackrock 1 i_platemail_helm_blackrock 1}
+ITEMNEWBIE={i_ringmail_sleeves_blackrock 1 i_platemail_arms_blackrock 1}
+ITEMNEWBIE=i_platemail_gorget_blackrock
+ITEMNEWBIE={i_chainmail_tunic_blackrock 1 i_platemail_chest_blackrock 1}
+ITEMNEWBIE={i_chainmail_leggings_blackrock 1 i_platemail_leggings_blackrock 1}
+ITEMNEWBIE={i_sword_long_b_blackrock 1 i_mace_war_blackrock 1}
+ITEMNEWBIE={i_shield_round_blackrock 1 i_shield_heater_blackrock 1}
+ITEMNEWBIE=i_surcoat_army
+color=0846
+ITEMNEWBIE=i_cape
+color=0846
+ITEMNEWBIE=i_boots_calf
+
+ON=@NPCRefuseItem 
+SAY I cannot be bribed. be gone. 
+RETURN 1 
+
+[CHARDEF c_Mercenary_archer]
+DEFNAME=c_Mercenary_archer
+NAME=#NAMES_HUMANMALE, Mercenary Archer
+ID=C_MAN
+DAM=50,80
+ARMOR=200
+
+CAN=MT_EQUIP|MT_RUN|MT_USEHANDS|MT_WALK
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_Mercenary_greeting
+
+CATEGORY=Imperial uo
+SUBSECTION=Mercenary Faction Npc's
+DESCRIPTION=Mercenary Guard - Archer
+
+ON=@Create
+
+TITLE=A Town Guard of Mercenary
+
+
+TAG.NAME.SUFFIX= , Mercenary Archer
+
+NPC=brain_human
+COLOR=colors_skin
+TAG.NAME.HUE=0846
+STR={1400 2400}
+DEX={3000 5000}
+INT={900 1000}
+
+ARCHERY=1000
+TACTICS=1000
+ANATOMY=1000
+
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+
+ON=@NPCRestock
+ITEMNEWBIE=i_cap_leather
+COLOR=0846
+ITEMNEWBIE=i_gloves_leather
+COLOR=0846
+ITEMNEWBIE=i_gorget_leather
+COLOR=0846
+ITEMNEWBIE=i_leggings_leather
+COLOR=0846
+ITEMNEWBIE=i_tunic_leather
+COLOR=0846
+ITEMNEWBIE=i_crossbow_myst
+ITEMNEWBIE=i_boots_calf
+COLOR=0846
+ITEMNEWBIE=i_cape
+COLOR=0846
+
+[CHARDEF c_guard_mercenary_mount]
+DEFNAME=c_guard_mercenary_mount
+NAME=#NAMES_HUMANMALE, Mercenary Warrior
+ID=C_MAN
+DAM=50,80
+ARMOR=200
+
+CAN=MT_EQUIP|MT_RUN|MT_USEHANDS|MT_WALK
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_mercenary_greeting
+
+CATEGORY=Imperial uo
+SUBSECTION=Mercenary Faction Npc's
+DESCRIPTION=Mercenary Guard - Mounted
+
+ON=@Create
+
+TITLE=A Town Guard of Mercenary
+
+TAG.NAME.SUFFIX= , Mercenary Warrior
+
+NPC=brain_human
+COLOR=colors_skin
+TAG.NAME.HUE=0846
+STR={1400 2400}
+DEX={3000 5000}
+INT={900 1000}
+
+SWORDSMANSHIP = 1000
+TACTICS = 1000
+NECROMANCY=0
+MAGERY=0
+
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_facial_hair
+COLOR=match_hair
+ITEMNEWBIE={i_ringmail_gloves_blackrock 1 i_platemail_gloves_blackrock 1}
+ITEMNEWBIE={i_chainmail_coif_blackrock 1 i_platemail_helm_blackrock 1}
+ITEMNEWBIE={i_ringmail_sleeves_blackrock 1 i_platemail_arms_blackrock 1}
+ITEMNEWBIE=i_platemail_gorget_blackrock
+ITEMNEWBIE={i_chainmail_tunic_blackrock 1 i_platemail_chest_blackrock 1}
+ITEMNEWBIE={i_chainmail_leggings_blackrock 1 i_platemail_leggings_blackrock 1}
+ITEMNEWBIE={i_sword_long_b_blackrock 1 i_mace_war_blackrock 1}
+ITEMNEWBIE={i_shield_round_blackrock 1 i_shield_heater_blackrock 1}
+ITEMNEWBIE=i_surcoat_army
+color=0846
+ITEMNEWBIE=i_cape
+color=0846
+ITEMNEWBIE=i_boots_calf
+
+ON=@NPCRestock
+ITEM=random_coin_purse
+ITEM=i_mt_horse_gray
+
+ON=@NPCRefuseItem
+SAY I cannot be bribed. be gone.
+RETURN 1
+
+[SPEECH spk_mercenary_greeting]
+ON=*hello*
+ON=*hi*
+ON=*lo*
+ON=*sup*
+ON=*yo*
+IF !(<SRC.ISMERCENARY>)
+DORAND 3
+SAY I'll do away with ye if ye should step closer!
+SAY Out with ye! I care not for those who follow false paths!
+SAY Ye make me sick!
+ENDDO
+RETURN 1
+ELSE
+DORAND 3
+SAY Hello, <SRC.NAME>
+SAY How goes it, <SRC.NAME>?
+SAY Anything I can do to help ye?
+ENDDO
+RETURN 1
+ENDIF
+
+[CHARDEF c_h_merc_recruit] 
+DEFNAME=c_h_merc_recruit
+NAME=Felix, the Mercenary Recruiter
+ID=C_MAN 
+DAM=25,45 
+ARMOR=60
+
+TSPEECH = mercenary_recruiter 
+
+CATEGORY=Imperial uo
+SUBSECTION=Mercenary Faction Npc's
+DESCRIPTION=Mercenary Recruiter
+
+ON=@Create 
+TAG.NAME.HUE=0846
+TITLE=Mercenary Recruiter
+NPC=brain_human
+COLOR=colors_skin 
+STR={451 565} 
+DEX={151 165} 
+INT={151 165} 
+
+FENCING={90.0 100.0} 
+PARRYING={90.0 100.0} 
+SWORDSMANSHIP={90.0 100.0} 
+WRESTLING={90.0 100.0} 
+MACEFIGHTING={90.0 100.0} 
+MAGICRESISTANCE={90.0 100.0} 
+TACTICS={90.0 100.0} 
+ANIMALLORE={90.0 100.0}
+
+ITEMNEWBIE=random_male_hair 
+COLOR=colors_hair 
+ITEMNEWBIE=random_facial_hair 
+COLOR=match_hair 
+
+ON=@NPCRestock 
+ITEMNEWBIE=i_platemail_chest
+ITEMNEWBIE=i_platemail_leggings 
+ITEMNEWBIE=i_platemail_arms 
+ITEMNEWBIE=013ba
+ITEMNEWBIE=01ffd
+ITEMNEWBIE=i_surcoat_merc
+ITEMNEWBIE=i_cape
+COLOR = 0846 
+
+ON=@NPCRefuseItem 
+SAY I cannot be bribed. be gone. 
+RETURN 1 
+
+
+
+
+[CHARDEF c_h_merc_vend]
+DEFNAME=c_h_merc_vend
+NAME=#NAMES_HUMANMALE, the Mercenary Vendor
+ID=C_MAN
+DESIRES=i_gold,e_notoriety
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+
+TSPEECH=spk_shopkeep
+
+ON=@Create
+NPC=brain_vendor
+COLOR=colors_skin
+FLAGS=028000005
+STR={80 100} 
+DEX={80 100} 
+INT={80 100} 
+
+
+FENCING={90.0 100.0} 
+PARRYING={90.0 100.0} 
+SWORDSMANSHIP={90.0 100.0} 
+WRESTLING={90.0 100.0} 
+MACEFIGHTING={90.0 100.0} 
+MAGICRESISTANCE={90.0 100.0} 
+TACTICS={90.0 100.0} 
+ANIMALLORE={90.0 100.0}
+
+ITEMNEWBIE=random_male_hair 
+COLOR=colors_hair 
+ITEMNEWBIE=random_facial_hair 
+COLOR=match_hair 
+
+ON=@NPCRestock
+
+ITEMNEWBIE=i_robe_merc
+
+SELL	= i_hat_wizards_merc,{3 7}
+SELL	= i_robe_merc,{3 7}
+SELL	= i_sash_merc,{3 7}
+SELL	= i_surcoat_merc,{3 7}
+SELL	= i_cape_merc,{3 7}
+
+//SELL	= i_Merc_contract1,{10 20}
+//SELL	= i_Merc_contract2,{10 20}
+//SELL	= i_Merc_contract3,{10 20}
+//SELL	= i_Merc_contract4,{10 20}
+//SELL	= i_Merc_contract5,{10 20}
+
+CATEGORY=Imperial uo
+SUBSECTION=Mercenary Faction Npc's
+DESCRIPTION=Mercenary Shop
+
+
+/////////////////////////////////////MERC RANKING REWARDS///////////////////////////////////////
+
+[ITEMDEF i_dagger_mercenary]
+ID=0f51
+NAME=Mercenary Dagger
+TYPE=T_WEAPON_FENCE
+TDATA1=mat_copper
+FLIP=1
+DAM=2, 8
+SKILL=Fencing
+REQSTR=10
+WEIGHT=3
+DUPELIST=0f52
+
+CATEGORY=Imperial uo
+SUBSECTION=Mercenary Faction Items
+DESCRIPTION=Mercenary Dagger
+
+ON=@Create
+ATTR=attr_newbie
+HITPOINTS=32
+COLOR=0846
+
+ON=@DClick
+RETURN = <wpn_dclick_bladed>
+
+ON=@Targon_ground
+RETURN = <wpn_targon_ground_bladed>
+
+ON=@Targon_char
+RETURN = <wpn_targon_char_bladed>
+
+ON=@Targon_item
+RETURN = <wpn_targon_item_bladed>
+
+ON=@Equip
+IF !(<SRC.ISMERCENARY>)
+SRC.SYSMESSAGE @0846 Only Mercenaries can use it.
+UNEQUIP
+ENDIF
+RETURN 1
+
+/// horse ///
+
+[ITEMDEF i_mercenary_horse_deed]
+DEFNAME= i_mercenary_horse_deed
+ID=i_deed
+NAME=Mercenary Horse Deed
+
+CATEGORY=Imperial uo
+SUBSECTION=Mercenary Faction Items
+DESCRIPTION=Mercenary Horse (Deed)
+
+ON=@CREATE
+COLOR=0846
+
+ON=@DCLICK
+IF ( (<SRC.TARG.ATTR> & attr_move_never)
+SRC.SYSMESSAGE You can't unshrink that.
+RETURN 1
+
+ENDIF 
+IF <SRC.RESTEST i_mercenary_horse_deed>
+SERV.NEWNPC c_mercenary_horse
+LOCAL.NPC=<NEW.UID>
+SERV.NEWITEM i_memory
+NEW.COLOR=042
+NEW.LINK=<SRC.UID>
+NEW.CONT=<LOCAL.NPC>
+TRY UID.<LOCAL.NPC>.update
+SRC.CONSUME i_mercenary_horse_deed 1
+ENDIF
+RETURN 1
+
+[CHARDEF c_mercenary_horse]
+DEFNAME=c_mercenary_horse
+ID=c_horse_gray
+NAME=Mercenary Horse
+SOUND=snd_ANIMALS_HORSE1
+ICON=i_pet_horse_gray
+CAN=MT_WALK|MT_RUN
+RESOURCES=15 i_ribs_raw, 8 i_hide
+FOODTYPE=55 t_crops,55 t_fruit,55 t_grain, 64 t_grass
+DAM=10,20
+ARMOR=20
+
+ON=@Create
+COLOR=0846
+NPC=BRAIN_ANIMAL
+FAME=0
+STR={150 200}
+DEX={100 120}
+INT={10 50}
+
+PARRYING={40.0 55.0}
+MAGICRESISTANCE={60.0 80.0}
+TACTICS={50.0 60.0}
+WRESTLING={40.0 60.0}
+ARMSLORE=70.0
+
+CATEGORY=Imperial uo
+SUBSECTION=Mercenary Faction Items
+DESCRIPTION=Mercenary Horse
+
+
+/// merc public bind stones ////
+
+[ITEMDEF i_mercenary_bindstone_public]
+DEFNAME=i_mercenary_bindstone_public
+ID=0ed6
+NAME=Mercenary Bind Stone
+TYPE=t_normal
+
+ON=@CREATE
+COLOR=0846 
+
+ON=@CLICK
+MESSAGE @0846 To bind your spirit to the stone double click it.
+
+ON=@DCLICK
+IF (<SRC.ISMERCENARY>) && (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 2999)
+SRC.TAG.MERCHOME=<SRC.P>
+MESSAGE @0846 Your spirit is now bound to this stone. To recall your spirit back use .bindback.
+ELSE
+SRC.MESSAGE @0846 You need at least 3000 Mercenary Points to use this stone.
+ENDIF
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Mercenary Faction Items
+DESCRIPTION=Mercenary Public Bindstone
+
+
+[PLEVEL 0]
+bindback
+
+[FUNCTION bindback]
+
+IF (<SRC.ISSYNDICATE>) && (<EVAL <SRC.TAG0.REP.ALIGNMENT>> < 3000)
+SYSMESSAGE @07d1 You are not yet worthy of using such powers.
+RETURN 1
+ELSEIF (<SRC.ISBROTHERHOOD>) && (<EVAL <SRC.TAG0.REP.ALIGNMENT>> < 3000)
+SYSMESSAGE @0770 You are not yet worthy of using such powers.
+RETURN 1
+ELSEIF (<SRC.ISMERCENARY>) && (<EVAL <SRC.TAG0.REP.ALIGNMENT>> < 3000)
+SYSMESSAGE @0846 You are not yet worthy of using such powers.
+RETURN 1
+ELSEIF (<SRC.ISORDER>) && (<EVAL <SRC.TAG0.REP.ALIGNMENT>> < 3000)
+ORDERSAY You are not yet worthy of using such powers.
+RETURN 1
+ELSEIF (<SRC.ISCHAOS>) && (<EVAL <SRC.TAG0.REP.ALIGNMENT>> < 3000)
+CHAOSSAY You are not yet worthy using such powers.
+RETURN 1
+ENDIF
+
+IF (<SRC.ISSYNDICATE>) || (<SRC.ISBROTHERHOOD>) || (<SRC.ISMERCENARY>) || (<SRC.ISORDER>) || (<SRC.ISCHAOS>)
+	IF (<SRC.ISDEAD>) 
+		IF (<TAG0.MERCHOME>)
+			SRC.GO <TAG.MERCHOME>
+			SRC.SYSMESSAGE Your spirit recalls back to the bind stone.
+		ELSE
+			SRC.SYSMESSAGE You do not have any bindback location saved.
+		ENDIF
+	ELSE
+		SRC.SYSMESSAGE You are not dead.
+	ENDIF
+ELSE
+	SRC.SYSMESSAGE You are not worthy using such powers.
+	RETURN 1
+ENDIF
+
+
+///////// Robe +6 ////////////
+
+[ITEMDEF i_mercenary_protection]
+NAME=Mercenary Robe of Protection
+ID=i_robe
+WEIGHT=3
+VALUE=5000
+TYPE=T_ARMOR
+DYE=0
+ARMOR=6
+DUPELIST=01f04
+
+ON=@CREATE
+QUALITY=200
+ATTR=05
+HITPOINTS={50 130}
+COLOR=0846
+
+ON=@DCLICK
+TYPE=T_ARMOR
+
+
+ON=@EQUIP
+ 
+IF (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 6999) && (<SRC.ISMERCENARY>)
+SRC.MESSAGE @0846 As you wear the robe, you feel more protected.
+RETURN 0
+ELSE
+SRC.MESSAGE @0846 You can't equip this robe.
+UNEQUIP
+RETURN 1
+ENDIF
+
+
+CATEGORY=Imperial uo
+SUBSECTION=Mercenary Faction Items
+DESCRIPTION=Mercenary Robe of Protection
+
+
+/// merc personal bind stones ////
+
+[ITEMDEF i_mercenary_bindstone_deed]
+DEFNAME=i_mercenary_bindstone_deed
+NAME=Personal Mercenary Bind Stone Deed
+ID=i_deed
+RESOURCES=i_deed,i_mercenary_bindstone
+
+ON=@Create
+COLOR=0846
+MORE=i_mercenary_bindstone
+ATTR=attr_newbie
+
+CATEGORY=Imperial uo
+SUBSECTION=Mercenary Faction Items
+DESCRIPTION=Personal Mercenary Bind Stone Deed
+
+
+[ITEMDEF i_mercenary_bindstone]
+DEFNAME=i_mercenary_bindstone
+ID=0ed6
+NAME=Personal Mercenary Bind Stone
+TYPE=t_normal
+
+ON=@CREATE
+COLOR=0846 
+
+ON=@CLICK
+MESSAGE @0846 To bind your spirit to the stone double click it.
+
+ON=@DCLICK 
+IF (<MORE>!=1)
+NAME=<SRC.NAME>'s Bind Stone
+MORE=1 
+MORE2=<SRC.UID>
+SRC.SYSMESSAGE @0846 This stone has been linked to you. 
+SRC.SYSMESSAGE @0846 No-one but you can use it.
+
+ELSEIF ((<MORE>==1) && (<MORE2>==<SRC.UID>) && (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 7999)) 
+SRC.TAG.MERCHOME=<SRC.P>
+MESSAGE @0846 Your spirit is now bound to this stone. To recall your spirit back use .bindback
+ELSE 
+SRC.SYSMESSAGE @0846 You can not use the stone.  
+ENDIF 
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Mercenary Faction Items
+DESCRIPTION=Personal Mercenary Bind Stone
+
+/// shroud ///
+
+[ITEMDEF i_mercenary_elite_shroud]
+ID=i_hooded_shroud
+NAME=@0846 Mercenary Elite Shroud
+TYPE=T_CLOTHING
+ARMOR=5
+DYE=0
+VALUE=500000
+
+CATEGORY=Imperial uo
+SUBSECTION=Mercenary Faction Items
+DESCRIPTION=Mercenary Elite Shroud
+
+ON=@Create
+HITPOINTS=150
+COLOR=0846
+ATTR=05
+
+ON=@Equip
+IF !(<SRC.ISMERCENARY>)
+MESSAGE @0846 You are not a member of The Mercenaries.
+UNEQUIP
+ELSEIF (<SRC.ISMERCENARY>) && (<EVAL <SRC.TAG0.REP.ALIGNMENT>> < 10000)
+MESSAGE @0846 You need at least 10000 Mercenary Points to wear this!
+UNEQUIP
+ELSE
+MESSAGE @0846 You pull on the robe and pull the hood over your head.
+ENDIF
+RETURN 1
+
+ON=@Click
+Message=@07a1 [Newbied]
+
+/// elite steed ///
+
+[EVENTS e_mount_mercenary]
+
+ON=@DISMOUNT
+if <argo.tag0.mount_mercenary>
+serv.newitem <argo.tag0.mount_mercenary>
+new.bounce
+new.color=<argo.tag0.mount_mercenary_color>
+new.tag.uid=<argo.tag0.mount_mercenary_owner>
+src.tag.lastdonarshrink = <new.uid>
+src.tag.ondonarmount
+argo.remove
+src.findlayer.25.remove
+SERV.LOG <SRC.NAME> dismounted their Mercenary Steed <new.uid>
+SRC.EVENTS -e_mount_mercenary
+RETURN 1
+ENDIF
+
+[ITEMDEF i_mercenary_elite_steed]
+NAME=Mercenary Elite Steed
+ID=i_pet_horse
+TYPE=t_mercenary_statuette
+TDATA1=c_horse_tan
+WEIGHT=1
+
+ON=@CREATE
+ATTR=04
+COLOR=0846
+
+CATEGORY=Imperial uo
+SUBSECTION=Mercenary Faction Items
+DESCRIPTION=Mercenary Elite Steed
+
+[TYPEDEF t_mercenary_statuette]
+
+ON=@CLICK
+IF !(STRCMP(0<TAG.UID>,0) == 0)
+SRC.SYSMESSAGE @25 This steed is linked to an account already.
+ELSE
+SRC.SYSMESSAGE @25 This steed is not owned by anyone.
+ENDIF
+
+ON=@DCLICK
+IF (STRCMP(0<TAG.UID>,0) == 0)
+TAG.UID = <SRC.NAME>
+SRC.SYSMESSAGE @25 Owner Set
+ENDIF
+IF <cant_mount_mercenary>
+RETURN 1
+ELSE
+mount_mercenary <TDATA1>
+SRC.EVENTS +e_mount_mercenary
+RETURN 1
+ENDIF
+
+[FUNCTION mount_mercenary]
+if <cant_mount_mercenary>
+return 1
+else
+src.tag.ondonarmount = 1
+serv.newnpc <args>
+ref1=<new.uid>
+serv.newitem i_memory
+new.color=memory_ipet
+new.link=<src.uid>
+new.cont=<ref1.uid>
+src.events -e_mount_mercenary
+ref1.food=999
+ref1.color=<color>
+ref1.tag0.mount_mercenary=<baseid>
+ref1.tag0.mount_mercenary_color=<color>
+ref1.tag0.mount_mercenary_owner=<tag.uid>
+ref1.mount <src>
+consume
+endif
+
+[function cant_mount_mercenary]
+if (<topobj.isplayer>)
+if (<topobj.uid>!=<src.uid>)
+src.sysmessage This is not yours to use.
+RETURN 1
+elseif !(STRCMP(<tag.uid>,<src.name>) == 0)
+src.sysmessage This is not yours to use.
+RETURN 1
+elseif (<src.flags>&statf_dead)
+src.sysmessage You can't use that right now.
+RETURN 1
+elseif (<src.flags>&statf_polymorph)
+src.sysmessage You can't use that while polymorphed.
+RETURN 1
+elseif ((<SRC.BODY> != C_MAN) && (<SRC.BODY> != C_WOMAN))
+src.sysmessage You can't use that while polymorphed.
+RETURN 1
+elseif (<src.findlayer.25.uid>)
+src.sysmessage You are already on a mount.
+RETURN 1
+ELSEIF (<SRC.TAG0.MERCENARYRANK> < 11)
+SRC.SYSMESSAGE @0846 You are not worthy enough to ride the <NAME>.
+RETURN 1
+ELSE
+RETURN 0
+ENDIF
+ELSE
+src.sysmessage You cannot use this where it is.
+RETURN 1
+ENDIF
+
+
+
+////////////////////////////////////
+////Personal Resurrection Stone////
+//////////////////////////////////
+
+[ITEMDEF i_mercenary_ress_deed]
+DEFNAME= i_mercenary_ress_deed
+NAME=Personal Resurrection Deed
+ID=i_deed
+RESOURCES=i_deed,i_mercenary_ress_stone
+
+CATEGORY=Imperial uo
+SUBSECTION=Mercenary Faction Items
+DESCRIPTION=Personal Mercenary Resurrection Stone Deed
+
+ON=@CREATE
+MORE=i_mercenary_ress_stone
+ATTR=attr_newbie
+
+[ITEMDEF i_mercenary_ress_stone]
+DEFNAME=i_mercenary_ress_stone
+ID=0ed6
+NAME=Personal Mercenary Resurrection Stone
+TYPE=t_normal
+
+ON=@CREATE
+NAME=<SRC.NAME>'s Resurrection Stone
+MORE=1
+MORE2=<SRC.UID>
+SRC.SYSMESSAGE @0846 This stone has been linked to you. 
+SRC.SYSMESSAGE @0846 No-one but you can use it.
+
+ON=@CLICK
+MESSAGE @0846 The stone seems to glow.
+
+IF ((<MORE>==1) && (<MORE2>==<SRC.UID>) && (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 8999)) 
+SRC.RESURRECT
+MESSAGE @0846 Your spirit has now re-joined your body.
+ELSE 
+SRC.SYSMESSAGE @0846 You can not use the stone.
+ENDIF
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Mercenary Faction Items
+DESCRIPTION=Personal Mercenary Resurrection Stone
+
+/////////////////////////////////////////
+//////// Mercenary Recall Rune /////////
+///////////////////////////////////////
+
+[ITEMDEF m_merc_recall]
+  ID		= i_memory
+  TYPE	= t_eq_script
+  LAYER	= layer_special
+  NAME	= Recalling
+ON=@Create
+    ATTR = 02
+    TIMER = 8
+ON=@TIMER
+    CONT.GO <MOREp>
+    REMOVE
+
+
+[FUNCTION f_merc_recall]
+   IF !( (<SRC.TAG.mercrank>) < 5 )
+      SRC.KILL
+      return 1
+   endif
+   
+   IF ( <SRC.RESTEST m_merc_recall> )
+       RETURN 1
+   ENDIF
+
+   IF ( (<SRC.MEMORYFINDTYPE(memory_fight).uid>) || ( <SRC.FLAGS> & statf_freeze ) )
+      src.sysmessage Nothing happens...
+      return 1
+   ENDIF
+
+   if ( <src.findid.i_rune_weaken.uid> || <src.findid.i_rune_clumsy.uid> || <src.findid.i_rune_feeblemind.uid> || <src.findid.i_rune_poison.uid> || <src.findid.i_rune_curse.uid> )
+      SRC.SYSMESSAGE The negative energies upon you block the magic.
+      return 1
+   endif
+
+   SRC.NEWITEM m_merc_recall
+   SRC.ACT.EQUIP
+   SRC.ACT.TIMER = 5
+   SRC.ACT.ATTR = 02
+   SRC.ACT.MORE1 = <UID>
+   SRC.ACT.MOREP	= <MOREp>
+   SRC.NEWITEM m_merc_recall_effect
+   SRC.ACT.EQUIP
+   SRC.ACT.TIMER = 7
+   SRC.ACT.ATTR = 02
+   SRC.NEWITEM m_merc_recall_effect
+   SRC.ACT.EQUIP
+   SRC.ACT.TIMER = 6
+   SRC.ACT.ATTR = 02
+   SRC.NEWITEM m_merc_recall_effect
+   SRC.ACT.EQUIP
+   SRC.ACT.TIMER = 5
+   SRC.ACT.ATTR = 02
+   SRC.NEWITEM m_merc_recall_effect
+   SRC.ACT.EQUIP
+   SRC.ACT.TIMER = 3
+   SRC.ACT.ATTR = 02
+   SRC.NEWITEM m_merc_recall_effect
+   SRC.ACT.EQUIP
+   SRC.ACT.TIMER = 2
+   SRC.ACT.ATTR = 02
+   SRC.SYSMESSAGE You start feeling dizzy...
+   RETURN 1
+
+
+
+[ITEMDEF i_rune_mercGZ]
+  NAME=Mercenary Britain HQ Recall Rune
+  DEFNAME=i_rune_merc
+  ID=01f17
+  TYPE=T_NORMAL
+  WEIGHT=1
+ON=@CREATE
+   COLOR = 0846
+   ATTR=04
+   MOREX = 0
+ON=@DCLICK
+   MOREp	= 1469,1549,32 // Inside GZ
+SRC.MANA = 1
+   return <f_merc_recall>
+
+[ITEMDEF i_rune_merc]
+  NAME=Mercenary Britain Outpost Recall Rune
+  DEFNAME=i_rune_merc
+  ID=01f17
+  TYPE=T_NORMAL
+  WEIGHT=1
+ON=@CREATE
+   COLOR = 0846
+   ATTR=04
+   MOREX = 0
+ON=@DCLICK
+   MOREp	= 1469,1549,32 // Inside GZ
+SRC.MANA = 1
+   return <f_merc_recall>
+
+[ITEMDEF m_merc_recall_effect]
+  ID		= i_memory
+  TYPE	= t_eq_script
+  LAYER	= layer_special
+  NAME	= Recall Effect
+
+ON=@Create
+    ATTR = 02
+    TIMER = 5
+
+ON=@TIMER
+    CONT.SOUND 01dc
+    CONT.EFFECT		= 3, i_fire_column, 6, 15, 1
+    CONT.EFFECT		= 3, i_fire_column, 6, 15, 1
+    CONT.EFFECT		= 3, i_fire_column, 6, 15, 1
+    CONT.EFFECT		= 3, i_fire_column, 6, 15, 1
+    REMOVE
+
+////////////////////////////////////////
+
+
+[ITEMDEF i_travel_player]
+DEFNAME=i_travel_player
+ID=0ed6
+NAME=Mercenary Travel stone
+TYPE=T_NORMAL
+
+ON=@CREATE
+COLOR=0846
+
+ON=@DCLICK
+
+IF (<SRC.FINDID.i_delivery_memory.UID>)
+SRC.SYSMESSAGE @0846 You can't travel by magic, it ruins deliveries!
+RETURN 1
+
+ELSEIF (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 5999)
+DIALOG d_playertravel
+
+ELSE
+SRC.MESSAGE @0846 You can not use this stone.
+ENDIF
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Mercenary Faction Items
+DESCRIPTION=Mercenary Travel Stone
+
+
+/////Gumps//////
+
+[DIALOG d_mercenary_profile]
+0,0
+page 0
+gumppic 167 152 5120
+gumppic 177 152 5121
+gumppic 335 152 5121
+gumppic 603 152 5122
+gumppic 445 152 5121
+gumppic 169 162 5123
+gumppic 169 275 5123
+gumppic 169 330 5123
+gumppic 603 162 5125
+gumppic 603 275 5125
+gumppic 603 328 5125
+gumppic 171 443 5126
+gumppic 602 441 5128
+gumppic 181 443 5127
+gumppic 338 443 5127
+gumppic 444 442 5127
+gumppic 179 162 5124
+gumppic 337 162 5124
+gumppic 179 275 5124
+gumppic 337 275 5124
+gumppic 179 331 5124
+gumppic 337 331 5124
+gumppic 445 160 5124
+gumppic 447 272 5124
+gumppic 445 330 5124
+gumppic 151 117 12 545
+gumppic 151 116 50623 1635
+gumppic 151 116 50540
+gumppic 150 116 50548 1635
+gumppic 130 98 1883
+gumppic 151 117 50524
+gumppic 151 118 50477
+gumppic 153 110 50581 1635
+text 377 177 1935 0
+text 334 226 1935 1
+text 334 302 1935 2
+text 228 368 1935 3
+text 227 398 1935 4
+text 398 368 1935 5
+text 398 397 1935 6
+text 335 264 1935 7
+button 204 371 1209 1210 1 0 1
+button 204 401 1209 1210 1 0 2
+button 377 371 1209 1210 1 0 3
+button 377 400 1209 1210 1 0 4
+
+[DIALOG d_mercenary_profile text]
+The Mercenary Faction
+You currently have <EVAL <SRC.TAG0.REP.ALIGNMENT>> Mercenary Points.
+You currently have <EVAL <SRC.TAG0.RATINGPVMD>> PvM Deaths.
+Add Paperdoll Title
+Remove Paperdoll Title
+Next Rank
+Add/Remove Name Title
+Your currently rank: <SRC.TAG0.CURRENTMRANK>
+
+
+[DIALOG d_mercenary_profile button]
+
+ON=1 // add title
+
+SRC.TAG.NAME.SUFFIX=, <SRC.TAG.CURRENTMRANK>
+SRC.SYSMESSAGE @0846 Title Added.
+ENDIF
+RETURN 1
+
+ON=2 // remove title
+SRC.TAG.NAME.SUFFIX=
+SRC.SYSMESSAGE @0846 Title Removed.
+ENDIF
+RETURN 1
+
+
+
+
+
+ON=3 // next rank
+
+IF (<SRC.TAG.MERCENARYRANK> == 0) && (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 999))
+SRC.TAG.MERCENARYRANK=1
+SRC.TAG.CURRENTMRANK=Mercenary Initiate
+SRC.TAG.NAME.SUFFIX=, Mercenary Initiate
+SRC.SYSMESSAGE @0846 Congratulations! You have advanced to <TAG.CURRENTMRANK>.
+SRC.SYSMESSAGE @0846 You got a Mercenary Dagger as a prize in your bank!
+SRC.NEWITEM=i_dagger_mercenary 
+SRC.ACT.CONT=<SRC.findlayer(layer_bankbox).uid>
+
+ELSEIF (<SRC.TAG.MERCENARYRANK> == 01) && (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 1999))
+SRC.TAG.MERCENARYRANK=2
+SRC.TAG.CURRENTMRANK=Mercenary Apprentice
+SRC.TAG.NAME.SUFFIX=, Mercenary Apprentice
+SRC.SYSMESSAGE @0846 Congratulations! You have advanced to <SRC.TAG.CURRENTMRANK>.
+SRC.SYSMESSAGE @0846 You can now use The Mercenary Recall Magic! Use .factionhome to start using it.
+
+
+ELSEIF (<SRC.TAG.MERCENARYRANK> == 02) && (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 2999))
+SRC.TAG.MERCENARYRANK=3
+SRC.TAG.CURRENTMRANK=Mercenary Novice
+SRC.TAG.NAME.SUFFIX=, Mercenary Novice
+SRC.SYSMESSAGE @0846 Congratulations! You have advanced to <SRC.TAG.CURRENTMRANK>.
+SRC.SYSMESSAGE @0846 You can now use the public Mercenary Bind Stone.
+
+
+ELSEIF (<SRC.TAG.MERCENARYRANK> == 03) && (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 3999))
+SRC.TAG.MERCENARYRANK=4
+SRC.TAG.CURRENTMRANK=Mercenary Servant
+SRC.TAG.NAME.SUFFIX=, Mercenary Servant
+SRC.SYSMESSAGE @0846 Congratulations! You have advanced to <SRC.TAG.CURRENTMRANK>.
+SRC.SYSMESSAGE @0846 You got a Mercenary Hair and Backpack Dye Tub as a prize in your back pack!
+SERV.NEWITEM=i_hair_tub
+NEW.NAME=Mercenary Hair Dye Tub
+NEW.ATTR=ATTR_NEWBIE
+NEW.COLOR=0846
+NEW.MOREX=1
+NEW.BOUNCE
+SERV.NEWITEM=i_dye_tub_backpack
+NEW.NAME=Mercenary Backpack Dye Tub
+NEW.ATTR=ATTR_NEWBIE
+NEW.COLOR=0846
+NEW.MOREX=1
+NEW.BOUNCE
+
+ELSEIF (<SRC.TAG.MERCENARYRANK> == 04) && (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 4999))
+SRC.TAG.MERCENARYRANK=5
+SRC.TAG.CURRENTMRANK=Mercenary Warrior
+SRC.TAG.NAME.SUFFIX=, Mercenary Warrior
+SRC.SYSMESSAGE @0846 Congratulations! You have advanced to <SRC.TAG.CURRENTMRANK>.
+SRC.SYSMESSAGE @0846 You got a Mercenary Horse as a prize in your bank! 
+SRC.NEWITEM=i_mercenary_horse_deed
+SRC.ACT.CONT=<SRC.findlayer(layer_bankbox).uid>
+
+
+
+ELSEIF (<SRC.TAG.MERCENARYRANK> == 05) && (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 5999))
+SRC.TAG.MERCENARYRANK=6
+SRC.TAG.CURRENTMRANK=Mercenary Disciple
+SRC.TAG.NAME.SUFFIX=, Mercenary Disciple
+SRC.SYSMESSAGE @0846 Congratulations! You have advanced to <SRC.TAG.CURRENTMRANK>.
+SRC.SYSMESSAGE @0846 You can now use The Mercenary Travel Stone. It is located in Britain and Moonglow. It teleports you to the main map places.
+
+
+ELSEIF (<SRC.TAG.MERCENARYRANK> == 06) && (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 6999))
+SRC.TAG.MERCENARYRANK=7
+SRC.TAG.CURRENTMRANK=Mercenary Knight
+SRC.TAG.NAME.SUFFIX=, Mercenary Knight
+SRC.SYSMESSAGE @0846 Congratulations! You have advanced to <SRC.TAG.CURRENTMRANK>.
+SRC.SYSMESSAGE @0846 You got a Mercenary Robe of Protection as a prize in your bank!
+SRC.NEWITEM=i_mercenary_protection
+SRC.ACT.CONT=<SRC.findlayer(layer_bankbox).uid>
+
+
+ELSEIF (<SRC.TAG.MERCENARYRANK> == 07) && (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 7999))
+SRC.TAG.MERCENARYRANK=8
+SRC.TAG.CURRENTMRANK=Mercenary Soldier
+SRC.TAG.NAME.SUFFIX=, Mercenary Soldier
+SRC.SYSMESSAGE @0846 Congratulations! You have advanced to <SRC.TAG.CURRENTMRANK>.
+SRC.SYSMESSAGE @0846 You got a Personal Bind Stone in your bank!
+SRC.NEWITEM i_mercenary_bindstone_deed
+SRC.ACT.CONT=<SRC.findlayer(layer_bankbox).uid>
+
+
+ELSEIF (<SRC.TAG.MERCENARYRANK> == 08) && (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 8999))
+SRC.TAG.MERCENARYRANK=9
+SRC.TAG.CURRENTMRANK=Mercenary Veteran
+SRC.TAG.NAME.SUFFIX=, Mercenary Veteran
+SRC.SYSMESSAGE @0846 Congratulations! You have advanced to <SRC.TAG.CURRENTMRANK>.
+SRC.SYSMESSAGE @0846 You got a Personal Resurrection Stone in your bank!
+SRC.NEWITEM i_mercenary_ress_deed
+SRC.ACT.CONT=<SRC.findlayer(layer_bankbox).uid>
+
+
+ELSEIF (<SRC.TAG.MERCENARYRANK> == 09) && (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 9999))
+SRC.TAG.MERCENARYRANK=10
+SRC.TAG.CURRENTMRANK=Mercenary Elite
+SRC.TAG.NAME.SUFFIX=, Mercenary Elite
+SRC.SYSMESSAGE @0846 Congratulations! You have advanced to <SRC.TAG.CURRENTMRANK>.
+SRC.SYSMESSAGE @0846 You got a Mercenary Elite Shroud in your bank!
+SRC.NEWITEM i_mercenary_elite_shroud
+SRC.ACT.CONT=<SRC.findlayer(layer_bankbox).uid>
+
+
+ELSEIF (<SRC.TAG.MERCENARYRANK> == 10) && (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 10999))
+SRC.TAG.MERCENARYRANK=11
+SRC.TAG.CURRENTMRANK=Mercenary Master
+SRC.TAG.NAME.SUFFIX=, Mercenary Master
+SRC.SYSMESSAGE @0846 Congratulations! You have advanced to <SRC.TAG.CURRENTMRANK>.
+SRC.SYSMESSAGE @0846 You got a bag of Reward Keys in your bank!
+SRC.NEWITEM i_bag_Faction1100
+SRC.ACT.CONT=<SRC.findlayer(layer_bankbox).uid>
+
+
+ELSEIF (<SRC.TAG.MERCENARYRANK> == 11) && (<EVAL <SRC.TAG0.REP.ALIGNMENT>> > 11999))
+SRC.TAG.MERCENARYRANK=12
+SRC.TAG.CURRENTMRANK=Mercenary Master Marksman
+SRC.TAG.NAME.SUFFIX=, Mercenary Master Marksman
+SRC.SYSMESSAGE @0846 Congratulations! You have advanced to <SRC.TAG.CURRENTMRANK>.
+SRC.SYSMESSAGE @0846 You got a bag of Reward Keys to Shame in your bank!
+SRC.NEWITEM i_bag_Faction1200
+SRC.ACT.CONT=<SRC.findlayer(layer_bankbox).uid>
+SERV.B @0846 A new Master Marksman is born. Congratulations <SRC.NAME>, for being the perfect hunter.
+ELSE
+SRC.SYSMESSAGE @0846 You have not fulfilled enough contracts to progress through the ranks.
+ENDIF
+RETURN 1
+
+ON=4 // add/remove name title
+IF (<SRC.TAG0.ALIGNMENT.SHOWTITLE> == 01)
+SRC.TAG.ALIGNMENT.SHOWTITLE=0
+SRC.SYSMESSAGE @0846 Title removed from your name.
+
+ELSEIF (<SRC.TAG0.ALIGNMENT.SHOWTITLE> == 0)
+SRC.TAG.ALIGNMENT.SHOWTITLE=1
+SRC.SYSMESSAGE @0846 Title added to your name.
+
+ELSE
+SRC.SYSMESSAGE @0846 You are not a Mercenary Member.
+ENDIF
+RETURN 1
+
+[DIALOG d_mercenary_join]
+0,0
+page 0
+gumppic 167 152 5120
+gumppic 177 152 5121
+gumppic 335 152 5121
+gumppic 603 152 5122
+gumppic 445 152 5121
+gumppic 169 162 5123
+gumppic 169 275 5123
+gumppic 169 330 5123
+gumppic 603 162 5125
+gumppic 603 275 5125
+gumppic 603 328 5125
+gumppic 171 443 5126
+gumppic 602 441 5128
+gumppic 181 443 5127
+gumppic 338 443 5127
+gumppic 444 442 5127
+gumppic 179 162 5124
+gumppic 337 162 5124
+gumppic 179 275 5124
+gumppic 337 275 5124
+gumppic 179 331 5124
+gumppic 337 331 5124
+gumppic 445 160 5124
+gumppic 447 272 5124
+gumppic 445 330 5124
+gumppic 151 117 12 545
+gumppic 151 116 50623 1635
+gumppic 151 116 50540
+gumppic 150 116 50548 1635
+gumppic 130 98 1883
+gumppic 151 117 50524
+gumppic 151 118 50477
+gumppic 153 110 50581 1635
+text 377 177 1935 0
+text 366 228 1935 1
+text 341 286 1935 2
+text 228 368 1935 3
+text 227 398 1935 4
+text 467 367 1935 5
+text 328 264 1935 6
+button 204 371 1209 1210 1 0 1
+button 204 401 1209 1210 1 0 2
+button 445 371 1209 1210 1 0 3
+
+[DIALOG d_mercenary_join text]
+The Mercenary Faction
+Welcome to the Mercenaries.
+Once you join us, you can never leave.
+Yes, I'm ready to join.
+No, I'm not ready to join.
+Information
+To join us, you'll need at least 550.0 skilll.
+
+[DIALOG d_mercenary_join button]
+
+ON=1
+
+IF (<SRC.ISMERCENARY>)
+SRC.SYSMESSAGE @0846 You are already a member of The Mercenaries.
+
+ELSEIF !(<SRC.ISMERCENARY>) && (<SRC.SKILLTOTAL> > 5500))
+SRC.TAG.MERCENARYRANK=0
+SRC.TAG.CURRENTMRANK=Mercenary Enlistee
+SRC.TAG.ALIGNMENT.SHOWTITLE=1
+src.tag.alignment=alignment_mercenary
+src.tag.rep.alignment=1
+SRC.SYSMESSAGE @0846 You now belong to the Mercenaries. Welcome!
+SRC.SYSMESSAGE @0846 You now have access to the Mercenaries Faction Chat by typing .f 
+ef_spirits
+RETURN 1
+
+ELSE
+SRC.SYSMESSAGE @0846 You are not worthy enough to join the Mercenaries.
+ENDIF
+RETURN 1
+
+ON=3
+DIALOG d_mercenary_info
+
+[DIALOG d_mercenary_info]
+0,0
+page 0
+gumppic 167 152 5120
+gumppic 177 152 5121
+gumppic 335 152 5121
+gumppic 603 152 5122
+gumppic 445 152 5121
+gumppic 169 162 5123
+gumppic 169 275 5123
+gumppic 169 330 5123
+gumppic 603 162 5125
+gumppic 603 275 5125
+gumppic 603 328 5125
+gumppic 171 443 5126
+gumppic 602 441 5128
+gumppic 181 443 5127
+gumppic 338 443 5127
+gumppic 444 442 5127
+gumppic 179 162 5124
+gumppic 337 162 5124
+gumppic 179 275 5124
+gumppic 337 275 5124
+gumppic 179 331 5124
+gumppic 337 331 5124
+gumppic 445 160 5124
+gumppic 447 272 5124
+gumppic 445 330 5124
+gumppic 151 117 12 545
+gumppic 151 116 50623 1635
+gumppic 151 116 50540
+gumppic 150 116 50548 1635
+gumppic 130 98 1883
+gumppic 151 117 50524
+gumppic 151 118 50477
+gumppic 153 110 50581 1635
+dtext 377 177 1935 The Mercenary Faction
+dtext 319 222 1935 The Mercenaries are one of the five factions
+dtext 319 246 1935 found on Imperial UO.
+dtext 318 268 1935 They seek prizes and go through ranks by
+dtext 319 290 1935 hunting all kind of monsters.
+dtext 319 310 1935 For a complete information about ranks & prizes
+dtext 319 334 1935 visit our website.
+dtext 470 367 1935 Return
+//button 204 371 1209 1210 1 0 1
+//button 204 401 1209 1210 1 0 2
+button 445 371 1209 1210 1 0 1
+
+
+[DIALOG d_mercenary_info button]
+
+ON=1
+DIALOG d_mercenary_join
+
+//----------------------MERCENARIES---------------------//
+
+// -- NPC
+
+[CHARDEF c_faction_vendor_mercenaries]
+NAME=Yorky, The Mercenary Trader
+ID=C_MAN
+DESIRES=i_gold,e_notoriety
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+TSPEECH=spk_human_prime
+TSPEECH=spk_trainer
+TSPEECH=spk_needs
+TSPEECH=spk_rehello
+TSPEECH=spk_human_default
+TSPEECH=spk_mercenary_vendor
+
+
+TEVENTS=e_Human_HearUnk
+TEVENTS=e_Human_Needs
+TEVENTS=e_Human_ConvInit
+TEVENTS=e_Human_Greet
+TEVENTS=e_Human_Space
+TEVENTS=e_Human_Refuse
+TEVENTS=e_Human_Environ
+
+ON=@Create
+TAG.NAME.HUE=0846
+NPC=brain_vendor
+COLOR=colors_skin
+STR={16 30}
+DEX={26 40}
+INT={31 45}
+
+EVALUATINGINTEL={45.0 68.0}
+WRESTLING={15.0 38.0}
+MAGICRESISTANCE={15.0 38.0}
+TACTICS={15.0 38.0}
+INSCRIPTION={50.0 70.0}
+
+ITEMNEWBIE=random_female_hair
+COLOR=colors_hair
+
+ON=@NPCRestock
+ITEM=RANDOM_LIGHT
+ITEMNEWBIE=i_mercenary_elite_shroud
+ITEM=random_shoes
+COLOR=colors_neutral
+
+SELL=FACTION_VENDOR_MERCENARY_SELL
+BUY=FACTION_VENDOR_MERCENARY_BUY
+
+CATEGORY=Imperial uo
+SUBSECTION=Mercenary Faction Templates
+DESCRIPTION=Mercenary Vendor
+
+[TEMPLATE FACTION_VENDOR_MERCENARY_SELL]
+DEFNAME=FACTION_VENDOR_MERCENARY_SELL
+CATEGORY=Imperial uo
+SUBSECTION=Mercenary Faction Templates
+DESCRIPTION=Mercenary Vendor
+SELL=i_robe_mercenary,{3 5}
+SELL=i_dress_mercenary,{3 5}
+SELL=i_cape_mercenary,{3 5}
+SELL=i_mount_tub_mercenary,{2 4}
+SELL=i_potion_refresh,{51 100}
+SELL=i_potion_nightsight,{51 100}
+SELL=i_potion_heal,{51 100}
+SELL=i_potion_cure,{51 100}
+SELL=i_reag_black_pearl,{500 500}
+SELL=i_reag_blood_moss,{500 500}
+SELL=i_reag_garlic,{500 500}
+SELL=i_reag_ginseng,{500 500}
+SELL=i_reag_mandrake_root,{500 500}
+SELL=i_reag_nightshade,{500 500}
+SELL=i_reag_sulfur_ash,{500 500}
+SELL=i_reag_spider_silk,{500 500}
+SELL=i_xbolt,{250 500}
+SELL=i_arrow,{250 500}
+SELL=i_bandage,{100 150}
+
+[TEMPLATE FACTION_VENDOR_MERCENARY_BUY]
+DEFNAME=FACTION_VENDOR_MERCENARY_BUY
+CATEGORY=Imperial uo
+SUBSECTION=Mercenary Faction Templates
+DESCRIPTION=Mercenary Vendor Buy
+BUY=i_bandage,{100 150}
+
+[SPEECH spk_mercenary_vendor]
+ON=*buy*
+   IF (<SRC.FLAGS> & statf_dead)
+      SRC.SYSMESSAGE @025 The dead cannot make transactions, friend...
+      RETURN 1
+   ENDIF
+IF (<SRC.ISMERCENARY>)
+SAY It is a pleasure to serve thee...
+BUY
+ELSE
+SAY I only serve members of the Mercenaries!
+return 1
+ENDIF
+
+
+// -- MERCENARY MOUNT DYE TUB
+
+[ITEMDEF i_mount_tub_mercenary]
+ID = 0fab
+NAME = Mount Dying Pigment
+VALUE = 75000
+ON=@Create
+COLOR = 0846
+
+ON=@DClick
+if ( !<SRC.findlayer(layer_horse).uid> )
+src.sysmessage You are not mounted.
+return 1
+endif
+if !(<SRC.ISMERCENARY>)
+src.message Only members of the Mercenaries may use this!
+return 1
+endif
+SRC.ACT = <SRC.findlayer(layer_horse).uid>
+SRC.ACT.COLOR = <COLOR>
+SRC.ACT = <SRC.ACT.MORE2>
+SRC.ACT.COLOR = <COLOR>
+SRC.ACT.TAG.COLOR = <COLOR>
+src.act.events +e_dyed
+src.sysmessage You spread the pigment over the <SRC.ACT.NAME>.
+if ( !<SRC.ISGM> )
+REMOVE
+endif
+return 1
+
+// -- MERCENARY ROBE
+
+[ITEMDEF i_robe_mercenary]
+ID=i_robe
+NAME=Mercenary Robe
+TYPE=T_CLOTHING
+VALUE=5000
+DYE=0
+
+ON=@CREATE
+HITPOINTS=100
+COLOR=0846
+
+ON=@EQUIP
+IF (<SRC.ISMERCENARY>)
+SRC.SYSMESSAGE Your equip the Mercenary Robe.
+ELSE
+SRC.SYSMESSAGE You can not wear the Mercenary Robe. You are not a member of the Mercenaries.
+UNEQUIP
+ENDIF
+RETURN 1
+
+// -- MERCENARY DRESS
+
+[ITEMDEF i_dress_mercenary]
+ID=i_dress_full
+NAME=Mercenary Dress
+TYPE=T_CLOTHING
+VALUE=5000
+DYE=0
+
+ON=@CREATE
+HITPOINTS=100
+COLOR=0846
+
+ON=@EQUIP
+IF (<SRC.ISMERCENARY>)
+SRC.SYSMESSAGE Your equip the Mercenary Dress.
+ELSE
+SRC.SYSMESSAGE You can not wear the Mercenary Dress. You are not a member of the Mercenaries.
+UNEQUIP
+ENDIF
+RETURN 1
+
+// -- MERCENARY CLOAK
+
+[ITEMDEF i_cape_mercenary]
+ID=i_cape
+NAME=Mercenary Cloak
+TYPE=T_CLOTHING
+VALUE=5000
+DYE=0
+
+ON=@CREATE
+HITPOINTS=100
+COLOR=0846
+
+ON=@EQUIP
+IF (<SRC.ISMERCENARY>)
+SRC.SYSMESSAGE Your equip the Mercenary Cloak.
+ELSE
+SRC.SYSMESSAGE You can not wear the Mercenary Dress. You are not a member of the Mercenaries.
+UNEQUIP
+ENDIF
+RETURN 1
+
+
+[EOF]

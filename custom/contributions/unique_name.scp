@@ -1,0 +1,68 @@
+// Unique Character Names v1.2 - Scripted by Mordaunt
+//				Troubleshooting credit to Darksun84 & _ab_sco in IRC
+
+
+[COMMENT f_onchar_create] // Was Function
+if <serv.LIST.player_names.COUNT>
+	if <serv.LIST.player_names.FINDELEM "<src.name>"> != -1 
+        	src.timerf 3, src.namechange
+	else
+		serv.LIST.player_names.ADD <src.name>
+   	endif
+else
+   	serv.LIST.player_names.ADD <src.name>
+	serv.log Unique player name list created
+endif
+
+[COMMENT f_onchar_delete] // Was Function
+serv.LIST.player_names.<LIST.player_names.FINDELEM "<src.name>">.REMOVE
+
+[COMMENT namechange] // Was Function
+src.flags=(<src.flags>|040000)
+src.tag0.badname=1
+src.sysmessage @021 The name you have chosen is already taken by another player.
+src.sysmessage @021 You will remain frozen until you choose a new name.
+src.dialog d_name_change
+
+[COMMENT d_name_change] // Was Dialog
+150,220
+nomove
+noclose
+page 0 // Basic layout
+gumppictiled 0 0 310 150 0a40
+checkertrans 1 1 308 148
+dtext 85 10 90 This name is taken.
+dtext 80 30 90 Please choose a new name.
+gumppic 20 50 1143 0 
+dtextentry 30 52 150 50 0 0 
+dtext 200 120 90 Confirm
+button 250 120 0fa5 0fa7 1 0 1
+
+[COMMENT d_name_change BUTTON]
+ON=1
+    if <serv.LIST.player_names.FINDELEM "<argtxt[0]>"> != -1
+        src.sysmessage @021 The name you have chosen is already taken by another player.
+        src.sysmessage @021 Please chose a different name.
+        src.dialog d_name_change
+    else
+	if strregex(^[aA-zZ]+$,<argtxt[0]>)
+		local.length=<argtxt[0]>
+		if (<eval strlen(<local.length>)> < 3) || (<eval strlen(<local.length>)> > 16)
+			src.sysmessage @021 Invalid name.
+			src.sysmessage @021 Valid names must be 3 - 16 characters in length.
+			src.dialog d_name_change
+		else
+        		serv.LIST.player_names.ADD <argtxt[0]>
+			src.name <argtxt[0]>
+			src.account.chatname <argtxt[0]>
+			src.flags=(<src.flags>& ~040000)
+			src.sysmessage @0c2 Your name is now <src.name>!
+			src.tag0.badname=
+		endif
+	else
+		src.sysmessage @021 Invalid name.
+		src.sysmessage @021 Names may only contain letters A - Z
+		src.dialog d_name_change
+	endif
+    endif
+

@@ -1,0 +1,836 @@
+//-------------------------------------------------------------------------------------------------
+//-                                                                                               -
+//---------------------------------------Assault PvP v1.00-----------------------------------------
+//-                                                                                               -
+//-----------------------------------Written By James Timbrell-------------------------------------
+//-                                                                                               -
+//---------------------------------For use on Burstfire UO alone-----------------------------------
+//-                                                                                               -
+//-------------------------------------------------------------------------------------------------
+
+//-------------------------------------------------------------------------------------------------
+//-                                                                                               -
+//---------------------------------------Professor Assault-----------------------------------------
+//-                                                                                               -
+//-------------------------------------------------------------------------------------------------
+
+// CHANGELOG
+// =========
+//
+// 18/08/18 - Wigifer - Removed references to e_all_npc 
+//
+
+//---------------------------------------------Events----------------------------------------------
+
+
+[EVENTS e_pvp_assault_professor_blue]
+
+ON=@Death
+   SRC.HITS=<SRC.STR>
+   SRC.MANA=<SRC.INT>
+   SRC.STAM=<SRC.DEX>
+   IF (0<VAR.ROUND>=1)
+      SRC.GO <f_assault_attack_go>
+   ELSE
+      SRC.GO <f_assault_defend_go>
+   ENDIF
+   ACT.TAG.FRAGS=(<ACT.TAG.FRAGS> + 1)
+   f_reagents_restore
+   RETURN 1
+
+   
+[EVENTS e_pvp_assault_professor_red]
+
+ON=@Death
+   SRC.HITS=<SRC.STR>
+   SRC.MANA=<SRC.INT>
+   SRC.STAM=<SRC.DEX>
+   IF (0<VAR.ROUND>=1)
+      SRC.GO <f_assault_defend_go>
+   ELSE
+      SRC.GO <f_assault_attack_go>
+   ENDIF
+   ACT.TAG.FRAGS=(<ACT.TAG.FRAGS> + 1)
+   f_reagents_restore
+   RETURN 1
+
+
+//--------------------------------------------Functions--------------------------------------------
+
+
+[FUNCTION f_assault_attack_go]
+IF !(<VAR.COMPLETED>)
+   return 1391,1749,0,20
+ELSEIF (0<VAR.COMPLETED>=1)
+   return 1426,1690,0,20
+ELSEIF (0<VAR.COMPLETED>=2)
+   return 1490,1641,24,20
+ELSEIF (0<VAR.COMPLETED>=3)
+   return 1456,1556,30,20
+ELSEIF (0<VAR.COMPLETED>=4)
+   return 1503,1519,40,20
+ENDIF
+
+
+
+[FUNCTION f_assault_defend_go]
+IF !(<VAR.COMPLETED>)
+   return 1427,1678,0,20
+ELSEIF (0<VAR.COMPLETED>=1)
+   return 1513,1641,20,20
+ELSEIF (0<VAR.COMPLETED>=2)
+   return 1456,1567,30,20
+ELSEIF (0<VAR.COMPLETED>=3)
+   return 1332,1625,50,20
+ELSEIF (0<VAR.COMPLETED>=4)
+   return 1530,1431,35,20
+ENDIF
+
+
+   
+[Function SYSMESSAGE_ASSAULT_PROFESSOR]
+
+IF (<SRC.EVENTS> == e_pvp_assault_professor_blue) 
+    SRC.SYSMESSAGE @155 <args>
+    RETURN 1
+ELSEIF (<SRC.EVENTS> == e_pvp_assault_professor_red)
+    SRC.SYSMESSAGE @155 <args>
+    RETURN 1
+ELSE
+    RETURN 1
+ENDIF
+
+
+[Function Professor_Time]
+
+IF (0<VAR.ROUND>=1)
+   IF ((<EVENTS> == e_pvp_assault_professor_blue) || (<EVENTS> == e_pvp_assault_professor_red))
+      SYSMESSAGE @155 <eval (0<VAR.PROFESSORTIMER>/60)> have passed so far...
+      RETURN 1
+   ELSE
+      RETURN 1
+   ENDIF
+ELSE
+   IF ((<EVENTS> == e_pvp_assault_professor_blue) || (<EVENTS> == e_pvp_assault_professor_red))
+      SYSMESSAGE @155 There are <eval (0<VAR.PROFESSORTIMER>/60)> minutes left!
+      RETURN 1
+   ELSE
+      RETURN 1
+   ENDIF
+ENDIF
+
+
+[Function Professor_roundchange]
+
+IF ((<EVENTS> == e_pvp_assault_professor_blue) || (<EVENTS> == e_pvp_assault_professor_red))
+   SYSMESSAGE @155 Red Team you have just over <eval (0<VAR.PROFESSORTIMER>/60)> minutes!
+   KILL
+   RETURN 1
+ELSE
+   RETURN 1
+ENDIF
+
+
+[Function Professor_end]
+
+Professor_highscorer
+IF (0<VAR.PROFESSORTIMER>==0)
+   IF ((<EVENTS> == e_pvp_assault_professor_blue) || (<EVENTS> == e_pvp_assault_professor_red))
+      SYSMESSAGE @155 Blue team have won!
+      SYSMESSAGE @155 The highest scorer was <VAR.PROFHIGHSCORE> with <VAR.PROFFRAGS>!
+      VAR.COMPLETED=
+      VAR.ROUND=
+      VAR.PROFESSORTIMER=
+      VAR.PROFHIGHSCORE=
+      VAR.PROFFRAGS=
+      EVENTS -e_pvp_assault_professor_red
+      EVENTS -e_pvp_assault_professor_blue
+      SRC.TAG.ASSAULT.REAG.BlackPearl=
+      SRC.TAG.ASSAULT.REAG.bloodmoss=
+      SRC.TAG.ASSAULT.REAG.garlic=
+      SRC.TAG.ASSAULT.REAG.ginseng=
+      SRC.TAG.ASSAULT.REAG.mandrakeroot=
+      SRC.TAG.ASSAULT.REAG.nightshade=
+      SRC.TAG.ASSAULT.REAG.sulfurash=
+      SRC.TAG.ASSAULT.REAG.spidersilk=
+      SRC.GO 6038,407
+      RETURN 1
+   ELSE
+      RETURN 1
+   ENDIF
+ELSE
+   IF ((<EVENTS> == e_pvp_assault_professor_blue) || (<EVENTS> == e_pvp_assault_professor_red))
+      SYSMESSAGE @155 Red team have won!
+      SYSMESSAGE @155 The highest scorer was <VAR.PROFHIGHSCORE> with <EVAL <VAR.PROFFRAGS>>!
+      VAR.COMPLETED=
+      VAR.ROUND=
+      VAR.PROFESSORTIMER=
+      VAR.PROFHIGHSCORE=
+      VAR.PROFFRAGS=
+      EVENTS -e_pvp_assault_professor_red
+      EVENTS -e_pvp_assault_professor_blue      
+      SRC.TAG.ASSAULT.REAG.BlackPearl=
+      SRC.TAG.ASSAULT.REAG.bloodmoss=
+      SRC.TAG.ASSAULT.REAG.garlic=
+      SRC.TAG.ASSAULT.REAG.ginseng=
+      SRC.TAG.ASSAULT.REAG.mandrakeroot=
+      SRC.TAG.ASSAULT.REAG.nightshade=
+      SRC.TAG.ASSAULT.REAG.sulfurash=
+      SRC.TAG.ASSAULT.REAG.spidersilk=
+      SRC.GO 6038,407
+      RETURN 1
+   ELSE
+      RETURN 1
+   ENDIF
+ELSE
+
+
+[Function Professor_highscorer]
+IF !(<VAR.PROFHIGHSCORE>)   
+   IF ((<EVENTS> == e_pvp_assault_professor_blue) || (<EVENTS> == e_pvp_assault_professor_red))
+      VAR.PROFHIGHSCORE=<NAME>
+      VAR.PROFFRAGS=<TAG.FRAGS>
+      RETURN 1
+   ELSE
+      RETURN 1
+   ENDIF
+ELSE
+   IF ((<EVENTS> == e_pvp_assault_professor_blue) || (<EVENTS> == e_pvp_assault_professor_red))
+      IF (<TAG.FRAGS> > <VAR.PROFFRAGS>)
+         VAR.PROFHIGHSCORE=<NAME>
+         VAR.PROFFRAGS=<TAG.FRAGS>
+         RETURN 1
+      ELSE
+         RETURN 1
+      ENDIF
+   ELSE
+      RETURN 1
+   ENDIF
+ENDIF
+
+
+[Function f_professorgate_initialise]
+
+IF !(0<VAR.PROFGATE>)
+   VAR.PROFGATE=1
+ELSE
+   VAR.PROFGATE=(<eval <VAR.PROFGATE> + 1>)
+ENDIF
+IF (0<VAR.PROFESSORGATE<VAR.PROFGATE>>)
+   f_professorgate_initialise
+ELSE
+   TRYP 0 VAR.PROFESSORGATE<VAR.PROFGATE>=<UID>
+   VAR.PROFGATE=
+ENDIF
+
+
+
+[Function f_allprofessorgates_up]
+IF !(0<VAR.PROFGATE>)
+   VAR.PROFGATE=1
+ELSE
+   VAR.PROFGATE=(<eval <VAR.PROFGATE> + 1>)
+ENDIF
+IF (0<VAR.PROFESSORGATE<VAR.PROFGATE>>)
+   ACT=<VAR.PROFESSORGATE<VAR.PROFGATE>>
+   ACT.NUDGEUP 20
+   f_allprofessorgates_up
+ELSE
+   VAR.PROFGATE=
+ENDIF
+
+[Function f_allprofessorgates_down]
+IF !(0<VAR.PROFGATE>)
+   VAR.PROFGATE=1
+ELSE
+   VAR.PROFGATE=(<eval <VAR.PROFGATE> + 1>)
+ENDIF
+IF (0<VAR.PROFESSORGATE<VAR.PROFGATE>>)
+   ACT=<VAR.PROFESSORGATE<VAR.PROFGATE>>
+   ACT.NUDGEDOWN 20
+   f_allprofessorgates_down
+ELSE
+   VAR.PROFGATE=
+ENDIF
+
+[Function f_professortwogate_initialise]
+
+IF !(0<VAR.PROFGATE>)
+   VAR.PROFGATE=1
+ELSE
+   VAR.PROFGATE=(<eval <VAR.PROFGATE> + 1>)
+ENDIF
+IF (0<VAR.PROFESSORGATETWO<VAR.PROFGATE>)>)
+   f_professorgate_initialise
+ELSE
+   TRYP 0 VAR.PROFESSORGATETWO<VAR.PROFGATE>)=<UID>
+   VAR.PROFGATE=
+ENDIF
+
+
+[Function f_allprofessortwogates_up]
+IF !(0<VAR.PROFGATE>)
+   VAR.PROFGATE=1
+ELSE
+   VAR.PROFGATE=(<eval <VAR.PROFGATE> + 1>)
+ENDIF
+IF (0<VAR.PROFESSORTWOGATE<VAR.PROFGATE>>)
+   ACT=<VAR.PROFESSORTWOGATE<VAR.PROFGATE>>
+   ACT.NUDGEUP 20
+   f_allprofessortwogates_up
+ELSE
+   VAR.PROFGATE=
+ENDIF
+
+[Function f_allprofessortwogates_down]
+IF !(0<VAR.PROFGATE>)
+   VAR.PROFGATE=1
+ELSE
+   VAR.PROFGATE=(<eval <VAR.PROFGATE> + 1>)
+ENDIF
+IF (0<VAR.PROFESSORTWOGATE<VAR.PROFGATE>>)
+   ACT=<VAR.PROFESSORTWOGATE<VAR.PROFGATE>>
+   ACT.NUDGEDOWN 20
+   f_allprofessortwogates_down
+ELSE
+   VAR.PROFGATE=
+ENDIF
+
+
+[Function f_professorbridge_initialise]
+
+IF !(0<VAR.PROFBRIDGE>)
+   VAR.PROFBRIDGE=1
+ELSE
+   VAR.PROFBRIDGE=(<eval <VAR.PROFBRIDGE> + 1>)
+ENDIF
+IF (0<VAR.PROFESSORBRIDGE<VAR.PROFBRIDGE>>)
+   f_professorbridge_initialise
+ELSE
+   TRYP 0 VAR.PROFESSORBRIDGE<VAR.PROFBRIDGE>=<UID>
+   VAR.PROFBRIDGE=
+ENDIF
+
+
+[Function f_allprofessorbridges_up]
+IF !(0<VAR.PROFBRIDGE>)
+   VAR.PROFBRIDGE=1
+ELSE
+   VAR.PROFBRIDGE=(<eval <VAR.PROFBRIDGE> + 1>)
+ENDIF
+IF (0<VAR.PROFESSORBRIDGE<VAR.PROFBRIDGE>>)
+   ACT=<VAR.PROFESSORBRIDGE<VAR.PROFBRIDGE>>
+   ACT.NUDGEUP 20
+   f_allprofessorbridges_up
+ELSE
+   VAR.PROFBRIDGE=
+ENDIF
+
+
+[Function f_allprofessorbridges_down]
+IF !(0<VAR.PROFBRIDGE>)
+   VAR.PROFBRIDGE=1
+ELSE
+   VAR.PROFBRIDGE=(<eval <VAR.PROFBRIDGE> + 1>)
+ENDIF
+IF (0<VAR.PROFESSORBRIDGE<VAR.PROFBRIDGE>>)
+   ACT=<VAR.PROFESSORBRIDGE<VAR.PROFBRIDGE>>
+   ACT.NUDGEDOWN 20
+   f_allprofessorbridges_down
+ELSE
+   VAR.PROFBRIDGE=
+ENDIF
+
+
+
+[Function f_professortwobridge_initialise]
+
+IF !(0<VAR.PROFBRIDGE>)
+   VAR.PROFBRIDGE=1
+ELSE
+   VAR.PROFBRIDGE=(<eval <VAR.PROFBRIDGE> + 1>)
+ENDIF
+IF (0<VAR.PROFESSORTWOBRIDGE<VAR.PROFBRIDGE>>)
+   f_professortwobridge_initialise
+ELSE
+   TRYP 0 VAR.PROFESSORTWOBRIDGE<VAR.PROFBRIDGE>=<UID>
+   VAR.PROFBRIDGE=
+ENDIF
+
+
+[Function f_allprofessortwobridges_up]
+IF !(0<VAR.PROFBRIDGE>)
+   VAR.PROFBRIDGE=1
+ELSE
+   VAR.PROFBRIDGE=(<eval <VAR.PROFBRIDGE> + 1>)
+ENDIF
+IF (0<VAR.PROFESSORTWOBRIDGE<VAR.PROFBRIDGE>>)
+   ACT=<VAR.PROFESSORTWOBRIDGE<VAR.PROFBRIDGE>>
+   ACT.NUDGEUP 20
+   f_allprofessortwobridges_up
+ELSE
+   VAR.PROFBRIDGE=
+ENDIF
+
+
+[Function f_allprofessortwobridges_down]
+IF !(0<VAR.PROFBRIDGE>)
+   VAR.PROFBRIDGE=1
+ELSE
+   VAR.PROFBRIDGE=(<eval <VAR.PROFBRIDGE> + 1>)
+ENDIF
+IF (0<VAR.PROFESSORTWOBRIDGE<VAR.PROFBRIDGE>)>)
+   ACT=<VAR.PROFESSORTWOBRIDGE<VAR.PROFBRIDGE>)>
+   ACT.NUDGEDOWN 20
+   f_allprofessortwobridges_down
+ELSE
+   VAR.PROFBRIDGE=
+ENDIF
+
+
+[FUNCTION f_reagents_count]
+IF (<SRC.FINDID.i_reag_black_pearl.UID>)
+   SRC.TAG.ASSAULT.REAG.BlackPearl=<SRC.FINDID.i_reag_black_pearl.AMOUNT>
+ENDIF
+IF (<SRC.FINDID.i_reag_blood_moss.UID>)
+   SRC.TAG.ASSAULT.REAG.bloodmoss=<SRC.FINDID.i_reag_blood_moss.AMOUNT>
+ENDIF
+IF (<SRC.FINDID.i_reag_garlic.UID>)
+   SRC.TAG.ASSAULT.REAG.garlic=<SRC.FINDID.i_reag_garlic.AMOUNT>
+ENDIF
+IF (<SRC.FINDID.i_reag_ginseng.UID>)
+   SRC.TAG.ASSAULT.REAG.ginseng=<SRC.FINDID.i_reag_ginseng.AMOUNT>
+ENDIF
+IF (<SRC.FINDID.i_reag_mandrake_root.UID>)
+   SRC.TAG.ASSAULT.REAG.mandrakeroot=<SRC.FINDID.i_reag_mandrake_root.AMOUNT>
+ENDIF
+IF (<SRC.FINDID.i_reag_nightshade.UID>)
+   SRC.TAG.ASSAULT.REAG.nightshade=<SRC.FINDID.i_reag_nightshade.AMOUNT>
+ENDIF
+IF (<SRC.FINDID.i_reag_sulfur_ash.UID>)
+   SRC.TAG.ASSAULT.REAG.sulfurash=<SRC.FINDID.i_reag_sulfur_ash.AMOUNT>
+ENDIF
+IF (<SRC.FINDID.i_reag_spider_silk.UID>)
+   SRC.TAG.ASSAULT.REAG.spidersilk=<SRC.FINDID.i_reag_spider_silk.AMOUNT>
+ENDIF
+
+
+[FUNCTION f_reagents_restore]
+IF (<SRC.FINDID.i_reag_black_pearl.UID>)
+   SRC.FINDID.i_reag_black_pearl.AMOUNT=<SRC.TAG.ASSAULT.REAG.BlackPearl>
+ELSEIF (0<SRC.TAG.ASSAULT.REAG.BlackPearl>)
+   SERV.NEWITEM i_reag_black_pearl
+   NEW.BOUNCE
+   NEW.AMOUNT=<SRC.TAG.ASSAULT.REAG.BlackPearl>
+ENDIF
+IF (<SRC.FINDID.i_reag_blood_moss.UID>)
+   SRC.FINDID.i_reag_blood_moss.AMOUNT=<SRC.TAG.ASSAULT.REAG.bloodmoss>
+ELSEIF (0<SRC.TAG.ASSAULT.REAG.bloodmoss>)
+   SERV.NEWITEM i_reag_blood_moss
+   NEW.BOUNCE
+   NEW.AMOUNT=<SRC.TAG.ASSAULT.REAG.bloodmoss>
+ENDIF
+IF (<SRC.FINDID.i_reag_garlic.UID>)
+   SRC.FINDID.i_reag_garlic.AMOUNT=<SRC.TAG.ASSAULT.REAG.garlic>
+ELSEIF (0<SRC.TAG.ASSAULT.REAG.garlic>)
+   SERV.NEWITEM i_reag_garlic
+   NEW.BOUNCE
+   NEW.AMOUNT=<SRC.TAG.ASSAULT.REAG.garlic>
+ENDIF
+IF (<SRC.FINDID.i_reag_ginseng.UID>)
+   SRC.FINDID.i_reag_ginseng.AMOUNT=<SRC.TAG.ASSAULT.REAG.ginseng>
+ELSEIF (0<SRC.TAG.ASSAULT.REAG.ginseng>)
+   SERV.NEWITEM i_reag_ginseng
+   NEW.BOUNCE
+   NEW.AMOUNT=<SRC.TAG.ASSAULT.REAG.ginseng>
+ENDIF
+IF (<SRC.FINDID.i_reag_mandrake_root.UID>)
+   SRC.FINDID.i_reag_mandrake_root.AMOUNT=<SRC.TAG.ASSAULT.REAG.mandrakeroot>
+ELSEIF (0<SRC.TAG.ASSAULT.REAG.mandrakeroot>)
+   SERV.NEWITEM i_reag_mandrake_root
+   NEW.BOUNCE
+   NEW.AMOUNT=<SRC.TAG.ASSAULT.REAG.mandrakeroot>
+ENDIF
+IF (<SRC.FINDID.i_reag_nightshade.UID>)
+   SRC.FINDID.i_reag_nightshade.AMOUNT=<SRC.TAG.ASSAULT.REAG.nightshade>
+ELSEIF (0<SRC.TAG.ASSAULT.REAG.nightshade>)
+   SERV.NEWITEM i_reag_nightshade
+   NEW.BOUNCE
+   NEW.AMOUNT=<SRC.TAG.ASSAULT.REAG.nightshade>
+ENDIF
+IF (<SRC.FINDID.i_reag_sulfur_ash.UID>)
+   SRC.FINDID.i_reag_sulfur_ash.AMOUNT=<SRC.TAG.ASSAULT.REAG.sulfurash>
+ELSEIF (0<SRC.TAG.ASSAULT.REAG.sulfurash>)
+   SERV.NEWITEM i_reag_sulfur_ash
+   NEW.BOUNCE
+   NEW.AMOUNT=<SRC.TAG.ASSAULT.REAG.sulfurash>
+ENDIF
+IF (<SRC.FINDID.i_reag_spider_silk.UID>)
+   SRC.FINDID.i_reag_spider_silk.AMOUNT=<SRC.TAG.ASSAULT.REAG.spidersilk>
+ELSEIF (0<SRC.TAG.ASSAULT.REAG.spidersilk>)
+   SERV.NEWITEM i_reag_spider_silk
+   NEW.BOUNCE
+   NEW.AMOUNT=<SRC.TAG.ASSAULT.REAG.spidersilk>
+ENDIF
+
+
+
+//----------------------------------------------Items----------------------------------------------
+
+[ITEMDEF i_pvp_assault_professor_blue]
+ID=i_guildstone
+NAME=Professor Assault Blue Team Entry
+TYPE=t_normal
+
+ON=@DCLICK
+   IF (<SRC.DISTANCE> > 2)
+      SRC.SYSMESSAGE @43 You are too far away to use this!
+      RETURN 1
+   ENDIF
+   SRC.TAG.FRAGS=0
+   SRC.EVENTS +e_pvp_assault_professor_blue
+   SRC.f_reagents_count
+   SERV.NEWITEM i_robe
+   NEW.COLOR=06
+   NEW.BOUNCE
+   SRC.GO 1391,1749,0,20
+   RETURN 1
+   
+CATEGORY=Wigifer MPZ
+SUBSECTION=Assault
+DESCRIPTION=Professor Blue Entry
+
+
+[ITEMDEF i_pvp_assault_professor_red]
+ID=i_guildstone
+NAME=Professor Assault Red Team Entry
+TYPE=t_normal
+
+ON=@DCLICK
+   IF (<SRC.DISTANCE> > 2)
+      SRC.SYSMESSAGE @43 You are too far away to use this!
+      RETURN 1
+   ENDIF
+   SRC.TAG.FRAGS=0
+   SRC.EVENTS +e_pvp_assault_professor_red
+   SRC.f_reagents_count
+   SERV.NEWITEM i_robe
+   NEW.COLOR=025
+   NEW.BOUNCE
+   SRC.GO 1433,1686,0,20
+   RETURN 1
+   
+CATEGORY=Wigifer MPZ
+SUBSECTION=Assault
+DESCRIPTION=Professor Red Entry
+
+
+
+[ITEMDEF i_pvp_assault_professor_control]
+ID=i_guildstone
+NAME=Professor Assault Control
+TYPE=t_normal
+
+ON=@DCLICK
+   IF (0<VAR.ROUND>=1)
+      VAR.COMPLETED=
+      VAR.ROUND=1
+      VAR.PROFESSORTIMER=1
+      VAR.PROFHIGHSCORE=
+      VAR.PROFFRAGS=
+      TIMER=-1
+      SRC.SYSMESSAGE @843 Professor assault cancelled!
+      RETURN 1
+   ENDIF
+   VAR.COMPLETED=
+   VAR.ROUND=1
+   VAR.PROFESSORTIMER=1
+   VAR.PROFHIGHSCORE=
+   VAR.PROFFRAGS=
+   SRC.SYSMESSAGE @843 Professor assault started!
+   SERV.ALLCLIENTS SYSMESSAGE_ASSAULT_PROFESSOR The first round has now begun! GO GO GO!
+   TIMER=1
+   
+ON=@TIMER
+   IF (0<VAR.ROUND>=1)
+      VAR.PROFESSORTIMER=(<VAR.PROFESSORTIMER> + 1)
+   ELSE
+      VAR.PROFESSORTIMER=(<VAR.PROFESSORTIMER> - 1)
+   ENDIF
+   IF ((0<VAR.PROFESSORTIMER> == 60) || (0<VAR.PROFESSORTIMER> == 120) || (0<VAR.PROFESSORTIMER> == 180) || (0<VAR.PROFESSORTIMER> == 240) || (0<VAR.PROFESSORTIMER> == 300) || (0<VAR.PROFESSORTIMER> == 360) || (0<VAR.PROFESSORTIMER> == 420) || (0<VAR.PROFESSORTIMER> == 480) || (0<VAR.PROFESSORTIMER> == 540) || (0<VAR.PROFESSORTIMER> == 600) || (0<VAR.PROFESSORTIMER> == 660) || (0<VAR.PROFESSORTIMER> == 720) || (0<VAR.PROFESSORTIMER> == 780) || (0<VAR.PROFESSORTIMER> == 840))
+      SERV.ALLCLIENTS Professor_Time
+   ENDIF
+   IF (0<VAR.PROFESSORTIMER> == 900)
+      IF (0<VAR.ROUND>=1)
+         VAR.ROUND=2
+         VAR.COMPLETED=
+         SERV.ALLCLIENTS Professor_roundchange
+         SERV.ALLCLIENTS SYSMESSAGE_ASSAULT_PROFESSOR The second round has now begun! GO GO GO!
+         f_allprofessorgates_down
+         f_allprofessortwogates_down
+         f_allprofessorbridges_up
+         f_allprofessortwobridges_up
+      ENDIF
+   ENDIF
+   IF (0<VAR.PROFESSORTIMER> == 0)
+      IF (0<VAR.ROUND>=2)
+         f_allprofessorgates_down
+         f_allprofessortwogates_down
+         f_allprofessorbridges_up
+         f_allprofessortwobridges_up
+         Professor_end
+         RETURN 1
+      ENDIF
+   ENDIF
+   TIMER=1   
+   RETURN 1   
+   
+   
+CATEGORY=Wigifer MPZ
+SUBSECTION=Assault
+DESCRIPTION=Professor Control
+
+
+
+
+[ITEMDEF i_pvp_assault_professor_objective_one]
+ID=0108e
+TYPE=T_SWITCH
+NAME=Gate switch
+
+ON=@DCLICK
+   IF (<SRC.DISTANCE> > 2)
+      SRC.SYSMESSAGE You need to get closer to flick the switch!
+      RETURN 1
+   ENDIF
+   IF !(<VAR.COMPLETED>)
+      f_allprofessorgates_up
+      SERV.ALLCLIENTS SYSMESSAGE_ASSAULT_PROFESSOR Objective 1 has been completed!
+      VAR.COMPLETED=1
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE @13 This objective has been completed!
+      RETURN 1
+   ENDIF
+   
+CATEGORY=Wigifer MPZ
+SUBSECTION=Assault
+DESCRIPTION=Professor Obj.1
+
+
+[ITEMDEF i_pvp_assault_professor_gate]
+ID=0823
+TYPE=T_SCRIPT
+NAME=Gate
+
+ON=@CREATE
+   f_professorgate_initialise
+   
+CATEGORY=Wigifer MPZ
+SUBSECTION=Assault
+DESCRIPTION=Professor Obj.1 Gate
+
+
+[ITEMDEF i_pvp_assault_professor_objective_two]
+ID=0108e
+TYPE=T_SWITCH
+NAME=Gate switch
+
+ON=@DCLICK
+   IF (<SRC.DISTANCE> > 2)
+      SRC.SYSMESSAGE You need to get closer to flick the switch!
+      RETURN 1
+   ENDIF
+   IF (<VAR.COMPLETED>=1)
+      f_allprofessorgates_up
+      SERV.ALLCLIENTS SYSMESSAGE_ASSAULT_PROFESSOR Objective 2 has been completed!
+      VAR.COMPLETED=2
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE @13 This objective has been completed!
+      RETURN 1
+   ENDIF
+
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Assault
+DESCRIPTION=Professor Obj.2
+
+   
+[ITEMDEF i_pvp_assault_professor_gate2]
+ID=0823
+TYPE=T_SCRIPT
+NAME=Gate
+
+ON=@CREATE
+   f_professortwogate_initialise
+
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Assault
+DESCRIPTION=Professor Obj.2 Gate
+
+   
+[ITEMDEF i_pvp_assault_professor_objective_three]
+ID=0108e
+TYPE=T_SWITCH
+NAME=Bridge switch
+
+ON=@DCLICK
+   IF (<SRC.DISTANCE> > 2)
+      SRC.SYSMESSAGE You need to get closer to flick the switch!
+      RETURN 1
+   ENDIF
+   IF (<VAR.COMPLETED>=2)
+      f_allprofessorbridges_down
+      SERV.ALLCLIENTS SYSMESSAGE_ASSAULT_PROFESSOR Objective 3 has been completed!
+      VAR.COMPLETED=3
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE @13 This objective has been completed!
+      RETURN 1
+   ENDIF
+
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Assault
+DESCRIPTION=Professor Obj.3
+
+   
+[ITEMDEF i_pvp_assault_professor_bridge]
+ID=i_water
+TYPE=T_SCRIPT
+NAME=water
+
+ON=@CREATE
+   f_professorbridge_initialise
+
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Assault
+DESCRIPTION=Professor Obj.3 Bridge
+
+   
+[ITEMDEF i_pvp_assault_professor_objective_four]
+ID=0108e
+TYPE=T_SWITCH
+NAME=Bridge switch
+
+ON=@DCLICK
+   IF (<SRC.DISTANCE> > 2)
+      SRC.SYSMESSAGE You need to get closer to flick the switch!
+      RETURN 1
+   ENDIF
+   IF (<VAR.COMPLETED>=3)
+      f_allprofessortwobridges_down
+      SERV.ALLCLIENTS SYSMESSAGE_ASSAULT_PROFESSOR Objective 4 has been completed!
+      VAR.COMPLETED=4
+      ACT=<VAR.OBJECTIVEFIVEID>
+      ACT.TRIGGER @GetItemVars
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE @13 This objective has been completed!
+      RETURN 1
+   ENDIF
+
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Assault
+DESCRIPTION=Professor Obj.4
+
+   
+[ITEMDEF i_pvp_assault_professor_bridge2]
+ID=i_water
+TYPE=T_SCRIPT
+NAME=water
+
+ON=@CREATE
+   f_professortwobridge_initialise
+
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Assault
+DESCRIPTION=Professor Obj.4 Bridge
+   
+
+[ITEMDEF i_pvp_assault_objective_five]
+ID=i_guildstone
+TYPE=t_script
+NAME=Objective Five Marker
+
+ON=@CREATE
+   VAR.OBJECTIVEFIVEID=<UID>
+   
+ON=@GETITEMVARS
+   NEWNPC c_assault_professor
+   ACT.P=<P>
+
+
+CATEGORY=Wigifer MPZ
+SUBSECTION=Assault
+DESCRIPTION=Professor Obj.5
+
+
+//--------------------------------------------Character--------------------------------------------
+
+[CHARDEF c_assault_professor]  
+NAME=Insane Professor
+ID=c_man    
+CAN=MT_WALK
+DESIRES=i_gold,c_man, c_woman
+ARMOR=75
+
+ON=@Create 
+COLOR=colors_skin
+Title=Objective Five
+STR=500
+DEX=30  
+INT=75  
+  
+PARRYING=700  
+Magery=5000
+MAGICRESISTANCE=70 0 
+TACTICS=700  
+ANATOMY=700  
+DETECTION=700
+  
+NPC=BRAIN_MONSTER  
+FAME=4000  
+KARMA=-5000  
+
+ON=@NPCRestock  
+ITEMNEWBIE=i_robe
+color=065b
+ITEMNEWBIE=i_sandals
+color=084e
+ITEMNEWBIE=i_cape
+color=084e
+ITEMNEWBIE=i_spellbook
+color=084e
+ADDSPELL=s_lightning
+ADDSPELL=s_poison
+ADDSPELL=s_flamestrike
+ADDSPELL=s_dispel
+ADDSPELL=s_harm
+ADDSPELL=s_magicarrow
+ADDSPELL=s_curse
+ADDSPELL=s_weaken
+
+ON=@DEATH
+REMOVE
+   IF (0<VAR.ROUND>=1)
+      VAR.ROUND=2
+      VAR.COMPLETED=
+      SERV.ALLCLIENTS Professor_roundchange
+      f_allprofessorgates_down
+      f_allprofessortwogates_down
+      f_allprofessorbridges_up
+      f_allprofessortwobridges_up
+   ELSEIF (0<VAR.ROUND>=2)
+      f_allprofessorgates_down
+      f_allprofessortwogates_down
+      f_allprofessorbridges_up
+      f_allprofessortwobridges_up
+      Professor_end
+   ENDIF
+

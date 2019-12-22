@@ -1,0 +1,561 @@
+//-------------------------Order and Chaos Town Wars-------------------------
+//-									    -
+//------------------------By James "Wigifer" Timbrell------------------------
+//-----------------------And Jessica "Wren" Graham---------------------------
+//-									    -
+//---------------------------------------------------------------------------
+
+
+//-----------------------------------NEW TOWNWARS-------------------------------------------
+[ITEMDEF i_oc_town_wars]
+ID=0ed6
+NAME=Town Control Stone
+ 
+ON=@CREATE
+   ATTR=08010
+   COLOR = 0
+  
+
+ON=@CLICK
+   //SEE IF THE TERRITORY TAG HAS BEEN SET
+   IF (0<TAG.TERRITORY>=0)
+      TAG.TERRITORY=<REGION.NAME>
+      NAME = <TAG.TERRITORY> Control Stone
+   ENDIF
+
+   //DISPLAY THE ALIGNMENT OF THE TERRITORY
+   IF (<COLOR>=0)
+      SRC.SYSMESSAGE This stone is neutral!
+   ELSEIF (<COLOR>=0b03)
+      SRC.ORDERSAY This stone is currently being controlled by Order!
+   ELSEIF (<COLOR>=0af7)
+      SRC.CHAOSSAY This stone is currently being controlled by Chaos!
+   ENDIF
+   
+
+ON=@DCLICK
+   //SEE IF THE TERRITORY TAG HAS BEEN SET
+   IF (0<TAG.TERRITORY>=0)
+      TAG.TERRITORY=<REGION.NAME>
+      NAME = <TAG.TERRITORY> Control Stone
+   ENDIF
+
+   //CHECK DISTANCE FROM STONE
+   IF (<SRC.P.Z> < <P.Z>) || (<SRC.DISTANCE>>2) || !(<CanSeeLos>) 
+	   SRC.SYSMESSAGE You are too far away.
+      RETURN 1
+   ENDIF   
+   
+   IF (<SRC.ISDEAD>)
+	SRC.SYSMESSAGE You can't do this while dead.
+	RETURN 1
+	ENDIF
+      
+   IF (<SRC.ISALIGNMENT_ORDER>) 
+      
+      //IF ORDER DOES NOT OWN THE STONE
+      IF !(<COLOR>=0b03)
+      
+        //IF ORDER DOES NOT OWN THE STONE AND CANT CLAIM IT YET SHOW HOW MANY TIME IS REMAINING
+		IF (<MORE1>=1)
+			SRC.SYSMESSAGE You cannot try to claim this castle for another <eval <EVAL (<TIMER>/60)>/60> hours.
+            RETURN 1
+            
+        //IF ORDER DOES NOT OWN THE STONE AND IT IS IN A STATE TO BE CLAIMED, TRIGGER CLAIM, ADDING FIRST DEFENDER
+        ELSEIF (<TIMER>=-1)
+            ANNOUNCE ORDER is trying to capture <TAG.TERRITORY>
+			SERV.LOG :OC WARS: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> (Order) is trying to capture <TAG.TERRITORY>
+            SRC.SYSMESSAGE You must remain in <TAG.TERRITORY> to protect it for 30 minutes.
+            SRC.EVENTS +OC_Town_Defender
+            SRC.TAG.OC_TERRITORY=<UID>
+            TAG.DEFENDER01=<SRC.UID>
+			VAR.DEFENDER01=<SRC.UID>
+            TAG.DEFENDERS=1
+            TAG.COLOR=<COLOR>
+            COLOR=0a17
+            TIMER=1200
+      
+        //IF ORDER DOES NOT OWN THE STONE AND IT IS ALREADY BEING CLAIMED BY ORDER, TRY TO ADD ME AS DEFENDER
+        ELSEIF (<COLOR>=0a17)
+            ADD_DEFENDERS <SRC.UID>
+      
+        //IF ORDER DOES NOT OWN THE STONE AND IT IS BEING CLAIMED BY CHAOS, TRY TO STOP CLAIM OR ELSE TELL ME WHO IS STILL DEFENDING
+        ELSEIF (<COLOR>=0aa8)
+            IF (<CHECK_DEFENDERS>= 0)
+               ANNOUNCE ORDER has stopped CHAOS from laying claim on <TAG.TERRITORY>
+			   SERV.LOG :OC WARS: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> (Order) is stopping Chaos from capturing <TAG.TERRITORY>
+               COLOR=<TAG.COLOR>
+               MORE1=1
+               TIMER=1
+               SET_REGION_AFFILIATION
+               RESET_TOWNWAR
+            ELSE
+               LIST_DEFENDERS
+            ENDIF
+         ENDIF
+		 
+		ELSE
+			ORDERSAY Order is already controlling this stone.
+      ENDIF
+      
+   ELSEIF (<SRC.ISALIGNMENT_CHAOS>) 
+
+      //IF CHAOS DOES NOT OWN THE STONE
+      IF !(<COLOR>=0af7)
+      
+         //IF CHAOS DOES NOT OWN THE STONE AND CANT CLAIM IT YET SHOW HOW MANY TIME IS REMAINING
+			IF (<MORE1>=1)
+			SRC.SYSMESSAGE You cannot try to claim this castle for another <eval <EVAL (<TIMER>/60)>/60> hours.
+            RETURN 1
+            
+         //IF CHAOS DOES NOT OWN THE STONE AND IT IS IN A STATE TO BE CLAIMED, TRIGGER CLAIM, ADDING FIRST DEFENDER
+			ELSEIF (<TIMER>=-1)
+            ANNOUNCE CHAOS is trying to capture <TAG.TERRITORY>
+			SERV.LOG :OC WARS: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> (Chaos) is trying to capture <TAG.TERRITORY>
+            SRC.SYSMESSAGE You must remain in <TAG.TERRITORY> to protect it for 30 minutes.
+            SRC.EVENTS +OC_Town_Defender
+            SRC.TAG.OC_TERRITORY=<UID>
+            TAG.DEFENDER01=<SRC.UID>
+			VAR.DEFENDER01=<SRC.UID>
+            TAG.DEFENDERS=1
+      	    TAG.COLOR=<COLOR>
+            COLOR=0aa8
+            TIMER=1200
+         
+         //IF CHAOS DOES NOT OWN THE STONE AND IT IS ALREADY BEING CLAIMED BY CHAOS, TRY TO ADD ME AS DEFENDER
+			ELSEIF (<COLOR>=0aa8)
+            ADD_DEFENDERS <SRC.UID>
+
+         //IF CHAOS DOES NOT OWN THE STONE AND IT IS BEING CLAIMED BY ORDER, TRY TO STOP CLAIM OR ELSE TELL ME WHO IS STILL DEFENDING
+         ELSEIF (<COLOR>=0a17)
+            IF (<CHECK_DEFENDERS>= 0)
+               ANNOUNCE CHAOS has stopped ORDER from laying claim on <TAG.TERRITORY>
+			   SERV.LOG :OC WARS: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> (Chaos) is stopping Order from capturing <TAG.TERRITORY>
+               COLOR=<TAG.COLOR>
+               MORE1=1
+               TIMER=1
+               SET_REGION_AFFILIATION   
+               RESET_TOWNWAR
+            ELSE
+               LIST_DEFENDERS
+            ENDIF
+         ENDIF
+		 
+		 ELSE
+		 CHAOSSAY Chaos is already controlling this stone.
+      ENDIF
+      
+   ELSE
+      SRC.SYSMESSAGE You cannot join Order and Chaos wars!
+   ENDIF
+   RETURN 1
+
+
+ON=@TIMER
+   //IF DISABLED FROM CAPTURE, ENABLE IT
+   IF (<MORE1>=1)
+      MORE1=0
+	  VAR.OCWARSCONTROL=
+	  ANNOUNCE ORDER and CHAOS stone can now be captured again at <TAG.TERRITORY>
+	  TRY uid.<var.ocwarsnpc>.remove
+	  TRY uid.<var.ocwarsnpc2>.remove
+	  RESET_TOWNWAR
+	  COLOR=00
+      TIMER=-1
+      RETURN 1
+   ENDIF
+   
+   //SEE IF ORDER HAS CAPTURED THE STONE
+   IF (<COLOR>=0a17)
+       IF <CHECK_DEFENDERS>
+          ANNOUNCE ORDER has successfully captured <TAG.TERRITORY>
+		  
+		  
+		  TRY UID.<var.defender01>.tag.rep.alignment=<eval <uid.<var.defender01>.tag0.rep.alignment> +100>
+		  SERV.LOG :OC WARS: <UID.<VAR.DEFENDER01>.UID> <UID.<VAR.DEFENDER01>.ACCOUNT> <UID.<VAR.DEFENDER01>.NAME> got 100 points from the oc town war. now has <EVAL <uid.<var.defender01>.tag.rep.alignment>>
+		  
+		  
+		  
+		  TRY UID.<var.defender02>.tag.rep.alignment=<eval <uid.<var.defender02>.tag0.rep.alignment> +100>
+		  SERV.LOG :OC WARS: <UID.<VAR.DEFENDER02>.UID> <UID.<VAR.DEFENDER02>.ACCOUNT> <UID.<VAR.DEFENDER02>.NAME> got 100 points from the oc town war. now has <EVAL <uid.<var.defender02>.tag.rep.alignment>>
+		 
+		  
+		  
+		  TRY UID.<var.defender03>.tag.rep.alignment=<eval <uid.<var.defender03>.tag0.rep.alignment> +100>
+		  SERV.LOG :OC WARS: <UID.<VAR.DEFENDER03>.UID> <UID.<VAR.DEFENDER03>.ACCOUNT> <UID.<VAR.DEFENDER03>.NAME> got 100 points from the oc town war. now has <EVAL <uid.<var.defender03>.tag.rep.alignment>>
+		 
+		  
+		 
+		  TRY UID.<var.defender04>.tag.rep.alignment=<eval <uid.<var.defender04>.tag0.rep.alignment> +100>
+		  SERV.LOG :OC WARS: <UID.<VAR.DEFENDER04>.UID> <UID.<VAR.DEFENDER04>.ACCOUNT> <UID.<VAR.DEFENDER04>.NAME> got 100 points from the oc town war. now has <EVAL <uid.<var.defender04>.tag.rep.alignment>>
+	
+
+		  TRY UID.<var.defender05>.tag.rep.alignment=<eval <uid.<var.defender05>.tag0.rep.alignment> +100>
+		  SERV.LOG :OC WARS: <UID.<VAR.DEFENDER05>.UID> <UID.<VAR.DEFENDER05>.ACCOUNT> <UID.<VAR.DEFENDER05>.NAME> got 100 points from the oc town war. now has <EVAL <uid.<var.defender05>.tag.rep.alignment>>
+		
+		  
+		  VAR.OCWARSCONTROL=order
+		  COLOR=0b03
+		  	
+		f_ocwars_npc_order
+		
+			 //DISABLE CAPTURE FOR 1 HOURS
+				SET_REGION_AFFILIATION
+				RESET_TOWNWAR
+				MORE1=1
+				TIMER=3600
+				RETURN 1
+
+       ELSE
+          COLOR=<TAG.COLOR>
+          ANNOUNCE ORDER has failed to capture <TAG.TERRITORY>.       
+       ENDIF
+       
+   //SEE IF CHAOS HAS CAPTURED THE STONE
+   ELSEIF (<COLOR>=0aa8)
+       IF <CHECK_DEFENDERS>
+          ANNOUNCE CHAOS has successfully captured <TAG.TERRITORY>
+		
+		  TRY UID.<var.defender01>.tag.rep.alignment=<eval <uid.<var.defender01>.tag0.rep.alignment> +100>
+		  SERV.LOG :OC WARS: <UID.<VAR.DEFENDER01>.UID> <UID.<VAR.DEFENDER01>.ACCOUNT> <UID.<VAR.DEFENDER01>.NAME> got 100 points from the oc town war. now has <EVAL <uid.<var.defender01>.tag.rep.alignment>>
+	
+		  
+		
+		  TRY UID.<var.defender02>.tag.rep.alignment=<eval <uid.<var.defender02>.tag0.rep.alignment> +100>
+		  SERV.LOG :OC WARS: <UID.<VAR.DEFENDER02>.UID> <UID.<VAR.DEFENDER02>.ACCOUNT> <UID.<VAR.DEFENDER02>.NAME> got 100 points from the oc town war. now has <EVAL <uid.<var.defender02>.tag.rep.alignment>>
+		
+		  
+		 
+		  TRY UID.<var.defender03>.tag.rep.alignment=<eval <uid.<var.defender03>.tag0.rep.alignment> +100>
+		  SERV.LOG :OC WARS: <UID.<VAR.DEFENDER03>.UID> <UID.<VAR.DEFENDER03>.ACCOUNT> <UID.<VAR.DEFENDER03>.NAME> got 100 points from the oc town war. now has <EVAL <uid.<var.defender03>.tag.rep.alignment>>
+	
+		 
+		  TRY UID.<var.defender04>.tag.rep.alignment=<eval <uid.<var.defender04>.tag0.rep.alignment> +100>
+		  SERV.LOG :OC WARS: <UID.<VAR.DEFENDER04>.UID> <UID.<VAR.DEFENDER04>.ACCOUNT> <UID.<VAR.DEFENDER04>.NAME> got 100 points from the oc town war. now has <EVAL <uid.<var.defender04>.tag.rep.alignment>>
+	
+		
+		  TRY UID.<var.defender05>.tag.rep.alignment=<eval <uid.<var.defender05>.tag0.rep.alignment> +100>
+		  SERV.LOG :OC WARS: <UID.<VAR.DEFENDER05>.UID> <UID.<VAR.DEFENDER05>.ACCOUNT> <UID.<VAR.DEFENDER05>.NAME> got 100 points from the oc town war. now has <EVAL <uid.<var.defender05>.tag.rep.alignment>>
+	
+		  
+          VAR.OCWARSCONTROL=chaos
+		  COLOR=0af7
+		  
+		  f_ocwars_npc_chaos
+		  
+		   //DISABLE CAPTURE FOR 1 HOUR
+			SET_REGION_AFFILIATION
+			RESET_TOWNWAR
+			MORE1=1
+			TIMER=3600
+			RETURN 1
+		  
+       ELSE
+          COLOR=<TAG.COLOR>
+          ANNOUNCE CHAOS has failed to capture <TAG.TERRITORY>.       
+       ENDIF
+   ENDIF
+   
+  
+   
+
+//ADD UP TO 5 DEFENDERS TO THE STONE
+[FUNCTION ADD_DEFENDERS]
+//No more than 5 official defenders
+IF ( 0<TAG.DEFENDERS>=05 )
+   MESSAGE No more official defenders can be added.
+   RETURN 1
+ENDIF
+
+//Check to see if defender is already registered, if not add them.
+FOR 1 <EVAL (<TAG.DEFENDERS>+1)>
+   IF (0<TAG.DEFENDER<LOCAL._FOR>>=<args>)
+      MESSAGE You are already defending this stone.
+	  SRC.SYSMESSAGE You must remain in <TAG.TERRITORY> to protect it for another <EVAL (<TIMER>/60)> minutes.
+      RETURN 1   
+   ELSEIF (0<TAG.DEFENDER<LOCAL._FOR>>= 0)
+      TRY TAG.DEFENDER<LOCAL._FOR>=<args>
+      TRY UID.<ARGS>.EVENTS +OC_Town_Defender
+      TRY UID.<ARGS>.TAG.OC_TERRITORY=<UID>
+      TAG.DEFENDERS=<TAG.DEFENDERS>+1
+	  VAR.DEFENDER<LOCAL._FOR>=<SRC.UID>
+      RETURN 1
+   ENDIF
+ENDFOR
+RETURN 1
+
+
+//SEE IF THE STONE HAS BEEN DEFENDED OR NOT
+[FUNCTION CHECK_DEFENDERS]
+LOCAL.DEFENDERS=<TAG.DEFENDERS>
+FOR 1 <TAG.DEFENDERS>
+   //Check to see if defenders are logged in, alive, and in this territory.
+   IF (0<TAG.DEFENDER<LOCAL._FOR>>=00)
+      LOCAL.DEFENDERS=<LOCAL.DEFENDERS>-1
+   ELSEIF !(strmatch("<UID.<TAG.DEFENDER<LOCAL._FOR>>.REGION.NAME>","<TAG.TERRITORY>"))
+      LOCAL.DEFENDERS=<LOCAL.DEFENDERS>-1
+   ELSEIF (<UID.<TAG.DEFENDER<LOCAL._FOR>>.ISONLINE>=0)
+      LOCAL.DEFENDERS=<LOCAL.DEFENDERS>-1
+   ENDIF
+ENDFOR
+RETURN <LOCAL.DEFENDERS>
+
+
+//REMOVE DEFENDER WHEN THEY DIE AND RESET THEIR TAGS AND EVENTS
+[FUNCTION DEFENDER_KILLED]
+FOR 1 <TAG.DEFENDERS>
+   //Change defender's status to killed
+   IF strmatch("<TAG.DEFENDER<LOCAL._FOR>>","<args>")
+      TRY TAG.DEFENDER<LOCAL._FOR> = 0
+	  VAR.DEFENDER<LOCAL._FOR>=
+   ENDIF
+ENDFOR
+RETURN 1
+
+[EVENTS OC_Town_Defender]
+ON=@Death
+   TRY UID.<SRC.TAG.OC_TERRITORY>.DEFENDER_KILLED <SRC.UID>
+   SRC.TAG.OC_TERRITORY=
+   SRC.EVENTS -OC_Town_Defender
+
+
+//LIST DEFENDERS TO OPPOSING FACTION WHEN THEY DOUBLE-CLICK THE STONE
+[FUNCTION LIST_DEFENDERS]
+SRC.SYSMESSAGE The remaining defenders of <TAG.TERRITORY> are:
+FOR 1 <TAG.DEFENDERS>
+   IF (<TAG.DEFENDER<LOCAL._FOR>> > 0)
+      IF (<UID.<TAG.DEFENDER<LOCAL._FOR>>.ISONLINE>=1)
+         IF strmatch("<UID.<TAG.DEFENDER<LOCAL._FOR>>.REGION.NAME>","<TAG.TERRITORY>")
+            SRC.SYSMESSAGE <UID.<TAG.DEFENDER<LOCAL._FOR>>.NAME> - <UID.<TAG.DEFENDER<LOCAL._FOR>>.P>
+         ELSE
+            SRC.SYSMESSAGE <UID.<TAG.DEFENDER<LOCAL._FOR>>.NAME> - Outside Territory
+         ENDIF
+      ELSE
+         SRC.SYSMESSAGE <UID.<TAG.DEFENDER<LOCAL._FOR>>.NAME> - Logged Out
+      ENDIF
+   ENDIF
+ENDFOR
+
+OC_UNHIDE
+
+RETURN 1
+
+   
+//RESET TAGS AND EVENTS
+[FUNCTION RESET_TOWNWAR]
+FOR 1 <TAG.DEFENDERS>
+   IF (<TAG.DEFENDER<LOCAL._FOR>>>0)
+      TRY UID.<TAG.DEFENDER<LOCAL._FOR>>.EVENTS -OC_Town_Defender
+      TRY UID.<TAG.DEFENDER<LOCAL._FOR>>.TAG.OC_TERRITORY=
+   ENDIF
+   TRY TAG.DEFENDER<LOCAL._FOR>=
+   TAG.COLOR=
+ENDFOR
+tag.defender01=
+tag.defender02=
+tag.defender03=
+tag.defender04=
+tag.defender05=
+tag.defenders
+var.defender01=
+var.defender02=
+var.defender03=
+var.defender04=
+var.defender05=
+
+
+//UNHIDE DEFENDERS
+[FUNCTION OC_UNHIDE]
+FOR 1 <TAG.DEFENDERS>
+   IF (<TAG.DEFENDER<LOCAL._FOR>> > 0)
+      IF (<UID.<TAG.DEFENDER<LOCAL._FOR>>.ISONLINE>=1)
+         IF strmatch("<UID.<TAG.DEFENDER<LOCAL._FOR>>.REGION.NAME>","<TAG.TERRITORY>")
+         
+            //Cancel Invisibility Spell and Potions
+            OBJ=<UID.<TAG.DEFENDER<LOCAL._FOR>>>
+            
+            IF <OBJ.FINDID.i_rune_invisibility.UID>
+               OBJ.FINDID.i_rune_invisibility.REMOVE
+            ENDIF
+            
+            //Unhide people
+            IF <eval (<OBJ.flags>&0800000)==0800000> 
+               OBJ.SAY 
+            ENDIF
+         ENDIF
+      ENDIF
+   ENDIF
+ENDFOR
+RETURN 1
+
+
+//SET THE REGION'S OWNER
+[FUNCTION SET_REGION_AFFILIATION]
+LOCAL.REGION=<STRARG <REGION.NAME>>
+LOCAL.APOSTROPHE=<STRPOS 0 39 <LOCAL.REGION>>
+IF (<LOCAL.APOSTROPHE> > 0)
+   LOCAL.REGION=<STRSUB 0 <LOCAL.APOSTROPHE> <LOCAL.REGION>>
+ENDIF
+
+   IF (<COLOR>=0)
+      TRY VAR.<STRARG <LOCAL.REGION>>.AFFILIATION=alignment_none
+   ELSEIF (<COLOR>=0b03)
+      TRY VAR.<STRARG <LOCAL.REGION>>.AFFILIATION=alignment_order
+   ELSEIF (<COLOR>=0af7)
+      TRY VAR.<STRARG <LOCAL.REGION>>.AFFILIATION=alignment_chaos
+   ENDIF
+   RETURN 1
+
+
+//USED BY VENDORS
+[FUNCTION GET_REGION_AFFILIATION]
+LOCAL.REGION=<STRARG <REGION.NAME>>
+LOCAL.APOSTROPHE=<STRPOS 0 39 <LOCAL.REGION>>
+IF (<LOCAL.APOSTROPHE> > 0)
+   LOCAL.REGION=<STRSUB 0 <LOCAL.APOSTROPHE> <LOCAL.REGION>>
+ENDIF
+
+
+   IF (<EVAL 0<VAR.<LOCAL.REGION>.AFFILIATION>>=0)
+      RETURN alignment_none
+   ELSEIF strmatch("<VAR.<LOCAL.REGION>.AFFILIATION>","alignment_none")
+      RETURN alignment_none
+   ELSEIF strmatch("<VAR.<LOCAL.REGION>.AFFILIATION>","alignment_order")
+      RETURN alignment_order
+   ELSEIF strmatch("<VAR.<LOCAL.REGION>.AFFILIATION>","alignment_chaos")
+      RETURN alignment_chaos
+   ENDIF
+
+
+[FUNCTION TESTAFF]
+SRC.SAY <GET_REGION_AFFILIATION>
+
+[ITEMDEF i_oc_wars_door]
+ID=i_door_metal
+NAME=metal door
+TYPE=t_door
+
+ON=@DCLICK
+IF (strmatch("<VAR0.OCWARSCONTROL>","chaos")) 
+	IF !(strmatch("<SRC.TAG0.ALIGNMENT>","alignment_chaos"))
+		IF ((<SRC.P.Y> < <P.Y>) && (<SRC.P.Z> = <P.Z>))
+			IF !<SRC.FINDID.M_EXIT_DELAY_ocwars.UID>
+				SRC.NEWITEM M_Exit_Delay_ocwars
+				SRC.ACT.MOREP=<P.X>,<EVAL (<P.Y>+1)>,<P.Z>,<P.M>
+				SRC.ACT.NAME=<SRC.REGION.NAME>
+				SRC.EQUIP <SRC.ACT>
+				SRC.EMOTE try to exit.
+			ENDIF
+			RETURN 1
+		ELSE
+		CHAOSSAY Only member of Chaos can use this doors as they control the Castle.
+		RETURN 1
+		ENDIF
+	ENDIF
+ELSEIF (strmatch("<VAR0.OCWARSCONTROL>","order")) 
+	IF !(strmatch("<SRC.TAG0.ALIGNMENT>","alignment_order"))
+		IF ((<SRC.P.Y> < <P.Y>) && (<SRC.P.Z> = <P.Z>))
+			IF !<SRC.FINDID.M_EXIT_DELAY_ocwars.UID>
+				SRC.NEWITEM M_Exit_Delay_ocwars
+				SRC.ACT.MOREP=<P.X>,<EVAL (<P.Y>+1)>,<P.Z>,<P.M>
+				SRC.ACT.NAME=<SRC.REGION.NAME>
+				SRC.EQUIP <SRC.ACT>
+				SRC.EMOTE try to exit.
+			ENDIF
+			RETURN 1
+		ELSE
+		ORDERSAY Only member of Order can use this doors as they control the Castle.
+		RETURN 1
+		ENDIF
+	ENDIF
+ENDIF
+
+[ItemDef M_Exit_Delay_ocwars]
+id=i_memory
+Name=OC Wars Exit Delay
+type=t_eq_script
+
+ON=@Create
+   MORE2    = 0
+   TIMER    = 1
+
+ON=@Timer
+   IF (<EVAL <MORE2>>=6)
+      IF strmatch("<CONT.REGION.NAME>","<NAME>")
+         CONT.GO <MOREP>
+         CONT.SYSMESSAGE You Manage to slip out the door.
+      ENDIF
+      Remove 
+   ELSE
+      TIMER=1
+      MORE2=<EVAL (<MORE2>+1)>
+   ENDIF
+   RETURN 1
+
+
+
+
+
+[FUNCTION f_ocwars_npc_order]
+
+IF (0<var.ocwarsnpc>)
+	TRY uid.<var.ocwarsnpc>.remove
+ENDIF
+
+NEWITEM i_worldgem_bit
+var.ocwarsnpc = <new.uid>
+NEW.P = 1339,1735,60
+NEW.TYPE 34
+NEW.AMOUNT 1
+NEW.MORE c_order_vendor
+NEW.MOREP 5 10 3
+NEW.ATTR 00b0
+NEW.TIMER 1
+
+IF (0<var.ocwarsnpc2>)
+	TRY uid.<var.ocwarsnpc2>.remove
+ENDIF
+
+NEWITEM i_worldgem_bit
+var.ocwarsnpc2 = <new.uid>
+NEW.P = 1343,1730,20
+NEW.TYPE 34
+NEW.AMOUNT 1
+NEW.MORE c_order_recruiter
+NEW.MOREP 5 10 3
+NEW.ATTR 00b0
+NEW.TIMER 1
+RETURN 1
+
+[FUNCTION f_ocwars_npc_chaos]
+
+IF (0<var.ocwarsnpc>)
+	TRY uid.<var.ocwarsnpc>.remove
+ENDIF
+
+NEWITEM i_worldgem_bit
+var.ocwarsnpc = <new.uid>
+NEW.P = 1339,1735,60
+NEW.TYPE 34
+NEW.AMOUNT 1
+NEW.MORE c_chaos_vendor
+NEW.MOREP 5 10 3
+NEW.ATTR 00b0
+NEW.TIMER 1
+
+IF (0<var.ocwarsnpc2>)
+	TRY uid.<var.ocwarsnpc2>.remove
+ENDIF
+
+NEWITEM i_worldgem_bit
+var.ocwarsnpc2 = <new.uid>
+NEW.P = 1343,1730,20
+NEW.TYPE 34
+NEW.AMOUNT 1
+NEW.MORE c_chaos_recruiter
+NEW.MOREP 5 10 3
+NEW.ATTR 00b0
+NEW.TIMER 1
+RETURN 1
+
+[EOF]   

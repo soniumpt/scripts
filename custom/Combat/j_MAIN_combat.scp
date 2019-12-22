@@ -1,0 +1,1000 @@
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+                                                                        +
+//+                      MEMORY SHARD COMBAT SYSTEMS                       +
+//+                                                                        +
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+                                                                        +
+//+                           AUTHOR: WIGIFER                              +
+//+                         CREATED: 21/08/2018                            +
+//+                     LATEST REVISION: 23/08/2018                        +
+//+                                                                        +
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+                                                                        +
+//+  Kell's combat system has lasted an absolute aeon, however it has so   +
+//+  many flaws, gaping holes, compatability problems and sheer            +
+//+  overcomplications for no good reason that it needs a solid rewrite.   +
+//+                                                                        +
+//+  Also, this system is actually going to be well commented.             +
+//+                                                                        +
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+                                                                        +
+//+ [CHANGELOG]                                                            +
+//+                                                                        +
+//+ 23/08/18 - Wigifer - Well... It's kinda done. It works. All the basics +
+//+                      are in. We have the formulas, flags, and a        +
+//+                      system. I'll be changing it later I bet.          +
+//+                    - Added: combat_armour_elem_defense                 +
+//+                             combat_damage_type                         +
+//+                             combat_status_type                         +
+//+                             f_damage_type_quantity                     +
+//+                             f_damage_type_comparator                   +
+//+                             f_combat_trytohit                          +
+//+                             f_combat_calculatehit                      +
+//+                             f_combat_getdamagetypes                    +
+//+                    - Keep an eye if the functionality of CALL ever     +
+//+                      changes, or if FUNCTIONS can no longer take in    +
+//+                      3 ARGN's...                                       +
+//+                    - For now, thrown in SKILLCHECK_NOW for the         +
+//+                      combat skills... But when updating skills, this   +
+//+                      will need replacing.                              +
+//+                                                                        +
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+                                                                        +
+//+ [TO DO]                                                                +
+//+                                                                        +
+//+ - Add weight as a factor in hit/miss                                   +
+//+ - Integrate Wrestling specials (Disarm / Bash) as random actions.      +
+//+   65% Wrestling, 1/10 chance to Bash (Ignore AR of target)             +
+//+   90% Wrestling, 1/15 chance to Disarm (Remove equipment of target)    +
+//+                                                                        +
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+[DEFNAME combat_damage_type]
+CDT_Sword		00000001
+CDT_Piercing		00000002
+CDT_Blunt		00000004
+CDT_Arrow		00000008
+CDT_Fire		00000010
+CDT_Ice			00000020
+CDT_Lightning		00000040
+CDT_Earth		00000080
+CDT_Wind		00000100
+CDT_Water		00000200
+CDT_Radiation		00000400
+CDT_Acid		00000800
+CDT_Purity		00001000
+CDT_Taint		00002000
+CDT_Temporal		00004000
+CDT_Eternal		00008000
+CDT_Human		00010000
+CDT_Elven		00020000
+CDT_Daemonic		00040000
+CDT_Dragonic		00080000
+CDT_Lawful		00100000
+CDT_Chaotic		00200000
+CDT_Training		00400000 // Always 0 damage
+CDT_Merciful		00800000 // Always leave 1hp
+
+[DEFNAME combat_status_type]
+CST_HealthDrain		00000001 // Absorb enemy health
+CST_ManaDrain		00000002 // Absorb enemy mana
+CST_StamDrain		00000004 // Absorb enemy stamina
+CST_SoulDrain		00000008 // Absorb enemy health/mana/stamina
+CST_HeartPoison		00000010 // Poisoning: Lose health over time
+CST_MindPoison		00000020 // Poisoning: Lose mana over time
+CST_BodyPoison		00000040 // Poisoning: Lose stam over time
+CST_SoulPoison		00000080 // Poisoning: Lose health/mana/stam over time
+CST_Stun		00000100 // Prevent movement
+CST_Silence		00000200 // Prevent spellcasting
+CST_Cripple		00000400 // Prevent melee
+CST_Confuse		00000800 // Prevent item use
+CST_Midas		00001000 // Increase gold gain
+CST_Lupin		00002000 // Increase loot gain
+CST_Butcher		00004000 // Increase carve gain
+CST_Faith		00008000 // Increase fame/karma gain
+CST_Focus		00010000 // Increase impact of skills
+CST_Channel		00020000 // Increase impact of stats
+CST_Genius		00040000 // Highest combat skill used
+CST_Lunacy		00080000 // Weapon only does 0 or max
+CST_Rebirth		00100000 // Phoenix-style rebirth
+
+
+// Ooh, f_damage_type_quantity!
+// What this does is get the *number* of effects on an item OR a jewel.
+// <ARGN1> passed in should always be the flag we are comparing.
+// This function returns a number between 0 and the maximum number of flags available.
+// If this was C#, we could write this more efficiently... But hey ho!
+
+[FUNCTION f_damage_type_quantity]
+LOCAL.QUANTITY = 0
+IF (<ARGN1> & CDT_Sword)
+   LOCAL.QUANTITY += 1
+ENDIF
+IF (<ARGN1> & CDT_Piercing)
+   LOCAL.QUANTITY += 1
+ENDIF
+IF (<ARGN1> & CDT_Blunt)
+   LOCAL.QUANTITY += 1
+ENDIF
+IF (<ARGN1> & CDT_Arrow)
+   LOCAL.QUANTITY += 1
+ENDIF
+IF (<ARGN1> & CDT_Fire)
+   LOCAL.QUANTITY += 1
+ENDIF
+IF (<ARGN1> & CDT_Ice	)
+   LOCAL.QUANTITY += 1
+ENDIF
+IF (<ARGN1> & CDT_Lightning)
+   LOCAL.QUANTITY += 1
+ENDIF
+IF (<ARGN1> & CDT_Earth)
+   LOCAL.QUANTITY += 1
+ENDIF
+IF (<ARGN1> & CDT_Wind)
+   LOCAL.QUANTITY += 1
+ENDIF
+IF (<ARGN1> & CDT_Water)
+   LOCAL.QUANTITY += 1
+ENDIF
+IF (<ARGN1> & CDT_Radiation)
+   LOCAL.QUANTITY += 1
+ENDIF
+IF (<ARGN1> & CDT_Acid)
+   LOCAL.QUANTITY += 1
+ENDIF
+IF (<ARGN1> & CDT_Purity)
+   LOCAL.QUANTITY += 1
+ENDIF
+IF (<ARGN1> & CDT_Taint)
+   LOCAL.QUANTITY += 1
+ENDIF
+IF (<ARGN1> & CDT_Temporal)
+   LOCAL.QUANTITY += 1
+ENDIF
+IF (<ARGN1> & CDT_Eternal)
+   LOCAL.QUANTITY += 1
+ENDIF
+IF (<ARGN1> & CDT_Human)
+   LOCAL.QUANTITY += 1
+ENDIF
+IF (<ARGN1> & CDT_Elven)
+   LOCAL.QUANTITY += 1
+ENDIF
+IF (<ARGN1> & CDT_Daemonic)
+   LOCAL.QUANTITY += 1
+ENDIF
+IF (<ARGN1> & CDT_Dragonic)
+   LOCAL.QUANTITY += 1
+ENDIF
+IF (<ARGN1> & CDT_Lawful)
+   LOCAL.QUANTITY += 1
+ENDIF
+IF (<ARGN1> & CDT_Chaotic)
+   LOCAL.QUANTITY += 1
+ENDIF
+IF (<ARGN1> & CDT_Training)
+   LOCAL.QUANTITY += 1
+ENDIF
+IF (<ARGN1> & CDT_Merciful)
+   LOCAL.QUANTITY += 1
+ENDIF
+return <EVAL <LOCAL.QUANTITY>>
+
+// This returns the number of successful comparators between two Bitmasks
+// <ARGN1> = Weapon Bitmask
+// <ARGN2> = Compared bitmask
+//
+// Usage example: I want to see if the following match...
+// - <ARGN1> Weapon Damage Type
+// - <ARGN2> Monster Strengths
+// Every time these two match, I know a monster is strong to +1 element on that weapon.
+// For an end result, I can see how many damage buffs to NOT apply.
+[FUNCTION f_damage_type_comparator]
+LOCAL.QUANTITY = 0
+IF ((<ARGN1> & CDT_Sword ) && (<ARGN2> & CDT_Sword))
+   LOCAL.QUANTITY += 1
+ENDIF
+IF ((<ARGN1> & CDT_Piercing ) && (<ARGN2> & CDT_Piercing))
+   LOCAL.QUANTITY += 1
+ENDIF
+IF ((<ARGN1> & CDT_Blunt ) && (<ARGN2> & CDT_Blunt))
+   LOCAL.QUANTITY += 1
+ENDIF
+IF ((<ARGN1> & CDT_Arrow ) && (<ARGN2> & CDT_Arrow))
+   LOCAL.QUANTITY += 1
+ENDIF
+IF ((<ARGN1> & CDT_Fire ) && (<ARGN2> & CDT_Fire))
+   LOCAL.QUANTITY += 1
+ENDIF
+IF ((<ARGN1> & CDT_Ice) && (<ARGN2> & CDT_Ice))
+   LOCAL.QUANTITY += 1
+ENDIF
+IF ((<ARGN1> & CDT_Lightning ) && (<ARGN2> & CDT_Lightning))
+   LOCAL.QUANTITY += 1
+ENDIF
+IF ((<ARGN1> & CDT_Earth ) && (<ARGN2> & CDT_Earth))
+   LOCAL.QUANTITY += 1
+ENDIF
+IF ((<ARGN1> & CDT_Wind ) && (<ARGN2> & CDT_Wind))
+   LOCAL.QUANTITY += 1
+ENDIF
+IF ((<ARGN1> & CDT_Water ) && (<ARGN2> & CDT_Water))
+   LOCAL.QUANTITY += 1
+ENDIF
+IF ((<ARGN1> & CDT_Radiation ) && (<ARGN2> & CDT_Radiation))
+   LOCAL.QUANTITY += 1
+ENDIF
+IF ((<ARGN1> & CDT_Acid ) && (<ARGN2> & CDT_Acid))
+   LOCAL.QUANTITY += 1
+ENDIF
+IF ((<ARGN1> & CDT_Purity ) && (<ARGN2> & CDT_Purity))
+   LOCAL.QUANTITY += 1
+ENDIF
+IF ((<ARGN1> & CDT_Taint ) && (<ARGN2> & CDT_Taint))
+   LOCAL.QUANTITY += 1
+ENDIF
+IF ((<ARGN1> & CDT_Temporal ) && (<ARGN2> & CDT_Temporal))
+   LOCAL.QUANTITY += 1
+ENDIF
+IF ((<ARGN1> & CDT_Eternal ) && (<ARGN2> & CDT_Eternal))
+   LOCAL.QUANTITY += 1
+ENDIF
+IF ((<ARGN1> & CDT_Human ) && (<ARGN2> & CDT_Human))
+   LOCAL.QUANTITY += 1
+ENDIF
+IF ((<ARGN1> & CDT_Elven ) && (<ARGN2> & CDT_Elven))
+   LOCAL.QUANTITY += 1
+ENDIF
+IF ((<ARGN1> & CDT_Daemonic ) && (<ARGN2> & CDT_Daemonic))
+   LOCAL.QUANTITY += 1
+ENDIF
+IF ((<ARGN1> & CDT_Dragonic ) && (<ARGN2> & CDT_Dragonic))
+   LOCAL.QUANTITY += 1
+ENDIF
+IF ((<ARGN1> & CDT_Lawful ) && (<ARGN2> & CDT_Lawful))
+   LOCAL.QUANTITY += 1
+ENDIF
+IF ((<ARGN1> & CDT_Chaotic ) && (<ARGN2> & CDT_Chaotic))
+   LOCAL.QUANTITY += 1
+ENDIF
+IF ((<ARGN1> & CDT_Training ) && (<ARGN2> & CDT_Training))
+   LOCAL.QUANTITY += 1
+ENDIF
+IF ((<ARGN1> & CDT_Merciful ) && (<ARGN2> & CDT_Merciful))
+   LOCAL.QUANTITY += 1
+ENDIF
+return <EVAL <LOCAL.QUANTITY>>
+
+
+
+// So what we do now is, ON=@HIT and ON=@HITMISS, actually force the roll to fail.
+// We're going to ensure the attacker runs f_combat_roll, passing the defender is passed as the <ARGS> for data integrity.
+// This is done in e_all_pc and e_all_npc   
+
+// Firstly:
+// OBJ = Attacker (Done at start)
+// ACT = Defender (Passed as ARGS from @HIT and @HITMISS)
+//
+// We need to roll the chance for success.
+// If it succeeds, it will move on to f_combat_calculate hit.
+// If it fails, it passes a message to each combatant to let them know HOW they failed to hit.
+
+[FUNCTION f_combat_trytohit]
+// Set OBJ to the attacker
+OBJ = <UID>
+ACT = <UID.<ARGS>.UID>
+
+// CHECK FOR INVUL FIRST!
+// We break here if the target is invul.
+IF (<ACT.FLAGS> & statf_invul)
+   OBJ.SYSMESSAGE @24 <ACT.NAME> is invincible and cannot be hurt.
+   ACT.SYSMESSAGE @24 <OBJ.NAME> is trying to hit you, but it is futile.
+   RETURN 1
+ENDIF
+
+// Karma/Kills/Criminal check here here
+IF ( !(<ACT.FLAGS> && statf_criminal) && (<ACT.KARMA> >= 0) && (<ACT.KILLS> < 3) )
+   OBJ.SYSMESSAGE You have been marked as a criminal for attacking <ACT.NAME>!
+   // Add criminal status to the attacker
+   OBJ.FLAGS = (<OBJ.FLAGS> | statf_criminal)
+   if !(<OBJ.FINDID(b_criminal_timer).UID>)
+      SERV.NEWITEM b_criminal_timer
+      NEW.EQUIP <OBJ.UID>
+   ELSE
+      OBJ.FINDID(b_criminal_timer).TIMER = 240
+   ENDIF
+ENDIF
+
+ACT.ATTACKER.ADD <OBJ.UID>
+
+// We're creating 5 LOCAL's here...
+// - ATTACKERMELEE: The characters active melee skill (e.g. Swords, Blunts)
+//                  Note that if there's no layer 1, we don't need this!
+// - ATTACKERACCURACY: The characters accuracy. This is (<ATTACKERMELEE/WRESTLING> + <TACTICS> + <ANATOMY>)
+//                   : Note we multiply this by 100, because Sphere doesn't deal in decimals... So this allows us to deal with it better later.
+// - DEFENDERSTEEDDODGE: The amount of dodge the defender gets from their steed.
+//                     : The defender only gets dodge from their steed if their Animal Lore is above their steeds requirement (ARMS LORE).
+// - DEFENDERDODGE: The defenders chance to dodge. This is <STAM> + <TACTICS> + <DEFENDERSTEEDDODGE>
+// - DEFENDERSHIELDPARRY: The defenders modifier for parrying from a shield. Must have (<REQSTR> - 5) Shieldfighting to get the bonus.
+// - DEFENDERPARRY: The defenders chance to parry. This is <STAM> + <SHIELDFIGHTING>
+
+LOCAL.ATTACKERMELEE = 0
+LOCAL.ATTACKERACCURACY = 0
+LOCAL.DEFENDERSTEEDDODGE = 0
+LOCAL.DEFENDERDODGE = 0
+LOCAL.DEFENDERSHIELDPARRY = 0
+LOCAL.DEFENDERPARRY = 0
+
+// We're checking for the active combat skill here and making it our ATTACKERMELEE.
+// Then we're calculating our ATTACKERACCURACY
+IF (<OBJ.FINDLAYER(layer_hand1)>) 
+   LOCAL.ATTACKERMELEE = <OBJ.<SERV.SKILL(<FINDLAYER(layer_hand1).SKILL>).NAME>>
+   LOCAL.ATTACKERACCURACY = <EVAL <LOCAL.ATTACKERMELEE> + <OBJ.TACTICS> + <OBJ.ANATOMY>>
+ELSEIF (<OBJ.FINDLAYER(layer_hand2)>)
+   IF (<OBJ.FINDLAYER(layer_hand2).SKILL> > 0)
+      LOCAL.ATTACKERMELEE = <OBJ.<SERV.SKILL(<FINDLAYER(layer_hand2).SKILL>).NAME>>
+      LOCAL.ATTACKERACCURACY = <EVAL <LOCAL.ATTACKERMELEE> + <OBJ.TACTICS> + <OBJ.ANATOMY>>
+   ENDIF
+ELSE
+   LOCAL.ATTACKERACCURACY = <EVAL <OBJ.WRESTLING> + <OBJ.TACTICS> + <OBJ.ANATOMY>>
+ENDIF
+
+// Next we're calculating the chance to dodge...
+IF (<ACT.FINDLAYER(layer_horse)>)
+   LOCAL.DEFENDERSTEEDDODGE = <UID.<ACT.FINDLAYER(layer_horse).MORE2>.ARMSLORE>
+ENDIF
+LOCAL.DEFENDERDODGE = <EVAL <LOCAL.DEFENDERSTEEDDODGE> + <ACT.TACTICS> + <EVAL <ACT.STAM> * 10>>
+
+// And the chance to parry
+IF (<ACT.FINDLAYER(layer_hand2)>)
+   // Must have (REQSTR - 5)% Shieldfighting to use properly, else LOCAL.DEFENDERSHIELDPARRY remains 0
+   IF (<ACT.PARRYING> > <EVAL <ACT.FINDLAYER(layer_hand2).REQSTR> - 5>)
+      LOCAL.DEFENDERSHIELDPARRY = <EVAL <ACT.FINDLAYER(layer_hand2).REQSTR>>
+   ENDIF
+   LOCAL.DEFENDERPARRY = <EVAL <EVAL <ACT.STAM> * 10> + <ACT.PARRYING> + <LOCAL.DEFENDERSHIELDPARRY>>
+ELSE
+   LOCAL.DEFENDERPARRY = 0
+ENDIF
+
+// So the *normal* maximum of ATTACKERACCURACY is 3000
+// The *normal* maximum of DEFENDERDODGE is 3200
+// The *normal* maximum of DEFENDERPARRY is 2950
+// We now need to get the chance to hit... But of course, no-one is perfect. So!
+// Max Dodge vs Max Accuracy: ~16.6% chance to dodge
+// Max Parry vs Max Accuracy: ~16.6% additional chance to parry on top of dodge % (So max of ~33.3%)
+// These are combined chances! So with Max Dodge and Max Parry, you have a greater chance of nulling the attack.
+// We try, for play purposes, to see if we fall just below the dodge first. Then we go Dodge + Parry. That way they can *see* both play a part.
+// Therefore we need <ATTACKERACCURACY> to be quadrupled, so it is within a max of 18000.
+// We then random roll in that 18000 max (But more likely and see if it's above 
+
+
+LOCAL.ATTACKERACCURACY *= 6
+
+// Try to roll ABOVE (Not equal to) enemy DEFENDER DODGE
+LOCAL.ATTACKERACCURACY = (RAND(<EVAL <LOCAL.ATTACKERACCURACY>>))
+
+IF (<LOCAL.ATTACKERACCURACY> < <EVAL <LOCAL.DEFENDERDODGE>>)
+   OBJ.SYSMESSAGE @40 <ACT.NAME> dodges your attack.
+   ACT.SYSMESSAGE @40 You dodge <OBJ.NAME>'s attack.
+   // Play dodge sound on both clients
+   OBJ.SOUND 0239
+   ACT.SOUND 0238
+ELSEIF (<LOCAL.ATTACKERACCURACY> < <EVAL <LOCAL.DEFENDERDODGE> + <LOCAL.DEFENDERPARRY>>)
+   OBJ.SYSMESSAGE @40 <ACT.NAME> parries your attack.
+   ACT.SYSMESSAGE @40 You parry <OBJ.NAME>'s attack.
+   // Play dodge sound on both clients
+   OBJ.SOUND 023a
+   ACT.SOUND 0238   
+ELSE
+   CALL f_combat_calculatehit <ARGS>
+   // Out of laziness, play the DONK sound on both clients
+   OBJ.SOUND 0236
+   ACT.SOUND 0237
+   LOCAL.DAMAGEOUT = <EVAL <LOCAL.FINALDAMAGE> + <LOCAL.ELEMDAMAGE>>
+   // Check it doesn't do 0 damage, else we fix it at 0.
+   IF (<LOCAL.DAMAGEOUT> < 0)
+      LOCAL.DAMAGEOUT = 0
+   ENDIF
+   // Now apply the damage, and anything that drops below 0 gets fixed at 0
+   ACT.HITS -= <LOCAL.DAMAGEOUT>
+   // Remove attackers if we drop to 0
+   IF (<ACT.HITS> <= 0)
+      // Get the number of attackers on the victim.
+      IF (<ACT.ATTACKER> > 0)
+         // For each attacker up to the count, remove the victim UID.
+         FOR ATK 0 <EVAL <ACT.ATTACKER> - 1>
+            UID.<ACT.ATTACKER.<LOCAL.ATK>>.ATTACKER.DELETE <ACT.UID>
+         ENDFOR
+      ENDIF
+      // Now we've cleared the victim from its attackers, we can clear the attacker's list.
+      ACT.ATTACKER.CLEAR
+      ACT.HITS = 0
+   ENDIF
+   // Additional details are given to the attacker and defender based on their skills
+   // Attacker first...
+   IF (<OBJ.ANATOMY> > 900)
+      OBJ.SYSMESSAGE @056 You hit <ACT.NAME> for <EVAL <LOCAL.DAMAGEOUT>> damage! [<ACT.HITS>/<ACT.MAXHITS>hp remaining, with <EVAL <LOCAL.ELEMDAMAGE>> elemental damage dealt]
+   ELSEIF (<OBJ.ANATOMY> > 750)
+      OBJ.SYSMESSAGE @056 You hit <ACT.NAME> for <EVAL <LOCAL.DAMAGEOUT>> damage! [<EVAL <LOCAL.ELEMDAMAGE>> elemental damage dealt]
+   ELSEIF (<OBJ.ANATOMY> > 500)
+      OBJ.SYSMESSAGE @056 You hit <ACT.NAME> for <EVAL <LOCAL.DAMAGEOUT>> damage!
+   ELSE
+      OBJ.SYSMESSAGE @056 You hit <ACT.NAME>!   
+   ENDIF
+   // Next the defender...
+   IF (<ACT.ANATOMY> > 900)
+      ACT.SYSMESSAGE @024 <OBJ.NAME> hits you for <EVAL <LOCAL.DAMAGEOUT>> damage! [<ACT.HITS>/<ACT.MAXHITS>hp remaining, with <EVAL <LOCAL.ELEMDAMAGE>> elemental damage received]
+   ELSEIF (<ACT.ANATOMY> > 750)
+      ACT.SYSMESSAGE @024 <OBJ.NAME> hits you for <EVAL <LOCAL.DAMAGEOUT>> damage! [<EVAL <LOCAL.ELEMDAMAGE>> elemental damage received]
+   ELSEIF (<ACT.ANATOMY> > 500)
+      ACT.SYSMESSAGE @024 <OBJ.NAME> hits you for <EVAL <LOCAL.DAMAGEOUT>> damage!
+   ELSE
+      ACT.SYSMESSAGE @024 <OBJ.NAME> hits you!   
+   ENDIF
+   // Now break any offending spells on the target.
+   IF (<ACT.FINDID(i_rune_paralyze)>)
+      ACT.FINDID(i_rune_paralyze).TIMER = 0
+      ACT.SYSMESSAGE @034 The paralysis effect breaks as you are hit.
+      OBJ.SYSMESSAGE @077 <ACT.NAME>'s paralysis breaks.
+   ENDIF
+ENDIF
+
+// Finally, trigger our skill rolls manually.
+// We do this by calling "f_skillsuccess_rollskill <SkillID>"
+
+IF (<OBJ.FINDLAYER(layer_hand1)>)  // 1H Weapon Skill
+   // OBJ.SYSMESSAGE Triggering LH1 <OBJ.FINDLAYER(layer_hand1).SKILL>
+   OBJ.f_skillsuccess_rollskill <OBJ.FINDLAYER(layer_hand1).SKILL>
+ELSEIF (<OBJ.FINDLAYER(layer_hand2)>) // 2H Weapon Skill
+   IF (<OBJ.FINDLAYER(layer_hand2).SKILL> > 0)
+      // OBJ.SYSMESSAGE Triggering LH2 <OBJ.FINDLAYER(layer_hand2).SKILL>
+      OBJ.f_skillsuccess_rollskill <OBJ.FINDLAYER(layer_hand2).SKILL>
+   ENDIF
+ELSE // Wrestling
+   // OBJ.SYSMESSAGE Triggering Wrestling
+   OBJ.f_skillsuccess_rollskill 43
+ENDIF
+
+// Always roll for tactics too!
+OBJ.f_skillsuccess_rollskill 27
+
+IF (<ACT.FINDLAYER(layer_hand2)>)
+   IF (<ACT.FINDLAYER(layer_hand2).TYPE> == t_shield)
+      //ACT.SYSMESSAGE Triggering PARRY
+      ACT.f_skillsuccess_rollskill 5
+   ENDIF
+ENDIF
+
+// Defender should always roll tactics too!
+ACT.f_skillsuccess_rollskill 5
+
+
+// --------------------------------------------------------
+
+// Firstly:
+// OBJ = Attacker (Done at start)
+// ACT = Defender (Passed as ARGS from @HIT and @HITMISS)
+//
+// We need to roll the amount of damage being done.
+// If there is a hit, it should always be for a minimum of 1 damage UNLESS someone is using training weapons.
+// Training weapons should have damage negated immediately.
+// Three key variables here:
+// - LOCAL.BASEDAMAGE: The guaranteed lowest hit.
+// - LOCAL.MAXDAMAGE: The potential *additional* damage you can do (Excluding BASE)
+// - LOCAL.FINALDAMAGE: The damage as rolled... And which will have the ELEMDAMAGE added on.
+//
+// We then have to deal with the defensive ability of the defender, handled by:
+// - LOCAL.DEFENSE: The damage reduction to calculate.
+//
+// After we calculate the defense vs. BASE, we can add any ELEM damage to be applied
+// - LOCAL.ELEMDAMAGE: The additional elemental damage to add to the final damage.
+//                     For a PC, this is determined by a weapons MORE2 (Built in) and its TAG.JEWEL
+//
+// The FINALDAMAGE is BASE + RAND(<MAXDAMAGE>) + ELEMDAMAGE
+//
+
+[FUNCTION f_combat_calculatehit]
+// Set OBJ to the attacker
+OBJ = <UID>
+// Set ACT as defender
+ACT = <UID.<ARGS>.UID>
+// Set the weapon layer
+// This means we can do integrity without screwing around with extra needless IF's later.
+IF (<OBJ.FINDLAYER(layer_hand2)>)
+   IF (<OBJ.FINDLAYER(layer_hand2).SKILL> > 0)
+      LOCAL.WEAPONLAYER = layer_hand2
+   ELSE
+      LOCAL.WEAPONLAYER = layer_hand1
+   ENDIF
+ELSE
+   LOCAL.WEAPONLAYER = layer_hand1
+ENDIF
+   
+
+
+LOCAL.BASEDAMAGE = 0
+LOCAL.MAXDAMAGE = 0
+LOCAL.ELEMDAMAGE = 0
+LOCAL.FINALDAMAGE = 0
+
+LOCAL.DEFENSE = 0
+
+// This one is a fun one - It stops mobs being OP.
+
+// BASEDAMAGE modifiers:
+// [PC]
+// - The DAM.LO of a weapon is multiplied by the skill modifier, then divided by 1000.
+//   The result is the % of DAM.LO that can be applied.
+//   This means a 20 DAM weapon in the hands of an 80% swords user will do 16 damage (80% of DAM.LO).
+//   For wrestling, this is instead a base of 10.
+// - Strength is applied by multiplying by strength, and then dividing by 50.
+//   This makes it so 50 = 100% damage.
+//                   100 = 200% damage.
+//                   150 = 300% damage
+//   Note: This is NOT applied to bows.
+// [NPC]
+// - Strength is not used.
+// - Otherwise, an NPC Base is their <DAM.LO> + <<OBJ.WRESTLING> / 50> (So +1 point per 5% skill)
+
+IF !(<OBJ.NPC>)
+   IF (<OBJ.FINDLAYER(<LOCAL.WEAPONLAYER>)>) // Weapon Equip
+      LOCAL.BASEDAMAGE = <EVAL <OBJ.FINDLAYER(<LOCAL.WEAPONLAYER>).DAM.LO>>
+      LOCAL.BASEDAMAGE *= <EVAL <OBJ.<SERV.SKILL(<FINDLAYER(<LOCAL.WEAPONLAYER>).SKILL>).NAME>>>
+      LOCAL.BASEDAMAGE /= 1000
+      IF !(<OBJ.FINDLAYER(<LOCAL.WEAPONLAYER>).SKILL> == 31)
+         LOCAL.BASEDAMAGE *= <EVAL <OBJ.STR> / 50> 
+      ENDIF
+   ELSE
+      LOCAL.BASEDAMAGE = <EVAL 10>
+      LOCAL.BASEDAMAGE *= <EVAL <OBJ.WRESTLING>>
+      LOCAL.BASEDAMAGE /= <EVAL 1000>
+      LOCAL.BASEDAMAGE *= <EVAL <OBJ.STR> / 50>
+   ENDIF
+ELSE // Mobs do not put their STR towards their damage!
+   LOCAL.BASEDAMAGE = <EVAL <EVAL <OBJ.DAM.LO> + <OBJ.WRESTLING>> / 50>
+ENDIF
+
+// OBJ.SAY <EVAL <LOCAL.BASEDAMAGE>>
+
+// MAXDAMAGE modifiers
+// [PC]
+// - Take the difference of DAM.HI and DAM.LO
+//   Multiply this by TACS + ANAT, then divide by 2000.
+//   The result is the % of DAM Difference that can be applied.
+//   This means a 20 DAM.LO, 30 DAM.HI weapon in the hands of an 80% swords user will have a potential additional 8 damage (80% of the 10 difference).
+//   For wrestling, this is instead a base of 10.
+// [NPC]
+// - Max modifier is calculated as <HI - LO> + <<TACTICS + ANATOMY> / 50> (So +1 point per 5% combined skill)
+IF !(<OBJ.NPC>)
+   IF (<OBJ.FINDLAYER(<LOCAL.WEAPONLAYER>)>) // Weapon Equip
+      LOCAL.MAXDAMAGE = <EVAL <OBJ.FINDLAYER(<LOCAL.WEAPONLAYER>).DAM.HI>>
+      LOCAL.MAXDAMAGE -= <EVAL <OBJ.FINDLAYER(<LOCAL.WEAPONLAYER>).DAM.LO>>
+      LOCAL.MAXDAMAGE *= <EVAL <OBJ.TACTICS> + <OBJ.ANATOMY>>
+      LOCAL.MAXDAMAGE /= <EVAL 2000>
+      LOCAL.MAXDAMAGE *= <EVAL <OBJ.STR> / 50> 
+   ELSE
+      LOCAL.MAXDAMAGE = <EVAL 10>
+      LOCAL.MAXDAMAGE *= <EVAL <OBJ.TACTICS> + <OBJ.ANATOMY>>
+      LOCAL.MAXDAMAGE /= <EVAL 2000>
+      LOCAL.MAXDAMAGE *= <EVAL <OBJ.STR> / 50> 
+   ENDIF
+ELSE
+   LOCAL.MAXDAMAGE = <EVAL <EVAL <OBJ.DAM.HI> - <OBJ.DAM.LO>>>
+   LOCAL.MAXDAMAGE += <EVAL <EVAL <OBJ.TACTICS> + <OBJ.ANATOMY>> / 50>
+ENDIF
+
+// OBJ.SAY MAX: <EVAL <LOCAL.MAXDAMAGE>>
+
+// This is our random roll on top of base, for max
+LOCAL.DAMAGEPLUS=<EVAL RAND(<EVAL <LOCAL.MAXDAMAGE>>)>
+
+// We're going to roll the base of our FINALDAMAGE now - This does not include our ELEMDAMAGE!
+LOCAL.FINALDAMAGE=<EVAL <LOCAL.DAMAGEPLUS> + <LOCAL.BASEDAMAGE> - <EVAL <ACT.ARMOR> / 7>>
+
+// OBJ.SAY FINAL: <EVAL <LOCAL.FINALDAMAGE>>
+
+// ELEMDAMAGE modifiers
+// - ELEMDAMAGE cannot drop below 0
+// - A weapon with a material damage type does an additional half BASEDAMAGE elemental damage.
+// - A weapon with a jewel damage type does an additional half BASEDAMAGE elemental damage.
+// - Note this means that a weapon with +Cold metal and +Fire jewel will do half BASEDAMAGE cold AND half BASEDAMAGE fire
+// - An NPC with a damage type does an additional half BASEDAMAGE elemental damage.
+// - Modifiers are then applied based on strength and weakness.
+//   Against an NPC, if they have a weakness then this is doubled to full BASEDAMAGE.
+//   Against a PC, if their armour has a weakness then:
+//   - +3 is taken for each of: layer_neck, layer_hands.
+//   - +4 is taken for each of: layer_head, layer_arms.
+//   - +5 is taken for each of: layer_chest, layer_legs.
+//   Against an NPC, if they have a strength then this damage is reduced to 0.
+//   Against a PC, if their armour has a strength then:
+//   - -10% is taken for each of: layer_neck, layer_hands.
+//   - -15% is taken for each of: layer_head, layer_arms.
+//   - -25% is taken for each of: layer_chest, layer_legs.
+//   - For reference, this means single affinity reaches -100%.
+//   - This also means that Fury and Mayhem jewels no longer work as before...
+
+LOCAL.ELEMFLAG = 0
+
+// One more thing before we continue:
+// The MORE2 holds a weapons elements from material, and is updated as necessary by e_all_items.
+// The TAG.JEWEL holds a weapons elements from jewels, and is updated as necessary by e_all_items.
+
+LOCAL.ELEMDAMAGE = 0
+
+// @@@@@@@@@@@@@@@@@@@@
+// @ ELEMENTAL DAMAGE @
+// @@@@@@@@@@@@@@@@@@@@
+
+IF !(<OBJ.NPC>)
+   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   // PLAYER CHARACTER ELEMENTAL DAMAGE
+   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   IF (<OBJ.FINDLAYER(<LOCAL.WEAPONLAYER>)>)
+      // If it's not an NPC and it has a weapon, this is the complex bit.
+      // Dear God, why did I do this?!
+      IF !(<ACT.NPC>)
+         // ## Weapon default Elements ##
+         IF (<OBJ.FINDLAYER(<LOCAL.WEAPONLAYER>).MORE2> > 0)
+            // ==========
+            //    HELM
+            // ==========
+            IF (<ACT.FINDLAYER(layer_helm)>)
+               // We found this piece, so we need to work out how MUCH damage we're applying.
+               // Just to be safe, make sure LOCAL.ARELEMDAMAGE is reset
+               LOCAL.ARELEMDAMAGE = 0
+               CALL f_combat_getdamagetypes <OBJ.FINDLAYER(<LOCAL.WEAPONLAYER>).MORE2> <ACT.FINDLAYER(layer_helm).MORE2> <ACT.FINDLAYER(layer_helm).MORE2>
+               // We now need to get our damage.
+               // <EVAL <DAM.LO> * <LOCAL.MULTIPLIER>> gives us the damage by the multiplier... But multiplied by 100.
+               // To get our real damage, we then divide that by 100.
+               // Example: 13 damage, 133% multiplier.
+               // (13 * 133) / 100 = 17 Damage
+               // Example: 13 damage, 75% multiplier
+               // (13 * 75) / 100 = 9.75 (10) Damage
+               LOCAL.ARELEMDAMAGE = <EVAL <OBJ.FINDLAYER(<LOCAL.WEAPONLAYER>).DAM.LO> * <LOCAL.ELEMMULTIPLIER> / 100>
+               // Now apply the modifier for this AR piece by doing (<ARELEM> * <piece>) / 100
+               LOCAL.ELEMDAMAGE += <EVAL <LOCAL.ARELEMDAMAGE> * CAED_helm / 100>
+            ELSE
+               // We did not find this piece, so we just flat out apply the proportional damage for this helm.
+               LOCAL.ELEMDAMAGE += <EVAL <OBJ.FINDLAYER(<LOCAL.WEAPONLAYER>).DAM.LO> * CAED_helm / 100>
+            ENDIF
+            // ==========
+            //   COLLAR
+            // ==========
+            IF (<ACT.FINDLAYER(layer_collar)>)
+               // We found this piece, so we need to work out how MUCH damage we're applying.
+               // Just to be safe, make sure LOCAL.ARELEMDAMAGE is reset
+               LOCAL.ARELEMDAMAGE = 0
+               CALL f_combat_getdamagetypes <OBJ.FINDLAYER(<LOCAL.WEAPONLAYER>).MORE2> <ACT.FINDLAYER(layer_collar).MORE2> <ACT.FINDLAYER(layer_collar).MORE2>
+               // We now need to get our damage.
+               // <EVAL <DAM.LO> * <LOCAL.MULTIPLIER>> gives us the damage by the multiplier... But multiplied by 100.
+               // To get our real damage, we then divide that by 100.
+               // Example: 13 damage, 133% multiplier.
+               // (13 * 133) / 100 = 17 Damage
+               // Example: 13 damage, 75% multiplier
+               // (13 * 75) / 100 = 9.75 (10) Damage
+               LOCAL.ARELEMDAMAGE = <EVAL <OBJ.FINDLAYER(<LOCAL.WEAPONLAYER>).DAM.LO> * <LOCAL.ELEMMULTIPLIER> / 100>
+               // Now apply the modifier for this AR piece by doing (<ARELEM> * <piece>) / 100
+               LOCAL.ELEMDAMAGE += <EVAL <LOCAL.ARELEMDAMAGE> * CAED_collar / 100>
+            ELSE
+               // We did not find this piece, so we just flat out apply the proportional damage for this helm.
+               LOCAL.ELEMDAMAGE += <EVAL <OBJ.FINDLAYER(<LOCAL.WEAPONLAYER>).DAM.LO> * CAED_collar / 100>
+            ENDIF
+            // ==========
+            //    ARMS
+            // ==========
+            IF (<ACT.FINDLAYER(layer_arms)>)
+               // We found this piece, so we need to work out how MUCH damage we're applying.
+               // Just to be safe, make sure LOCAL.ARELEMDAMAGE is reset
+               LOCAL.ARELEMDAMAGE = 0
+               CALL f_combat_getdamagetypes <OBJ.FINDLAYER(<LOCAL.WEAPONLAYER>).MORE2> <ACT.FINDLAYER(layer_arms).MORE2> <ACT.FINDLAYER(layer_arms).MORE2>
+               // We now need to get our damage.
+               // <EVAL <DAM.LO> * <LOCAL.MULTIPLIER>> gives us the damage by the multiplier... But multiplied by 100.
+               // To get our real damage, we then divide that by 100.
+               // Example: 13 damage, 133% multiplier.
+               // (13 * 133) / 100 = 17 Damage
+               // Example: 13 damage, 75% multiplier
+               // (13 * 75) / 100 = 9.75 (10) Damage
+               LOCAL.ARELEMDAMAGE = <EVAL <OBJ.FINDLAYER(<LOCAL.WEAPONLAYER>).DAM.LO> * <LOCAL.ELEMMULTIPLIER> / 100>
+               // Now apply the modifier for this AR piece by doing (<ARELEM> * <piece>) / 100
+               LOCAL.ELEMDAMAGE += <EVAL <LOCAL.ARELEMDAMAGE> * CAED_arms / 100>
+            ELSE
+               // We did not find this piece, so we just flat out apply the proportional damage for this helm.
+               LOCAL.ELEMDAMAGE += <EVAL <OBJ.FINDLAYER(<LOCAL.WEAPONLAYER>).DAM.LO> * CAED_arms / 100>
+            ENDIF
+            // ==========
+            //   GLOVES
+            // ==========
+            IF (<ACT.FINDLAYER(layer_gloves)>)
+               // We found this piece, so we need to work out how MUCH damage we're applying.
+               // Just to be safe, make sure LOCAL.ARELEMDAMAGE is reset
+               LOCAL.ARELEMDAMAGE = 0
+               CALL f_combat_getdamagetypes <OBJ.FINDLAYER(<LOCAL.WEAPONLAYER>).MORE2> <ACT.FINDLAYER(layer_gloves).MORE2> <ACT.FINDLAYER(layer_gloves).MORE2>
+               // We now need to get our damage.
+               // <EVAL <DAM.LO> * <LOCAL.MULTIPLIER>> gives us the damage by the multiplier... But multiplied by 100.
+               // To get our real damage, we then divide that by 100.
+               // Example: 13 damage, 133% multiplier.
+               // (13 * 133) / 100 = 17 Damage
+               // Example: 13 damage, 75% multiplier
+               // (13 * 75) / 100 = 9.75 (10) Damage
+               LOCAL.ARELEMDAMAGE = <EVAL <OBJ.FINDLAYER(<LOCAL.WEAPONLAYER>).DAM.LO> * <LOCAL.ELEMMULTIPLIER> / 100>
+               // Now apply the modifier for this AR piece by doing (<ARELEM> * <piece>) / 100
+               LOCAL.ELEMDAMAGE += <EVAL <LOCAL.ARELEMDAMAGE> * CAED_gloves / 100>
+            ELSE
+               // We did not find this piece, so we just flat out apply the proportional damage for this helm.
+               LOCAL.ELEMDAMAGE += <EVAL <OBJ.FINDLAYER(<LOCAL.WEAPONLAYER>).DAM.LO> * CAED_gloves / 100>
+            ENDIF
+            // ==========
+            //   CHEST
+            // ==========
+            IF (<ACT.FINDLAYER(layer_chest)>)
+               // We found this piece, so we need to work out how MUCH damage we're applying.
+               // Just to be safe, make sure LOCAL.ARELEMDAMAGE is reset
+               LOCAL.ARELEMDAMAGE = 0
+               CALL f_combat_getdamagetypes <OBJ.FINDLAYER(<LOCAL.WEAPONLAYER>).MORE2> <ACT.FINDLAYER(layer_chest).MORE2> <ACT.FINDLAYER(layer_chest).MORE2>
+               // We now need to get our damage.
+               // <EVAL <DAM.LO> * <LOCAL.MULTIPLIER>> gives us the damage by the multiplier... But multiplied by 100.
+               // To get our real damage, we then divide that by 100.
+               // Example: 13 damage, 133% multiplier.
+               // (13 * 133) / 100 = 17 Damage
+               // Example: 13 damage, 75% multiplier
+               // (13 * 75) / 100 = 9.75 (10) Damage
+               LOCAL.ARELEMDAMAGE = <EVAL <OBJ.FINDLAYER(<LOCAL.WEAPONLAYER>).DAM.LO> * <LOCAL.ELEMMULTIPLIER> / 100>
+               // Now apply the modifier for this AR piece by doing (<ARELEM> * <piece>) / 100
+               LOCAL.ELEMDAMAGE += <EVAL <LOCAL.ARELEMDAMAGE> * CAED_chest / 100>
+            ELSE
+               // We did not find this piece, so we just flat out apply the proportional damage for this helm.
+               LOCAL.ELEMDAMAGE += <EVAL <OBJ.FINDLAYER(<LOCAL.WEAPONLAYER>).DAM.LO> * CAED_chest / 100>
+            ENDIF
+            // ==========
+            //    LEGS
+            // ==========
+            IF (<ACT.FINDLAYER(layer_legs)>)
+               // We found this piece, so we need to work out how MUCH damage we're applying.
+               // Just to be safe, make sure LOCAL.ARELEMDAMAGE is reset
+               LOCAL.ARELEMDAMAGE = 0
+               CALL f_combat_getdamagetypes <OBJ.FINDLAYER(<LOCAL.WEAPONLAYER>).MORE2> <ACT.FINDLAYER(layer_legs).MORE2> <ACT.FINDLAYER(layer_legs).MORE2>
+               // We now need to get our damage.
+               // <EVAL <DAM.LO> * <LOCAL.MULTIPLIER>> gives us the damage by the multiplier... But multiplied by 100.
+               // To get our real damage, we then divide that by 100.
+               // Example: 13 damage, 133% multiplier.
+               // (13 * 133) / 100 = 17 Damage
+               // Example: 13 damage, 75% multiplier
+               // (13 * 75) / 100 = 9.75 (10) Damage
+               LOCAL.ARELEMDAMAGE = <EVAL <OBJ.FINDLAYER(<LOCAL.WEAPONLAYER>).DAM.LO> * <LOCAL.ELEMMULTIPLIER> / 100>
+               // Now apply the modifier for this AR piece by doing (<ARELEM> * <piece>) / 100
+               LOCAL.ELEMDAMAGE += <EVAL <LOCAL.ARELEMDAMAGE> * CAED_legs / 100>
+            ELSE
+               // We did not find this piece, so we just flat out apply the proportional damage for this helm.
+               LOCAL.ELEMDAMAGE += <EVAL <OBJ.FINDLAYER(<LOCAL.WEAPONLAYER>).DAM.LO> * CAED_legs / 100>
+            ENDIF            
+         ENDIF
+      ELSE
+         // Find if the NPC has a weakness to anything in the weapon first...
+         IF (<OBJ.FINDLAYER(1).MORE2> > 0)
+            CALL f_combat_getdamagetypes <OBJ.FINDLAYER(<LOCAL.WEAPONLAYER>).MORE2> <ACT.TAG0.DMGTYPE.WEAKNESS> <ACT.TAG0.DMGTYPE.STRENGTH>
+            // We now need to get our damage.
+            // <EVAL <DAM.LO> * <LOCAL.MULTIPLIER>> gives us the damage by the multiplier... But multiplied by 100.
+            // To get our real damage, we then divide that by 100.
+            // Example: 13 damage, 133% multiplier.
+            // (13 * 133) / 100 = 17 Damage
+            // Example: 13 damage, 75% multiplier
+            // (13 * 75) / 100 = 9.75 (10) Damage
+            LOCAL.ELEMDAMAGE += <EVAL <OBJ.FINDLAYER(<LOCAL.WEAPONLAYER>).DAM.LO> * <LOCAL.ELEMMULTIPLIER> / 100>
+         ENDIF
+         // Then check vs. a jewel
+         IF (<OBJ.FINDLAYER(<LOCAL.WEAPONLAYER>).TAG0.JEWEL> > 0)
+            CALL f_combat_getdamagetypes <OBJ.FINDLAYER(<LOCAL.WEAPONLAYER>).TAG0.JEWEL> <ACT.TAG0.DMGTYPE.WEAKNESS> <ACT.TAG0.DMGTYPE.STRENGTH>
+            // We now need to get our damage.
+            // <EVAL <DAM.LO> * <LOCAL.MULTIPLIER>> gives us the damage by the multiplier... But multiplied by 100.
+            // To get our real damage, we then divide that by 100.
+            // Example: 13 damage, 133% multiplier.
+            // (13 * 133) / 100 = 17 Damage
+            // Example: 13 damage, 75% multiplier
+            // (13 * 75) / 100 = 9.75 (10) Damage
+            LOCAL.ELEMDAMAGE += <EVAL <OBJ.FINDLAYER(<LOCAL.WEAPONLAYER>).DAM.LO> * <LOCAL.ELEMMULTIPLIER> / 100>
+         ENDIF
+      ENDIF
+   ENDIF
+ELSE
+   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   // NON-PLAYER CHARACTERS ELEMENTAL DAMAGE
+   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   IF !(<ACT.NPC>)
+      IF (<OBJ.TAG0.DMGTYPE.DEALS> > 0)
+         // ==========
+         //    HELM
+         // ==========
+         IF (<ACT.FINDLAYER(layer_helm)>)
+            // We found this piece, so we need to work out how MUCH damage we're applying.
+            // Just to be safe, make sure LOCAL.ARELEMDAMAGE is reset
+            LOCAL.ARELEMDAMAGE = 0
+            CALL f_combat_getdamagetypes <OBJ.TAG0.DMGTYPE.DEALS> <ACT.FINDLAYER(layer_helm).MORE2> <ACT.FINDLAYER(layer_helm).MORE2>
+            // We now need to get our damage.
+            // <EVAL <DAM.LO> * <LOCAL.MULTIPLIER>> gives us the damage by the multiplier... But multiplied by 100.
+            // To get our real damage, we then divide that by 100.
+            // Example: 13 damage, 133% multiplier.
+            // (13 * 133) / 100 = 17 Damage
+            // Example: 13 damage, 75% multiplier
+            // (13 * 75) / 100 = 9.75 (10) Damage
+            LOCAL.ARELEMDAMAGE = <EVAL <OBJ.DAM.LO> * <LOCAL.ELEMMULTIPLIER> / 100>
+            // Now apply the modifier for this AR piece by doing (<ARELEM> * <piece>) / 100
+            LOCAL.ELEMDAMAGE += <EVAL <LOCAL.ARELEMDAMAGE> * CAED_helm / 100>
+         ELSE
+            // We did not find this piece, so we just flat out apply the proportional damage for this helm.
+            LOCAL.ELEMDAMAGE += <EVAL <OBJ.DAM.LO> * CAED_helm / 100>
+         ENDIF
+         // ==========
+         //   COLLAR
+         // ==========
+         IF (<ACT.FINDLAYER(layer_collar)>)
+            // We found this piece, so we need to work out how MUCH damage we're applying.
+            // Just to be safe, make sure LOCAL.ARELEMDAMAGE is reset
+            LOCAL.ARELEMDAMAGE = 0
+            CALL f_combat_getdamagetypes <OBJ.TAG0.DMGTYPE.DEALS> <ACT.FINDLAYER(layer_collar).MORE2> <ACT.FINDLAYER(layer_collar).MORE2>
+            // We now need to get our damage.
+            // <EVAL <DAM.LO> * <LOCAL.MULTIPLIER>> gives us the damage by the multiplier... But multiplied by 100.
+            // To get our real damage, we then divide that by 100.
+            // Example: 13 damage, 133% multiplier.
+            // (13 * 133) / 100 = 17 Damage
+            // Example: 13 damage, 75% multiplier
+            // (13 * 75) / 100 = 9.75 (10) Damage
+            LOCAL.ARELEMDAMAGE = <EVAL <OBJ.DAM.LO> * <LOCAL.ELEMMULTIPLIER> / 100>
+            // Now apply the modifier for this AR piece by doing (<ARELEM> * <piece>) / 100
+            LOCAL.ELEMDAMAGE += <EVAL <LOCAL.ARELEMDAMAGE> * CAED_collar / 100>
+         ELSE
+            // We did not find this piece, so we just flat out apply the proportional damage for this helm.
+            LOCAL.ELEMDAMAGE += <EVAL <OBJ.DAM.LO> * CAED_collar / 100>
+         ENDIF
+         // ==========
+         //    ARMS
+         // ==========
+         IF (<ACT.FINDLAYER(layer_arms)>)
+            // We found this piece, so we need to work out how MUCH damage we're applying.
+            // Just to be safe, make sure LOCAL.ARELEMDAMAGE is reset
+            LOCAL.ARELEMDAMAGE = 0
+            CALL f_combat_getdamagetypes <OBJ.TAG0.DMGTYPE.DEALS> <ACT.FINDLAYER(layer_arms).MORE2> <ACT.FINDLAYER(layer_arms).MORE2>
+            // We now need to get our damage.
+            // <EVAL <DAM.LO> * <LOCAL.MULTIPLIER>> gives us the damage by the multiplier... But multiplied by 100.
+            // To get our real damage, we then divide that by 100.
+            // Example: 13 damage, 133% multiplier.
+            // (13 * 133) / 100 = 17 Damage
+            // Example: 13 damage, 75% multiplier
+            // (13 * 75) / 100 = 9.75 (10) Damage
+            LOCAL.ARELEMDAMAGE = <EVAL <OBJ.DAM.LO> * <LOCAL.ELEMMULTIPLIER> / 100>
+            // Now apply the modifier for this AR piece by doing (<ARELEM> * <piece>) / 100
+            LOCAL.ELEMDAMAGE += <EVAL <LOCAL.ARELEMDAMAGE> * CAED_arms / 100>
+         ELSE
+            // We did not find this piece, so we just flat out apply the proportional damage for this helm.
+            LOCAL.ELEMDAMAGE += <EVAL <OBJ.DAM.LO> * CAED_arms / 100>
+         ENDIF
+         // ==========
+         //   GLOVES
+         // ==========
+         IF (<ACT.FINDLAYER(layer_gloves)>)
+            // We found this piece, so we need to work out how MUCH damage we're applying.
+            // Just to be safe, make sure LOCAL.ARELEMDAMAGE is reset
+            LOCAL.ARELEMDAMAGE = 0
+            CALL f_combat_getdamagetypes <OBJ.TAG0.DMGTYPE.DEALS> <ACT.FINDLAYER(layer_gloves).MORE2> <ACT.FINDLAYER(layer_gloves).MORE2>
+            // We now need to get our damage.
+            // <EVAL <DAM.LO> * <LOCAL.MULTIPLIER>> gives us the damage by the multiplier... But multiplied by 100.
+            // To get our real damage, we then divide that by 100.
+            // Example: 13 damage, 133% multiplier.
+            // (13 * 133) / 100 = 17 Damage
+            // Example: 13 damage, 75% multiplier
+            // (13 * 75) / 100 = 9.75 (10) Damage
+            LOCAL.ARELEMDAMAGE = <EVAL <OBJ.DAM.LO> * <LOCAL.ELEMMULTIPLIER> / 100>
+            // Now apply the modifier for this AR piece by doing (<ARELEM> * <piece>) / 100
+            LOCAL.ELEMDAMAGE += <EVAL <LOCAL.ARELEMDAMAGE> * CAED_gloves / 100>
+         ELSE
+            // We did not find this piece, so we just flat out apply the proportional damage for this helm.
+            LOCAL.ELEMDAMAGE += <EVAL <OBJ.DAM.LO> * CAED_gloves / 100>
+         ENDIF
+         // ==========
+         //   CHEST
+         // ==========
+         IF (<ACT.FINDLAYER(layer_chest)>)
+            // We found this piece, so we need to work out how MUCH damage we're applying.
+            // Just to be safe, make sure LOCAL.ARELEMDAMAGE is reset
+            LOCAL.ARELEMDAMAGE = 0
+            CALL f_combat_getdamagetypes <OBJ.TAG0.DMGTYPE.DEALS> <ACT.FINDLAYER(layer_chest).MORE2> <ACT.FINDLAYER(layer_chest).MORE2>
+            // We now need to get our damage.
+            // <EVAL <DAM.LO> * <LOCAL.MULTIPLIER>> gives us the damage by the multiplier... But multiplied by 100.
+            // To get our real damage, we then divide that by 100.
+            // Example: 13 damage, 133% multiplier.
+            // (13 * 133) / 100 = 17 Damage
+            // Example: 13 damage, 75% multiplier
+            // (13 * 75) / 100 = 9.75 (10) Damage
+            LOCAL.ARELEMDAMAGE = <EVAL <OBJ.DAM.LO> * <LOCAL.ELEMMULTIPLIER> / 100>
+            // Now apply the modifier for this AR piece by doing (<ARELEM> * <piece>) / 100
+            LOCAL.ELEMDAMAGE += <EVAL <LOCAL.ARELEMDAMAGE> * CAED_chest / 100>
+         ELSE
+            // We did not find this piece, so we just flat out apply the proportional damage for this helm.
+            LOCAL.ELEMDAMAGE += <EVAL <OBJ.DAM.LO> * CAED_chest / 100>
+         ENDIF
+         // ==========
+         //    LEGS
+         // ==========
+         IF (<ACT.FINDLAYER(layer_legs)>)
+            // We found this piece, so we need to work out how MUCH damage we're applying.
+            // Just to be safe, make sure LOCAL.ARELEMDAMAGE is reset
+            LOCAL.ARELEMDAMAGE = 0
+            CALL f_combat_getdamagetypes <OBJ.TAG0.DMGTYPE.DEALS> <ACT.FINDLAYER(layer_legs).MORE2> <ACT.FINDLAYER(layer_legs).MORE2>
+            // We now need to get our damage.
+            // <EVAL <DAM.LO> * <LOCAL.MULTIPLIER>> gives us the damage by the multiplier... But multiplied by 100.
+            // To get our real damage, we then divide that by 100.
+            // Example: 13 damage, 133% multiplier.
+            // (13 * 133) / 100 = 17 Damage
+            // Example: 13 damage, 75% multiplier
+            // (13 * 75) / 100 = 9.75 (10) Damage
+            LOCAL.ARELEMDAMAGE = <EVAL <OBJ.DAM.LO> * <LOCAL.ELEMMULTIPLIER> / 100>
+            // Now apply the modifier for this AR piece by doing (<ARELEM> * <piece>) / 100
+            LOCAL.ELEMDAMAGE += <EVAL <LOCAL.ARELEMDAMAGE> * CAED_legs / 100>
+         ELSE
+            // We did not find this piece, so we just flat out apply the proportional damage for this helm.
+            LOCAL.ELEMDAMAGE += <EVAL <OBJ.DAM.LO> * CAED_legs / 100>
+         ENDIF            
+      ENDIF
+   // Okay, so it's an NPC.SIMPLE!
+   ELSE
+      // Find if the NPC has a weakness to anything in the weapon first...
+      IF (<OBJ.FINDLAYER(<LOCAL.WEAPONLAYER>).MORE2> > 0)
+         CALL f_combat_getdamagetypes <OBJ.TAG0.DMGTYPE.DEALS> <ACT.TAG0.DMGTYPE.WEAKNESS> <ACT.TAG0.DMGTYPE.STRENGTH>
+         // We now need to get our damage.
+         // <EVAL <DAM.LO> * <LOCAL.MULTIPLIER>> gives us the damage by the multiplier... But multiplied by 100.
+         // To get our real damage, we then divide that by 100.
+         // Example: 13 damage, 133% multiplier.
+         // (13 * 133) / 100 = 17 Damage
+         // Example: 13 damage, 75% multiplier
+         // (13 * 75) / 100 = 9.75 (10) Damage
+         LOCAL.ELEMDAMAGE += <EVAL <OBJ.DAM.LO> * <LOCAL.ELEMMULTIPLIER> / 100>
+      ENDIF
+   ENDIF
+ENDIF
+
+// Gets damage types.
+// Retrieves:
+// - LOCAL.ELEMMULTIPLIER (The damage multiplier as a percentage between 0-100%)
+// Note: This is utilised if the attacker is HOLDING A WEAPON
+// <ARGN1> = Attack Flags
+// <ARGN2> = Defense Weakness Flags
+// <ARGN3> = Defense Strength Flags
+//
+// This could be much improved if ARGN4 was a thing...
+[FUNCTION f_combat_getdamagetypes]
+   CALL f_damage_type_quantity <ARGN1> // Find the total number of damage types
+   LOCAL.TOTAL_DMGTYPES = <LOCAL.QUANTITY>
+   CALL f_damage_type_comparator <ARGN1> <ARGN2> // Find the number the entity has a weakness to
+   LOCAL.DOUBL_DMGTYPES = <LOCAL.QUANTITY>
+   CALL f_damage_type_comparator <ARGN1> <ARGN3> // Find the number the entity has a strength to
+   LOCAL.INVUL_DMGTYPES = <LOCAL.QUANTITY>
+   LOCAL.NORML_DMGTYPES = <EVAL <LOCAL.TOTAL_DMGTYPES> - <LOCAL.DOUBL_DMGTYPES> - <LOCAL.INVUL_DMGTYPES>> // Find the number it takes normal damage from
+   // Now we can calculate the multiplier
+   // We do (Base * 10000) because Sphere won't work with decimals...
+   LOCAL.BASE_DMGPERCENT = <EVAL <LOCAL.TOTAL_DMGTYPES> * 100>
+   // ...and do the (Final * 100).
+   // In this way, when we do (Base / Final), we end up with a whole integer percentage.
+   // Example:
+   // We have 6 root modifiers on a weapon.
+   // Two of these are doubled due to weaknesses.
+   // None are negated as there are no strengths.
+   // So our total modifiers are 8 (We're doing MORE than the base element modifier).
+   // (8 / 6) gives us our modifier as a decimal, which is 1.33, but Sphere can't work with decimals...
+   // So if we do (80000 / 600), we end up with 133. A nice integer percentage!
+   // Example 2:
+   // We have 4 root modifiers on a weapon.
+   // None of these are doubled due to weaknesses.
+   // 3 are negated as there are no strengths.
+   // So our total modifiers are 1 (3 are wiped out).
+   // (1 / 4) gives us our modifier as a decimal, which is 0.25, but Sphere can't work with decimals...
+   // So if we do (10000 / 400), we end up with 25. A nice integer percentage!   
+   LOCAL.FINL_DMGPERCENT = <EVAL <EVAL <LOCAL.DOUBLE_DMGTYPES> + <LOCAL.NORML_DMGTYPES>> * 10000>
+   // Now we do that division sum we mentioned to get the multiplier
+   // This is returned thanks to CALL
+   IF (<LOCAL.BASE_DMGPERCENT> > 0)
+      LOCAL.ELEMMULTIPLIER = <EVAL <LOCAL.FINL_DMGPERCENT> / <LOCAL.BASE_DMGPERCENT>>
+   ELSE
+      LOCAL.ELEMMULTIPLIER = 0
+   ENDIF
+   
+   

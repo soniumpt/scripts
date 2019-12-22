@@ -1,0 +1,1549 @@
+//****************************************************************************
+//SPHERE by : Menasoft �1997-2000
+//www.sphereserver.com
+// All SPHERE script files and formats are copyright Menasoft & Partners.
+// This file may be freely edited for personal use, but may not be distributed
+// in whole or in part, in any format without express written permission from
+// Menasoft & Partners.  All donations and contributions
+// become the property of Menasoft & Partners.
+//****************************************************************************
+// FILE LAST UPDATED: Saturday, June 3, 2000
+//
+VERSION=0.54
+
+// 21-07-03 - Wigifer - Phasing - Tested
+// 23-10-03 Stamina regen on val increased - Tiff
+// 12-11-03 Agapite ar: Wearable with +5000 karma and less than 3 kills, Shadow: 10 kill requirement - Tiff
+// 12-11-03 Verite regen increased a tad - Tiffany
+// 07-03-04 Fixed e_agapite_ar and e_shadow_ar to calculate the tag so the event doesn't get stuck on - Wren
+// 28-04-04 Increased Bloodrock regen speed...was 90 seconds...now 60 seconds...might need more. - Wren
+// 20-08-04 Increased Bloodrock regen speed...was 60 seconds...now 45 seconds; heals 3 instead of 2 as well - Wren
+// Phasing time reverted back to BFUO (* 5), on TUP (* 3) - Ray
+
+
+//********************************************************************//
+//                               GOLD                               //
+//********************************************************************//
+[FUNCTION f_gold_effect]
+TIMER=timer_b_gold
+   VAR.PER_ACT    = <CONT.ACT>
+   CONT.ACT    = <CONT.FINDLAYER.layer_hand1.UID>
+   if ! ( 0<CONT.ACT.UID> )
+     CONT.ACT    = <CONT.FINDLAYER.layer_hand2.UID>
+   endif
+   if ( <CONT.ACT.ISWEAPON> && (<CONT.ACT.TDATA1> == mat_gold) )
+      CONT.TAKE_MANA (<CONT.INT> / 3)
+   endif
+   CONT.ACT    = <VAR.PER_ACT>
+
+
+
+ON=@EQUIP
+TIMER=timer_b_gold
+ON=@Timer
+    if <cont>
+        f_gold_effect
+        return 1
+    endif
+
+//********************************************************************//
+//                              SHADOW                                //
+//********************************************************************//
+[FUNCTION shadow_equip]
+   SRC.EVENTS +e_shadow_ar
+   RETURN 0
+   
+[FUNCTION shadow_equiptest]
+   IF (<SRC.KILLS> < 10)
+      SRC.emote rejects the armor.
+      SRC.effect=3,i_fx_curse,6,15,1
+      SRC.SOUND snd_SPELL_CURSE
+      SRC.SYSMESSAGE You are too pure of mind to wear this!
+      RETURN 1
+   ENDIF
+   RETURN 0
+   
+[FUNCTION shadow_unequip]
+  SRC.EVENTS -e_shadow_ar
+  RETURN 0
+
+[FUNCTION shadow_dclick]
+  RETURN 0
+
+[FUNCTION shadow_timer]
+  TIMER = -1
+  RETURN 1
+
+[FUNCTION shadow_effect]
+  RETURN 0
+
+[EVENTS e_shadow_ar]
+ON=@gethit
+if ( <kills> > 10 )
+  LOCAL.SHADOW_AR=0
+  IF <FINDID.i_platemail_chest_shadow.uid>
+     IF (<FINDID.i_platemail_chest_shadow.CONT.UID>=<UID>)
+           LOCAL.SHADOW_AR=(<EVAL <LOCAL.SHADOW_AR> + 5>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_platemail_arms_shadow.uid> 
+     IF (<FINDID.i_platemail_arms_shadow.CONT.UID>=<UID>)
+        LOCAL.SHADOW_AR=(<EVAL <LOCAL.SHADOW_AR> + 1>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_PLATEMAIL_leggings_shadow.uid> 
+     IF (<FINDID.i_PLATEMAIL_leggings_shadow.CONT.UID>=<UID>)
+        LOCAL.SHADOW_AR=(<EVAL <LOCAL.SHADOW_AR> + 2>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_PLATEMAIL_HELM_shadow.uid> 
+     IF (<FINDID.i_PLATEMAIL_HELM_shadow.CONT.UID>=<UID>)
+        LOCAL.SHADOW_AR=(<EVAL <LOCAL.SHADOW_AR> + 1>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_PLATEMAIL_GORGET_shadow.uid> 
+     IF (<FINDID.i_PLATEMAIL_GORGET_shadow.CONT.UID>=<UID>)
+        LOCAL.SHADOW_AR=(<EVAL <LOCAL.SHADOW_AR> + 1>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_PLATEMAIL_gloves_shadow.uid> 
+     IF (<FINDID.i_PLATEMAIL_gloves_shadow.CONT.UID>=<UID>)
+        LOCAL.SHADOW_AR=(<EVAL <LOCAL.SHADOW_AR> + 1>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_armor_female_plate_shadow.uid> 
+     IF (<FINDID.i_armor_female_plate_shadow.CONT.UID>=<UID>)
+        LOCAL.SHADOW_AR=(<EVAL <LOCAL.SHADOW_AR> + 5>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_chainmail_coif_shadow.uid> 
+     IF (<FINDID.i_chainmail_coif_shadow.CONT.UID>=<UID>)
+        LOCAL.SHADOW_AR=(<EVAL <LOCAL.SHADOW_AR> + 1>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_chainmail_leggings_shadow.uid> 
+     IF (<FINDID.i_chainmail_leggings_shadow.CONT.UID>=<UID>)
+        LOCAL.SHADOW_AR=(<EVAL <LOCAL.SHADOW_AR> + 1>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_chainmail_tunic_shadow.uid> 
+     IF (<FINDID.i_chainmail_tunic_shadow.CONT.UID>=<UID>)
+        LOCAL.SHADOW_AR=(<EVAL <LOCAL.SHADOW_AR> + 3>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_ringmail_leggings_shadow.uid> 
+     IF (<FINDID.i_ringmail_leggings_shadow.CONT.UID>=<UID>)
+        LOCAL.SHADOW_AR=(<EVAL <LOCAL.SHADOW_AR> + 1>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_ringmail_sleeves_shadow.uid> 
+     IF (<FINDID.i_ringmail_sleeves_shadow.CONT.UID>=<UID>)
+        LOCAL.SHADOW_AR=(<EVAL <LOCAL.SHADOW_AR> + 1>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_ringmail_gloves_shadow.uid> 
+     IF (<FINDID.i_ringmail_gloves_shadow.CONT.UID>=<UID>)
+        LOCAL.SHADOW_AR=(<EVAL <LOCAL.SHADOW_AR> + 1>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_ringmail_tunic_shadow.uid> 
+     IF (<FINDID.i_shadow_RINGMAIL_TUNIC.CONT.UID>=<UID>)
+        LOCAL.SHADOW_AR=(<EVAL <LOCAL.SHADOW_AR> + 2>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_shield_buckler_shadow.uid> 
+     IF (<FINDID.i_shield_buckler_shadow.CONT.UID>=<UID>)
+        LOCAL.SHADOW_AR=(<EVAL <LOCAL.SHADOW_AR> + 2>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_SHIELD_heater_shadow.uid> 
+     IF (<FINDID.i_SHIELD_heater_shadow.CONT.UID>=<UID>)
+        LOCAL.SHADOW_AR=(<EVAL <LOCAL.SHADOW_AR> + 5>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_shield_round_small_shadow.uid> 
+     IF (<FINDID.i_shield_round_small_shadow.CONT.UID>=<UID>)
+        LOCAL.SHADOW_AR=(<EVAL <LOCAL.SHADOW_AR> + 3>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_helm_closed_shadow.uid> 
+     IF (<FINDID.i_helm_closed_shadow.CONT.UID>=<UID>)
+        LOCAL.SHADOW_AR=(<EVAL <LOCAL.SHADOW_AR> + 1>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_helm_open_shadow.uid> 
+     IF (<FINDID.i_helm_open_shadow.CONT.UID>=<UID>)
+        LOCAL.SHADOW_AR=(<EVAL <LOCAL.SHADOW_AR> + 1>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_bascinet_shadow.uid> 
+     IF (<FINDID.i_bascinet_shadow.CONT.UID>=<UID>)
+        LOCAL.SHADOW_AR=(<EVAL <LOCAL.SHADOW_AR> + 1>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_helm_nose_shadow.uid> 
+     IF (<FINDID.i_helm_nose_shadow.CONT.UID>=<UID>)
+        LOCAL.SHADOW_AR=(<EVAL <LOCAL.SHADOW_AR> + 1>)
+     ENDIF
+  ENDIF
+
+  if (<EVAL <LOCAL.SHADOW_AR>> == 0)
+      LOCAL.SHADOW_AR=
+      EVENTS -e_shadow_ar
+      return 0
+  elseif (<EVAL <LOCAL.SHADOW_AR>> < 2)
+        if ( rand( 80 ) < 2 )
+        EFFECT=1,i_fx_glow_spike,6,15,1
+        src.message "The shadows protect <name>"
+        sysmessage "The Shadows protect you
+        return 1
+        endif
+  elseif (<EVAL <LOCAL.SHADOW_AR>> < 5)
+        if ( rand( 70 ) < 2 )
+        EFFECT=1,i_fx_glow_spike,6,15,1
+        src.message "The shadows protect <name>"
+        sysmessage "The Shadows protect you
+        return 1
+        endif
+  elseif (<EVAL <LOCAL.SHADOW_AR>> < 8)
+        if ( rand( 55 ) < 2 )
+        EFFECT=1,i_fx_glow_spike,6,15,1
+        src.message "The shadows protect <name>"
+        sysmessage "The Shadows protect you
+        return 1
+        endif
+  elseif (<EVAL <LOCAL.SHADOW_AR>> < 11)
+        if ( rand( 40 ) < 2 )
+        EFFECT=1,i_fx_glow_spike,6,15,1
+        src.message "The shadows protect <name>"
+        sysmessage "The Shadows protect you
+        return 1
+        endif
+  elseif (<EVAL <LOCAL.SHADOW_AR>> < 13)
+        if ( rand( 30 ) < 2 )
+        EFFECT=1,i_fx_glow_spike,6,15,1
+        src.message "The shadows protect <name>"
+        sysMessage "The Shadows protect you
+        return 1
+        endif
+  elseif (<EVAL <LOCAL.SHADOW_AR>> < 15)
+        if ( rand( 20 ) < 2 )
+        EFFECT=1,i_fx_glow_spike,6,15,1
+        src.message "The shadows protect <name>"
+        sysMessage "The Shadows protect you
+        return 1
+        endif
+  elseif (<EVAL <LOCAL.SHADOW_AR>> < 25)
+        if ( rand( 16 ) < 2 )
+        EFFECT=1,i_fx_glow_spike,6,15,1
+        src.message "The shadows protect <name>"
+        sysMessage "The Shadows protect you
+        return 1
+        endif
+  else
+    return 0
+  ENDIF       
+ENDIF
+
+
+
+//********************************************************************//
+//                              ENTIT                                 //
+//********************************************************************//
+[EVENTS e_entit_ar]
+ON=@spelleffect
+  tag.entitar=
+  IF <FINDID.i_platemail_gorget_entit.uid>
+     IF (<FINDID.i_platemail_gorget_entit.CONT.UID>=<UID>)
+        tag.entitar=<EVAL (0<tag.entitar> + 1)>
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_platemail_gloves_entit.uid> 
+     IF (<FINDID.i_platemail_gloves_entit.CONT.UID>=<UID>)
+        tag.entitar=<EVAL (0<tag.entitar> + 2)>
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_platemail_arms_entit.uid> 
+     IF (<FINDID.i_platemail_arms_entit.CONT.UID>=<UID>)
+        tag.entitar=<EVAL (0<tag.entitar> + 3)>
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_platemail_leggings_entit.uid> 
+     IF (<FINDID.i_platemail_leggings_entit.CONT.UID>=<UID>)
+        tag.entitar=<EVAL (0<tag.entitar> + 6)>
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_platemail_chest_entit.uid> 
+     IF (<FINDID.i_platemail_chest_entit.CONT.UID>=<UID>)
+        tag.entitar=<EVAL (0<tag.entitar> + 9)>
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_armor_female_plate_entit.uid> 
+     IF (<FINDID.i_armor_female_plate_entit.CONT.UID>=<UID>)
+        tag.entitar=<EVAL (0<tag.entitar> + 8)>
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_bascinet_entit.uid> 
+     IF (<FINDID.i_bascinet_entit.CONT.UID>=<UID>)
+        tag.entitar=<EVAL (0<tag.entitar> + 3)>
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_helm_closed_entit.uid> 
+     IF (<FINDID.i_helm_closed_entit.CONT.UID>=<UID>)
+        tag.entitar=<EVAL (0<tag.entitar> + 3)>
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_helm_open_entit.uid> 
+     IF (<FINDID.i_helm_open_entit.CONT.UID>=<UID>)
+        tag.entitar=<EVAL (0<tag.entitar> + 3)>
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_helm_nose_entit.uid> 
+     IF (<FINDID.i_helm_nose_entit.CONT.UID>=<UID>)
+        tag.entitar=<EVAL (0<tag.entitar> + 3)>
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_platemail_helm_entit.uid> 
+     IF (<FINDID.i_platemail_helm_entit.CONT.UID>=<UID>)
+        tag.entitar=<EVAL (0<tag.entitar> + 3)>
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_shield_heater_entit.uid> 
+     IF (<FINDID.i_shield_heater_entit.CONT.UID>=<UID>)
+        tag.entitar=<EVAL (0<tag.entitar> + 7)>
+     ENDIF
+  ENDIF
+
+  if (<EVAL <tag.entitar>> == 0)
+      tag.entitar=
+      EVENTS -e_entit_ar
+      return 0
+  elseif (<EVAL <tag.entitar>> < 2)
+        if ( rand( 100 ) < 2 )
+        EFFECT=1,i_fx_glow_spike,6,15,1
+        src.message "<name>'s armor absorbs the spell"
+        sysmessage "Your armor absorbs the spell"
+        return 1
+        endif
+  elseif (<EVAL <tag.entitar>> < 5)
+        if ( rand( 80 ) < 2 )
+        EFFECT=1,i_fx_glow_spike,6,15,1
+        src.message "<name>'s armor absorbs the spell"
+        sysmessage "Your armor absorbs the spell"
+        return 1
+        endif
+  elseif (<EVAL <tag.entitar>> < 8)
+        if ( rand( 50 ) < 2 )
+        EFFECT=1,i_fx_glow_spike,6,15,1
+        src.message "<name>'s armor absorbs the spell"
+        sysmessage "Your armor absorbs the spell"
+        return 1
+        endif
+  elseif (<EVAL <tag.entitar>> < 11)
+        if ( rand( 30 ) < 2 )
+        EFFECT=1,i_fx_glow_spike,6,15,1
+        src.message "<name>'s armor absorbs the spell"
+        sysmessage "Your armor absorbs the spell"
+        return 1
+        endif
+  elseif (<EVAL <tag.entitar>> < 15)
+        if ( rand( 20 ) < 2 )
+        EFFECT=1,i_fx_glow_spike,6,15,1
+        src.message "<name>'s armor absorbs the spell"
+        sysmessage "Your armor absorbs the spell"
+        return 1
+        endif
+  elseif (<EVAL <tag.entitar>> < 18)
+        if ( rand( 14 ) < 2 )
+        EFFECT=1,i_fx_glow_spike,6,15,1
+        src.message "<name>'s armor absorbs the spell"
+        sysmessage "Your armor absorbs the spell"
+        return 1
+        endif
+  elseif (<EVAL <tag.entitar>> < 20)
+        if ( rand( 6 ) < 2 )
+        EFFECT=1,i_fx_glow_spike,6,15,1
+        src.message "<name>'s armor absorbs the spell"
+        sysmessage "Your armor absorbs the spell"
+        return 1
+        endif
+  elseif (<EVAL <tag.entitar>> < 25)
+        if ( rand( 3 ) < 2 )
+        EFFECT=1,i_fx_glow_spike,6,15,1
+        src.message "<name>'s armor absorbs the spell"
+        sysmessage "Your armor absorbs the spell"
+        return 1
+        endif
+  elseif (<EVAL <tag.entitar>> < 40)
+        EFFECT=1,i_fx_glow_spike,6,15,1
+        src.message "<name>'s armor absorbs the spell"
+        sysmessage "Your armor absorbs the spell"
+        return 1       
+  else
+    return 0
+  ENDIF   
+
+ON=@SpellCast
+  tag.entitar=
+  IF <FINDID.i_platemail_gorget_entit.uid>
+     IF (<FINDID.i_platemail_gorget_entit.CONT.UID>=<UID>)
+        tag.entitar=(<EVAL <tag0.entitar> + 1>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_platemail_gloves_entit.uid> 
+     IF (<FINDID.i_platemail_gloves_entit.CONT.UID>=<UID>)
+        tag.entitar=(<EVAL <tag0.entitar> + 2>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_platemail_arms_entit.uid> 
+     IF (<FINDID.i_platemail_arms_entit.CONT.UID>=<UID>)
+        tag.entitar=(<EVAL <tag0.entitar> + 3>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_platemail_leggings_entit.uid> 
+     IF (<FINDID.i_platemail_leggings_entit.CONT.UID>=<UID>)
+        tag.entitar=(<EVAL <tag0.entitar> + 6>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_platemail_chest_entit.uid> 
+     IF (<FINDID.i_platemail_chest_entit.CONT.UID>=<UID>)
+        tag.entitar=(<EVAL <tag0.entitar> + 9>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_armor_female_plate_entit.uid> 
+     IF (<FINDID.i_armor_female_plate_entit.CONT.UID>=<UID>)
+        tag.entitar=(<EVAL <tag0.entitar> + 8>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_bascinet_entit.uid> 
+     IF (<FINDID.i_bascinet_entit.CONT.UID>=<UID>)
+        tag.entitar=(<EVAL <tag0.entitar> + 3>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_helm_closed_entit.uid> 
+     IF (<FINDID.i_helm_closed_entit.CONT.UID>=<UID>)
+        tag.entitar=(<EVAL <tag0.entitar> + 3>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_helm_open_entit.uid> 
+     IF (<FINDID.i_helm_open_entit.CONT.UID>=<UID>)
+        tag.entitar=(<EVAL <tag0.entitar> + 3>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_helm_nose_entit.uid> 
+     IF (<FINDID.i_helm_nose_entit.CONT.UID>=<UID>)
+        tag.entitar=(<EVAL <tag0.entitar> + 3>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_platemail_helm_entit.uid> 
+     IF (<FINDID.i_platemail_helm_entit.CONT.UID>=<UID>)
+        tag.entitar=(<EVAL <tag0.entitar> + 3>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_shield_buckler_entit.uid> 
+     IF (<FINDID.i_shield_heater_entit.CONT.UID>=<UID>)
+        tag.entitar=(<EVAL <tag0.entitar> + 3>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_shield_round_small_entit.uid> 
+     IF (<FINDID.i_shield_heater_entit.CONT.UID>=<UID>)
+        tag.entitar=(<EVAL <tag0.entitar> + 5>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_shield_round_entit.uid> 
+     IF (<FINDID.i_shield_heater_entit.CONT.UID>=<UID>)
+        tag.entitar=(<EVAL <tag0.entitar> + 6>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_shield_kite_entit.uid> 
+     IF (<FINDID.i_shield_heater_entit.CONT.UID>=<UID>)
+        tag.entitar=(<EVAL <tag0.entitar> + 6>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_shield_heater_entit.uid> 
+     IF (<FINDID.i_shield_heater_entit.CONT.UID>=<UID>)
+        tag.entitar=(<EVAL <tag0.entitar> + 7>)
+     ENDIF
+  ENDIF
+
+  if (<EVAL <tag.entitar>> == 0)
+      EVENTS -e_entit_ar
+      return 0
+  elseif (<EVAL <tag.entitar>> < 2)
+        if ( rand( 100 ) < 2 )
+        EFFECT=1,i_fx_glow_spike,6,15,1
+        sysmessage "Your armor absorbs the spell"
+        return 1
+        endif
+  elseif (<EVAL <tag.entitar>> < 5)
+        if ( rand( 80 ) < 2 )
+        EFFECT=1,i_fx_glow_spike,6,15,1
+        sysmessage "Your armor absorbs the spell"
+        return 1
+        endif
+  elseif (<EVAL <tag.entitar>> < 8)
+        if ( rand( 50 ) < 2 )
+        EFFECT=1,i_fx_glow_spike,6,15,1
+        sysmessage "Your armor absorbs the spell"
+        return 1
+        endif
+  elseif (<EVAL <tag.entitar>> < 11)
+        if ( rand( 30 ) < 2 )
+        EFFECT=1,i_fx_glow_spike,6,15,1
+        sysmessage "Your armor absorbs the spell"
+        return 1
+        endif
+  elseif (<EVAL <tag.entitar>> < 15)
+        if ( rand( 20 ) < 2 )
+        EFFECT=1,i_fx_glow_spike,6,15,1
+        sysmessage "Your armor absorbs the spell"
+        return 1
+        endif
+  elseif (<EVAL <tag.entitar>> < 18)
+        if ( rand( 14 ) < 2 )
+        EFFECT=1,i_fx_glow_spike,6,15,1
+        sysmessage "Your armor absorbs the spell"
+        return 1
+        endif
+  elseif (<EVAL <tag.entitar>> < 20)
+        if ( rand( 6 ) < 2 )
+        EFFECT=1,i_fx_glow_spike,6,15,1
+        sysmessage "Your armor absorbs the spell"
+        return 1
+        endif
+  elseif (<EVAL <tag.entitar>> < 25)
+        if ( rand( 3 ) < 2 )
+        EFFECT=1,i_fx_glow_spike,6,15,1
+        sysmessage "Your armor absorbs the spell"
+        return 1
+        endif
+  elseif (<EVAL <tag.entitar>> < 40)
+        EFFECT=1,i_fx_glow_spike,6,15,1
+        sysmessage "Your armor absorbs the spell"
+        return 1       
+  else
+    return 0
+  ENDIF
+
+
+
+//********************************************************************//
+//                            BLOODROCK                               //
+//********************************************************************//
+[FUNCTION f_bloodrock_effect]
+TIMER=40
+    if ( <cont.hits> < <cont.str> )
+         cont.sysmessage "you feel the bloodrock restore your health"
+        effect=3,i_fx_HEAL_EFFECT,6,15,1
+        SOUND snd_SPELL_HEAL
+        cont.hits = <eval(<CONT.hits> + 4)>
+            // check again later
+    endif
+
+
+[FUNCTION f_armour_bloodrock_equip]
+  SRC.SYSMESSAGE +<eval (<WEIGHT>/28)> life.
+  SRC.f_extra_life_equip <eval (<WEIGHT>/28)>
+
+
+[FUNCTION f_armour_bloodrock_unequip]
+  SRC.SYSMESSAGE -<eval (<WEIGHT>/28)> life.
+  SRC.f_extra_life_unequip <eval (<WEIGHT>/28)>
+
+
+
+//********************************************************************//
+//                               VERITE                               //
+//********************************************************************//
+[FUNCTION f_verite_effect]
+TIMER=40 // 43
+    if ( <cont.mana> < 2 )
+        cont.sysmessage The <typedef.name> regenerates 10 mana.
+        effect=3,i_fx_BLESS_EFFECT,6,15,1
+        SOUND snd_SPELL_BLESS
+        //cont.mana = <eval(<CONT.mana> + 10)>
+        cont.mana = <eval(<CONT.mana> + 10)>
+    elseif ( <cont.mana> < 5 )
+        cont.sysmessage The <typedef.name> regenerates 9 mana.
+        effect=3,i_fx_BLESS_EFFECT,6,15,1
+        SOUND snd_SPELL_BLESS
+        //cont.mana = <eval(<CONT.mana> + 9)>
+        cont.mana = <eval(<CONT.mana> + 9)>
+    elseif ( <cont.mana> < 15 )
+        cont.sysmessage The <typedef.name> regenerates 8 mana.
+        effect=3,i_fx_BLESS_EFFECT,6,15,1
+        SOUND snd_SPELL_BLESS
+        //cont.mana = <eval(<CONT.mana> + 8)>
+        cont.mana = <eval(<CONT.mana> + 8>
+    elseif ( <cont.mana> < 35 )
+        cont.sysmessage The <typedef.name> regenerates 7 mana.
+        effect=3,i_fx_BLESS_EFFECT,6,15,1
+        SOUND snd_SPELL_BLESS
+        //cont.mana = <eval(<CONT.mana> + 7)>
+        cont.mana = <eval(<CONT.mana> + 7)>
+    elseif ( <cont.mana> < <eval(<cont.int> - 25)> )
+        cont.sysmessage The <typedef.name> regenerates 6 mana.
+        effect=3,i_fx_BLESS_EFFECT,6,15,1
+        SOUND snd_SPELL_BLESS
+        //cont.mana = <eval(<CONT.mana> + 6)>
+        cont.mana = <eval(<CONT.mana> + 6)>
+    endif
+
+
+
+//********************************************************************//
+//                              STRONGHOLD                            //
+//********************************************************************//
+[FUNCTION stronghold_sysmessage]
+   SYSMESSAGE @91 <args>
+
+[FUNCTION stronghold_equip]
+   EQUIPCANCEL 0
+   if ( <CONT.NPC> )
+      return 0
+   endif
+   SRC.SYSMESSAGE @91 The blessing of the Angels envelops you.
+   TIMER    = 11
+   return 0
+
+[FUNCTION stronghold_unequip]
+   if ( <CONT.NPC> )
+      return 0
+   endif
+   TIMER    = -1
+
+[FUNCTION stronghold_unequip_test]
+ serv.log UNEQUIPPED
+   if ( <CONT.NPC> )
+      return 0
+   endif
+   TIMER    = -1
+   return 0
+   
+[FUNCTION stronghold_equip_test]
+   EQUIPCANCEL 0
+   if ( <CONT.NPC> )
+      return 0
+   endif
+   SRC.SYSMESSAGE @91 The blessing of the Angels envelops you.
+   return 0
+   
+[FUNCTION stronghold_dclick]
+   RETURN <DCLICKCANCEL>
+
+[FUNCTION stronghold_timer_test]
+   return 0
+   
+[FUNCTION stronghold_timer]
+   if ( <CONT> )
+      if ( <CONT.ISCHAR> )
+         TIMER    = 10
+         return 1
+      else
+         TIMER    = -1
+      endif
+   endif
+   return 0
+
+[FUNCTION stronghold_effect]
+   VAR.ARM.EFFECT.STRONGHOLD    = <eval (<VAR.ARM.EFFECT.STRONGHOLD>+(<WEIGHT>/25))>
+   return 0
+
+
+
+//********************************************************************//
+//                              VERMINARD                             //
+//********************************************************************//
+[FUNCTION verminard_sysmessage]
+   SYSMESSAGE @81 <args>
+
+[FUNCTION verminard_equip]
+   EQUIPCANCEL 0
+   if ( <CONT.NPC> )
+      return 0
+   endif
+   if ( <CONT.ISGM> )
+   elseif !( <ISIDENTIFIED> )
+      EQUIPCANCEL That is not propperly identified.
+      return 0
+   endif
+   SRC.verminard_sysmessage A dark gloom of power envelops you.
+   TIMER    = 11
+   return 0
+
+[FUNCTION verminard_unequip]
+   if ( <CONT.NPC> )
+      return 0
+   endif
+   TIMER    = -1
+   return 0
+
+[FUNCTION verminard_dclick]
+   RETURN <DCLICKCANCEL>
+
+[FUNCTION verminard_timer]
+   if ( <CONT> )
+      if ( <CONT.ISCHAR> )
+         TIMER    = 10
+         return 1
+      else
+         TIMER    = -1
+      endif
+   endif
+   return 0
+
+[FUNCTION verminard_effect]
+   VAR.ARM.EFFECT.VERMINARD    = <eval (<VAR.ARM.EFFECT.VERMINARD>+(<WEIGHT>/25))>
+   return 0
+
+
+
+//********************************************************************//
+//                              AGAPITE                               //
+//********************************************************************//
+[FUNCTION agapite_equip]
+   SRC.EVENTS +e_agapite_ar
+   RETURN 0
+   
+[FUNCTION agapite_equiptest]
+   IF (<SRC.KARMA> < 5000) || (<SRC.KILLS> > 3)
+      SRC.emote rejects its wearer.
+      SRC.effect=3,i_fx_curse,6,15,1
+      SRC.SOUND snd_SPELL_CURSE
+      SRC.SYSMESSAGE The darkness in your soul prevents you wearing this
+      RETURN 1
+   ENDIF
+   RETURN 0
+   
+[FUNCTION agapite_unequip]
+  SRC.EVENTS -e_agapite_ar
+  RETURN 0
+
+[FUNCTION agapite_dclick]
+  RETURN 0
+
+[FUNCTION agapite_timer]
+  TIMER = -1
+  RETURN 1
+
+[FUNCTION agapite_effect]
+  RETURN 0
+
+[EVENTS e_agapite_ar]
+ON=@gethit
+IF (<SRC.KARMA> >= 5000) && (<SRC.KILLS> <= 3)
+  LOCAL.AGAPITE_AR=0
+  IF <FINDID.i_platemail_chest_agapite.uid>
+     IF (<FINDID.i_platemail_chest_agapite.CONT.UID>=<UID>)
+           LOCAL.AGAPITE_AR=(<EVAL <LOCAL.AGAPITE_AR> + 5>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_platemail_arms_agapite.uid> 
+     IF (<FINDID.i_platemail_arms_agapite.CONT.UID>=<UID>)
+        LOCAL.AGAPITE_AR=(<EVAL <LOCAL.AGAPITE_AR> + 1>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_PLATEMAIL_leggings_agapite.uid> 
+     IF (<FINDID.i_PLATEMAIL_leggings_agapite.CONT.UID>=<UID>)
+        LOCAL.AGAPITE_AR=(<EVAL <LOCAL.AGAPITE_AR> + 2>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_PLATEMAIL_HELM_AGAPITE.uid> 
+     IF (<FINDID.i_PLATEMAIL_HELM_AGAPITE.CONT.UID>=<UID>)
+        LOCAL.AGAPITE_AR=(<EVAL <LOCAL.AGAPITE_AR> + 1>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_PLATEMAIL_GORGET_agapite.uid> 
+     IF (<FINDID.i_PLATEMAIL_GORGET_agapite.CONT.UID>=<UID>)
+        LOCAL.AGAPITE_AR=(<EVAL <LOCAL.AGAPITE_AR> + 1>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_PLATEMAIL_gloves_agapite.uid> 
+     IF (<FINDID.i_PLATEMAIL_gloves_agapite.CONT.UID>=<UID>)
+        LOCAL.AGAPITE_AR=(<EVAL <LOCAL.AGAPITE_AR> + 1>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_armor_female_plate_agapite.uid> 
+     IF (<FINDID.i_armor_female_plate_agapite.CONT.UID>=<UID>)
+        LOCAL.AGAPITE_AR=(<EVAL <LOCAL.AGAPITE_AR> + 5>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_chainmail_coif_agapite.uid> 
+     IF (<FINDID.i_chainmail_coif_agapite.CONT.UID>=<UID>)
+        LOCAL.AGAPITE_AR=(<EVAL <LOCAL.AGAPITE_AR> + 1>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_chainmail_leggings_agapite.uid> 
+     IF (<FINDID.i_chainmail_leggings_agapite.CONT.UID>=<UID>)
+        LOCAL.AGAPITE_AR=(<EVAL <LOCAL.AGAPITE_AR> + 1>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_chainmail_tunic_agapite.uid> 
+     IF (<FINDID.i_chainmail_tunic_agapite.CONT.UID>=<UID>)
+        LOCAL.AGAPITE_AR=(<EVAL <LOCAL.AGAPITE_AR> + 3>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_ringmail_leggings_agapite.uid> 
+     IF (<FINDID.i_ringmail_leggings_agapite.CONT.UID>=<UID>)
+        LOCAL.AGAPITE_AR=(<EVAL <LOCAL.AGAPITE_AR> + 1>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_ringmail_sleeves_agapite.uid> 
+     IF (<FINDID.i_ringmail_sleeves_agapite.CONT.UID>=<UID>)
+        LOCAL.AGAPITE_AR=(<EVAL <LOCAL.AGAPITE_AR> + 1>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_ringmail_gloves_agapite.uid> 
+     IF (<FINDID.i_ringmail_gloves_agapite.CONT.UID>=<UID>)
+        LOCAL.AGAPITE_AR=(<EVAL <LOCAL.AGAPITE_AR> + 1>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_ringmail_tunic_agapite.uid> 
+     IF (<FINDID.i_ringmail_tunic_agapite.CONT.UID>=<UID>)
+        LOCAL.AGAPITE_AR=(<EVAL <LOCAL.AGAPITE_AR> + 2>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_shield_buckler_agapite.uid> 
+     IF (<FINDID.i_shield_buckler_agapite.CONT.UID>=<UID>)
+        LOCAL.AGAPITE_AR=(<EVAL <LOCAL.AGAPITE_AR> + 2>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_SHIELD_heater_agapite.uid> 
+     IF (<FINDID.i_SHIELD_heater_agapite.CONT.UID>=<UID>)
+        LOCAL.AGAPITE_AR=(<EVAL <LOCAL.AGAPITE_AR> + 5>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_shield_round_small_agapite.uid> 
+     IF (<FINDID.i_shield_round_small_agapite.CONT.UID>=<UID>)
+        LOCAL.AGAPITE_AR=(<EVAL <LOCAL.AGAPITE_AR> + 3>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_helm_closed_agapite.uid> 
+     IF (<FINDID.i_helm_closed_agapite.CONT.UID>=<UID>)
+        LOCAL.AGAPITE_AR=(<EVAL <LOCAL.AGAPITE_AR> + 1>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_helm_open_agapite.uid> 
+     IF (<FINDID.i_helm_open_agapite.CONT.UID>=<UID>)
+        LOCAL.AGAPITE_AR=(<EVAL <LOCAL.AGAPITE_AR> + 1>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_bascinet_agapite.uid> 
+     IF (<FINDID.i_bascinet_agapite.CONT.UID>=<UID>)
+        LOCAL.AGAPITE_AR=(<EVAL <LOCAL.AGAPITE_AR> + 1>)
+     ENDIF
+  ENDIF
+
+  IF <FINDID.i_helm_nose_agapite.uid> 
+     IF (<FINDID.i_helm_nose_agapite.CONT.UID>=<UID>)
+        LOCAL.AGAPITE_AR=(<EVAL <LOCAL.AGAPITE_AR> + 1>)
+     ENDIF
+  ENDIF
+
+  if (<EVAL <LOCAL.AGAPITE_AR>> == 0)
+      LOCAL.AGAPITE_AR=
+      EVENTS -e_agapite_ar
+      return 0
+  elseif (<EVAL <LOCAL.AGAPITE_AR>> < 2)
+        if ( rand( 80 ) < 2 )
+        EFFECT=1,i_fx_glow_spike,6,15,1
+        src.message "The gods protect <name>"
+        sysmessage "The gods protect you
+        return 1
+        endif
+  elseif (<EVAL <LOCAL.AGAPITE_AR>> < 5)
+        if ( rand( 70 ) < 2 )
+        EFFECT=1,i_fx_glow_spike,6,15,1
+        src.message "The gods protect <name>"
+        sysmessage "The gods protect you
+        return 1
+        endif
+  elseif (<EVAL <LOCAL.AGAPITE_AR>> < 8)
+        if ( rand( 55 ) < 2 )
+        EFFECT=1,i_fx_glow_spike,6,15,1
+        src.message "The gods protect <name>"
+        sysmessage "The gods protect you
+        return 1
+        endif
+  elseif (<EVAL <LOCAL.AGAPITE_AR>> < 11)
+        if ( rand( 40 ) < 2 )
+        EFFECT=1,i_fx_glow_spike,6,15,1
+        src.message "The gods protect <name>"
+        sysmessage "The gods protect you
+        return 1
+        endif
+  elseif (<EVAL <LOCAL.AGAPITE_AR>> < 13)
+        if ( rand( 30 ) < 2 )
+        EFFECT=1,i_fx_glow_spike,6,15,1
+        src.message "The gods protect <name>"
+        sysMessage "The gods protect you
+        return 1
+        endif
+  elseif (<EVAL <LOCAL.AGAPITE_AR>> < 15)
+        if ( rand( 20 ) < 2 )
+        EFFECT=1,i_fx_glow_spike,6,15,1
+        src.message "The gods protect <name>"
+        sysMessage "The gods protect you
+        return 1
+        endif
+  elseif (<EVAL <LOCAL.AGAPITE_AR>> < 25)
+        if ( rand( 16 ) < 2 )
+        EFFECT=1,i_fx_glow_spike,6,15,1
+        src.message "The gods protect <name>"
+        sysMessage "The gods protect you
+        return 1
+        endif
+  else
+      return 0
+  ENDIF       
+ENDIF
+
+
+
+//********************************************************************//
+//                              VALORITE                              //
+//********************************************************************//
+[FUNCTION f_valorite_effect]
+TIMER=30
+    if ( <cont.stam> < 2 )
+                cont.sysmessage The <typedef.name> restore your stamina
+        effect=3,i_fx_HEAL_EFFECT,6,15,1
+        SOUND snd_SPELL_ARCHCURE
+        cont.stam = <eval(<CONT.stam> + 2)>
+    elseif ( <cont.stam> < 5 )
+                cont.sysmessage The <typedef.name> restore your stamina
+        effect=3,i_fx_HEAL_EFFECT,6,15,1
+        SOUND snd_SPELL_ARCHCURE
+        cont.stam = <eval(<CONT.stam> + 5)>
+    elseif ( <cont.stam> < 10 )
+                cont.sysmessage The <typedef.name> restore your stamina
+        effect=3,i_fx_HEAL_EFFECT,6,15,1
+        SOUND snd_SPELL_ARCHCURE
+        cont.stam = <eval(<CONT.stam> + 10)>
+    elseif ( <cont.stam> < 20 )
+                cont.sysmessage The <typedef.name> restore your stamina
+        effect=3,i_fx_HEAL_EFFECT,6,15,1
+        SOUND snd_SPELL_ARCHCURE
+        cont.stam = <eval(<CONT.stam> + 10)>
+    elseif ( <cont.stam> < 50 )
+                cont.sysmessage The <typedef.name> restore your stamina
+        effect=3,i_fx_HEAL_EFFECT,6,15,1
+        SOUND snd_SPELL_ARCHCURE
+        cont.stam = <eval(<CONT.stam> + 8)>
+    elseif ( <cont.stam> < <eval(<cont.dex> - 15)> )
+                cont.sysmessage The <typedef.name> restore your stamina
+        effect=3,i_fx_HEAL_EFFECT,6,15,1
+        SOUND snd_SPELL_ARCHCURE
+        cont.stam = <eval(<CONT.stam> + 8)>
+    endif
+        IF (<cont.stam> > <cont.MAXstam>)
+        cont.stam=<cont.MAXstam>
+                ENDIF
+
+
+//********************************************************************//
+//                              SKARGARD                              //
+//********************************************************************//
+[FUNCTION skargard_equip]
+  SRC.SYSMESSAGE @54 You feel the spirits of the Northern Winds surround you
+  IF !(<SRC.FINDID.i_skargard_phasing_memory.UID>)
+     SRC.NEWITEM=i_skargard_phasing_memory
+     SRC.ACT.CONT=<SRC.UID>
+     SRC.ACT.LINK=<SRC.UID>
+  ENDIF
+  SRC.TAG.SKAREQ=(0<SRC.TAG.SKAREQ>+1)
+  return 0
+   
+[FUNCTION skargard_unequip]
+  SRC.SYSMESSAGE @54 You feel the spirits of the Northern Winds leave you
+    SRC.TAG.SKAREQ=(0<eval <SRC.TAG.SKAREQ>+-1>)
+  IF (0<SRC.TAG.SKAREQ> == 0)
+     SRC.FINDID.i_skargard_phasing_memory.REMOVE
+  ENDIF
+  return 0
+
+[FUNCTION skargard_timer]
+  return 0
+
+[FUNCTION skargard_effect]
+  return 0
+
+[FUNCTION skargard_dclick]
+  return 0
+
+[ITEMDEF i_skargard_phasing_memory]
+ID=i_memory
+NAME=Skargard Phasing
+TYPE=t_eq_script
+ON=@CREATE
+TIMER=120
+
+ON=@TIMER
+LOCAL.SKARPHASE=<eval rand(100)>
+IF (<eval <LOCAL.SKARPHASE>> <= <eval <CONT.TAG.ARM.EFFECT.INVIS>>)
+   CONT.SYSMESSAGE @54 You phase out for a brief time
+   CONT.INVIS=1
+   CONT.NEWITEM=i_skargard_phased
+   CONT.EQUIP <CONT.ACT>
+ENDIF
+TIMER=90
+RETURN 1
+
+[ITEMDEF i_skargard_phased]
+ID=i_memory
+NAME=Invis Due to Skargard
+TYPE=t_eq_script
+ON=@EQUIP
+   SRC.ACT.TIMER=<eval (0<SRC.TAG.SKAREQ> * 5)>
+ON=@TIMER
+   CONT.SYSMESSAGE @54 You phase back in...
+   CONT.INVIS=0
+   CONT.FINDID.i_skargard_phased.REMOVE
+RETURN 0
+
+[ITEMDEF i_skargard_phased_fix]
+ID=i_guildstone
+NAME=Skar Fix
+TYPE=t_eq_script
+ON=@DCLICK
+   SRC.SYSMESSAGE You phase back in
+   CONT.FLAGS = (<CONT.FLAGS> & ~statf_insubstantial)
+   SRC.FINDID.i_skargard_phased.REMOVE
+   SRC.FINDID.i_skargard_phasing_memory.REMOVE
+RETURN 1
+
+
+
+//********************************************************************//
+//                             CELESTIUM                              //
+//********************************************************************//
+[FUNCTION celestium_equip]
+  SRC.SYSMESSAGE @54 You feel your mind raise up to another level...
+  IF !(<SRC.FINDID.i_celestium_astral_memory.UID>)
+     SRC.NEWITEM=i_celestium_astral_memory
+     SRC.ACT.CONT=<SRC.UID>
+     SRC.ACT.LINK=<SRC.UID>
+  ENDIF
+  SRC.TAG.CELESTEQ=(0<SRC.TAG.CELESTEQ>+1)
+  return 0
+   
+[FUNCTION celestium_unequip]
+  SRC.SYSMESSAGE @54 You feel disheartened as your mind becomes lost once more...
+    SRC.TAG.CELESTEQ=(<eval <SRC.TAG.CELESTEQ> +- 1>)
+  IF (0<SRC.TAG.CELESTEQ> == 0)
+     SRC.FINDID.i_celestium_astral_memory.REMOVE
+  ENDIF
+  return 0
+
+[FUNCTION celestium_timer]
+  return 0
+
+[FUNCTION celestium_effect]
+  return 0
+
+[FUNCTION celestium_dclick]
+  return 0
+
+[ITEMDEF i_celestium_astral_memory]
+ID=i_memory
+NAME=Celestium Phasing
+TYPE=t_eq_script
+
+ON=@CREATE
+TIMER=180
+
+ON=@TIMER
+LOCAL.ASTRAL=<eval rand(100)>
+IF ( (<eval <LOCAL.ASTRAL>> <= <eval <CONT.TAG.ARM.EFFECT.ASTRAL>>) && !(<CONT.FINDID.i_astral_projection.UID>) )
+   CONT.SYSMESSAGE @54 You feel able to project yourself astrally...
+   CONT.TAG.ASTRALTIMER=<eval (0<CONT.TAG.CELESTEQ> * 5)>
+   CONT.TAG.CELEST.MINEQ=(<CONT.TAG.CELESTEQ> +- 2)
+   IF (<CONT.TAG.CELEST.MINEQ> < 0)
+      CONT.TAG.CELEST.MINEQ=0
+   ENDIF
+   CONT.NEWITEM=i_astral_projection
+   CONT.EQUIP <CONT.ACT>
+   TIMER=180
+ENDIF
+TIMER=180
+RETURN 1
+
+[ITEMDEF i_astral_projection]
+ID=i_memory
+NAME=Celestium Phasing
+TYPE=t_eq_script
+
+
+[PLEVEL 0]
+astral
+
+[FUNCTION astral]
+IF (<SRC.FINDID.i_astral_projection>)
+   IF (<SRC.TAG.CELESTEQ> < <SRC.TAG.CELEST.MINEQ>)
+      SRC.SYSMESSAGE @95 Your mind cannot focus without more celestium equipped...
+      RETURN 1
+   ELSE
+      SRC.SYSMESSAGE @63 You form an astral projection of yourself...
+      SRC.NEWNPC c_astral_projection
+      ASTRAL_SETUP
+      SRC.ACT.P=<P>
+      SRC.FINDID.i_astral_projection.REMOVE
+      SRC.TAG.ASTRALTIMER=
+      RETURN 1
+   ENDIF
+ELSE
+   SRC.SYSMESSAGE @69 You cannot currently focus enough to form an astral projection...
+   RETURN 1
+ENDIF
+RETURN 1
+
+
+[CHARDEF c_astral_projection]
+ID=c_man
+NAME=Astral Projection
+ICON=i_pet_MAN
+CAN=MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS
+RESOURCES=i_flesh_head, i_flesh_torso, i_flesh_right_arm, i_flesh_left_arm, i_flesh_left_leg, i_flesh_right_leg, i_blood_2
+FOODTYPE=15 t_food, t_fruit
+DESIRES=i_gold,e_notoriety
+AVERSIONS=t_TRAP,t_eerie_stuff
+BLOODCOLOR=0
+
+ON=@CREATE
+NPC=brain_human
+STR=15
+INT=15
+DEX=15
+TIMER=180
+
+ON=@TIMER
+REMOVE
+
+ON=@DEATH
+REMOVE
+   
+[FUNCTION ASTRAL_SETUP]
+SRC.ACT.BODY=<SRC.BODY>
+SRC.ACT.STR=<SRC.STR>
+SRC.ACT.HITS=<SRC.STR>
+SRC.ACT.INT=<SRC.INT>
+SRC.ACT.DEX=<SRC.DEX>
+SRC.ACT.MANA=<SRC.INT>
+SRC.ACT.STAM=<SRC.DEX>
+SRC.ACT.WRESTLING=<SRC.WRESTLING>
+SRC.ACT.FENCING=<SRC.FENCING>
+SRC.ACT.SWORDSMANSHIP=<SRC.SWORDSMANSHIP>
+SRC.ACT.MACEFIGHTING=<SRC.MACEFIGHTING>
+SRC.ACT.ARCHERY=<SRC.ARCHERY>
+SRC.ACT.ANATOMY=<SRC.ANATOMY>
+SRC.ACT.PARRYING=<SRC.PARRYING>
+SRC.ACT.TACTICS=<SRC.TACTICS>
+SRC.ACT.MAGERY=<SRC.MAGERY>
+SRC.ACT.COLOR=<SRC.COLOR>
+SRC.ACT.NAME=<SRC.NAME>
+SRC.ACT.KARMA=<SRC.KARMA>
+SRC.ACT.FAME=<SRC.FAME>
+SRC.ACT.TITLE=<SRC.TITLE>
+LOCAL.EQUIPNPC=<SRC.ACT>
+
+SRC.ACT.FINDLAYER(1).REMOVE
+SRC.ACT.FINDLAYER(2).REMOVE
+SRC.ACT.FINDLAYER(3).REMOVE
+SRC.ACT.FINDLAYER(4).REMOVE
+SRC.ACT.FINDLAYER(5).REMOVE
+SRC.ACT.FINDLAYER(6).REMOVE
+SRC.ACT.FINDLAYER(7).REMOVE
+SRC.ACT.FINDLAYER(8).REMOVE
+SRC.ACT.FINDLAYER(9).REMOVE
+SRC.ACT.FINDLAYER(10).REMOVE
+SRC.ACT.FINDLAYER(11).REMOVE
+SRC.ACT.FINDLAYER(12).REMOVE
+SRC.ACT.FINDLAYER(13).REMOVE
+SRC.ACT.FINDLAYER(14).REMOVE
+SRC.ACT.FINDLAYER(15).REMOVE
+SRC.ACT.FINDLAYER(16).REMOVE
+SRC.ACT.FINDLAYER(17).REMOVE
+SRC.ACT.FINDLAYER(18).REMOVE
+SRC.ACT.FINDLAYER(19).REMOVE
+SRC.ACT.FINDLAYER(20).REMOVE
+SRC.ACT.FINDLAYER(22).REMOVE
+SRC.ACT.FINDLAYER(24).REMOVE
+
+IF <SRC.FINDID.i_spellbook>
+   SERV.NEWITEM i_spellbook
+   NEW.MORE1=<SRC.FINDID.i_spellbook.MORE1>&06c2a0885
+   NEW.MORE2=<SRc.FINDID.i_spellbook.MORE2>&0fb576671
+   //Only harmful spells
+   //Healing spells are filtered out by the and statement above.
+   UID.<LOCAL.EQUIPNPC>.EQUIP <NEW.UID>
+ENDIF
+
+IF <SRC.FINDLAYER(1)>
+   NEWITEM <SRC.FINDLAYER(1).ID>
+   NEW.NAME=<SRC.FINDLAYER(1).NAME>
+   NEW.COLOR=<SRC.FINDLAYER(1).COLOR>
+   NEW.MOREP=<SRC.FINDLAYER(1).MOREP>
+   NEW.ATTR=05
+   UID.<LOCAL.EQUIPNPC>.EQUIP <NEW.UID>
+ENDIF
+
+IF <SRC.FINDLAYER(2)>
+   NEWITEM <SRC.FINDLAYER(2).ID>
+   NEW.NAME=<SRC.FINDLAYER(2).NAME>
+   NEW.COLOR=<SRC.FINDLAYER(2).COLOR>
+   NEW.MOREP=<SRC.FINDLAYER(2).MOREP>
+   NEW.ATTR=05
+   UID.<LOCAL.EQUIPNPC>.EQUIP <NEW.UID> 
+ENDIF
+
+IF <SRC.FINDLAYER(3)>
+   NEWITEM <SRC.FINDLAYER(3).ID>
+   NEW.NAME=<SRC.FINDLAYER(3).NAME>
+   NEW.COLOR=<SRC.FINDLAYER(3).COLOR>
+   NEW.MOREP=<SRC.FINDLAYER(3).MOREP>
+   NEW.ATTR=05
+   UID.<LOCAL.EQUIPNPC>.EQUIP <NEW.UID> 
+ENDIF
+
+IF <SRC.FINDLAYER(4)>
+   NEWITEM <SRC.FINDLAYER(4).ID>
+   NEW.NAME=<SRC.FINDLAYER(4).NAME>
+   NEW.COLOR=<SRC.FINDLAYER(4).COLOR>
+   NEW.MOREP=<SRC.FINDLAYER(4).MOREP>
+   NEW.ATTR=05
+   UID.<LOCAL.EQUIPNPC>.EQUIP <NEW.UID> 
+ENDIF
+
+IF <SRC.FINDLAYER(5)>
+   NEWITEM <SRC.FINDLAYER(5).ID>
+   NEW.NAME=<SRC.FINDLAYER(5).NAME>
+   NEW.COLOR=<SRC.FINDLAYER(5).COLOR>
+   NEW.MOREP=<SRC.FINDLAYER(5).MOREP>
+   NEW.ATTR=05
+   UID.<LOCAL.EQUIPNPC>.EQUIP <NEW.UID> 
+ENDIF
+
+IF <SRC.FINDLAYER(6)>
+   NEWITEM <SRC.FINDLAYER(6).ID>
+   NEW.NAME=<SRC.FINDLAYER(6).NAME>
+   NEW.COLOR=<SRC.FINDLAYER(6).COLOR>
+   NEW.MOREP=<SRC.FINDLAYER(6).MOREP>
+   NEW.ATTR=05
+   UID.<LOCAL.EQUIPNPC>.EQUIP <NEW.UID> 
+ENDIF
+
+IF <SRC.FINDLAYER(7)>
+   NEWITEM <SRC.FINDLAYER(7).ID>
+   NEW.NAME=<SRC.FINDLAYER(7).NAME>
+   NEW.COLOR=<SRC.FINDLAYER(7).COLOR>
+   NEW.MOREP=<SRC.FINDLAYER(7).MOREP>
+   NEW.ATTR=05
+   UID.<LOCAL.EQUIPNPC>.EQUIP <NEW.UID> 
+ENDIF
+
+IF <SRC.FINDLAYER(8)>
+   NEWITEM <SRC.FINDLAYER(8).ID>
+   NEW.NAME=<SRC.FINDLAYER(8).NAME>
+   NEW.COLOR=<SRC.FINDLAYER(8).COLOR>
+   NEW.MOREP=<SRC.FINDLAYER(8).MOREP>
+   NEW.ATTR=05
+   UID.<LOCAL.EQUIPNPC>.EQUIP <NEW.UID> 
+ENDIF
+
+IF <SRC.FINDLAYER(9)>
+   NEWITEM <SRC.FINDLAYER(9).ID>
+   NEW.NAME=<SRC.FINDLAYER(9).NAME>
+   NEW.COLOR=<SRC.FINDLAYER(9).COLOR>
+   NEW.MOREP=<SRC.FINDLAYER(9).MOREP>
+   NEW.ATTR=05
+   UID.<LOCAL.EQUIPNPC>.EQUIP <NEW.UID> 
+ENDIF
+
+IF <SRC.FINDLAYER(10)>
+   NEWITEM <SRC.FINDLAYER(10).ID>
+   NEW.NAME=<SRC.FINDLAYER(10).NAME>
+   NEW.COLOR=<SRC.FINDLAYER(10).COLOR>
+   NEW.MOREP=<SRC.FINDLAYER(10).MOREP>
+   NEW.ATTR=<SRC.FINDLAYER(10).ATTR>|04
+   UID.<LOCAL.EQUIPNPC>.EQUIP <NEW.UID> 
+ENDIF
+
+IF <SRC.FINDLAYER(11)>
+   NEWITEM <SRC.FINDLAYER(11).ID>
+   NEW.NAME=<SRC.FINDLAYER(11).NAME>
+   NEW.COLOR=<SRC.FINDLAYER(11).COLOR>
+   NEW.MOREP=<SRC.FINDLAYER(11).MOREP>
+   NEW.ATTR=<SRC.FINDLAYER(11).ATTR>|04
+   UID.<LOCAL.EQUIPNPC>.EQUIP <NEW.UID> 
+ENDIF
+
+IF <SRC.FINDLAYER(12)>
+   NEWITEM <SRC.FINDLAYER(12).ID>
+   NEW.NAME=<SRC.FINDLAYER(12).NAME>
+   NEW.COLOR=<SRC.FINDLAYER(12).COLOR>
+   NEW.MOREP=<SRC.FINDLAYER(12).MOREP>
+   NEW.ATTR=<SRC.FINDLAYER(12).ATTR>|04
+   UID.<LOCAL.EQUIPNPC>.EQUIP <NEW.UID> 
+ENDIF
+
+IF <SRC.FINDLAYER(13)>
+   NEWITEM <SRC.FINDLAYER(13).ID>
+   NEW.NAME=<SRC.FINDLAYER(13).NAME>
+   NEW.COLOR=<SRC.FINDLAYER(13).COLOR>
+   NEW.MOREP=<SRC.FINDLAYER(13).MOREP>
+   NEW.ATTR=<SRC.FINDLAYER(13).ATTR>|04
+   UID.<LOCAL.EQUIPNPC>.EQUIP <NEW.UID> 
+ENDIF
+
+IF <SRC.FINDLAYER(14)>
+   NEWITEM <SRC.FINDLAYER(14).ID>
+   NEW.NAME=<SRC.FINDLAYER(14).NAME>
+   NEW.COLOR=<SRC.FINDLAYER(14).COLOR>
+   NEW.MOREP=<SRC.FINDLAYER(14).MOREP>
+   NEW.ATTR=<SRC.FINDLAYER(14).ATTR>|04
+   UID.<LOCAL.EQUIPNPC>.EQUIP <NEW.UID> 
+ENDIF
+
+IF <SRC.FINDLAYER(15)>
+   NEWITEM <SRC.FINDLAYER(15).ID>
+   NEW.NAME=<SRC.FINDLAYER(15).NAME>
+   NEW.COLOR=<SRC.FINDLAYER(15).COLOR>
+   NEW.MOREP=<SRC.FINDLAYER(15).MOREP>
+   NEW.ATTR=<SRC.FINDLAYER(15).ATTR>|04
+   UID.<LOCAL.EQUIPNPC>.EQUIP <NEW.UID> 
+ENDIF
+
+IF <SRC.FINDLAYER(16)>
+   NEWITEM <SRC.FINDLAYER(16).ID>
+   NEW.NAME=<SRC.FINDLAYER(16).NAME>
+   NEW.COLOR=<SRC.FINDLAYER(16).COLOR>
+   NEW.MOREP=<SRC.FINDLAYER(16).MOREP>
+   NEW.ATTR=<SRC.FINDLAYER(16).ATTR>|04
+   UID.<LOCAL.EQUIPNPC>.EQUIP <NEW.UID> 
+ENDIF
+
+IF <SRC.FINDLAYER(17)>
+   NEWITEM <SRC.FINDLAYER(17).ID>
+   NEW.NAME=<SRC.FINDLAYER(17).NAME>
+   NEW.COLOR=<SRC.FINDLAYER(17).COLOR>
+   NEW.MOREP=<SRC.FINDLAYER(17).MOREP>
+   NEW.ATTR=<SRC.FINDLAYER(17).ATTR>|04
+   UID.<LOCAL.EQUIPNPC>.EQUIP <NEW.UID> 
+ENDIF
+
+IF <SRC.FINDLAYER(18)>
+   NEWITEM <SRC.FINDLAYER(18).ID>
+   NEW.NAME=<SRC.FINDLAYER(18).NAME>
+   NEW.COLOR=<SRC.FINDLAYER(18).COLOR>
+   NEW.MOREP=<SRC.FINDLAYER(18).MOREP>
+   NEW.ATTR=<SRC.FINDLAYER(18).ATTR>|04
+   UID.<LOCAL.EQUIPNPC>.EQUIP <NEW.UID> 
+ENDIF
+
+IF <SRC.FINDLAYER(19)>
+   NEWITEM <SRC.FINDLAYER(19).ID>
+   NEW.NAME=<SRC.FINDLAYER(19).NAME>
+   NEW.COLOR=<SRC.FINDLAYER(19).COLOR>
+   NEW.MOREP=<SRC.FINDLAYER(19).MOREP>
+   NEW.ATTR=<SRC.FINDLAYER(19).ATTR>|04
+   UID.<LOCAL.EQUIPNPC>.EQUIP <NEW.UID> 
+ENDIF
+
+IF <SRC.FINDLAYER(20)>
+   NEWITEM <SRC.FINDLAYER(20).ID>
+   NEW.NAME=<SRC.FINDLAYER(20).NAME>
+   NEW.COLOR=<SRC.FINDLAYER(20).COLOR>
+   NEW.MOREP=<SRC.FINDLAYER(20).MOREP>
+   NEW.ATTR=<SRC.FINDLAYER(20).ATTR>|04
+   UID.<LOCAL.EQUIPNPC>.EQUIP <NEW.UID> 
+ENDIF
+
+IF <SRC.FINDLAYER(22)>
+   NEWITEM <SRC.FINDLAYER(22).ID>
+   NEW.NAME=<SRC.FINDLAYER(22).NAME>
+   NEW.COLOR=<SRC.FINDLAYER(22).COLOR>
+   NEW.MOREP=<SRC.FINDLAYER(22).MOREP>
+   NEW.ATTR=<SRC.FINDLAYER(22).ATTR>|04
+   UID.<LOCAL.EQUIPNPC>.EQUIP <NEW.UID> 
+ENDIF
+
+IF <SRC.FINDLAYER(24)>
+   NEWITEM <SRC.FINDLAYER(24).ID>
+   NEW.NAME=<SRC.FINDLAYER(24).NAME>
+   NEW.COLOR=<SRC.FINDLAYER(24).COLOR>
+   NEW.MOREP=<SRC.FINDLAYER(24).MOREP>
+   NEW.ATTR=<SRC.FINDLAYER(24).ATTR>|04
+   UID.<LOCAL.EQUIPNPC>.EQUIP <NEW.UID>
+ENDIF
+
+IF !(STRCMPI(<NAME>,<SRC.NAME>) == 0)
+   SRC.ACT.NAME=<SRC.NAME>
+   SRC.ACT.HITS=<STR>
+   SRC.ACT.UPDATE
+   RETURN 1
+ENDIF
+
+UPDATE
+
+
+
+//********************************************************************//
+//                              MYTHERIL                              //
+//********************************************************************//
+[FUNCTION f_armour_mytheril_equip]
+ATTR    = <ATTR> | attr_decay
+TIMER    = 3
+
+[FUNCTION f_armour_mytheril_unequip]
+ATTR    = <ATTR> &~ attr_decay
+TIMER    = -1
+
+
+[FUNCTION f_armour_mytheril_timer]
+if ( <CONT> == 0 )
+   remove
+   return 0
+endif
+
+TIMER    = <args>
+LOCAL.PREV_ACT    = <CONT.ACT.UID>
+CONT.f_mytheril_spell_decay 33    // reactive armour
+CONT.f_mytheril_spell_decay 34    // night sight
+CONT.f_mytheril_spell_decay 35    // protection
+CONT.f_mytheril_spell_decay 37    // magic reflection
+CONT.f_mytheril_spell_decay 38    // paralyze
+CONT.f_mytheril_spell_decay 39    // invis
+CONT.f_mytheril_spell_decay 40    // polymorph
+CONT.f_mytheril_spell_decay 42    // poison
+CONT.f_mytheril_spell_decay 44    // potion
+CONT.ACT    = <LOCAL.PREV_ACT>
+
+[FUNCTION f_mytheril_spell_decay]
+if ( <findlayer(<args>).uid> )
+   ACT = <findlayer(<args>).uid>
+   if ( <ACT.TIMER> > 15 )
+      ACT.timer    = <eval (<ACT.TIMER> + {3 4})>
+   endif
+endif
+
+
+
+//********************************************************************//
+//                             BLACKROCK                              //
+//********************************************************************//
+[FUNCTION f_armour_blackrock_equip125a]
+SRC.MAGICRESISTANCE    = <eval (<SRC.MAGICRESISTANCE> + (<WEIGHT>/6))>
+ATTR    = <ATTR> | attr_decay
+TIMER    = 3
+
+[FUNCTION f_armour_blackrock_unequip]
+SRC.MAGICRESISTANCE    = <eval (<SRC.MAGICRESISTANCE> - (<WEIGHT>/6))>
+ATTR    = <ATTR> &~ attr_decay
+TIMER    = -1
+
+
+[FUNCTION f_armour_blackrock_timer]
+if ( <CONT> == 0 )
+   remove
+   return 0
+endif
+
+TIMER    = <args>
+if ( <CONT.MANA> > 1 )
+   CONT.MANA    = <eval (<CONT.MANA>-1)>
+else
+   CONT.MANA    = 0
+endif
+CONT.f_blackrock_spell_decay 33    // reactive armour
+CONT.f_blackrock_spell_decay 35    // protection
+CONT.f_blackrock_spell_decay 38 // paralyze
+CONT.f_blackrock_spell_decay 42    // poison
+CONT.f_blackrock_spell_decay 44    // potion
+
+
+[FUNCTION f_blackrock_spell_decay]
+if ( <findlayer(<args>).uid> )
+   ACT = <findlayer(<args>).uid>
+   if ( <ACT.TIMER> > 15 )
+      ACT.timer    = <eval (<ACT.TIMER> - 14)>
+   endif
+endif
+
+
+
+//********************************************************************//
+//                              SHIELDS                               //
+//********************************************************************//
+[FUNCTION f_shield_equip]
+   if ( <CONT.parrying> < ((<reqstr> * 10) - 50) )
+     CONT.SYSMESSAGE You don't feel too good handling this sort of shield.
+   endif
+   return 0
+   
+
+[EOF]

@@ -1,0 +1,2513 @@
+//////////////////////////////////////////
+//Cooking Script for Imperial UO Shard  //
+//Scripted by Fatman, assisted by Warman//
+//////////////////////////////////////////
+//Further additions from 01 Feb 2003 by //
+//Wigifer, assisted by Magar            //
+//////////////////////////////////////////
+//Further additions from 21 Jul 2003 by //
+//Wigifer                               //
+//////////////////////////////////////////
+//Further changes 24 Nov 2003 by Wren   //
+//Moved t_w_food to UOProjectDefs       //
+//Fixed Cooking Bugs & Cleaned Script   //
+//Left a few things commented that need //
+//Removed after testing in-game         //
+//////////////////////////////////////////
+
+//[FUNCTION f_cooking_failure]
+//   IF !( 0<VAR.FAIL> )
+//      SRC.NEWITEM i_pot
+//      SRC.ACT.BOUNCE
+//      RETURN 1
+//   ENDIF
+//   RETURN 0
+
+
+//OTHERS
+[ITEMDEF i_tomatoe]
+  ID=09D0
+  NAME=Tomatoe
+  VALUE=1
+  TYPE=T_FRUIT
+  WEIGHT=0.1
+  CATEGORY=Items by Professions
+  SUBSECTION=Cook
+  DESCRIPTION=Tomatoe
+
+[ITEMDEF i_mixing_bowl] 
+  NAME=Mixing Bowl
+  ID=015f8
+  VALUE=40
+  WEIGHT=3
+  DEFNAME=i_mixing_bowl
+  TYPE=t_normal
+
+ON=@CREATE 
+  COLOR=0083a
+
+
+  /////////////
+ //RESOURCES//
+/////////////
+
+[ITEMDEF 01039]
+//sack of flour
+//DUPEITEM=01039
+CATEGORY=Items by Professions
+SUBSECTION=Baker
+DESCRIPTION=Sack of Flour
+
+[ITEMDEF 01045]
+//sack of flour
+DUPEITEM=01039
+CATEGORY=Items by Professions
+SUBSECTION=Baker
+DESCRIPTION=Sack of Flour
+
+[ITEMDEF 01046]
+//open sack of flour
+DUPEITEM=01039
+CATEGORY=Items by Professions
+SUBSECTION=Baker
+DESCRIPTION=Open Sack of Flour
+
+
+[ITEMDEF 01ebd]
+  DEFNAME=i_wheat_sheaf
+  TYPE=t_grain
+  VALUE=1
+  WEIGHT=10
+  CATEGORY=Items by Professions
+  SUBSECTION=StableMaster
+  DESCRIPTION=Sheaf of Wheat
+
+ON=@Dclick
+    TARGET What do you want to use this on?
+    RETURN 1
+
+ON=@TARGON_ITEM
+   //If target flour mill, produce flour.
+   IF (<SRC.TARG.BASEID>==i_flour_mill)
+      IF ( <AMOUNT> <4 )
+         SRC.SYSMESSAGE That is not enough wheat to grind in the mill.
+         RETURN 1
+      ENDIF
+
+      SRC.NEWITEM i_flour_sack
+      SRC.ACT.BOUNCE
+
+      IF ( <AMOUNT> == 4)
+         REMOVE
+         RETURN 1
+      ENDIF
+
+      //Anti-macro
+      SRC.NEWITEM i_wheat_sheaf
+      SRC.ACT.AMOUNT = <EVAL( <AMOUNT>-4)>
+      REMOVE
+      SRC.ACT.BOUNCE
+      RETURN 1
+   ENDIF
+
+
+  //////////////////
+ //FINAL PRODUCTS//
+//////////////////
+
+[ITEMDEF 09eb]
+  DEFNAME=i_muffins
+  WEIGHT=0.2
+  VALUE=15
+  SKILLMAKE=COOKING 30.0
+  RESOURCES=1 i_sweet_dough
+  TYPE=t_food
+  
+  CATEGORY=Items by Professions
+  SUBSECTION=Baker
+  DESCRIPTION=Muffins
+
+[ITEMDEF 09e9]
+  DEFNAME=i_cake
+  TYPE=t_food
+  VALUE=25
+  WEIGHT=0.3
+  SKILLMAKE=COOKING 45.0
+  RESOURCES=1 i_cake_mix
+  
+  CATEGORY=Items by Professions
+  SUBSECTION=Baker
+  DESCRIPTION=Cake
+
+[ITEMDEF 0103b]
+  DEFNAME=i_bread_loaf
+  TYPE=t_food
+  WEIGHT=0.1
+  VALUE=8
+  SKILLMAKE=COOKING 30.0
+  RESOURCES=1 i_dough
+  
+  CATEGORY=Items by Professions
+  SUBSECTION=Baker
+  DESCRIPTION=Bread Loaf
+
+[ITEMDEF 0160b]
+  DEFNAME=i_pan_cookies
+  WEIGHT=0.3
+  VALUE=23
+  TYPE=t_food
+  SKILLMAKE=COOKING 45.0
+  RESOURCES=1 i_cookie_mix
+
+  CATEGORY=Items by Professions
+  SUBSECTION=Baker
+  DESCRIPTION=Pan of Cookies
+
+
+  //////////
+ //Mixing//
+//////////
+
+[ITEMDEF i_flour_sack]
+  ID=01045
+  WEIGHT=5
+  VALUE=5
+
+ON=@Dclick
+   TARGET What are you going to mix this flour with?
+   RETURN 1
+
+ON=@TARGON_ITEM
+   //If target is water pitcher, make dough.
+   IF (<SRC.TARG.BASEID> == i_pitcher_water)
+      IF ( !<SRC.RESTEST 4 i_pitcher_water> )
+         SRC.SYSMESSAGE You do not have enough water to mix the flour with.
+         RETURN 1
+      ELSEIF ( !<SRC.RESTEST 1 i_mixing_bowl> )
+         SRC.SYSMESSAGE You need a mixing bowl to do this.
+         RETURN 1
+      ELSEIF ( !<SRC.RESTEST 1 i_flour_sack> )
+         SRC.SYSMESSAGE You dont have enough flour on you.
+         RETURN 1
+      ENDIF
+      SRC.TAG.MAKEITEM.LEVEL 10.0
+
+      //Test Skill
+      IF (<SRC.COOKING> < <SRC.TAG.MAKEITEM.LEVEL>)
+         SRC.SYSMESSAGE You are not skilled enough to do that.
+         RETURN 1
+      ENDIF
+
+      SRC.SYSMESSAGE You add the water to the flour in the bowl and start mixing.
+      SRC.CONSUME 1 i_flour_sack, 4 i_pitcher_water
+      SRC.NEWITEM i_dough
+      SRC.ACT.BOUNCE
+      SRC.SKILLCHECK_RUN Skill_Cooking
+
+      SRC.NEWITEM i_pitcher_glass
+      SRC.ACT.BOUNCE
+      SRC.NEWITEM i_pitcher_glass
+      SRC.ACT.BOUNCE
+      SRC.NEWITEM i_pitcher_glass
+      SRC.ACT.BOUNCE
+      SRC.NEWITEM i_pitcher_glass
+      SRC.ACT.BOUNCE
+      RETURN 1
+   ENDIF
+
+   //If target is sweet dough, make cake mix.
+   IF (<SRC.TARG.BASEID>==i_sweet_dough)
+      IF ( !<SRC.RESTEST 1 i_mixing_bowl> )
+         SRC.SYSMESSAGE You need a mixing bowl to do this.
+         RETURN 1
+      ELSEIF ( !<SRC.RESTEST 1 i_flour_sack> )
+         SRC.SYSMESSAGE You dont have enough flour on you.
+         RETURN 1
+      ENDIF
+      SRC.TAG.MAKEITEM.LEVEL 20.0
+
+      //Test Skill
+      IF (<SRC.COOKING> < <SRC.TAG.MAKEITEM.LEVEL>)
+         SRC.SYSMESSAGE You are not skilled enough to do that.
+         RETURN 1
+      ENDIF
+
+      SRC.SYSMESSAGE You start baking the mix.
+      SRC.CONSUME 1 i_sweet_dough, 1 i_flour_sack
+      SRC.NEWITEM i_cake_mix
+      SRC.ACT.BOUNCE
+      SRC.SKILLCHECK_RUN Skill_Cooking
+      RETURN 1
+   ENDIF
+
+   SRC.SYSMESSAGE You cant think of anything to do with that.
+   RETURN 1   
+
+
+
+[ITEMDEF 0103d]
+  DEFNAME=i_dough
+  TYPE=T_FOOD_RAW
+  TDATA1=i_bread_loaf
+  VALUE=6
+  WEIGHT=3
+  SKILLMAKE=COOKING 10.0
+  RESOURCES=1 i_flour_sack, 4 i_pitcher_water
+  
+  CATEGORY=Items by Professions
+  SUBSECTION=Baker
+  DESCRIPTION=Dough
+
+ON=@DCLICK
+   TARGET What do you want to use this on?
+   RETURN 1
+
+ON=@TARGON_ITEM
+   //If target is oven, make bread
+   IF ((<SRC.TARG.BASEID>==i_oven_stone)||(<SRC.TARG.BASEID>==i_oven_sandstone))
+
+      //Test resources to make bread.
+      IF ( !<SRC.RESTEST 1 i_dough> )
+         SRC.SYSMESSAGE You dont have enough dough on you.
+         RETURN 1
+      ENDIF
+
+      SRC.TAG.MAKEITEM.LEVEL 30.0
+
+      //Test Skill
+      IF (<SRC.COOKING> < <SRC.TAG.MAKEITEM.LEVEL>)
+         SRC.SYSMESSAGE You are not skilled enough to do that.
+         RETURN 1
+      ENDIF
+
+      SRC.SYSMESSAGE You put the dough in the oven.
+      SRC.CONSUME 1 i_dough
+      SRC.NEWITEM i_bread_loaf
+      SRC.ACT.BOUNCE
+      SRC.SKILLCHECK_RUN Skill_Cooking
+      RETURN 1
+   ENDIF
+
+   //If target is honey, make sweet dough
+   IF (<SRC.TARG.BASEID>==i_jar_honey)
+
+      //Test resources to make sweet dough
+      IF ( !<SRC.RESTEST 1 i_mixing_bowl> )
+         SRC.SYSMESSAGE You need a mixing bowl to do this.
+         RETURN 1
+      ELSEIF ( !<SRC.RESTEST 1 i_dough> )
+         SRC.SYSMESSAGE You dont have enough dough on you.
+         RETURN 1
+      ENDIF
+
+      SRC.TAG.MAKEITEM.LEVEL 20.0
+
+      //Test Skill
+      IF (<SRC.COOKING> < <SRC.TAG.MAKEITEM.LEVEL>)
+         SRC.SYSMESSAGE You are not skilled enough to do that.
+         RETURN 1
+      ENDIF
+
+      SRC.SYSMESSAGE You start mixing the dough.
+      SRC.CONSUME 1 i_dough, 1 i_jar_honey
+      SRC.NEWITEM i_sweet_dough
+      SRC.ACT.BOUNCE
+      SRC.SKILLCHECK_RUN Skill_Cooking
+      RETURN 1
+   ENDIF
+
+   //PIZZA
+   IF (<SRC.TARG.BASEID>==i_sausages)
+      SRC.TAG.MAKEITEM.LEVEL 550
+      SRC.COOKITEM i_pizza_sausage_uncooked
+      RETURN 1
+   ELSEIF (<SRC.TARG.BASEID>==i_tomatoe)
+      SRC.TAG.MAKEITEM.LEVEL 450
+      SRC.COOKITEM i_pizza_uncooked
+      RETURN 1
+   ENDIF
+
+   //PIES
+   IF (<SRC.TARG.BASEID>==i_fruit_pumpkin)
+      SRC.TAG.MAKEITEM.LEVEL 300
+      SRC.COOKITEM i_pie_pumpkin_unbaked
+      RETURN 1
+   ELSEIF (<SRC.TARG.BASEID>==i_fruit_pear)
+      SRC.TAG.MAKEITEM.LEVEL 320
+      SRC.COOKITEM i_pie_fruit_unbaked
+      RETURN 1
+   ELSEIF (<SRC.TARG.BASEID>==i_fruit_peach)
+      SRC.TAG.MAKEITEM.LEVEL 340
+      SRC.COOKITEM i_pie_peach_unbaked
+      RETURN 1
+   ELSEIF (<SRC.TARG.BASEID>==i_fruit_apple)
+      SRC.TAG.MAKEITEM.LEVEL 360
+      SRC.COOKITEM i_pie_apple_unbaked
+      RETURN 1
+   ELSEIF (<SRC.TARG.BASEID>==i_bird_raw)
+      SRC.TAG.MAKEITEM.LEVEL 380
+      SRC.COOKITEM i_pie_bird_unbaked
+      RETURN 1
+   ELSEIF (<SRC.TARG.BASEID>==i_fish_cut_raw)
+      SRC.TAG.MAKEITEM.LEVEL 400
+      SRC.COOKITEM i_pie_fish_unbaked
+      RETURN 1
+   ELSEIF (<SRC.TARG.BASEID>==i_ham)
+      SRC.TAG.MAKEITEM.LEVEL 420
+      SRC.COOKITEM i_pie_ham_unbaked
+      RETURN 1
+   ELSEIF (<SRC.TARG.BASEID>==i_eggs_fresh)
+      SRC.TAG.MAKEITEM.LEVEL 440
+      SRC.COOKITEM i_pie_eggs_unbaked
+      RETURN 1
+   ELSEIF (<SRC.TARG.BASEID>==i_ribs_raw_angel)   //Added by Wigifer for Angel Pie
+      SRC.TAG.MAKEITEM.LEVEL 890
+      SRC.COOKITEM i_pie_angel_unbaked
+      RETURN 1
+   ELSEIF (<SRC.TARG.BASEID>==i_fish_rare)
+      SRC.TAG.MAKEITEM.LEVEL 900
+      SRC.COOKITEM i_pie_lords_unbaked
+      RETURN 1
+   ENDIF
+
+   SRC.SYSMESSAGE You cant think of anything to do with that.
+   RETURN 1
+
+[ITEMDEF i_sweet_dough]
+  ID=i_dough
+  Name=Sweet Dough
+  WEIGHT=3
+  VALUE=12
+  SKILLMAKE=COOKING 20.0
+  RESOURCES=1 i_dough, 1 i_jar_honey
+
+  CATEGORY=Items by Professions
+  SUBSECTION=Baker
+  DESCRIPTION=Sweet Dough
+
+ON=@Dclick
+   TARGET What are you going to mix this with?
+   RETURN 1
+
+ON=@CREATE
+   COLOR 0098
+
+ON=@TARGON_ITEM
+   //If target is oven, make muffins
+   IF ((<SRC.TARG.BASEID>==i_oven_stone)||(<SRC.TARG.BASEID>==i_oven_sandstone))
+      //Test resources to make cookie mix.
+      IF ( !<SRC.RESTEST 1 i_sweet_dough> )
+         SRC.SYSMESSAGE You dont have enough sweet dough on you.
+         RETURN 1
+      ENDIF
+
+      SRC.TAG.MAKEITEM.LEVEL 30.0
+
+      //Test Skill
+      IF (<SRC.COOKING> < <SRC.TAG.MAKEITEM.LEVEL>)
+         SRC.SYSMESSAGE You are not skilled enough to do that.
+         RETURN 1
+      ENDIF
+
+      SRC.SYSMESSAGE You put the sweet dough in the oven.
+      SRC.CONSUME 1 i_sweet_dough
+      SRC.NEWITEM i_muffins
+      SRC.ACT.BOUNCE
+      SRC.SKILLCHECK_RUN Skill_Cooking
+      RETURN 1
+   ENDIF
+
+   //If target is a sack of flour, make cake mix.
+   IF (<SRC.TARG.BASEID>==i_flour_sack)
+
+      //Test resources to make cake mix.
+      IF ( !<SRC.RESTEST 1 i_mixing_bowl> )
+         SRC.SYSMESSAGE You need a mixing bowl to do this.
+         RETURN 1
+      ELSEIF ( !<SRC.RESTEST 1 i_sweet_dough> )
+         SRC.SYSMESSAGE You dont have enough sweet dough on you.
+         RETURN 1
+      ENDIF
+
+      SRC.TAG.MAKEITEM.LEVEL 20.0
+
+      //Test Skill
+      IF (<SRC.COOKING> < <SRC.TAG.MAKEITEM.LEVEL>)
+         SRC.SYSMESSAGE You are not skilled enough to do that.
+         RETURN 1
+      ENDIF
+
+      SRC.SYSMESSAGE You start baking the mix.
+      SRC.CONSUME 1 i_sweet_dough, 1 i_flour_sack
+      SRC.NEWITEM i_cake_mix
+      SRC.ACT.BOUNCE
+      SRC.SKILLCHECK_RUN Skill_Cooking
+      RETURN 1
+   ENDIF
+
+   //If target ia a jar of honey, make cookie mix
+   IF (<SRC.TARG.BASEID>==i_jar_honey)
+
+      //Test resources to make cookie mix.
+      IF ( !<SRC.RESTEST 1 i_mixing_bowl> )
+         SRC.SYSMESSAGE You need a mixing bowl to do this.
+         RETURN 1
+      ELSEIF ( !<SRC.RESTEST 1 i_sweet_dough> )
+         SRC.SYSMESSAGE You dont have enough sweet dough on you.
+         RETURN 1
+      ENDIF
+
+      SRC.TAG.MAKEITEM.LEVEL 20.0
+
+      //Test Skill
+      IF (<SRC.COOKING> < <SRC.TAG.MAKEITEM.LEVEL>)
+         SRC.SYSMESSAGE You are not skilled enough to do that.
+         RETURN 1
+      ENDIF
+
+      SRC.SYSMESSAGE You start baking the mix.
+      SRC.CONSUME 1 i_sweet_dough, 1 i_jar_honey
+      SRC.NEWITEM i_cookie_mix
+      SRC.ACT.BOUNCE
+      SRC.SKILLCHECK_RUN Skill_Cooking
+      RETURN 1
+   ENDIF
+
+   SRC.SYSMESSAGE You cant think of anything to do with that.
+   RETURN 1
+
+[ITEMDEF i_cake_mix]
+  ID=i_cookie_mix
+  Name=Cake Mix
+  WEIGHT=6
+  VALUE=20
+  SKILLMAKE=COOKING 20.0
+  RESOURCES=1 i_sweet_dough, 1 i_flour_sack
+
+  CATEGORY=Items by Professions
+  SUBSECTION=Baker
+  DESCRIPTION=Cake Mix
+
+ON=@Dclick
+   TARGET What are you going to cook this on?
+   RETURN 1
+
+ON=@TARGON_ITEM
+   //If target is oven, make cake.
+   IF ((<SRC.TARG.BASEID>==i_oven_stone)||(<SRC.TARG.BASEID>==i_oven_sandstone))
+
+      //Test resources to make cake.
+      IF ( !<SRC.RESTEST 1 i_cake_mix> )
+         SRC.SYSMESSAGE You dont have enough cake mix on you.
+         RETURN 1
+      ENDIF
+
+      SRC.TAG.MAKEITEM.LEVEL 45.0
+
+      //Test Skill
+      IF (<SRC.COOKING> < <SRC.TAG.MAKEITEM.LEVEL>)
+         SRC.SYSMESSAGE You are not skilled enough to do that.
+         RETURN 1
+      ENDIF
+
+      SRC.SYSMESSAGE You put the cake in the oven.
+      SRC.CONSUME 1 i_cake_mix
+      SRC.NEWITEM i_cake
+      SRC.ACT.BOUNCE
+      SRC.SKILLCHECK_RUN Skill_Cooking
+   ELSE
+      SRC.SYSMESSAGE You cant think of anything to do with that.
+   ENDIF
+   RETURN 1
+
+[ITEMDEF i_cookie_mix]
+  NAME=Cookie Mix
+  VALUE=17
+  WEIGHT=3
+  SKILLMAKE=COOKING 20.0
+  RESOURCES=1 i_sweet_dough, 1 i_jar_honey
+
+  CATEGORY=Items by Professions
+  SUBSECTION=Baker
+  DESCRIPTION=Cookie Mix
+
+ON=@Dclick
+   TARGET What are you going to cook this on?
+   RETURN 1
+
+ON=@TARGON_ITEM
+   //If target is oven, make cookies.
+   IF ((<SRC.TARG.BASEID>==i_oven_stone)||(<SRC.TARG.BASEID>==i_oven_sandstone))
+
+      //Test resources to make cookies.
+      IF ( !<SRC.RESTEST 1 i_cookie_mix> )
+         SRC.SYSMESSAGE You dont have enough cookie mix on you.
+         RETURN 1
+      ENDIF
+
+      SRC.TAG.MAKEITEM.LEVEL 45.0
+
+      //Test Skill
+      IF (<SRC.COOKING> < <SRC.TAG.MAKEITEM.LEVEL>)
+         SRC.SYSMESSAGE You are not skilled enough to do that.
+         RETURN 1
+      ENDIF
+
+      SRC.SYSMESSAGE You put the cookies in the oven.
+      SRC.CONSUME 1 i_cookie_mix
+      SRC.NEWITEM i_pan_cookies
+      SRC.ACT.BOUNCE
+      SRC.SKILLCHECK_RUN Skill_Cooking
+   ELSE
+      SRC.SYSMESSAGE You cant think of anything u can do with that.
+   ENDIF
+   RETURN 1
+
+
+  /////////
+ //OVENS//
+/////////
+
+[ITEMDEF 092b]
+  DEFNAME=i_oven_stone
+  RESOURCES=20 i_ingot_iron, 300 i_rock_plain, 25 i_stone_marble
+  TYPE=T_FIRE
+  CATEGORY=Fireplaces, Chimneys & Ovens
+  SUBSECTION=Stone Oven 1
+  DESCRIPTION=@
+  DUPELIST=092c,092d,092e,092f,0930,0931,0932,0933,0934,0943,0944
+
+ON=@Dclick
+   TARGET What are you going to cook here?
+   RETURN 1
+
+ON=@TARGON_ITEM
+   //If target is cake mix, make cake.
+   IF (<SRC.TARG.BASEID>==i_cake_mix)
+      SRC.TAG.MAKEITEM.LEVEL 45.0
+
+      //Test Skill
+      IF (<SRC.COOKING> < <SRC.TAG.MAKEITEM.LEVEL>)
+         SRC.SYSMESSAGE You are not skilled enough to do that.
+         RETURN 1
+      ENDIF
+
+      SRC.SYSMESSAGE You put the cake in the oven.
+      SRC.CONSUME 1 i_cake_mix
+      SRC.NEWITEM i_cake
+      SRC.ACT.BOUNCE
+      SRC.SKILLCHECK_RUN Skill_Cooking
+      RETURN 1
+   ENDIF
+
+   //If target is cookie mix, make cookies. 
+   IF (<SRC.TARG.BASEID>==i_cookie_mix)
+      SRC.TAG.MAKEITEM.LEVEL 45.0
+
+      //Test Skill
+      IF (<SRC.COOKING> < <SRC.TAG.MAKEITEM.LEVEL>)
+         SRC.SYSMESSAGE You are not skilled enough to do that.
+         RETURN 1
+      ENDIF
+
+      SRC.SYSMESSAGE You put the cookies in the oven.
+      SRC.CONSUME 1 i_cookie_mix
+      SRC.NEWITEM i_pan_cookies
+      SRC.ACT.BOUNCE
+      SRC.SKILLCHECK_RUN Skill_Cooking
+      RETURN 1
+   ENDIF
+
+   //If target is sweet dough, make muffins 
+   IF (<SRC.TARG.BASEID>==i_sweet_dough)
+      SRC.TAG.MAKEITEM.LEVEL 30.0
+
+      //Test Skill
+      IF (<SRC.COOKING> < <SRC.TAG.MAKEITEM.LEVEL>)
+         SRC.SYSMESSAGE You are not skilled enough to do that.
+         RETURN 1
+      ENDIF
+
+      SRC.SYSMESSAGE You put the sweet dough in the oven.
+      SRC.CONSUME 1 i_sweet_dough
+      SRC.NEWITEM i_muffins
+      SRC.ACT.BOUNCE
+      SRC.SKILLCHECK_RUN Skill_Cooking
+      RETURN 1
+   ENDIF
+
+   //If target is dough, make bread 
+   IF (<SRC.TARG.BASEID>==i_dough)
+      SRC.TAG.MAKEITEM.LEVEL 30.0
+
+      //Test Skill
+      IF (<SRC.COOKING> < <SRC.TAG.MAKEITEM.LEVEL>)
+         SRC.SYSMESSAGE You are not skilled enough to do that.
+         RETURN 1
+      ENDIF
+
+      SRC.SYSMESSAGE You put the dough in the oven.
+      SRC.CONSUME 1 i_dough
+      SRC.NEWITEM i_bread_loaf
+      SRC.ACT.BOUNCE
+      SRC.SKILLCHECK_RUN Skill_Cooking
+      RETURN 1
+   ENDIF
+
+   SRC.SYSMESSAGE You dont want to do that.
+   RETURN 1
+
+ON=@SPELLEFFECT
+   RETURN 1
+
+[ITEMDEF 0461]
+  DEFNAME=i_oven_sandstone
+  RESOURCES=20 i_ingot_iron, 300 i_stone_sand, 25 i_stone_marble
+  TYPE=T_FIRE
+  CATEGORY=Fireplaces, Chimneys & Ovens
+  SUBSECTION=Sandstone Oven
+  DESCRIPTION=@
+  DUPELIST=0462,0463,0464,0465,0466,046a,046b,046c,046d,046e,046f
+
+ON=@DCLICK
+   TARGET What are you going to cook here?
+   RETURN 1
+
+ON=@TARGON_ITEM
+   //If target is cake mix, make cake.
+   IF (<SRC.TARG.BASEID>==i_cake_mix)
+      SRC.TAG.MAKEITEM.LEVEL 45.0
+
+      //Test Skill
+      IF (<SRC.COOKING> < <SRC.TAG.MAKEITEM.LEVEL>)
+         SRC.SYSMESSAGE You are not skilled enough to do that.
+         RETURN 1
+      ENDIF
+
+      SRC.SYSMESSAGE You put the cake in the oven.
+      SRC.CONSUME 1 i_cake_mix
+      SRC.NEWITEM i_cake
+      SRC.ACT.BOUNCE
+      SRC.SKILLCHECK_RUN Skill_Cooking
+      RETURN 1
+   ENDIF
+
+   //If target is cookie mix, make cookies. 
+   IF (<SRC.TARG.BASEID>==i_cookie_mix)
+      SRC.TAG.MAKEITEM.LEVEL 45.0
+      //Test Skill
+      IF (<SRC.COOKING> < <SRC.TAG.MAKEITEM.LEVEL>)
+         SRC.SYSMESSAGE You are not skilled enough to do that.
+         RETURN 1
+      ENDIF
+      SRC.SYSMESSAGE You put the cookies in the oven.
+      SRC.CONSUME 1 i_cookie_mix
+      SRC.NEWITEM i_pan_cookies
+      SRC.ACT.BOUNCE
+      SRC.SKILLCHECK_RUN Skill_Cooking
+      RETURN 1
+   ENDIF
+
+   //If target is sweet dough, make muffins 
+   IF (<SRC.TARG.BASEID>==i_sweet_dough)
+      SRC.TAG.MAKEITEM.LEVEL 30.0
+
+      //Test Skill
+      IF (<SRC.COOKING> < <SRC.TAG.MAKEITEM.LEVEL>)
+         SRC.SYSMESSAGE You are not skilled enough to do that.
+         RETURN 1
+      ENDIF
+
+      SRC.SYSMESSAGE You put the sweet dough in the oven.
+      SRC.CONSUME 1 i_sweet_dough
+      SRC.NEWITEM i_muffins
+      SRC.ACT.BOUNCE
+      SRC.SKILLCHECK_RUN Skill_Cooking
+      RETURN 1
+   ENDIF
+
+   //If target is dough, make bread 
+   IF (<SRC.TARG.BASEID>==i_dough)
+      SRC.TAG.MAKEITEM.LEVEL 30.0
+
+      //Test Skill
+      IF (<SRC.COOKING> < <SRC.TAG.MAKEITEM.LEVEL>)
+         SRC.SYSMESSAGE You are not skilled enough to do that.
+         RETURN 1
+      ENDIF
+
+      SRC.SYSMESSAGE You put the dough in the oven.
+      SRC.CONSUME 1 i_dough
+      SRC.NEWITEM i_bread_loaf
+      SRC.ACT.BOUNCE
+      SRC.SKILLCHECK_RUN Skill_Cooking
+      RETURN 1
+   ENDIF
+
+   SRC.SYSMESSAGE You dont want to do that.
+   RETURN 1
+
+ON=@SPELLEFFECT
+   RETURN 1
+
+//NEW ITEMS
+
+//PIZZAS
+
+[ITEMDEF 01083]
+  DEFNAME=i_pizza_uncooked
+  RESOURCES=1 i_cheese_wheel, 2 i_dough, 4 i_tomatoe
+  SKILLMAKE=COOKING 450
+  TYPE=T_FOOD_RAW
+  TDATA1=i_pizza
+  VALUE=67
+  WEIGHT=1
+
+  CATEGORY=Items by Professions
+  SUBSECTION=Baker
+  DESCRIPTION=Uncooked Pizza
+
+ON=@Dclick
+   TARGET What are you going to cook this on?
+   RETURN 1
+
+ON=@TARGON_ITEM
+   //If target is oven, make pizza.
+   IF ((<SRC.TARG.BASEID>==i_oven_stone)||(<SRC.TARG.BASEID>==i_oven_sandstone))
+      SRC.TAG.MAKEITEM.LEVEL 450
+      SRC.SYSMESSAGE You put the pizza in the oven.
+      SRC.COOKITEM i_pizza
+//      f_cooking_failure
+   ELSE
+      SRC.SYSMESSAGE You cant cook it there.
+   ENDIF
+   RETURN 1
+
+
+[ITEMDEF i_pizza_sausage_uncooked]
+  ID=01083
+  NAME=Uncooked Ogre pizza
+  RESOURCES=1 i_cheese_wheel, 2 i_dough, 1 i_ham, 1 i_sausages, 4 i_bacon_slice, 4 i_tomatoe
+  SKILLMAKE=COOKING 550
+  TYPE=T_FOOD_RAW
+  VALUE=54
+  TDATA1=i_pizza_sausage
+  WEIGHT=1
+
+  CATEGORY=Items by Professions
+  SUBSECTION=Baker
+  DESCRIPTION=Uncooked Ogre Pizza
+
+ON=@Dclick
+   TARGET What are you going to cook this on?
+   RETURN 1
+
+ON=@TARGON_ITEM
+   //If target is oven, make pizza.
+   IF ((<SRC.TARG.BASEID>==i_oven_stone)||(<SRC.TARG.BASEID>==i_oven_sandstone))
+      SRC.TAG.MAKEITEM.LEVEL 550
+      SRC.SYSMESSAGE You put the pizza in the oven.
+      SRC.COOKITEM i_pizza_sausage
+//      f_cooking_failure
+   ELSE
+      SRC.SYSMESSAGE You cant cook it there.
+   ENDIF
+   RETURN 1
+
+[ITEMDEF 01040]
+  DEFNAME=i_pizza
+  RESOURCES=1 i_pizza_uncooked
+  WEIGHT=0.8
+  TYPE=t_food
+  VALUE=97
+  SKILLMAKE=COOKING 45.0
+
+  CATEGORY=Items by Professions
+  SUBSECTION=Baker
+  DESCRIPTION=Pizza
+
+
+[ITEMDEF i_pizza_sausage]
+  ID=01040
+  NAME=Ogre pizza
+  RESOURCES=1 i_pizza_sausage_uncooked
+  WEIGHT=0.9
+  VALUE=107
+  TYPE=t_food
+  SKILLMAKE=COOKING 65.0
+
+  CATEGORY=Items by Professions
+  SUBSECTION=Baker
+  DESCRIPTION=Ogre Pizza
+
+
+//PIES
+
+[ITEMDEF i_pie_pumpkin_unbaked]
+  ID=01042
+  NAME=Unbaked pumpkin pie
+  TYPE=T_FOOD_RAW
+  TDATA1=i_pie_pumpkin_baked
+  VALUE=23
+  SKILLMAKE=COOKING 30.0
+  RESOURCES=2 i_dough, 4 i_fruit_pumpkin
+  WEIGHT=1
+
+  CATEGORY=Items by Professions
+  SUBSECTION=Baker
+  DESCRIPTION=Unbaked Pumpkin Pie
+
+ON=@Dclick
+   TARGET What are you going to cook this on?
+   RETURN 1
+
+ON=@TARGON_ITEM
+   //If target is oven, make pie.
+   IF ((<SRC.TARG.BASEID>==i_oven_stone)||(<SRC.TARG.BASEID>==i_oven_sandstone))
+      SRC.TAG.MAKEITEM.LEVEL 40.0
+      SRC.SYSMESSAGE You put the cake in the oven.
+      SRC.COOKITEM i_pie_pumpkin_baked
+//      f_cooking_failure
+   ELSE
+      SRC.SYSMESSAGE You cant cook it there.
+   ENDIF
+   RETURN 1
+
+[ITEMDEF i_pie_pumpkin_baked]
+  ID=01041
+  NAME=Pumpkin pie
+  WEIGHT=0.3
+  TYPE=t_food
+  VALUE=31
+  SKILLMAKE=COOKING 40.0
+  RESOURCES=1 i_pie_pumpkin_unbaked
+
+  CATEGORY=Items by Professions
+  SUBSECTION=Baker
+  DESCRIPTION=Baked Pumpkin Pie
+
+ON=@CREATE
+   COLOR=0157
+
+
+[ITEMDEF i_pie_fruit_unbaked]
+  ID=01042
+  NAME=Unbaked fruit pie
+  TYPE=T_FOOD_RAW
+  TDATA1=i_pie_fruit_baked
+  VALUE=23
+  SKILLMAKE=COOKING 32.0
+  RESOURCES=2 i_dough, 4 i_fruit_pear
+  WEIGHT=1
+
+  CATEGORY=Items by Professions
+  SUBSECTION=Baker
+  DESCRIPTION=Unbaked Pie
+
+ON=@Dclick
+   TARGET What are you going to cook this on?
+   RETURN 1
+
+ON=@TARGON_ITEM
+   //If target is oven, make pie.
+   IF ((<SRC.TARG.BASEID>==i_oven_stone)||(<SRC.TARG.BASEID>==i_oven_sandstone))
+      SRC.TAG.MAKEITEM.LEVEL 42.0
+      SRC.SYSMESSAGE You put the cake in the oven.
+      SRC.COOKITEM i_pie_fruit_baked
+//      f_cooking_failure
+   ELSE
+      SRC.SYSMESSAGE You cant cook it there.
+   ENDIF
+   RETURN 1
+
+[ITEMDEF i_pie_fruit_baked]
+  ID=01041
+  NAME=Fruit Pie
+  WEIGHT=0.3
+  VALUE=32
+  TYPE=t_food
+  SKILLMAKE=COOKING 42.0
+  RESOURCES=1 i_pie_fruit_unbaked
+
+  CATEGORY=Items by Professions
+  SUBSECTION=Baker
+  DESCRIPTION=Baked Pie
+
+ON=@CREATE
+   COLOR=0229
+
+
+[ITEMDEF i_pie_peach_unbaked]
+  ID=01042
+  NAME=Unbaked peach cobbler
+  TYPE=T_FOOD_RAW
+  TDATA1=i_pie_peach_baked
+  VALUE=23
+  SKILLMAKE=COOKING 34.0
+  RESOURCES=2 i_dough, 4 i_fruit_peach
+  WEIGHT=1
+
+  CATEGORY=Items by Professions
+  SUBSECTION=Baker
+  DESCRIPTION=Unbaked Peach Cobbler
+
+ON=@Dclick
+   TARGET What are you going to cook this on?
+   RETURN 1
+
+ON=@TARGON_ITEM
+   //If target is oven, make pie.
+   IF ((<SRC.TARG.BASEID>==i_oven_stone)||(<SRC.TARG.BASEID>==i_oven_sandstone))
+      SRC.TAG.MAKEITEM.LEVEL 44.0
+      SRC.SYSMESSAGE You put the cake in the oven.
+      SRC.COOKITEM i_pie_peach_baked
+//      f_cooking_failure
+   ELSE
+      SRC.SYSMESSAGE You cant cook it there.
+   ENDIF
+   RETURN 1
+
+
+[ITEMDEF i_pie_peach_baked]
+  ID=01041
+  NAME=Peach cobbler
+  WEIGHT=0.3
+  TYPE=t_food
+  VALUE=33
+  SKILLMAKE=COOKING 44.0
+  RESOURCES=1 i_pie_peach_unbaked
+
+  CATEGORY=Items by Professions
+  SUBSECTION=Baker
+  DESCRIPTION=Baked Peach Cobbler
+
+ON=@CREATE
+   COLOR=002d
+
+
+[ITEMDEF i_pie_apple_unbaked]
+  ID=01042
+  NAME=Unbaked apple pie
+  TYPE=T_FOOD_RAW
+  TDATA1=i_pie_apple_baked
+  VALUE=23
+  SKILLMAKE=COOKING 36.0
+  RESOURCES=2 i_dough, 4 i_fruit_apple
+  WEIGHT=1
+
+  CATEGORY=Items by Professions
+  SUBSECTION=Baker
+  DESCRIPTION=Unbaked Pie
+
+ON=@Dclick
+   TARGET What are you going to cook this on?
+   RETURN 1
+
+ON=@TARGON_ITEM
+   //If target is oven, make pie.
+   IF ((<SRC.TARG.BASEID>==i_oven_stone)||(<SRC.TARG.BASEID>==i_oven_sandstone))
+      SRC.TAG.MAKEITEM.LEVEL 46.0
+      SRC.SYSMESSAGE You put the cake in the oven.
+      SRC.COOKITEM i_pie_apple_baked
+//      f_cooking_failure
+   ELSE
+      SRC.SYSMESSAGE You cant cook it there.
+   ENDIF
+   RETURN 1
+
+[ITEMDEF i_pie_apple_baked]
+  ID=01041
+  NAME=Apple Pie
+  WEIGHT=0.3
+  TYPE=t_food
+  VALUE=34
+  SKILLMAKE=COOKING 46.0
+  RESOURCES=1 i_pie_apple_unbaked
+
+  CATEGORY=Items by Professions
+  SUBSECTION=Baker
+  DESCRIPTION=Baked Pie
+
+ON=@CREATE
+   COLOR=00fa
+
+
+[ITEMDEF i_pie_bird_unbaked]
+  ID=01042
+  NAME=Unbaked hunters pie
+  TYPE=T_FOOD_RAW
+  VALUE=27
+  TDATA1=i_pie_bird_baked
+  SKILLMAKE=COOKING 38.0
+  RESOURCES=2 i_dough, 4 i_bird_raw
+  WEIGHT=1
+
+  CATEGORY=Items by Professions
+  SUBSECTION=Baker
+  DESCRIPTION=Unbaked Hunters Pie
+
+ON=@Dclick
+   TARGET What are you going to cook this on?
+   RETURN 1
+
+ON=@TARGON_ITEM
+   //If target is oven, make pie.
+   IF ((<SRC.TARG.BASEID>==i_oven_stone)||(<SRC.TARG.BASEID>==i_oven_sandstone))
+      SRC.TAG.MAKEITEM.LEVEL 48.0
+      SRC.SYSMESSAGE You put the cake in the oven.
+      SRC.COOKITEM i_pie_bird_baked
+//      f_cooking_failure
+   ELSE
+      SRC.SYSMESSAGE You cant cook it there.
+   ENDIF
+   RETURN 1
+
+[ITEMDEF i_pie_bird_baked]
+  ID=01041
+  NAME=Hunters pie
+  WEIGHT=0.3
+  TYPE=t_food
+  VALUE=40
+  SKILLMAKE=COOKING 48.0
+  RESOURCES=1 i_pie_bird_unbaked
+
+  CATEGORY=Items by Professions
+  SUBSECTION=Baker
+  DESCRIPTION=Baked Hunters Pie
+
+
+[ITEMDEF i_pie_fish_unbaked]
+  ID=01042
+  NAME=Unbaked fish pie
+  TYPE=T_FOOD_RAW
+  TDATA1=i_pie_fish_baked
+  VALUE=27
+  SKILLMAKE=COOKING 42.0
+  RESOURCES=2 i_dough, 4 i_fish_cut_raw
+  WEIGHT=1
+
+  CATEGORY=Items by Professions
+  SUBSECTION=Baker
+  DESCRIPTION=Unbaked Fish Pie
+
+ON=@Dclick
+   TARGET What are you going to cook this on?
+   RETURN 1
+
+ON=@TARGON_ITEM
+   //If target is oven, make pie.
+   IF ((<SRC.TARG.BASEID>==i_oven_stone)||(<SRC.TARG.BASEID>==i_oven_sandstone))
+      SRC.TAG.MAKEITEM.LEVEL 52.0
+      SRC.SYSMESSAGE You put the cake in the oven.
+      SRC.COOKITEM i_pie_fish_baked
+//      f_cooking_failure
+   ELSE
+      SRC.SYSMESSAGE You cant cook it there.
+   ENDIF
+   RETURN 1
+
+[ITEMDEF i_pie_fish_baked]
+  ID=01041
+  NAME=Fish pie
+  WEIGHT=0.4
+  TYPE=t_food
+  VALUE=42
+  SKILLMAKE=COOKING 52.0
+  RESOURCES=1 i_pie_fish_unbaked
+
+  CATEGORY=Items by Professions
+  SUBSECTION=Baker
+  DESCRIPTION=Baked Fish Pie
+
+ON=@CREATE
+   COLOR=001b
+
+
+[ITEMDEF i_pie_ham_unbaked]
+  ID=01042
+  NAME=Unbaked trolls pie
+  TYPE=T_FOOD_RAW
+  TDATA1=i_pie_ham_baked
+  SKILLMAKE=COOKING 44.0
+  VALUE=38
+  RESOURCES=2 i_dough, 4 i_ham
+  WEIGHT=1
+
+  CATEGORY=Items by Professions
+  SUBSECTION=Baker
+  DESCRIPTION=Unbaked Trolls Pie
+
+ON=@Dclick
+   TARGET What are you going to cook this on?
+   RETURN 1
+
+ON=@TARGON_ITEM
+   //If target is oven, make pie.
+   IF ((<SRC.TARG.BASEID>==i_oven_stone)||(<SRC.TARG.BASEID>==i_oven_sandstone))
+      SRC.TAG.MAKEITEM.LEVEL 54.0
+      SRC.SYSMESSAGE You put the cake in the oven.
+      SRC.COOKITEM i_pie_ham_baked
+//      f_cooking_failure
+   ELSE
+      SRC.SYSMESSAGE You cant cook it there.
+   ENDIF
+   RETURN 1
+
+[ITEMDEF i_pie_ham_baked]
+  ID=01041
+  NAME=Trolls pie
+  WEIGHT=0.6
+  TYPE=t_food
+  VALUE=57
+  SKILLMAKE=COOKING 54.0
+  RESOURCES=1 i_pie_ham_unbaked
+
+  CATEGORY=Items by Professions
+  SUBSECTION=Baker
+  DESCRIPTION=Baked Trolls Pie
+
+ON=@CREATE
+   COLOR=021e
+
+
+[ITEMDEF i_pie_eggs_unbaked]
+  ID=01042
+  NAME=Unbaked Quiche
+  TYPE=T_FOOD_RAW
+  VALUE=29
+  TDATA1=i_pie_eggs_baked
+  SKILLMAKE=COOKING 46.0
+  RESOURCES=1 i_dough, 4 i_eggs_fresh
+  WEIGHT=1
+
+  CATEGORY=Items by Professions
+  SUBSECTION=Baker
+  DESCRIPTION=Unbaked Quiche
+
+ON=@Dclick
+   TARGET What are you going to cook this on?
+   RETURN 1
+
+ON=@TARGON_ITEM
+   //If target is oven, make pie.
+   IF ((<SRC.TARG.BASEID>==i_oven_stone)||(<SRC.TARG.BASEID>==i_oven_sandstone))
+      SRC.TAG.MAKEITEM.LEVEL 56.0
+      SRC.SYSMESSAGE You put the cake in the oven.
+      SRC.COOKITEM i_pie_eggs_baked
+//      f_cooking_failure
+   ELSE
+      SRC.SYSMESSAGE You cant cook it there.
+   ENDIF
+   RETURN 1
+
+[ITEMDEF i_pie_eggs_baked]
+  ID=01041
+  NAME=Quiche
+  WEIGHT=0.5
+  VALUE=47
+  TYPE=t_food
+  SKILLMAKE=COOKING 56.0
+  RESOURCES=1 i_pie_eggs_unbaked
+
+  CATEGORY=Items by Professions
+  SUBSECTION=Baker
+  DESCRIPTION=Baked Quiche
+
+ON=@CREATE
+   COLOR=00fa
+
+//SOUPS
+
+[ITEMDEF 01605]
+  DEFNAME=i_bowl_wood_lg
+  RESOURCES=2 i_BOARD
+  WEIGHT=1
+  VALUE=10
+  
+  CATEGORY=Items by Professions
+  SUBSECTION=Cook
+  DESCRIPTION=Wooden Bowl (Lg.)
+
+ON=@Dclick
+   TARGET What do you want to use this with?
+   RETURN 1
+
+ON=@TARGON_ITEM
+   IF ((<MOREX> > 1)&&((<SRC.TARG.TYPE>==T_FIRE)||(<SRC.TARG.TYPE>==T_CAMPFIRE)))
+      IF (<MOREX>==2)
+         MOREX=0
+         SRC.TAG.MAKEITEM.LEVEL 200
+         VAR.FAIL = 
+         SRC.COOKITEM i_bowl_tomato_soup
+         IF <VAR0.FAIL> = 0
+            SRC.NEWITEM i_pitcher_glass
+            SRC.ACT.BOUNCE
+         ENDIF
+         RETURN 1
+      ELSEIF (<MOREX>==3)
+         MOREX=0
+         SRC.TAG.MAKEITEM.LEVEL 300
+         VAR.FAIL = 
+         SRC.COOKITEM i_bowl_stew_lg
+         IF <VAR0.FAIL> = 0
+            SRC.NEWITEM i_pitcher_glass
+            SRC.ACT.BOUNCE
+         ENDIF
+         RETURN 1
+      ENDIF
+      MOREX=0
+      SRC.SYSMESSAGE You cant cook it there.
+      RETURN 1
+   ENDIF
+
+   IF (<SRC.TARG.BASEID>==i_tomatoe)
+      MOREX=2
+      TARGET What fire would you like to use to cook that?
+      RETURN 1
+   ELSEIF (<SRC.TARG.BASEID>==i_ribs_raw)
+      MOREX=3
+      TARGET What fire would you like to use to cook that?
+      RETURN 1
+   ENDIF
+
+   SRC.SYSMESSAGE There is nothing you can do with that.
+   RETURN 1
+   
+
+[ITEMDEF 01606]
+  DEFNAME=i_bowl_tomato_soup
+  RESOURCES=1 i_bowl_wood_lg, 4 i_TOMATOE, 1 i_pitcher_water
+  VALUE=30
+  WEIGHT=0.3
+  TYPE=T_FOOD
+  SKILLMAKE=COOKING 200
+
+  CATEGORY=Items by Professions
+  SUBSECTION=Cook
+  DESCRIPTION=Tomato Soup
+
+
+[ITEMDEF 01604]
+  DEFNAME=i_bowl_stew_lg
+  RESOURCES=1 i_bowl_wood_lg, 1 i_pitcher_water, 1 i_FLOUR_SACK, 4 i_ribs_raw
+  VALUE=50
+  WEIGHT=0.4
+  TYPE=T_FOOD
+  SKILLMAKE=COOKING 300
+  
+  CATEGORY=Items by Professions
+  SUBSECTION=Cook
+  DESCRIPTION=Bowl of Stew
+
+
+////////////////////////////////////Additions here by Wigifer//////////////////////////////////
+[ITEMDEF i_ribs_raw_angel]
+// DEFNAME2=RAW_RIBS
+NAME=Raw Angel Meat
+ID=i_ribs_raw
+TYPE=t_meat_raw
+TDATA1=i_ribs_cooked_angel
+VALUE=3
+WEIGHT=1
+CATEGORY=Imperial uo
+SUBSECTION=Cook
+DESCRIPTION=Angel Ribs (Raw)
+
+ON=@create
+   color=07a1
+
+ON=@targon_item
+   IF ( <amount> > 5 )
+      f_cook_targon_item
+      RETURN 1
+   ENDIF
+
+[ITEMDEF i_ribs_cooked_angel]
+  ID=i_ribs_cooked
+  NAME=Cooked Angel Meat
+  RESOURCES=1 i_ribs_raw_angel
+  WEIGHT=0.4
+  VALUE=50
+  TYPE=t_food
+
+ON=@create
+   color=07a1
+
+CATEGORY=Imperial uo
+SUBSECTION=Cook
+DESCRIPTION=Angel Ribs (Cooked)
+
+[ITEMDEF i_pie_angel_unbaked]
+  ID=01042
+  NAME=Unbaked Angel Pie
+  TYPE=T_FOOD_RAW
+  TDATA1=i_pie_angel_baked
+  SKILLMAKE=COOKING 88.0
+  VALUE=38
+  RESOURCES=10 i_dough, 12 i_ribs_raw_angel
+  WEIGHT=1
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Cook
+  DESCRIPTION=Unbaked Angel Pie
+
+ON=@Dclick
+   TARGET What are you going to cook this on?
+   RETURN 1
+
+ON=@TARGON_ITEM
+   //If target is oven, make pie.
+   IF ((<SRC.TARG.BASEID>==i_oven_stone)||(<SRC.TARG.BASEID>==i_oven_sandstone))
+      SRC.TAG.MAKEITEM.LEVEL 98.0
+      //Test Skill
+      IF (<SRC.COOKING> < <SRC.TAG.MAKEITEM.LEVEL>)
+         SRC.SYSMESSAGE You are not skilled enough to cook Angel Pie!
+         RETURN 1
+      ENDIF
+      SRC.SYSMESSAGE You put the pie in the oven.
+      SRC.COOKITEM i_pie_angel_baked
+//      f_cooking_failure
+   ELSE
+      SRC.SYSMESSAGE You cant cook it there.
+   ENDIF
+   RETURN 1
+
+// Shared credit with Magar for the baked pie, for helping me with memory objects
+// Infact really he scripted it himself
+
+[ITEMDEF i_pie_angel_baked]
+  ID=01041
+  NAME=Angel Pie
+  WEIGHT=1
+  TYPE=t_normal
+  VALUE=82
+  TDATA4=13
+  SKILLMAKE=COOKING 99.0
+  RESOURCES=1 i_pie_angel_unbaked
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Cook
+  DESCRIPTION=Baked Angel Pie
+
+ON=@CREATE
+   COLOR=07a1
+
+ON=@DCLICK
+   IF <src.findid.i_angel_eating.uid>
+      SRC.SYSMESSAGE You can't eat another Angel Pie this soon!
+      RETURN 0
+   ELSEIF (<SRC.FOOD> > 14)
+      SRC.SYSMESSAGE You are too full to eat anymore.
+      RETURN 0
+   ENDIF
+
+   IF (<TDATA4> >1)
+      SRC.EMOTE eat the <NAME>
+      SRC.FOOD = <EVAL (<src.food> + <TDATA4>)>
+   ENDIF
+
+   SRC.NEWITEM=i_angel_eating
+   SRC.ACT.CONT=<SRC.UID>
+   SRC.SYSMESSAGE You eat the Angel Pie and feel a holy energy surge through you...
+   SRC.SYSMESSAGE After eating the Angel Pie...
+   SRC.MODSTR=<SRC.MODSTR> +20
+
+   IF ( <SRC.FOOD> < 2 )
+      SRC.SYSMESSAGE You still feel starving.
+   ELSEIF ( <SRC.FOOD> < 4 )
+      SRC.SYSMESSAGE You still feel very hungry.
+   ELSEIF ( <SRC.FOOD> < 6 )
+      SRC.SYSMESSAGE You still feel hungry.
+   ELSEIF ( <SRC.FOOD> < 8 )
+      SRC.SYSMESSAGE You still feel a little hungry.
+   ELSEIF ( <SRC.FOOD> < 10 )
+      SRC.SYSMESSAGE You dont't feel hungry anymore.
+   ELSEIF ( <SRC.FOOD> < 12 )
+      SRC.SYSMESSAGE You feel fed.
+   ELSEIF ( <SRC.FOOD> < 14 )
+      SRC.SYSMESSAGE You feel well fed.
+   ELSE
+      SRC.SYSMESSAGE You feel absolutely stuffed
+   ENDIF
+
+   // Food HP calc
+   LOCAL.MAXHITSPERFOOD = (<EVAL (<SRC.STR> + (<TDATA4>*6))>)
+   IF ( <SRC.HITS> >= <LOCAL.MAXHITSPERFOOD> )
+      RETURN 1
+   ENDIF
+   SRC.HITS = <EVAL (<SRC.HITS> + (<TDATA4>*3))>       
+
+   // Consume only one
+   AMOUNT = <EVAL (<AMOUNT>-1)>
+   IF (<AMOUNT> == 0)
+      REMOVE
+   ENDIF
+
+   RETURN 1
+
+
+
+[ITEMDEF i_angel_eating]
+ID=i_memory
+TYPE=t_eq_script
+NAME=Angel Pie Consumed
+ON=@Create
+TIMER=900 // 15 minutes
+
+ON=@Timer
+    CONT.MODSTR=<CONT.MODSTR> +-20
+REMOVE
+RETURN 1
+ENDIF
+
+// Chocolate and ingredients scripted by Wigifer
+
+[ITEMDEF i_sugar_sack]
+  ID=01045
+  NAME=Sack of Sugar
+  WEIGHT=5
+  VALUE=35
+
+ON=@CREATE
+   COLOR=03e9
+
+ON=@Dclick
+   TARGET What are you going to mix this sugar with?
+   RETURN 1
+
+ON=@TARGON_ITEM
+   //If target is milk pitcher, make milk chocolate.
+   IF (<SRC.TARG.BASEID> == i_pitcher_milk)
+      IF ( !<SRC.RESTEST 4 i_pitcher_milk> )
+         SRC.SYSMESSAGE You do not have enough milk to mix the sugar with.
+         RETURN 1
+      ELSEIF ( !<SRC.RESTEST 2 i_cocoa_bean> )
+         SRC.SYSMESSAGE You do not have enough cocoa to mix the sugar with.
+         RETURN 1
+      ELSEIF ( !<SRC.RESTEST 1 i_mixing_bowl> )
+         SRC.SYSMESSAGE You need a mixing bowl to do this.
+         RETURN 1
+      ELSEIF ( !<SRC.RESTEST 1 i_sugar_sack> )
+         SRC.SYSMESSAGE You dont have enough sugar on you.
+         RETURN 1
+      ENDIF
+
+      SRC.TAG.MAKEITEM.LEVEL 60.0
+
+      //Test Skill
+      IF (<SRC.COOKING> < <SRC.TAG.MAKEITEM.LEVEL>)
+         SRC.SYSMESSAGE You are not skilled enough to do that.
+         RETURN 1
+      ENDIF
+
+      SRC.SYSMESSAGE You add the milk and cocoa to the sugar in the bowl and start mixing.
+      SRC.CONSUME 1 i_sugar_sack, 4 i_pitcher_milk, 2 i_cocoa_bean
+      SRC.NEWITEM i_chocolate_milk
+      SRC.ACT.BOUNCE
+      SRC.SKILLCHECK_RUN Skill_Cooking
+
+      SRC.NEWITEM i_pitcher_glass
+      SRC.ACT.BOUNCE
+      SRC.NEWITEM i_pitcher_glass
+      SRC.ACT.BOUNCE
+      SRC.NEWITEM i_pitcher_glass
+      SRC.ACT.BOUNCE
+      SRC.NEWITEM i_pitcher_glass
+      SRC.ACT.BOUNCE
+      RETURN 1
+   ENDIF
+
+   //If target is cocoa beans, make dark chocolate.
+   IF (<SRC.TARG.BASEID> == i_cocoa_bean)
+      IF ( !<SRC.RESTEST 2 i_pitcher_milk> )
+         SRC.SYSMESSAGE You do not have enough milk to mix the sugar with.
+         RETURN 1
+      ELSEIF ( !<SRC.RESTEST 6 i_cocoa_bean> )
+         SRC.SYSMESSAGE You do not have enough cocoa to mix the sugar with.
+         RETURN 1
+      ELSEIF ( !<SRC.RESTEST 1 i_mixing_bowl> )
+         SRC.SYSMESSAGE You need a mixing bowl to do this.
+         RETURN 1
+      ELSEIF ( !<SRC.RESTEST 1 i_sugar_sack> )
+         SRC.SYSMESSAGE You dont have enough sugar on you.
+         RETURN 1
+      ENDIF
+
+      SRC.TAG.MAKEITEM.LEVEL 65.0
+
+      //Test Skill
+      IF (<SRC.COOKING> < <SRC.TAG.MAKEITEM.LEVEL>)
+         SRC.SYSMESSAGE You are not skilled enough to do that.
+         RETURN 1
+      ENDIF
+
+      SRC.SYSMESSAGE You add the milk and sugar to the cocoa in the bowl and start mixing.
+      SRC.CONSUME 1 i_sugar_sack, 2 i_pitcher_milk, 6 i_cocoa_bean
+      SRC.NEWITEM i_chocolate_dark
+      SRC.ACT.BOUNCE
+      SRC.SKILLCHECK_RUN Skill_Cooking
+
+      SRC.NEWITEM i_pitcher_glass
+      SRC.ACT.BOUNCE
+      SRC.NEWITEM i_pitcher_glass
+      SRC.ACT.BOUNCE
+      RETURN 1
+   ENDIF
+
+   //If target is another sack of sugar make white chocolate
+   IF (<SRC.TARG.BASEID> == i_sugar_sack)
+      IF ( !<SRC.RESTEST 4 i_pitcher_milk> )
+         SRC.SYSMESSAGE You do not have enough milk to mix the sugar with.
+         RETURN 1
+      ELSEIF ( !<SRC.RESTEST 1 i_mixing_bowl> )
+         SRC.SYSMESSAGE You need a mixing bowl to do this.
+         RETURN 1
+      ELSEIF ( !<SRC.RESTEST 4 i_sugar_sack> )
+         SRC.SYSMESSAGE You dont have enough sugar on you.
+         RETURN 1
+      ENDIF
+
+      SRC.TAG.MAKEITEM.LEVEL 55.0
+ 
+      //Test Skill
+      IF (<SRC.COOKING> < <SRC.TAG.MAKEITEM.LEVEL>)
+         SRC.SYSMESSAGE You are not skilled enough to do that.
+         RETURN 1
+      ENDIF
+
+      SRC.SYSMESSAGE You add the milk to the sugar in the bowl and start mixing.
+      SRC.CONSUME 4 i_sugar_sack, 4 i_pitcher_milk
+      SRC.NEWITEM i_chocolate_white
+      SRC.ACT.BOUNCE
+      SRC.SKILLCHECK_RUN Skill_Cooking
+
+      SRC.NEWITEM i_pitcher_glass
+      SRC.ACT.BOUNCE
+      SRC.NEWITEM i_pitcher_glass
+      SRC.ACT.BOUNCE
+      SRC.NEWITEM i_pitcher_glass
+      SRC.ACT.BOUNCE
+      SRC.NEWITEM i_pitcher_glass
+      SRC.ACT.BOUNCE
+      RETURN 1
+   ENDIF
+
+CATEGORY=Imperial uo
+SUBSECTION=Cook
+DESCRIPTION=Sack of Sugar
+
+[ITEMDEF i_cocoa_bean]
+NAME=Cocoa Bean
+ID=i_virtuestone_black
+VALUE=75
+
+ON=@CREATE
+   COLOR=002e2
+
+CATEGORY=Imperial uo
+SUBSECTION=Cook
+DESCRIPTION=Cocoa Bean
+
+[ITEMDEF i_chocolate_milk]
+  ID=i_ingot_iron
+  NAME=Milk Chocolate
+  WEIGHT=1
+  TYPE=t_normal
+  VALUE=82
+  TDATA4=2
+  SKILLMAKE=COOKING 60.0
+  RESOURCES=1 i_sugar_sack, 2 i_cocoa_bean, 4 i_pitcher_milk
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Cook
+  DESCRIPTION=Milk Chocolate
+
+ON=@CREATE
+   COLOR=0724
+
+ON=@DCLICK
+   IF <src.findid.i_milk_chocolate_eating.uid>
+      SRC.SYSMESSAGE You can't eat another bar of chocolate yet or you'll be sick!
+      RETURN 1
+   ELSEIF <src.findid.i_dark_chocolate_eating.uid>
+      SRC.SYSMESSAGE You can't eat another bar of chocolate yet or you'll be sick!
+      RETURN 1
+   ELSEIF <src.findid.i_white_chocolate_eating.uid>
+      SRC.SYSMESSAGE You can't eat another bar of chocolate yet or you'll be sick!
+      RETURN 1
+   ELSEIF (<SRC.FOOD> > 14)
+      SRC.SYSMESSAGE You are too full to eat anymore.
+      RETURN 1
+   ENDIF
+
+   IF (<TDATA4> >1)
+      SRC.EMOTE eat the <NAME>
+      SRC.FOOD = <EVAL (<src.food> + <TDATA4>)>
+   ENDIF
+
+   SRC.NEWITEM=i_milk_chocolate_eating
+   SRC.ACT.CONT=<SRC.UID>
+   SRC.SYSMESSAGE You eat the bar of milk chocolate and feel energised...
+   SRC.SYSMESSAGE After eating the bar of milk chocolate...
+   SRC.MODDEX=<SRC.MODDEX> +5
+
+   IF ( <SRC.FOOD> < 2 )
+      SRC.SYSMESSAGE You still feel starving.
+   ELSEIF ( <SRC.FOOD> < 4 )
+      SRC.SYSMESSAGE You still feel very hungry.
+   ELSEIF ( <SRC.FOOD> < 6 )
+      SRC.SYSMESSAGE You still feel hungry.
+   ELSEIF ( <SRC.FOOD> < 8 )
+      SRC.SYSMESSAGE You still feel a little hungry.
+   ELSEIF ( <SRC.FOOD> < 10 )
+      SRC.SYSMESSAGE You dont't feel hungry anymore.
+   ELSEIF ( <SRC.FOOD> < 12 )
+      SRC.SYSMESSAGE You feel fed.
+   ELSEIF ( <SRC.FOOD> < 14 )
+      SRC.SYSMESSAGE You feel well fed.
+   ELSE
+      SRC.SYSMESSAGE You feel absolutely stuffed
+   ENDIF
+
+   // Food HP calc
+   LOCAL.MAXHITSPERFOOD = (<EVAL (<SRC.STR> + (<TDATA4>*6))>)
+   IF ( <SRC.HITS> >= <LOCAL.MAXHITSPERFOOD> )
+      RETURN 1
+   ENDIF
+   SRC.HITS = <EVAL (<SRC.HITS> + (<TDATA4>*3))>       
+
+   // Consume only one
+   AMOUNT = <EVAL (<AMOUNT>-1)>
+   IF (<AMOUNT> == 0)
+      REMOVE
+   ENDIF
+
+   RETURN 1
+
+
+[ITEMDEF i_milk_chocolate_eating]
+ID=i_memory
+TYPE=t_eq_script
+NAME=Milk Chocolate Consumed
+ON=@Create
+   TIMER=90 // 1 minute 30 seconds
+
+ON=@Timer
+   CONT.MODDEX=<CONT.MODDEX> +-5
+   REMOVE 
+   RETURN 1
+
+[ITEMDEF i_chocolate_dark]
+  ID=i_ingot_iron
+  NAME=Dark Chocolate
+  WEIGHT=1
+  TYPE=t_normal
+  VALUE=82
+  TDATA4=2
+  SKILLMAKE=COOKING 65.0
+  RESOURCES=1 i_sugar_sack, 6 i_cocoa_bean, 2 i_pitcher_milk
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Cook
+  DESCRIPTION=Dark Chocolate
+
+ON=@CREATE
+   COLOR=0734
+
+ON=@DCLICK
+   IF <src.findid.i_milk_chocolate_eating.uid> 
+      SRC.SYSMESSAGE You can't eat another bar of chocolate yet or you'll be sick!
+      RETURN 1
+   ELSEIF <src.findid.i_dark_chocolate_eating.uid>
+      SRC.SYSMESSAGE You can't eat another bar of chocolate yet or you'll be sick!
+      RETURN 1
+   ELSEIF <src.findid.i_white_chocolate_eating.uid>
+      SRC.SYSMESSAGE You can't eat another bar of chocolate yet or you'll be sick!
+      RETURN 1
+   ELSEIF (<SRC.FOOD> > 14)
+      SRC.SYSMESSAGE You are too full to eat anymore.
+      RETURN 1
+   ENDIF
+   IF (<TDATA4> >1)
+      SRC.EMOTE eat the <NAME>
+      SRC.FOOD = <EVAL (<src.food> + <TDATA4>)>
+   ENDIF
+
+   SRC.NEWITEM=i_dark_chocolate_eating
+   SRC.ACT.CONT=<SRC.UID>
+   SRC.SYSMESSAGE You eat the bar of dark chocolate and feel energised...
+   SRC.SYSMESSAGE After eating the bar of dark chocolate...
+   SRC.MODDEX=<SRC.MODDEX> +8
+
+   IF ( <SRC.FOOD> < 2 )
+      SRC.SYSMESSAGE You still feel starving.
+   ELSEIF ( <SRC.FOOD> < 4 )
+      SRC.SYSMESSAGE You still feel very hungry.
+   ELSEIF ( <SRC.FOOD> < 6 )
+      SRC.SYSMESSAGE You still feel hungry.
+   ELSEIF ( <SRC.FOOD> < 8 )
+      SRC.SYSMESSAGE You still feel a little hungry.
+   ELSEIF ( <SRC.FOOD> < 10 )
+      SRC.SYSMESSAGE You dont't feel hungry anymore.
+   ELSEIF ( <SRC.FOOD> < 12 )
+      SRC.SYSMESSAGE You feel fed.
+   ELSEIF ( <SRC.FOOD> < 14 )
+      SRC.SYSMESSAGE You feel well fed.
+   ELSE
+      SRC.SYSMESSAGE You feel absolutely stuffed
+   ENDIF
+
+   // Food HP calc
+   LOCAL.MAXHITSPERFOOD = (<EVAL (<SRC.STR> + (<TDATA4>*6))>)
+   IF ( <SRC.HITS> >= <LOCAL.MAXHITSPERFOOD> )
+      RETURN 1
+   ENDIF
+   SRC.HITS = <EVAL (<SRC.HITS> + (<TDATA4>*3))>       
+
+   // Consume only one
+   AMOUNT = <EVAL (<AMOUNT>-1)>
+   IF (<AMOUNT> == 0)
+      REMOVE
+   ENDIF
+
+   RETURN 1
+
+
+[ITEMDEF i_dark_chocolate_eating]
+ID=i_memory
+TYPE=t_eq_script
+NAME=Dark Chocolate Consumed
+ON=@Create
+TIMER=90 // 1 minute 30 seconds
+
+ON=@Timer
+   CONT.MODDEX=<CONT.MODDEX> +-8
+   REMOVE
+   RETURN 1
+
+[ITEMDEF i_chocolate_white]
+  ID=i_ingot_iron
+  NAME=White Chocolate
+  WEIGHT=1
+  TYPE=t_normal
+  VALUE=82
+  TDATA4=2
+  SKILLMAKE=COOKING 55.0
+  RESOURCES=4 i_sugar_sack, 4 i_pitcher_milk
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Cook
+  DESCRIPTION=White Chocolate
+
+ON=@CREATE
+   COLOR=0481
+
+ON=@DCLICK
+   IF <src.findid.i_milk_chocolate_eating.uid>
+      SRC.SYSMESSAGE You can't eat another bar of chocolate yet or you'll be sick!
+      RETURN 1
+   ELSEIF <src.findid.i_dark_chocolate_eating.uid>
+      SRC.SYSMESSAGE You can't eat another bar of chocolate yet or you'll be sick!
+      RETURN 1
+   ELSEIF <src.findid.i_white_chocolate_eating.uid>
+      SRC.SYSMESSAGE You can't eat another bar of chocolate yet or you'll be sick!
+      RETURN 1
+   ELSEIF (<SRC.FOOD> > 14)
+      SRC.SYSMESSAGE You are too full to eat anymore.
+      RETURN 1
+   ENDIF
+
+   IF (<TDATA4> >1)
+       SRC.EMOTE eat the <NAME>
+       SRC.FOOD = <EVAL (<src.food> + <TDATA4>)>
+   ENDIF
+
+   SRC.NEWITEM=i_white_chocolate_eating
+   SRC.ACT.CONT=<SRC.UID>
+   SRC.SYSMESSAGE You eat the bar of white chocolate and feel more focused...
+   SRC.SYSMESSAGE After eating the bar of white chocolate...
+   SRC.MEDITATION=<SRC.MEDITATION> +10
+
+   IF ( <SRC.FOOD> < 2 )
+      SRC.SYSMESSAGE You still feel starving.
+   ELSEIF ( <SRC.FOOD> < 4 )
+      SRC.SYSMESSAGE You still feel very hungry.
+   ELSEIF ( <SRC.FOOD> < 6 )
+      SRC.SYSMESSAGE You still feel hungry.
+   ELSEIF ( <SRC.FOOD> < 8 )
+      SRC.SYSMESSAGE You still feel a little hungry.
+   ELSEIF ( <SRC.FOOD> < 10 )
+      SRC.SYSMESSAGE You dont't feel hungry anymore.
+   ELSEIF ( <SRC.FOOD> < 12 )
+      SRC.SYSMESSAGE You feel fed.
+   ELSEIF ( <SRC.FOOD> < 14 )
+      SRC.SYSMESSAGE You feel well fed.
+   ELSE
+      SRC.SYSMESSAGE You feel absolutely stuffed
+   ENDIF
+
+   // Food HP calc
+   LOCAL.MAXHITSPERFOOD = (<EVAL (<SRC.STR> + (<TDATA4>*6))>)
+   IF ( <SRC.HITS> >= <LOCAL.MAXHITSPERFOOD> )
+      RETURN 1
+   ENDIF
+   SRC.HITS = <EVAL (<SRC.HITS> + (<TDATA4>*3))>       
+
+   // Consume only one
+   AMOUNT = <EVAL (<AMOUNT>-1)>
+   IF (<AMOUNT> == 0)
+      REMOVE
+   ENDIF
+
+   RETURN 1
+
+[ITEMDEF i_white_chocolate_eating]
+ID=i_memory
+TYPE=t_eq_script
+NAME=White Chocolate Consumed
+ON=@Create
+TIMER=60 // 1 minute
+
+ON=@Timer
+   CONT.MEDITATION=<CONT.MEDITATION> +-10
+   REMOVE
+   RETURN 1
+
+[ITEMDEF i_potato]
+NAME=Potato
+ID=i_fruit_coconut
+VALUE=22
+TYPE=t_normal
+
+ON=@CREATE
+   COLOR=00713
+
+ON=@DCLICK
+   TARGET What do you want to use this on?
+   RETURN 1
+
+ON=@TARGON_ITEM
+   //If target is raw ribs, make shepherds pie
+   IF (<SRC.TARG.BASEID>==i_ribs_raw)
+
+      //Test resources to make shepherds pie      
+      IF ( !<SRC.RESTEST 1 i_mixing_bowl> )
+         SRC.SYSMESSAGE You need a mixing bowl to do this.
+         RETURN 1
+      ELSEIF ( !<SRC.RESTEST 20 i_potato> )
+         SRC.SYSMESSAGE You dont have enough potatos on you.
+         RETURN 1
+      ELSEIF ( !<SRC.RESTEST 12 i_ribs_raw> )
+         SRC.SYSMESSAGE You dont have enough raw ribs on you.
+         RETURN 1
+      ELSEIF ( !<SRC.RESTEST 4 i_fruit_carrot> )
+         SRC.SYSMESSAGE You dont have enough carrots on you.
+         RETURN 1
+      ELSEIF ( !<SRC.RESTEST 1 i_bowl_wood_peas> )
+         SRC.SYSMESSAGE You dont have a bowl of peas on you.
+         RETURN 1
+      ENDIF
+
+      SRC.TAG.MAKEITEM.LEVEL 85.0
+
+      //Test Skill
+      IF (<SRC.COOKING> < <SRC.TAG.MAKEITEM.LEVEL>)
+         SRC.SYSMESSAGE You are not skilled enough to do that.
+         RETURN 1
+      ENDIF
+
+      SRC.SYSMESSAGE You start making shepherds pie.
+      SRC.CONSUME 20 i_potato, 12 i_ribs_raw, 4 i_fruit_carrot, 1 i_bowl_wood_peas
+      SRC.NEWITEM i_shepherds_pie_uncooked
+      SRC.ACT.BOUNCE
+      SRC.SKILLCHECK_RUN Skill_Cooking
+      RETURN 1
+   ENDIF
+
+   //If target is prize fish, make sushi
+   IF (<SRC.TARG.BASEID>==i_fish_prize)
+      //Test resources to make Sushi
+      IF ( !<SRC.RESTEST 1 i_mixing_bowl> )
+         SRC.SYSMESSAGE You need a mixing bowl to do this.
+         RETURN 1
+      ELSEIF ( !<SRC.RESTEST 2 i_fish_prize> )
+         SRC.SYSMESSAGE You dont have enough Prize Fish on you.
+         RETURN 1
+      ELSEIF ( !<SRC.RESTEST 1 i_fish_rare> )
+         SRC.SYSMESSAGE You dont have a Truly Rare Fish on you.
+         RETURN 1
+      ELSEIF ( !<SRC.RESTEST 1 i_fish_wondrous> )
+         SRC.SYSMESSAGE You dont have a Wondrous Fish on you.
+         RETURN 1
+      ELSEIF ( !<SRC.RESTEST 1 i_fish_peculiar> )
+         SRC.SYSMESSAGE You dont have a Peculiar Fish on you.
+         RETURN 1
+      ENDIF
+
+      SRC.TAG.MAKEITEM.LEVEL 80.0
+      //Test Skill
+      IF (<SRC.COOKING> < <SRC.TAG.MAKEITEM.LEVEL>)
+         SRC.SYSMESSAGE You are not skilled enough to do that.
+         RETURN 1
+      ENDIF
+      SRC.SYSMESSAGE You start making sushi.
+      SRC.CONSUME 2 i_potato, 2 i_fish_prize, 1 i_fish_rare, 1 i_fish_wondrous, 1 i_fish_peculiar
+      SRC.NEWITEM i_sushi
+      SRC.ACT.BOUNCE
+      SRC.SKILLCHECK_RUN Skill_Cooking
+      RETURN 1
+   ENDIF
+
+CATEGORY=Imperial uo
+SUBSECTION=Cook
+DESCRIPTION=Potato
+
+
+/////////////////////////SHEPHERD's PIE/////////////////////////////
+//Credit to Karl, who wanted me to script shepherds pie           //
+//Here you go mate, enjoy                                         //
+////////////////////////////////////////////////////////////////////	
+
+[ITEMDEF i_shepherds_pie_uncooked]
+  ID=i_plate
+  NAME=Cold Shepherds Pie Meal
+  TYPE=T_FOOD_RAW
+  TDATA1=i_shepherds_pie_cooked
+  SKILLMAKE=COOKING 85.0
+  VALUE=38
+  RESOURCES=20 i_potato, 12 i_ribs_raw, 4 i_fruit_carrot, 1 i_bowl_wood_peas
+  WEIGHT=1
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Cook
+  DESCRIPTION=Uncooked Shepherds Pie
+
+ON=@Dclick
+   TARGET What are you going to cook this on?
+   RETURN 1
+
+ON=@TARGON_ITEM
+   //If target is oven, make pie.
+   IF ((<SRC.TARG.BASEID>==i_oven_stone)||(<SRC.TARG.BASEID>==i_oven_sandstone))
+      SRC.TAG.MAKEITEM.LEVEL 85.0
+
+      //Test Skill
+      IF (<SRC.COOKING> < <SRC.TAG.MAKEITEM.LEVEL>)
+         SRC.SYSMESSAGE You are not skilled enough to cook Shepherds Pie!
+         RETURN 1
+      ENDIF
+
+      SRC.SYSMESSAGE You put the Shepherds Pie in the oven.
+      SRC.COOKITEM i_shepherds_pie_cooked
+//      f_cooking_failure
+   ELSE
+      SRC.SYSMESSAGE You cant cook it there.
+   ENDIF
+   RETURN 1
+
+[ITEMDEF i_shepherds_pie_cooked]
+  ID=09d8
+  NAME=Shepherds Pie Meal
+  WEIGHT=1
+  TYPE=t_normal
+  VALUE=82
+  TDATA4=8
+  SKILLMAKE=COOKING 95.0
+  RESOURCES=1 i_shepherds_pie_uncooked
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Cook
+  DESCRIPTION=Cooked Shepherds Pie
+
+ON=@DCLICK
+   IF <SRC.FINDID.i_shepherds_eating.uid>
+      SRC.SYSMESSAGE You can't eat another Shepherds Pie this soon!
+   ELSEIF (<SRC.FOOD> > 14)
+      SRC.SYSMESSAGE You are too full to eat anymore.
+      RETURN 0
+   ENDIF
+
+   IF (<TDATA4> >1)
+      SRC.EMOTE eat the <NAME>
+      SRC.FOOD = <EVAL (<src.food> + <TDATA4>)>
+   ENDIF
+
+   SRC.NEWITEM=i_shepherds_eating
+   SRC.ACT.CONT=<SRC.UID>
+   SRC.SYSMESSAGE You eat the Shepherds Pie and feel more in touch with nature...
+   SRC.SYSMESSAGE After eating the Shepherds Pie...
+   SRC.TAMING=<SRC.TAMING> +50
+
+   IF ( <SRC.FOOD> < 2 )
+      SRC.SYSMESSAGE You still feel starving.
+   ELSEIF ( <SRC.FOOD> < 4 )
+      SRC.SYSMESSAGE You still feel very hungry.
+   ELSEIF ( <SRC.FOOD> < 6 )
+      SRC.SYSMESSAGE You still feel hungry.
+   ELSEIF ( <SRC.FOOD> < 8 )
+      SRC.SYSMESSAGE You still feel a little hungry.
+   ELSEIF ( <SRC.FOOD> < 10 )
+      SRC.SYSMESSAGE You dont't feel hungry anymore.
+   ELSEIF ( <SRC.FOOD> < 12 )
+      SRC.SYSMESSAGE You feel fed.
+   ELSEIF ( <SRC.FOOD> < 14 )
+      SRC.SYSMESSAGE You feel well fed.
+   ELSE
+      SRC.SYSMESSAGE You feel absolutely stuffed
+   ENDIF
+
+   // Food HP calc
+   LOCAL.MAXHITSPERFOOD = (<EVAL (<SRC.STR> + (<TDATA4>*6))>)
+   IF ( <SRC.HITS> >= <LOCAL.MAXHITSPERFOOD> )
+      RETURN 1
+   ENDIF
+   SRC.HITS = <EVAL (<SRC.HITS> + (<TDATA4>*3))>       
+
+   // Consume only one
+   AMOUNT = <EVAL (<AMOUNT>-1)>
+   IF (<AMOUNT> == 0)
+      REMOVE
+   ENDIF
+
+   RETURN 1
+
+
+[ITEMDEF i_shepherds_eating]
+ID=i_memory
+TYPE=t_eq_script
+NAME=Shepherds Pie Consumed
+ON=@Create
+   TIMER=90 // 1 minute 30 seconds
+
+ON=@Timer
+   CONT.TAMING=<CONT.TAMING> +-50
+   REMOVE
+   RETURN 1
+
+
+
+//////////////////////////////////SUSHI/////////////////////////////////////
+//Credit for this idea goes to Katjak and Dannyboy (for stale sushi)      //
+////////////////////////////////////////////////////////////////////////////
+
+[ITEMDEF i_sushi]
+  ID=i_fish_small
+  NAME=Sushi
+  WEIGHT=1
+  TYPE=t_normal
+  VALUE=82
+  TDATA4=9
+  SKILLMAKE=COOKING 80.0
+  RESOURCES=2 i_potato, 2 i_fish_prize, 1 i_fish_rare, 1 i_fish_wondrous, 1 i_fish_peculiar
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Cook
+  DESCRIPTION=Sushi
+
+ON=@CREATE
+    COLOR=00482
+
+ON=@DCLICK
+   IF <SRC.FINDID.i_sushi_eating.uid>
+      SRC.SYSMESSAGE You can't eat another portion of Sushi this soon!
+      RETURN 0
+   ELSEIF <SRC.FINDID.i_sushi_stale_eating.uid>
+      SRC.SYSMESSAGE You can't eat another portion of Sushi this soon!
+      RETURN 0
+   ELSEIF (<SRC.FOOD> > 14)
+      SRC.SYSMESSAGE You are too full to eat anymore.
+      RETURN 0
+   ENDIF
+
+   IF (<TDATA4> >1)
+      SRC.EMOTE eat the <NAME>
+      SRC.FOOD = <EVAL (<src.food> + <TDATA4>)>
+   ENDIF
+
+   SRC.NEWITEM=i_sushi_eating
+   SRC.ACT.CONT=<SRC.UID>
+   SRC.SYSMESSAGE You eat the Sushi and feel more self-aware...
+   SRC.SYSMESSAGE After eating the Sushi...
+   SRC.MODINT=<SRC.MODINT> +10
+   SRC.MAGERY=<SRC.MAGERY> +50
+
+   IF ( <SRC.FOOD> < 2 )
+      SRC.SYSMESSAGE You still feel starving.
+   elseif ( <SRC.FOOD> < 4 )
+      SRC.SYSMESSAGE You still feel very hungry.
+   elseif ( <SRC.FOOD> < 6 )
+      SRC.SYSMESSAGE You still feel hungry.
+   elseif ( <SRC.FOOD> < 8 )
+      SRC.SYSMESSAGE You still feel a little hungry.
+   elseif ( <SRC.FOOD> < 10 )
+      SRC.SYSMESSAGE You dont't feel hungry anymore.
+   elseif ( <SRC.FOOD> < 12 )
+      SRC.SYSMESSAGE You feel fed.
+   elseif ( <SRC.FOOD> < 14 )
+      SRC.SYSMESSAGE You feel well fed.
+   else
+      SRC.SYSMESSAGE You feel absolutely stuffed
+   ENDIF
+
+   //Food HP calc
+   LOCAL.MAXHITSPERFOOD = (<EVAL (<SRC.STR> + (<TDATA4>*6))>)
+   IF ( <SRC.HITS> >= <LOCAL.MAXHITSPERFOOD> )
+      RETURN 1
+   ENDIF
+   SRC.HITS = <EVAL (<SRC.HITS> + (<TDATA4>*3))>       
+
+   //Consume only one
+   AMOUNT = <EVAL (<AMOUNT>-1)>
+   IF (<AMOUNT> == 0)
+      REMOVE
+   ENDIF
+
+   RETURN 1
+
+//Stale sushi made with aging agent, a poisoning item
+//Thanks to DannyBoy for this additional idea
+
+[ITEMDEF i_sushi_stale]
+  ID=i_fish_small
+  NAME=Sushi
+  WEIGHT=1
+  TYPE=t_normal
+  VALUE=82
+  TDATA4=9
+  SKILLMAKE=COOKING 80.0
+  RESOURCES=2 i_potato, 2 i_fish_prize, 1 i_fish_rare, 1 i_fish_wondrous, 1 i_fish_peculiar
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Cook
+  DESCRIPTION=Stale Sushi
+
+ON=@CREATE
+    COLOR=00482
+    
+ON=@DCLICK
+   IF <src.findid.i_sushi_eating.uid>
+      SRC.SYSMESSAGE You can't eat another portion of Sushi this soon!
+      RETURN 0
+   ELSEIF <src.findid.i_sushi_stale_eating.uid>
+      SRC.SYSMESSAGE You can't eat another portion of Sushi this soon!
+      RETURN 0
+   ELSEIF (<SRC.FOOD> > 14)
+      SRC.SYSMESSAGE You are too full to eat anymore.
+      RETURN 0
+   ENDIF
+
+   IF (<TDATA4> >1)
+      SRC.EMOTE eat the <NAME>
+      SRC.FOOD = <EVAL (<src.food> + <TDATA4>)>
+   ENDIF
+
+   SRC.NEWITEM=i_sushi_stale_eating
+   SRC.ACT.CONT=<SRC.UID>
+   SRC.SYSMESSAGE You eat the Sushi and feel sick...
+   SRC.SYSMESSAGE You realise the sushi was left too long and became poisonous!
+   SRC.HITS=<SRC.HITS>+-40
+   SRC.STR=<SRC.STR>+-10
+   SRC.SYSMESSAGE After eating the Sushi...
+
+   IF ( <SRC.FOOD> < 2 )
+      SRC.SYSMESSAGE You still feel starving.
+   ELSEIF ( <SRC.FOOD> < 4 )
+      SRC.SYSMESSAGE You still feel very hungry.
+   ELSEIF ( <SRC.FOOD> < 6 )
+      SRC.SYSMESSAGE You still feel hungry.
+   ELSEIF ( <SRC.FOOD> < 8 )
+      SRC.SYSMESSAGE You still feel a little hungry.
+   ELSEIF ( <SRC.FOOD> < 10 )
+      SRC.SYSMESSAGE You dont't feel hungry anymore.
+   ELSEIF ( <SRC.FOOD> < 12 )
+      SRC.SYSMESSAGE You feel fed.
+   ELSEIF ( <SRC.FOOD> < 14 )
+      SRC.SYSMESSAGE You feel well fed.
+   ELSE
+      SRC.SYSMESSAGE You feel absolutely stuffed
+   ENDIF
+
+   // Food HP calc
+   LOCAL.MAXHITSPERFOOD = (<EVAL (<SRC.STR> + (<TDATA4>*6))>)
+   IF ( <SRC.HITS> >= <LOCAL.MAXHITSPERFOOD> )
+      RETURN 1
+   ENDIF
+   SRC.HITS = <EVAL (<SRC.HITS> + (<TDATA4>*3))>       
+
+   // Consume only one
+   AMOUNT = <EVAL (<AMOUNT>-1)>
+   IF (<AMOUNT> == 0)
+      REMOVE
+   ENDIF
+
+   RETURN 1
+
+[ITEMDEF i_sushi_eating]
+ID=i_memory
+TYPE=t_eq_script
+NAME=Sushi Consumed
+ON=@Create
+TIMER=90 // 1 minute 30 seconds
+
+ON=@Timer
+   CONT.MODINT=<CONT.MODINT> +-10
+   CONT.MAGERY=<CONT.MAGERY> +-50
+   REMOVE
+   RETURN 1
+
+
+[ITEMDEF i_sushi_stale_eating]
+ID=i_memory
+TYPE=t_eq_script
+NAME=Stale Sushi Consumed
+ON=@Create
+TIMER=90 // 1 minute 30 seconds
+
+ON=@Timer
+   CONT.SYSMESSAGE After emptying your stomach you decide it best to check your sushi in future...
+   CONT.STR=<CONT.STR>+10
+   REMOVE
+   RETURN 1
+
+//Aging agent is essentially a poisoning item, but is only used on food, hence placed here
+[ITEMDEF i_aging_agent]
+NAME=Aging Agent
+ID=01837
+TYPE=t_normal
+
+ON=@CREATE
+   COLOR=00713
+
+ON=@DCLICK
+   TARGET What do you want to use this on?
+   RETURN 1
+
+ON=@TARGON_ITEM
+   //If target is sushi, age the sushi
+   IF (<SRC.TARG.BASEID>==i_sushi)
+      //Test for the aging agent and sushi baing in characters pack
+      IF ( !<SRC.RESTEST 1 i_sushi> )
+         SRC.SYSMESSAGE You need sushi in your pack to do this.
+         RETURN 1
+      ELSEIF ( !<SRC.RESTEST 1 i_aging_agent> )
+         SRC.SYSMESSAGE You need the aging agent in your pack to do this.
+         RETURN 1
+      ENDIF
+
+      SRC.TAG.MAKEITEM.LEVEL 55.0
+      //Test Skill
+      IF (<SRC.POISONING> < <SRC.TAG.MAKEITEM.LEVEL>)
+         SRC.SYSMESSAGE You are not skilled enough to do that.
+         RETURN 1
+      ENDIF
+
+      SRC.SYSMESSAGE You apply the aging agent to the sushi...
+      SRC.CONSUME 1 i_sushi, 1 i_aging_agent
+      SRC.NEWITEM i_sushi_stale
+      SRC.ACT.BOUNCE
+      SRC.SKILLCHECK_RUN Skill_Poisoning
+   ENDIF
+   RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Poisoning
+DESCRIPTION=Aging Agent
+
+
+
+////////////////////////////////////PIE OF LORDS///////////////////////////
+// This raises all stats by 15                                           //
+// The trade off is that you may not eat another for approximately 1 week//
+///////////////////////////////////////////////////////////////////////////
+
+[ITEMDEF i_pie_lords_unbaked]
+  ID=01042
+  NAME=Unbaked Pie of Lords
+  TYPE=T_FOOD_RAW
+  TDATA1=i_pie_lords_baked
+  SKILLMAKE=COOKING 90.0
+  VALUE=38
+  RESOURCES=10 i_dough, 6 i_ribs_raw_angel, 1 i_fish_rare, 1 i_fish_peculiar
+  WEIGHT=1
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Cook
+  DESCRIPTION=Unbaked Pie of Lords
+
+ON=@Dclick
+   TARGET What are you going to cook this on?
+   RETURN 1
+
+ON=@TARGON_ITEM
+   //If target is oven, make pie.
+   IF ((<SRC.TARG.BASEID>==i_oven_stone)||(<SRC.TARG.BASEID>==i_oven_sandstone))
+      SRC.TAG.MAKEITEM.LEVEL 100.0
+      //Test Skill
+      IF (<SRC.COOKING> < <SRC.TAG.MAKEITEM.LEVEL>)
+         SRC.SYSMESSAGE You are not skilled enough to cook Pie of Lords!
+         RETURN 1
+      ENDIF
+      IF (<SRC.FAME> < 5000)
+         SRC.SYSMESSAGE You are not worthy enough to make this pie!
+         RETURN 1
+      ENDIF
+      SRC.SYSMESSAGE You put the pie in the oven.
+      SRC.COOKITEM i_pie_lords_baked
+//      f_cooking_failure
+   ELSE
+      SRC.SYSMESSAGE You cant cook it there.
+   ENDIF
+   RETURN 1
+
+
+[ITEMDEF i_pie_lords_baked]
+  ID=01041
+  NAME=Pie of Lords
+  WEIGHT=1
+  TYPE=t_normal
+  VALUE=20
+  TDATA4=30
+  SKILLMAKE=COOKING 100.0
+  RESOURCES=1 i_pie_lords_unbaked
+
+  CATEGORY=Imperial uo
+  SUBSECTION=Cook
+  DESCRIPTION=Baked Pie of Lords
+
+ON=@CREATE
+    COLOR=00785
+
+ON=@DCLICK
+   IF (<SRC.FAME> < 10000)
+      SRC.SYSMESSAGE You are not worthy enough to eat this, how dare you consider it!
+      RETURN 0
+   ELSEIF <SRC.FINDID.i_lords_eating.uid>
+      SRC.SYSMESSAGE You can't eat another Pie of Lords this soon! T'would damage your reputation!
+      RETURN 0
+   ELSEIF <SRC.FINDID.i_lords_waiting.uid>
+      SRC.SYSMESSAGE To save face among your peers you choose not to eat the pie, lest you be called nothing more than a pig who eats fine food alone...
+      RETURN 0
+   ELSEIF (<SRC.FOOD> > 14)
+      SRC.SYSMESSAGE You are too full to eat anymore.
+      RETURN 0
+   ENDIF
+ 
+   IF (<TDATA4> >1)
+      SRC.EMOTE eat the <NAME>
+      SRC.FOOD = <EVAL (<src.food> + <TDATA4>)>
+   ENDIF
+
+   SRC.NEWITEM=i_lords_eating
+   SRC.ACT.CONT=<SRC.UID>
+   SRC.SYSMESSAGE You eat the Pie of Lords and feel like no mere peasant can defeat you!
+   SRC.SYSMESSAGE After eating the Pie of Lords...
+   SRC.MODSTR=<SRC.MODSTR> +15
+   SRC.MODINT=<SRC.MODINT> +15
+   SRC.MODDEX=<SRC.MODDEX> +15
+
+   IF ( <SRC.FOOD> < 2 )
+      SRC.SYSMESSAGE You still feel starving.
+   ELSEIF ( <SRC.FOOD> < 4 )
+      SRC.SYSMESSAGE You still feel very hungry.
+   ELSEIF ( <SRC.FOOD> < 6 )
+      SRC.SYSMESSAGE You still feel hungry.
+   ELSEIF ( <SRC.FOOD> < 8 )
+      SRC.SYSMESSAGE You still feel a little hungry.
+   ELSIF ( <SRC.FOOD> < 10 )
+      SRC.SYSMESSAGE You dont't feel hungry anymore.
+   ELSEIF ( <SRC.FOOD> < 12 )
+      SRC.SYSMESSAGE You feel fed.
+   ELSEIF ( <SRC.FOOD> < 14 )
+      SRC.SYSMESSAGE You feel well fed.
+   ELSE
+      SRC.SYSMESSAGE You feel absolutely stuffed
+   ENDIF
+
+   // Food HP calc
+   LOCAL.MAXHITSPERFOOD = (<EVAL (<SRC.STR> + (<TDATA4>*6))>)
+   IF ( <SRC.HITS> >= <LOCAL.MAXHITSPERFOOD> )
+      RETURN 1
+   ENDIF
+   SRC.HITS = <EVAL (<SRC.HITS> + (<TDATA4>*3))>       
+
+   // Consume only one
+   AMOUNT = <EVAL (<AMOUNT>-1)>
+   IF (<AMOUNT> == 0)
+      REMOVE
+   ENDIF
+
+   RETURN 1
+
+[ITEMDEF i_lords_eating]
+ID=i_memory
+TYPE=t_eq_script
+NAME=Pie of Lords Consumed
+ON=@Create
+TIMER=900 // 15 minutes
+
+ON=@Timer
+   CONT.MODSTR=<CONT.MODSTR> +-15
+   CONT.MODINT=<CONT.MODINT> +-15
+   CONT.MODDEX=<CONT.MODDEX> +-15
+   CONT.NEWITEM=i_lords_waiting
+   CONT.ACT.CONT=<CONT.UID>
+   REMOVE
+   RETURN 1
+
+[ITEMDEF i_lords_waiting]
+ID=i_memory
+TYPE=t_eq_script
+NAME=Pie of Lords Limiter
+ON=@Create
+   TIMER=3600 // An hour
+
+ON=@Timer
+   REMOVE
+   RETURN 1
+
+
+[FUNCTION COOKITEM]
+IF ( <RESTEST i_skill_cooking> )
+   SRC.SYSMESSAGE You haven't finished cooking.
+   RETURN 1
+ENDIF
+
+NEWITEM	<args>
+IF !( <RESTEST <ACT.RESOURCES>> )
+   SRC.SYSMESSAGE You lack the propper ingredients in your backpack.
+   ACT.REMOVE
+   VAR.FAIL = 1
+   RETURN 1
+ENDIF
+
+CONSUME <ACT.RESOURCES>
+SYSMESSAGE You start making <ACT.NAME>.
+ACT.REMOVE
+NEWITEM		i_skill_cooking
+ACT.MORE1	= <args>
+ACT.CONT	= <UID>
+ACT.TIMER	= 2
+
+
+[ITEMDEF i_skill_cooking]
+ID		= i_memory
+TYPE		= t_eq_script
+NAME		= cook item
+
+ON = @Timer
+   CONT.NEWITEM	<MORE1>
+   IF ( !<CONT.ISGM> && ( rand(<CONT.TAG.MAKEITEM.LEVEL>) > <CONT.COOKING> ) ) 
+      CONT.SYSMESSAGE You fail to make <CONT.ACT.NAME>.
+      CONT.ACT.REMOVE
+      REMOVE
+      RETURN 1
+   ENDIF
+
+   CONT.ACT.CONT	= <CONT.UID>
+   CONT.SYSMESSAGE You place the <CONT.ACT.NAME> in your pack.
+   CONT.SKILLCHECK_RUN Skill_Cooking
+
+   REMOVE
+   RETURN 1
+
+[EOF]

@@ -1,0 +1,224 @@
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+                                                                        +
+//+                      AUTOMATIC LOOT TABLE SYSTEM                       +
+//+                                                                        +
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+                                                                        +
+//+                           AUTHOR: WIGIFER                              +
+//+                         CREATED: 18/08/2018                            +
+//+                     LATEST REVISION: 19/08/2018                        +
+//+                                                                        +
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+                                                                        +
+//+                                                                        +
+//+                                                                        +
+//+                                                                        +
+//+                                                                        +
+//+                                                                        +
+//+                                                                        +
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+                           F_CENTRAL_LOOT                               +
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+[FUNCTION F_CENTRAL_LOOT]
+// CANCEL ALL ACTIONS IF IT'S AN ANIMAL
+
+IF (<NPC> == brain_animal)
+   RETURN 1
+ENDIF
+
+IF (<FINDLAYER(21).UID>)
+   FINDLAYER(21).REMOVE
+ENDIF
+// ##############################
+// ### DIFFICULTY CALCULATION ###
+// ##############################
+
+// We're going to define LOCAL.DIFFICULTY as 0 first, just for neatness purposes.
+LOCAL.DIFFICULTY = 0
+
+// Calculate our Str modifier
+// Each point in STR is worth 1 difficulty
+LOCAL.DIFFICULTY += <EVAL <STR>>
+// Every 2 points in INT is worth 1 difficulty
+LOCAL.DIFFICULTY += <EVAL <INT> / 2>
+// Every 3 points in DEX is worth 1 difficulty
+LOCAL.DIFFICULTY += <EVAL <DEX> / 3>
+// On top of this, every point of MaxHP is worth 1 difficulty
+LOCAL.DIFFICULTY += <EVAL <MAXHITS>>
+// Add in melee attack skills
+// Every 2% in a skill is worth 1 difficulty
+LOCAL.DIFFICULTY += <EVAL <SWORDSMANSHIP> / 20>
+LOCAL.DIFFICULTY += <EVAL <MACEFIGHTING> / 20>
+LOCAL.DIFFICULTY += <EVAL <FENCING> / 20>
+LOCAL.DIFFICULTY += <EVAL <WRESTLING> / 20>
+// Every 3% in parrying is worth 1 difficulty
+LOCAL.DIFFICULTY += <EVAL <PARRYING> / 30>
+// Every 1% in Tactics, Magic Resistance and Magery is worth 1 difficulty
+LOCAL.DIFFICULTY += <EVAL <TACTICS> / 10>
+LOCAL.DIFFICULTY += <EVAL <MAGICRESISTANCE> / 10>
+LOCAL.DIFFICULTY += <EVAL <MAGERY> / 10>
+// We're now adding a blank Multiplier value which holds our multiplier...
+LOCAL.MULTIPLIER = 0
+// We then work out the Armor value multiplier... 1 base multiplier, +1 multiplier per 25 armour.
+LOCAL.MULTIPLIER += <EVAL 1 + <EVAL <ARMOR> / 25>>
+// We then multiply this by the average damage value... 1 base multiplier, +1 multiplier per 25 avgdam.
+LOCAL.AVGDAM = <EVAL <EVAL <DAM.HI> + <DAM.LO>> / 2>
+LOCAL.MULTIPLIER += <EVAL 1 + <EVAL <LOCAL.AVGDAM> / 25>>
+// Now multiply our difficulty by this!
+LOCAL.DIFFICULTY *= <LOCAL.MULTIPLIER>
+
+// Add i_gold and set the amount as the LOCAL.DIFFICULTY / 3
+SERV.NEWITEM i_gold
+NEW.AMOUNT <EVAL <LOCAL.DIFFICULTY> / 3>
+NEW.BOUNCE
+
+// ##############################
+// ###   GENERIC ITEM DROPS   ###
+// ##############################
+
+
+// ###     SPELL SCROLLS      ###
+//
+// 1/5 chance of a spell scroll if the creature has magery ability. Circle depends on skill and difficulty.
+// Monsters with a power level of 10000 or greater also get an extra chance to roll one of EVERY type
+
+IF ((<MAGERY> > 800) && (<EVAL <LOCAL.DIFFICULTY>> > 10000) && (RAND(5) == 1))
+   SERV.NEWITEM random_eighth_circle
+   NEW.BOUNCE
+   SERV.NEWITEM random_seventh_circle
+   NEW.BOUNCE   
+   SERV.NEWITEM random_sixth_circle
+   NEW.BOUNCE
+   SERV.NEWITEM random_fifth_circle
+   NEW.BOUNCE   
+   SERV.NEWITEM random_fourth_circle
+   NEW.BOUNCE   
+   SERV.NEWITEM random_third_circle
+   NEW.BOUNCE
+   SERV.NEWITEM random_second_circle
+   NEW.BOUNCE   
+   SERV.NEWITEM random_first_circle
+   NEW.BOUNCE   
+ELSEIF ((<MAGERY> > 800) && (<EVAL <LOCAL.DIFFICULTY>> > 2000) && (RAND(5) == 1))
+   SERV.NEWITEM random_eighth_circle
+   NEW.BOUNCE
+ELSEIF ( (<MAGERY> > 700) && (<EVAL <LOCAL.DIFFICULTY>> > 1750) && (RAND(5) == 1))
+   SERV.NEWITEM random_seventh_circle
+   NEW.BOUNCE
+ELSEIF ((<MAGERY> > 600) && (<EVAL <LOCAL.DIFFICULTY>> > 1500) && (RAND(5) == 1))
+   SERV.NEWITEM random_sixth_circle
+   NEW.BOUNCE
+ELSEIF ((<MAGERY> > 500) && (<EVAL <LOCAL.DIFFICULTY>> > 1250) && (RAND(5) == 1))
+   SERV.NEWITEM random_fifth_circle
+   NEW.BOUNCE
+ELSEIF ((<MAGERY> > 400) && (<EVAL <LOCAL.DIFFICULTY>> > 750) && (RAND(5) == 1))
+   SERV.NEWITEM random_fourth_circle
+   NEW.BOUNCE
+ELSEIF ((<MAGERY> > 300) && (<EVAL <LOCAL.DIFFICULTY>> > 250) && (RAND(5) == 1))
+   SERV.NEWITEM random_third_circle
+   NEW.BOUNCE
+ELSEIF ((<MAGERY> > 200) && (RAND(5) == 1))
+   SERV.NEWITEM random_second_circle
+   NEW.BOUNCE   
+ELSEIF ((<MAGERY> > 100) && (RAND(5) == 1))
+   SERV.NEWITEM random_first_circle
+   NEW.BOUNCE
+ENDIF
+
+
+// ###       REAGENTS         ###
+//
+// 1/3 chance of a random reagent. 1/3 chance of THEN rolling a second, and 1/3 chance of THEN rolling a 3rd... So it's a 1/27 chance of 3 regs.
+
+IF ((<LOCAL.DIFFICULTY> > 250) && (RAND(3) == 1))
+   IF (<MAGERY> > 100)
+      SERV.NEWITEM random_reagent
+      NEW.AMOUNT {5 15}
+      NEW.BOUNCE
+      IF (RAND(4) == 1)
+         SERV.NEWITEM random_reagent
+         NEW.AMOUNT {5 15}
+         NEW.BOUNCE
+         IF (RAND(4) == 1)
+	    SERV.NEWITEM random_reagent
+	    NEW.AMOUNT {5 15}
+	    NEW.BOUNCE
+         ENDIF
+      ENDIF
+   ENDIF
+ENDIF
+
+// ###        POTIONS         ###
+//
+// 1/3 chance of a random potion if the opponent has a good level of Int.
+
+IF ((<LOCAL.DIFFICULTY> > 250) && (RAND(3) == 1))
+   IF (<INT> > 50)
+      SERV.NEWITEM random_potion
+      NEW.AMOUNT {1 2}
+      NEW.BOUNCE
+   ENDIF
+ENDIF
+
+// ##############################
+// ###  BODY SPECIFIC DROPS   ###
+// ##############################
+
+// ###        POTIONS         ###
+
+IF (STRMATCH(*Spider*, <ID>))
+   SERV.NEWITEM i_reag_spider_silk
+   NEW.AMOUNT {2 4}
+   NEW.BOUNCE
+ENDIF
+
+
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+                          F_GET_DIFFICULTY                              +
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+[FUNCTION f_get_difficulty]
+
+// We're going to define LOCAL.DIFFICULTY as 0 first, just for neatness purposes.
+LOCAL.DIFFICULTY = 0
+
+// Calculate our Str modifier
+// Each point in STR is worth 1 difficulty
+LOCAL.DIFFICULTY += <EVAL <STR>>
+// Every 2 points in INT is worth 1 difficulty
+LOCAL.DIFFICULTY += <EVAL <INT> / 2>
+// Every 3 points in DEX is worth 1 difficulty
+LOCAL.DIFFICULTY += <EVAL <DEX> / 3>
+// On top of this, every point of MaxHP is worth 1 difficulty
+LOCAL.DIFFICULTY += <EVAL <MAXHITS>>
+// Add in melee attack skills
+// Every 2% in a skill is worth 1 difficulty
+LOCAL.DIFFICULTY += <EVAL <SWORDSMANSHIP> / 20>
+LOCAL.DIFFICULTY += <EVAL <MACEFIGHTING> / 20>
+LOCAL.DIFFICULTY += <EVAL <FENCING> / 20>
+LOCAL.DIFFICULTY += <EVAL <WRESTLING> / 20>
+// Every 3% in parrying is worth 1 difficulty
+LOCAL.DIFFICULTY += <EVAL <PARRYING> / 30>
+// Every 1% in Tactics, Magic Resistance and Magery is worth 1 difficulty
+LOCAL.DIFFICULTY += <EVAL <TACTICS> / 10>
+LOCAL.DIFFICULTY += <EVAL <MAGICRESISTANCE> / 10>
+LOCAL.DIFFICULTY += <EVAL <MAGERY> / 10>
+// We're now adding a blank Multiplier value which holds our multiplier...
+LOCAL.MULTIPLIER = 0
+// We then work out the Armor value multiplier... 1 base multiplier, +1 multiplier per 25 armour.
+LOCAL.MULTIPLIER += <EVAL 1 + <EVAL <ARMOR> / 25>>
+// We then multiply this by the average damage value... 1 base multiplier, +1 multiplier per 25 avgdam.
+LOCAL.AVGDAM = <EVAL <EVAL <DAM.HI> + <DAM.LO>> / 2>
+LOCAL.MULTIPLIER += <EVAL 1 + <EVAL <LOCAL.AVGDAM> / 25>>
+// Now multiply our difficulty by this!
+LOCAL.DIFFICULTY *= <LOCAL.MULTIPLIER>
+
+RETURN <EVAL <LOCAL.DIFFICULTY>>
+
+
+
+[EOF]

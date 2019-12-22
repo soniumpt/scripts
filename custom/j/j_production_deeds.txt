@@ -1,0 +1,933 @@
+//-----------------------------------
+//-    Mass Production Deeds        -
+//-                                 -
+//-    Scripted by Wigifer          -
+//-                                 -
+//-    27th January 2004            -
+//-    For use solely on            -
+//-    Burstfire UO                 -
+//-----------------------------------
+
+[ITEMDEF i_deed_production_blacksmithy]
+ID=i_deed
+TYPE=t_script
+NAME=Blacksmithy Mass Production Deed
+
+ON=@CREATE
+COLOR=075
+
+ON=@DCLICK
+IF ( (<LINK>=04fffffff) && !(0<TAG.UID>) )
+   TIMER=3600
+   SRC.SYSMESSAGE @25 You have an hour to fill the order!
+   SRC.SYSMESSAGE @25 At the end of the hour a cheque will appear in your bank!
+   SRC.SYSMESSAGE @25 Happy crafting!
+   f_production_blacksmithy_set
+   LINK=<SRC.UID>
+   TAG.UID=<SRC.UID>
+ELSEIF (0<TAG.UID>)
+   LINK=<TAG.UID>
+ENDIF
+IF (<TIMER>=0)
+   SRC.SYSMESSAGE @25 Too late. Time up! Place your deed on the floor to recieve your reward!
+   RETURN 1
+ENDIF
+DIALOG d_production_deed
+RETURN 1
+
+ON=@TIMER
+   VAR.TOTALPROFIT=0
+   IF (0<TAG.PRODUCTONEDONE>=1)
+      VAR.TOTALPROFIT=<eval 0<VAR.TOTALPROFIT> + 0<TAG.PRODUCTONEVALUE>>
+   ENDIF
+   IF (0<TAG.PRODUCTTWODONE>=1)
+      VAR.TOTALPROFIT=<eval 0<VAR.TOTALPROFIT> + 0<TAG.PRODUCTTWOVALUE>>
+   ENDIF
+   IF (0<TAG.PRODUCTTHREEDONE>=1)
+      VAR.TOTALPROFIT=<eval 0<VAR.TOTALPROFIT> + 0<TAG.PRODUCTTHREEVALUE>>
+   ENDIF
+   IF (0<TAG.PRODUCTFOURDONE>=1)
+      VAR.TOTALPROFIT=<eval 0<VAR.TOTALPROFIT> + 0<TAG.PRODUCTFOURVALUE>>
+   ENDIF
+   IF (0<TAG.PRODUCTFIVEDONE>=1)
+      VAR.TOTALPROFIT=<eval 0<VAR.TOTALPROFIT> + 0<TAG.PRODUCTFIVEVALUE>>
+   ENDIF
+   IF (0<TAG.PRODUCTSIXDONE>=1)
+      VAR.TOTALPROFIT=<eval 0<VAR.TOTALPROFIT> + 0<TAG.PRODUCTSIXVALUE>>
+   ENDIF
+   IF (0<TAG.PRODUCTSEVENDONE>=1)
+      VAR.TOTALPROFIT=<eval 0<VAR.TOTALPROFIT> + 0<TAG.PRODUCTSEVENVALUE>>
+   ENDIF
+   IF ((0<TAG.PRODUCTONEDONE>=1)&&(0<TAG.PRODUCTTWODONE>=1)&&(0<TAG.PRODUCTTHREEDONE>=1)&&(0<TAG.PRODUCTFOURDONE>=1)&&(0<TAG.PRODUCTFIVEDONE>=1)&&(0<TAG.PRODUCTSIXDONE>=1)&&(0<TAG.PRODUCTSEVENDONE>=1))
+      LINK.SYSMESSAGE @80 For filling out the order completely, you recieve a trader ticket in your bank.
+      LINK.NEWITEM i_tradertoken
+      LINK.ACT.CONT=<LINK.findlayer(layer_bankbox).uid>
+   ENDIF
+   IF (0<VAR.TOTALPROFIT>=0)
+      LINK.SYSMESSAGE @60 You get nothing for crafting nothing!!!
+      REMOVE
+      RETURN 1
+   ENDIF
+   LINK.NEWITEM i_check
+   LINK.ACT.MORE2=<eval 0<VAR.TOTALPROFIT>>
+   LINK.ACT.CONT=<LINK.findlayer(layer_bankbox).uid>
+   LINK.SYSMESSAGE @60 Your order has been completed...
+   LINK.SYSMESSAGE @60 A cheque payment worth <eval <LINK.ACT.MORE2>> has been placed in your bank.
+   REMOVE
+   RETURN 1
+
+ON=@Targon_char
+SRC.SYSMESSAGE You cannot target this on characters!
+RETURN 1
+
+ON=@Targon_ground
+SRC.SYSMESSAGE Somehow you feel that earth and dirt doesn't sell well...
+RETURN 1
+
+ON=@Targon_item
+IF !(<src.targ.cont>==<src.findlayer.21.uid>)
+   SRC.SYSMESSAGE @85 You can only add items in your pack!!!
+   RETURN 1
+ENDIF
+IF ( !strcmpi("<TAG.PRODUCTONE>","<SRC.TARG.BASEID>")
+   IF !(0<TAG.PRODUCTONEDONE>)
+      SRC.SYSMESSAGE @42 You add the <TAG.PRODUCTONENAME> to the inventory...
+      TAG.PRODUCTONEDONE=1
+      SRC.TARG.REMOVE
+   ELSE
+      SRC.SYSMESSAGE @42 You've already added <TAG.PRODUCTONENAME> to slot one!
+   ENDIF
+ENDIF
+IF ( !strcmpi("<TAG.PRODUCTTWO>","<SRC.TARG.BASEID>")
+   IF !(0<TAG.PRODUCTTWODONE>)
+      SRC.SYSMESSAGE @42 You add the <TAG.PRODUCTTWONAME> to the inventory...
+      TAG.PRODUCTTWODONE=1
+      SRC.TARG.REMOVE
+   ELSE
+      SRC.SYSMESSAGE @42 You've already added <TAG.PRODUCTTWONAME> to slot two!
+   ENDIF
+   RETURN 1
+ENDIF
+IF ( !strcmpi("<TAG.PRODUCTTHREE>","<SRC.TARG.BASEID>")
+   IF !(0<TAG.PRODUCTTHREEDONE>)
+      SRC.SYSMESSAGE @42 You add the <TAG.PRODUCTTHREENAME> to the inventory...
+      TAG.PRODUCTTHREEDONE=1
+      SRC.TARG.REMOVE
+   ELSE
+      SRC.SYSMESSAGE @42 You've already added <TAG.PRODUCTTHREENAME> to slot three!
+   ENDIF
+   RETURN 1
+ENDIF
+IF ( !strcmpi("<TAG.PRODUCTFOUR>","<SRC.TARG.BASEID>")
+   IF !(0<TAG.PRODUCTFOURDONE>)
+      SRC.SYSMESSAGE @42 You add the <TAG.PRODUCTFOURNAME> to the inventory...
+      TAG.PRODUCTFOURDONE=1
+      SRC.TARG.REMOVE
+   ELSE
+      SRC.SYSMESSAGE @42 You've already added <TAG.PRODUCTFOURNAME> to slot four!
+   ENDIF
+   RETURN 1
+ENDIF
+IF ( !strcmpi("<TAG.PRODUCTFIVE>","<SRC.TARG.BASEID>")
+   IF !(0<TAG.PRODUCTFIVEDONE>)
+      SRC.SYSMESSAGE @42 You add the <TAG.PRODUCTFIVENAME> to the inventory...
+      TAG.PRODUCTFIVEDONE=1
+      SRC.TARG.REMOVE
+   ELSE
+      SRC.SYSMESSAGE @42 You've already added <TAG.PRODUCTFIVENAME> to slot five!
+   ENDIF
+   RETURN 1
+ENDIF
+IF ( !strcmpi("<TAG.PRODUCTSIX>","<SRC.TARG.BASEID>")
+   IF !(0<TAG.PRODUCTSIXDONE>)
+      SRC.SYSMESSAGE @42 You add the <TAG.PRODUCTSIXNAME> to the inventory...
+      TAG.PRODUCTSIXDONE=1
+      SRC.TARG.REMOVE
+   ELSE
+      SRC.SYSMESSAGE @42 You've already added <TAG.PRODUCTSIXNAME> to slot six!
+   ENDIF   
+   RETURN 1
+ENDIF
+IF ( !strcmpi("<TAG.PRODUCTSEVEN>","<SRC.TARG.BASEID>")
+   IF !(0<TAG.PRODUCTSEVENDONE>)
+      SRC.SYSMESSAGE @42 You add the <TAG.PRODUCTSEVENNAME> to the inventory...
+      TAG.PRODUCTSEVENDONE=1
+      SRC.TARG.REMOVE
+   ELSE
+      SRC.SYSMESSAGE @42 You've already added <TAG.PRODUCTSEVENNAME> to slot seven!
+   ENDIF
+   RETURN 1
+ENDIF
+RETURN 1
+
+[ITEMDEF i_deed_production_carpentry]
+ID=i_deed
+TYPE=t_script
+NAME=Carpentry Mass Production Deed
+
+ON=@CREATE
+f_production_carpentry_set
+COLOR=075
+
+ON=@DCLICK
+IF (<LINK>=04fffffff)
+   TIMER=3600
+   SRC.SYSMESSAGE @25 You have an hour to fill the order!
+   SRC.SYSMESSAGE @25 At the end of the hour a cheque will appear in your bank!
+   SRC.SYSMESSAGE @25 Happy crafting!
+   LINK=<SRC.UID>
+ENDIF
+IF (<TIMER>=0)
+   SRC.SYSMESSAGE @25 Too late. Time up! Place your deed on the floor to recieve your reward!
+   RETURN 1
+ENDIF
+DIALOG d_production_deed
+RETURN 1
+
+ON=@TIMER
+   VAR.TOTALPROFIT=0
+   IF (0<TAG.PRODUCTONEDONE>=1)
+      VAR.TOTALPROFIT=<eval 0<VAR.TOTALPROFIT> + 0<TAG.PRODUCTONEVALUE>>
+   ENDIF
+   IF (0<TAG.PRODUCTTWODONE>=1)
+      VAR.TOTALPROFIT=<eval 0<VAR.TOTALPROFIT> + 0<TAG.PRODUCTTWOVALUE>>
+   ENDIF
+   IF (0<TAG.PRODUCTTHREEDONE>=1)
+      VAR.TOTALPROFIT=<eval 0<VAR.TOTALPROFIT> + 0<TAG.PRODUCTTHREEVALUE>>
+   ENDIF
+   IF (0<TAG.PRODUCTFOURDONE>=1)
+      VAR.TOTALPROFIT=<eval 0<VAR.TOTALPROFIT> + 0<TAG.PRODUCTFOURVALUE>>
+   ENDIF
+   IF (0<TAG.PRODUCTFIVEDONE>=1)
+      VAR.TOTALPROFIT=<eval 0<VAR.TOTALPROFIT> + 0<TAG.PRODUCTFIVEVALUE>>
+   ENDIF
+   IF (0<TAG.PRODUCTSIXDONE>=1)
+      VAR.TOTALPROFIT=<eval 0<VAR.TOTALPROFIT> + 0<TAG.PRODUCTSIXVALUE>>
+   ENDIF
+   IF (0<TAG.PRODUCTSEVENDONE>=1)
+      VAR.TOTALPROFIT=<eval 0<VAR.TOTALPROFIT> + 0<TAG.PRODUCTSEVENVALUE>>
+   ENDIF
+   IF ((0<TAG.PRODUCTONEDONE>=1)&&(0<TAG.PRODUCTTWODONE>=1)&&(0<TAG.PRODUCTTHREEDONE>=1)&&(0<TAG.PRODUCTFOURDONE>=1)&&(0<TAG.PRODUCTFIVEDONE>=1)&&(0<TAG.PRODUCTSIXDONE>=1)&&(0<TAG.PRODUCTSEVENDONE>=1))
+      LINK.SYSMESSAGE @80 For filling out the order completely, you recieve a trader ticket in your bank.
+      LINK.NEWITEM i_tradertoken
+      LINK.ACT.CONT=<LINK.findlayer(layer_bankbox).uid>
+   ENDIF
+   IF (0<VAR.TOTALPROFIT>=0)
+      LINK.SYSMESSAGE @60 You get nothing for crafting nothing!!!
+      REMOVE
+      RETURN 1
+   ENDIF
+   LINK.NEWITEM i_check
+   LINK.ACT.CONT=<LINK.findlayer(layer_bankbox).uid>
+   LINK.ACT.MORE2=<eval 0<VAR.TOTALPROFIT>>
+   LINK.SYSMESSAGE @60 Your order has been completed...
+   LINK.SYSMESSAGE @60 A cheque payment worth <eval <LINK.ACT.MORE2>> has been placed in your bank.
+   REMOVE
+   RETURN 1
+   
+ON=@Targon_char
+SRC.SYSMESSAGE You cannot target this on characters!
+RETURN 1
+
+ON=@Targon_ground
+SRC.SYSMESSAGE Somehow you feel that earth and dirt doesn't sell well...
+RETURN 1
+
+ON=@Targon_item
+IF !(<src.targ.cont>==<src.findlayer.21.uid>)
+   SRC.SYSMESSAGE @85 You can only add items in your pack!!!
+   RETURN 1
+ENDIF
+IF ( !strcmpi("<TAG.PRODUCTONE>","<SRC.TARG.BASEID>")
+   IF !(0<TAG.PRODUCTONEDONE>)
+      SRC.SYSMESSAGE @42 You add the <TAG.PRODUCTONENAME> to the inventory...
+      TAG.PRODUCTONEDONE=1
+      SRC.TARG.REMOVE
+   ELSE
+      SRC.SYSMESSAGE @42 You've already added <TAG.PRODUCTONENAME>!
+   ENDIF
+   RETURN 1
+ELSEIF ( !strcmpi("<TAG.PRODUCTTWO>","<SRC.TARG.BASEID>")
+   IF !(0<TAG.PRODUCTTWODONE>)
+      SRC.SYSMESSAGE @42 You add the <TAG.PRODUCTTWONAME> to the inventory...
+      TAG.PRODUCTTWODONE=1
+      SRC.TARG.REMOVE
+   ELSE
+      SRC.SYSMESSAGE @42 You've already added <TAG.PRODUCTTWONAME>!
+   ENDIF
+   RETURN 1
+ELSEIF ( !strcmpi("<TAG.PRODUCTTHREE>","<SRC.TARG.BASEID>")
+   IF !(0<TAG.PRODUCTTHREEDONE>)
+      SRC.SYSMESSAGE @42 You add the <TAG.PRODUCTTHREENAME> to the inventory...
+      TAG.PRODUCTTHREEDONE=1
+      SRC.TARG.REMOVE
+   ELSE
+      SRC.SYSMESSAGE @42 You've already added <TAG.PRODUCTTHREENAME>!
+   ENDIF
+   RETURN 1
+ELSEIF ( !strcmpi("<TAG.PRODUCTFOUR>","<SRC.TARG.BASEID>")
+   IF !(0<TAG.PRODUCTFOURDONE>)
+      SRC.SYSMESSAGE @42 You add the <TAG.PRODUCTFOURNAME> to the inventory...
+      TAG.PRODUCTFOURDONE=1
+      SRC.TARG.REMOVE
+   ELSE
+      SRC.SYSMESSAGE @42 You've already added <TAG.PRODUCTFOURNAME>!
+   ENDIF
+   RETURN 1
+ELSEIF ( !strcmpi("<TAG.PRODUCTFIVE>","<SRC.TARG.BASEID>")
+   IF !(0<TAG.PRODUCTFIVEDONE>)
+      SRC.SYSMESSAGE @42 You add the <TAG.PRODUCTFIVENAME> to the inventory...
+      TAG.PRODUCTFIVEDONE=1
+      SRC.TARG.REMOVE
+   ELSE
+      SRC.SYSMESSAGE @42 You've already added <TAG.PRODUCTFIVENAME>!
+   ENDIF
+   RETURN 1
+ELSEIF ( !strcmpi("<TAG.PRODUCTSIX>","<SRC.TARG.BASEID>")
+   IF !(0<TAG.PRODUCTSIXDONE>)
+      SRC.SYSMESSAGE @42 You add the <TAG.PRODUCTSIXNAME> to the inventory...
+      TAG.PRODUCTSIXDONE=1
+      SRC.TARG.REMOVE
+   ELSE
+      SRC.SYSMESSAGE @42 You've already added <TAG.PRODUCTSIXNAME>!
+   ENDIF   
+   RETURN 1
+ELSEIF ( !strcmpi("<TAG.PRODUCTSEVEN>","<SRC.TARG.BASEID>")
+   IF !(0<TAG.PRODUCTSEVENDONE>)
+      SRC.SYSMESSAGE @42 You add the <TAG.PRODUCTSEVENNAME> to the inventory...
+      TAG.PRODUCTSEVENDONE=1
+      SRC.TARG.REMOVE
+   ELSE
+      SRC.SYSMESSAGE @42 You've already added <TAG.PRODUCTSEVENNAME>!
+   ENDIF
+   RETURN 1
+ELSE
+   SRC.SYSMESSAGE @140 This isn't on the list!!!
+ENDIF
+RETURN 1
+
+
+[DIALOG d_production_deed]
+0,0
+page 0
+// Main page
+resizepic 50 50 1228 400 300
+text 125 55 0 1
+page 1
+button 90 100 2510 2511 1 0 1001
+text 115 100 4 2
+button 90 125 2510 2511 1 0 1002
+text 115 125 4 3
+button 90 150 2510 2511 1 0 1003
+text 115 150 4 4
+button 90 175 2510 2511 1 0 1004
+text 115 175 4 5
+button 90 200 2510 2511 1 0 1005
+text 115 200 4 6
+button 90 225 2510 2511 1 0 1006
+text 115 225 4 7
+button 90 250 2510 2511 1 0 1007
+text 115 250 4 8
+button 90 280 4023 4025 1 0 1008
+text 125 280 5 9
+
+
+[DIALOG d_production_deed TEXT]
+<VAR.BLANKLINE>
+Mass Production Deed
+<TAG.PRODUCTONENAME>
+<TAG.PRODUCTTWONAME>
+<TAG.PRODUCTTHREENAME>
+<TAG.PRODUCTFOURNAME>
+<TAG.PRODUCTFIVENAME>
+<TAG.PRODUCTSIXNAME>
+<TAG.PRODUCTSEVENNAME>
+Add Item
+
+[DIALOG d_production_deed BUTTON]
+ONBUTTON=1001
+   IF !(0<TAG.PRODUCTONEDONE>)
+   SRC.SYSMESSAGE @24 You have not made the <TAG.PRODUCTONENAME>!
+   ELSE
+   SRC.SYSMESSAGE @24 You have made the <TAG.PRODUCTONENAME>!
+   ENDIF
+ONBUTTON=1002
+   IF !(0<TAG.PRODUCTTWODONE>)
+   SRC.SYSMESSAGE @24 You have not made the <TAG.PRODUCTTWONAME>!
+   ELSE
+   SRC.SYSMESSAGE @24 You have made the <TAG.PRODUCTTWONAME>!
+   ENDIF
+ONBUTTON=1003
+   IF !(0<TAG.PRODUCTTHREEDONE>)
+   SRC.SYSMESSAGE @24 You have not made the <TAG.PRODUCTTHREENAME>!
+   ELSE
+   SRC.SYSMESSAGE @24 You have made the <TAG.PRODUCTTHREENAME>!
+   ENDIF
+ONBUTTON=1004
+   IF !(0<TAG.PRODUCTFOURDONE>)
+   SRC.SYSMESSAGE @24 You have not made the <TAG.PRODUCTFOURNAME>!
+   ELSE
+   SRC.SYSMESSAGE @24 You have made the <TAG.PRODUCTFOURNAME>!
+   ENDIF
+ONBUTTON=1005
+   IF !(0<TAG.PRODUCTFIVEDONE>)
+   SRC.SYSMESSAGE @24 You have not made the <TAG.PRODUCTFIVENAME>!
+   ELSE
+   SRC.SYSMESSAGE @24 You have made the <TAG.PRODUCTFIVENAME>!
+   ENDIF
+ONBUTTON=1006
+   IF !(0<TAG.PRODUCTSIXDONE>)
+   SRC.SYSMESSAGE @24 You have not made the <TAG.PRODUCTSIXNAME>!
+   ELSE
+   SRC.SYSMESSAGE @24 You have made the <TAG.PRODUCTSIXNAME>!
+   ENDIF
+ONBUTTON=1007
+   IF !(0<TAG.PRODUCTSEVENDONE>)
+   SRC.SYSMESSAGE @24 You have not made the <TAG.PRODUCTSEVENNAME>!
+   ELSE
+   SRC.SYSMESSAGE @24 You have made the <TAG.PRODUCTSEVENNAME>!
+   ENDIF
+ONBUTTON=1008
+   TARGET Target the item you wish to add to the deed...
+   
+   
+[FUNCTION f_production_blacksmithy_set]
+DORAND 15
+   BEGIN
+      TAG.PRODUCTONE=i_sword_long
+      TAG.PRODUCTONENAME=Iron Long Sword
+      TAG.PRODUCTONEVALUE=90
+   END
+   BEGIN
+      TAG.PRODUCTONE=i_axe_battle
+      TAG.PRODUCTONENAME=Iron Battle Axe
+      TAG.PRODUCTONEVALUE=90
+   END
+   BEGIN
+      TAG.PRODUCTONE=i_katana
+      TAG.PRODUCTONENAME=Iron Katana
+      TAG.PRODUCTONEVALUE=50
+   END
+   BEGIN
+      TAG.PRODUCTONE=i_ringmail_gloves
+      TAG.PRODUCTONENAME=Iron Ringmail Gloves
+      TAG.PRODUCTONEVALUE=60
+   END
+   BEGIN
+      TAG.PRODUCTONE=i_chainmail_tunic
+      TAG.PRODUCTONENAME=Iron Chainmail Tunic
+      TAG.PRODUCTONEVALUE=80
+   END
+   BEGIN
+      TAG.PRODUCTONE=i_platemail_chest
+      TAG.PRODUCTONENAME=Iron Breastplate
+      TAG.PRODUCTONEVALUE=110
+   END
+   BEGIN
+      TAG.PRODUCTONE=i_halberd
+      TAG.PRODUCTONENAME=Iron Halberd
+      TAG.PRODUCTONEVALUE=100
+   END
+   BEGIN
+      TAG.PRODUCTONE=i_dagger
+      TAG.PRODUCTONENAME=Iron Dagger
+      TAG.PRODUCTONEVALUE=60
+   END
+   BEGIN
+      TAG.PRODUCTONE=i_mace_war
+      TAG.PRODUCTONENAME=Iron War Mace
+      TAG.PRODUCTONEVALUE=85
+   END
+   BEGIN
+      TAG.PRODUCTONE=i_hammer_pick
+      TAG.PRODUCTONENAME=Iron Hammer Pick
+      TAG.PRODUCTONEVALUE=90
+   END
+   BEGIN
+      TAG.PRODUCTONE=i_shield_kite
+      TAG.PRODUCTONENAME=Iron Kite Shield
+      TAG.PRODUCTONEVALUE=95
+   END
+   BEGIN
+      TAG.PRODUCTONE=i_shield_heater
+      TAG.PRODUCTONENAME=Iron Heater Shield
+      TAG.PRODUCTONEVALUE=110
+   END
+   BEGIN
+      TAG.PRODUCTONE=i_platemail_leggings
+      TAG.PRODUCTONENAME=Iron Platemail Leggings
+      TAG.PRODUCTONEVALUE=100
+   END
+   BEGIN
+      TAG.PRODUCTONE=i_platemail_gloves
+      TAG.PRODUCTONENAME=Iron Platemail Gloves
+      TAG.PRODUCTONEVALUE=75
+   END
+   BEGIN
+      TAG.PRODUCTONE=i_chainmail_coif
+      TAG.PRODUCTONENAME=Iron Chainmail Coif
+      TAG.PRODUCTONEVALUE=65
+   END
+ENDDO
+DORAND 15
+   BEGIN
+      TAG.PRODUCTTWO=i_sword_long_gold
+      TAG.PRODUCTTWONAME=Gold Long Sword
+      TAG.PRODUCTTWOVALUE=590
+   END
+   BEGIN
+      TAG.PRODUCTTWO=i_axe_battle_gold
+      TAG.PRODUCTTWONAME=Gold Battle Axe
+      TAG.PRODUCTTWOVALUE=590
+   END
+   BEGIN
+      TAG.PRODUCTTWO=i_katana_gold
+      TAG.PRODUCTTWONAME=Gold Katana
+      TAG.PRODUCTTWOVALUE=550
+   END
+   BEGIN
+      TAG.PRODUCTTWO=i_ringmail_gloves_gold
+      TAG.PRODUCTTWONAME=Gold Ringmail Gloves
+      TAG.PRODUCTTWOVALUE=560
+   END
+   BEGIN
+      TAG.PRODUCTTWO=i_chainmail_tunic_gold
+      TAG.PRODUCTTWONAME=Gold Chainmail Tunic
+      TAG.PRODUCTTWOVALUE=580
+   END
+   BEGIN
+      TAG.PRODUCTTWO=i_platemail_chest_gold
+      TAG.PRODUCTTWONAME=Gold Breastplate
+      TAG.PRODUCTTWOVALUE=610
+   END
+   BEGIN
+      TAG.PRODUCTTWO=i_halberd_gold
+      TAG.PRODUCTTWONAME=Gold Halberd
+      TAG.PRODUCTTWOVALUE=560
+   END
+   BEGIN
+      TAG.PRODUCTTWO=i_dagger_gold
+      TAG.PRODUCTTWONAME=Gold Dagger
+      TAG.PRODUCTTWOVALUE=560
+   END
+   BEGIN
+      TAG.PRODUCTTWO=i_mace_war_gold
+      TAG.PRODUCTTWONAME=Gold War Mace
+      TAG.PRODUCTTWOVALUE=585
+   END
+   BEGIN
+      TAG.PRODUCTTWO=i_hammer_pick_gold
+      TAG.PRODUCTTWONAME=Gold Hammer Pick
+      TAG.PRODUCTTWOVALUE=590
+   END
+   BEGIN
+      TAG.PRODUCTTWO=i_shield_kite_gold
+      TAG.PRODUCTTWONAME=Gold Kite Shield
+      TAG.PRODUCTTWOVALUE=595
+   END
+   BEGIN
+      TAG.PRODUCTTWO=i_shield_heater_gold
+      TAG.PRODUCTTWONAME=Gold Heater Shield
+      TAG.PRODUCTTWOVALUE=610
+   END
+   BEGIN
+      TAG.PRODUCTTWO=i_platemail_leggings_gold
+      TAG.PRODUCTTWONAME=Gold Platemail Leggings
+      TAG.PRODUCTTWOVALUE=560
+   END
+   BEGIN
+      TAG.PRODUCTTWO=i_platemail_gloves_gold
+      TAG.PRODUCTTWONAME=Gold Platemail Gloves
+      TAG.PRODUCTTWOVALUE=575
+   END
+   BEGIN
+      TAG.PRODUCTTWO=i_chainmail_coif_gold
+      TAG.PRODUCTTWONAME=Gold Chainmail Coif
+      TAG.PRODUCTTWOVALUE=565
+   END
+ENDDO
+DORAND 15
+   BEGIN
+      TAG.PRODUCTTHREE=i_sword_long_silver
+      TAG.PRODUCTTHREENAME=Silver Long Sword
+      TAG.PRODUCTTHREEVALUE=590
+   END
+   BEGIN
+      TAG.PRODUCTTHREE=i_axe_battle_silver
+      TAG.PRODUCTTHREENAME=Silver Battle Axe
+      TAG.PRODUCTTHREEVALUE=590
+   END
+   BEGIN
+      TAG.PRODUCTTHREE=i_katana_silver
+      TAG.PRODUCTTHREENAME=Silver Katana
+      TAG.PRODUCTTHREEVALUE=550
+   END
+   BEGIN
+      TAG.PRODUCTTHREE=i_ringmail_gloves_silver
+      TAG.PRODUCTTHREENAME=Silver Ringmail Gloves
+      TAG.PRODUCTTHREEVALUE=560
+   END
+   BEGIN
+      TAG.PRODUCTTHREE=i_chainmail_tunic_silver
+      TAG.PRODUCTTHREENAME=Silver Chainmail Tunic
+      TAG.PRODUCTTHREEVALUE=580
+   END
+   BEGIN
+      TAG.PRODUCTTHREE=i_platemail_chest_silver
+      TAG.PRODUCTTHREENAME=Silver Breastplate
+      TAG.PRODUCTTHREEVALUE=610
+   END
+   BEGIN
+      TAG.PRODUCTTHREE=i_halberd_silver
+      TAG.PRODUCTTHREENAME=Silver Halberd
+      TAG.PRODUCTTHREEVALUE=560
+   END
+   BEGIN
+      TAG.PRODUCTTHREE=i_dagger_silver
+      TAG.PRODUCTTHREENAME=Silver Dagger
+      TAG.PRODUCTTHREEVALUE=560
+   END
+   BEGIN
+      TAG.PRODUCTTHREE=i_mace_war_silver
+      TAG.PRODUCTTHREENAME=Silver War Mace
+      TAG.PRODUCTTHREEVALUE=585
+   END
+   BEGIN
+      TAG.PRODUCTTHREE=i_hammer_pick_silver
+      TAG.PRODUCTTHREENAME=Silver Hammer Pick
+      TAG.PRODUCTTHREEVALUE=590
+   END
+   BEGIN
+      TAG.PRODUCTTHREE=i_shield_kite_silver
+      TAG.PRODUCTTHREENAME=Silver Kite Shield
+      TAG.PRODUCTTHREEVALUE=595
+   END
+   BEGIN
+      TAG.PRODUCTTHREE=i_shield_heater_silver
+      TAG.PRODUCTTHREENAME=Silver Heater Shield
+      TAG.PRODUCTTHREEVALUE=610
+   END
+   BEGIN
+      TAG.PRODUCTTHREE=i_platemail_leggings_silver
+      TAG.PRODUCTTHREENAME=Silver Platemail Leggings
+      TAG.PRODUCTTHREEVALUE=560
+   END
+   BEGIN
+      TAG.PRODUCTTHREE=i_platemail_gloves_silver
+      TAG.PRODUCTTHREENAME=Silver Platemail Gloves
+      TAG.PRODUCTTHREEVALUE=575
+   END
+   BEGIN
+      TAG.PRODUCTTHREE=i_chainmail_coif_silver
+      TAG.PRODUCTTHREENAME=Silver Chainmail Coif
+      TAG.PRODUCTTHREEVALUE=565
+   END
+ENDDO
+DORAND 15
+   BEGIN
+      TAG.PRODUCTFOUR=i_sword_long_steel
+      TAG.PRODUCTFOURNAME=Steel Long Sword
+      TAG.PRODUCTFOURVALUE=590
+   END
+   BEGIN
+      TAG.PRODUCTFOUR=i_axe_battle_steel
+      TAG.PRODUCTFOURNAME=Steel Battle Axe
+      TAG.PRODUCTFOURVALUE=590
+   END
+   BEGIN
+      TAG.PRODUCTFOUR=i_katana_steel
+      TAG.PRODUCTFOURNAME=Steel Katana
+      TAG.PRODUCTFOURVALUE=550
+   END
+   BEGIN
+      TAG.PRODUCTFOUR=i_ringmail_gloves_steel
+      TAG.PRODUCTFOURNAME=Steel Ringmail Gloves
+      TAG.PRODUCTFOURVALUE=560
+   END
+   BEGIN
+      TAG.PRODUCTFOUR=i_chainmail_tunic_steel
+      TAG.PRODUCTFOURNAME=Steel Chainmail Tunic
+      TAG.PRODUCTFOURVALUE=580
+   END
+   BEGIN
+      TAG.PRODUCTFOUR=i_platemail_chest_steel
+      TAG.PRODUCTFOURNAME=Steel Breastplate
+      TAG.PRODUCTFOURVALUE=610
+   END
+   BEGIN
+      TAG.PRODUCTFOUR=i_halberd_steel
+      TAG.PRODUCTFOURNAME=Steel Halberd
+      TAG.PRODUCTFOURVALUE=560
+   END
+   BEGIN
+      TAG.PRODUCTFOUR=i_dagger_steel
+      TAG.PRODUCTFOURNAME=Steel Dagger
+      TAG.PRODUCTFOURVALUE=560
+   END
+   BEGIN
+      TAG.PRODUCTFOUR=i_mace_war_steel
+      TAG.PRODUCTFOURNAME=Steel War Mace
+      TAG.PRODUCTFOURVALUE=585
+   END
+   BEGIN
+      TAG.PRODUCTFOUR=i_hammer_pick_steel
+      TAG.PRODUCTFOURNAME=Steel Hammer Pick
+      TAG.PRODUCTFOURVALUE=590
+   END
+   BEGIN
+      TAG.PRODUCTFOUR=i_shield_kite_steel
+      TAG.PRODUCTFOURNAME=Steel Kite Shield
+      TAG.PRODUCTFOURVALUE=595
+   END
+   BEGIN
+      TAG.PRODUCTFOUR=i_shield_heater_steel
+      TAG.PRODUCTFOURNAME=Steel Heater Shield
+      TAG.PRODUCTFOURVALUE=610
+   END
+   BEGIN
+      TAG.PRODUCTFOUR=i_platemail_leggings_steel
+      TAG.PRODUCTFOURNAME=Steel Platemail Leggings
+      TAG.PRODUCTFOURVALUE=560
+   END
+   BEGIN
+      TAG.PRODUCTFOUR=i_platemail_gloves_steel
+      TAG.PRODUCTFOURNAME=Steel Platemail Gloves
+      TAG.PRODUCTFOURVALUE=575
+   END
+   BEGIN
+      TAG.PRODUCTFOUR=i_chainmail_coif_steel
+      TAG.PRODUCTFOURNAME=Steel Chainmail Coif
+      TAG.PRODUCTFOURVALUE=565
+   END
+ENDDO
+DORAND 15
+   BEGIN
+      TAG.PRODUCTFIVE=i_sword_long_titanium
+      TAG.PRODUCTFIVENAME=Titanium Long Sword
+      TAG.PRODUCTFIVEVALUE=6000
+   END
+   BEGIN
+      TAG.PRODUCTFIVE=i_axe_battle_titanium
+      TAG.PRODUCTFIVENAME=Titanium Battle Axe
+      TAG.PRODUCTFIVEVALUE=5800
+   END
+   BEGIN
+      TAG.PRODUCTFIVE=i_katana_titanium
+      TAG.PRODUCTFIVENAME=Titanium Katana
+      TAG.PRODUCTFIVEVALUE=4000
+   END
+   BEGIN
+      TAG.PRODUCTFIVE=i_ringmail_gloves_titanium
+      TAG.PRODUCTFIVENAME=Titanium Ringmail Gloves
+      TAG.PRODUCTFIVEVALUE=4200
+   END
+   BEGIN
+      TAG.PRODUCTFIVE=i_chainmail_tunic_titanium
+      TAG.PRODUCTFIVENAME=Titanium Chainmail Tunic
+      TAG.PRODUCTFIVEVALUE=5000
+   END
+   BEGIN
+      TAG.PRODUCTFIVE=i_platemail_chest_titanium
+      TAG.PRODUCTFIVENAME=Titanium Breastplate
+      TAG.PRODUCTFIVEVALUE=7500
+   END
+   BEGIN
+      TAG.PRODUCTFIVE=i_halberd_titanium
+      TAG.PRODUCTFIVENAME=Titanium Halberd
+      TAG.PRODUCTFIVEVALUE=7000
+   END
+   BEGIN
+      TAG.PRODUCTFIVE=i_dagger_titanium
+      TAG.PRODUCTFIVENAME=Titanium Dagger
+      TAG.PRODUCTFIVEVALUE=1000
+   END
+   BEGIN
+      TAG.PRODUCTFIVE=i_mace_war_titanium
+      TAG.PRODUCTFIVENAME=Titanium War Mace
+      TAG.PRODUCTFIVEVALUE=4600
+   END
+   BEGIN
+      TAG.PRODUCTFIVE=i_hammer_pick_titanium
+      TAG.PRODUCTFIVENAME=Titanium Hammer Pick
+      TAG.PRODUCTFIVEVALUE=5100
+   END
+   BEGIN
+      TAG.PRODUCTFIVE=i_shield_kite_titanium
+      TAG.PRODUCTFIVENAME=Titanium Kite Shield
+      TAG.PRODUCTFIVEVALUE=6200
+   END
+   BEGIN
+      TAG.PRODUCTFIVE=i_shield_heater_titanium
+      TAG.PRODUCTFIVENAME=Titanium Heater Shield
+      TAG.PRODUCTFIVEVALUE=7500
+   END
+   BEGIN
+      TAG.PRODUCTFIVE=i_platemail_leggings_titanium
+      TAG.PRODUCTFIVENAME=Titanium Platemail Leggings
+      TAG.PRODUCTFIVEVALUE=7100
+   END
+   BEGIN
+      TAG.PRODUCTFIVE=i_platemail_gloves_titanium
+      TAG.PRODUCTFIVENAME=Titanium Platemail Gloves
+      TAG.PRODUCTFIVEVALUE=5000
+   END
+   BEGIN
+      TAG.PRODUCTFIVE=i_chainmail_coif_titanium
+      TAG.PRODUCTFIVENAME=Titanium Chainmail Coif
+      TAG.PRODUCTFIVEVALUE=3500
+   END
+ENDDO
+DORAND 15
+   BEGIN
+      TAG.PRODUCTSIX=i_sword_long_titanium
+      TAG.PRODUCTSIXNAME=Titanium Long Sword
+      TAG.PRODUCTSIXVALUE=8000
+   END
+   BEGIN
+      TAG.PRODUCTSIX=i_axe_battle_titanium
+      TAG.PRODUCTSIXNAME=Titanium Battle Axe
+      TAG.PRODUCTSIXVALUE=6800
+   END
+   BEGIN
+      TAG.PRODUCTSIX=i_ringmail_gloves_shadow
+      TAG.PRODUCTSIXNAME=Shadow Ringmail Gloves
+      TAG.PRODUCTSIXVALUE=4000
+   END
+   BEGIN
+      TAG.PRODUCTSIX=i_ringmail_gloves_agapite
+      TAG.PRODUCTSIXNAME=Agapite Ringmail Gloves
+      TAG.PRODUCTSIXVALUE=4000
+   END
+   BEGIN
+      TAG.PRODUCTSIX=i_chainmail_tunic_titanium
+      TAG.PRODUCTSIXNAME=Titanium Chainmail Tunic
+      TAG.PRODUCTSIXVALUE=5000
+   END
+   BEGIN
+      TAG.PRODUCTSIX=i_platemail_chest_adamantine
+      TAG.PRODUCTSIXNAME=Adamantine Breastplate
+      TAG.PRODUCTSIXVALUE=20500
+   END
+   BEGIN
+      TAG.PRODUCTSIX=i_halberd_skargard
+      TAG.PRODUCTSIXNAME=Skargard Halberd
+      TAG.PRODUCTSIXVALUE=67000
+   END
+   BEGIN
+      TAG.PRODUCTSIX=i_dagger_titanium
+      TAG.PRODUCTSIXNAME=Titanium Dagger
+      TAG.PRODUCTSIXVALUE=1000
+   END
+   BEGIN
+      TAG.PRODUCTSIX=i_mace_war_adamantine
+      TAG.PRODUCTSIXNAME=Adamantine War Mace
+      TAG.PRODUCTSIXVALUE=12000
+   END
+   BEGIN
+      TAG.PRODUCTSIX=i_hammer_pick_terathane
+      TAG.PRODUCTSIXNAME=Terathane Hammer Pick
+      TAG.PRODUCTSIXVALUE=5100
+   END
+   BEGIN
+      TAG.PRODUCTSIX=i_shield_kite_verminard
+      TAG.PRODUCTSIXNAME=Verminard Kite Shield
+      TAG.PRODUCTSIXVALUE=28000
+   END
+   BEGIN
+      TAG.PRODUCTSIX=i_shield_heater_stronghold
+      TAG.PRODUCTSIXNAME=Stronghold Heater Shield
+      TAG.PRODUCTSIXVALUE=28000
+   END
+   BEGIN
+      TAG.PRODUCTSIX=i_platemail_leggings_entit
+      TAG.PRODUCTSIXNAME=Enriched Titanium Platemail Leggings
+      TAG.PRODUCTSIXVALUE=72500
+   END
+   BEGIN
+      TAG.PRODUCTSIX=i_platemail_gloves_titanium
+      TAG.PRODUCTSIXNAME=Titanium Platemail Gloves
+      TAG.PRODUCTSIXVALUE=5000
+   END
+   BEGIN
+      TAG.PRODUCTSIX=i_CHAINMAIL_COIF_MYTHERIL
+      TAG.PRODUCTSIXNAME=Mytheril Chainmail Coif
+      TAG.PRODUCTSIXVALUE=58000
+   END
+ENDDO
+DORAND 15
+   BEGIN
+      TAG.PRODUCTSEVEN=i_sword_long_adamantine
+      TAG.PRODUCTSEVENNAME=Adamantine Long Sword
+      TAG.PRODUCTSEVENVALUE=19000
+   END
+   BEGIN
+      TAG.PRODUCTSEVEN=i_helm_nose_valorite
+      TAG.PRODUCTSEVENNAME=Valorite Nose Helm
+      TAG.PRODUCTSEVENVALUE=32000
+   END
+   BEGIN
+      TAG.PRODUCTSEVEN=i_helm_nose_verite
+      TAG.PRODUCTSEVENNAME=Verite Nose Helm
+      TAG.PRODUCTSEVENVALUE=32000
+   END
+   BEGIN
+      TAG.PRODUCTSEVEN=i_ringmail_gloves_mytheril
+      TAG.PRODUCTSEVENNAME=Mytheril Ringmail Gloves
+      TAG.PRODUCTSEVENVALUE=30000
+   END
+   BEGIN
+      TAG.PRODUCTSEVEN=i_halberd_skargard
+      TAG.PRODUCTSEVENNAME=Skargard Halberd
+      TAG.PRODUCTSEVENVALUE=72000
+   END
+   BEGIN
+      TAG.PRODUCTSEVEN=i_platemail_chest_adamantine
+      TAG.PRODUCTSEVENNAME=Adamantine Breastplate
+      TAG.PRODUCTSEVENVALUE=20500
+   END
+   BEGIN
+      TAG.PRODUCTSEVEN=i_halberd_phoenix
+      TAG.PRODUCTSEVENNAME=Phoenix Halberd
+      TAG.PRODUCTSEVENVALUE=250000
+   END
+   BEGIN
+      TAG.PRODUCTSEVEN=i_dagger_adamantine
+      TAG.PRODUCTSEVENNAME=Adamantine Dagger
+      TAG.PRODUCTSEVENVALUE=6000
+   END
+   BEGIN
+      TAG.PRODUCTSEVEN=i_mace_war_verminard
+      TAG.PRODUCTSEVENNAME=Verminard War Mace
+      TAG.PRODUCTSEVENVALUE=22600
+   END
+   BEGIN
+      TAG.PRODUCTSEVEN=i_hammer_pick_stronghold
+      TAG.PRODUCTSEVENNAME=Stronghold Hammer Pick
+      TAG.PRODUCTSEVENVALUE=16100
+   END
+   BEGIN
+      TAG.PRODUCTSEVEN=i_shield_kite_skargard
+      TAG.PRODUCTSEVENNAME=Skargard Kite Shield
+      TAG.PRODUCTSEVENVALUE=56200
+   END
+   BEGIN
+      TAG.PRODUCTSEVEN=i_shield_heater_adamantine
+      TAG.PRODUCTSEVENNAME=Adamantine Heater Shield
+      TAG.PRODUCTSEVENVALUE=15000
+   END
+   BEGIN
+      TAG.PRODUCTSEVEN=i_platemail_leggings_phoenix
+      TAG.PRODUCTSEVENNAME=Phoenix Platemail Leggings
+      TAG.PRODUCTSEVENVALUE=252100
+   END
+   BEGIN
+      TAG.PRODUCTSEVEN=i_platemail_gloves_adamantine
+      TAG.PRODUCTSEVENNAME=Adamantine Platemail Gloves
+      TAG.PRODUCTSEVENVALUE=15000
+   END
+   BEGIN
+      TAG.PRODUCTSEVEN=i_platemail_chest_bloodrock
+      TAG.PRODUCTSEVENNAME=Bloodrock Breast Plate
+      TAG.PRODUCTSEVENVALUE=325000
+   END
+ENDDO

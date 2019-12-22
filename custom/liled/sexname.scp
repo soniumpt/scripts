@@ -1,0 +1,203 @@
+//********************************************************************//
+//                         SEX CHANGE VOUCHER                         //
+//      CHANGES THE CURRENT CHARACTERS SEX BETWEEN MAN AND WOMAN      //
+//********************************************************************//
+
+[ITEMDEF i_sex_change_voucher]
+ID = i_scroll_blank
+TYPE = t_eq_script
+NAME = Sex Change Voucher
+VALUE=700000
+WEIGHT=1
+
+ON=@Create
+COLOR = 07a
+ATTR = attr_newbie
+
+ON=@DCLICK
+   DIALOG d_sexChange
+   RETURN 1
+
+[DIALOG d_sexChange]
+150,200
+gumppic 100 10 1140
+button 250 150 247 248 1 0 1
+dtext 170 75 125 Are you sure you wish to change to the opposite sex?
+
+//[DIALOG d_sexChange TEXT]
+//
+
+
+[DIALOG d_sexChange BUTTON]
+
+ON=0
+
+ONBUTTON=1
+    IF (<SRC.FLAGS>& 0400)
+       SRC.SPELLEFFECT s_dispel 1000
+    ENDIF
+    IF (<SRC.OBODY> == c_man)
+       SERV.LOG ::SEX CHANGE:: <SRC.ACCOUNT> - <SRC.UID> - <SRC.NAME> - From man to woman
+       SRC.OBODY=c_woman
+       SRC.BODY=c_woman
+    ELSEIF (<SRC.OBODY> == c_woman)
+       SERV.LOG ::SEX CHANGE:: <SRC.ACCOUNT> - <SRC.UID> - <SRC.NAME> - From woman to man
+       SRC.OBODY=c_man
+       SRC.BODY=c_man
+    ELSE
+       RETURN 1
+    ENDIF
+    SRC.UPDATE
+    CONSUME
+    RETURN 1
+
+//********************************************************************//
+//                            RENAME VOUCHER                          //
+//         RENAMES THE CHARACTER ACCORDING TO THEIR TEXT INPUT        //
+//               (ALPHABETICAL AND NUMERICAL CHARS ONLY)              //
+//********************************************************************//
+
+[ITEMDEF i_rename_voucher]
+ID = i_scroll_blank
+NAME = Rename Voucher
+TYPE=t_eq_script
+VALUE=800000
+WEIGHT=1
+
+ON=@Create
+COLOR = 02
+ATTR = attr_newbie
+
+ON=@DCLICK
+DIALOG d_RenameChar
+SRC.SYSMESSAGE @50 What would you like to rename to?
+RETURN 1
+
+[DIALOG d_RenameChar]
+150,200
+gumppic 100 10 2070
+resizepic 130 45 3000 115 22
+button 165 85 247 248 1 0 1
+textentry 135 45 95 15 0 0 0
+
+//[DIALOG d_RenameChar TEXT]
+//<NAME>
+
+[DIALOG d_RenameChar BUTTON]
+
+ON=0
+
+ONBUTTON=1
+IF (<STRLENGTH <ARGTXT[0]>> < 4)
+SRC.SYSMESSAGE @50 You must specify longer name.
+RETURN 1
+ENDIF
+
+IF (<STRLENGTH <ARGTXT[0]>> > 16)
+   SRC.SYSMESSAGE @50 Please specify a shorter name.
+   RETURN 1
+ENDIF
+
+
+IF (<HVAL STRREGEX([^A-Za-z0-9 ], <ARGTXT[0]>)>)
+   SRC.SYSMESSAGE @50 You cannot rename to that!
+   RETURN 1
+ELSEIF (<HVAL STRMATCH(counsellor*, <ARGTXT[0]>)>)
+   SRC.SYSMESSAGE @50 You cannot rename to that!
+   RETURN 1
+ELSEIF (<HVAL STRMATCH(gm*, <ARGTXT[0]>)>)
+   SRC.SYSMESSAGE @50 You cannot rename to that!
+   RETURN 1
+ELSEIF (<HVAL STRMATCH(head gm*, <ARGTXT[0]>)>)
+   SRC.SYSMESSAGE @50 You cannot rename to that!
+   RETURN 1
+ELSEIF (<HVAL STRMATCH(seer *, <ARGTXT[0]>)>)
+   SRC.SYSMESSAGE @50 You cannot rename to that!
+   RETURN 1
+ELSEIF (<HVAL STRMATCH(admin *, <ARGTXT[0]>)>)
+   SRC.SYSMESSAGE @50 You cannot rename to that!
+   RETURN 1
+ELSEIF (<HVAL STRMATCH(head admin*, <ARGTXT[0]>)>)
+   SRC.SYSMESSAGE @50 You cannot rename to that!
+   RETURN 1
+ELSEIF (<HVAL STRMATCH(owner *, <ARGTXT[0]>)>)
+   SRC.SYSMESSAGE @50 You cannot rename to that!
+   RETURN 1
+ELSEIF (<HVAL STRMATCH(*<chr 32><chr 32>*, <ARGTXT[0]>)>)
+   SRC.SYSMESSAGE @50 You cannot rename to that!
+   RETURN 1
+ELSE
+   TAG.RENAME=<ARGTXT[0]>
+   DIALOG d_confirmRename
+   RETURN 1
+ENDIF
+
+
+[DIALOG d_confirmRename]
+150,200
+gumppic 100 10 1140
+button 250 150 247 248 1 0 1
+dtext 170 75 125 Are you sure you wish to rename to: <TAG.RENAME>?
+
+//[DIALOG d_confirmRename TEXT]
+//
+
+
+[DIALOG d_confirmRename BUTTON]
+
+ON=0
+
+ONBUTTON=1
+   SRC.SYSMESSAGE @50 Sucessfully renamed to <TAG.RENAME>
+   SERV.LOG ::RENAME:: Account: <SRC.ACCOUNT> - UID: <SRC.UID> - Original Name: <SRC.NAME> - New Name: <TAG.RENAME>
+   SRC.NAME=<TAG.RENAME>
+   SRC.TAG.RENAME=
+   CONSUME
+   RETURN 1
+
+
+
+[function strlength]
+return <strpos 0 ® <args>®>
+
+//********************************************************************//
+//                               SURGEON                              //
+//      SELLS THE NAME CHANGE AND SEX CHANGE VOUCHERS (1-3 SOLD)      //
+//********************************************************************//
+
+[CHARDEF c_h_surgeon]
+NAME=#NAMES_HUMANMALE the Surgeon
+ID=c_man
+TSPEECH=spk_human_prime
+TSPEECH=spk_shopkeep
+TSPEECH=spk_human_default
+TEVENTS=e_Human_HearUnk
+TEVENTS=e_Human_ConvInit
+TEVENTS=e_Human_Greet
+CATEGORY=Imperial uo
+SUBSECTION=Trader Sex change
+DESCRIPTION=Surgeon
+
+ON=@Create
+    NPC=brain_vendor
+    COLOR=colors_skin
+    NEED=i_gold
+    STR={66 80}
+    DEX=90
+    INT={66 80}
+    ITEMNEWBIE=i_lantern
+    ITEMNEWBIE=random_female_hair
+    COLOR=colors_hair
+    ITEMNEWBIE=i_robe
+    COLOR=colors_all
+    TAG.VENDMARKUP_FIXED = 1
+
+ON=@NPCRestock
+    SELL=i_sex_change_voucher,{1 3}
+    SELL=i_rename_voucher,{1 3}
+    
+      
+   
+   
+
+[eof]

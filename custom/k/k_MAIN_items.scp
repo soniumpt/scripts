@@ -1,0 +1,491 @@
+// CHANGELOG
+// 31/08/18 - Wigifer - Updated i_archery_butte to use the new skillcheck calls.
+// 25/11/2019 - Wigifer - Updated all remaining <TIME> to <SERV.TIME> (56d update issue)
+
+//Updated to add Yin's Archery Butte and Competition
+
+[FUNCTION ADD_TOOLTIP]
+IF !<ISEMPTY <VAR.TOOLTIP>>
+   VAR.TOOLTIP=<VAR.TOOLTIP><DEF.BR><DEF.BFONT_white><ARGS>
+ELSE
+   VAR.TOOLTIP=<DEF.BFONT_white><ARGS>
+ENDIF
+
+[ITEMDEF i_telepad_moving]
+ID	= i_fx_sparkle
+TYPE	= t_script
+
+ON = @Create
+   TYPE	= t_telepad
+   TAG.X1	= 1318
+   TAG.X2	= 1327
+   TAG.Y1	= 1749
+   TAG.Y2	= 1755
+
+ON = @Timer
+   TIMER	= { 14 20 }
+   LOCAL.X	= <eval { <TAG.X1> <TAG.X2> }>
+   LOCAL.Y	= <eval { <TAG.Y1> <TAG.Y2> }>
+   P	= <eval <LOCAL.X>> <eval <LOCAL.Y>> 1
+   FIX
+   return 1
+
+[ITEMDEF i_archery_butte_standard]
+ID=i_archery_butte
+TYPE=T_ARCHERY_BUTTE
+SKILLMAKE=CARPENTRY 85.0, TAILORING 40.0, t_sewing_kit, t_carpentry
+RESOURCES=20 i_STRAW, 10 i_log, 8 i_CLOTH
+WEIGHT=1000
+CATEGORY=Imperial uo
+SUBSECTION=Misc
+DESCRIPTION=Archery Butte
+DUPELIST=0100b
+
+on=@Create
+timer=0
+
+
+ON = @Timer
+timer=0
+return 1
+
+
+ON = @DClick
+   SRC.f_skillsuccess_rollskill 31
+   RETURN 1
+
+
+
+[ITEMDEF 0100a]
+DEFNAME=i_archery_butte
+NAME=archery butte
+TYPE=T_normal
+SKILLMAKE=CARPENTRY 40.0, TAILORING 40.0, t_sewing_kit, t_carpentry
+RESOURCES=20 i_STRAW, 10 i_log, 8 i_CLOTH
+WEIGHT=1000
+CATEGORY=Imperial uo
+SUBSECTION=Misc
+DESCRIPTION=Archery Butte
+DUPELIST=0100b
+
+on=@Create
+   TIMER=0
+
+ON = @Timer
+   TIMER=0
+   RETURN 1
+
+ON=@DClick
+   SRC.f_skillsuccess_rollskill 31
+   RETURN 1
+
+[ITEMDEF i_archery_butte_competition_pro]
+DEFNAME=i_archery_butte_competition_pro
+TYPE=t_normal
+ID=0100a
+NAME= Samaels Competition Pro - Archery
+SKILLMAKE=CARPENTRY 40.0, TAILORING 40.0, t_sewing_kit, t_carpentry
+RESOURCES=20 i_STRAW, 10 i_log, 8 i_CLOTH
+WEIGHT=1000
+CATEGORY=Imperial uo
+SUBSECTION=Misc
+DESCRIPTION=Samaels Competition Pro - Archery
+
+
+on=@DClick
+IF (<SRC.RESTEST 100 i_gold>)
+src.consume 100 i_gold
+src.tag.acp_shoots = 5
+src.tag.acp_score =0
+src.sysmessage @06 Game starts! You have 5 trows! 1500 score - 100 gold prize. 2000 - 500 gold. 2500 - Samaels Deadmans Arrow book!
+src.dialog d_archery_competition_pro
+return 1
+else
+src.message You need at least 100 gold to try yourself at this competition!
+return 1
+endif
+
+
+[DIALOG d_archery_competition_pro]
+-10,-10
+page 0
+resizepic 0 0 2620 300 300
+button 146 139 2104 2104 1 0 1
+dtext 130 30 044e Shoot!
+dtext 96 270 044e Shoots: <eval <src.tag.acp_shoots>> Score: <eval <src.tag.acp_score>>
+
+page 2
+resizepic 0 0 2620 300 300
+button 146 139 2104 2104 1 0 1
+dtext 130 30 044e Shoot!
+dtext 96 270 044e Shoots: <eval <src.tag.acp_shoots>> Score: <eval <src.tag.acp_score>>
+tilepic <src.tag.acp_arrowx> <src.tag.acp_arrowy> 6253
+
+[DIALOG d_archery_competition_pro BUTTON]
+on=1
+if (<src.tag.acp_shoots> == 0)
+	src.tag.acp_score=<eval <src.tag.acp_score>>
+	if (<src.tag.acp_score> >= 2500)
+		//should give Samaels Deadman Arrow book
+		SRC.NEWITEM i_gold,{3000}
+		SRC.ACT.BOUNCE
+		src.message @06 You wond 3000 gold!
+		src.message Match is over! Your score is <eval <src.tag.acp_score>>.
+
+	elseif (<src.tag.acp_score> >= 2000)
+
+		SRC.NEWITEM i_gold,{500}
+		SRC.ACT.BOUNCE
+		src.message @06 You wond 500 gold!
+		src.message Match is over! Your score is <eval <src.tag.acp_score>>.
+	elseif (<src.tag.acp_score> >= 1500)
+
+		SRC.NEWITEM i_gold,{100}
+		SRC.ACT.BOUNCE
+		src.message @06 You wond 100 gold!
+		src.message Match is over! Your score is <eval <src.tag.acp_score>>.
+	else
+		src.message Match is over! Your score is <eval <src.tag.acp_score>>.
+
+	endif
+	src.tag.acp_shoots = 
+	src.tag.acp_score = 
+	src.tag.acp_arrowx=
+	src.tag.acp_arrowy=
+	src.tag.acp_scorex=
+	src.tag.acp_scorey=
+	return 1
+endif
+src.tag.acp_arrowx=<eval RAND(300)>
+src.tag.acp_arrowy=<eval RAND(300)>
+src.tag.acp_shoots = <src.tag.acp_shoots> - 1
+src.tag.acp_scorex= <src.tag.acp_arrowx> - 150
+src.tag.acp_scorey= <src.tag.acp_arrowy> - 150
+If (<src.tag.acp_scorex> < 150)
+	src.tag.acp_scorex=150 -<src.tag.acp_scorex>
+elseif (<src.tag.acp_scorex> > 150)
+	src.tag.scorex=<src.tag.acp_scorex> - 150
+elseif (<src.tag.acp_scorex> == 0)
+	src.tag.acp_scorex=1000
+endif
+If (<src.tag.acp_scorey> < 150)
+	src.tag.acp_scorey=150 - <src.tag.acp_scorey> 
+elseif (<src.tag.acp_scorey> >150)
+	src.tag.acp_scorey=<src.tag.acp_scorey>-150 
+elseif (<src.tag.acp_scorey> == 0)
+	src.tag.acp_scorey=1000
+endif
+if ( rand(5) == 0)
+src.tag.acp_scorex=0
+src.tag.acp_scorey=0
+src.tag.acp_arrowx=3000
+src.tag.acp_arrowy=3000
+src.message Ups, you missed the butte!
+endif
+//src.message Archery bonus is <eval ((<src.archery>/50)*Rand(7))>
+src.tag.acp_score = <src.tag.acp_score> + <src.tag.acp_scorex> + <src.tag.acp_scorey> + ((<src.archery>/50)*Rand(7))
+src.dialog d_archery_competition_pro.page 2
+
+
+[ITEMDEF 01070]
+DEFNAME=i_training_dummy
+TYPE=t_train_dummy
+SKILLMAKE=CARPENTRY 85.0, TAILORING 70.0, t_sewing_kit, t_carpentry
+RESOURCES=15 i_CLOTH, 35 i_STRAW, 8 i_BOARD, 1 i_ingot_iron
+WEIGHT=35
+CATEGORY=Items by Professions
+SUBSECTION=Fighters
+DESCRIPTION=Training Dummy
+DUPELIST=01071,01072,01073,01074,01075,01076,01077
+
+ON = @Timer
+   if ( <DISPID> == 01071 )
+      TIMER	= 1
+      DISPID = 01070
+      UPDATE
+   else
+   endif
+   
+   return 1
+
+ON = @DClick
+   if ( <TIMER> >= 0 )
+      return 1
+   endif
+
+   SRC.ACT	= <SRC.FINDLAYER.layer_hand1.uid>
+   if ( <SRC.ACT.uid> == 0 )
+      SRC.ACT	= <SRC.FINDLAYER.layer_hand2.uid>
+   endif
+
+  IF ( <TYPE> == t_train_dummy )
+     IF ( <SRC.ACT.uid> == 0 )
+        SRC.f_skillsuccess_rollskill 43
+     ELSE
+        SRC.f_skillsuccess_rollskill <SRC.ACT.SKILL>
+     ENDIF
+  ENDIF
+
+  RETURN 1
+
+
+
+// this will do to store other TAGs
+[ITEMDEF i_tag_store]
+ID	= 0ed5
+NAME	= Tag Store Stone
+TYPE	= t_script
+
+ON	= @Create
+  ATTR	= attr_invis | attr_move_never
+  TIMER	= -1
+
+ON	= @DClick
+  MESSAGE UID = <UID>
+  return 1
+
+
+
+[FUNCTION f_settings_loot]
+   VAR.LOOT_UID		= uid_settings		// change ONLY the number here
+   VAR.LOOT		= VAR.GLOBAL
+   VAR.LOOT.NAME	= Global Variable
+
+   if ( <UID.<VAR.LOOT_UID>.baseid> )
+     if ( <UID.<VAR.LOOT_UID>.baseid> == i_tag_store )
+       VAR.LOOT		= UID.<VAR.LOOT_UID>.TAG
+       VAR.LOOT.NAME	= <UID.<var.LOOT_UID>.name>
+     endif
+   endif
+
+
+[FUNCTION f_loot_aux]
+  if ( 0<<var.loot>.NOLOOT.<region.uid>> == 01 )
+    VAR.NOLOOT.REGION = DISALLOWED
+  elseif ( 0<<var.loot>.NOLOOT.<region.uid>> == 0 )
+    VAR.NOLOOT.REGION = allowed
+  else
+    VAR.NOLOOT.REGION = allowed ONLY to killer
+  endif
+
+  if ( 0<<var.loot>.NOLOOT> == 01 )
+    VAR.NOLOOT.WORLD = DISALLOWED
+  elseif ( 0<<var.loot>.NOLOOT> == 0 )
+    VAR.NOLOOT.WORLD = allowed ONLY to killer
+  else
+    VAR.NOLOOT.WORLD = allowed
+  endif
+
+  VAR.NOLOOT.WARN = off
+  if ( 0<<var.loot>.WARNLOOT> ) 
+    VAR.NOLOOT.WARN = ON
+  endif
+
+
+[FUNCTION loot] 
+  SRC.f_settings_loot
+
+  if ( !strcmp( "<args>", "warn" ) )
+    SAFETRY <var.loot>.WARNLOOT = <eval !(0<<var.loot>.WARNLOOT>)>
+    sysmessage Using settings from: <VAR.LOOT.NAME>
+    f_loot_aux
+    sysmessage * Loot warnings are <VAR.noloot.warn>.
+    return 0
+  elseif ( !strcmp( "<args>", "region" ) )
+    if ( 0<<var.loot>.NOLOOT.<region.uid>> == 0 )
+       SAFETRY <var.loot>.NOLOOT.<region.uid> = 1
+    elseif ( 0<<var.loot>.NOLOOT.<region.uid>> == 1 )
+       SAFETRY <var.loot>.NOLOOT.<region.uid> = 2
+    else
+       SAFETRY <var.loot>.NOLOOT.<region.uid> = 0
+    endif
+    f_loot_aux
+    sysmessage * Looting is <VAR.noloot.region> here in <region.name>.
+    return 0
+  elseif ( !strcmp( "<args>", "world" ) )
+    if ( 0<<var.loot>.NOLOOT> == 0 )
+       TRY <var.loot>.NOLOOT	= 1
+    elseif ( 0<<var.loot>.NOLOOT> == 1 )
+       TRY <var.loot>.NOLOOT	= 2
+    else
+       TRY <var.loot>.NOLOOT	= 0
+    endif
+    f_loot_aux
+    sysmessage * Looting is <VAR.noloot.world> worldwide.
+    return 0
+  elseif ( !strcmp( "<args>", "debug" ) )
+    sysmessage Using settings from: <VAR.LOOT.NAME>
+    return 0
+  elseif ( !strcmp( "<args>", "status" ) )
+  else
+    SYSMESSAGE Usage: .loot [region/world/warn/status/debug]
+    return 1
+  endif
+  
+  f_loot_aux
+  if ( !strcmp( <VAR.NOLOOT.WORLD>, <VAR.NOLOOT.REGION> ) )
+    VAR.NOLOOT.MSG = and
+  else
+    VAR.NOLOOT.MSG = but
+  endif
+  
+  sysmessage Using settings from: <VAR.LOOT.NAME>
+  sysmessage Loot warnings are <VAR.noloot.warn>.
+  sysmessage Looting is <VAR.noloot.region> here in <region.name> <VAR.noloot.msg> <VAR.noloot.world> worldwide.
+
+
+[FUNCTION CLOSE_LAST_BODY]
+  // close other bodies
+  if ( 0<SRC.TAG.LASTBODY> == 0 )
+     SRC.TAG.LASTBODY	= 0
+  endif
+
+  LOCAL.CLOSE_ACT		= <SRC.ACT>
+  SRC.ACT		= <SRC.TAG.LASTBODY>
+  OBJ			= <SRC.TAG.LASTBODY>
+  if ( (<SRC.ACT.UID> == 0) || (!(<OBJ.TYPE> == t_corpse)) || (<SRC.ACT.ID> != 02006) )
+     SRC.TAG.LASTBODY	= 0
+  elseif ( <SRC.ACT.DISTANCE> < 7 )
+     LOCAL.PREV_P		= <SRC.ACT.P>
+     SRC.ACT.CONT	= <SRC.FINDLAYER(layer_pack).uid>
+     SRC.ACT.P		= <LOCAL.PREV_P>
+  endif
+
+  SRC.TAG.LASTBODY	= <UID>
+  SRC.ACT		= <LOCAL.CLOSE_ACT>
+
+
+[FUNCTION all_to_ground]
+all_to_ground_rec 0
+
+[FUNCTION all_to_ground_rec]
+if ( <findcont(<args>).uid> == 0 )
+   return 0
+endif
+SAFETRY findcont(<args>).P	= <P>
+SAFETRY findcont(<args>).UPDATE
+all_to_ground_rec <eval(<args>+1)>
+
+
+
+[ITEMDEF 0ee3]
+//spiderweb
+DEFNAME=i_spider_web
+VALUE=1
+TYPE=t_web
+CATEGORY=Decoration - Dungeons and The Dead
+SUBSECTION=Spider Web
+DESCRIPTION=Spider Web 01 (N)
+DUPELIST=0ee4,0ee5,0ee6
+ON = @Timer
+   REMOVE
+   return 1
+ON = @DCLICK
+   REMOVE
+   return 1   
+
+[ITEMDEF 0ee4]
+//spiderweb
+DUPEITEM=0ee3
+CATEGORY=Decoration - Dungeons and The Dead
+SUBSECTION=Spider Web
+DESCRIPTION=Spider Web 01 (W)
+ON = @Timer
+   REMOVE
+   return 1
+ON = @DCLICK
+   REMOVE
+   return 1
+
+[ITEMDEF 0ee5]
+//spiderweb
+DUPEITEM=0ee3
+CATEGORY=Decoration - Dungeons and The Dead
+SUBSECTION=Spider Web
+DESCRIPTION=Spider Web 02 (N)
+ON = @Timer
+   REMOVE
+   return 1
+ON = @DCLICK
+   REMOVE
+   return 1
+
+[ITEMDEF 0ee6]
+//spiderweb
+DUPEITEM=0ee3
+CATEGORY=Decoration - Dungeons and The Dead
+SUBSECTION=Spider Web
+DESCRIPTION=Spider Web 02 (N)
+ON = @Timer
+   REMOVE
+   return 1
+ON = @DCLICK
+   REMOVE
+   return 1
+
+
+
+[ITEMDEF i_skargard_spirits]
+ID	= i_gem_citrine_3
+NAME	= glowing orb%s
+TYPE	= t_normal
+VALUE	= 300
+WEIGHT	= 10
+
+ON = @Create
+   COLOR	= color_o_skargard
+   ATTR		= attr_magic
+
+ON = @GetItemVars
+   VAR.ITEM.MINSKILL_ID	= 30.0
+
+ON = @Identify
+   NAME	= skargard spirit%s
+   ATTR_MAGIC 0
+
+ON = @DClick
+   if !( <ISIDENTIFIED> )
+      SRC.SYSMESSAGE You don't know how to use it.
+      return 1
+   endif
+
+   if ( <SRC.RESTEST i_skargard_protect> )
+      SRC.SYSMESSAGE The skargard spirits are still with you.
+      return 1
+   endif
+
+   if ( 0<SRC.TAG.SKARGARD_SPIRITS_time> == 0 )
+   elseif ( (<SERV.TIME> - <SRC.TAG.SKARGARD_SPIRITS_time>) < 50 )
+      SRC.SYSMESSAGE The memory of skargard spirits is still too recent on you.
+      return 1
+   endif
+   SRC.TAG.SKARGARD_SPIRITS_time	= <SERV.TIME>
+
+   SRC.NEWITEM i_skargard_protect
+   SRC.ACT.EQUIP
+   SRC.SYSMESSAGE @90 The skargard spirits embrace you.
+   CONSUMEONE
+   return 1
+
+
+[ITEMDEF i_skargard_protect]
+ID	= i_memory
+NAME	= skargard spirits
+TYPE	= t_eq_script
+VALUE	= 250
+
+ON = @Equip
+   MORE2	= <CONT.COLOR>
+   CONT.COLOR	= color_o_skargard
+   CONT.TAG.SKARGARD_SPIRITS	= <eval ({ 1 3 })>
+
+ON = @Unequip
+   CONT.COLOR	= <MORE2>
+   CONT.TAG.SKARGARD_SPIRITS	=
+
+ON = @Timer
+   REMOVE
+   return 1
+
+
+[EOF]

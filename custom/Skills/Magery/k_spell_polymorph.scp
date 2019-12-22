@@ -1,0 +1,504 @@
+[FUNCTION POLYMORPH]
+   SRC.TAKE_MANA 40
+   if ( <SRC.findid.i_spell_poly> )
+      if ( <SRC.findid.i_spell_poly.MOREm> )
+         src.sysmessage You are still polymorphing...
+	 return 1
+      endif
+   endif
+   SRC.NEWITEM		i_spell_poly
+   SRC.ACT.TRIGGER	<args>
+   SRC.ACT.EQUIP
+
+[EVENTS e_polymorphing]
+ON = @SpellCast
+   EVENTS -e_polymorphing
+   findid.i_spell_poly.remove
+   
+ON = @GetHit
+   EVENTS -e_polymorphing
+   findid.i_spell_poly.remove
+
+
+[ITEMDEF i_spell_poly]	//Polymorph
+ID	= i_rune_polymorph
+TYPE	= t_eq_script
+LAYER	= layer_special
+NAME	= polymorph
+
+ON = @Create
+  MOREp		= 0, 0, 0
+
+ON = @Equip
+  TIMER		= 1
+  MOREm		= 3
+  SRC.SYSMESSAGE You feel your body starting to change...
+  SRC.EVENTS	+e_polymorphing
+  //IF <SRC.ISGM>
+  RECORD_LAYERS
+  
+  TAG.STEED = <VAR.STEED>
+  VAR.STEED =
+  //ENDIF
+  
+ON = @Timer
+  if ( <MOREm> == 0 )
+     REMOVE
+     return 1
+  else
+     MOREm	= (<MOREm> - 1)
+     TIMER	= 2
+     if ( <MOREm> < 1 )
+        CONT.SYSMESSAGE You assume the shape of a <NAME>.
+	CONT.EFFECT	= 3, i_fx_sparkle, 1, 8
+     elseif ( <MOREm> < 2 )
+        CONT.SYSMESSAGE You start assuming the shape of a <NAME>.
+	CONT.EFFECT	= 3, i_fx_sparkle, 1, 8
+	return 1
+     elseif ( <MOREm> < 3 )
+        CONT.EFFECT	= 3, i_fx_sparkle, 1, 8
+	return 1
+     endif
+  endif
+
+  if ( <CONT.FINDLAYER.LAYER_SPELL_Polymorph> )
+     CONT.FINDLAYER.LAYER_SPELL_Polymorph.remove
+  endif
+  
+  LAYER		= LAYER_SPELL_Polymorph
+
+  IF ( <MOREZ> = 0 )
+     TIMER		= <eval ( ((<CONT.MAGERY>+<CONT.evaluatingintel>)/8) + rand(20) )>
+  ELSE
+     TIMER		= <eval ( ((<CONT.NECROMANCY>+<CONT.NETHERLORE>)/8) + rand(20) )>
+  ENDIF
+  CONT.CONSUME=i_reag_blood_moss 1
+  CONT.CONSUME=i_reag_mandrake_root 1
+  CONT.CONSUME=i_reag_spider_silk 1
+  CONT.BODY	= <MORE2>
+  MORE2		= <CONT.OBODY>
+  CONT.UPDATE
+  MOREx		= ( <MOREx> - <CONT.STR> )
+  MOREy		= ( <MOREy> - <CONT.DEX> )
+  CONT.STR	= <eval ( <CONT.STR> + <MOREx> )>
+  CONT.DEX	= <eval ( <CONT.DEX> + <MOREy> )>
+  CONT.EVENTS	-e_polymorphing
+  CONT.FIX_HITS
+  CONT.FIX_STAM
+  return 1
+  
+ON = @Unequip
+  if ( <MOREm> )
+     return 0
+  endif
+
+  SRC.STR	= ( <SRC.STR> - <MOREx> )
+  SRC.DEX	= ( <SRC.DEX> - <MOREy> )
+  if ( <MORE2> != <SRC.BODY> )
+     SRC.OBODY	= <MORE2>
+  endif
+  SRC.BODY	= <SRC.OBODY>
+  SRC.UPDATE
+  SRC.FIX_HITS
+  SRC.FIX_STAM
+  
+  //IF <SRC.ISGM>
+  IF !<SRC.ISDEAD>
+     SRC.REMOUNT <TAG0.STEED>
+     EQUIP_RECORDED_LAYERS
+  ENDIF
+  //ENDIF
+
+//********************************************************************//
+//                          MAGERY POLYMORPHS                         //
+//********************************************************************//
+ON = @Init_rabbit
+  NAME		= rabbit
+  MORE2		= c_rabbit_poly
+  MOREx		= { 40 50 }
+  MOREy		= { 90 100 }
+  MOREz		= 0
+  
+ON = @Init_mongbat
+  NAME		= mongbat
+  MORE2		= c_mongbat_poly
+  MOREx		= { 60 70 }
+  MOREy		= { 90 100 }
+  MOREz		= 0
+  
+ON = @Init_snake_giant
+  NAME		= giant snake
+  MORE2		= c_snake_giant_poly
+  MOREx		= { 105 110 }
+  MOREy		= { 95 105 }
+  MOREz		= 0
+
+ON = @Init_gorilla
+  NAME		= gorilla
+  MORE2		= c_gorilla_poly
+  MOREx		= { 90 100 }
+  MOREy		= { 90 95 }
+  MOREz		= 0
+
+ON = @Init_gargoyle
+  NAME		= gargoyle
+  MORE2		= c_gargoyle_poly
+  MOREx		= { 130 140 }
+  MOREy		= { 85 95 }
+  MOREz		= 0
+
+ON = @Init_dragon
+  NAME		= dragon
+  MORE2		= { c_dragon_green_poly 1 c_dragon_red_poly 1 }
+  MOREx		= { 240 260 }
+  MOREy		= { 95 105 }
+  MOREz		= 0
+
+ON = @Init_dog
+  NAME		= dog
+  MORE2		= c_dog
+  MOREx		= { 50 60 }
+  MOREy		= { 50 60 }
+  MOREz		= 0
+
+ON = @Init_chicken
+  NAME		= chicken
+  MORE2		= c_chicken
+  MOREx		= { 25 35 }
+  MOREy		= { 55 65 }
+  MOREz		= 0
+
+ON = @Init_llama
+  NAME		= llama
+  MORE2		= c_llama
+  MOREx		= { 55 60 }
+  MOREy		= { 55 65 }
+  MOREz		= 0
+
+ON = @Init_daemon
+  if ( <SRC.MAGERY> < 90.0 )
+     if ( rand(3) )
+        NAME	= daemon
+        MORE2	= c_DAEMON_poly_1
+	MOREx		= { 175 185 }
+	MOREy		= { 90 100 }
+     else
+        NAME	= daemon
+        MORE2	= c_DAEMON_poly_2
+	MOREx		= { 185 195 }
+	MOREy		= { 90 100 }
+     endif
+  elseif ( <SRC.MAGERY> < 95.0 )
+     if ( rand(3) )
+        NAME	= daemon
+        MORE2	= c_DAEMON_poly_2
+	MOREx		= { 195 205 }
+	MOREy		= { 90 100 }
+     else
+        NAME	= greater daemon
+        MORE2	= c_DAEMON_poly_3
+	MOREx		= { 210 220 }
+	MOREy		= { 90 100 }
+     endif
+  else
+     if ( rand(3) )
+        NAME	= greater daemon
+        MORE2	= c_DAEMON_poly_3
+	MOREx		= { 210 220 }
+	MOREy		= { 90 100 }
+     else
+        NAME	= greater daemon
+        MORE2	= c_DAEMON_poly_4
+	MOREx		= { 225 235 }
+	MOREy		= { 90 100 }
+     endif
+  endif
+  MOREz		= 0
+
+ON = @Init_vampire_bat
+  NAME		= Vampire Bat
+  MORE2		= c_m_vampire_bat_poly
+  MOREx		= { 105 110 }
+  MOREy		= { 95 105 }
+  MOREz		= 0
+
+  
+//********************************************************************//
+//                        NECROMANCY POLYMORPHS                       //
+//********************************************************************//
+ON = @Init_Zombie
+  NAME		= Zombie
+  MORE2		= c_m_zombie_poly
+  MOREx		= { 65 75 }
+  MOREy		= { 45 55 }
+  MOREz		= 1
+
+ON = @Init_Ghoul
+  NAME		= Ghoul
+  MORE2		= c_m_ghoul_poly
+  MOREx		= { 90 100 }
+  MOREy		= { 70 80 }
+  MOREz		= 1
+  
+ON = @Init_Liche
+  NAME		= Liche
+  MORE2		= c_m_liche_poly
+  MOREx		= { 140 150 }
+  MOREy		= { 85 95 }
+  MOREz		= 1
+
+ON = @Init_Wreched_Corpse
+  NAME		= Wretched Corpse
+  MORE2		= c_m_wrechedcorpse_poly
+  MOREx		= { 180 190 }
+  MOREy		= { 95 105 }
+  MOREz		= 1
+  
+ON = @Init_Liche_Lord
+  NAME		= Liche Lord
+  MORE2		= c_m_liche_lord_poly
+  MOREx		= { 215 225 }
+  MOREy		= { 95 105 }
+  MOREz		= 1
+  
+ON = @Init_Undead_Dragon
+  NAME		= Undead Dragon
+  MORE2		= c_m_undead_Dragon_poly
+  MOREx		= { 245 255 }
+  MOREy		= { 105 115 }
+  MOREz		= 1
+
+//********************************************************************//
+//                          MAGERY POLYMORPHS                         //
+//********************************************************************//
+[CHARDEF 02001]
+DEFNAME	= c_mongbat_poly
+ID	= c_mongbat
+NAME	= Mongbat
+SOUND	= snd_MONSTER_MNGBAT1
+ICON	= i_pet_mongbat
+CAN	= MT_WALK
+DAM	= 2, 9
+ARMOR	= 10
+STR	= 70
+DEX	= 100
+
+[CHARDEF 02002]
+DEFNAME	= c_snake_giant_poly
+ID	= c_snake_giant
+NAME	= Giant Serpent
+SOUND	= snd_MONSTER_SEASERP1
+ICON	= i_pet_SNAKE_GIANT
+ANIM	= 078c7f
+CAN	= MT_WALK
+DAM	= 4, 12
+ARMOR	= 2
+STR	= 110
+DEX	= 100
+
+[CHARDEF 02003]
+DEFNAME	= c_gargoyle_poly
+ID	= c_gargoyle
+NAME	= Gargoyle
+SOUND	= snd_MONSTER_GARGYL1
+ICON	= i_pet_GARG
+ANIM	= 03fbc7f
+CAN	= MT_WALK|MT_FLY
+DAM	= 8, 15
+ARMOR	= 25
+STR	= 130
+DEX	= 90
+
+[CHARDEF 02004]
+DEFNAME	= c_daemon_poly_1
+ID	= c_daemon
+NAME	= #NAMES_DAEMON the Daemon
+SOUND	= snd_MONSTER_DAEMON1
+ICON	= i_pet_DAEMON
+ANIM	= 03fbc7f
+CAN	= MT_WALK|MT_FLY
+DAM	= 12, 20
+ARMOR	= 30
+STR	= 180
+DEX	= 95
+
+[CHARDEF 02005]
+DEFNAME	= c_daemon_poly_2
+ID	= c_daemon
+NAME	= #NAMES_DAEMON the Daemon
+SOUND	= snd_MONSTER_DAEMON1
+ICON	= i_pet_DAEMON
+ANIM	= 03fbc7f
+CAN	= MT_WALK|MT_FLY
+DAM	= 12, 20
+ARMOR	= 30
+STR	= 190
+DEX	= 95
+
+[CHARDEF 02006]
+DEFNAME	= c_daemon_poly_3
+ID	= c_DAEMON_W_SWORD
+NAME	= #NAMES_DAEMON the Daemon
+SOUND	= snd_MONSTER_DAEMON1
+ICON	= i_pet_DAEMON
+ANIM	= 03fbc7f
+CAN	= MT_WALK|MT_FLY
+DAM	= 15, 25
+ARMOR	= 30
+STR	= 210
+DEX	= 90
+
+[CHARDEF 02007]
+DEFNAME	= c_daemon_poly_4
+ID	= c_DAEMON_W_SWORD
+NAME	= #NAMES_DAEMON the Daemon
+SOUND	= snd_MONSTER_DAEMON1
+ICON	= i_pet_DAEMON
+ANIM	= 03fbc7f
+CAN	= MT_WALK|MT_FLY
+DAM	= 15, 25
+ARMOR	= 30
+STR	= 220
+DEX	= 95
+
+[CHARDEF 02008]
+DEFNAME	= c_dragon_green_poly
+ID	= c_dragon_green
+NAME	= #NAMES_DRAGON the Dragon
+SOUND	= snd_MONSTER_DRAGON1
+ICON	= i_pet_DRAGON
+ANIM	= 03f9c7f
+CAN	= MT_WALK|MT_FLY
+DAM	= 15, 25
+ARMOR	= 40
+STR	= 250
+DEX	= 100
+
+[CHARDEF 02009]
+DEFNAME	= c_dragon_red_poly
+ID	= c_dragon_red
+NAME	= #NAMES_DRAGON the Dragon
+SOUND	= snd_MONSTER_DRAGON1
+ICON	= i_pet_DRAGON
+ANIM	= 03f9c7f
+CAN	= MT_WALK|MT_FLY
+DAM	= 15, 25
+ARMOR	= 40
+STR	= 250
+DEX	= 100
+
+[CHARDEF 0200a]
+DEFNAME	= c_rabbit_poly
+ID	= c_rabbit
+NAME	= Rabbit
+SOUND	= snd_ANIMALS_RABBIT3
+ICON	= i_pet_rabbit
+CAN	= MT_WALK
+DAM	= 2, 9
+ARMOR	= 10
+STR	= 40
+DEX	= 60
+
+[CHARDEF 0200b]
+DEFNAME	= c_gorilla_poly
+ID	= c_gorilla
+NAME	= Gorilla
+SOUND	= snd_ANIMALS_GORILLA1
+ICON	= i_pet_GORILLA
+ANIM	= 078c7f
+CAN	= MT_WALK
+DAM	= 7, 10
+ARMOR	= 2
+STR	= 100
+DEX	= 100
+
+[CHARDEF 0200c]
+DEFNAME	= c_m_vampire_bat_poly
+ID	= c_vampire_bat
+NAME	= Vampire Bat
+SOUND	= snd_MONSTER_ZOMBIE1
+ICON	= i_pet_vampirebat
+CAN	= MT_WALK
+DAM	= 4, 12
+ARMOR	= 2
+STR	= 110
+DEX	= 100
+
+//********************************************************************//
+//                       NECROMANCY POLYMORPHS                        //
+//********************************************************************//
+[CHARDEF 02020]
+DEFNAME	= c_m_zombie_poly
+ID	= c_zombie
+NAME	= Zombie
+SOUND	= snd_MONSTER_ZOMBIE1
+ICON	= i_pet_zombie
+CAN	= MT_WALK
+DAM	= 4, 11
+ARMOR	= 9
+STR	= 70
+DEX	= 50
+
+[CHARDEF 02021]
+DEFNAME	= c_m_ghoul_poly
+ID	= c_m_ghoul
+NAME	= Ghoul
+SOUND	= snd_MONSTER_ZOMBIE1
+ICON	= i_pet_zombie
+CAN	= MT_WALK
+DAM	= 7, 14
+ARMOR	= 20
+STR	= 95
+DEX	= 75
+
+[CHARDEF 02022]
+DEFNAME	= c_m_liche_poly
+ID	= c_liche
+NAME	= Liche
+SOUND	= snd_MONSTER_LICHE1
+ICON	= i_pet_lich
+CAN	= MT_WALK
+DAM	= 10, 17
+ARMOR	= 30
+STR	= 145
+DEX	= 90
+
+[CHARDEF 02023]
+DEFNAME	= c_m_WrechedCorpse_poly
+ID	= c_m_WrechedCorpse
+NAME	= Wretched Corpse
+SOUND	= snd_MONSTER_GHOST1
+ICON	= i_pet_zombie
+CAN	= MT_WALK
+DAM	= 13, 20
+ARMOR	= 40
+STR	= 185
+DEX	= 100
+
+[CHARDEF 02024]
+DEFNAME	= c_m_liche_lord_poly
+ID	= c_m_liche_lord
+NAME	= Liche Lord
+SOUND	= snd_MONSTER_LICHE1
+ICON	= i_pet_lich
+CAN	= MT_WALK
+DAM	= 16, 23
+ARMOR	= 50
+STR	= 220
+DEX	= 100
+
+[CHARDEF 02025]
+DEFNAME	= c_m_undead_Dragon_poly
+ID	= c_undead_Dragon
+NAME	= Undead Dragon
+SOUND	= snd_MONSTER_DRAGON1
+ICON	= i_pet_dragon
+CAN	= MT_WALK|MT_FLY
+DAM	= 16, 23
+ARMOR	= 50
+STR	= 250
+DEX	= 110
+
+
+[EOF]
+

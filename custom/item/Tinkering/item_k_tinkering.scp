@@ -1,0 +1,957 @@
+//// nail barrels
+
+[ITEMDEF i_nail_barrel]
+NAME=Empty nail Barrel
+ID=0fae
+TYPE=t_script
+VALUE=40
+WEIGHT=40
+DUPELIST = 0fae
+DYE=1
+SKILLMAKE=TINKERING 67.0, CARPENTRY 66.0, t_tinker_tools
+RESOURCES = 12 i_log_pine, 2 i_BARREL_HOOPS, 36 i_nails_iron, 1 i_hinge_iron
+CATEGORY=Unique Items
+SUBSECTION=Tinkering
+DESCRIPTION=Nail Barrel
+
+ON=@Create
+   MORE2=0
+   MOREM=0
+
+ON=@CLICK
+   IF (<EVAL <MOREm>> = 0)
+      NAME=Empty Nail Barrel
+      MOREm=0
+      return 1
+   ENDIF
+   
+ON=@Targon_Ground
+   IF (<EVAL <MOREM>> = 0)
+      SRC.SYSMESSAGE Your can't target the ground.
+      RETURN 1
+   ENDIF
+
+ON=@Targon_Char
+   SRC.SYSMESSAGE You want to nail yourself? What to a cross?.. Oh! behave!
+   RETURN 1
+
+
+ON=@DClick
+   IF (<EVAL <morem>> = 0) && (<EVAL <MORE2>> > 0)
+      SRC.SYSMESSAGE You clean your barrel, ready for another type of nail.
+      more2=0
+   ELSEIF (<EVAL <MOREM>> = 250)
+      SRC.SYSMESSAGE The barrel is full, so you cannot add more nails.
+      TARGET Target your backpack to take out nails from the barrel...
+   ELSEIF (<EVAL <MOREM>> > 250)
+      MOREM=250
+   ELSEIF ( <TOPOBJ.UID> = <SRC.UID> )
+IF (<EVAL <MOREM>> < 250)
+
+   IF ((<SRC.RESTEST 1 i_nails_adamantine>) && ((<MORE2>=0) || (<MORE2>=1)) && (<SRC.RESTEST 1 i_nails_adamantine>))
+      LOCAL.NAILTYPE = i_nails_adamantine
+      LOCAL.NAILNAME = Adamantine Nails
+      MORE2=1      
+   ELSEIF ((<SRC.RESTEST 1 i_nails_brass>) && ((<MORE2>=0) || (<MORE2>=2)) && (<SRC.RESTEST 1 i_nails_brass>))
+      LOCAL.NAILTYPE = i_nails_brass
+      LOCAL.NAILNAME = Brass Nails
+      MORE2=2
+   ELSEIF ((<SRC.RESTEST 1 i_nails_bronze>) && ((<MORE2>=0) || (<MORE2>=3)) && (<SRC.RESTEST 1 i_nails_bronze>))
+      MORE2=3
+      LOCAL.NAILTYPE = i_nails_bronze
+      LOCAL.NAILNAME = Bronze Nails
+   ELSEIF ((<SRC.RESTEST 1 i_nails_chrome>) && ((<MORE2>=0) || (<MORE2>=4)) && (<SRC.RESTEST 1 i_nails_chrome >))
+      MORE2=4
+      LOCAL.NAILTYPE = i_nails_chrome
+      LOCAL.NAILNAME = Chrome Nails
+   ELSEIF ((<SRC.RESTEST 1 i_nails_copper>) && ((<MORE2>=0) || (<MORE2>=5)) && (<SRC.RESTEST 1 i_nails_copper >))
+      MORE2=5
+      LOCAL.NAILTYPE = i_nails_copper
+      LOCAL.NAILNAME = Copper Nails
+   ELSEIF ((<SRC.RESTEST 1 i_nails_ferrum>) && ((<MORE2>=0) || (<MORE2>=6)) && (<SRC.RESTEST 1 i_nails_ferrum >))
+      MORE2=6
+      LOCAL.NAILTYPE = i_nails_ferrum
+      LOCAL.NAILNAME = Ferrum Nails
+   ELSEIF ((<SRC.RESTEST 1 i_nails_gold>) && ((<MORE2>=0) || (<MORE2>=7)) && (<SRC.RESTEST 1 i_nails_gold >))
+      MORE2=7
+      LOCAL.NAILTYPE = i_nails_gold
+      LOCAL.NAILNAME = Gold Nails
+   ELSEIF ((<SRC.RESTEST 1 i_nails_phoenix>) && ((<MORE2>=0) || (<MORE2>=8)) && (<SRC.RESTEST 1 i_nails_phoenix>))
+      MORE2=8
+      LOCAL.NAILTYPE = i_nails_pheonix
+      LOCAL.NAILNAME = Pheonix Nails
+   ELSEIF ((<SRC.RESTEST 1 i_nails_pure_copper>) && ((<MORE2>=0) || (<MORE2>=9)) && (<SRC.RESTEST 1 i_nails_pure_copper >))
+      MORE2=9
+      LOCAL.NAILTYPE = i_nails_pure_copper
+      LOCAL.NAILNAME = Pure Copper Nails
+   ELSEIF ((<SRC.RESTEST 1 i_nails_silver>) && ((<MORE2>=0) || (<MORE2>=10)) && (<SRC.RESTEST 1 i_nails_silver>))
+      MORE2=10
+      LOCAL.NAILTYPE = i_nails_silver
+      LOCAL.NAILNAME = Silver Nails
+   ELSEIF ((<SRC.RESTEST 1 i_nails_steel>) && ((<MORE2>=0) || (<MORE2>=11)) && (<SRC.RESTEST 1 i_nails_steel>))
+      MORE2=11
+      LOCAL.NAILTYPE = i_nails_steel
+      LOCAL.NAILNAME = Steel Nails
+   ELSEIF ((<SRC.RESTEST 1 i_nails_terathane>) && ((<MORE2>=0) || (<MORE2>=12)) && (<SRC.RESTEST 1 i_nails_terathane>))
+      MORE2=12
+      LOCAL.NAILTYPE = i_nails_terathane
+      LOCAL.NAILNAME = Terathane Nails
+   ELSEIF ((<SRC.RESTEST 1 i_nails_titanium>) && ((<MORE2>=0) || (<MORE2>=13)) && (<SRC.RESTEST 1 i_nails_titanium>))
+      MORE2=13
+      LOCAL.NAILTYPE = i_nails_titanium
+   ELSEIF ((<SRC.RESTEST 1 i_nails_iron>) && ((<MORE2>=0) || (<MORE2>=14)) && (<SRC.RESTEST 1 i_nails_iron >))
+      MORE2=14
+      LOCAL.NAILTYPE = i_nails_iron
+      LOCAL.NAILNAME = Iron Nails
+   ELSE
+      SRC.SYSMESSAGE The Nails could not be added.
+      RETURN 1
+   ENDIF
+   SRC.SYSMESSAGE You fill up the barrel with a <LOCAL.NAILTYPE>
+   SRC.CONSUME <LOCAL.NAILTYPE>
+   SRC.SOUND=0033
+   MOREM=<MOREM>+1
+   NAME=<LOCAL.NAILNAME> Barrel (<eval <MOREm>>) 
+
+ENDIF
+
+
+   ELSE
+      SRC.SYSMESSAGE Target your backpack to take out nails or...
+      TARGET Target the nails you wish to fill the barrel with?
+   ENDIF
+   RETURN 1
+
+
+ON=@Targon_item
+IF (<SRC.TARG.BASEID> == i_backpack)
+
+   IF ((<MORE2> > 0) && (<MORE2> < 15))
+      DOSWITCH <MORE2>
+         RETURN 1
+         SRC.NEWITEM=i_nails_adamantine
+         SRC.NEWITEM=i_nails_brass
+         SRC.NEWITEM=i_nails_bronze
+         SRC.NEWITEM=i_nails_chrome
+         SRC.NEWITEM=i_nails_copper
+         SRC.NEWITEM=i_nails_ferrum
+         SRC.NEWITEM=i_nails_gold
+         SRC.NEWITEM=i_nails_phoenix
+         SRC.NEWITEM=i_nails_pure_copper
+         SRC.NEWITEM=i_nails_silver
+         SRC.NEWITEM=i_nails_steel
+         SRC.NEWITEM=i_nails_terathane
+         SRC.NEWITEM=i_nails_titanium
+         SRC.NEWITEM=i_nails_iron
+      ENDDO
+   ELSE
+      RETURN 1
+   ENDIF
+   
+   SRC.SYSMESSAGE You place the nails in you backpack.
+   SRC.SOUND=0033   
+   SRC.ACT.ATTR=0
+   SRC.ACT.BOUNCE
+   MOREM=<MOREM>+(-1)
+   NAME=<STRSUB 0 <EVAL (<strpos 1 40 <NAME>>-1)> <NAME>> (<EVAL <MOREM>>)
+   
+ELSEIF (<EVAL <MOREM>> < 250)
+
+   IF ((<SRC.TARG.BASEID> == i_nails_adamantine) && ((<MORE2>=0) || (<MORE2>=1)) && (<SRC.RESTEST i_nails_adamantine>))
+      MORE2=1      
+   ELSEIF ((<SRC.TARG.BASEID> == i_nails_brass) && ((<MORE2>=0) || (<MORE2>=2)) && (<SRC.RESTEST i_nails_brass>))
+      MORE2=2
+   ELSEIF ((<SRC.TARG.BASEID> == i_nails_bronze) && ((<MORE2>=0) || (<MORE2>=3)) && (<SRC.RESTEST i_nails_bronze>))
+      MORE2=3
+   ELSEIF ((<SRC.TARG.BASEID> == i_nails_chrome) && ((<MORE2>=0) || (<MORE2>=4)) && (<SRC.RESTEST i_nails_chrome >))
+      MORE2=4
+   ELSEIF ((<SRC.TARG.BASEID> == i_nails_copper) && ((<MORE2>=0) || (<MORE2>=5)) && (<SRC.RESTEST i_nails_copper >))
+      MORE2=5
+   ELSEIF ((<SRC.TARG.BASEID> == i_nails_ferrum) && ((<MORE2>=0) || (<MORE2>=6)) && (<SRC.RESTEST i_nails_ferrum >))
+      MORE2=6
+   ELSEIF ((<SRC.TARG.BASEID> == i_nails_gold) && ((<MORE2>=0) || (<MORE2>=7)) && (<SRC.RESTEST i_nails_gold >))
+      MORE2=7
+   ELSEIF ((<SRC.TARG.BASEID> == i_nails_phoenix) && ((<MORE2>=0) || (<MORE2>=8)) && (<SRC.RESTEST i_nails_phoenix>))
+      MORE2=8
+   ELSEIF ((<SRC.TARG.BASEID> == i_nails_pure_copper) && ((<MORE2>=0) || (<MORE2>=9)) && (<SRC.RESTEST i_nails_pure_copper >))
+      MORE2=9
+   ELSEIF ((<SRC.TARG.BASEID> == i_nails_silver) && ((<MORE2>=0) || (<MORE2>=10)) && (<SRC.RESTEST i_nails_silver>))
+      MORE2=10
+   ELSEIF ((<SRC.TARG.BASEID> == i_nails_steel) && ((<MORE2>=0) || (<MORE2>=11)) && (<SRC.RESTEST i_nails_steel>))
+      MORE2=11
+   ELSEIF ((<SRC.TARG.BASEID> == i_nails_terathane) && ((<MORE2>=0) || (<MORE2>=12)) && (<SRC.RESTEST i_nails_terathane>))
+      MORE2=12
+   ELSEIF ((<SRC.TARG.BASEID> == i_nails_titanium) && ((<MORE2>=0) || (<MORE2>=13)) && (<SRC.RESTEST i_nails_titanium>))
+      MORE2=13
+   ELSEIF ((<SRC.TARG.BASEID> == i_nails_iron) && ((<MORE2>=0) || (<MORE2>=14)) && (<SRC.RESTEST i_nails_iron >))
+      MORE2=14
+   ELSE
+      SRC.SYSMESSAGE The Nails could not be added.
+      RETURN 1
+   ENDIF
+   SRC.SYSMESSAGE You fill up the barrel with a  <SRC.TARG.NAME>
+   SRC.TARG.REMOVE
+   SRC.SOUND=0033
+   MOREM=<MOREM>+1
+   NAME=<SRC.TARG.NAME> Barrel (<eval <MOREm>>) 
+
+ELSE
+   SRC.SYSMESSAGE You cannot add <SRC.TARG.NAME> to this barrel!
+ENDIF
+   
+RETURN 1
+
+
+// Extended potions.
+/// potion flask ///
+
+[ITEMDEF i_keg_potion]
+NAME=Empty Potion Flask
+ID=i_flask_long_empty
+TYPE=t_script
+VALUE=40
+WEIGHT=10
+SKILLMAKE=TINKERING 75.0, t_tinker_tools
+RESOURCES = 15 i_bottle_empty, 3 i_BEESWAX, 1 i_hinge_silver, 1 i_wire_gold
+CATEGORY=Unique Items
+SUBSECTION=Tinker
+DESCRIPTION=Potion Flask
+
+ON=@Create
+MORE2=0
+MOREM=0
+
+ON=@CLICK
+   IF <MOREm>=0
+      NAME=Empty Potion Flask
+      DISPID=i_flask_long_empty
+      UPDATE
+      MOREm=0
+   ENDIF
+
+ON=@DClick
+   IF <MOREm>=0
+      NAME=Empty Potion Flask
+      TARGET What potion or bottle would you pour into the flask?
+      RETURN 1
+      //MOREm=0
+   ENDIF
+   TARGET What potion or bottle would you like to fill?
+   RETURN 1
+
+ON=@Targon_Char
+   SRC.SYSMESSAGE That is not a potion or an empty bottle
+   RETURN 1
+
+ON=@Targon_ground
+   SRC.SYSMESSAGE That is not a potion or an empty bottle
+   RETURN 1
+
+ON=@Targon_Item
+   IF (<SRC.TARG.BASEID> == i_bottle_empty) && (<MOREM>=0)
+      SRC.SYSMESSAGE You can't fill potion bottles with an empty flask! 
+ 
+   ELSEIF (<SRC.TARG.TOPOBJ.UID>!=<SRC.UID> )
+      SRC.SYSMESSAGE This needs to be in your backpack first!
+
+   //ELSEIF (<SRC.TARG.BASEID> == i_bottle_empty) && (<SRC.TARG.AMOUNT> > 1)
+      //SRC.SYSMESSAGE You Can only fill one bottle at a time.
+
+   ELSEIF (<SRC.TARG.BASEID> == i_bottle_empty)
+      IF ((<MORE2> > 0) && (<MORE2> < 30))
+         DOSWITCH <MORE2>
+            RETURN 1    
+            SERV.NEWITEM=i_potion_Agility
+            SERV.NEWITEM=i_potion_AgilityGreat
+            SERV.NEWITEM=i_potion_CureLess
+            SERV.NEWITEM=i_potion_Cure
+            SERV.NEWITEM=i_potion_CureGreat
+            SERV.NEWITEM=i_potion_ExplosionLess
+            SERV.NEWITEM=i_potion_Explosion
+            SERV.NEWITEM=i_potion_ExplosionGreat
+            SERV.NEWITEM=i_potion_HealLess
+            SERV.NEWITEM=i_potion_Heal
+            SERV.NEWITEM=i_potion_HealGreat
+            SERV.NEWITEM=i_potion_Nightsight
+            SERV.NEWITEM=i_potion_PoisonLess
+            SERV.NEWITEM=i_potion_Poison
+            SERV.NEWITEM=i_potion_PoisonGreat
+            SERV.NEWITEM=i_potion_PoisonDeadly
+            SERV.NEWITEM=i_potion_Refresh
+            RETURN 1
+            SERV.NEWITEM=i_potion_Strength
+            SERV.NEWITEM=i_potion_StrengthGreat
+            SERV.NEWITEM=i_potion_Shrink
+            SERV.NEWITEM=i_potion_Mana
+            SERV.NEWITEM=i_potion_cleverness
+            SERV.NEWITEM=i_potion_clevernessGreat
+            SERV.NEWITEM=i_potion_clevernessless
+            SERV.NEWITEM=i_potion_invisibility
+            SERV.NEWITEM=i_potion_permanence
+            SERV.NEWITEM=i_potion_permanencegreat
+            SERV.NEWITEM=i_potion_permanenceless
+            SERV.NEWITEM=i_potion_managreat
+         ENDDO
+         IF (<SRC.TARG.AMOUNT> > <MOREM>)
+             SRC.SYSMESSAGE You do not have enough potion in the flask to fill all those pots.
+             RETURN 1
+         ELSE
+         NEW.AMOUNT=<SRC.TARG.AMOUNT>
+         NEW.BOUNCE
+         ENDIF
+      ELSE
+         RETURN 1
+      ENDIF
+      SRC.ACT.ATTR=0
+      SRC.ACT.BOUNCE
+      SRC.SYSMESSAGE You fill up <SRC.TARG.AMOUNT> bottle(s).
+      MOREM=(<MOREM>+-<EVAL <SRC.TARG.AMOUNT>>)
+      SRC.CONSUME=<EVAL <SRC.TARG.AMOUNT>> i_bottle_empty 
+      SRC.SOUND=0240
+      NAME=<STRSUB 0 <EVAL (<strpos 1 40 <NAME>>-1)> <NAME>> (<EVAL <MOREM>>)
+
+   ELSE
+      
+      IF (<EVAL (<MOREM>+<SRC.TARG.AMOUNT>)> > 250)
+         SRC.SYSMESSAGE There's not enough room for that many potions.  
+         SRC.SYSMESSAGE You can only put <EVAL (250-<MOREM>)> more potions in this flask.
+         RETURN 1
+      ELSEIF (<SRC.TARG.BASEID>==i_potion_Agility) &&  ((<MOREM>=0) ||(<MORE2>=1))
+         MORE2=1
+      ELSEIF (<SRC.TARG.BASEID>==i_potion_AgilityGreat) &&  ((<MOREM>=0) ||(<MORE2>=2))
+         MORE2=2
+      ELSEIF (<SRC.TARG.BASEID>==i_potion_CureLess) &&  ((<MOREM>=0) ||(<MORE2>=3))
+         MORE2=3
+      ELSEIF (<SRC.TARG.BASEID>==i_potion_Cure) &&  ((<MOREM>=0) ||(<MORE2>=4))
+         MORE2=4
+      ELSEIF (<SRC.TARG.BASEID>==i_potion_CureGreat) &&  ((<MOREM>=0) ||(<MORE2>=5))
+         MORE2=5
+      ELSEIF (<SRC.TARG.BASEID>==i_potion_ExplosionLess) &&  ((<MOREM>=0) ||(<MORE2>=6))
+         MORE2=6
+      ELSEIF (<SRC.TARG.BASEID>==i_potion_Explosion) &&  ((<MOREM>=0) ||(<MORE2>=7))
+         MORE2=7
+      ELSEIF (<SRC.TARG.BASEID>==i_potion_ExplosionGreat) &&  ((<MOREM>=0) ||(<MORE2>=8))
+         MORE2=8
+      ELSEIF (<SRC.TARG.BASEID>==i_potion_HealLess) &&  ((<MOREM>=0) ||(<MORE2>=9))
+         MORE2=9
+      ELSEIF (<SRC.TARG.BASEID>==i_potion_Heal) &&  ((<MOREM>=0) ||(<MORE2>=10))
+         MORE2=10
+      ELSEIF (<SRC.TARG.BASEID>==i_potion_HealGreat) &&  ((<MOREM>=0) ||(<MORE2>=11))
+         MORE2=11
+      ELSEIF (<SRC.TARG.BASEID>==i_potion_Nightsight) &&  ((<MOREM>=0) ||(<MORE2>=12))
+         MORE2=12
+      ELSEIF (<SRC.TARG.BASEID>==i_potion_PoisonLess) &&  ((<MOREM>=0) ||(<MORE2>=13))
+         MORE2=13
+      ELSEIF (<SRC.TARG.BASEID>==i_potion_Poison) &&  ((<MOREM>=0) ||(<MORE2>=14))
+         MORE2=14
+      ELSEIF (<SRC.TARG.BASEID>==i_potion_PoisonGreat) &&  ((<MOREM>=0) ||(<MORE2>=15))
+         MORE2=15
+      ELSEIF (<SRC.TARG.BASEID>==i_potion_PoisonDeadly) &&  ((<MOREM>=0) ||(<MORE2>=16))
+         MORE2=16
+      ELSEIF (<SRC.TARG.BASEID>==i_potion_Refresh) &&  ((<MOREM>=0) ||(<MORE2>=17))
+         MORE2=17
+      ELSEIF (<SRC.TARG.BASEID>==i_potion_Strength) &&  ((<MOREM>=0) ||(<MORE2>=19))
+         MORE2=19
+      ELSEIF (<SRC.TARG.BASEID>==i_potion_StrengthGreat) &&  ((<MOREM>=0) ||(<MORE2>=20))
+         MORE2=20
+      ELSEIF (<SRC.TARG.BASEID>==i_potion_Shrink) &&  ((<MOREM>=0) ||(<MORE2>=21))
+         MORE2=21
+      ELSEIF (<SRC.TARG.BASEID>==i_potion_Mana) &&  ((<MOREM>=0) ||(<MORE2>=22))
+         MORE2=22
+      ELSEIF (<SRC.TARG.BASEID>==i_potion_cleverness) &&  ((<MOREM>=0) ||(<MORE2>=23))
+         MORE2=23
+      ELSEIF (<SRC.TARG.BASEID>==i_potion_clevernessgreat) &&  ((<MOREM>=0) ||(<MORE2>=24))
+         MORE2=24
+      ELSEIF (<SRC.TARG.BASEID>==i_potion_clevernessless) &&  ((<MOREM>=0) ||(<MORE2>=25))
+         MORE2=25
+      ELSEIF (<SRC.TARG.BASEID>==i_potion_invisibility) &&  ((<MOREM>=0) ||(<MORE2>=26))
+         MORE2=26
+      ELSEIF (<SRC.TARG.BASEID>==i_potion_permanence) &&  ((<MOREM>=0) ||(<MORE2>=27))
+         MORE2=27
+      ELSEIF (<SRC.TARG.BASEID>==i_potion_permanencegreat) &&  ((<MOREM>=0) ||(<MORE2>=28))
+         MORE2=28
+      ELSEIF (<SRC.TARG.BASEID>==i_potion_permanenceless) &&  ((<MOREM>=0) ||(<MORE2>=29))
+         MORE2=29
+      ELSEIF (<SRC.TARG.BASEID>==i_potion_managreat) &&  ((<MOREM>=0) ||(<MORE2>=30))
+         MORE2=30
+      ELSE
+         SRC.SYSMESSAGE The potion could not be added.
+         RETURN 1
+      ENDIF
+      MOREM=<MOREM>+<EVAL <SRC.TARG.AMOUNT>>
+      NAME=<SRC.TARG.NAME> Flask (<eval <MOREM>>)
+      SRC.SOUND=0240 
+      DISPID=i_flask_long_purple_anim
+      UPDATE
+      SRC.SYSMESSAGE You fill up the flask with a <SRC.TARG.NAME>
+      SRC.TARG.REMOVE
+      SRC.NEWITEM=i_bottle_empty
+      SRC.ACT.ATTR=0 
+      SRC.ACT.AMOUNT=<SRC.TARG.AMOUNT>
+      SRC.ACT.BOUNCE 
+       
+   ENDIF
+   RETURN 1
+
+[ITEMDEF 0104b]
+DEFNAME=i_clock
+NAME = pine clock
+RESOURCES=1 i_CLOCK_FRAME, 1 i_clock_parts
+WEIGHT=2
+TYPE=T_CLOCK
+VALUE = 170
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Clock
+DUPELIST=0104c
+SKILLMAKE=TINKERING 55.1, t_tinker_tools
+
+ON = @DClick
+   SRC.SHOWTIME
+   return 1
+
+
+[ITEMDEF 0104d]
+DEFNAME=i_clock_frame
+RESOURCES=4 i_log_pine, 1 i_nails
+TYPE = t_normal
+NAME = pine clock frame
+WEIGHT=2
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Clock Frame
+
+DUPELIST=0104e
+SKILLMAKE=TINKERING 53.7, t_tinker_tools
+
+
+[ITEMDEF i_clock_eucalyptus]
+DEFNAME=i_clock_eucalyptus
+ID=i_clock
+NAME = eucalyptus clock
+RESOURCES=1 i_clock_frame_eucalyptus, 1 i_clock_parts
+WEIGHT=2
+TYPE=T_CLOCK
+VALUE = 170
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Clock
+DUPELIST=0104c
+SKILLMAKE=TINKERING 62.1, t_tinker_tools
+
+ON=@DClick
+   SRC.SHOWTIME
+   return 1
+
+ON=@CREATE
+COLOR = color_o_eucalyptus
+
+
+[ITEMDEF i_clock_frame_eucalyptus]
+DEFNAME=i_clock_frame_eucalyptus
+ID=i_clock_frame
+RESOURCES=4 i_log_eucalyptus, 1 i_nails
+TYPE = t_normal
+NAME = eucalyptus clock frame
+WEIGHT=2
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Clock Frame
+
+DUPELIST=0104e
+SKILLMAKE=TINKERING 60.7, t_tinker_tools
+
+ON=@CREATE
+COLOR = color_o_eucalyptus
+
+//Holly
+
+[ITEMDEF i_clock_holly]
+DEFNAME=i_clock_holly
+ID=i_clock
+NAME = holly clock
+RESOURCES=1 i_clock_frame_holly, 1 i_clock_parts
+WEIGHT=2
+TYPE=T_CLOCK
+VALUE = 170
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Clock
+DUPELIST=0104c
+SKILLMAKE=TINKERING 69.1, t_tinker_tools
+
+ON=@DClick
+   SRC.SHOWTIME
+   return 1
+
+ON=@CREATE
+COLOR = color_o_holly
+
+
+[ITEMDEF i_clock_frame_holly]
+DEFNAME=i_clock_frame_holly
+ID=i_clock_frame
+RESOURCES=4 i_log_holly, 1 i_nails
+TYPE = t_normal
+NAME = holly clock frame
+WEIGHT=2
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Clock Frame
+
+DUPELIST=0104e
+SKILLMAKE=TINKERING 67.7, t_tinker_tools
+
+ON=@CREATE
+COLOR = color_o_holly
+
+
+//Rose
+
+[ITEMDEF i_clock_rose]
+DEFNAME=i_clock_rose
+ID=i_clock
+NAME = rose clock
+RESOURCES=1 i_clock_frame_rose, 1 i_clock_parts
+WEIGHT=2
+TYPE=T_CLOCK
+VALUE = 170
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Clock
+DUPELIST=0104c
+SKILLMAKE=TINKERING 69.1, t_tinker_tools
+
+ON=@DClick
+   SRC.SHOWTIME
+   return 1
+
+ON=@CREATE
+COLOR = color_o_rose
+
+
+[ITEMDEF i_clock_frame_rose]
+DEFNAME=i_clock_frame_rose
+ID=i_clock_frame
+RESOURCES=4 i_log_rose, 1 i_nails
+TYPE = t_normal
+NAME = rose clock frame
+WEIGHT=2
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Clock Frame
+
+DUPELIST=0104e
+SKILLMAKE=TINKERING 67.7, t_tinker_tools
+
+ON=@CREATE
+COLOR = color_o_rose
+
+
+//Oak
+
+[ITEMDEF i_clock_oak]
+DEFNAME=i_clock_oak
+ID=i_clock
+NAME = oak clock
+RESOURCES=1 i_clock_frame_oak, 1 i_clock_parts
+WEIGHT=2
+TYPE=T_CLOCK
+VALUE = 170
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Clock
+DUPELIST=0104c
+SKILLMAKE=TINKERING 76.1, t_tinker_tools
+
+ON=@DClick
+   SRC.SHOWTIME
+   return 1
+
+ON=@CREATE
+COLOR = color_o_oak
+
+
+[ITEMDEF i_clock_frame_oak]
+DEFNAME=i_clock_frame_oak
+ID=i_clock_frame
+RESOURCES=4 i_log_oak, 1 i_nails
+TYPE = t_normal
+NAME = oak clock frame
+WEIGHT=2
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Clock Frame
+
+DUPELIST=0104e
+SKILLMAKE=TINKERING 74.7, t_tinker_tools
+
+ON=@CREATE
+COLOR = color_o_oak
+
+//Interleaved
+
+[ITEMDEF i_clock_interleaved]
+DEFNAME=i_clock_interleaved
+ID=i_clock
+NAME = interleaved clock
+RESOURCES=1 i_clock_frame_interleaved, 1 i_clock_parts
+WEIGHT=2
+TYPE=T_CLOCK
+VALUE = 170
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Clock
+DUPELIST=0104c
+SKILLMAKE=TINKERING 76.1, t_tinker_tools
+
+ON=@DClick
+   SRC.SHOWTIME
+   return 1
+
+ON=@CREATE
+COLOR = color_o_interleaved
+
+
+[ITEMDEF i_clock_frame_interleaved]
+DEFNAME=i_clock_frame_interleaved
+ID=i_clock_frame
+RESOURCES=4 i_log_interleaved, 1 i_nails
+TYPE = t_normal
+NAME = interleaved clock frame
+WEIGHT=2
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Clock Frame
+
+DUPELIST=0104e
+SKILLMAKE=TINKERING 74.7, t_tinker_tools
+
+ON=@CREATE
+COLOR = color_o_interleaved
+
+//Ironwood
+
+[ITEMDEF i_clock_ironwood]
+DEFNAME=i_clock_ironwood
+ID=i_clock
+NAME = ironwood clock
+RESOURCES=1 i_clock_frame_ironwood, 1 i_clock_parts
+WEIGHT=2
+TYPE=T_CLOCK
+VALUE = 170
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Clock
+DUPELIST=0104c
+SKILLMAKE=TINKERING 83.1, t_tinker_tools
+
+ON=@DClick
+   SRC.SHOWTIME
+   return 1
+
+ON=@CREATE
+COLOR = color_o_ironwood
+
+
+[ITEMDEF i_clock_frame_ironwood]
+DEFNAME=i_clock_frame_ironwood
+ID=i_clock_frame
+RESOURCES=4 i_log_ironwood, 1 i_nails
+TYPE = t_normal
+NAME = ironwood clock frame
+WEIGHT=2
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Clock Frame
+
+DUPELIST=0104e
+SKILLMAKE=TINKERING 81.7, t_tinker_tools
+
+ON=@CREATE
+COLOR = color_o_ironwood
+
+//Mahogany
+
+[ITEMDEF i_clock_mahogany]
+DEFNAME=i_clock_mahogany
+ID=i_clock
+NAME = mahogany clock
+RESOURCES=1 i_clock_frame_mahogany, 1 i_clock_parts
+WEIGHT=2
+TYPE=T_CLOCK
+VALUE = 170
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Clock
+DUPELIST=0104c
+SKILLMAKE=TINKERING 90.1, t_tinker_tools
+
+ON=@DClick
+   SRC.SHOWTIME
+   return 1
+
+ON=@CREATE
+COLOR = color_o_mahogany
+
+
+[ITEMDEF i_clock_frame_mahogany]
+DEFNAME=i_clock_frame_mahogany
+ID=i_clock_frame
+RESOURCES=4 i_log_mahogany, 1 i_nails
+TYPE = t_normal
+NAME = mahogany clock frame
+WEIGHT=2
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Clock Frame
+
+DUPELIST=0104e
+SKILLMAKE=TINKERING 88.7, t_tinker_tools
+
+ON=@CREATE
+COLOR = color_o_mahogany
+
+//Cherry
+
+[ITEMDEF i_clock_cherry]
+DEFNAME=i_clock_cherry
+ID=i_clock
+NAME = cherry clock
+RESOURCES=1 i_clock_frame_cherry, 1 i_clock_parts
+WEIGHT=2
+TYPE=T_CLOCK
+VALUE = 170
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Clock
+DUPELIST=0104c
+SKILLMAKE=TINKERING 97.1, t_tinker_tools
+
+ON=@DClick
+   SRC.SHOWTIME
+   return 1
+
+ON=@CREATE
+COLOR = color_o_cherry
+
+
+[ITEMDEF i_clock_frame_cherry]
+DEFNAME=i_clock_frame_cherry
+ID=i_clock_frame
+RESOURCES=4 i_log_cherry, 1 i_nails
+TYPE = t_normal
+NAME = cherry clock frame
+WEIGHT=2
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Clock Frame
+
+DUPELIST=0104e
+SKILLMAKE=TINKERING 95.7, t_tinker_tools
+
+ON=@CREATE
+COLOR = color_o_cherry
+
+//Composite
+
+[ITEMDEF i_clock_composite]
+DEFNAME=i_clock_composite
+ID=i_clock
+NAME = composite clock
+RESOURCES=1 i_clock_frame_composite, 1 i_clock_parts
+WEIGHT=2
+TYPE=T_CLOCK
+VALUE = 170
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Clock
+DUPELIST=0104c
+SKILLMAKE=TINKERING 99.1, t_tinker_tools
+
+ON=@DClick
+   SRC.SHOWTIME
+   return 1
+
+ON=@CREATE
+COLOR = color_o_composite
+
+
+[ITEMDEF i_clock_frame_composite]
+DEFNAME=i_clock_frame_composite
+ID=i_clock_frame
+RESOURCES=4 i_log_composite, 1 i_nails
+TYPE = t_normal
+NAME = composite clock frame
+WEIGHT=2
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Clock Frame
+
+DUPELIST=0104e
+SKILLMAKE=TINKERING 97.7, t_tinker_tools
+
+ON=@CREATE
+COLOR = color_o_composite
+
+//Imbued
+
+[ITEMDEF i_clock_imbued_cherry]
+DEFNAME=i_clock_imbued_cherry
+ID=i_clock
+NAME = imbued cherry clock
+RESOURCES=1 i_clock_frame_imbued_cherry, 1 i_clock_parts
+WEIGHT=2
+TYPE=T_CLOCK
+VALUE = 170
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Clock
+DUPELIST=0104c
+SKILLMAKE=TINKERING 100.0, t_tinker_tools
+
+ON=@DClick
+   SRC.SHOWTIME
+   return 1
+
+ON=@CREATE
+COLOR = color_o_imbued
+
+
+[ITEMDEF i_clock_frame_imbued_cherry]
+DEFNAME=i_clock_frame_imbued_cherry
+ID=i_clock_frame
+RESOURCES=4 i_imbued_cherry, 1 i_nails
+TYPE = t_normal
+NAME = imbued cherry clock frame
+WEIGHT=2
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Clock Frame
+
+DUPELIST=0104e
+SKILLMAKE=TINKERING 100.0, t_tinker_tools
+
+ON=@CREATE
+COLOR = color_o_imbued
+
+//Myst
+
+[ITEMDEF i_clock_myst]
+DEFNAME=i_clock_myst
+ID=i_clock
+NAME = myst clock
+RESOURCES=1 i_clock_frame_myst, 1 i_clock_parts
+WEIGHT=2
+TYPE=T_CLOCK
+VALUE = 170
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Clock
+DUPELIST=0104c
+SKILLMAKE=TINKERING 100.0, t_tinker_tools
+
+ON=@DClick
+   SRC.SHOWTIME
+   return 1
+
+ON=@CREATE
+COLOR = color_o_myst
+
+
+[ITEMDEF i_clock_frame_myst]
+DEFNAME=i_clock_frame_myst
+ID=i_clock_frame
+RESOURCES=4 i_log_myst, 1 i_nails
+TYPE = t_normal
+NAME = myst clock frame
+WEIGHT=2
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Clock Frame
+
+DUPELIST=0104e
+SKILLMAKE=TINKERING 100.0, t_tinker_tools
+
+ON=@CREATE
+COLOR = color_o_myst
+
+
+[ITEMDEF 0105b]
+DEFNAME=i_axel
+RESOURCES=1 i_log_pine
+REPLICATE=1
+WEIGHT=1
+NAME = axel
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Axle
+DUPELIST=0105c
+SKILLMAKE=TINKERING 30.4, t_tinker_tools
+VALUE = 3
+
+
+[ITEMDEF 0104f]
+DEFNAME=i_clock_parts
+RESOURCES=1 i_axel_and_gears, 1 i_springs
+WEIGHT=1
+TYPE=T_NORMAL
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Clock Parts
+DUPELIST=01050
+SKILLMAKE=TINKERING 30.5,t_tinker_tools
+
+
+[ITEMDEF 01051]
+DEFNAME=i_axel_and_gears
+RESOURCES=1 i_axel, 1 i_gears
+WEIGHT=1
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Axle with Gears
+DUPELIST=01052
+SKILLMAKE=TINKERING 30.4, t_tinker_tools
+
+
+[ITEMDEF 0e1c]
+//DEFNAME2=BACKGAMMON
+DEFNAME=i_backgammon_game
+RESOURCES=10 i_log_pine
+WEIGHT=5
+TYPE=T_GAME_BOARD
+TDATA2=092e
+CATEGORY=Items by Professions
+SUBSECTION=Barkeep
+SKILLMAKE=TINKERING 30.0,t_tinker_tools
+DUPELIST=0fad
+VALUE = 17
+
+ON=@Create
+more1=1
+
+[ITEMDEF 01053]
+//gears
+DEFNAME		= i_gears
+RESOURCES	= 1 i_ingot_iron
+REPLICATE	= 1
+WEIGHT		= 1
+DUPELIST	= 01054
+SKILLMAKE	= TINKERING 14.7, t_tinker_tools
+
+
+[ITEMDEF 01055]
+DEFNAME=i_hinge
+RESOURCES=1 i_ingot_iron
+WEIGHT=1
+CATEGORY=Items by Professions
+SUBSECTION=Tinker
+DESCRIPTION=Hinge
+DUPELIST=01056
+SKILLMAKE=TINKERING 64.8,t_tinker_tools
+VALUE = 8
+
+  
+
+[EOF]
+

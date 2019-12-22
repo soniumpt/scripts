@@ -1,0 +1,1400 @@
+//Jan 15 '04 - Wren - Add value to black gems
+// http://www.mtsc.unt.edu/faculty/reidy/metals/metal_profiles.htm
+[REGIONRESOURCE mr_nothing2]
+SKILL=0.0 100.0
+AMOUNT=1 1
+REAP		= 0
+REGEN		= 60*60*10
+
+
+[DEFNAME COLOR_ore]
+color_o_coal		0774
+color_o_oldcopper	0590
+color_o_copper		01b9
+color_o_pure_copper	03ea
+color_o_tin		03c1
+color_o_iron		0763
+color_o_ferrum		02ec
+color_o_bronze		03ec
+color_o_brass		03ef
+color_o_steel		0835
+color_o_chrome		02ef
+color_o_titanium	04de
+color_o_silver		0482
+color_o_gold		038
+color_o_phoenix		032
+color_o_old_copper	0590
+color_o_shadow		0770
+color_o_agapite		0400
+color_o_verite		07d1
+color_o_valorite	0515
+color_o_adamantine	0524
+color_o_terathane	05a5
+color_o_skargard	060
+color_o_entit           0798
+color_o_bloodrock	04c2
+color_o_blackrock	0455
+color_o_verminard	079b // 0664
+color_o_stronghold	07a1
+color_o_celestium	0782
+color_o_shadow     	0770
+color_o_bloodrock  	04c2
+color_o_blackrock  	0455
+color_o_mytheril   	07b5
+color_o_verite     	07d1
+color_o_agapite    	0400
+color_o_valorite   	0515
+color_o_billon		036b
+color_o_shakudo		022a
+color_o_electrum	08a5
+color_o_melancholy	0bb1 // 0ae9
+color_o_stellite	06
+color_o_phoenicia	09f3
+color_o_stellar		0af3
+color_o_cobalt		0344
+color_o_manganese	02d7
+color_o_platinum	0481
+color_o_ascension	09a9	
+color_o_romancer	09bd
+color_o_mysticite	09f6
+color_o_deathrock	09b8
+color_o_deity		0b82
+color_o_ultimatum	0ba6
+color_o_whiteoak	07b5
+
+
+// [FUNCTION f_dclick_ingot]
+//   if ( !<src.restest 1 i_coal> )
+//      src.sysmessage You're out of coal to do anything.
+//      return 1
+//   endif
+//   return 0
+
+
+[ITEMDEF i_coal]
+ID		= i_ore_iron
+TYPE		= t_ore
+NAME		= coal
+SKILLMAKE	= MINING 1.0
+VALUE		= 1
+WEIGHT		= 0.5
+
+ON = @Create
+  COLOR		= color_o_coal
+ON = @Click
+  TYPE		= t_ore
+ON = @DClick
+  if !( <TOPOBJ.UID> == <SRC.UID> )
+     src.sysmessage You must have the coal in your pack.
+     return 1
+  endif
+  TARGET What forge do you want to feed coal into?
+  return 1
+ON = @Targon_Char
+  src.sysmessage That is not a forge.
+  return 1
+ON = @Targon_Item
+  if ( (<SRC.TARG.TYPE> != t_forge) && (<SRC.TARG.TYPE> != t_forge_out) )
+     src.sysmessage That is not a forge.
+     return 1
+  endif
+  
+  if ( <SRC.TARG.DISTANCE> > 2 )
+     src.sysmessage You are too far away.
+     SKILLINIT_stop
+     return 1
+  endif
+
+  if ( <SRC.TARG.MORE2> >= 50 )
+     if ( <SRC.TARG.TYPE> == t_forge_out )
+        MESSAGE *the forge starts burning*
+	SRC.TARG.TYPE	= t_forge
+        SRC.TARG.TIMER	= 60
+	return 1
+     endif
+     src.sysmessage The forge has enough coal.
+     return 1
+  endif
+
+  LOCAL.MAX	= <eval (50 - <SRC.TARG.MORE2>)>
+  if ( <LOCAL.MAX> >= <AMOUNT>  )
+     LOCAL.MAX	= <AMOUNT>
+     REMOVE
+  else
+     AMOUNT	= <eval (<AMOUNT> - <LOCAL.MAX>)>
+     UPDATE
+  endif
+  SRC.EMOTE add some coal to the forge
+  SRC.TARG.MORE2	= <eval (<SRC.TARG.MORE2> + <LOCAL.MAX>)>
+  SRC.TARG.TYPE		= t_forge
+  if ( <SRC.TARG.TIMER> == -1 )
+     SRC.TARG.TIMER	= 60
+  endif
+  return 1
+
+
+[REGIONRESOURCE mr_coal]
+SKILL=0.1 100.0
+AMOUNT=10 30
+REAP		= i_coal
+REGEN		= 60*60*10
+ON=@ResourceFound
+   IF !( <SRC.TAG0.MINESTONE> == 0 )
+      OBJ = <ARGO.UID>
+      OBJ.MORE1=rand_stone
+   ENDIF
+
+
+//********************************************************************//
+//                             OLD COPPER                             //
+//********************************************************************// 
+// [ITEMDEF i_ore_old_copper]
+// ID=i_ore_iron
+// NAME=old copper ore
+// SKILLMAKE=MINING 260.0
+// TDATA1=i_ingot_old_copper
+// VALUE=2
+
+// ON=@Create
+// COLOR=color_o_oldcopper
+// ON=@DClick
+// SRC.SYSMESSAGE Use a forge to smelt the <name>.
+// return 1
+
+// ********************************************************************// 
+// [ITEMDEF 04549]
+// DEFNAME=i_ingot_old_copper
+// NAME=old copper ingots
+// ID=i_ingot_iron
+// RESOURCES=i_ore_old_copper
+// SKILLMAKE=MINING 60.0
+// TDATA1=50.0
+// TDATA2=80.0
+// VALUE=3
+// CATEGORY=Items by Professions
+// SUBSECTION=Blacksmiths
+// DESCRIPTION=Old Copper Ingot
+
+// ON=@Create
+// COLOR=color_o_oldcopper
+
+//********************************************************************// 
+[REGIONRESOURCE mr_old_copper]
+// this is really just a variety of copper. copper makes terrible armor
+// t_rock
+// SKILL=200.0 250.0
+// AMOUNT=7 18
+// REAP=i_ore_old_copper
+// REGEN=60*60*10
+// ON=@ResourceFound
+//   IF !( <SRC.TAG0.MINESTONE> == 0 )
+//      OBJ = <ARGO.UID>
+//     OBJ.MORE1=rand_stone
+//   ENDIF
+
+
+//********************************************************************//
+//                               COPPER                               //
+//********************************************************************// 
+[ITEMDEF i_ore_copper]
+NAME		= copper ore
+ID		= i_ore_iron
+TYPE		= t_ore
+SKILLMAKE	= MINING 2.0
+TDATA1		= i_ingot_copper
+VALUE		= 3
+WEIGHT		= 2
+
+ON=@Create
+  COLOR		= color_o_copper
+ON=@DClick
+  SRC.SYSMESSAGE Use a forge to smelt the <name>.
+  return 1
+
+//********************************************************************// 
+[ITEMDEF 01be3]
+DEFNAME		= i_ingot_copper
+NAME		= copper ingot%s
+TYPE		= T_INGOT
+RESOURCES	= 2 i_ore_copper
+SKILLMAKE	= MINING 20.0
+TDATA1		= 20.0
+TDATA2		= 40.0
+WEIGHT		= 1
+DUPELIST	= 01be4,01be5,01be6,01be7,01be8
+VALUE		= 4
+// ON = @DClick
+//   return <f_dclick_ingot>
+
+//********************************************************************// 
+[REGIONRESOURCE mr_copper]
+SKILL=2.0 80.0
+AMOUNT=4 20
+REAP		= i_ore_copper
+REGEN		= 60*60*10
+ON=@ResourceFound
+   IF !( <SRC.TAG0.MINESTONE> == 0 )
+      OBJ = <ARGO.UID>
+      OBJ.MORE1=rand_stone
+   ENDIF
+
+
+//********************************************************************//
+//                             PURE COPPER                            //
+//********************************************************************// 
+[ITEMDEF i_ore_pure_copper]
+NAME		= pure copper ore
+ID		= i_ore_iron
+TYPE		= t_ore
+SKILLMAKE	= MINING 10.0
+TDATA1		= i_ingot_pure_copper
+VALUE		= 4
+WEIGHT		= 2
+ON=@Create
+  COLOR		= color_o_pure_copper
+ON=@DClick
+  SRC.SYSMESSAGE Use a forge to smelt the <name>.
+  return 1
+
+//********************************************************************// 
+[ITEMDEF i_ingot_pure_copper]
+ID		= i_ingot_copper
+NAME		= pure copper ingot%s
+TYPE		= T_INGOT
+RESOURCES	= 2 i_ore_pure_copper
+SKILLMAKE	= MINING 30.0
+TDATA1		= 30.0
+TDATA2		= 50.0
+WEIGHT		= 1
+DUPELIST	= 01be4,01be5,01be6,01be7,01be8
+VALUE		= 5
+ON=@Create
+  COLOR		= color_o_pure_copper
+// ON = @DClick
+//   return <f_dclick_ingot>
+
+//********************************************************************// 
+[REGIONRESOURCE mr_pure_copper]
+SKILL=10.0 90.0
+AMOUNT=4 20
+REAP		= i_ore_pure_copper
+REGEN		= 60*60*15
+ON=@ResourceFound
+   IF !( <SRC.TAG0.MINESTONE> == 0 )
+      OBJ = <ARGO.UID>
+      OBJ.MORE1=rand_stone
+   ENDIF
+
+
+//********************************************************************//
+//                                 TIN                                //
+//********************************************************************// 
+[ITEMDEF i_ore_tin]
+NAME		= tin ore
+ID		= i_ore_iron
+TYPE		= t_ore
+SKILLMAKE	= MINING 8.0
+TDATA1		= i_ingot_tin
+VALUE		= 2
+WEIGHT		= 2
+ON=@Create
+  COLOR		= color_o_tin
+ON=@DClick
+  SRC.SYSMESSAGE Use a forge to smelt the <name>.
+  return 1
+
+//********************************************************************// 
+[ITEMDEF i_ingot_tin]
+NAME		= tin ingot%s
+ID		= i_ingot_iron
+TYPE		= T_INGOT
+RESOURCES	= 2 i_ore_tin
+SKILLMAKE	= MINING 30.0
+TDATA1		= 30.0
+TDATA2		= 50.0
+WEIGHT		= 1
+VALUE		= 5
+// ON = @DClick
+//   return <f_dclick_ingot>
+
+//********************************************************************// 
+[REGIONRESOURCE mr_tin]
+SKILL=8.0 80.0
+AMOUNT=3 9
+REAP		= i_ore_tin
+REGEN		= 60*60*10
+ON=@ResourceFound
+   IF !( <SRC.TAG0.MINESTONE> == 0 )
+      OBJ = <ARGO.UID>
+      OBJ.MORE1=rand_stone
+   ENDIF
+
+
+//********************************************************************//
+//                                IRON                                //
+//********************************************************************// 
+[ITEMDEF 019b7]
+DEFNAME		= i_ore_iron
+NAME		= iron ore
+TYPE		= t_ore
+SKILLMAKE	= MINING 15.0
+TDATA1		= i_ingot_iron
+WEIGHT		= 2
+VALUE		= 3
+DUPELIST	= 019b8,019b9,019ba
+ON=@Create
+  COLOR		= color_o_iron
+ON=@DClick
+  SRC.SYSMESSAGE Use a forge to smelt the <name>.
+  return 1
+
+//********************************************************************// 
+[ITEMDEF 01bef]
+DEFNAME		= i_ingot_iron
+NAME		= iron ingot%s
+TYPE		= T_INGOT
+RESOURCES	= 2 i_ore_iron
+SKILLMAKE	= MINING 30.0
+TDATA1		= 30.0
+TDATA2		= 60.0
+WEIGHT		= 1
+DUPELIST	= 01bf0,01bf1,01bf2,01bf3,01bf4
+VALUE		= 6
+ON=@Create
+  COLOR		= color_o_iron
+// ON = @DClick
+//   return <f_dclick_ingot>
+
+//********************************************************************// 
+[REGIONRESOURCE mr_iron]	// default mining result.
+SKILL=15.0 80.0
+AMOUNT=3 20
+REAP		= i_ore_iron
+REGEN		= 60*60*10
+ON=@ResourceFound
+   IF !( <SRC.TAG0.MINESTONE> == 0 )
+      OBJ = <ARGO.UID>
+      OBJ.MORE1=rand_stone
+   ENDIF
+
+
+//********************************************************************//
+//                               FERRUM                               //
+//********************************************************************// 
+[ITEMDEF i_ore_ferrum]
+NAME		= ferrum ore
+ID		= i_ore_iron
+TYPE		= t_ore
+SKILLMAKE	= MINING 245.0
+TDATA1		= i_ingot_ferrum
+VALUE		= 4
+WEIGHT		= 2
+ON=@Create
+  COLOR		= color_o_ferrum
+ON=@DClick
+  SRC.SYSMESSAGE Use a forge to smelt the <name>.
+  return 1
+
+//********************************************************************// 
+[ITEMDEF i_ingot_ferrum]
+ID		= i_ingot_iron
+NAME		= ferrum ingot%s
+TYPE		= T_INGOT
+RESOURCES	= 6 i_ingot_pure_copper, 4 i_ingot_iron
+SKILLMAKE	= MINING 45.0
+TDATA1		= 30.0
+TDATA2		= 60.0
+WEIGHT		= 1
+DUPELIST	= 01be4,01be5,01be6,01be7,01be8
+VALUE		= 5
+ON=@Create
+  COLOR		= color_o_ferrum
+// ON = @DClick
+// return <f_dclick_ingot>
+
+//********************************************************************// 
+[REGIONRESOURCE mr_ferrum]
+SKILL=245.0 90.0
+AMOUNT=4 20
+REAP		= i_ore_ferrum
+REGEN		= 60*60*15
+ON=@ResourceFound
+   IF !( <SRC.TAG0.MINESTONE> == 0 )
+      OBJ = <ARGO.UID>
+      OBJ.MORE1=rand_stone
+   ENDIF
+   
+   
+//********************************************************************//
+//                                GOLD                                //
+//********************************************************************// 
+[ITEMDEF i_ore_gold]
+NAME		= gold ore
+ID		= i_ore_iron
+TYPE		= t_ore
+SKILLMAKE	= MINING 50.0
+TDATA1		= i_ingot_gold
+VALUE		= 20
+WEIGHT		= 4
+ON = @Create
+  COLOR		= color_o_gold
+ON = @DClick
+  SRC.SYSMESSAGE Use a forge to smelt the <name>.
+  return 1
+
+//********************************************************************// 
+[ITEMDEF 01be9]
+DEFNAME		= i_ingot_gold
+NAME		= gold ingot%s
+TYPE		= T_INGOT
+SKILLMAKE	= MINING 60.0
+TDATA1		= 70.0
+TDATA2		= 100.0
+RESOURCES	= 1 i_ore_gold
+WEIGHT		= 2
+VALUE		= 50
+DUPELIST	= 01bea,01beb,01bec,01bed,01bee
+// ON = @DClick
+// return <f_dclick_ingot>
+
+//********************************************************************// 
+[REGIONRESOURCE mr_gold]
+SKILL=50.0 100.0
+AMOUNT=3 6
+REAP		= i_ore_gold
+REGEN		= 60*60*10
+ON=@ResourceFound
+   IF !( <SRC.TAG0.MINESTONE> == 0 )
+      OBJ = <ARGO.UID>
+      OBJ.MORE1=rand_stone
+   ENDIF
+
+
+//********************************************************************//
+//                               BRONZE                               //
+//********************************************************************// 
+[ITEMDEF i_ingot_bronze]
+NAME		= bronze ingot%s
+ID		= i_ingot_copper
+RESOURCES	= 6 i_ingot_copper, 4 i_ingot_tin
+SKILLMAKE	= BLACKSMITHING 20.0, MINING 40.0
+WEIGHT		= 2
+VALUE		= 14
+ON=@Create
+  COLOR		= color_o_bronze
+  AMOUNT	= 4
+
+
+//********************************************************************//
+//                                BRASS                               //
+//********************************************************************// 
+[ITEMDEF i_ingot_brass]
+NAME		= brass ingot%s
+ID		= i_ingot_copper
+RESOURCES	= 6 i_ingot_pure_copper, 4 i_ingot_tin
+SKILLMAKE	= BLACKSMITHING 20.0, MINING 60.0
+WEIGHT		= 2
+VALUE		= 14
+ON=@Create
+  COLOR		= color_o_brass
+  AMOUNT	= 4
+
+
+//********************************************************************//
+//                                STEEL                               //
+//********************************************************************// 
+[ITEMDEF i_ingot_steel]
+NAME		= steel ingot%s
+ID		= i_ingot_iron
+RESOURCES	= 10 i_ingot_iron, 8 i_coal
+SKILLMAKE	= BLACKSMITHING 30.0, MINING 50.0
+WEIGHT		= 2
+VALUE		= 18
+ON = @Create
+  COLOR		= color_o_steel
+  AMOUNT	= 4
+
+
+//********************************************************************//
+//                               SILVER                               //
+//********************************************************************// 
+[ITEMDEF i_ore_silver]
+NAME		= silver ore
+ID		= i_ore_iron
+TYPE		= t_ore
+SKILLMAKE	= MINING 50.0
+TDATA1		= i_ingot_silver
+WEIGHT		= 3
+VALUE		= 10
+ON=@Create
+  COLOR		= color_o_silver
+ON=@DClick
+  SRC.SYSMESSAGE Use a forge to smelt the <name>.
+  return 1
+
+//********************************************************************// 
+[ITEMDEF 01bf5]
+DEFNAME		= i_ingot_silver
+NAME		= silver ingot%s
+TYPE		= T_INGOT
+SKILLMAKE	= MINING 60.0
+TDATA1		= 50.0
+TDATA2		= 100.0
+RESOURCES	= 1 i_ore_silver
+WEIGHT		= 1
+DUPELIST	= 01bf6,01bf7,01bf8,01bf9,01bfa
+VALUE		= 30
+// ON = @DClick
+// return <f_dclick_ingot>
+
+//********************************************************************// 
+[REGIONRESOURCE mr_silver]
+SKILL=50.0 100.0
+AMOUNT=3 6
+REAP		= i_ore_silver
+REGEN		= 60*60*10
+ON=@ResourceFound
+   IF !( <SRC.TAG0.MINESTONE> == 0 )
+      OBJ = <ARGO.UID>
+      OBJ.MORE1=rand_stone
+   ENDIF
+
+
+//********************************************************************//
+//                               CHROME                               //
+//********************************************************************// 
+[ITEMDEF i_ingot_chrome]
+NAME		= chrome ingot%s
+ID		= i_ingot_iron
+RESOURCES	= 8 i_ingot_ferrum, 4 i_ingot_tin, 8 i_coal
+SKILLMAKE	= BLACKSMITHING 30.0, MINING 70.0
+WEIGHT		= 2
+VALUE		= 18
+ON = @Create
+  COLOR		= color_o_chrome
+  AMOUNT	= 4
+
+
+//********************************************************************//
+//                               VERITE                               //
+//********************************************************************// 
+[ITEMDEF i_ore_verite]
+ID=i_ore_iron
+NAME=verite ore
+SKILLMAKE=MINING 75.0
+TDATA1=i_ingot_verite
+VALUE=15
+
+ON=@Create
+COLOR=color_o_verite
+ON=@DClick
+SRC.SYSMESSAGE Use a forge to smelt the <name>.
+return 1
+
+//********************************************************************// 
+[ITEMDEF i_ingot_verite]
+NAME=verite ingot%s
+ID=i_ingot_iron
+RESOURCES	= 1 i_ore_verite
+SKILLMAKE=MINING 90.0
+TDATA1=90.0
+TDATA2=100.0
+
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Verite Ingot
+
+ON=@Create
+COLOR=color_o_verite
+
+//********************************************************************// 
+[REGIONRESOURCE mr_verite]
+// t_rock
+SKILL=75.0 100.0
+AMOUNT=3 5
+REAP=i_ore_verite
+REGEN=60*60*10
+ON=@ResourceFound
+   IF !( <SRC.TAG0.MINESTONE> == 0 )
+      OBJ = <ARGO.UID>
+      OBJ.MORE1=rand_stone
+   ENDIF
+
+
+//********************************************************************//
+//                             CELESTIUM                              //
+//********************************************************************// 
+[ITEMDEF i_ore_celestium]
+ID=i_ore_iron
+NAME=celestium ore
+SKILLMAKE=MINING 100.0
+TDATA1=i_ingot_celestium
+VALUE=80
+ON=@Create
+COLOR=color_o_celestium
+
+[ITEMDEF i_ingot_celestium]
+NAME=celestium ingot%s
+ID=i_ingot_iron
+RESOURCES	= 1 i_ore_celestium
+SKILLMAKE=MINING 100.0
+TDATA1=90.0
+TDATA2=100.0
+
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Celestium Ingot
+
+ON=@Create
+COLOR=color_o_celestium
+
+
+//********************************************************************//
+//                             TERATHANE                              //
+//********************************************************************// 
+[ITEMDEF i_ore_terathane]
+NAME		= terathane ore
+ID		= i_ore_iron
+TYPE		= t_ore
+SKILLMAKE	= MINING 65.0
+TDATA1		= i_ingot_terathane
+VALUE		= 15
+WEIGHT		= 4
+ON = @Create
+  COLOR		= color_o_terathane
+ON = @DClick
+  SRC.SYSMESSAGE Use a forge to smelt the <name>.
+  return 1
+
+//********************************************************************// 
+[ITEMDEF i_ingot_terathane]
+NAME		= terathane ingot%s
+ID		= i_ingot_iron
+TYPE		= T_INGOT
+SKILLMAKE	= MINING 75.0
+TDATA1		= 70.0
+TDATA2		= 95.0
+RESOURCES	= 1 i_ore_terathane
+WEIGHT		= 2
+VALUE		= 30
+ON = @Create
+  COLOR		= color_o_terathane
+// ON = @DClick
+//  return <f_dclick_ingot>
+
+//********************************************************************// 
+[REGIONRESOURCE mr_terathane]
+SKILL=65.0 100.0
+AMOUNT=4 8
+REAP		= i_ore_terathane
+REGEN		= 60*60*40
+ON=@ResourceFound
+   IF !( <SRC.TAG0.MINESTONE> == 0 )
+      OBJ = <ARGO.UID>
+      OBJ.MORE1=rand_stone
+   ENDIF
+
+//********************************************************************// 
+[ITEMDEF i_rock_terathane]
+NAME	= terathane rock
+ID	= 01772
+TYPE	= t_rock
+
+ON = @Create
+  COLOR		= color_o_terathane
+  MORE1		= mr_terathane
+  DISPID	= { 0177a 1  0177b 2 0177c 3 }
+  ATTR		= attr_move_never
+
+[ITEMDEF i_rock_ferrum]
+NAME	= ferrum rock
+ID	= 01772
+TYPE	= t_rock
+
+ON = @Create
+  COLOR		= color_o_ferrum
+  MORE1		= mr_ferrum
+  DISPID	= { 0177a 1  0177b 2 0177c 3 }
+  ATTR		= attr_move_never
+
+//********************************************************************//
+//                            STRONGHOLD                              //
+//********************************************************************// 
+[ITEMDEF i_gem_holy]
+ID		= i_gem_ruby
+TYPE		= t_normal
+NAME		= holy gem
+RESOURCES	= 20 i_angel_dust
+VALUE		= 500
+ON=@CREATE
+  COLOR		= color_o_stronghold
+
+//********************************************************************// 
+[ITEMDEF i_angel_dust]
+ID	= 0eef
+NAME	= angel dust
+TYPE	= t_normal
+VALUE	= 500
+ON = @Create
+   COLOR	= color_o_stronghold
+
+//********************************************************************// 
+[ITEMDEF i_ingot_stronghold]
+NAME		= stronghold ingot%s
+ID		= i_ingot_iron
+RESOURCES	= 4 i_ingot_terathane, 2 i_ingot_titanium, 1 i_angel_dust
+SKILLMAKE	= BLACKSMITHING 50.0, MINING 85.0
+WEIGHT		= 3
+VALUE		= 50
+ON = @Create
+  COLOR		= color_o_stronghold
+  AMOUNT	= 4
+
+
+//********************************************************************//
+//                        ENRICHED TITANIUM                           //
+//********************************************************************// 
+[ITEMDEF i_ingot_entit]
+ID = i_ingot_iron
+NAME=enriched titanium ingot
+RESOURCES=i_ingot_titanium 1, i_ingot_gold 10, i_potion_managreat 6, i_scroll_magic_reflection 4, i_scroll_dispel 4
+SKILLMAKE=BLACKSMITHING 60.0, MINING 93.0
+TDATA1=90.0
+TDATA2=120.0
+VALUE = 80
+ON=@Create
+COLOR=color_o_entit
+
+
+//********************************************************************//
+//                             AGAPITE                                //
+//********************************************************************// 
+[ITEMDEF i_ore_agapite]
+ID=i_ore_iron
+NAME=agapite ore
+SKILLMAKE=MINING 70.0
+TDATA1=i_ingot_agapite
+VALUE=10
+
+ON=@Create
+COLOR=color_o_agapite
+ON=@DClick
+SRC.SYSMESSAGE Use a forge to smelt the <name>.
+return 1
+
+//********************************************************************// 
+[ITEMDEF i_ingot_agapite]
+ID=i_ingot_iron
+NAME=agapite ingot%s
+SKILLMAKE=MINING 80.0
+TDATA1=80.0
+TDATA2=98.0
+RESOURCES	= 1 i_ore_agapite
+
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Agapite Ingot
+
+ON=@Create
+COLOR=color_o_agapite
+COLOR=color_o_agapite
+
+//********************************************************************// 
+[REGIONRESOURCE mr_agapite]
+// t_rock
+SKILL=70.0 100.0
+AMOUNT=3 6
+REAP=i_ore_agapite
+REGEN=60*60*10
+ON=@ResourceFound
+   IF !( <SRC.TAG0.MINESTONE> == 0 )
+      OBJ = <ARGO.UID>
+      OBJ.MORE1=rand_stone
+   ENDIF
+
+
+//********************************************************************//
+//                             SHADOW                                 //
+//********************************************************************// 
+[ITEMDEF i_ore_shadow]
+ID=i_ore_iron
+NAME=shadow ore
+SKILLMAKE=MINING 70.0
+TDATA1=i_ingot_shadow
+VALUE=15
+
+ON=@Create
+COLOR=color_o_shadow
+ON=@DClick
+SRC.SYSMESSAGE Use a forge to smelt the <name>.
+return 1
+
+//********************************************************************// 
+[ITEMDEF i_ingot_shadow]
+NAME=shadow ingot%s
+ID=i_ingot_iron
+SKILLMAKE=MINING 80.0
+TDATA1=60.0
+TDATA2=98.0
+RESOURCES	= 1 i_ore_shadow
+
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Shadow Ingot
+
+ON=@Create
+COLOR=color_o_shadow
+
+//********************************************************************// 
+[REGIONRESOURCE mr_shadow]
+// t_rock
+SKILL=70.0 100.0
+AMOUNT=3 6
+REAP=i_ore_shadow
+REGEN=60*60*10
+ON=@ResourceFound
+   IF !( <SRC.TAG0.MINESTONE> == 0 )
+      OBJ = <ARGO.UID>
+      OBJ.MORE1=rand_stone
+   ENDIF
+
+
+//********************************************************************//
+//                            TITANIUM                                //
+//********************************************************************// 
+[ITEMDEF i_ore_titanium]
+NAME		= titanium ore
+ID		= i_ore_iron
+TYPE		= t_ore
+SKILLMAKE	= MINING 60.0
+TDATA1		= i_ingot_titanium
+VALUE		= 10
+WEIGHT		= 3
+ON=@Create
+  COLOR		= color_o_titanium
+ON=@DClick
+  SRC.SYSMESSAGE Use a forge to smelt the <name>.
+  return 1
+
+//********************************************************************// 
+[ITEMDEF i_ingot_titanium]
+NAME		= titanium ingot%s
+ID		= i_ingot_iron
+TYPE		= T_INGOT
+SKILLMAKE	= MINING 75.0
+TDATA1		= 60.0
+TDATA2		= 80.0
+RESOURCES	= 1 i_ore_titanium
+WEIGHT		= 1.5
+VALUE 		= 15
+ON=@Create
+  COLOR = color_o_titanium
+// ON = @DClick
+// return <f_dclick_ingot>
+
+//********************************************************************// 
+[REGIONRESOURCE mr_titanium]
+SKILL=60.0 100.0
+AMOUNT=4 8
+REAP		= i_ore_titanium
+REGEN		= 60*60*10
+ON=@ResourceFound
+   IF !( <SRC.TAG0.MINESTONE> == 0 )
+      OBJ = <ARGO.UID>
+      OBJ.MORE1=rand_stone
+   ENDIF
+
+
+//********************************************************************//
+//                           VERMINARD                                //
+//********************************************************************// 
+[ITEMDEF i_gem_shadow]
+ID	= i_gem_ruby
+TYPE	= t_normal
+NAME	= black gem
+VALUE	= 500
+
+ON=@CREATE
+  COLOR		= 0485
+
+//********************************************************************// 
+[ITEMDEF i_ingot_verminard]
+NAME		= verminard ingot%s
+ID		= i_ingot_iron
+RESOURCES	= 4 i_ingot_terathane, 2 i_ingot_titanium, i_gem_shadow
+SKILLMAKE	= BLACKSMITHING 50.0, MINING 85.0
+WEIGHT		= 3
+VALUE		= 50
+ON = @Create
+  COLOR		= color_o_verminard
+  AMOUNT	= 4
+
+
+//********************************************************************//
+//                           VALORITE                                 //
+//********************************************************************// 
+[ITEMDEF i_ore_valorite]
+ID=i_ore_iron
+NAME=valorite ore
+SKILLMAKE=MINING 75.0
+TDATA1=i_ingot_valorite
+VALUE=15
+
+ON=@Create
+COLOR=color_o_valorite
+ON=@DClick
+SRC.SYSMESSAGE Use a forge to smelt the <name>.
+return 1
+
+//********************************************************************// 
+[ITEMDEF i_ingot_valorite]
+NAME=valorite ingot%s
+ID=i_ingot_iron
+RESOURCES=1 i_ore_valorite
+SKILLMAKE=MINING 90.0
+TDATA1=90.0
+TDATA2=100.0
+
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Valorite Ingot
+
+ON=@Create
+COLOR=color_o_valorite
+
+//********************************************************************// 
+[REGIONRESOURCE mr_Valorite]
+// t_rock
+SKILL=75.0 100.0
+AMOUNT=3 5
+REAP=i_ore_Valorite
+REGEN=60*60*10
+ON=@ResourceFound
+   IF !( <SRC.TAG0.MINESTONE> == 0 )
+      OBJ = <ARGO.UID>
+      OBJ.MORE1=rand_stone
+   ENDIF
+
+
+//********************************************************************//
+//                            PHOENIX                                 //
+//********************************************************************// 
+[ITEMDEF i_ingot_phoenix]
+NAME		= phoenix ingot%s
+ID		= i_ingot_gold
+RESOURCES	= 50 i_ingot_gold, 3 i_feather_phoenix, 50 i_reag_sulfur_ash
+SKILLMAKE	= BLACKSMITHING 75.0, MINING 99.0
+WEIGHT		= 2
+VALUE		= 50
+ON = @Create
+  COLOR		= color_o_phoenix
+
+//********************************************************************// 
+[ITEMDEF i_feather_phoenix]
+ID		= i_feather
+TYPE		= t_normal
+NAME		= phoenix feather
+WEIGHT		= 1
+VALUE		= 200
+ON = @Create
+  COLOR		= color_o_phoenix
+
+
+//********************************************************************//
+//                            SKARGARD                                //
+//********************************************************************// 
+[ITEMDEF i_ore_skargard]
+NAME		= skargard crystal
+ID		= i_ore_iron
+TYPE		= t_ore
+SKILLMAKE	= MINING 95.0
+TDATA1		= i_ingot_skargard
+VALUE		= 15
+WEIGHT		= 4
+ON = @Create
+  COLOR		= color_o_skargard
+ON = @DClick
+  SRC.SYSMESSAGE You must use the Skargard forge, to melt <name>.
+  return 1
+ON = @DropOn_Ground
+  if !( <SRC.REGION_SKARGARD> )
+     TIMER	2
+     return 1
+  endif
+ON = @Timer
+  if ( <REGION_SKARGARD> )
+     return 0
+  endif
+  SAY *melting*
+  if ( <AMOUNT> < 15 )
+     REMOVE
+  else
+     AMOUNT	= (<AMOUNT> - { 7 12 } )
+     TIMER	= { 7 10 }
+  endif
+  return 1
+ON = @Click
+  if ( <REGION_SKARGARD> )
+     return 0
+  endif
+  SRC.EMOTE see the Skargard crystals melt
+  REMOVE
+ON = @DROPON_ITEM
+  if ( <REGION_SKARGARD> )
+     return 0
+  endif
+  SRC.EMOTE see the Skargard crystals melt
+  REMOVE
+
+//********************************************************************// 
+[ITEMDEF i_ingot_skargard]
+NAME		= skargard alloy
+ID		= i_ingot_iron
+TYPE		= T_INGOT
+SKILLMAKE	= MINING 95.0
+TDATA1=90.0
+TDATA2=110.0
+RESOURCES	= 1 i_ore_skargard
+WEIGHT		= 3
+VALUE		= 100
+ON = @Create
+  COLOR		= color_o_skargard
+// ON = @DClick
+// return <f_dclick_ingot>
+
+
+//********************************************************************// 
+[REGIONRESOURCE mr_skargard]
+SKILL=95.0 100.0
+AMOUNT=2 4
+REAP		= i_ore_skargard
+REGEN		= 60*60*20
+ON=@ResourceFound
+   IF !( <SRC.TAG0.MINESTONE> == 0 )
+      OBJ = <ARGO.UID>
+      OBJ.MORE1=rand_stone
+   ENDIF
+
+//********************************************************************// 
+[ITEMDEF i_rock_skargard]
+NAME	= skargard rock
+ID	= 01772
+TYPE	= t_rock
+
+ON = @Create
+  COLOR		= color_o_skargard
+  MORE1		= mr_skargard
+  DISPID	= { 01772 1  01771 2  01774 3  0177a 1  0177b 2 0177c 3 }
+  ATTR		= attr_move_never
+
+
+//********************************************************************//
+//                            BLOODROCK                               //
+//********************************************************************// 
+[ITEMDEF i_ingot_bloodrock]
+ID = i_ingot_iron
+NAME=bloodrock ingot
+RESOURCES=i_ingot_blackrock 2, i_reag_blood_vial 2, i_reag_ginseng 5, i_reag_blood_spawn 1
+SKILLMAKE=BLACKSMITHING 95.0, MINING 99.0
+TDATA1=90.0
+TDATA2=120.0
+VALUE = 80
+ON=@Create
+COLOR=color_o_bloodrock
+
+
+//********************************************************************//
+//                            MYTHERIL                                //
+//********************************************************************// 
+[ITEMDEF i_ore_mytheril]
+ID=i_ore_iron
+NAME=mytheril ore
+SKILLMAKE=MINING 99.0
+TDATA1=i_ingot_mytheril
+VALUE=15
+
+ON=@Create
+COLOR=color_o_mytheril
+ON=@DClick
+SRC.SYSMESSAGE Use a forge to smelt the <name>.
+return 1
+
+//********************************************************************// 
+[ITEMDEF i_ingot_mytheril]
+ID=i_ingot_iron
+NAME=mytheril ingot%s
+RESOURCES=i_ore_mytheril
+SKILLMAKE=MINING 99.0
+TDATA1=90.0
+TDATA2=105.0
+
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Mytheril Ingot
+
+ON=@Create
+COLOR=color_o_mytheril
+
+//********************************************************************// 
+[REGIONRESOURCE mr_mytheril]
+// t_rock
+SKILL=99.0 100.0
+AMOUNT=1 2
+REAP=i_ore_mytheril
+REGEN=60*60*10
+ON=@ResourceFound
+   IF !( <SRC.TAG0.MINESTONE> == 0 )
+      OBJ = <ARGO.UID>
+      OBJ.MORE1=rand_stone
+   ENDIF
+   
+
+//********************************************************************//
+//                           ADAMANTINE                               //
+//********************************************************************// 
+[ITEMDEF i_ingot_adamantine]
+NAME		= adamantine ingot%s
+ID		= i_ingot_iron
+RESOURCES	= 6 i_ingot_titanium, 2 i_ingot_tin, 4 i_gem_diamond
+SKILLMAKE	= BLACKSMITHING 50.0, MINING 85.0
+WEIGHT		= 3
+VALUE		= 50
+ON = @Create
+  COLOR		= color_o_adamantine
+  AMOUNT	= 4
+
+
+//********************************************************************//
+//                            BLACKROCK                               //
+//********************************************************************// 
+[ITEMDEF i_ore_blackrock]
+ID=i_ore_iron
+NAME=blackrock ore
+SKILLMAKE=MINING 100.0
+TDATA1=i_ingot_blackrock
+VALUE=80
+ON=@Create
+COLOR=color_o_blackrock
+
+//********************************************************************// 
+[ITEMDEF i_ingot_blackrock]
+ID=i_ingot_iron
+NAME=blackrock ingot%s
+RESOURCES= 1 i_ore_blackrock
+SKILLMAKE=MINING 95.0
+TDATA1=90.0
+TDATA2=120.0
+VALUE = 250
+
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Black Rock Ingot
+
+ON=@Create
+COLOR=color_o_blackrock
+
+//********************************************************************// 
+[REGIONRESOURCE mr_blackrock]
+SKILL=99.0 100.0
+AMOUNT=1 2
+REAP		= i_ore_blackrock
+REGEN		= 60*60*20
+ON=@ResourceFound
+   IF !( <SRC.TAG0.MINESTONE> == 0 )
+      OBJ = <ARGO.UID>
+      OBJ.MORE1=rand_stone      
+   ENDIF
+
+////////////////////////
+//Syndicate Contracts//
+//////////////////////
+
+
+[ITEMDEF i_syndicate_contract]
+DEFNAME=i_syndicate_contract
+ID=i_scroll_blank
+NAME=Syndicate Contract (50 Points)
+TYPE=t_normal
+VALUE=10000
+
+ON=@CREATE
+COLOR=color_o_verite
+
+ON=@DCLICK
+IF ((<SRC.ISSYNDICATE>)  && (<SRC.RESTEST i_syndicate_contract 1>))
+
+IF (<SRC.FINDID(i_afk_check_punish_delay)>)
+SRC.SYSMESSAGE You can't use a Syndicate Contract right after failling to answer an AFK Check.
+RETURN 1
+ENDIF
+
+//SRC.NEWITEM=i_gold 
+//SRC.ACT.AMOUNT=10000
+//SRC.ACT.CONT=<SRC.findlayer(layer_bankbox).uid>
+SRC.CONSUME i_syndicate_contract 1
+SOUND=01FC
+
+
+SERV.LOG :FACTION POINTS: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> has <EVAL <SRC.TAG.REP.ALIGNMENT>> <SRC.TAG.ALIGNMENT> points.
+SRC.TAG0.REP.ALIGNMENT = <EVAL <SRC.TAG0.REP.ALIGNMENT> + 50>
+SERV.LOG :FACTION POINTS: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> now have <EVAL <SRC.TAG.REP.ALIGNMENT>> <SRC.TAG.ALIGNMENT> points.
+SRC.SYSMESSAGE @07d1 You have fulfilled the contract. You have gained 50 Syndicate Point for your efforts.
+
+
+ELSE
+SRC.SYSMESSAGE @07d1 Only Syndicate members can fulfill this contract.
+ENDIF
+RETURN 1
+
+[REGIONRESOURCE mr_syndicate]
+SKILL=80.0 100.0
+AMOUNT=1
+REAP=i_syndicate_contract
+REGEN=60*60*20
+
+//--------------------------------------
+//--------------------------------------
+
+
+//********************************************************************
+//                               COBALT                               
+//******************************************************************** 
+[ITEMDEF i_ore_cobalt]
+ID=i_ore_iron
+NAME=cobalt ore
+SKILLMAKE=MINING 75.0
+TDATA1=i_ingot_cobalt
+VALUE=80
+ON=@Create
+COLOR=color_o_cobalt
+
+//******************************************************************** 
+[ITEMDEF i_ingot_cobalt]
+ID=i_ingot_iron
+NAME=cobalt ingot%s
+RESOURCES=i_ore_cobalt
+SKILLMAKE=MINING 75.0
+TDATA1=70.0
+TDATA2=80.0
+VALUE = 20
+
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=Cobalt Ingot
+
+ON=@Create
+COLOR=color_o_cobalt
+
+//******************************************************************** 
+[REGIONRESOURCE mr_cobalt]
+SKILL=75.0 78.0
+AMOUNT=2 5
+REAP		= i_ore_cobalt
+REGEN		= 60*60*20
+ON=@ResourceFound
+   IF !( <SRC.TAG0.MINESTONE> = 0 )
+      OBJ = <ARGO.UID>
+      OBJ.MORE1=rand_stone      
+   ENDIF
+
+
+//********************************************************************
+//                               manganese                               
+//******************************************************************** 
+[ITEMDEF i_ore_manganese]
+ID=i_ore_iron
+NAME=manganese ore
+SKILLMAKE=MINING 85.0
+TDATA1=i_ingot_manganese
+VALUE=80
+ON=@Create
+COLOR=color_o_manganese
+
+//******************************************************************** 
+[ITEMDEF i_ingot_manganese]
+ID=i_ingot_iron
+NAME=manganese ingot%s
+RESOURCES=i_ore_manganese
+SKILLMAKE=MINING 85.0
+TDATA1=80.0
+TDATA2=90.0
+VALUE = 20
+
+CATEGORY=Items by Professions
+SUBSECTION=Blacksmiths
+DESCRIPTION=manganese Ingot
+
+ON=@Create
+COLOR=color_o_manganese
+
+//******************************************************************** 
+[REGIONRESOURCE mr_manganese]
+SKILL=85.0 88.0
+AMOUNT=2 5
+REAP		= i_ore_manganese
+REGEN		= 60*60*20
+ON=@ResourceFound
+   IF !( <SRC.TAG0.MINESTONE> = 0 )
+      OBJ = <ARGO.UID>
+      OBJ.MORE1=rand_stone      
+   ENDIF
+
+
+
+//********************************************************************
+//                             SHAKUDO                                
+//******************************************************************** 
+[ITEMDEF i_ingot_shakudo]
+NAME		= shakudo ingot%s
+ID		= i_ingot_iron
+RESOURCES	= 1 i_ingot_gold, 2 i_ingot_copper
+SKILLMAKE	= BLACKSMITHING 30.0, MINING 55.0
+WEIGHT		= 3
+VALUE		= 10
+ON = @Create
+  COLOR		= color_o_shakudo
+  AMOUNT	= 4
+
+
+//********************************************************************
+//                              BILLON                                
+//******************************************************************** 
+[ITEMDEF i_ingot_billon]
+NAME		= billon ingot%s
+ID		= i_ingot_iron
+RESOURCES	= 1 i_ingot_silver, 2 i_ingot_copper
+SKILLMAKE	= BLACKSMITHING 30.0, MINING 55.0
+WEIGHT		= 3
+VALUE		= 10
+ON = @Create
+  COLOR		= color_o_billon
+  AMOUNT	= 4
+
+//********************************************************************
+//                             ELECTRUM                               
+//******************************************************************** 
+[ITEMDEF i_ingot_electrum]
+NAME		= electrum ingot%s
+ID		= i_ingot_iron
+RESOURCES	= 10 i_ingot_billon, 6 i_ingot_verite, 12 i_ingot_shadow
+SKILLMAKE	= BLACKSMITHING 75.0, MINING 90.0
+WEIGHT		= 3
+VALUE		= 10
+ON = @Create
+  COLOR		= color_o_electrum
+  AMOUNT	= 4
+
+//********************************************************************
+//                            MELANCHOLY                              
+//******************************************************************** 
+[ITEMDEF i_ingot_melancholy]
+NAME		= melancholy ingot%s
+ID		= i_ingot_iron
+RESOURCES	= 10 i_ingot_shakudo, 6 i_ingot_valorite, 12 i_ingot_agapite
+SKILLMAKE	= BLACKSMITHING 75.0, MINING 90.0
+WEIGHT		= 3
+VALUE		= 10
+ON = @Create
+  COLOR		= color_o_melancholy
+  AMOUNT	= 4
+

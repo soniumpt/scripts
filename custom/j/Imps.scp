@@ -1,0 +1,328 @@
+[DIALOG d_bridge_imp]
+150,100
+nodispose
+noclose
+page 0
+button 0 0 1228 1228 0 1 1000
+page 1
+DTEXT 30 50 30 Dost thou be full of wisdom?
+DTEXT 30 70 30 Of mental guile and might?
+DTEXT 30 90 30 To get to yonder kingdom
+DTEXT 30 110 30 three questions to get right!
+DTEXT 30 130 30 But remember before ye jump ahead,
+DTEXT 30 150 30 That stupidity has it's cost...
+DTEXT 30 170 30 You'll make yourself a death bed,
+DTEXT 30 190 30 And then you'll find all lost...
+button 40 230 56 55 1 0 1001
+DTEXT 58 227 50 Yes
+button 95 230 56 55 1 0 1002
+DTEXT 113 227 50 No
+
+[DIALOG d_bridge_imp BUTTON]
+ONBUTTON=1001
+IF (<EVAL <SRC.P>> == <EVAL 1474,2161,6>)
+   DIALOG d_bridge_imp_riddle
+   TAG.LASTRIDDLE=1
+ELSEIF (<EVAL <SRC.P>> == <EVAL 1473,2160,6>)
+   DIALOG d_bridge_imp_riddle
+   TAG.LASTRIDDLE=2
+ELSE
+   SAY Come closer <SRC.SEX young lad/little lass>, I beseech thee
+ENDIF
+RETURN 1
+ONBUTTON=1002
+SAY Sometimes the smartest path is the one of safety
+
+[DIALOG d_bridge_imp TEXT]
+
+
+[DIALOG d_bridge_imp_riddle]
+150,100
+nodispose
+noclose
+page 0
+button 0 0 1228 1228 0 1 1000
+page 1
+DTEXT 30 50 50 What am I?
+DTEXT 30 90 30 My skin is by far the hardest
+DTEXT 30 110 30 My sword slays all it sees
+DTEXT 30 130 30 Residing in pure evil forts
+DTEXT 30 150 30 I make the strong-willed crease
+resizepic 30 185 3000 200 22
+textentry 32 185 253 25 0 1 0
+button 40 230 56 55 1 0 1001
+DTEXT 58 227 50 Accept
+
+[DIALOG d_bridge_imp_riddle BUTTON]
+ONBUTTON=1001
+IF ( !strcmpi("<ARGTXT[1]>","Balron")
+   DIALOG d_bridge_imp_riddle_2
+ELSE
+   DORAND 3
+      SRC.GO 6067,51 // Hythloth Level 4
+      SRC.GO 5710,147,-43 // Ice Dungeon
+      SRC.GO 5768,108 // Shame Level 4
+   ENDDO
+ENDIF
+
+
+[DIALOG d_bridge_imp_riddle TEXT]
+What am I then?
+
+[DIALOG d_bridge_imp_riddle_2]
+150,100
+nodispose
+noclose
+page 0
+button 0 0 1228 1228 0 1 1000
+page 1
+DTEXT 30 50 50 Where is this?
+DTEXT 30 90 30 If you are a miner
+DTEXT 30 110 30 You know this place well
+DTEXT 30 130 30 It's also famous for
+DTEXT 30 150 30 A former mayor's betrayal
+resizepic 30 185 3000 200 22
+textentry 32 185 253 25 0 1 0
+button 40 230 56 55 1 0 1001
+DTEXT 58 227 50 Accept
+
+[DIALOG d_bridge_imp_riddle_2 BUTTON]
+ONBUTTON=1001
+IF ( !strcmpi("<ARGTXT[1]>","Minoc")
+   DIALOG d_bridge_imp_riddle_3
+ELSE
+   DORAND 3
+      SRC.GO 6067,51 // Hythloth Level 4
+      SRC.GO 5710,147,-43 // Ice Dungeon
+      SRC.GO 5768,108 // Shame Level 4
+   ENDDO
+ENDIF
+
+
+[DIALOG d_bridge_imp_riddle_2 TEXT]
+Where is this place?
+
+
+[DIALOG d_bridge_imp_riddle_3]
+150,100
+nodispose
+noclose
+page 0
+button 0 0 1228 1228 0 1 1000
+page 1
+DTEXT 30 50 50 What skill is this?
+DTEXT 30 90 30 To know all life the aim
+DTEXT 30 110 30 To understand the heart
+DTEXT 30 130 30 It aids in combat skill
+DTEXT 30 150 30 With it you hit your mark
+resizepic 30 185 3000 200 22
+textentry 32 185 253 25 0 1 0
+button 40 230 56 55 1 0 1001
+DTEXT 58 227 50 Accept
+
+[DIALOG d_bridge_imp_riddle_3 BUTTON]
+ONBUTTON=1001
+IF ( !strcmpi("<ARGTXT[1]>","Assessment")
+   SAY You may pass.
+   IF (<TAG.LASTRIDDLE>=1)
+      SRC.GO 1473,2159,6
+   ELSE
+      SRC.GO 1474,2161,6
+   ENDIF
+ELSE
+   DORAND 3
+      SRC.GO 6067,51 // Hythloth Level 4
+      SRC.GO 5710,147,-43 // Ice Dungeon
+      SRC.GO 5768,108 // Shame Level 4
+   ENDDO
+ENDIF
+
+
+[DIALOG d_bridge_imp_riddle_3 TEXT]
+Where is this place?
+
+
+[CHARDEF c_bridge_imp]
+//Male Kid (Blond Hair) (not in t2a)
+//NOTE: NOT in T2a !
+ID=c_child_mb
+NAME=Jarad
+RESOURCES=4 t_food
+CAN=MT_WALK|MT_RUN|MT_USEHANDS
+
+ICON=i_pet_MAN
+FOODTYPE=15 t_food,t_fruit
+DESIRES=i_gold,e_notoriety
+AVERSIONS=t_TRAP,t_eerie_stuff
+TEVENTS=e_Human_HearUnk
+ARMOR=250
+DAM=50,99
+
+DESCRIPTION=Jarad
+SUBSECTION=Imps
+CATEGORY=Imperial uo
+
+ON=@Create
+STR=5000
+INT=5000
+DEX=2500
+NPC=brain_human
+FENCING={8.0 19.0}
+PARRYING={8.0 19.0}
+SWORDSMANSHIP={8.0 19.0}
+WRESTLING={8.0 19.0}
+MACEFIGHTING={8.0 19.0}
+MAGICRESISTANCE=999.9
+TACTICS={8.0 19.0}
+
+ON=@CLICK
+IF (<DISTANCE> < 5)
+   DIALOG d_bridge_imp
+ELSE
+   SRC.MESSAGE You feel you are too far away to catch his attention.
+ENDIF
+
+ON=@DCLICK
+IF (<DISTANCE> < 5)
+   DIALOG d_bridge_imp
+ELSE
+   SRC.MESSAGE You feel you are too far away to catch his attention.
+ENDIF
+
+//--------------------------------------------
+
+[ITEMDEF i_armour_swamp_dragon]
+ID=i_toolkit
+TYPE=t_normal
+VALUE=120
+RESOURCES=200 i_ingot_titanium, 30 i_nails_titanium, 1 i_potion_ShrinkGreat
+SKILLMAKE=BLACKSMITHING 100.0,TINKERING 100.0,ARMSLORE 100.0,t_tinker_tools
+
+ON=@DCLICK
+   TARGET Target the shrunk swamp dragon to kit up!
+   RETURN 1
+
+ON=@TARGON_ITEM
+   IF (<SRC.TARG.BASEID>=i_pet_swampdragon)
+      IF (<SRC.ANIMALLORE> > 60.0)
+         SRC.TARG.REMOVE
+         SERV.NEWITEM i_pet_swampdragon_armored
+         NEW.BOUNCE <SRC.UID>
+         SRC.SYSMESSAGE You equip the Swamp Dragon with the armour.
+      ELSE
+         SRC.SYSMESSAGE You do not have enough skill to equip this swamp dragon!
+      ENDIF
+   ELSE
+      SRC.SYSMESSAGE You can only equip this to Swamp Dragons!
+   ENDIF
+   REMOVE
+   RETURN 1
+   
+//--------------------------------------------
+
+[ITEMDEF i_mirror_magic]
+ID=i_haunted_mirror
+NAME=magic mirror
+TYPE=t_normal
+RESOURCES=36 i_ingot_steel, 12 i_nails_steel, 4 i_jewel_elemental_mayhem
+SKILLMAKE=TINKERING 97.4,t_tinker_tools
+RESLEVEL=2
+RESDISPDNID=i_portrait_3
+
+ON=@CREATE
+   MORE1=0
+
+ON=@DCLICK
+   IF (<MORE1>=0)
+      MORE1=1
+      TAG.LASTNAME=<SRC.NAME>
+      SRC.SAY Mirror, mirror, on the wall, who's the fairest of them all?
+      TIMER=3
+   ELSE
+      SRC.SYSMESSAGE You cannot interrupt the mirror!
+   ENDIF
+   RETURN 1
+   
+ON=@TIMER
+   IF (<MORE1> == 1)
+      FLIP
+      SAY Why <TAG.LASTNAME>, there is but one... For whom the light has always shone...
+      MORE1=2
+      TIMER=3
+      RETURN 1
+   ELSEIF (<MORE1> == 2)   
+      SAY Her name I'd give but then I know... You'd poison her apple just for show!
+      MORE1=3
+      TIMER=3
+      RETURN 1
+   ELSEIF (<MORE1> == 3)      
+      SAY An identity I'll keep, for she is hot! So pray to God Wig dates her not!
+      MORE1=4
+      TIMER=3
+      RETURN 1
+   ELSEIF (<MORE1> == 4)      
+      FLIP
+      MORE1=0
+      TIMER=1
+      RETURN 1
+   ELSE
+      TIMER=-1
+      RETURN 1
+   ENDIF
+      
+
+[ITEMDEF i_mirror_magic_east]
+ID=i_haunted_mirror_ns
+NAME=magic mirror
+TYPE=t_normal
+RESOURCES=36 i_ingot_steel, 12 i_nails_steel, 4 i_jewel_elemental_mayhem
+SKILLMAKE=TINKERING 97.4,t_tinker_tools
+
+ON=@CREATE
+   MORE1=0
+
+ON=@DCLICK
+   IF (<MORE1>=0)
+      MORE1=1
+      TAG.LASTNAME=<SRC.NAME>
+      SRC.SAY Mirror, mirror, on the wall, who's the fairest of them all?
+      TIMER=3
+   ELSE
+      SRC.SYSMESSAGE You cannot interrupt the mirror!
+   ENDIF
+   RETURN 1
+   
+ON=@TIMER
+   IF (<MORE1> == 1)
+      FLIP
+      SAY Why <TAG.LASTNAME>, there is but one... For whom the light has always shone...
+      MORE1=2
+      TIMER=3
+      RETURN 1
+   ELSEIF (<MORE1> == 2)   
+      SAY Her name I'd give but then I know... You'd poison her apple just for show!
+      MORE1=3
+      TIMER=3
+      RETURN 1
+   ELSEIF (<MORE1> == 3)      
+      SAY An identity I'll keep, for she is hot! So pray to God Wig dates her not!
+      MORE1=4
+      TIMER=3
+      RETURN 1
+   ELSEIF (<MORE1> == 4)      
+      FLIP
+      MORE1=0
+      TIMER=1
+      RETURN 1
+   ELSE
+      TIMER=-1
+      RETURN 1
+   ENDIF     
+
+//--------------------------------------------
+
+[FUNCTION regiontestmulti]
+
+MESSAGE <UID.<REGION.UID>.TYPE>
+
+//--------------------------------------------

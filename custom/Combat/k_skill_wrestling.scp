@@ -1,0 +1,215 @@
+[PLEVEL 0]
+SPECIAL
+
+
+[DEFNAME def_special]
+  spec_disarm_cost	20 // stamina
+  spec_bash_cost	50 // stamina
+
+
+
+[FUNCTION SPECIAL]
+  if ( !strcmpi( "<args>", "" ) )
+     sysmessage What special action do you want to perform?
+  elseif ( !strcmpi( "<args>", "disarm" )
+     SPECIAL_DISARM
+  elseif ( !strcmpi( "<args>", "bash" )
+     SPECIAL_BASH
+  else
+     sysmessage You don't know such an action.
+  endif
+
+
+[FUNCTION SPECIAL_BASH]
+  if ( <WRESTLING> < 90.0 )
+     sysmessage You're not good enough to attempt and bash someone.
+     return 1
+  endif
+  
+  if ( <findlayer(layer_hand1).uid> || <findlayer(layer_hand2).uid> )
+     sysmessage You need your hands free.
+     return 1
+  endif
+
+  //if ( <FLAGS> & statf_onhorse )
+    // sysmessage You can't do that while mounting.
+    // return 1
+  //endif
+  
+  if ( <ACTION> != Skill_Wrestling )
+     sysmessage You're not brawling with anyone.
+     return 1
+  endif
+
+  if ( !<ACT> || !<ACT.ISCHAR> )
+     sysmessage You're not fighting anyone.
+     return 1
+  endif
+
+  if ( <ACT.DISTANCE> > 2 )
+     sysmessage They are too far away.
+     return 1
+  endif
+
+ 
+  if ( <STAMINA> < spec_bash_cost )
+     SYSMESSAGE You're too tired for that.
+     return 1
+  endif
+
+  STAMINA	= ( <STAMINA> - spec_bash_cost )
+
+  // calculate chances
+  LOCAL.RESIST	= <eval (( <ACT.DEX> + <ACT.STR> ) / 4)>
+  if ( <LOCAL.RESIST> > 60 )
+     LOCAL.RESIST		= 60
+  endif
+
+  if ( 0 )
+  elseif ( <WRESTLING> < 90.0 )
+     LOCAL.CHANCE		= 5
+  elseif ( <WRESTLING> < 95.0 )
+     LOCAL.CHANCE		= 15
+  elseif ( <WRESTLING> < 100.0 )
+     LOCAL.CHANCE		= 20
+  else
+     LOCAL.CHANCE		= 30
+  endif
+
+  LOCAL.CHANCE		= <eval ( <LOCAL.CHANCE> + <eval (( <DEX> + <STR> ) / 10)> - <LOCAL.RESIST> )>
+
+  if ( 0<TAG.DEBUG.SPECIAL> )
+     SAY BASH: c(<eval <LOCAL.CHANCE>>%), r(<eval <LOCAL.RESIST>>%)
+  endif
+
+  if ( rand(100) > <LOCAL.CHANCE> )
+     EMOTE fail to bash <ACT.NAME>
+     ACT.DAMAGE		1
+     return 1
+  endif
+
+  
+  EMOTE bash <ACT.NAME>
+  if ( (<ACT.FLAGS> & statf_onhorse) && !<ACT.NPC> )
+     ACT.horse_bump
+     VAR.DAM	= <eval ({ 10 20 })>
+  else
+     VAR.DAM	= <eval ({  7 15 })>
+  endif
+
+  if ( <VAR.DAM> >= <ACT.HITS> )
+     ACT.HITS	= 1
+  else
+     ACT.HITS	= (<ACT.HITS> - <VAR.DAM>)
+  endif
+
+  return 1
+
+
+
+[FUNCTION SPECIAL_DISARM]
+  if ( <WRESTLING> < 80.0 )
+     sysmessage You're not good enough to attempt and disarm someone.
+     return 1
+  endif
+  
+  if ( <findlayer(layer_hand1).uid> || <findlayer(layer_hand2).uid> )
+     sysmessage You need your hands free.
+     return 1
+  endif
+
+  if ( <ACTION> != Skill_Wrestling )
+     sysmessage You're not brawling with anyone.
+     return 1
+  endif
+
+  if ( !<ACT> || !<ACT.ISCHAR> )
+     sysmessage You're not fighting anyone.
+     return 1
+  endif
+
+  if ( <ACT.DISTANCE> > 2 )
+     sysmessage They are too far away.
+     return 1
+  endif
+
+  if ( <STAMINA> < spec_disarm_cost )
+     SYSMESSAGE You're too tired for that.
+     return 1
+  endif
+
+  if !( <ACT.FINDLAYER( layer_pack ).uid> )
+     SYSMESSAGE Their grip is too tight.
+     return 1
+  endif
+  
+  STAMINA	= ( <STAMINA> - spec_disarm_cost )
+
+  VAR.WEAPON	= 0
+  if ( <ACT.FINDLAYER( layer_hand1 ).uid> )
+     if ( <ACT.FINDLAYER( layer_hand1 ).ISWEAPON> )
+         VAR.WEAPON	= <ACT.FINDLAYER( layer_hand1 ).UID>
+     endif
+  endif
+
+  if ( <VAR.WEAPON> == 0 )
+  if ( <ACT.FINDLAYER( layer_hand2 ).uid> )
+     if ( <ACT.FINDLAYER( layer_hand2 ).ISWEAPON> )
+         VAR.WEAPON	= <ACT.FINDLAYER( layer_hand2 ).UID>
+     endif
+  endif
+  endif
+
+  if ( <VAR.WEAPON> == 0 )
+     SYSMESSAGE They're not wielding any weapon.
+     return 1
+  endif
+
+
+  // calculate chances
+  LOCAL.RESIST	= <eval (( <ACT.DEX> + <ACT.STR> ) / 4)>
+  if ( <LOCAL.RESIST> > 60 )
+     LOCAL.RESIST		= 60
+  endif
+
+  if ( 0 )
+  elseif ( <WRESTLING> < 80.0 )
+     LOCAL.CHANCE		= 0
+  elseif ( <WRESTLING> < 85.0 )
+     LOCAL.CHANCE		= 5
+  elseif ( <WRESTLING> < 85.0 )
+     LOCAL.CHANCE		= 10
+  elseif ( <WRESTLING> < 90.0 )
+     LOCAL.CHANCE		= 20
+  elseif ( <WRESTLING> < 95.0 )
+     LOCAL.CHANCE		= 25
+  elseif ( <WRESTLING> < 100.0 )
+     LOCAL.CHANCE		= 35
+  else
+     LOCAL.CHANCE		= 50
+  endif
+
+  LOCAL.CHANCE		= <eval ( <LOCAL.CHANCE> + <eval (( <DEX> + <STR> ) / 10)> - <LOCAL.RESIST> )>
+
+  if ( 0<TAG.DEBUG.SPECIAL> )
+     SAY DISARM: c(<eval <LOCAL.CHANCE>>%), r(<eval <LOCAL.RESIST>>%)
+  endif
+
+  if ( rand(100) > <LOCAL.CHANCE> )
+     EMOTE fail to disarm <ACT.NAME>
+     ACT.DAMAGE		1
+     return 1
+  endif
+
+  VAR.DIS_ACT		= <ACT>
+  ACT			= <VAR.WEAPON>
+  ACT.CONT		= <ACT.CONT.FINDLAYER( layer_pack ).uid> 
+  ACT			= <VAR.DIS_ACT>
+  ACT.DAMAGE		1
+  EMOTE disarm <ACT.NAME>
+  return 1
+
+
+
+[EOF]
+

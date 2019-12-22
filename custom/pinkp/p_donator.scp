@@ -1,0 +1,925 @@
+//*********************************************************************************************************//
+//         Event to display a message above donator mounts head Created by Pink Panther                    //
+//*********************************************************************************************************//
+
+[EVENTS e_donatormount]
+On=@Click
+   MESSAGE @0afe [Donator Mount]
+   
+//*********************************************************************************************************//
+//                         Donator Mounts Wand Created by Pink Panther                                     //
+//*********************************************************************************************************//
+   
+[ITEMDEF i_wand_steed_donator]
+name=Donator Steed Wand
+ID=0df3
+WEIGHT=0
+
+ON=@CREATE
+COLOR=07a0
+ATTR=05
+
+ON=@DCLICK
+   EQUIP
+   
+   // If the wand is not linked yet it will display a target
+   
+   IF (<LINK>=04fffffff)
+   TARGET Target your steed.
+   RETURN 1
+   ENDIF
+   
+   // If the wand is linked, the link (steed) tag.owner is you and if the link (steed) is not being ridden, the steed will be teleported to you
+   // If the link (steed) doesn't have an owner or the owner is not you, it will make you the owner again
+   
+   IF !(<LINK>=04fffffff)
+      IF (<LINK.TAG.OWNER>=<SRC.UID>)
+            IF !(<EVAL (<LINK.flags>&statf_ridden)==statf_ridden>)
+   
+               IF (<LINK.RESTEST 2 I_MEMORY>)
+			   LINK.REMOVE i_memory
+			   LINK.REMOVE i_memory
+			   ENDIF
+   
+			   IF !(<LINK.FINDID.I_MEMORY.UID>)
+				  SERV.NEWITEM = i_memory
+				  NEW.TYPE = t_eq_memory_obj
+				  NEW.COLOR = memory_ipet
+				  NEW.LINK = <SRC.UID>
+				  NEW.MOREP = <SRC.P>
+				  LINK.EQUIP <NEW.UID>
+				  LINK.FOOD=999
+				  src.message Donator mount is yours again.
+				ENDIF
+							
+			   IF !(<LINK.FINDID.I_MEMORY.LINK> == <SRC.UID>)
+			      LINK.FINDID.I_MEMORY.REMOVE
+				  SERV.NEWITEM = i_memory
+				  NEW.TYPE = t_eq_memory_obj
+				  NEW.COLOR = memory_ipet
+				  NEW.LINK = <SRC.UID>
+				  NEW.MOREP = <SRC.P>
+				  LINK.EQUIP <NEW.UID>
+				  LINK.FOOD=999
+				  src.message Donator mount is yours again.
+				ENDIF	
+				
+				
+				IF <LINK.NPC> Then
+                  LINK.GO <SRC.P> 
+				  LINK.MOUNT
+               ENDIF
+				
+            ENDIF
+      ELSE
+         SRC.SYSMESSAGE This wand is not linked to your steed.
+      ENDIF
+   ENDIF
+   
+ON=@TARGON_CHAR 
+
+   //If this is a donator steed
+   
+   IF ((<SRC.TARG.ID>=C_HORSE_GRAY_DONATOR)||(<SRC.TARG.ID>=C_HORSE_BROWN_LT_DONATOR)||(<SRC.TARG.ID>=C_HORSE_BROWN_DK_DONATOR)||(<SRC.TARG.ID>=C_HORSE_TAN_DONATOR)||(<SRC.TARG.ID>=C_LLAMA_DONATOR)||(<SRC.TARG.ID>=C_OSTARD_FOREST_DONATOR)||(<SRC.TARG.ID>=C_OSTARD_DESERT_DONATOR)||(<SRC.TARG.ID>=C_OSTARD_ZOSTRICH_DONATOR) || (<SRC.TARG.ID>=c_polar_bear_donator)||(<SRC.TARG.ID>=c_casual_horse_donator)||(<SRC.TARG.ID>=c_armored_steed_donator)||(<SRC.TARG.ID>=c_flame_steed_donator)||(<SRC.TARG.ID>=c_cusidhe_donator)||(<SRC.TARG.ID>=c_lion_wings_donator)||(<SRC.TARG.ID>=c_billy_goat_donator)||(<SRC.TARG.ID>=c_raptor_light_donator)||(<SRC.TARG.ID>=c_ostrich_donator)||(<SRC.TARG.ID>=c_grizzly_polar_bear_donator)||(<SRC.TARG.ID>=c_raptor_donator))
+
+      //If this steed has no owner defined, it is my steed.
+	  
+      IF (<SRC.TARG.TAG0.OWNER>=0)
+         SRC.TARG.TAG.OWNER=<SRC.UID>
+         LINK=<SRC.TARG.UID>
+		 SERV.NEWITEM = i_memory
+		 NEW.TYPE = t_eq_memory_obj
+	     NEW.COLOR = memory_ipet
+		 NEW.LINK = <SRC.UID>
+		 NEW.MOREP = <SRC.P>
+		 SRC.TARG.EQUIP <NEW.UID>
+		 SRC.TARG.GO <SRC.P>
+		 src.sysmessage @07a1 This is now your donator mount.
+		 src.sysmessage @07a1 Say "change color" when un-mounted to change its color.
+		 src.sysmessage @07a1 Type .donatorshrink to shrink it at no cost.
+		 src.sysmessage @07a1 Double click your wand to teleport it to you or to re-tame it.
+		 src.sysmessage @079c WARNING: Using the steed to intentionally block other players is ILLEGAL.
+		 SERV.LOG :DONATOR MOUNT: <src.account> <src.name> <src.uid> has a new donator mount <src.targ.uid> <src.targ.id> <src.targ.name>. Donator Steed Wand ID is <uid>
+	  ELSE
+		 SRC.SYSMESSAGE This steed already has an owner.
+      ENDIF  
+   ELSE
+      SRC.SYSMESSAGE This is not a Donator Steed.
+   ENDIF
+   return 1
+
+ON=@DAMAGE
+   RETURN 1
+
+//*********************************************************************************************************//
+//                 Donator Mounts Speech and Color Menu Created by Pink Panther                            //
+//*********************************************************************************************************//
+
+[SPEECH DONATOR_STEED] 
+ON=*drop*
+RETURN 1
+
+ON=*all transfer*
+return 1
+
+ON=*all friend*
+return 1
+
+ON=*save color a*
+IF (<TAG.OWNER>=<SRC.UID>)
+   TAG.COLORA=<COLOR>
+ENDIF
+RETURN 1
+
+ON=*save color b*
+IF (<TAG.OWNER>=<SRC.UID>)
+   TAG.COLORB=<COLOR>
+ENDIF
+RETURN 1
+
+ON=*save color c*
+IF (<TAG.OWNER>=<SRC.UID>)
+   TAG.COLORC=<COLOR>
+ENDIF
+RETURN 1
+
+ON=*save color d*
+IF (<TAG.OWNER>=<SRC.UID>)
+   TAG.COLORD=<COLOR>
+ENDIF
+RETURN 1
+
+ON=*save color e*
+IF (<TAG.OWNER>=<SRC.UID>)
+   TAG.COLORE=<COLOR>
+ENDIF
+RETURN 1
+
+ON=*load color a*
+IF (<TAG.OWNER>=<SRC.UID>)
+   COLOR=<TAG.COLORA>
+   TAG.COLOR=0
+ENDIF
+RETURN 1
+
+ON=*load color b*
+IF (<TAG.OWNER>=<SRC.UID>)
+   COLOR=<TAG.COLORB>
+   TAG.COLOR=0
+ENDIF
+RETURN 1
+
+ON=*load color c*
+IF (<TAG.OWNER>=<SRC.UID>)
+   COLOR=<TAG.COLORC>
+   TAG.COLOR=0
+ENDIF
+RETURN 1
+
+ON=*load color d*
+IF (<TAG.OWNER>=<SRC.UID>)
+   COLOR=<TAG.COLORD>
+   TAG.COLOR=0
+ENDIF
+RETURN 1
+
+ON=*load color e*
+IF (<TAG.OWNER>=<SRC.UID>)
+   COLOR=<TAG.COLORE>
+   TAG.COLOR=0
+ENDIF
+RETURN 1
+
+on=*change color*
+IF (<tag.owner>=<src.uid>)
+DIALOG d_donatorcolormenu
+else
+src.message This isnt your donator mount.
+endif
+return 1
+
+
+[DIALOG d_donatorcolormenu]
+0,0
+
+PAGE 1
+
+gumppic 70 390 3507
+gumppic 500 390 3508
+gumppic 45 390 3506
+gumppic 500 94 3505
+gumppic 71 95 3504
+gumppic 45 94 3503
+gumppic 500 69 3502
+gumppic 70 69 3501
+gumppic 45 69 3500
+gumppic 258 69 3501
+gumppic 260 95 3504
+gumppic 261 390 3507
+gumppic 500 148 3505
+gumppic 262 150 3504
+gumppic 61 151 3504
+gumppic 45 148 3503
+
+// Reward Board Colors Button
+button  80  135 2510 2511 1 0 1  // color 0ae0
+button  200  135 2510 2511 1 0 2  // color 0b4e
+button  80  155 2510 2511 1 0 3  // color 0683
+button  200  155 2510 2511 1 0 4  // color 0b9b
+button  80  175 2510 2511 1 0 5  // color 0b99
+button  200  175 2510 2511 1 0 6  // color 07ac
+button  80  195 2510 2511 1 0 7  // color 0a0f
+button  200  195 2510 2511 1 0 8  // color 07a3
+button  80  215 2510 2511 1 0 9  // color 07a2
+button  200  215 2510 2511 1 0 10 // color 01
+button  80  235 2510 2511 1 0 11 // color 0b56
+button  200  235 2510 2511 1 0 12 // color 0a2a
+button  80  255 2510 2511 1 0 13 // color 05b0
+button  200  255 2510 2511 1 0 14 // color 0799
+button  80  275 2510 2511 1 0 15 // color 0796
+button  200  275 2510 2511 1 0 16 // color 0ba1
+button  80  295 2510 2511 1 0 17 // color 09ed
+button  200  295 2510 2511 1 0 18 // color 0783
+button  80  315 2510 2511 1 0 19 // color 07bf
+button  200  315 2510 2511 1 0 20 // color 09aa
+button  80  335 2510 2511 1 0 21 // color 09e6
+button  200  335 2510 2511 1 0 22 // color 079a
+button  80  355 2510 2511 1 0 23 // color 0a03
+button  200  355 2510 2511 1 0 24 // color 0bb0
+button  80  375 2510 2511 1 0 25 // color 07ad
+button  200  375 2510 2511 1 0 99 // color 0485
+button  243  111 2510 2511 1 0 45 // no color
+button  420  388 2510 2511 1 0 52 // next page
+
+
+
+// Reward Board Colors Text
+dtext 200 83 0 Donator Mount Colors Menu
+dtext 113 108 0 Reward Board
+dtext 263 108 0 No Color
+dtext 100 133 0 Marine // 0ae0
+dtext 220 133 0 Azure // 0b4e
+dtext 100 153 0 Bubblegum // 0683
+dtext 220 153 0 Sunfire // 0b9b
+dtext 100 173 0 Purple Haze // 0b99
+dtext 220 173 0 Neon // 07ac
+dtext 100 193 0 Flamingo // 0a0f
+dtext 220 193 0 Vermilion //07a3
+dtext 100 213 0 Blueberry // 07a2
+dtext 220 213 0 Pitch Black // 01
+dtext 100 233 0 Magenta // 0b56
+dtext 220 233 0 Anthrax // 0a2a
+dtext 100 253 0 Indigo // 05b0
+dtext 220 253 0 Blood // 0799
+dtext 100 273 0 Midnight // 0796
+dtext 220 273 0 Vorpal // 0ba1
+dtext 100 293 0 Salmon // 09ed
+dtext 220 293 0 Jupiter // 0783
+dtext 100 313 0 Onyx // 07bf
+dtext 220 313 0 Cyanide // 09aa
+dtext 100 333 0 Lime // 09e6
+dtext 220 333 0 Butterscotch // 079a
+dtext 100 353 0 Orange Haze // 0a03
+dtext 220 353 0 Firebrick // 0bb0
+dtext 100 373 0 Sun // 07ad
+dtext 220 373 0 Black // 07ad
+
+// Alchemy Colors Text
+dtext 373 108 0 Alchemy
+dtext 340 133 0 Iron // 0763
+dtext 440 133 0 Bronze // 03ec
+dtext 340 153 0 Steel// 0835
+dtext 440 153 0 Titanium// 04de
+dtext 340 173 0 Shadow // 0770
+dtext 440 173 0 Agapite // 0400
+dtext 340 193 0 Terathane // 05a5
+dtext 440 193 0 Verite // 07d1
+dtext 340 213 0 Valorite // 0515
+dtext 440 213 0 Adamantine // 0524
+dtext 340 233 0 Skargard // 060
+dtext 440 233 0 Enriched Tit // 0798
+dtext 340 253 0 White Oak // 07b5
+dtext 440 253 0 Phoenix // 032
+dtext 340 273 0 Blackrock // 0455
+dtext 440 273 0 Bloodrock // 04c2
+dtext 340 293 0 Mahogany // 0608
+dtext 440 293 0 Cherry // 0151
+dtext 340 313 0 Composite // 0488
+dtext 440 313 0 Verminard // 079b
+dtext 340 333 0 Stronghold // 07a1
+dtext 440 333 0 Myst // 07a0
+dtext 340 353 0 Acid // 0a43
+dtext 440 353 0 Fire // 077a
+dtext 340 373 0 Ice // 077b
+dtext 440 385 0 Next Page // 077a
+
+
+// Alchemy Colors Button
+button  320  135 2510 2511 1 0 26  // color 0763
+button  420  135 2510 2511 1 0 27  // color 03ec
+button  320  155 2510 2511 1 0 28  // color 0835
+button  420  155 2510 2511 1 0 29  // color 04de
+button  320  175 2510 2511 1 0 30  // color 0770
+button  420  175 2510 2511 1 0 31  // color 0400
+button  320  195 2510 2511 1 0 32  // color 05a5
+button  420  195 2510 2511 1 0 33  // color 07d1
+button  320  215 2510 2511 1 0 34  // color 0515
+button  420  215 2510 2511 1 0 35  // color 0524
+button  320  235 2510 2511 1 0 36  // color 060
+button  420  235 2510 2511 1 0 37  // color 0798
+button  320  255 2510 2511 1 0 38  // color 07b5
+button  420  255 2510 2511 1 0 39  // color 032
+button  320  275 2510 2511 1 0 40  // color 0455
+button  420  275 2510 2511 1 0 41  // color 04c2
+button  320  295 2510 2511 1 0 42  // color 0608
+button  420  295 2510 2511 1 0 43  // color 0151
+button  320  315 2510 2511 1 0 44  // color 0488
+button  420  315 2510 2511 1 0 46  // color 079b
+button  320  335 2510 2511 1 0 47  // color 07a1
+button  420  335 2510 2511 1 0 48  // color 07a0
+button  320  355 2510 2511 1 0 49  // color 0a43
+button  420  355 2510 2511 1 0 50  // color 077a
+button  320  375 2510 2511 1 0 51  // color 077b
+
+[DIALOG d_donatorcolormenu BUTTON]
+
+// Reward Board Colors Button
+
+ON = 1
+color = 0ae0
+on=2
+color=0b4e
+ON=3
+COLOR=0683
+ON=4
+COLOR= 0b9b
+ON=5
+COLOR= 0b99
+ON=6
+COLOR=07ac
+ON=7
+COLOR=0a0f
+ON=8
+COLOR=07a3
+ON=9
+COLOR=07a2
+ON=10
+COLOR=01
+ON=11
+COLOR=0b56
+ON=12
+COLOR=0a2a
+ON=13
+COLOR= 05b0
+ON=14
+COLOR=0799
+ON=15
+COLOR=0796
+ON=16
+COLOR=0ba1
+ON=17
+COLOR=09ed
+ON=18
+COLOR=0783
+ON=19
+COLOR=07bf
+ON=20 
+COLOR=09aa
+ON=21
+COLOR=09e6
+ON=22
+COLOR=079a
+ON=23
+COLOR=0a03
+ON=24
+COLOR=0bb0
+ON=25
+COLOR=07ad
+ON=99
+COLOR=0485
+
+// Alchemy Colors Button
+
+ON=26
+COLOR=0763
+ON=27
+COLOR=03ec
+ON=28
+COLOR=0835
+ON=29
+COLOR=04de
+ON=30
+COLOR=0770
+ON=31
+COLOR=0400
+ON=32
+COLOR=05a5
+ON=33
+COLOR=07d1
+ON=34
+COLOR=0515
+ON=35
+COLOR=0524
+ON=36
+COLOR=060
+ON=37
+COLOR=0798
+ON=38
+COLOR=07b5
+ON=39
+COLOR=032
+ON=40
+COLOR=0455
+ON=41
+COLOR=04c2
+ON=42
+COLOR=0608
+ON=43
+COLOR=0151
+ON=44
+COLOR=0488
+ON=45
+color=0
+ON=46
+COLOR=079b
+ON=47
+COLOR=07a1
+ON=48
+COLOR=07a0
+ON=49
+COLOR=0a43
+ON=50
+COLOR=077a
+ON=51
+COLOR=077b
+ON=52
+DIALOG d_donatorcolormenu2
+
+
+[DIALOG d_donatorcolormenu2]
+0,0
+
+PAGE 1
+
+gumppic 70 390 3507
+gumppic 500 390 3508
+gumppic 45 390 3506
+gumppic 500 94 3505
+gumppic 71 95 3504
+gumppic 45 94 3503
+gumppic 500 69 3502
+gumppic 70 69 3501
+gumppic 45 69 3500
+gumppic 258 69 3501
+gumppic 260 95 3504
+gumppic 261 390 3507
+gumppic 500 148 3505
+gumppic 262 150 3504
+gumppic 61 151 3504
+gumppic 45 148 3503
+
+// New Alchemy Colors Button
+button  80  135 2510 2511 1 0 1  // color 0aa8
+button  200  135 2510 2511 1 0 2  // color 0489
+button  80  155 2510 2511 1 0 3  // color 0484
+button  200  155 2510 2511 1 0 4  // color 0481
+button  80  175 2510 2511 1 0 5  // color 0487
+button  200  175 2510 2511 1 0 6  // color 0480
+button  80  195 2510 2511 1 0 7  // color 09f6
+button  200  195 2510 2511 1 0 8  // color 0af1
+button  80  215 2510 2511 1 0 9  // color 048d
+button  200  215 2510 2511 1 0 10 // color 048b
+button  80  235 2510 2511 1 0 11 // color 0ac9
+button  200  235 2510 2511 1 0 12 // color 0483
+button  80  255 2510 2511 1 0 13 // color 0a10
+button  200  255 2510 2511 1 0 14 // color 09b1
+button  80  275 2510 2511 1 0 15 // color 0486
+button  200  275 2510 2511 1 0 16 // color 048f
+button  80  295 2510 2511 1 0 17 // color 0ae4
+button  200  295 2510 2511 1 0 18 // color 0490
+button  80  315 2510 2511 1 0 19 // color 048c
+button  200  315 2510 2511 1 0 20 // color 07a2
+button  80  335 2510 2511 1 0 21 // color 0b4d
+button  200  335 2510 2511 1 0 22 // color 099d
+button  80  355 2510 2511 1 0 23 // color 0ae6
+button  200  355 2510 2511 1 0 24 // color 0b8a
+button  80  375 2510 2511 1 0 25 // color 0ae3
+button  200  375 2510 2511 1 0 26 // color 0b3b
+button  243  111 2510 2511 1 0 53 // no color
+
+
+// New Alchemy Colors Text
+dtext 200 83 0 Donator Mount Colors Menu
+dtext 113 108 0 New Alchemy
+dtext 263 108 0 No Color
+dtext 100 133 0 Dread // 0aa8
+dtext 220 133 0 Blue // 0489
+dtext 100 153 0 Pure White // 0484
+dtext 220 153 0 White // 0481
+dtext 100 173 0 Green // 0487
+dtext 220 173 0 Ice Blue // 0480
+dtext 100 193 0 Swamp // 09f6
+dtext 220 193 0 Cardinal //0af1
+dtext 100 213 0 Soft Blue // 048d
+dtext 220 213 0 Soft Purple // 048b
+dtext 100 233 0 Passion Purple// 0ac9
+dtext 220 233 0 Purple // 0483
+dtext 100 253 0 Strong Pink // 0a10
+dtext 220 253 0 Passion Pink // 09b1
+dtext 100 273 0 Ancient Fire // 0486
+dtext 220 273 0 Angel // 048f
+dtext 100 293 0 Cerulean// 0ae4
+dtext 220 293 0 C. Strong Pink // 0490
+dtext 100 313 0 C. Passion Pink // 048c
+dtext 220 313 0 Heavenly White // 0b87
+dtext 100 333 0 Frozen Blue // 0b4d
+dtext 220 333 0 Rain // 099d
+dtext 100 353 0 Purple Rain // 0ae6
+dtext 220 353 0 Peppermint // 0b8a
+dtext 100 373 0 Sunset // 0ae3
+dtext 220 373 0 Citrus // 0b3b
+
+// Donator Colors Text
+dtext 373 108 0 Donator
+dtext 340 133 0 Yollord // 0b52
+dtext 440 133 0 Provoken Green // 0b74
+dtext 340 153 0 Creammy // 0a52
+dtext 440 153 0 Mystic // 0a56
+dtext 340 173 0 Blord // 09a1
+dtext 440 173 0 Intensik Red // 0ba4
+dtext 340 193 0 Pinky // 05cf
+dtext 440 193 0 Exotic // 0a53
+dtext 340 213 0 Eye Killer // 044b
+dtext 440 213 0 Troop Green // 0ad9
+dtext 340 233 0 Hot Blue // 09e3
+dtext 440 233 0 Neophyte // 09d7
+dtext 340 253 0 UnderCore // 0635
+dtext 440 253 0 Not Pink // 0a34
+dtext 340 273 0 Pixel // 0438
+dtext 440 273 0 King Dark // 0a24
+dtext 340 293 0 Disaster // 0a26
+dtext 440 293 0 Insight // 0a30
+dtext 340 313 0 Volodo // 0a32
+dtext 440 313 0 Terror // 0a37
+dtext 340 333 0 Sweety // 09c4
+dtext 440 333 0 Proudly // 0ac9
+dtext 340 353 0 Lightly // 0aab
+dtext 440 353 0 Waycool // 0a57
+dtext 340 373 0 Greeny // 09e5
+
+
+// Donator Colors Button
+button  320  135 2510 2511 1 0 27  // color 0b52
+button  420  135 2510 2511 1 0 28  // color 0b74
+button  320  155 2510 2511 1 0 29  // color 0a52
+button  420  155 2510 2511 1 0 30  // color 0a56
+button  320  175 2510 2511 1 0 31  // color 09a1
+button  420  175 2510 2511 1 0 32  // color 0ba4
+button  320  195 2510 2511 1 0 33  // color 05cf
+button  420  195 2510 2511 1 0 34  // color 0a53
+button  320  215 2510 2511 1 0 35  // color 044b
+button  420  215 2510 2511 1 0 36  // color 0ad9
+button  320  235 2510 2511 1 0 37  // color 09e3
+button  420  235 2510 2511 1 0 38  // color 09d7
+button  320  255 2510 2511 1 0 39  // color 0635
+button  420  255 2510 2511 1 0 40  // color 0a34
+button  320  275 2510 2511 1 0 41  // color 0438
+button  420  275 2510 2511 1 0 42  // color 0a24
+button  320  295 2510 2511 1 0 43  // color 0a26
+button  420  295 2510 2511 1 0 44  // color 0a30
+button  320  315 2510 2511 1 0 45  // color 0a32
+button  420  315 2510 2511 1 0 46  // color 0a37
+button  320  335 2510 2511 1 0 47  // color 09c4
+button  420  335 2510 2511 1 0 48  // color 0ac9
+button  320  355 2510 2511 1 0 49  // color 0aab
+button  420  355 2510 2511 1 0 50  // color 0a57
+button  320  375 2510 2511 1 0 51  // color 09e5
+
+button  420  388 2510 2511 1 0 52 // previous page
+dtext 440 385 0 Previous Page // previous page
+
+[DIALOG d_donatorcolormenu2 BUTTON]
+
+ON=1
+COLOR = 0aa8
+ON=2
+COLOR = 0489
+ON=3
+COLOR = 0484
+ON=4
+COLOR = 0481
+ON=5
+COLOR = 0487
+ON=6
+COLOR = 0480
+ON=7
+COLOR = 09f6
+ON=8
+COLOR = 0af1
+ON=9
+COLOR = 048d
+ON=10
+COLOR = 048b
+ON=11
+COLOR = 0ac9
+ON=12
+COLOR = 0483
+ON=13
+COLOR = 0a10
+ON=14
+COLOR = 09b1
+ON=15
+COLOR = 0486
+ON=16
+COLOR = 048f
+ON=17
+COLOR = 0ae4
+ON=18
+COLOR = 0490
+ON=19
+COLOR = 048c
+ON=20
+COLOR = 0b87
+ON=21
+COLOR = 0b4d
+ON=22
+COLOR = 099d
+ON=23
+COLOR = 0ae6
+ON=24
+COLOR = 0b8a
+ON=25
+COLOR = 0ae3
+ON=26
+COLOR = 0b3b
+ON=27
+COLOR = 0b52
+ON=28
+COLOR = 0b74
+ON=29
+COLOR = 0a52
+ON=30
+COLOR = 0a56
+ON=31
+COLOR = 09a1
+ON=32
+COLOR = 0ba4
+ON=33
+COLOR = 05cf
+ON=34
+COLOR = 0a53
+ON=35
+COLOR = 044b
+ON=36
+COLOR = 0ad9
+ON=37
+COLOR = 09e3
+ON=38
+COLOR = 09d7
+ON=39
+COLOR = 0635
+ON=40
+COLOR = 0a34
+ON=41
+COLOR = 0438
+ON=42
+COLOR = 0a24
+ON=43
+COLOR = 0a26
+ON=44
+COLOR = 0a30
+ON=45
+COLOR = 0a32
+ON=46
+COLOR = 0a37
+ON=47
+COLOR = 09c4
+ON=48
+COLOR = 0ac9
+ON=49
+COLOR = 0aab
+ON=50
+COLOR = 0a57
+ON=51
+COLOR = 09e5
+ON=52
+DIALOG d_donatorcolormenu
+ON=53
+COLOR = 0
+
+
+//*********************************************************************************************************//
+//                     Function to Shrink own donator mount Created by Pink Panther                        //
+//*********************************************************************************************************//
+
+[FUNCTION donatorshrink]
+  IF (<SRC.FINDID.i_wand_steed_donator.uid>)
+		IF (<SRC.FINDID.i_wand_steed_donator.link.TAG.OWNER>=<SRC.UID>)
+			SRC.NEWITEM i_donatorshrink
+			SRC.ACT.TARGET Target the donator mount you want to shrink.
+			RETURN 1
+		ELSE
+			SRC.SYSMESSAGE Your Donator Steed Wand is not linked to any steed of yours.
+			RETURN 1
+		ENDIF
+	ELSE
+		SRC.SYSMESSAGE You don't have any Donator Steed Wand with yourself.
+		RETURN 1
+	ENDIF
+  
+[Itemdef i_donatorshrink]
+NAME=Donator Shrink Targetter
+ID=i_memory
+TYPE=T_EQ_SCRIPT
+LAYER=30
+
+ON=@CREATE
+   ATTR=attr_decay
+   
+   
+ON=@TARGON_CHAR
+   
+	IF !(<SRC.TARG.ISMYPET>)
+		SRC.SYSMESSAGE The animal must be loyal to you!
+		return 1
+	endif
+
+	IF ( !<src.targ.canseelos> || ( <src.targ.distance> > 2 ) )
+		src.sysmessage They are too far away.
+		return 1
+	endif
+   
+
+	IF ((<SRC.TARG.ID>=C_HORSE_GRAY_DONATOR)||(<SRC.TARG.ID>=C_HORSE_BROWN_LT_DONATOR)||(<SRC.TARG.ID>=C_HORSE_BROWN_DK_DONATOR)||(<SRC.TARG.ID>=C_HORSE_TAN_DONATOR)||(<SRC.TARG.ID>=C_LLAMA_DONATOR)||(<SRC.TARG.ID>=C_OSTARD_FOREST_DONATOR)||(<SRC.TARG.ID>=C_OSTARD_DESERT_DONATOR)||(<SRC.TARG.ID>=C_OSTARD_ZOSTRICH_DONATOR) || (<SRC.TARG.ID>=c_polar_bear_donator)||(<SRC.TARG.ID>=c_casual_horse_donator)||(<SRC.TARG.ID>=c_armored_steed_donator)||(<SRC.TARG.ID>=c_flame_steed_donator)||(<SRC.TARG.ID>=c_cusidhe_donator)||(<SRC.TARG.ID>=c_lion_wings_donator)||(<SRC.TARG.ID>=c_billy_goat_donator)||(<SRC.TARG.ID>=c_raptor_light_donator)||(<SRC.TARG.ID>=c_ostrich_donator)||(<SRC.TARG.ID>=c_grizzly_polar_bear_donator)||(<SRC.TARG.ID>=c_raptor_donator))
+		IF (<SRC.TARG.TAG.OWNER>=<SRC.UID>)
+			SRC.SYSMESSAGE Your pet has been shrunk!
+			SRC.TARG.SHRINK
+			Src.bounce <uid.<src.targ.actarg1>>
+			obj = <uid.<src.targ.actarg1>>
+			obj.attr=05
+			SERV.LOG :DONATOR MOUNT SHRINK: <src.account> <src.name> <src.uid> is shrinking a donator mount <src.targ.uid> <src.targ.id> <src.targ.name>. New figurine UID is <uid.<src.targ.actarg1>>
+			return 1
+		ELSE
+			SRC.SYSMESSAGE This donator mount isn't yours.
+			return 1
+		endif
+	ELSE
+		SRC.SYSMESSAGE This is not a donator mount.
+		return 1
+	endif
+	
+ 
+   
+ON=@TARGON_ITEM
+  SRC.SYSMESSAGE This is not a donator mount.
+  TIMER=1
+  REMOVE
+  RETURN 1
+
+ON=@TARGON_GROUND
+  SRC.SYSMESSAGE This is not a donator mount.
+  TIMER=1
+  REMOVE
+  RETURN 1
+  
+[PLEVEL 1]
+donatorshrink
+
+//*********************************************************************************************************//
+//                                  Donator Skills Created by Pink Panther                                 //
+//*********************************************************************************************************//
+
+[FUNCTION donationskills]
+
+SRC.NEWITEM i_donationskills
+SRC.ACT.TARGET Who do you wish to give 1000.0 Donation Skill Points?
+RETURN 1
+
+[ITEMDEF i_donationskills]
+NAME=Donation Skills Targetter
+ID=i_memory
+TYPE=T_EQ_SCRIPT
+LAYER=30
+
+ON=@CREATE
+   ATTR=attr_decay
+
+ON=@TARGON_CHAR
+   
+    SRC.TARG.ALLSKILLS=0
+	SRC.TARG.TAG.DONATEDFORSKILLS=1
+    SRC.TARG.TAG.DONATIONSKILLS=1000
+	SRC.TARG.SYSMESSAGE @07a1 Your character has been allocated with 1000% Donation Skill Points.
+	SRC.TARG.SYSMESSAGE @07a1 Please type .donationskill to claim your Donation Skill.
+	SRC.SYSMESSAGE @07a1 You have successfully given 1000% Donation Skill Points to <SRC.TARG.NAME>!
+    RETURN 1
+
+ON=@TARGON_ITEM
+  SRC.SYSMESSAGE You can't target an item!
+  TIMER=1
+  REMOVE
+  RETURN 1
+
+ON=@TARGON_GROUND
+  SRC.SYSMESSAGE You can't target the ground!
+  TIMER=1
+  REMOVE
+  RETURN 1
+
+  
+[FUNCTION donatorskill]
+IF !(<SRC.TAG0.DONATEDFORSKILLS>==1)
+SRC.SYSMESSAGE You don't appear to have donated for this.
+RETURN 1
+ELSE
+DIALOG d_donation_skills
+ENDIF
+RETURN 1
+
+[DIALOG d_donation_skills]
+200, 50
+NOMOVE
+NODISPOSE
+
+  resizepic 12 44 2600 482 341
+
+  dtext 50 100 0 This character has been allocated with <EVAL <TAG.DONATIONSKILLS>>% donation skill points.
+  dtext 50 117 0 Please select a skill to increase by 5% on this character.
+  button  45 192 <eval 0d2> <eval 0d3> 1 0 11 // Assessment
+  button  45 214 <eval 0d2> <eval 0d3> 1 0 15 // Shieldfighting
+  button  45 236 <eval 0d2> <eval 0d3> 1 0 26 //mystic lore
+  button  45 170 <eval 0d2> <eval 0d3> 1 0 24  // Detection
+  button 205 170 <eval 0d2> <eval 0d3> 1 0 27 // Healing
+  button 205 192 <eval 0d2> <eval 0d3> 1 0 31 // Hiding
+  button 205 214 <eval 0d2> <eval 0d3> 1 0 32 // Songs of war
+  button 205 236 <eval 0d2> <eval 0d3> 1 0 35 // Magery
+  button 205 258 <eval 0d2> <eval 0d3> 1 0 36 // Resit Magic
+  button 205 280 <eval 0d2> <eval 0d3> 1 0 37 // Tatics
+  button 45 258 <eval 0d2> <eval 0d3> 1 0 39 // Musician Ship
+  button 205 148 <eval 0d2> <eval 0d3> 1 0 40 // poisoning
+  button 45 280 <eval 0d2> <eval 0d3> 1 0 41 // Archery
+  button 45 148 <eval 0d2> <eval 0d3> 1 0 42 //necromancy
+  button 355 148 <eval 0d2> <eval 0d3> 1 0 48 // Tracking
+  button 355 170 <eval 0d2> <eval 0d3> 1 0 50 // Blade Weapons
+  button 355 192 <eval 0d2> <eval 0d3> 1 0 51 // Blunt Weapons
+  button 355 214 <eval 0d2> <eval 0d3> 1 0 52 // Fencing
+  button 355 236 <eval 0d2> <eval 0d3> 1 0 53 // wrestling
+  button 355 258 <eval 0d2> <eval 0d3> 1 0 56 // meditation
+  button 355 280 <eval 0d2> <eval 0d3> 1 0 57 // Stealth
+
+  dtext  65 192 0 Assessment
+  dtext  65 214 0 Shieldfighting
+  dtext  65 236 0 Mystic lore 
+  dtext  65 170 0 Detection
+  
+  dtext 225 170 0 Healing
+  dtext 225 192 0 Hiding
+  dtext 225 214 0 Songs of War
+  dtext 225 236 0 Magery 
+  dtext 225 258 0 Resist Magic 
+  dtext 225 280 0 Tactics 
+  dtext 65 258 0 Musicianship 
+  dtext 225 148 0 Poisoning
+  dtext 65 280 0 Archery 
+  dtext 65 148 0 Necromancy
+  
+  dtext 375 148 0 Tracking 
+  dtext 375 170 0 Blade weapons
+  dtext 375 192 0 Blunt weapons
+  dtext 375 214 0 Piercing weapons
+  dtext 375 236 0 Unarmed combat
+  dtext 375 258 0 Meditation
+  dtext 375 280 0 Stealth
+
+[DIALOG d_donation_skills BUTTON]
+ONBUTTON=10 58
+  IF (0<TAG.DONATIONSKILLS> < 5)
+     SRC.SYSMESSAGE You have no skill to claim at this time.
+     RETURN 1
+  ENDIF
+  LOCAL.SKILL=<ARGN1>
+  f_donationskill_finish125a <LOCAL.SKILL>
+  
+[FUNCTION f_donationskill_finish125a] 
+  LOCAL.SKILL	= <eval (<args> - 10)>
+  LOCAL.SKILL = <SERV.SKILL(<LOCAL.SKILL>).KEY>
+  LOCAL.SKILLAMOUNT=<<LOCAL.SKILL>>
+  
+  IF ( <<LOCAL.SKILL>> > 950 )
+     SYSMESSAGE You already have more than 95.0% skill in that skill. Please reduce it to 95% and try again.
+     RETURN 1
+  ELSEIF ( <SKILLTOTAL> > 9950 )
+     SYSMESSAGE You do not have enough room under the skillcap to add 5 skillpoints.
+     RETURN 1
+  ENDIF
+  SERV.LOG <NAME> has claimed +5 <LOCAL.SKILL> from the donation skill grant.
+  TRY <LOCAL.SKILL>	= <LOCAL.SKILLAMOUNT> + 5.0
+  SRC.TAG.DONATIONSKILLS=<EVAL (<SRC.TAG.DONATIONSKILLS> - 5)>
+  IF (0<SRC.TAG.DONATIONSKILLS>==0)
+     SRC.TAG.DONATIONSKILLS=
+  ENDIF  
+  RETURN 1
+  
+[PLEVEL 1]
+donatorskill
+

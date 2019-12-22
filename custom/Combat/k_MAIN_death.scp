@@ -1,0 +1,706 @@
+//Changelog:
+//==========
+// 07/01/2004 - Tiffany - Error fixed with the call for checking for the b_oc_mem obj 
+// 05/01/2004 - Boo - another fix to o/c counts, and guard change for o/c
+// 22/09/2003 - Boo - Added jewelry fix tested
+// 20/04/2003 - Firefly - Added <IsKarmaNeutral> to the ISFREEKILL function - Untested
+// 20/04/2003 - Firefly - Added some comments around, marked by [Firefly] at the end of it
+// 22/04/2003 - Wigifer - Added ACT.KILLS=(0<ACT.KILLS>+-1) to f_death sparring mode - Untested
+// 08/07/2003 - Wigifer - Alignment gain and loss of rep, also no kill count, added - Tested
+// 08/07/2003 - Wigifer - Alignment gain and loss of rep fixed, guard call fixed - Tested
+// 05/08/2003 - Wigifer - Jewelry test - Untested
+// 06/08/2003 - Wigifer - Jewelry test - Tested
+// 16/08/2003 - Wigifer - Order Chaos fix and IF I FIND THIS CHANGED AGAIN, ESPECIALLY WITHOUT CHANGELOG, I QUIT - Tested
+// 18/08/2003 - Wigifer - Messing with Order Chaos - Tested
+// 19/08/2003 - Wigifer - Removal of clashing script - Tested
+// 27/08/2003 - Wigifer - OC Fix of kills - Tested
+// 08/09/2003 - Wren - Worked on fixing sparring killcounts (semi-tested, might find that we need to catch another mem type)
+// 27/10/2003 - Wren - Fixed Guards function
+// 19/08/2018 - Wigifer - Commented out the Karma change Server Log. 
+//                      - It's broken though. Added a different line to ID characters.
+// 25/11/2019 - Wigifer - Updated all remaining <TIME> to <SERV.TIME> (56d update issue)
+
+
+//********************************************************************//
+//                           GUARD FUNCTIONS                          //
+//********************************************************************//
+[FUNCTION F_CALL_GUARDS] 
+   if ( (<eval <SERV.TIME>> - <eval <TAG.LASTGUARDS>>) < 10 )	// 30 seconds
+      SYSMESSAGE You only called them moments ago!
+	  serv.log <eval <SERV.TIME>>
+	  serv.log <eval <TAG.LASTGUARDS>>
+      return 1
+   endif 
+
+   IF ((<eval (<flags>&02000)==02000>) && (<ACCOUNT.PLEVEL> <= 1))
+      SYSMESSAGE You cannot interfere in this way in your current form.
+      RETURN 1
+   ENDIF
+   
+   if (( <KARMA> < -2000 ) || ( <KILLS> > 3 ) || (<FLAGS> & statf_criminal))
+      SYSMESSAGE You don't think the guards will pay much attention to your call.
+      return 1
+   endif
+      if (<FLAGS> & statf_dead)
+         SYSMESSAGE You don't think the guards will pay much attention to your call.
+         return 1
+   endif
+   IF !( <SRC.ISNPC> )
+      IF (( <SRC.KARMA> < -8000 ) || ( <SRC.KILLS> > 3 ))
+         //IF THE PERSON IS A MURDERER OR KARMA RED THEN ALLOW GUARD CALLING
+      ELSE
+         IF ( <ISORDER> )
+            IF (<SRC.ISCHAOS>)
+            SYSMESSAGE You cannot call guards on the opposite faction.
+            return 1
+            ENDIF
+         ELSEIF ( <ISCHAOS> )
+            IF (<SRC.ISORDER>)
+            SYSMESSAGE You cannot call guards on the opposite faction.
+            return 1
+            ENDIF
+         ELSEIF (<LOOP_FIGHTERS_GUARDS <SRC.UID>> = 0)
+            SYSMESSAGE They're not bothering you!
+            RETURN 1      
+         ENDIF
+      ENDIF
+   ENDIF
+
+   //Passed all tests, bring the guards, record time
+   TAG.LASTGUARDS = <eval <SERV.TIME>>
+   return 0
+
+//********************************************************************//
+[FUNCTION LOOP_FIGHTERS_GUARDS]
+LOCAL.GUARDS=0
+
+   FORCHARMEMORYTYPE memory_fight
+      IF ( <LINK.NPC> && (<LINK.FLAGS> & statf_pet) )
+         LINK = <hval <LINK.MASTER>>
+      ENDIF
+      
+      LINK.ACT = <LINK.MEMORYFIND.<SRC.UID>.UID>
+      
+      IF strmatch(<LINK.UID>,<ARGS>)
+         LOCAL.GUARDS=1
+      ENDIF
+      
+   ENDFOR
+   
+   FORCHARMEMORYTYPE memory_aggreived
+      IF ( <LINK.NPC> && (<LINK.FLAGS> & statf_pet) )
+         LINK = <hval <LINK.MASTER>>
+      ENDIF
+      
+      LINK.ACT = <LINK.MEMORYFIND.<SRC.UID>.UID>
+      
+      IF strmatch(<LINK.UID>,<ARGS>)
+         LOCAL.GUARDS=1
+      ENDIF
+      
+//      REMOVE
+   ENDFOR
+
+   FORCHARMEMORYTYPE memory_harmedby
+      IF ( <LINK.NPC> && (<LINK.FLAGS> & statf_pet) )
+         LINK = <hval <LINK.MASTER>>
+      ENDIF
+      
+      LINK.ACT = <LINK.MEMORYFIND.<SRC.UID>.UID>
+      
+      IF strmatch(<LINK.UID>,<ARGS>)
+         LOCAL.GUARDS=1
+      ENDIF
+      
+//      REMOVE
+   ENDFOR
+
+   FORCHARMEMORYTYPE MEMORY_SAWCRIME
+      IF ( <LINK.NPC> && (<LINK.FLAGS> & statf_pet) )
+         LINK = <hval <LINK.MASTER>>
+      ENDIF
+      
+      LINK.ACT = <LINK.MEMORYFIND.<SRC.UID>.UID>
+      
+      IF strmatch(<LINK.UID>,<ARGS>)
+         LOCAL.GUARDS=1
+      ENDIF
+      
+//      REMOVE
+   ENDFOR
+
+   FORCHARMEMORYTYPE MEMORY_IRRITATEDBY
+      IF ( <LINK.NPC> && (<LINK.FLAGS> & statf_pet) )
+         LINK = <hval <LINK.MASTER>>
+      ENDIF
+      	
+      LINK.ACT = <LINK.MEMORYFIND.<SRC.UID>.UID>
+      
+      IF strmatch(<LINK.UID>,<ARGS>)
+         LOCAL.GUARDS=1
+      ENDIF
+            
+//      REMOVE
+   ENDFOR
+      
+   RETURN <EVAL <LOCAL.GUARDS>>
+
+
+//********************************************************************//
+//                            DEATH FUNCTIONS                         //
+//********************************************************************//
+[FUNCTION f_close_trade]
+   ACT	= <findtype.t_eq_trade_window.uid>
+   if ( <ACT.UID> == 0 )
+      return 1
+   endif
+   act.remove
+   f_close_trade
+
+//********************************************************************//
+[FUNCTION f_drop_skargard]
+   ACT	= <findid.i_ore_skargard.uid>
+   if ( <ACT.UID> == 0 )
+      return 1
+   endif
+   act.DROP
+   f_drop_skargard
+
+//********************************************************************//
+[FUNCTION f_convert_to_harmedby]
+  // SERV.LOG CONVERTING HARMED BY
+   LOCAL.VICTIM = <UID> 
+   FORCHARMEMORYTYPE MEMORY_FIGHT
+ //  SERV.LOG FIGHT MEM
+      IF ( <UID.<LOCAL.VICTIM>.ISORDER> )
+         IF (<UID.<LINK>.ISCHAOS>)
+           COLOR = <COLOR>|<DEF.memory_harmedby>
+         ENDIF
+      ELSEIF ( <UID.<LOCAL.VICTIM>.ISCHAOS> )
+         IF (<UID.<LINK>.ISORDER>)
+           COLOR = <COLOR>|<DEF.memory_harmedby>
+         ENDIF
+      ELSE   
+         //Check Person attached to this memory to decide if I started the fight
+         IF <UID.<LINK>.f_killer_OkToKill <LOCAL.VICTIM>>
+            // SERV.LOG <UID.<LINK>.NAME> Not charged for killing <UID.<LOCAL.VICTIM>.NAME>. <COLOR>
+            REMOVE
+         ELSE   
+            COLOR = <COLOR>|<DEF.memory_harmedby>
+         ENDIF
+      ENDIF
+   ENDFOR
+
+   FORCHARMEMORYTYPE MEMORY_HARMEDBY
+  // SERV.LOG  HARMED MEM
+      IF ( <UID.<LOCAL.VICTIM>.ISORDER> && <UID.<LINK>.ISCHAOS> )
+      ELSEIF ( <UID.<LOCAL.VICTIM>.ISCHAOS> && <UID.<LINK>.ISORDER> )
+      ELSE   
+         //Check Person attached to this memory to decide if I started the fight
+         IF <UID.<LINK>.f_killer_OkToKill <LOCAL.VICTIM>>
+            // SERV.LOG <UID.<LINK>.NAME> Not charged for killing <UID.<LOCAL.VICTIM>.NAME>. <COLOR>
+            REMOVE
+         ENDIF
+      ENDIF
+   ENDFOR
+
+//********************************************************************//
+//                         OLD DEATH FUNCTIONS                        //
+//********************************************************************//
+[FUNCTION src_WASAGGRESSOR]
+   IF ( <SRC.ACT.COLOR> & MEMORY_IAGGRESSOR )
+      SYSMESSAGE Victim Was Agressor
+      RETURN 1
+   ENDIF
+   SYSMESSAGE Victim Was Not Agressor
+   RETURN 0
+	
+
+//********************************************************************//
+//                            KILLER FUNCTIONS                        //
+//********************************************************************//
+[FUNCTION f_victim_OkToKill]
+   IF !(0<ARGS>=0)
+      FORCHARMEMORYTYPE MEMORY_HARMEDBY
+         IF (<LINK>=<ARGS>)
+            // SERV.LOG Found Char Memory for <UID.<ARGS>.NAME>: Color=<COLOR>
+            IF ( <COLOR> & MEMORY_IAGGRESSOR )
+               RETURN 1
+            ELSE
+               RETURN 0
+            ENDIF
+         ENDIF
+      ENDFOR
+   ENDIF
+   RETURN 0
+
+[FUNCTION f_killer_OkToKill]
+   IF !(0<ARGS>=0)
+      FORCHARMEMORYTYPE MEMORY_SAWCRIME
+         IF (<LINK>=<ARGS>)
+            // SERV.LOG Found Char Memory for <UID.<ARGS>.NAME> on <NAME>: Color=<COLOR>
+            RETURN 1
+         ENDIF
+      ENDFOR
+
+      FORCHARMEMORYTYPE MEMORY_AGGREIVED
+         IF (<LINK>=<ARGS>)
+            // SERV.LOG Found Char Memory for <UID.<ARGS>.NAME> on <NAME>: Color=<COLOR>
+            RETURN 1
+         ENDIF
+      ENDFOR
+   ENDIF
+   RETURN 0
+
+//********************************************************************//
+[FUNCTION f_count_killers]
+   LOCAL.KILLERS=0
+   FORCHARMEMORYTYPE MEMORY_HARMEDBY
+      LOCAL.KILLERS=<LOCAL.KILLERS>+1
+   ENDFOR
+   RETURN <EVAL <LOCAL.KILLERS>>
+
+//********************************************************************//
+[FUNCTION f_calc_KARMA]    
+//*(default) = Killer
+//*ARGS (OBJ) = Victim UID
+
+   //SERV.LOG <NAME>[<ACCOUNT>] is firing f_calc_KARMA
+
+   OBJ=<ARGS>
+   
+   IF (<UID.<ARGS>.memoryfindtype(memory_guild).UID> && <MEMORYFINDTYPE(memory_guild).UID>)
+      TRY LOCAL.VICTIMATWAR=<UID.<UID.<ARGS>.GUILD>.GUILDFROMUID.<GUILD>.ISENEMY>
+      TRY LOCAL.KILLERATWAR=<UID.<GUILD>.GUILDFROMUID.<UID.<ARGS>.GUILD>.ISENEMY>
+      IF ((<LOCAL.KILLERATWAR>=1) && (<LOCAL.VICTIMATWAR>=1))
+         //SERV.LOG <NAME>'s Karma not altered for killing <UID.<ARGS>.NAME> due to their guilds being at war!
+         RETURN 1
+      ENDIF
+   ENDIF
+   
+   IF !( <OBJ.ISNPC> )
+      IF ( <OBJ.f_victim_OkToKill <UID>> )
+         //SERV.LOG <NAME>'s Karma not altered due to OBJ.f_victim_OkToKill
+         RETURN 1
+      ENDIF
+   ELSEIF (!( <ISNPC> ) && !(<OBJ.ISNPC>))
+      IF ( <f_killer_OkToKill <OBJ.UID>> )
+         //SERV.LOG <NAME>'s Karma not altered due to OBJ.f_killer_OkToKill
+         RETURN 1
+      ENDIF
+   ENDIF
+
+   //*KARMACHANGE = Start with the Inverse of Victim's Karma
+   LOCAL.KARMACHANGE	= <eval (0 - <OBJ.KARMA>)>
+
+   if ( !<OBJ.NPC> )
+      IF (!<NPC>)
+         //*Make max change 500 for players killing players
+         if (<LOCAL.KARMACHANGE> < -5000)
+            LOCAL.KARMACHANGE	= -500
+         elseif (<LOCAL.KARMACHANGE> > 5000)
+            LOCAL.KARMACHANGE	= 500
+         else
+            LOCAL.KARMACHANGE	= <eval (<LOCAL.KARMACHANGE> / 10)>
+         endif
+      ELSE
+         //*Make max change 100 for NPCs killing players
+         LOCAL.KARMACHANGE	= <eval (<LOCAL.KARMACHANGE> / 100)>
+      ENDIF
+   else
+      //*Make max change 100 for killing NPCS
+      LOCAL.KARMACHANGE	= <eval (<LOCAL.KARMACHANGE> / 100)>
+   endif
+
+   //*If Victim is a murderer then make sure that karma is added not subtracted
+   IF (<OBJ.ISMURDERER> > 3)
+      IF (<LOCAL.KARMACHANGE> < 0)
+         LOCAL.KARMACHANGE = <EVAL (0-<LOCAL.KARMACHANGE>)>
+      ENDIF
+   ENDIF
+   
+   //*Subtract or Add Karma and make sure that it's limited to +/- 10000
+   KARMA	= <eval (<KARMA> + <LOCAL.KARMACHANGE>)>
+   if ( <KARMA> > 10000 )
+      KARMA	= 10000
+   elseif ( <KARMA> < -10000 )
+      KARMA	= -10000
+   endif
+
+   //*Determing Message word gain/loss
+   IF ( <LOCAL.KARMACHANGE> < 0 )
+      LOCAL.KARMACHANGE	= <eval (0 - <LOCAL.KARMACHANGE>)>
+      LOCAL.KARMAVERB	= lose
+   ELSEIF ( <LOCAL.KARMACHANGE> > 0 )
+      LOCAL.KARMAVERB	= gain
+   ELSE
+      LOCAL.KARMAVERB   = maintain
+   ENDIF
+   
+   //SERV.LOG <NAME>[<ACCOUNT>] <LOCAL.KARMAVERB>s <EVAL <LOCAL.KARMACHANGE>> karma for killing <OBJ.NAME>[<OBJ.ACCOUNT>].
+
+
+   //*Determine Message Amount Wordage
+   if ( <LOCAL.KARMACHANGE> < 20 )
+   elseif ( <LOCAL.KARMACHANGE> < 200 )
+      SYSMESSAGE You <LOCAL.KARMAVERB> a bit of karma.
+   elseif ( <LOCAL.KARMACHANGE> < 50 )
+      SYSMESSAGE You <LOCAL.KARMAVERB> some karma.
+   elseif ( <LOCAL.KARMACHANGE> < 200 )
+      SYSMESSAGE You <LOCAL.KARMAVERB> karma.
+   elseif ( <LOCAL.KARMACHANGE> < 500 )
+      SYSMESSAGE You <LOCAL.KARMAVERB> quite some of karma.
+   else
+      SYSMESSAGE You <LOCAL.KARMAVERB> a lot of karma.
+   endif
+   
+   //IF (<EVAL <LOCAL.KARMACHANGE>> > 0)
+   //   SERV.LOG <NAME>[<ACCOUNT>] <LOCAL.KARMAVERB>s <EVAL <LOCAL.KARMACHANGE>> karma for killing <OBJ.NAME>[<OBJ.ACCOUNT>].
+   //ENDIF
+   
+   RETURN 1
+
+//********************************************************************//
+[FUNCTION f_calc_FAME]
+//*(default) = Killer
+//*ARGS (OBJ) = Victim UID
+
+   OBJ=<ARGS>
+   LOCAL.KILLER_FAME = <FAME>
+   LOCAL.VICTIM_FAME = <OBJ.FAME>
+    
+   //*FAMECHANGE = Start with the Victim's Fame
+   LOCAL.FAMECHANGE	= <OBJ.FAME>  /// might be +  - says Vidar 
+   
+
+ 
+   if !(<OBJ.NPC> || <NPC>) // If the killer or the victim are NPC's fame isn't changed
+	IF (<FAME> < 5000) 
+		If (<OBJ.FAME> > 5000) 
+			LOCAL.FAMECHANGE = <eval (<LOCAL.FAMECHANGE> / 5)> // If the killer fame is lower than 5000 and If the victim fame is higher than 5000, they will both win/lose 20% of the victim fame
+		else
+			LOCAL.FAMECHANGE = 500 // If the killer fame is lower than 5000 and If the victim fame is also lower than 5000, they will both win/lose 500 fame
+		endif
+	else
+		If (<OBJ.FAME> > 5000)
+			LOCAL.FAMECHANGE = 500 // If the killer fame is higher than 5000 and If the victim fame is also higher than 5000, they will both win/lose 500 fame
+		else
+			LOCAL.FAMECHANGE = <eval (<LOCAL.FAMECHANGE> / 10)> // If the killer fame is higher than 5000 and If the victim fame is lower than 5000, they will both win/lose 10% of the victim fame
+		endif
+	endif
+   elseif (<OBJ.NPC>) // New code to ensure there's NPC fame change for PC's
+        IF (<FAME> < 5000)
+           LOCAL.FAMECHANGE = <eval (<LOCAL.FAMECHANGE> / 20)> // A player can earn 5% of the victim NPC's fame if they themselves are below 5000 fame
+        ELSE
+           LOCAL.FAMECHANGE = <eval (<LOCAL.FAMECHANGE> / 100)> // A player can earn 1% of the victim NPC's fame if they themselves are above 5000 fame
+        ENDIF
+   endif
+	
+	
+//*Subtract or Add Killer's FAME and make sure that it's limited to 0 to 10000
+
+   FAME	= <eval (<FAME> + <LOCAL.FAMECHANGE>)>
+   IF ( <FAME> > 10000 )
+      FAME	= 10000
+   ELSEIF ( <FAME> == 0 )
+      FAME	= 0
+   ENDIF
+   
+   //*Determing Message word gain/loss
+   IF ( <LOCAL.FAMECHANGE> < 0 )
+      LOCAL.FAMECHANGE	= <eval 0 - <LOCAL.FAMECHANGE>)>
+      LOCAL.FAMEVERB	= lose
+   ELSE
+      LOCAL.FAMEVERB	= gain
+   ENDIF
+
+   //*Determine Message Amount Wordage
+   IF ( <LOCAL.FAMECHANGE> == 0 )
+   ELSEIF ( <LOCAL.FAMECHANGE> < 250 )
+      SYSMESSAGE You <LOCAL.FAMEVERB> a bit of fame.
+   ELSEIF ( <LOCAL.FAMECHANGE> < 500 )
+      SYSMESSAGE You <LOCAL.FAMEVERB> some fame.
+   ELSEIF ( <LOCAL.FAMECHANGE> < 750 )
+      SYSMESSAGE You <LOCAL.FAMEVERB> fame.
+   ELSEIF ( <LOCAL.FAMECHANGE> < 1000 )
+      SYSMESSAGE You <LOCAL.FAMEVERB> quite some of fame.
+   ELSE
+      SYSMESSAGE You <LOCAL.FAMEVERB> a lot of fame.
+   ENDIF
+
+   IF (<EVAL <LOCAL.FAMECHANGE>> > 0)
+      SERV.LOG <NAME>[<ACCOUNT>] <LOCAL.FAMEVERB>s <EVAL <LOCAL.FAMECHANGE>> fame for killing <OBJ.NAME>[<OBJ.ACCOUNT>].
+   ENDIF
+   
+//*Subtract or Add Victim's FAME if it's a player and make sure that it's limited to 0 to 10000
+
+
+   LOCAL.FAMECHANGE = <EVAL (0 - <LOCAL.FAMECHANGE>)>
+   OBJ.FAME	= <OBJ.FAME> + <LOCAL.FAMECHANGE>
+   IF ( <OBJ.FAME> > 10000 )
+      OBJ.FAME	= 10000
+   ELSEIF ( <OBJ.FAME> == 0 )
+      OBJ.FAME	= 0
+   ENDIF
+   
+   //*Determing Message word gain/loss
+   IF ( <LOCAL.FAMECHANGE> < 0 )
+      LOCAL.FAMECHANGE	= <eval 0 - <LOCAL.FAMECHANGE>)>
+      LOCAL.FAMEVERB	= lose
+   ELSE
+      LOCAL.FAMEVERB	= gain
+   ENDIF
+
+   //*Determine Message Amount Wordage
+   IF ( <LOCAL.FAMECHANGE> == 0 )
+   ELSEIF ( <LOCAL.FAMECHANGE> < 250 )
+      OBJ.SYSMESSAGE You <LOCAL.FAMEVERB> a bit of fame.
+   ELSEIF ( <LOCAL.FAMECHANGE> < 500 )
+      OBJ.SYSMESSAGE You <LOCAL.FAMEVERB> some fame.
+   ELSEIF ( <LOCAL.FAMECHANGE> < 750 )
+      OBJ.SYSMESSAGE You <LOCAL.FAMEVERB> fame.
+   ELSEIF ( <LOCAL.FAMECHANGE> < 1000 )
+      OBJ.SYSMESSAGE You <LOCAL.FAMEVERB> quite some of fame.
+   ELSE
+      OBJ.SYSMESSAGE You <LOCAL.FAMEVERB> a lot of fame.
+   ENDIF
+
+   IF (<EVAL <LOCAL.FAMECHANGE>> > 0)
+      SERV.LOG <OBJ.NAME>[<OBJ.ACCOUNT>] <LOCAL.FAMEVERB>s <EVAL <LOCAL.FAMECHANGE>> fame for dying to <NAME>[<ACCOUNT>].
+   ENDIF
+   
+   RETURN 1
+   
+
+//********************************************************************//
+[FUNCTION f_calc_KILLS]
+//*(default) = Killer
+//*ARGS (OBJ) = Victim UID
+
+   //*Determine if Killing the Victim was a crime
+   IF ( <OBJ.ISFREEKILL <UID>> )
+      RETURN 0
+   ENDIF
+   SYSMESSAGE <NAME>, You're marked for slaying the innocent "<OBJ.NAME>".
+   KILLS	= (<KILLS> + 1)
+   IF ( <KILLS> == <SERV.MURDERMINCOUNT> )
+      SYSMESSAGE You are now a murderer!
+   ENDIF
+
+   SERV.LOG <NAME>[<ACCOUNT>] gains a killcount for killing <OBJ.NAME>[<OBJ.ACCOUNT>] karma was <OBJ.KARMA>.
+   STAFFLOG <NAME>[<ACCOUNT>] killed <OBJ.NAME>[<OBJ.ACCOUNT>]
+   
+   RETURN 1
+
+//********************************************************************//
+//      FUNCTIONS TO DETERMINE VICTIM WILL BE CHARGED TO KILLER       //
+//********************************************************************//
+[FUNCTION ISFREEKILL]
+
+   LOCAL.KILLER=<ARGS>	
+   
+   IF (<ISINPARTY>)
+		FOR 0 <EVAL <PARTY.MEMBERS>-1>
+			IF (<PARTY.MEMBER.<LOCAL._FOR>.UID> == <LOCAL.KILLER>)
+				TRY UID.<LOCAL.KILLER>.SYSMESSAGE You have killed <NAME> from your own party! No charges are brought against you.
+				RETURN 1
+			endif
+		endfor
+	endif
+   IF ( <ISMURDERER> ) // checks for murderer status [Firefly]
+      RETURN 1
+   ELSEIF ( <ISKARMAEVIL> )
+      RETURN 1
+   ELSEIF ( <FLAGS> & statf_criminal )
+      RETURN 1
+   ELSEIF ( <ISKARMANEUTRAL> ) // checks for grey karma status - Attackable if grey [Firefly]
+      RETURN 1
+   ELSEIF ( <ISSPARING> )
+      RETURN 1
+   ELSEIF ( <ISORDER>  )
+      IF ( <UID.<LOCAL.KILLER>.ISCHAOS> )
+      RETURN 1
+      ENDIF
+   ELSEIF ( <ISCHAOS>  )
+      IF ( <UID.<LOCAL.KILLER>.ISORDER> )
+      RETURN 1 
+	  endif
+    ELSEIF ( <ISSAMEGUILD <LOCAL.KILLER>> )
+         TRY UID.<LOCAL.KILLER>.SYSMESSAGE You have killed <NAME> from your own guild! No charges are brought against you.
+		 RETURN 1
+//   ELSEIF ( <ISWARRINGGUILD <LOCAL.KILLER>> )
+//      TRY UID.<LOCAL.KILLER>.SYSMESSAGE You have killed <NAME> from [<GUILD.NAME>]! No charges are brought against you.
+//		 RETURN 1
+    ELSEIF ( <f_victim_OkToKill <ARGS>> )
+         RETURN 1
+    ELSEIF ( <UID.<LOCAL.KILLER>.f_killer_OkToKill <UID>> )
+         RETURN 1
+    ENDIF
+   RETURN 0
+   
+[function testparty]
+IF (<ISINPARTY>)
+		src.say I am in a party with <PARTY.MEMBER.0.UID> / <ISINPARTY.SRC.PARTY>
+endif
+
+[FUNCTION ISSAMEGUILD]
+IF (<UID.<ARGS>.GUILD>)
+	IF ((<UID.<UID.<ARGS>.GUILD>.UID>)==(<UID.<GUILD>.UID>))
+	 RETURN 1
+	ENDIF
+ENDIF
+RETURN 0  
+
+[FUNCTION SHOWFACTIONCOLOUR]
+   LOCAL.KILLER=<ARGS>	
+   IF ( <ISMURDERER> ) // checks for murderer status [Firefly]
+      RETURN 1
+   ELSEIF ( <ISKARMAEVIL> )
+      RETURN 1
+   ELSEIF ( <FLAGS> & statf_criminal )
+      RETURN 1
+   ELSEIF ( <ISKARMANEUTRAL> ) // checks for grey karma status - Attackable if grey [Firefly]
+      RETURN 1
+   ELSEIF ( <ISSPARING> )
+      RETURN 1
+    ELSEIF ( <f_victim_OkToKill <ARGS>> )
+         RETURN 1
+    ELSEIF ( <UID.<LOCAL.KILLER>.f_killer_OkToKill <UID>> )
+         RETURN 1
+	ELSEIF (<UID.<UID.<LOCAL.KILLER>.GUILD>>)
+		IF (<GUILD>)
+			IF ((<UID.<UID.<LOCAL.KILLER>.GUILD>.UID>)==(<UID.<GUILD>.UID>))		
+				IF (<LOCAL.KILLER> != <UID>)
+					IF (<UID.<GUILD>.UID> == 0)
+						RETURN 0
+					ENDIF
+					RETURN 1
+				ENDIF
+			ENDIF
+		ENDIF
+	ENDIF
+   RETURN 0
+   
+//********************************************************************//
+
+[FUNCTION ISMURDERER]
+IF ( <KILLS> > <SERV.MURDERMINCOUNT> )
+      RETURN 1
+ENDIF
+RETURN 0
+
+//********************************************************************//
+
+
+//********************************************************************//
+// [FUNCTION ISWARRINGGUILD]
+// TRY LOCAL.KILLERATWAR=<UID.<UID.<ARGS>.GUILD>.GUILDFROMUID.<GUILD>.ISENEMY>
+// TRY LOCAL.VICTIMATWAR=<UID.<GUILD>.GUILDFROMUID.<UID.<ARGS>.GUILD>.ISENEMY>
+// IF ((<LOCAL.KILLERATWAR>=1) && (<LOCAL.VICTIMATWAR>=1))
+   // SERV.LOG <UID.<ARGS>.NAME> not charged for killing <NAME> due to their guilds being at war!
+   // RETURN 1
+// ENDIF
+// RETURN 0
+
+//********************************************************************//
+[FUNCTION ISSPARING]
+IF ( <TAG0.SPARING> = 1) 
+      RETURN 1
+ENDIF
+   RETURN 0
+
+//********************************************************************//
+[FUNCTION ISKARMANEUTRAL]
+   IF !( <NPC> )
+      IF ( (<KARMA> >= -8000) && (<KARMA> < -800) )
+         RETURN 1
+      ENDIF
+   ELSEIF ( <NPC> == brain_beserk )
+      RETURN 0
+   ELSEIF ( <NPC> == brain_animal )
+      IF ( (<KARMA> >= -800) && (<KARMA> <= 100) )
+         RETURN 1
+      ENDIF
+   ELSEIF ( (<NPC> == brain_undead) || (<NPC> == brain_monster) )
+      IF ( <KARMA> = 0 )
+         RETURN 1
+      ENDIF
+   ELSEIF ( (<KARMA> > -3000) && (<KARMA> <= -100) )
+      RETURN 1
+   ENDIF
+   RETURN 0
+
+//********************************************************************//
+[FUNCTION ISKARMAEVIL]
+IF !( <NPC> )
+      IF ( <KARMA> < -8000 )
+         RETURN 1
+      ENDIF
+   ELSEIF ( <NPC> == brain_beserk )
+      RETURN 1
+   ELSEIF ( <NPC> == brain_animal )
+      IF ( <KARMA> < -800 )
+         RETURN 1
+      ENDIF
+   ELSEIF ( (<NPC> == brain_undead) || (<NPC> == brain_monster) )
+      IF ( <KARMA> < 0 )
+         RETURN 1
+      ENDIF
+   ELSEIF ( <KARMA> <= -3000 )
+      RETURN 1
+   ENDIF
+   RETURN 0
+
+//********************************************************************//
+[FUNCTION ISKARMAGOOD]
+IF !( <NPC> )
+      IF ( <KARMA> >= -2000 )
+         RETURN 1
+      ENDIF
+   ELSEIF ( <NPC> == brain_beserk )
+      RETURN 0
+   ELSEIF ( <NPC> == brain_animal )
+      IF ( <KARMA> > 100 )
+         RETURN 1
+      ENDIF
+   ELSEIF ( (<NPC> == brain_undead) || (<NPC> == brain_monster) )
+      IF ( <KARMA> > 0 )
+         RETURN 1
+      ENDIF
+   ELSEIF ( <KARMA> > 0 )
+      RETURN 1
+   ENDIF
+   RETURN 0
+
+//********************************************************************//
+[FUNCTION ISCHAOS]
+IF STRMATCH( "<TAG0.ALIGNMENT>", "alignment_chaos" )
+      RETURN 1
+   ENDIF
+   RETURN 0
+   
+//********************************************************************//
+[FUNCTION ISORDER]
+IF STRMATCH( "<TAG0.ALIGNMENT>", "alignment_order" )
+      RETURN 1
+   ENDIF
+   RETURN 0
+
+[FUNCTION ISTemperare]
+IF STRMATCH( "<TAG0.ALIGNMENT>", "alignment_Temperare" )
+      return 1
+   endif
+   return 0
+[FUNCTION ISCastitas]
+   IF STRMATCH( "<TAG0.ALIGNMENT>", "alignment_Castitas" )
+      return 1
+   endif
+   return 0
+[FUNCTION ISInvidia]
+   IF STRMATCH( "<TAG0.ALIGNMENT>", "alignment_Invidia" )
+      return 1
+   endif
+   return 0
+
+
+[EOF]

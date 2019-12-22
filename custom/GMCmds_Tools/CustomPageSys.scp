@@ -1,0 +1,455 @@
+//Changelog:
+//==========
+//22/04/2003 - Firefly - Script Started
+//22/04/2003 - Firefly - Fixed a major bug with a function called P (MAJOR CONFLICT) - Tested by Shard :D
+//
+
+//ff2.scp contents:
+//=================
+//o Rework of the .page system (easier for staff!)
+//o .pagem - Page menu for staff
+//o .pagegm - Pages for a gm (player)
+//
+//[End Contents]
+
+[Defname Page_system]
+pageboard_uid = 040091655
+
+[Plevel 1]
+pagegm
+pvpstats25a
+
+[Function pagegm]
+if (0<var.global.page.uid> == 0)
+VAR.GLOBAL.page.UID = pageboard_uid
+endif
+
+if !( 0<src.tag.paged> == 0 ) // if paged already
+src.menu m_paged_already
+return 0
+endif
+
+var.reason = Test Category
+
+if ( strcmp("<args>", "") ) // if not a blank message
+src.newitem i_pagegm_item
+src.act.name = Unhandled
+src.act.author = <src.account> // players account name here (in author)
+src.act.body.0 = <var.reason> // the category of page goes here
+src.act.body.1 = <args>
+src.act.link = <src.uid>
+src.tag.paged = <src.act.uid> // tag.paged = the uid of the message
+
+tryp 2 SRC.ACT.CONT = pageboard_uid
+serv.allclients page_to_staff <args>
+
+pu
+endif
+
+[Function page_to_staff]
+   if !( <isgm> || <iscouns> )
+      return 0
+   endif
+   SYSMESSAGE @06 [ GM Page ]: <src.act.author> : <src.act.body.1> 
+
+[Menu m_paged_already]
+You have a page pending in the queue already, what do you wish to do?
+On 0=Remove current page
+src.act = <src.tag.paged> // act = paged message
+src.act.remove
+src.tag.paged = 
+src.pu
+src.sysmessage Your page has been removed from the queue
+
+On 0=Leave page as it is
+
+
+[Itemdef i_pagegm_item]
+ID=0eb0
+Type=t_message
+
+[Itemdef i_pageboard]
+ID=i_bulletin_board
+NAME=Page Board
+
+CATEGORY=Imperial uo
+SUBSECTION=Paging
+DESCRIPTION=Page Board
+
+ON=@CREATE
+COLOR=06
+
+On=@Click
+//f_check_gmcrapposts
+
+on=@Dclick
+//f_check_gmcrapposts
+
+[Function f_check_gmcrapposts]
+src.act = <findid(0eb0).uid>
+src.act.remove
+if (<findid(0eb0).uid>)
+f_check_gmcrapposts
+endif
+
+[Plevel 2]
+pagem
+move
+
+[PLEVEL 5]
+pu
+page_init
+page_summary
+page_update
+page_next
+page_init
+page_term
+page_uid
+
+
+[FUNCTION pagem]
+if (0<var.global.page.uid> == 0)
+VAR.GLOBAL.page.UID = pageboard_uid
+endif
+   page_action <args>
+
+
+
+[FUNCTION page_action]
+   page_init
+   if ( 0 )
+   elseif ( !strcmpi( "<args>", "summary" ) )
+      page_summary
+   elseif ( !strcmpi( "<args>", "current" ) )
+      page_current
+   elseif ( !strcmpi( "<args>", "next" ) )
+      page_next
+   elseif ( !strcmpi( "<args>", "reset" ) )
+      page_reset
+   elseif ( !strcmpi( "<args>", "" ) && ( 0<TAG.page.READ> < <ACT.RESCOUNT>) ) // 122
+      page_current
+   elseif ( !strcmpi( "<args>", "back" ) )
+      page_back 1
+   elseif ( !strcmpi( "<args>", "back5" ) )
+      page_back 5
+   else
+	
+   endif
+   page_term
+
+
+[FUNCTION page_summary]
+   if ( <TAG.page.READ> >= <ACT.RESCOUNT> )
+      if ( 0<var.page.updating> == 0 )
+         sysmessage There are no unread pages (total of <eval <ACT.RESCOUNT>>).
+      endif
+      return 1
+   endif
+   LOCAL.AMOUNT	= <eval (<ACT.RESCOUNT>-<TAG.page.READ>)>
+   if ( <LOCAL.AMOUNT> == 1 )
+     SYSMESSAGE NEWS: There is one unread page.
+   else
+     SYSMESSAGE NEWS: There are <eval <LOCAL.amount>> unread page.
+   endif
+
+
+[FUNCTION page_back]
+   if ( <TAG.page.READ> == 0 )
+      if !( 0<VAR.page.MUTE> )
+        SYSMESSAGE No previous message.
+      endif
+      return 1
+   endif
+   VAR.BACK	= <args>
+   if ( 0<VAR.BACK> == 0 )
+      VAR.BACK	= 1
+   endif
+   if ( <VAR.BACK> > <TAG.page.READ> )
+      VAR.BACK 	= <TAG.page.READ>
+   endif
+   
+   TAG.page.READ	= <eval (<TAG.page.READ> - <VAR.BACK>)>
+   if !( 0<VAR.page.MUTE> )
+     SYSMESSAGE Rolled back <eval <VAR.BACK>> page message (<eval (<TAG.page.READ>+1)>/<act.rescount>).
+   endif
+
+   
+[FUNCTION page_next]
+   if ( <TAG.page.READ> >= (<ACT.RESCOUNT>-1) )
+      if !( 0<VAR.page.MUTE> )
+         SYSMESSAGE No more page messages.
+      endif
+      return 0
+   endif  
+   TAG.page.READ	= <eval (<TAG.page.READ> + 1)>
+
+
+
+[FUNCTION page_current]
+   VAR.page.NUM	= <eval ((<ACT.RESCOUNT> - <TAG.page.READ>)-1)>
+   if ( <VAR.page.NUM> < 0 )
+      TAG.page.READ	= <ACT.RESCOUNT>
+      SYSMESSAGE No more page messages.
+      return 0
+   endif
+   if !( 0<VAR.page.MUTE> )
+      //SYSMESSAGE Reading page message <eval (<TAG.page.READ>+1)> / <eval (<ACT.RESCOUNT>)>.
+   endif
+   ACT	= <ACT.findcont(<eval <var.page.num>>).uid>
+   src.tag.act = <act>
+      DIALOG d_page_show
+   ACT	= <ACT.CONT.UID>
+
+ 
+[FUNCTION page_reset]
+   TAG.page.READ	= 0
+   SYSMESSAGE pages reset.
+   NEWS_summary
+
+//
+//  AUXILIARY
+//
+
+[FUNCTION pu]
+   page_update
+
+[FUNCTION page_update]
+   var.page.updating	= 1
+   serv.allclients page_update_
+   var.page.updating	= 
+
+[FUNCTION page_UPDATE_]
+   page_init
+   page_term
+
+
+[FUNCTION page_init]
+  VAR.page.ACT	= <ACT>
+  if ( 0<VAR.GLOBAL.page.UID> == 0 )
+     VAR.GLOBAL.page.UID	= 040005fe4
+  endif
+  ACT	= <VAR.GLOBAL.page.UID>
+
+  if ( 0<TAG.page.READ> == 0 )
+     src.TAG.page.READ	= 0
+  elseif ( <TAG.page.READ> > <ACT.RESCOUNT> )
+     TAG.page.READ	= <ACT.RESCOUNT>
+  endif
+
+
+
+[FUNCTION page_term]
+  ACT	= <VAR.page.ACT>
+
+[FUNCTION page_uid]		// use .xNEWS_uid and target a bulletin board
+  if ( <SRC.UID> == <UID> )
+     src.sysmessage Use .xpage_uid and target a bulletin board.
+     return 1
+  endif
+  VAR.GLOBAL.page.UID	= <UID>
+  SRC.SYSMESSAGE Page board set to <NAME> (<UID>).
+
+
+[DIALOG d_page_show]
+100, 100
+NOMOVE
+NODISPOSE
+resizepic 0 0 2600 500 400
+  gumppic  73  15 1142
+  
+  text    100  16 4 0
+
+  button    220  340  <eval 01196> <eval 01197> 1 0 1
+  button    125  340  <eval 0119a> <eval 01199> 1 0 2
+ 
+  text 178 350  0 3
+  text 190 350  0 4
+  text 202 350  0 5
+  
+  text 60  43 50 10
+  text 60  60 50 11
+  text 60  77 50 12
+  text 60  94 50 13
+  text 60 111 50 14
+
+   button  60 145 <eval 0fa5> <eval 0fa7> 1 0 44	// rename
+   text   100 145 50 16		// text message to send pager
+   text 60 128 50 15	// Message:
+   textentry 140 128 500 60 42 0 0	// rename entry
+
+  button 60 170 <eval 0fa5> <eval 0fa7> 1 0 45 // handle page
+  text 100 170 50 17
+
+
+  button 60 220 <eval 0fa5> <eval 0fa7> 1 0 46 // page handled
+  text 100 220 50 18
+
+  button 60 195 <eval 0fa5> <eval 0fa7> 1 0 47 // requeue page
+  text 100 195 50 19
+
+  button 60 245 <eval 0fa5> <eval 0fa7> 1 0 48 // Go to pager
+  text 100 245 50 20
+
+  button 60 270 <eval 0fa5> <eval 0fa7> 1 0 49 // Summon Pager
+  text 100 270 50 21
+  
+  button 60 295 <eval 0fa5> <eval 0fa7> 1 0 50 // Jail Pager
+  text 100 295 50 22
+
+  button 60 320 <eval 0fa5> <eval 0fa7> 1 0 51 // Spy on Pager
+  text 100 320 50 23
+  
+[DIALOG d_page_show BUTTON]
+ON = 0
+ON = 1
+  VAR.page.MUTE	= 1
+  page_action next
+  page_action current
+  VAR.page.MUTE	=
+ON = 2
+  VAR.page.MUTE	= 1
+  page_action back
+  page_action current
+  VAR.page.MUTE	=
+ON = 3
+act = <tag.act>
+
+ON = 44
+act = <tag.act> 
+if ( !strcmpi( "<act.name>", "Unhandled") )
+src.sysmessage @06 You must handle this page to do anything
+return 0
+endif
+
+  src.act.link.sysmessage = @06 [ GM Reply from <src.name> ] 
+  src.act.link.sysmessage = @06 <argtxt[0]>
+  SRC.SYSMESSAGE Message Sent.
+  src.pagem
+
+ON = 45
+act = <tag.act>
+if ( !strcmpi( "<act.name>", "Unhandled") )
+tryp 2 src.act.name = Being handled by <src.name>
+src.sysmessage Handling page
+src.act.link.sysmessage @06 Your page is being handled by <src.name>
+src.act.link.tag.paged = 
+src.pagem
+else
+src.sysmessage This page is already being handled!
+src.pagem
+endif
+
+else // doing a page already!
+src.sysmessage You cannot handle two pages at once!
+endif
+
+ON = 46
+act = <tag.act>
+if ( !strcmpi( "<act.name>", "Unhandled") )
+src.sysmessage @06 You must handle this page to do anything
+return 0
+endif
+
+src.act.link.sysmessage @06 Your page has been handled by <src.name>
+src.act.link.tag.paged = // remove the paged tag
+src.sysmessage Page deleted!
+src.act.remove
+
+src.pu
+src.pagem
+
+ON = 47
+  act = <tag.act>
+if ( !strcmpi( "<act.name>", "Unhandled") )
+src.sysmessage @06 You must handle this page to do anything
+return 0
+endif
+
+
+if ( !strcmpi( "<act.name>", "Unhandled" ) ) 
+
+else
+src.act.link.sysmessage @06 Your page has been set aside for another gm to deal with
+src.act.name = Unhandled
+endif
+src.pagem
+
+ON=48
+  act = <tag.act>
+if ( !strcmpi( "<act.name>", "Unhandled") )
+src.sysmessage @06 You must handle this page to do anything
+return 0
+endif
+
+var.oldact = <src.act>
+src.act = <act.link>
+src.go <src.act.p>
+src.act = <var.oldact>
+src.sysmessage You arrive at the pagers location.
+src.pagem
+
+ON=49
+  act = <tag.act>
+if ( !strcmpi( "<act.name>", "Unhandled") )
+src.sysmessage @06 You must handle this page to do anything
+return 0
+endif
+
+var.oldact = <src.act>
+src.act = <src.act.link>
+src.act.go =  <src.p>
+src.act = <var.oldact>
+src.sysmessage The pager arrives at your location.
+src.pagem
+
+ON=50
+  act = <tag.act>
+if ( !strcmpi( "<act.name>", "Unhandled") )
+src.sysmessage @06 You must handle this page to do anything
+return 0
+endif
+
+var.oldact = <src.act>
+src.act = <act.link>
+src.act.jail
+src.sysmessage Pager has been .jail'ed. Remember to sort out a .punishs time for the pager!
+src.act = <var.oldact>
+src.pagem
+
+ON=51
+  act = <tag.act>
+src.sysmessage @06 You arrive at the pagers location (they do not know you are here) - SPY MODE
+var.oldact = <src.act>
+src.act = <act.link>
+src.go <src.act.p>
+src.act = <var.oldact>
+src.pagem
+
+
+[DIALOG d_page_show TEXT]
+GM Page System - <act.link.tag.loggedin>
+posted by
+<ACT.AUTHOR>
+<eval (<TAG.page.READ>+1>
+/
+<ACT.CONT.RESCOUNT>
+6
+7
+8
+9
+Page Category: <ACT.BODY.0>
+Page Status: <ACT.name>
+Page Message: <ACT.BODY.1>
+Pager Account: <ACT.AUTHOR>
+Pager UID: <ACT.LINK>
+Message: 
+Send Message
+Handle Page
+Page Handled
+Requeue Page
+Go to pager
+Summon Pager to you
+Jail Pager
+Spy on Pager
+
+[EOF]

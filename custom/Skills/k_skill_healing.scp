@@ -1,0 +1,582 @@
+//Changelog
+//---------
+//18-09-03 - Wigifer - Changed heal time and removed bandie cure
+//18-09-03 - Wigifer - Bandie healing modified
+//16-08-04 - Wren    - Leveled Bandie reqs for res, commented out gay region restriction on res
+//25-09-04 - Wren    - Made cure poison take gm healing and gm poisoning
+//10-09-04 - Wren    - Added some more cure poison stuff
+//16-09-05 - Raist   - Corrected a bug that allowed players to heal golems with bandies
+
+// Healing with bandages:
+// Below 50%, it takes 3 seconds to heal others, 4 seconds to heal yourself.
+// at 50%, it takes 3 seconds to heal others or yourself
+// at 65%, it takes 2 seconds to heal others, 3 seconds to heal yourself.
+// at 75%, it takes 2 seconds to heal others or yourself.
+// at 85%, it takes 1 seconds to heal others, 2 seconds to heal yourself.
+// at 95%, you can heal yourself with just one hand (unless wielding two-handed-weapons).
+// at 100%, it takes 1 second to heal others or yourself.
+// In combat mode, you'll always heal a little less than out of combat.
+	
+
+[ITEMDEF m_bandage_res]
+NAME=Resurrect with bandage
+ID=i_memory
+TYPE=t_eq_script
+LAYER=layer_special
+ON=@Create
+   ATTR=attr_decay
+   TIMER=10
+ON=@Equip
+   SRC.EVENTS +e_bandage_interrupt
+ON=@UnEquip
+   SRC.EVENTS -e_bandage_interrupt
+ON=@Timer
+   LOCAL.HEALING	= <CONT.HEALING>   
+
+   IF (<LOCAL.HEALING> < 90.0)
+      IF ( (!<CONT.RESTEST 5 i_bandage_bloody>) || (!<CONT.RESTEST 15 i_bandage>) )
+         CONT.SYSMESSAGE You need 5 bloody bandages and 15 clean ones for the resurrection process.
+         remove
+         return 1
+      endif
+   ELSEIF (<LOCAL.HEALING> < 100.0)
+      IF ( (!<CONT.RESTEST 5 i_bandage_bloody>) || (!<CONT.RESTEST 10 i_bandage>) )
+         CONT.SYSMESSAGE You need 5 bloody bandages and 10 clean ones for the resurrection process.
+         remove
+         return 1
+      ENDIF
+   ELSE
+      IF ( (!<CONT.RESTEST 5 i_bandage_bloody>) || (!<CONT.RESTEST 5 i_bandage>) )
+         CONT.SYSMESSAGE You need 5 bloody bandages and 5 clean ones for the resurrection process.
+         remove
+         return 1
+      ENDIF   
+   ENDIF
+   
+   LOCAL.AVG = <eval ( ((<LOCAL.healing> * 2) + <CONT.anatomy>)  /3)>
+   LOCAL.HITS = <LINK.STR>
+   if ( <LOCAL.AVG> < 85.0 )
+      LOCAL.HITS = <eval( ( <LOCAL.HITS> * 80 ) / 100 )>
+   elseif ( <LOCAL.AVG> < 90.0 )
+      LOCAL.HITS = <eval( ( <LOCAL.HITS> * 69 ) / 100 )>
+   elseif ( <LOCAL.AVG> < 90.0 )
+      LOCAL.HITS = <eval( ( <LOCAL.HITS> * 61 ) / 100 )>
+   elseif ( <LOCAL.AVG> < 95.0 )
+      LOCAL.HITS = <eval( ( <LOCAL.HITS> * 55 ) / 100 )>
+   elseif ( <LOCAL.AVG> < 100.0 )
+      LOCAL.HITS = <eval( ( <LOCAL.HITS> * 50 ) / 100 )>
+   else
+      LOCAL.HITS = <eval( ( <LOCAL.HITS> * 45 ) / 100 )>
+   endif
+   
+   if ( <CONT.HITS> <= <LOCAL.HITS> )
+      CONT.sysmessage You are too weak to try and resurrect them.
+      remove
+      return 1
+   endif
+   
+   IF (<LOCAL.HEALING> < 90.0)
+      CONT.consume 5 i_bandage
+      CONT.consume 15 i_bandage_bloody
+   ELSEIF (<LOCAL.HEALING> < 100.0)
+      CONT.consume 5 i_bandage
+      CONT.consume 10 i_bandage_bloody   
+   ELSE
+      CONT.consume 5 i_bandage
+      CONT.consume 5 i_bandage_bloody   
+   ENDIF
+   f_skillsuccess_rollskill 17
+   f_skillsuccess_rollstat 17
+   
+   CONT.HITS = <eval(<CONT.HITS> - <LOCAL.HITS>)>      
+
+   if ( RAND(800) > <eval (<LOCAL.AVG> - 40.0)> )
+      CONT.emote fail to resurrect <LINK.NAME>  
+      remove
+      return 1
+   endif
+
+   IF !( strmatch( "Ice*", "<CONT.REGION.NAME>" ) ) && !( strmatch( "Desert*", "<CONT.REGION.NAME>" ) )
+      CONT.SKILLCHECK_START Skill_Healing
+   endif
+   CONT.emote resurrect <LINK.NAME>
+   LINK.RESURRECT
+   remove
+   return 1
+
+
+[ITEMDEF m_bandage_heal]
+NAME=Heal with bandage
+ID=i_memory
+TYPE=t_eq_script
+LAYER=layer_special
+ON=Create
+   ATTR=attr_decay
+   TIMER=8
+   
+ON=@Equip
+   //Reset char control timer
+   if ( <SRC.ACTION> != -1 )
+      src.findlayer(layer_k_control).timer	= -1
+   endif
+
+   SRC.EVENTS +e_bandage_interrupt   
+
+ON=@UnEquip
+   SRC.EVENTS -e_bandage_interrupt
+   
+ON=@Timer
+
+   //Determine if you can still Heal them
+   IF ( <LINK.HITS> <= 0 )
+      CONT.SYSMESSAGE It is too late for them, they are already dead.
+      remove
+      return 1
+   ELSEIF ( !<CONT.RESTEST 1 i_bandage> )
+      CONT.SYSMESSAGE You ran out of bandages!
+      remove
+      return 1
+   endif
+
+
+   //Determing if they still need healing
+   LOCAL.HEALING	= <CONT.HEALING>   
+   LOCAL.MAXHITS	= <LINK.STR>
+   IF ( <LINK.HITS> >= <LOCAL.MAXHITS> )
+      CONT.SYSMESSAGE They are not wounded.
+      remove
+      return 1
+   ENDIF
+
+   LOCAL.CAP = <eval ((<LOCAL.MAXHITS> * 98)/100)>
+   IF ( <LINK.HITS> >= <LOCAL.CAP> )
+      CONT.SYSMESSAGE Their wounds will heal without further attention.
+      remove
+      return 1
+   ENDIF
+
+
+   //Check for Fail
+   IF (<CONT.STAM> < 10)
+      CONT.SYSMESSAGE You are too tired to tend to your wounds.
+      remove
+      return 1
+   ENDIF
+   f_skillsuccess_rollskill 17
+   f_skillsuccess_rollstat 17
+   
+   IF ( RAND(1000) > <eval ( (1900 + <LOCAL.HEALING>)/3 )> ) 
+      CONT.EMOTE fail to apply the bandages on <LINK.NAME>
+      
+      If (RAND(5) > 3)
+         CONT.consume 1 i_bandage
+      ENDIF
+      
+      IF (<LOCAL.HEALING> < 350)
+
+   IF !( strmatch( "Ice*", "<CONT.REGION.NAME>" ) ) && !( strmatch( "Desert*", "<CONT.REGION.NAME>" ) )
+      CONT.SKILLCHECK_START Skill_Healing
+   endif
+      ENDIF
+      
+      remove
+      return 1
+   ENDIF
+
+
+   //Heal Poison if they are skilled enough
+   IF ( (<LOCAL.HEALING> >= 100.0) && (<CONT.POISONING> >= 85.0) && (<CONT.ANATOMY> >= 100.0) )
+      
+      LOCAL.CURE = <eval ( (<LOCAL.HEALING>*2) + (<CONT.POISONING>/3) )>
+      IF ( !<LINK.npc> )	// work around the @SpellEffect bug
+         LINK.EVENTS -e_all_pc
+      ELSE
+         LINK.EVENTS -e_all_npc
+      ENDIF
+     
+      LINK.SPELLEFFECT s_CURE, <LOCAL.CURE>
+      
+      //IF ( !<LINK.npc> )	// work around the @SpellEffect bug
+      //   LINK.EVENTS +e_all_pc
+      //ELSE
+      //   LINK.EVENTS +e_all_npc
+      //ENDIF
+      
+      //Cure poisoning skill poisons
+      IF (<LINK.RESTEST 1 i_poisoning1>)
+         LINK.CONSUME=i_poisoning1
+         CONT.consume 1 i_bandage  
+         REMOVE
+         RETURN 1
+      ELSEIF (<LINK.RESTEST 1 i_poisoning2>)
+         IF <CONT.POISONING> >= 90.0)
+            IF ( (!<CONT.RESTEST 1 i_reag_executioners_cap>) || (!<CONT.RESTEST 1 i_bandage>) )
+               CONT.SYSMESSAGE You need 1 executioner's cap and 5 clean bandages to heal this poison.
+            ELSE     
+               LINK.CONSUME=i_poisoning2 
+               CONT.consume 1 i_bandage  
+               CONT.consume 1 i_reag_executioners_cap
+               REMOVE
+               RETURN 1
+            ENDIF
+         ENDIF
+      ELSEIF (<LINK.RESTEST 1 i_poisoning3>)
+         IF <CONT.POISONING> >= 95.0)
+            IF ( (!<CONT.RESTEST 2 i_reag_executioners_cap>) || (!<CONT.RESTEST 2 i_bandage>) )
+               CONT.SYSMESSAGE You need 2 executioner's caps and 5 clean bandages to heal this poison.
+            ELSE     
+               LINK.CONSUME=i_poisoning3
+               CONT.consume 2 i_bandage            
+               CONT.consume 2 i_reag_executioners_cap
+               REMOVE
+               RETURN 1
+            ENDIF
+         ENDIF
+      
+      ELSEIF (<LINK.RESTEST 1 i_poisoning4>)
+         IF <CONT.POISONING> >= 100.0)
+            IF ( (!<CONT.RESTEST 3 i_reag_executioners_cap>) || (!<CONT.RESTEST 3 i_bandage>) )
+               CONT.SYSMESSAGE You need 3 executioner's cap and 5 clean bandages to heal this poison.
+            ELSE
+               LINK.CONSUME=i_poisoning4
+               CONT.consume 3 i_bandage            
+               CONT.consume 3 i_reag_executioners_cap
+               REMOVE
+               RETURN 1
+            ENDIF
+         ENDIF      
+      ENDIF
+   ENDIF
+
+   CONT.consume 1 i_bandage
+   CONT.STAM=<EVAL (<CONT.STAM>-5)>
+
+   if ( <CONT.FLAGS> & 020 )
+      TAG.WARMODE = 1
+   endif
+
+   if ( <TAG.WARMODE> == 1 )
+      doswitch <eval (<LOCAL.HEALING>/100)>
+      LOCAL.HEAL	= <eval ( 14 + rand( 14))>	// < 10
+      LOCAL.HEAL	= <eval ( 20 + rand( 14))>	// < 20
+      LOCAL.HEAL	= <eval ( 26 + rand( 14))>	// < 30
+      LOCAL.HEAL	= <eval ( 32 + rand( 14))>	// < 40
+
+      LOCAL.HEAL	= <eval ( 38 + rand( 14))>	// < 50
+      LOCAL.HEAL	= <eval ( 44 + rand( 14))>	// < 60
+      LOCAL.HEAL	= <eval ( 50 + rand( 14))>	// < 70
+      LOCAL.HEAL	= <eval ( 58 + rand( 14))>	// < 80
+      LOCAL.HEAL	= <eval ( 64 + rand( 14))>	// < 90
+      LOCAL.HEAL	= <eval ( 70 + rand( 20))>	// < 100
+      LOCAL.HEAL	= <eval ( 81 + rand( 30))>	// ...
+      enddo
+      LOCAL.HEAL	= <eval ((<LOCAL.HEAL> * 1) / 4)>
+   else
+      doswitch <eval (<LOCAL.HEALING>/100)>
+      LOCAL.HEAL	= <eval ( 14 + rand( 19))>	// < 10
+      LOCAL.HEAL	= <eval ( 20 + rand( 19))>	// < 20
+      LOCAL.HEAL	= <eval ( 26 + rand( 19))>	// < 30
+      LOCAL.HEAL	= <eval ( 32 + rand( 19))>	// < 40
+
+      LOCAL.HEAL	= <eval ( 38 + rand( 19))>	// < 50
+      LOCAL.HEAL	= <eval ( 44 + rand( 19))>	// < 60
+      LOCAL.HEAL	= <eval ( 50 + rand( 19))>	// < 70
+      LOCAL.HEAL	= <eval ( 58 + rand( 19))>	// < 80
+      LOCAL.HEAL	= <eval ( 64 + rand( 19))>	// < 90
+      LOCAL.HEAL	= <eval ( 70 + rand( 25))>	// < 100
+      LOCAL.HEAL	= <eval ( 81 + rand( 35))>	// ...
+      enddo
+      LOCAL.HEAL	= <eval (((<LOCAL.HEAL> * 2) / 4) + 2)>
+   endif
+LOCAL.HEAL	= <eval ((((<LOCAL.HEAL> * 50) / 100) +3))>
+
+   // adjust
+   LOCAL.HEAL = <eval (<LOCAL.HEAL>+<link.hits>)>
+
+LOCAL.DEXBONUS = 0
+LOCAL.RANDHEAL = 0
+IF (<CONT.ODEX> > 100)
+LOCAL.DEXBONUS = <eval ((<CONT.ODEX> - 100)) / 5)>
+LOCAL.RANDHEAL = <eval (RAND((<LOCAL.dexbonus> + 2)))>
+LOCAL.HEAL = <eval (<LOCAL.HEAL> + <LOCAL.DEXBONUS> + <LOCAL.RANDHEAL>)>
+ENDIF
+
+
+   if ( <LOCAL.HEAL> > <LOCAL.CAP> )
+      LOCAL.HEAL = <LOCAL.CAP>
+   endif
+   LINK.HITS = <LOCAL.HEAL>
+
+   if ( <CONT.UID> == <LINK.UID> )
+      CONT.SYSMESSAGE You finish applying bandages on yourself.
+   else
+      LINK.SYSMESSAGE <CONT.NAME> finishes the bandaging process.
+      CONT.SYSMESSAGE You finish applying bandages on <LINK.NAME>.
+   endif
+
+   if ( <CONT.UID> == <LINK.UID> )
+      if ( <CONT.isgm> || (rand(10) < 7) )	// on self, only 70% of the normal chance of improvement
+
+   IF !( strmatch( "Ice*", "<CONT.REGION.NAME>" ) )
+      CONT.SKILLCHECK_START Skill_Healing
+   endif
+      endif
+   else	 
+
+   IF !( strmatch( "Ice*", "<CONT.REGION.NAME>" ) ) 
+      CONT.SKILLCHECK_START Skill_Healing
+   endif
+   endif
+
+   CONT.NEWITEM i_bandage_bloody
+   CONT.ACT.CONT = <CONT.UID>
+   CONT.ACT.BOUNCE
+   CONT.EVENTS -e_bandage_interrupt
+   remove
+   return 1
+
+
+[ITEMDEF 0e21]
+DEFNAME=i_bandage
+RESOURCES=i_cloth
+TYPE=T_BANDAGE
+WEIGHT=.2
+DUPELIST=0ee9
+CATEGORY=Items by Professions
+SUBSECTION=Healer
+DESCRIPTION=Clean Bandages
+
+ON=@Dclick
+  TARGET What do you want to use the bandages on?
+  return 1
+
+ON=@Targon_Char
+  LOCAL.HEALING	= <SRC.HEALING>
+
+  // Check to see if you can heal in the current circumstances
+  IF ( <SRC.FINDID( m_bandage_heal ).uid> )
+     SRC.SYSMESSAGE You haven't finished bandaging yet.
+     return 1
+  ELSEIF ( <SRC.FINDID( m_bandage_res ).uid> )
+     SRC.SYSMESSAGE You haven't finished the resurrection process yet.
+     return 1
+  ELSEIF ( !<SRC.TARG.CANSEELOS> ) 
+    SRC.SYSMESSAGE You'll have to get closer to <src.targ.name> for that.
+    return 1
+  ELSEIF ( <SRC.TARG.DISTANCE> > 2 ) 
+    SRC.SYSMESSAGE You'll have to get closer to <src.targ.name> for that.
+    return 1
+  ELSEIF ( STRMATCH("c_golem*","<src.targ.id>") )
+     src.sysmessage Bandages would have no effect on them.
+     return 1
+  ELSEIF ( <SRC.TARG.BODY> == c_Moloch ) 
+    SRC.SYSMESSAGE Bandages would have no effect on them.
+    return 1   
+  ELSEIF ( <SRC.TARG.FLAGS> & statf_war )
+     if ( <SRC.TARG.ACT> == <SRC.UID> )
+        src.sysmessage You can't heal them while they're fighting you.
+        return 1
+     endif
+  ENDIF
+
+
+  // RESURRECT
+  if ( !<src.targ.npc> & ((<SRC.TARG.ID>==c_ghost_man) || (<SRC.TARG.ID>==c_ghost_woman)) ) 
+     
+     //Check to see if you have the skill for this
+     IF ( <LOCAL.HEALING> < 80.0 )
+        src.sysmessage Your Healing skills are too poor to try and resurrect.
+	return 1
+     ELSEIF ( <SRC.ANATOMY> < 80.0 )
+        src.sysmessage You do not know enough of human Anatomy to try and resurrect.
+	return 1
+     endif
+     
+     //Check to see if you have the resources for this
+     IF (<LOCAL.HEALING> < 90.0)
+        IF ( (!<SRC.RESTEST 5 i_bandage_bloody>) || (!<SRC.RESTEST 15 i_bandage>) )
+           SRC.SYSMESSAGE You need 5 bloody bandages and 15 clean ones for the resurrection process.
+           return 1
+        endif
+     ELSEIF (<LOCAL.HEALING> < 100.0)
+        IF ( (!<SRC.RESTEST 5 i_bandage_bloody>) || (!<SRC.RESTEST 10 i_bandage>) )
+           SRC.SYSMESSAGE You need 5 bloody bandages and 10 clean ones for the resurrection process.
+           return 1
+        ENDIF
+     ELSE
+        IF ( (!<SRC.RESTEST 5 i_bandage_bloody>) || (!<SRC.RESTEST 5 i_bandage>) )
+           SRC.SYSMESSAGE You need 5 bloody bandages and 5 clean ones for the resurrection process.
+           return 1
+        ENDIF   
+     ENDIF
+
+
+     //Unequip any weapons
+     if ( <src.findlayer(layer_hand2).uid> )
+        src.findlayer(layer_hand2).unequip
+     endif
+     if ( <src.findlayer(layer_hand1).uid> )
+        src.findlayer(layer_hand1).unequip
+     endif
+
+
+     //Calculate Time and Amount of Health required to Resurrect
+     LOCAL.AVG = <eval (((<LOCAL.healing>*2) + <src.anatomy>)/3)>
+     LOCAL.HITS = <SRC.TARG.STR>
+     if ( <LOCAL.AVG> < 85.0 )
+        LOCAL.TIMER = 9
+	LOCAL.HITS = <eval( ( <LOCAL.HITS> * 70 ) / 100 )>
+     elseif ( <LOCAL.AVG> < 90.0 )
+        LOCAL.TIMER = 7
+	LOCAL.HITS = <eval( ( <LOCAL.HITS> * 63 ) / 100 )>
+     elseif ( <LOCAL.AVG> < 90.0 )
+        LOCAL.TIMER = 6
+	LOCAL.HITS = <eval( ( <LOCAL.HITS> * 56 ) / 100 )>
+     elseif ( <LOCAL.AVG> < 95.0 )
+        LOCAL.TIMER = 5
+	LOCAL.HITS = <eval( ( <LOCAL.HITS> * 49 ) / 100 )>
+     elseif ( <LOCAL.AVG> < 100.0 )
+        LOCAL.TIMER = 4
+	LOCAL.HITS = <eval( ( <LOCAL.HITS> * 44 ) / 100 )>
+     else
+        LOCAL.TIMER = 4
+	LOCAL.HITS = <eval( ( <LOCAL.HITS> * 35 ) / 100 )>
+     endif
+     
+     
+     //Determine if the player has the required health
+     if ( <SRC.HITS> <= <LOCAL.HITS> )
+        src.sysmessage You are too weak to try and resurrect them.
+	return 1
+     endif
+     	
+     	
+     //Begine trying to resurrect
+     SRC.NEWITEM m_bandage_res
+     SRC.ACT.LINK	= <SRC.TARG.UID>
+     SRC.ACT.CONT	= <SRC.UID>
+     SRC.ACT.TIMER	= <LOCAL.TIMER>
+     SRC.ACT.EQUIP
+     SRC.EMOTE try to resurrect <SRC.TARG.NAME>
+     return 1
+  endif
+
+
+
+  //HEALING  
+  //Determine whether they need healing
+  LOCAL.MAXHITS	= <SRC.TARG.STR>
+  if ( <SRC.TARG.HITS> >= <LOCAL.MAXHITS> )
+     SRC.SYSMESSAGE They are not wounded.
+     return 1
+  endif
+
+  LOCAL.CAP = <eval ((<LOCAL.MAXHITS> * 98)/100)>
+  if ( <SRC.TARG.HITS> >= <LOCAL.CAP> )
+     SRC.SYSMESSAGE Their wounds will heal without further attention.
+     return 1
+  endif
+  
+
+  // calculate TIMERs
+  if ( 0 )
+  elseif ( <LOCAL.healing> < 30 )
+     LOCAL.TIMER_other = 7
+     LOCAL.TIMER_self =  7
+  elseif ( <LOCAL.healing> < 45 )
+     LOCAL.TIMER_other = 7
+     LOCAL.TIMER_self =  6
+  elseif ( <LOCAL.healing> < 55 )
+     LOCAL.TIMER_other = 6
+     LOCAL.TIMER_self =  6
+  elseif ( <LOCAL.healing> < 70 )
+     LOCAL.TIMER_other = 6
+     LOCAL.TIMER_self =  5
+  elseif ( <LOCAL.healing> < 90 )
+     LOCAL.TIMER_other = 5
+     LOCAL.TIMER_self =  5
+  else
+     LOCAL.TIMER_other = 5
+     LOCAL.TIMER_self =  4
+  endif
+   
+  // Dex speed bonus
+  IF (<SRC.ODEX> >= 140
+     LOCAL.DEXTIMERBONUS = 1
+  ELSEIF (<SRC.ODEX> >= 120
+     LOCAL.DEXTIMERBONUS = 1
+  ELSEIF (<SRC.ODEX> >= 100
+     LOCAL.DEXTIMERBONUS = 0
+  ELSE
+     LOCAL.DEXTIMERBONUS = 0
+  ENDIF
+   
+   
+  // HEALING WHILE EQUIPED
+  if ( <src.findlayer(layer_hand2).uid> )
+    src.findlayer(layer_hand2).unequip
+  endif
+  if ( <src.findlayer(layer_hand1).uid> )
+    if ( <LOCAL.healing> < 95.0 )
+       src.findlayer(layer_hand1).unequip
+    endif
+  endif
+
+
+  //Begin Healing
+  SRC.NEWITEM m_bandage_heal
+  SRC.ACT.CONT = <SRC.UID>
+  SRC.ACT.LINK = <SRC.TARG.UID>
+  if ( <SRC.FLAGS> & 020 )
+     SRC.ACT.TAG.WARMODE = 1
+  else
+     SRC.ACT.TAG.WARMODE = 0
+     LOCAL.TIMER_other = <eval (<LOCAL.TIMER_other> + rand(1) + 1)>
+     LOCAL.TIMER_self =  <eval (<LOCAL.timer_self>  + rand(1) + 1)>
+  endif
+
+  SRC.SALUTE
+  if ( <SRC.targ.uid> == <src.uid> )
+     SRC.ACT.TIMER = <eval (<LOCAL.TIMER_self> - <LOCAL.DEXTIMERBONUS>)>
+     SRC.EMOTE apply bandages on self
+  else
+     SRC.ACT.TIMER = <eval (<LOCAL.TIMER_other> - <LOCAL.DEXTIMERBONUS>)>
+     SRC.EMOTE apply bandages on <SRC.TARG.NAME>
+  endif
+
+  SRC.ACT.EQUIP
+  SRC.EVENTS +e_bandage_interrupt
+  return 1
+
+
+
+[FUNCTION band_heal_remove]
+   if ( <findid(m_bandage_heal).uid> )
+      SYSMESSAGE <src.NAME> broke your concentration and ruined your bandaging!
+      findid(m_bandage_heal).remove
+      band_heal_remove
+   endif
+   
+
+[FUNCTION band_res_remove]
+   if ( <findid(m_bandage_res).uid> )
+      SYSMESSAGE <src.NAME> broke your concentration and ruined the resurrection process!
+      findid(m_bandage_res).remove
+      band_res_remove
+   endif
+
+
+[EVENTS e_bandage_interrupt]
+ON=@GetHit
+   band_heal_remove
+   band_res_remove
+   EVENTS -e_bandage_interrupt
+on=@spellcast
+   band_heal_remove
+   band_res_remove
+   EVENTS -e_bandage_interrupt
+if ( <FLAGS> & statf_hidden )
+   band_heal_remove
+   band_res_remove
+   EVENTS -e_bandage_interrupt
+endif

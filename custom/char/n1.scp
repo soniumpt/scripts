@@ -1,0 +1,177 @@
+// #-----------#
+// # CHANGELOG #
+// #-----------#
+//
+// 18/08/18 - Wigifer - Removed random loot from these monsters, ready for conversion to the new f_central_loot table.
+
+///GHOST//DOCK///
+/////////////////
+//////ITEMS//////
+
+[ITEMDEF I_EGG_TIMER_60]
+ 
+NAME= Egg Timer
+ID=6163
+
+ON=@CLICK
+   SRC.EMOTE think the egg timer's set for around sixty seconds.
+
+ON=@DCLICK
+  SAY You turn over the egg timer...
+  TIMER=58
+  SOUND=0122
+RETURN 1
+
+ON=@TIMER
+  SOUND=0028
+  SAY The egg timer has stopped...
+RETURN 1
+
+CATEGORY=Memory UO
+SUBSECTION=Rares
+DESCRIPTION=Egg Timer (60)
+
+
+
+[ITEMDEF i_frozen_clock]
+
+Name=Clock
+ID=4172
+FLIP=1
+
+ON=@Create
+COLOR=00835
+
+ON=@Click
+  SRC.EMOTE see the hands of the clock are stuck at midnight.
+
+ON=@DCLICK
+  SAY The Clock chimes...
+  SOUND=0100
+RETURN 1
+
+CATEGORY=Memory UO
+SUBSECTION=Items
+DESCRIPTION=Frozen Clock
+
+
+///GHOST//DOCK///
+/////////////////
+//////NPCS///////
+
+[CHARDEF c_m_dock_master]
+DEFNAME=c_m_dock_master
+NAME=Master of the Docks
+SOUND=snd_MONSTER_LICHE1
+ID=c_man
+ICON=i_pet_man
+DAM=25,40
+ARMOR=40
+CAN=MT_EQUIP|MT_USEHANDS|MT_WALK|MT_MALE|MT_RUN
+DESIRES=t_bone,i_gold,t_wand,t_reagent,e_undead
+
+TEVENTS=e_undead
+CATEGORY=Memory UO
+SUBSECTION=Undead
+DESCRIPTION=Dock Master
+
+ON=@Create
+  COLOR=0482
+  NPC=brain_monster
+  STR={450 500}
+  DEX={95 115}
+  INT={565 655}
+  PARRYING={55.0 65.0}
+  MACEFIGHTING={60.0 80.0}
+  MAGERY={90.0 100.0}
+  NECROMANCY={100.0}
+  MAGICRESISTANCE={90.0 100.0}
+  TACTICS={50.0 70.0}
+  WRESTLING={60.0 80.0}
+  FAME={100 2000}
+  KARMA={-5000 -5999}
+ON=@NPCRestock
+  ITEMNEWBIE=i_boots_calf
+   COLOR=0966
+  ITEMNEWBIE=i_hat_tricorne
+   COLOR=0966
+  ITEMNEWBIE=i_sash
+   COLOR=0966
+  ITEMNEWBIE=i_pants_long
+   COLOR=0966
+  ITEMNEWBIE=i_shirt_fancy
+  ITEMNEWBIE=i_staff_black
+  ITEMNEWBIE=i_spellbook
+   ADDSPELL=s_lightning
+   ADDSPELL=s_fire_bolt
+   ADDSPELL=s_poison
+   ADDSPELL=s_curse
+   ADDSPELL=s_paralyze
+   ADDSPELL=s_summon_undead
+   ADDSPELL=s_Hallucination
+   ADDSPELL=s_energy_bolt
+   ADDSPELL=s_harm
+   ADDSPELL=s_weaken
+
+
+[CHARDEF c_m_drowned_soul]
+
+DEFNAME=c_m_drowned_soul
+NAME=Drowned Soul
+SOUND=snd_MONSTER_ZOMBIE1
+ICON=i_pet_ZOMBIE
+ID=c_ZOMBIE
+CAN=MT_WALK
+
+TEVENTS= e_Undead
+DAM= 4,16
+ARMOR= 20
+CATEGORY=Memory UO
+SUBSECTION=Undead
+DESCRIPTION=Drowned Soul
+
+
+ON=@Create
+  NPC=BRAIN_UNDEAD
+  COLOR=colors_green
+  KARMA={-5000 -2500}
+  FAME={600 900}
+  STR={70 95}
+  DEX={50 75}
+  INT={40 65}
+  MAGICRESISTANCE={45.0 70.0}
+  PARRYING={40.0 70.0}
+  TACTICS={50.0 85.0}
+  WRESTLING={60.0 80.0}
+
+
+[CHARDEF c_m_Spirit_of_the_deep]
+DEFNAME=c_m_Sprit_of_the_deep
+NAME=Spirit of the Deep
+SOUND=snd_MONSTER_GHOST1
+ICON=i_pet_GHOUL
+ID=c_Grim_Reaper
+DAM=22,30
+ARMOR=25,30
+CAN=MT_GHOST|MT_WALK
+
+TEVENTS=e_Undead
+ON=@Create
+  NPC=BRAIN_UNDEAD
+  COLOR=0bb
+  KARMA={-3000 -3999}
+  FAME={1500 3000}
+  STR={125 150}
+  DEX={120 200}
+  INT={60 90}
+  MAGICRESISTANCE={85.0 90.0}
+  PARRYING={60.0 85.0}
+  TACTICS={60.0 85.0}
+  WRESTLING={60.0 85.0}
+
+CATEGORY=Memory UO
+SUBSECTION=Undead
+DESCRIPTION=Spirit of the Deep
+
+
+[EOF]

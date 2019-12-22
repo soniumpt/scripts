@@ -1,0 +1,737 @@
+//================================================ 
+//              AN ONLINEUO PRODUCT 
+//                 ADMIN PETER 
+//================================================ 
+//Copy these into one SCP file 
+//IN Game add a bulletin board for the whole region 
+//ie. put one bulletin board on Britain bank 
+//the double click the board to make it default 
+//Add c_lead_quest\ C_lead_quest_female (or spawn point) 
+//You now should see the Bulletin board has a new message posted 
+//(TURN OFF GM!) 
+
+
+//Revision: 
+//Too bad i do not know how to check the NPC's direction relativly to the 
+//board 
+//Suggest that you can use face command the get the direction. Put them 
+//into one function and have the correct direct in the return statement 
+//and I didnt put the distance check as well, since it causes error in 
+//SPHERE, but basically you need a QVAL statement: 
+// "I am a <QVAL <UID.<REGION.BBSID>.DISTANCE>>30 ? A long way:A Short Way> from here." 
+//Have fun editing this and learn sphere scripting! 
+
+// SQWEAK taken off dilogs boxes changed timer added more reasons for escorting someone, added escort command
+
+[ITEMDEF I_Lead_memory] 
+ID      = I_memory 
+Type    = T_EQ_Script 
+Name    = Lead Memory 
+
+ON=@Create 
+   Timer   = 3600    
+
+ON=@Timer 
+   Cont.Say "I'm better look for another person who can take me to my destination. bye" 
+   Cont.Tag.Lead   = 0 
+   Cont.Action     = 0 
+   link.newitem    = I_Lead_memory_player 
+   link.act.timer  = 3600 
+   link.act.p      = <link.p> 
+   link.act.update 
+   link.act.cont   = <link.UID> 
+   cont.homedist   = 1 
+   cont.home       = <P> 
+   RETURN 0 
+
+        
+[ITEMDEF I_escorting_npc] 
+ID      = I_memory 
+Type    = T_EQ_Script 
+Name    = Escorting NPC 
+
+On=@Equip
+   timer = -1
+   attr = 02
+
+ON=@Create 
+   timer = -1
+   attr = 02
+
+ON=@Timer 
+   RETURN 0 
+
+
+[ITEMDEF I_Lead_memory_player] 
+ID      = I_memory 
+Type    = T_EQ_Script 
+Name    = lead memory Player 
+
+ON=@Create 
+   Timer  = 3600    
+
+ON=@Timer 
+   RETURN 0 
+
+
+[function f_get_destination665] 
+   DORAND 7 
+      TAG.Destination = "Skara Brae" 
+      TAG.Destination = "Vesper" 
+      TAG.Destination = "Britain" 
+      TAG.Destination = "Minoc" 
+      TAG.Destination = "Yew" 
+      TAG.Destination = "Trinsic" 
+      TAG.Destination = "Cove" 
+   ENDDO 
+        
+   if STRMATCH("<TAG.Destination>","<REGION.NAME>") 
+      f_get_destination665  //loop 
+   endif 
+
+[function postmsg_lead] 
+//lead quest 
+   f_get_destination665 
+                
+   if (0<Region.tag.bbsid>) 
+      Newitem         0eb0 
+      act.link        <UID>            
+      Act.Author      = <ACT.LINK.NAME> 
+      Act.timer       = 3600 
+      Dorand 21 
+         Getbody_1
+         Getbody_2 
+         Getbody_3
+         Getbody_4
+         Getbody_5 
+         Getbody_6
+         Getbody_7
+         Getbody_8
+         Getbody_9
+         Getbody_10
+         Getbody_11
+         Getbody_12
+         Getbody_13
+         Getbody_14
+         Getbody_15
+         Getbody_16
+         Getbody_17
+         Getbody_18
+         Getbody_19
+         Getbody_20
+         Getbody_21
+      Enddo 
+      Act.Update 
+      Act.Cont        = <Region.tag.bbsid> 
+   endif 
+
+
+[function getbody_1] 
+act.name        = "Hiring a guard" 
+Act.Body.0      = "   Reputable Merchant seeks" 
+Act.Body.1      = "able warriors to serve as" 
+Act.Body.2      = "escort. Pay is SCALE; we" 
+Act.Body.3      = "prefer to hire experienced" 
+Act.Body.4      = "mercenaries" 
+Act.Body.5      = "I can be found a short way" 
+Act.Body.6      = "from here. When thou dost" 
+Act.Body.7      = "find me, Say to me" 
+Act.Body.8      = "'I will take thee'" 
+Act.Body.9      = "and we will go together to"
+Act.Body.10     = "the city of <TAG.Destination>" 
+Act.Body.10     = " " 
+Act.Body.11     = "<NAME>" 
+
+[function getbody_2] 
+Act.name        = "Seeking Escort" 
+Act.Body.0      = "  'Tis a terrible thing to be" 
+Act.Body.1      = "a parent with an ungrateful" 
+Act.Body.2      = "child! Yet such is my" 
+Act.Body.3      = "situation." 
+Act.Body.4      = "  Because of the poor" 
+Act.Body.5      = "behavior and lack of" 
+Act.Body.6      = "character of this offspring of" 
+Act.Body.7      = "mine, hes run away from " 
+Act.Body.8      = "home. I Think hes in " 
+Act.Body.9      = "  <TAG.Destination>"
+Act.Body.10     = "So Now I am in need of an" 
+Act.Body.11     = "able escort of good character."  
+Act.Body.12     = "I can be found a short way" 
+Act.Body.13     = "from here. When you find me"
+Act.Body.14     = "say 'I will take thee."
+Act.Body.14     = " " 
+Act.Body.15     = "<NAME>" 
+
+[function getbody_3] 
+act.name        = "Seeking Companion" 
+Act.Body.0      = "   I am one of Load British's" 
+Act.Body.1      = "couriers, and I seek an able" 
+Act.Body.2      = "warrior to escort me safely," 
+Act.Body.3      = "as the message I carry is" 
+Act.Body.4      = "very important to our" 
+Act.Body.5      = "kingdom" 
+Act.Body.6      = "I can be found a short way" 
+Act.Body.7      = "from here. When thou dost" 
+Act.Body.8      = "find me, look at me close" 
+Act.Body.9      = "and say 'I will take thee'" 
+Act.Body.10     = "I need to take the message" 
+Act.Body.11     = "to <tag.destination>."
+Act.Body.11     = " " 
+Act.Body.12     = "<NAME>"
+
+[function getbody_4] 
+act.name        = "Travelling Companion" 
+Act.Body.0      = "   I am looking for a" 
+Act.Body.1      = "travelling companion to" 
+Act.Body.2      = "Keep me from harm," 
+Act.Body.3      = "I hear bandits roam the" 
+Act.Body.4      = "land looking for people" 
+Act.Body.5      = "to steal from." 
+Act.Body.6      = "Can you Protect me?"
+Act.Body.7      = "I can be found a near" 
+Act.Body.8      = "here. When thou dost" 
+Act.Body.9      = "find me, Say to me" 
+Act.Body.10     = "'I can take thee'" 
+Act.Body.11     = "and we will travel to"
+Act.Body.12     = "<tag.destination>" 
+Act.Body.13     = " " 
+Act.Body.14     = "<NAME>" 
+
+[function getbody_5] 
+act.name        = "Lonely Traveller" 
+Act.Body.0      = "   I am looking for a" 
+Act.Body.1      = "travelling companion to" 
+Act.Body.2      = "The roads are dangerous," 
+Act.Body.3      = "at this time of year." 
+Act.Body.4      = "I am visiting relatives" 
+Act.Body.5      = "in <tag.destination>" 
+Act.Body.6      = "I heard its nice at this"
+Act.Body.7      = "time of year." 
+Act.Body.8      = "Will you take me there" 
+Act.Body.9      = "Safely?" 
+Act.Body.10     = "Say 'I will take thee'" 
+Act.Body.11     = "When you find me." 
+Act.Body.12     = "I will be not far from"
+Act.Body.13     = "here."
+Act.Body.13     = " " 
+Act.Body.14     = "<NAME>" 
+
+[function getbody_6] 
+act.name        = "Evil Darkonions" 
+Act.Body.0      = "   There everywhere," 
+Act.Body.1      = "they are after my blood." 
+Act.Body.2      = "Everytime I leave town," 
+Act.Body.3      = "they try and kill me." 
+Act.Body.4      = "Its it just me?" 
+Act.Body.5      = "I desperatly need to get " 
+Act.Body.6      = "to <tag.destination>"
+Act.Body.7      = "Save me from this scum" 
+Act.Body.8      = "Will you take me to" 
+Act.Body.9      = "<tag.destination> safely?" 
+Act.Body.10     = "Say 'I will take thee'" 
+Act.Body.11     = "When you find me." 
+Act.Body.12     = "I'm be not far from"
+Act.Body.13     = "here."
+Act.Body.13     = " " 
+Act.Body.14     = "<NAME>"
+
+[function getbody_7] 
+act.name        = "This Stinking City" 
+Act.Body.0      = "   I seem to lost." 
+Act.Body.1      = "I was trying to get to" 
+Act.Body.2      = "<tag.destination>," 
+Act.Body.3      = "but seemed to take a." 
+Act.Body.4      = "wrong turning and ended" 
+Act.Body.5      = "up in this stinking city." 
+Act.Body.6      = "I hate it here I want to"
+Act.Body.7      = "Go home to my family" 
+Act.Body.8      = "Will you take me to" 
+Act.Body.9      = "<tag.destination>?"
+Act.Body.10     = "So I can be back home"
+Act.Body.11     = "With my loved ones." 
+Act.Body.12     = "Say 'I will take thee'" 
+Act.Body.13     = "When you find me." 
+Act.Body.14     = "I'm quite near here."
+Act.Body.15     = " " 
+Act.Body.16     = "<NAME>"
+
+[function getbody_8] 
+act.name        = "I hate Adrian" 
+Act.Body.0      = "   Everytime I leave." 
+Act.Body.1      = "town Adrian tries to" 
+Act.Body.2      = "kill me, I normally" 
+Act.Body.3      = "run. This time I can't" 
+Act.Body.4      = "I must visit my aunt" 
+Act.Body.5      = "in <tag.destination>" 
+Act.Body.6      = "can you take me there?"
+Act.Body.7      = "Say 'I will take thee'" 
+Act.Body.8      = "When you find me." 
+Act.Body.9      = "I'm quite near here."
+Act.Body.10     = " " 
+Act.Body.11     = "<NAME>"
+
+[function getbody_9] 
+act.name        = "Happy Birthday" 
+Act.Body.0      = "   Its my sons Birthday." 
+Act.Body.1      = "I nearly forgot I have" 
+Act.Body.2      = "been so busy." 
+Act.Body.3      = "Can you escort me to" 
+Act.Body.4      = "<tag.destination>?" 
+Act.Body.5      = "I don't want to miss it" 
+Act.Body.6      = "again."
+Act.Body.7      = "Say 'I will take thee'" 
+Act.Body.8      = "When you find me." 
+Act.Body.9      = "I'm quite near here."
+Act.Body.10     = " " 
+Act.Body.11     = "<NAME>"
+
+[function getbody_10]
+Act.name = "My Dear Daughter"
+Act.Body.0 =  " 'Ack! i have no more"
+Act.Body.1 =  "strength in my soul"
+Act.Body.2 =  "to keep on living"
+Act.Body.3 =  "this way so far from her!"
+Act.Body.4 =  "Since i got lost in battle"
+Act.Body.5 =  "i never found my way home."
+Act.Body.6 =  "I heard my love died,"
+Act.Body.7 =  "but my daughter"
+Act.Body.8 =  "waits for me there! "
+Act.Body.9 =  "Please help me finding "
+Act.Body.10 = "my lair again,"
+Act.Body.11 = "it is located in"
+Act.Body.12 = "<TAG.Destination>"
+Act.Body.13 = "So if you could escort me
+Act.Body.14 = "there i would be so "
+Act.Body.15 = "thankfull, since the "
+Act.Body.16 = "path is so dangerous!"
+Act.Body.17 = "say 'I will take thee."
+Act.Body.18 = ""
+Act.Body.19 = "<NAME>"
+
+[function getbody_11] 
+act.name        = "Delivery" 
+Act.Body.0      = "   I need to deliver" 
+Act.Body.1      = "some important news" 
+Act.Body.2      = "to my bussiness partner." 
+Act.Body.3      = "Can you escort me to" 
+Act.Body.4      = "<tag.destination>?"
+Act.Body 5      = "As the roads are"
+Act.Body 6      = "dangerous this time " 
+Act.Body.7      = "of year." 
+Act.Body.8      = "Say 'I will take thee'" 
+Act.Body.9      = "When you find me." 
+Act.Body.10     = "I'm quite near here."
+Act.Body.11     = " " 
+Act.Body.12     = "<NAME>"
+
+[function getbody_12] 
+act.name        = "Escort needed" 
+Act.Body.0      = " Does anyone know" 
+Act.Body.1      = "the way to " 
+Act.Body.2      = "<tag.destination>?" 
+Act.Body.3      = "If so, can you escort" 
+Act.Body.4      = "me to. I am new to this"
+Act.Body 5      = "Region and do not know"
+Act.Body 6      = "my way around these" 
+Act.Body.7      = "parts." 
+Act.Body.8      = "Say 'I will take thee'" 
+Act.Body.9      = "When you find me." 
+Act.Body.10     = "I'm quite near here."
+Act.Body.11     = " " 
+Act.Body.12     = "<NAME>"
+
+[function getbody_13] 
+act.name        = "Beer Monster" 
+Act.Body.0      = "Excuse me Wanderer" 
+Act.Body.1      = "I strongly desire " 
+Act.Body.2      = "an escort to" 
+Act.Body.3      = "<tag.destination>," 
+Act.Body.4      = "as I hear there's a" 
+Act.Body.5      = "splendid beer festival" 
+Act.Body.6      = "there soon, I got a "
+Act.Body.7      = "little bit drunk and" 
+Act.Body.8      = "wandered from the path to" 
+Act.Body.9      = "<tag.destination>?"
+Act.Body.10     = "I need to get there "
+Act.Body.11     = "before it starts" 
+Act.Body.12     = "Say 'I will take thee'" 
+Act.Body.13     = "When you find me." 
+Act.Body.14     = "I'm just a few steps away"
+Act.Body.15     = " " 
+Act.Body.16     = "<NAME>"
+
+[function getbody_14] 
+act.name        = "Troll attacks!" 
+Act.Body.0      = "Help Me! PLEASE!" 
+Act.Body.1      = "I beg you please deliver" 
+Act.Body.2      = "me safe to the city of" 
+Act.Body.3      = "<tag.destination>," 
+Act.Body.4      = "I was journeying with" 
+Act.Body.5      = "my beloved and we were" 
+Act.Body.6      = "waylaid by trolls"
+Act.Body.7      = "we got split up" 
+Act.Body.8      = "but agreed that we would " 
+Act.Body.9      = "meet in <tag.destination>!"
+Act.Body.10     = "help me through these"
+Act.Body.11     = "terrifying lands!" 
+Act.Body.12     = "Say 'I will take thee'" 
+Act.Body.13     = "and I'll follow." 
+Act.Body.14     = "I may be hiding a little"
+Act.Body.15     = "Way away, come find me " 
+Act.Body.16     = "<NAME>"
+
+[function getbody_15] 
+act.name        = "Criminal seeks escort" 
+Act.Body.0      = "   I urgently need an escort" 
+Act.Body.1      = "who's willing to walk on" 
+Act.Body.2      = "the wrong side of the law." 
+Act.Body.3      = "I have a bounty on my head" 
+Act.Body.4      = "and need someone to" 
+Act.Body.5      = "smuggle me into" 
+Act.Body.6      = "<tag.destination>,"
+Act.Body.7      = "Where i have a 'job'" 
+Act.Body.8      = "to do..." 
+Act.Body.9      = "Will you help me?"
+Act.Body.10     = "Yes or no damnit!"
+Act.Body.11     = "My life is at risk here." 
+Act.Body.12     = "Say 'I will take thee'" 
+Act.Body.13     = "When you find me." 
+Act.Body.14     = "I'm quite near here."
+Act.Body.15     = " " 
+Act.Body.16     = "<NAME>"
+
+[function getbody_16] 
+act.name        = "Musician Requires Roady" 
+Act.Body.0      = "   Hey there!" 
+Act.Body.1      = "Will you help me?" 
+Act.Body.2      = "I am meant to be playing" 
+Act.Body.3      = "with my band tonight in" 
+Act.Body.4      = "<tag.destination>." 
+Act.Body.5      = "But the others have gone" 
+Act.Body.6      = "on ahead and left me"
+Act.Body.7      = "with all the gear." 
+Act.Body.8      = "Will you help me transport" 
+Act.Body.9      = "our instruments to"
+Act.Body.10     = "<tag.destination>?"
+Act.Body.11     = "Without your help i'm" 
+Act.Body.12     = "afraid i will miss the gig." 
+Act.Body.13     = "Say 'I will take thee'" 
+Act.Body.14     = "When you find me."
+Act.Body.15     = "I'm quite near here."
+Act.Body.16     = " " 
+Act.Body.17     = "<NAME>"
+
+[function getbody_17] 
+act.name        = "Assistance Needed" 
+Act.Body.0      = "   Hail." 
+Act.Body.1      = "I have just finished" 
+Act.Body.2      = "crafting a large order" 
+Act.Body.3      = "for a rather rich customer" 
+Act.Body.4      = "of mine, he lives in" 
+Act.Body.5      = "<tag.destination>." 
+Act.Body.6      = "Alas i am not strong"
+Act.Body.7      = "enough to deliver this" 
+Act.Body.8      = "order to <tag.destination>" 
+Act.Body.9      = "on my own."
+Act.Body.10     = "Will you help me?"
+Act.Body.11     = "If i don't deliver this" 
+Act.Body.12     = "order soon, i'm afriad i" 
+Act.Body.13     = "may loose a valuable customer." 
+Act.Body.14     = "Say 'I will take thee'"
+Act.Body.14     = "When you find me."
+Act.Body.15     = "I'm quite near here."
+Act.Body.16     = " " 
+Act.Body.17     = "<NAME>"
+
+[function getbody_18] 
+act.name        = "Seeking Assistance" 
+Act.Body.0      = "   Please help me." 
+Act.Body.1      = "I traveled far to" 
+Act.Body.2      = "get medicine for my sick," 
+Act.Body.3      = "grandmother who lives in" 
+Act.Body.4      = "<tag.destination>," 
+Act.Body.5      = "but I hear that the road" 
+Act.Body.6      = "is filled with bandits."
+Act.Body.7      = "Can you please take me to" 
+Act.Body.8      = "<tag.destination>,"
+Act.Body.9      = "as if my grandmother does"
+Act.Body.10     = "not get this potion,"
+Act.Body.11     = "She will surely perish." 
+Act.Body.12     = "Say 'I will take thee'" 
+Act.Body.13     = "When you find me." 
+Act.Body.14     = "I'm quite near here."
+Act.Body.15     = " " 
+Act.Body.16     = "<NAME>"
+
+[function getbody_19] 
+act.name        = "Requiring Escort" 
+Act.Body.0      = "I need an escort." 
+Act.Body.1      = "I am joining the guards" 
+Act.Body.2      = "of <tag.destination>" 
+Act.Body.3      = "but I am not yet trained" 
+Act.Body.4      = "well in the art of combat." 
+Act.Body.5      = "I need a good sword-arm" 
+Act.Body.6      = "to ensure I get to the"
+Act.Body.7      = "barracks in " 
+Act.Body.8      = "<tag.destination>"
+Act.Body.9      = "unharmed and ready to "
+Act.Body.10     = "train.If you can assist" 
+Act.Body.11     = "me, say 'I will take thee'" 
+Act.Body.12     = "When you find me." 
+Act.Body.13     = "I'm quite near here."
+Act.Body.14     = " " 
+Act.Body.15     = "<NAME>"
+
+[function getbody_20] 
+act.name        = "Companion needed" 
+Act.Body.0      = "I need assistance." 
+Act.Body.1      = "I am writing a book" 
+Act.Body.2      = "about the various lands" 
+Act.Body.3      = "of Britannia. My next" 
+Act.Body.4      = "stop is <tag.destination>," 
+Act.Body.5      = "but the mercenaries" 
+Act.Body.6      = "I hired have all"
+Act.Body.7      = "cleared off, the dogs" 
+Act.Body.8      = "that they are. If a"
+Act.Body.9      = "noble person can assist" 
+Act.Body.10     = "in taking me to "
+Act.Body.11     = "<tag.destination>,say "  
+Act.Body.12     = "'I will take thee'When " 
+Act.Body.13     = "you find me.I'm quite "
+Act.Body.14     = "near here. " 
+Act.Body.15     = " " 
+Act.Body.16     = "<NAME>"
+
+[function getbody_21] 
+act.name        = "Seeking adventure" 
+Act.Body.0      = "Please assist me." 
+Act.Body.1      = "I am seeking adventure," 
+Act.Body.2      = "and intend to go to " 
+Act.Body.3      = "<tag.destination> " 
+Act.Body.4      = "to combat the monsters " 
+Act.Body.5      = "and beasts that dwell " 
+Act.Body.6      = "If you can take me to"
+Act.Body.7      = "<tag.destination>, " 
+Act.Body.8      = "I should be able to "
+Act.Body.9      = "stock up on my supplies " 
+Act.Body.10     = "before venturing forth. "
+Act.Body.11     = "If you can, assist me, "
+Act.Body.11     = "then simply say "  
+Act.Body.12     = "'I will take thee' When " 
+Act.Body.13     = "you find me. I'm quite "
+Act.Body.14     = " near here."
+Act.Body.15     = " near here." 
+Act.Body.16     = "<NAME>"
+
+
+[Itemdef I_Mem_Post_timer] 
+ID      =I_Memory 
+Type    =T_EQ_SCRIPT 
+Name    =Posting memory 
+
+ON=@Timer 
+   Cont.postmsg_lead 
+   RETURN 0 
+
+[Speech spk_Lead_NPC]
+ON=Quest
+ON=Hello
+ON=Escort
+   IF strmatch("<REGION.NAME>","Cove")
+      SAY "Dear <SRC.Name>, I've lost my way, would you please take me me from this vile place to <TAG.Destination>? I'm afraid to try to make it out of here alone.  Payment will be made after we arrived!" 
+   ELSE
+      SAY "Dear <SRC.Name>, Would you please take me to <TAG.Destination>? Payment will be made after we arrived!" 
+   ENDIF
+   
+ON=I will*
+ON=Come*
+ON=Yes
+   IF <SRC.FINDID.I_Lead_Memory_Player.Timer>> 0 
+      SAY  "You need to rest about <EVAL <SRC.FINDID.I_Lead_Memory_Player.Timer>/60> Mins to take escort another person"      
+   ELSEIF <tag0.lead>  = 1  //already leading? 
+      IF <findid.i_lead_memory.link.uid>      = <SRC.UID> //Im leading by you 
+         SAY "You are already leading me" 
+         ACT     = <SRC.UID> 
+         action  = 100 
+      ELSE 
+         SAY "I am already going to my destination" 
+      ENDIF 
+   ELSE            
+      TAG.Lead        = 1  //Alread lead 
+      Newitem         = I_Lead_memory 
+      act.link        = <SRC.UID> 
+      act.name        = <SRC.NAME> 
+      act.timer       = 900 
+      act.p           = <P> 
+      act.morep       = <P> 
+      act.update 
+      act.cont        = <UID> 
+                
+      src.newitem i_escorting_npc
+      act.link	= <uid>
+      act.name 	= <name>
+      act.p 		= <p>
+      act.morep	= <p>
+      act.update
+      act.cont	= <src.uid>
+	
+      SAY "Lead on! Payment will be made when we arrive in the city of <TAG.Destination>" 
+      ACT             = <SRC.UID> 
+      ACTION          = 100 
+   ENDIF 
+   RETURN 1
+        
+ON=Where*
+ON=Destination 
+   IF <tag0.lead>  = 1  //already leading? 
+      IF <findid.i_lead_memory.link.uid>      = <SRC.UID> //Im leading you 
+         SAY "We are going to The City of <TAG.Destination>" 
+      ELSE 
+         SAY "I am already going to my destination" 
+      ENDIF 
+   ELSE            
+      SpeechColor = 995 
+      SAY "I'm looking to go to The City of <TAG.Destination>. Will you take me?" 
+   ENDIF 
+   RETURN 1 
+        
+ON=Here 
+ON=Arrive 
+ON=Reward
+   IF strmatch("<tag.destination>","<region.name>") 
+      SAY "We arrived! thanks very much, here is your payment" 
+      SRC.newitem     = I_Gold 
+      SRC.ACT.Amount  = <EVAL RAND(1000)> + <EVAL 1000>
+      SRC.ACT.bounce 
+                        
+      SRC.NEWITEM     = I_Lead_memory_player 
+      SRC.act.Timer   = 3600 
+      SRC.ACT.P       = <SRC.P> 
+      SRC.ACT.Update 
+      SRC.ACT.Cont    = <SRC.UID> 
+      
+      Src.findid.i_escorting_npc.remove
+      FINDID.i_lead_memory.remove 
+      TAG.Lead        = 0 
+      TAG.Destination = "" 
+      Home            = <P> 
+      ACT             = <UID> 
+      ACTION          = 0 
+      homedist        = 1 
+      Remove 
+   Else 
+      SAY "No, we arent quite there yet. Should we keep going?" 
+   endif 
+   RETURN 1
+
+ON=Quit
+ON=Abandon 
+   IF <tag0.lead>  = 1 
+      IF <findid.i_lead_memory.link.uid>      = <SRC.UID> 
+         SAY     "Fine, thanks for leading me, Bye" 
+         GO <HOME> 
+         HOMEDIST   	= 1 
+         NEWITEM        = I_Mem_Post_timer 
+         ACT.TIMER   	= 5 
+         SRC.FINDID.i_escorting_npc.remove                      
+         SRC.NEWITEM    = I_Lead_memory_player 
+         SRC.ACT.TIMER  = 3600 
+         SRC.ACT.P      = <SRC.P> 
+         SRC.ACT.UPDATE 
+         SRC.ACT.CONT   = <SRC.UID> 
+      ELSE 
+         SAY "You are not leading me?" 
+      ENDIF 
+   ELSE 
+      HEAR "destination" 
+   ENDIF 
+   RETURN 1 
+
+   ON=*
+   return 1
+
+[CHARDEF C_LEAD_QUEST] 
+//Male GUARD With Bow 
+NAME           =#NAMES_HUMANMALE
+TITLE          =  
+ID             =C_MAN 
+DAM            =45,60 
+ARMOR          =80 
+DESIRES        =i_gold 
+
+TSPEECH        =spk_Lead_NPC 
+TEVENTS        =e_Human_Environ 
+
+CATEGORY       =POD Customs 
+SUBSECTION     =Quests 
+DESCRIPTION    =leading 
+
+ON=@Create 
+   NPC=Brain_human
+   TITLE=Requiring Escort
+   COLOR           =colors_skin 
+   STR             ={351 365} 
+   DEX             ={151 165} 
+   INT             ={151 165} 
+
+   ITEMNEWBIE      = i_lantern 
+   ITEMNEWBIE      = i_Robe 
+   COLOR   	= Colors_all 
+   ITEMNEWBIE      = I_Cape 
+   COLOR   	= Colors_All 
+   ITEMNEWBIE      = random_male_hair 
+   COLOR   	= colors_hair 
+   ITEMNEWBIE      = random_facial_hair 
+   COLOR   	= match_hair 
+
+ON=@NPCRESTOCK 
+   ITEM    = I_Mem_Post_timer 
+   TIMER   =5 
+        
+ON=@NPCRefuseItem 
+   SAY I cannot be bribed. be gone. 
+   RETURN 1 
+        
+
+[CHARDEF C_LEAD_QUEST_FEMALE] 
+//Male GUARD With Bow 
+NAME           =#NAMES_HUMANMALE 
+TITLE          =  
+ID             =C_WOMAN 
+DAM            =45,60 
+ARMOR          =80 
+DESIRES        =i_gold 
+
+TSPEECH        =spk_Lead_NPC 
+TEVENTS        =e_Human_Environ 
+
+CATEGORY       =POD Customs 
+SUBSECTION     =Quests 
+DESCRIPTION    =leading female 
+        
+ON=@Create 
+   NPC=Brain_human 
+   COLOR           =colors_skin 
+   STR             ={351 365} 
+   DEX             ={151 165} 
+   INT             ={151 165} 
+
+   ITEMNEWBIE      = i_lantern 
+   ITEMNEWBIE      = i_Robe 
+   COLOR   = Colors_all 
+   ITEMNEWBIE      = I_Cape 
+   COLOR   = Colors_All 
+   ITEMNEWBIE      = random_male_hair 
+   COLOR   = colors_hair 
+   ITEMNEWBIE      = random_facial_hair 
+   COLOR   = match_hair 
+
+ON=@NPCRESTOCK 
+   ITEM            = I_Mem_Post_timer 
+   TIMER   =5 
+
+ON=@NPCRefuseItem 
+   SAY I cannot be bribed. be gone. 
+   RETURN 1 
+
+[EOF]

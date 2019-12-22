@@ -1,0 +1,699 @@
+[ItemDef M_FacePaint]
+id=i_memory
+Name=Face Paint Timer
+type=t_eq_script
+
+ON=@Create
+   TIMER=7200
+
+ON=@Timer
+   CONT.COLOR=<CONT.OSKIN>
+   CONT.EMOTE Face Paint wears off
+   REMOVE
+   RETURN 1
+
+
+[ItemDef M_FacePaint_Color]
+id=i_memory
+Name=Face Paint Timer
+type=t_eq_script
+
+ON=@Create
+   TIMER=2
+
+ON=@Timer
+   IF (<CONT.COLOR>=<CONT.OSKIN>)
+      CONT.SYSMESSAGE Yellow
+      CONT.COLOR = 009a
+      TIMER=2
+   ELSEIF (<CONT.COLOR>=009a)
+      CONT.SYSMESSAGE Red
+      CONT.COLOR = 0028
+      TIMER=2
+   ELSEIF (<CONT.COLOR>=0028)
+      CONT.SYSMESSAGE Blue
+      CONT.COLOR = 0258
+      TIMER=2
+   ELSEIF (<CONT.COLOR>=0258)
+      CONT.SYSMESSAGE Green
+      CONT.COLOR = 023a
+      TIMER=2
+   ELSEIF (<CONT.COLOR>=023a)
+      CONT.SYSMESSAGE Orange
+      CONT.COLOR = 0031
+      TIMER=2
+   ELSEIF (<CONT.COLOR>=0031)
+      CONT.SYSMESSAGE Purple
+      CONT.COLOR = 0010
+      TIMER=2
+   ELSEIF (<CONT.COLOR>=0010)
+      CONT.SYSMESSAGE Pink
+      CONT.COLOR = 001f
+      TIMER=2
+   ELSEIF (<CONT.COLOR>=001f)
+      CONT.COLOR=<CONT.OSKIN>
+      REMOVE
+   ENDIF
+   RETURN 1
+
+
+[CHARDEF c_h_Face_Painter]  
+NAME=#NAMES_HUMANFEMALE the Face Painter 
+ID=C_WOMAN 
+CAN=MT_EQUIP|MT_USEHANDS 
+TSPEECH=JobFacePainter 
+TEVENTS=e_Human_Environ 
+
+ON=@Create 
+FLAGS=00005 
+COLOR=083ea 
+STR={41 55} 
+DEX={41 55} 
+INT={41 55} 
+
+FAME=5000 
+KARMA=5000 
+
+NPC=brain_human 
+
+ON=@NPCRestock 
+ITEMNEWBIE= i_kilt
+COLOR=0526 
+ITEMNEWBIE=i_sandals
+COLOR=0526 
+ITEMNEWBIE=i_doublet
+COLOR=0526
+ITEMNEWBIE=i_hair_long
+COLOR=0735
+
+ON=@NPCSeeNewPlayer 
+SAY Would you like your face painted? Only 500gp and lasts about 2 hours!
+
+[SPEECH JobFacePainter] 
+ON=*hello* 
+ON=*hey* 
+ON=*hi* 
+ON=*hail* 
+ON=*g'day* 
+  SAY G'day, Would you like your face painted?  Only 500gps! It lasts about 2 hours under normal conditions or you can say Wash and I'll remove it.
+
+ON=*buy*
+ON=*paint*
+ON=*color*
+ON=*view*
+ON=*show*
+   IF (<SRC.FLAGS> & statf_dead)
+      SRC.SYSMESSAGE @025 The dead cannot make transactions, friend...
+      RETURN 1
+   ENDIF
+  if (<SRC.FINDID.M_FacePaint.UID>)
+     SAY You must ask me to wash your face before I can show you the colors that are available.
+     RETURN 1
+  endif
+
+  SAY I have yellow, red, blue, green, orange, pink, and purple paint with me today.  Watch and I'll show you.  Then say the color you wish to buy.
+  SRC.NEWITEM M_FacePaint_Color
+  SRC.ACT.EQUIP
+
+ON=*wash*
+  if (<SRC.FINDID.M_FacePaint.UID>)
+     SRC.FINDID.M_FacePaint.REMOVE
+  endif
+  SRC.COLOR=<SRC.OSKIN>
+
+ON=*yellow*
+  var.gold=500
+  consumegold_everywhere <eval (<var.gold>)>
+  if ( <VAR.consumegold> > 0 )
+     SAY You are <eval <VAR.consumegold>>gp short.
+     VAR.RETURN	= 1
+     return 1
+  endif
+  
+  if (<SRC.FINDID.M_FacePaint.UID>)
+     SRC.FINDID.M_FacePaint.REMOVE
+  endif
+
+  SAY Voila!
+  SRC.COLOR = 009a
+  SRC.NEWITEM M_FacePaint
+  SRC.ACT.EQUIP
+
+ON=*red*
+  var.gold=500
+  consumegold_everywhere <eval (<var.gold>)>
+  if ( <VAR.consumegold> > 0 )
+     SAY You are <eval <VAR.consumegold>>gp short.
+     VAR.RETURN	= 1
+     return 1
+  endif
+  
+  if (<SRC.FINDID.M_FacePaint.UID>)
+     SRC.FINDID.M_FacePaint.REMOVE
+  endif
+
+  SAY Voila!
+  SRC.COLOR = 0028
+  SRC.NEWITEM M_FacePaint
+  SRC.ACT.EQUIP
+
+ON=*blue*
+  var.gold=500
+  consumegold_everywhere <eval (<var.gold>)>
+  if ( <VAR.consumegold> > 0 )
+     SAY You are <eval <VAR.consumegold>>gp short.
+     VAR.RETURN	= 1
+     return 1
+  endif
+  
+  if (<SRC.FINDID.M_FacePaint.UID>)
+     SRC.FINDID.M_FacePaint.REMOVE
+  endif
+
+  SAY Voila!
+  SRC.COLOR = 0258
+  SRC.NEWITEM M_FacePaint
+  SRC.ACT.EQUIP
+
+ON=*green*
+  var.gold=500
+  consumegold_everywhere <eval (<var.gold>)>
+  if ( <VAR.consumegold> > 0 )
+     SAY You are <eval <VAR.consumegold>>gp short.
+     VAR.RETURN	= 1
+     return 1
+  endif
+  
+  if (<SRC.FINDID.M_FacePaint.UID>)
+     SRC.FINDID.M_FacePaint.REMOVE
+  endif
+
+  SAY Voila!
+  SRC.COLOR = 023a
+  SRC.NEWITEM M_FacePaint
+  SRC.ACT.EQUIP
+
+ON=*purple*
+  var.gold=500
+  consumegold_everywhere <eval (<var.gold>)>
+  if ( <VAR.consumegold> > 0 )
+     SAY You are <eval <VAR.consumegold>>gp short.
+     VAR.RETURN	= 1
+     return 1
+  endif
+  
+  if (<SRC.FINDID.M_FacePaint.UID>)
+     SRC.FINDID.M_FacePaint.REMOVE
+  endif
+
+  SAY Voila!
+  SRC.COLOR = 0010
+  SRC.NEWITEM M_FacePaint
+  SRC.ACT.EQUIP
+
+ON=*pink*
+  var.gold=500
+  consumegold_everywhere <eval (<var.gold>)>
+  if ( <VAR.consumegold> > 0 )
+     SAY You are <eval <VAR.consumegold>>gp short.
+     VAR.RETURN	= 1
+     return 1
+  endif
+  
+  if (<SRC.FINDID.M_FacePaint.UID>)
+     SRC.FINDID.M_FacePaint.REMOVE
+  endif
+
+  SAY Voila!
+  SRC.COLOR = 001f
+  SRC.NEWITEM M_FacePaint
+  SRC.ACT.EQUIP
+
+ON=*orange*
+  var.gold=500
+  consumegold_everywhere <eval (<var.gold>)>
+  if ( <VAR.consumegold> > 0 )
+     SAY You are <eval <VAR.consumegold>>gp short.
+     VAR.RETURN	= 1
+     return 1
+  endif
+  
+  if (<SRC.FINDID.M_FacePaint.UID>)
+     SRC.FINDID.M_FacePaint.REMOVE
+  endif
+
+  SAY Voila!
+  SRC.COLOR = 0031
+  SRC.NEWITEM M_FacePaint
+  SRC.ACT.EQUIP
+
+
+
+
+//Fair Tent
+[ITEMDEF i_multi_tent_fair]
+ID=i_multi_tent_blue
+Name=Fair Tent
+TYPE=T_MULTI
+VALUE=22000
+CATEGORY=Multis
+SUBSECTION=Tents
+DESCRIPTION=Blue Tent
+MULTIREGION=-3,-3,4,4
+COMPONENT=i_sign_brass,4, 5, 5	// Place the sign.
+COMPONENT=i_lantern_lit,-1, 5, 10
+COMPONENT=0b02, -2, 5, 0
+COMPONENT=0b00, -1, 5, 0
+COMPONENT=0b06, -2, 3, 0
+COMPONENT=0b08, -2, 2, 0
+COMPONENT=0b06, -2, 1, 0
+COMPONENT=0b08, -2, 0, 0
+COMPONENT=0b06, -2, -1, 0
+COMPONENT=0b08, -2, -2, 0
+COMPONENT=0b02, -1, -2, 0
+COMPONENT=0b00,  0, -2, 0
+COMPONENT=0b02,  1, -2, 0
+COMPONENT=0b00,  2, -2, 0
+
+
+
+[ITEMDEF i_deed_tent_fair]
+DEFNAME=i_deed_tent_fair
+NAME=Deed to a Fairground Tent
+ID=i_Deed
+RESOURCES=i_deed, i_multi_tent_fair
+
+ON=@Create
+MORE=i_multi_tent_fair
+ATTR=attr_newbie
+
+CATEGORY=Provisons - Deeds
+SUBSECTION=Custom Deeds
+DESCRIPTION=Deed to a Fairground Tent
+
+
+
+
+[CHARDEF c_h_Priest_Wedding]  
+NAME=#NAMES_HUMANMALE the Priest
+ID=C_MAN
+CAN=MT_EQUIP|MT_USEHANDS 
+TSPEECH=JobPriestWedding
+TEVENTS=e_Human_Environ 
+
+ON=@Create 
+  FLAGS=00005 
+  COLOR=083ea 
+  STR={41 55} 
+  DEX={41 55} 
+  INT={41 55} 
+ 
+  TAG.CEREMONY = 1
+  TAG.BRIDE_NAME = 
+  TAG.GROOM_NAME = 
+
+  TAG.DELAY1 = 2
+  TAG.DELAY2 = 5
+  TAG.DELAY3 = 15
+  TAG.DELAY4 = 15
+  TAG.DELAY5 = 15
+  TAG.DELAY6 = 15
+  TAG.DELAY7 = -1
+  TAG.DELAY8 = -1
+  TAG.DELAY9 = 15
+  TAG.DELAY10 = 5
+  TAG.DELAY11 = -1
+  TAG.DELAY12 = 5
+  TAG.DELAY13 = -1
+  TAG.DELAY14 = 5
+    
+  TAG.CEREMONY_LINE1 = Welcome citizens of Britannia!
+  TAG.CEREMONY_LINE2 = We have gathered here on this joyous day to witness the joining of <TAG.BRIDE_NAME> and <TAG.GROOM_NAME> in Holy matrimony.
+  TAG.CEREMONY_LINE3 = The marriage covenant has held a place of honor in every society and has remained sacred to this day.
+  TAG.CEREMONY_LINE4 = From the beginning of time men and women have chosen to join in this bond of sharing and trust.
+  TAG.CEREMONY_LINE5 = Marriage is not a light matter. Enter therein only if willing to share love, commitment, and knowledge unconditionally.
+  TAG.CEREMONY_LINE6 = <TAG.BRIDE_NAME>, with this advise, do you take <TAG.GROOM_NAME> to be your companion throughout all of your days?
+  TAG.CEREMONY_LINE7 = And <TAG.GROOM_NAME>, with this advise, do you also take <TAG.BRIDE_NAME> to be your companion throughout all of your days?
+  TAG.CEREMONY_LINE8 = Now, in mutual desire to wed, <TAG.BRIDE_NAME> and <TAG.GROOM_NAME> shall exchange their vows and rings as a token of their commitment.
+  TAG.CEREMONY_LINE9 = <TAG.BRIDE_NAME>, Repeat after me thy vows...
+  TAG.CEREMONY_LINE10 = 'This ring I give thee to seal the covenant I make with thee'
+  TAG.CEREMONY_LINE11 = <TAG.GROOM_NAME>, Repeat after me thy vows... 
+  TAG.CEREMONY_LINE12 = 'This ring I give thee to seal the covenant I make with thee.
+  TAG.CEREMONY_LINE13 = It is now my extreme pleasure before these witnesses with the power invested in me I announce you husband and wife.
+  TAG.CEREMONY_LINE14 = You may kiss your bride
+
+ON=@NPCRestock 
+  ITEMNEWBIE= i_boots_calf
+  COLOR=0485
+  ITEMNEWBIE=i_pants_long
+  COLOR=0485
+  ITEMNEWBIE=i_shirt_fancy
+  COLOR=07b5
+  ITEMNEWBIE=i_doublet
+  COLOR=0485
+  ITEMNEWBIE=i_leather_ninja_belt
+  NAME=belt
+  ITEMNEWBIE=i_spellbook
+  COLOR=0af7
+  NAME=The Bible
+  ATTR=05
+  ITEMNEWBIE=i_beard_vandyke
+  ITEMNEWBIE=i_hair_receding
+
+ON=@DCLICK
+  IF (<SRC.ACCOUNT.PLEVEL>>1)
+     IF (0<TAG.GROOM_NAME>=0) || (0<TAG.BRIDE_NAME>=0)
+        DIALOG D_CEREMONY_SETUP 
+     ELSE
+        DIALOG D_CEREMONY_RUN
+     ENDIF     
+  ENDIF
+
+
+
+[CHARDEF c_h_Priestess_Wedding]  
+NAME=#NAMES_HUMANFEMALE the Priestess
+ID=C_WOMAN
+CAN=MT_EQUIP|MT_USEHANDS 
+TSPEECH=JobPriestWedding
+TEVENTS=e_Human_Environ 
+
+ON=@Create 
+  FLAGS=00005 
+  COLOR=083ea 
+  STR={41 55} 
+  DEX={41 55} 
+  INT={41 55} 
+ 
+  TAG.CEREMONY = 1
+  TAG.BRIDE_NAME = 
+  TAG.GROOM_NAME = 
+  
+  TAG.DELAY1 = 2
+  TAG.DELAY2 = 5
+  TAG.DELAY3 = 15
+  TAG.DELAY4 = 15
+  TAG.DELAY5 = 15
+  TAG.DELAY6 = 15
+  TAG.DELAY7 = -1
+  TAG.DELAY8 = -1
+  TAG.DELAY9 = 15
+  TAG.DELAY10 = 5
+  TAG.DELAY11 = -1
+  TAG.DELAY12 = 5
+  TAG.DELAY13 = -1
+  TAG.DELAY14 = 5
+  
+  TAG.CEREMONY_LINE1 = Welcome citizens of Britannia!
+  TAG.CEREMONY_LINE2 = We have gathered here on this joyous day to witness the joining of <TAG.BRIDE_NAME> and <TAG.GROOM_NAME> in Holy matrimony.
+  TAG.CEREMONY_LINE3 = The marriage covenant has held a place of honor in every society and has remained sacred to this day.
+  TAG.CEREMONY_LINE4 = From the beginning of time men and women have chosen to join in this bond of sharing and trust.
+  TAG.CEREMONY_LINE5 = Marriage is not a light matter. Enter therein only if willing to share love, commitment, and knowledge unconditionally.
+  TAG.CEREMONY_LINE6 = <TAG.BRIDE_NAME>, with this advise, do you take <TAG.GROOM_NAME> to be your companion throughout all of your days?
+  TAG.CEREMONY_LINE7 = And <TAG.GROOM_NAME>, with this advise, do you also take <TAG.BRIDE_NAME> to be your companion throughout all of your days?
+  TAG.CEREMONY_LINE8 = Now, in mutual desire to wed, <TAG.BRIDE_NAME> and <TAG.GROOM_NAME> shall exchange their vows and rings as a token of their commitment.
+  TAG.CEREMONY_LINE9 = <TAG.BRIDE_NAME>, Repeat after me thy vows...
+  TAG.CEREMONY_LINE10 = 'This ring I give thee to seal the covenant I make with thee'
+  TAG.CEREMONY_LINE11 = <TAG.GROOM_NAME>, Repeat after me thy vows... 
+  TAG.CEREMONY_LINE12 = 'This ring I give thee to seal the covenant I make with thee.
+  TAG.CEREMONY_LINE13 = It is now my extreme pleasure before these witnesses with the power invested in me I announce you husband and wife.
+  TAG.CEREMONY_LINE14 = You may kiss your bride
+
+ON=@NPCRestock 
+  ITEMNEWBIE= i_sandals
+  COLOR=0485
+  ITEMNEWBIE=i_skirt_long
+  COLOR=0485
+  ITEMNEWBIE=i_armor_female_leather
+  COLOR=07b5
+  ITEMNEWBIE=i_hat_floppy
+  COLOR=0485
+  ITEMNEWBIE=i_spellbook
+  COLOR=0af7
+  NAME=The Bible
+  ATTR=05
+  ITEMNEWBIE=i_hair_long
+
+ON=@DCLICK
+  IF (<SRC.ACCOUNT.PLEVEL>>1)
+     IF (0<TAG.GROOM_NAME>=0) || (0<TAG.BRIDE_NAME>=0)
+        DIALOG D_CEREMONY_SETUP 
+     ELSE
+        DIALOG D_CEREMONY_RUN
+     ENDIF     
+  ENDIF
+
+
+[SPEECH JobPriestWedding] 
+
+
+[ItemDef M_Ceremony]
+id=i_memory
+Name=Ceremony Script
+type=t_eq_script
+
+ON=@Create
+   IF (<EVAL <CONT.TAG.DELAY1>> < 0)
+      CONT.TAG.WAIT=1
+      TIMER=5
+   ELSE
+      TIMER=<EVAL <CONT.TAG.DELAY1>>
+   ENDIF
+   
+   CONT.TAG.CEREMONY=1
+   
+ON=@Timer
+   IF (0<CONT.TAG.WAIT>=01)
+      TIMER=5
+   ELSE   
+      IF (0<CONT.TAG.CEREMONY> < 15)
+         CONT.SAY @30 <CONT.TAG.CEREMONY_LINE<EVAL <CONT.TAG.CEREMONY>>>
+         CONT.TAG.CEREMONY=(0<CONT.TAG.CEREMONY>+1)
+         
+         IF (<EVAL <CONT.TAG.DELAY<EVAL <CONT.TAG.CEREMONY>>>> < 0)
+            CONT.TAG.WAIT=1
+            TIMER=5
+         ELSE
+            TIMER=<EVAL <CONT.TAG.DELAY<EVAL <CONT.TAG.CEREMONY>>>>         
+         ENDIF
+      ELSE   
+         CONT.TAG.CEREMONY=1
+         REMOVE
+      ENDIF
+   ENDIF
+   RETURN 1
+
+
+[DIALOG D_CEREMONY_SETUP]
+50,50
+  gumppic    0    0 <eval   0ce>			// top
+  gumppic   44    0 <eval   0c9>
+  gumppic  471    0 <eval   0c9>
+  gumppic  891    0 <eval   0cf>
+
+  gumppic    0   44 <eval   0ca>			// middle
+  gumppic   44   44 <eval  0a2c>
+  gumppic  471   44 <eval  0a2c>
+  gumppic  891   44 <eval   0cb>
+
+  gumppic    0  160 <eval   0ca>			// middle
+  gumppic   44  160 <eval  0a2c>
+  gumppic  471  160 <eval  0a2c>
+  gumppic  891  160 <eval   0cb>
+
+  gumppic    0  450 <eval   0cc>			// bottom
+  gumppic   44  450 <eval   0e9>
+  gumppic  471  450 <eval   0e9>
+  gumppic  891  450 <eval   0cd>
+  
+  dtext 120 20 25 Wait is the delay before the line is said.  Set it to -1 if you want manually tell it to resume.
+  dtext 80 60 25 Text
+  dtextentry 80  80 880 20 0 1 <TAG.CEREMONY_LINE1>
+  dtextentry 80 100 880 20 0 2 <TAG.CEREMONY_LINE2>
+  dtextentry 80 120 880 20 0 3 <TAG.CEREMONY_LINE3>
+  dtextentry 80 140 880 20 0 4 <TAG.CEREMONY_LINE4>
+  dtextentry 80 160 880 20 0 5 <TAG.CEREMONY_LINE5>
+  dtextentry 80 180 880 20 0 6 <TAG.CEREMONY_LINE6>
+  dtextentry 80 200 880 20 0 7 <TAG.CEREMONY_LINE7>
+  dtextentry 80 220 880 20 0 8 <TAG.CEREMONY_LINE8>
+  dtextentry 80 240 880 20 0 9 <TAG.CEREMONY_LINE9>
+  dtextentry 80 260 880 20 0 10 <TAG.CEREMONY_LINE10>
+  dtextentry 80 280 880 20 0 11 <TAG.CEREMONY_LINE11>
+  dtextentry 80 300 880 20 0 12 <TAG.CEREMONY_LINE12>
+  dtextentry 80 320 880 20 0 13 <TAG.CEREMONY_LINE13>
+  dtextentry 80 340 880 20 0 14 <TAG.CEREMONY_LINE14>
+ 
+  dtext 20 60 25 Wait
+  dtextentry 20  80 20 20 0 15 <EVAL <TAG.DELAY1>>
+  dtextentry 20 100 20 20 0 16 <EVAL <TAG.DELAY2>>
+  dtextentry 20 120 20 20 0 17 <EVAL <TAG.DELAY3>>
+  dtextentry 20 140 20 20 0 18 <EVAL <TAG.DELAY4>>
+  dtextentry 20 160 20 20 0 19 <EVAL <TAG.DELAY5>>
+  dtextentry 20 180 20 20 0 20 <EVAL <TAG.DELAY6>>
+  dtextentry 20 200 20 20 0 21 <EVAL <TAG.DELAY7>>
+  dtextentry 20 220 20 20 0 22 <EVAL <TAG.DELAY8>>
+  dtextentry 20 240 20 20 0 23 <EVAL <TAG.DELAY9>>
+  dtextentry 20 260 20 20 0 24 <EVAL <TAG.DELAY10>>
+  dtextentry 20 280 20 20 0 25 <EVAL <TAG.DELAY11>>
+  dtextentry 20 300 20 20 0 26 <EVAL <TAG.DELAY12>>
+  dtextentry 20 320 20 20 0 27 <EVAL <TAG.DELAY13>>
+  dtextentry 20 340 20 20 0 28 <EVAL <TAG.DELAY14>>
+
+  dtext        200 380 0 Groom:
+  dtextentry   250 380 200 20 0 29 <TAG.BRIDE_NAME>
+  dtext        550 380 0 Bride:
+  dtextentry   600 380 200 20 0 30 <TAG.GROOM_NAME>
+  
+  button 50 420 4005 4006 1 0 1 
+  dtext  85 420 0 Accept Default Ceremony (Auto Populates Names)
+  
+  button 440 420 4005 4006 1 0 2
+  dtext  475 420 0 Accept Custom Ceremony (Exactly as Written)
+
+  button 820 420 4005 4006 1 0 0 
+  dtext  855 420 0 Cancel
+
+
+[DIALOG D_CEREMONY_SETUP BUTTON]
+ON=0
+
+ON=1
+   TAG.GROOM_NAME = <ARGTXT[29]>
+   TAG.BRIDE_NAME = <ARGTXT[30]>
+   TAG.CEREMONY_LINE1 = Welcome citizens of Britannia!
+   TAG.CEREMONY_LINE2 = We have gathered here on this joyous day to witness the joining of <TAG.BRIDE_NAME> and <TAG.GROOM_NAME> in Holy matrimony.
+   TAG.CEREMONY_LINE3 = The marriage covenant has held a place of honor in every society and has remained sacred to this day.
+   TAG.CEREMONY_LINE4 = From the beginning of time men and women have chosen to join in this bond of sharing and trust.
+   TAG.CEREMONY_LINE5 = Marriage is not a light matter. Enter therein only if willing to share love, commitment, and knowledge unconditionally.
+   TAG.CEREMONY_LINE6 = <TAG.BRIDE_NAME>, with this advise, do you take <TAG.GROOM_NAME> to be your companion throughout all of your days?
+   TAG.CEREMONY_LINE7 = And <TAG.GROOM_NAME>, with this advise, do you also take <TAG.BRIDE_NAME> to be your companion throughout all of your days?
+   TAG.CEREMONY_LINE8 = Now, in mutual desire to wed, <TAG.BRIDE_NAME> and <TAG.GROOM_NAME> shall exchange their vows and rings as a token of their commitment.
+   TAG.CEREMONY_LINE9 = <TAG.BRIDE_NAME>, Repeat after me thy vows...
+   TAG.CEREMONY_LINE10 = 'This ring I give thee to seal the covenant I make with thee'
+   TAG.CEREMONY_LINE11 = <TAG.GROOM_NAME>, Repeat after me thy vows... 
+   TAG.CEREMONY_LINE12 = 'This ring I give thee to seal the covenant I make with thee.
+   TAG.CEREMONY_LINE13 = It is now my extreme pleasure before these witnesses with the power invested in me I announce you husband and wife.
+   TAG.CEREMONY_LINE14 = You may kiss your bride
+   
+   TAG.DELAY1 = <ARGTXT[15]>
+   TAG.DELAY2 = <ARGTXT[16]>
+   TAG.DELAY3 = <ARGTXT[17]>
+   TAG.DELAY4 = <ARGTXT[18]>
+   TAG.DELAY5 = <ARGTXT[19]>
+   TAG.DELAY6 = <ARGTXT[20]>
+   TAG.DELAY7 = <ARGTXT[21]>
+   TAG.DELAY8 = <ARGTXT[22]>
+   TAG.DELAY9 = <ARGTXT[23]>
+   TAG.DELAY10 = <ARGTXT[24]>
+   TAG.DELAY11 = <ARGTXT[25]>
+   TAG.DELAY12 = <ARGTXT[26]>
+   TAG.DELAY13 = <ARGTXT[27]>
+   TAG.DELAY14 = <ARGTXT[28]>
+   
+   DIALOG D_CEREMONY_RUN
+   
+ON=2
+   TAG.CEREMONY_LINE1=<ARGTXT[1]>
+   TAG.CEREMONY_LINE2=<ARGTXT[2]>
+   TAG.CEREMONY_LINE3=<ARGTXT[3]>
+   TAG.CEREMONY_LINE4=<ARGTXT[4]>
+   TAG.CEREMONY_LINE5=<ARGTXT[5]>
+   TAG.CEREMONY_LINE6=<ARGTXT[6]>
+   TAG.CEREMONY_LINE7=<ARGTXT[7]>
+   TAG.CEREMONY_LINE8=<ARGTXT[8]>
+   TAG.CEREMONY_LINE9=<ARGTXT[9]>
+   TAG.CEREMONY_LINE10=<ARGTXT[10]>
+   TAG.CEREMONY_LINE11=<ARGTXT[11]>
+   TAG.CEREMONY_LINE12=<ARGTXT[12]>
+   TAG.CEREMONY_LINE13=<ARGTXT[13]>
+   TAG.CEREMONY_LINE14=<ARGTXT[14]>
+
+   TAG.DELAY1 = <ARGTXT[15]>
+   TAG.DELAY2 = <ARGTXT[16]>
+   TAG.DELAY3 = <ARGTXT[17]>
+   TAG.DELAY4 = <ARGTXT[18]>
+   TAG.DELAY5 = <ARGTXT[19]>
+   TAG.DELAY6 = <ARGTXT[20]>
+   TAG.DELAY7 = <ARGTXT[21]>
+   TAG.DELAY8 = <ARGTXT[22]>
+   TAG.DELAY9 = <ARGTXT[23]>
+   TAG.DELAY10 = <ARGTXT[24]>
+   TAG.DELAY11 = <ARGTXT[25]>
+   TAG.DELAY12 = <ARGTXT[26]>
+   TAG.DELAY13 = <ARGTXT[27]>
+   TAG.DELAY14 = <ARGTXT[28]>
+   
+   TAG.GROOM_NAME=<ARGTXT[29]>
+   TAG.BRIDE_NAME=<ARGTXT[30]>
+
+   DIALOG D_CEREMONY_RUN
+
+
+[DIALOG D_CEREMONY_RUN]
+0,0
+  gumppic    0    0 <eval   0ce>			// top
+  gumppic   44    0 <eval   0c9>
+  gumppic  471    0 <eval   0cf>
+
+  gumppic    0   44 <eval   0cc>			// bottom
+  gumppic   44   44 <eval   0e9>
+  gumppic  471   44 <eval   0cd>
+
+  button   70 30 2360 2361 1 0 20
+  dtext    95 25 0 Previous Line
+  
+  button  240 30 2360 2361 1 0 21
+  dtext   265 25 0 Reset
+
+  button  370 30 2360 2361 1 0 22
+  dtext   395 25 0 Next Line
+
+  button   70 50 2360 2361 1 0 23
+  dtext    95 45 0 Start
+  
+  button  240 50 2360 2361 1 0 24
+  dtext   265 45 0 Pause
+  
+  button  370 50 2360 2361 1 0 25
+  dtext   395 45 0 Continue
+  
+  
+[DIALOG D_CEREMONY_RUN BUTTON]
+ON=20
+   TAG.CEREMONY=<EVAL (<TAG.CEREMONY>-1)>
+   TAG.WAIT=0
+   DIALOG D_CEREMONY_RUN
+
+ON=21
+   TAG.BRIDE_NAME =
+   TAG.GROOM_NAME =
+   TAG.CEREMONY = 1
+   IF <FINDID.M_CEREMONY.UID>
+      FINDID.M_CEREMONY.REMOVE
+   ENDIF
+   DIALOG D_CEREMONY_SETUP
+   
+ON=22
+   TAG.CEREMONY=<EVAL (<TAG.CEREMONY>+1)>
+   TAG.WAIT=0
+   DIALOG D_CEREMONY_RUN
+
+ON=23
+   IF (<SRC.ACCOUNT.PLEVEL> > 1)
+      IF !<FINDID.M_Ceremony.UID>
+   	SERV.NEWITEM M_Ceremony
+   	EQUIP <NEW.UID>
+      ENDIF
+   ENDIF
+   DIALOG D_CEREMONY_RUN
+
+ON=24
+   TAG.WAIT=1
+   DIALOG D_CEREMONY_RUN
+   
+ON=25
+   TAG.WAIT=0
+   DIALOG D_CEREMONY_RUN
+
+   
+[EOF]

@@ -1,0 +1,3809 @@
+﻿// 29-06-03 - Wigifer - All academy people now train to no more than 35 - Tested
+// 18-03-13 - Arkos - Graduation is now at 600 total skill, academy gear useable up to 600 total skill, academy gold robe newbied - Tested
+//25/09/13 - Ray - Commented claimskill when joining.
+//24/10/13 - Ray - Added the Academy Faction for Imperial UO + Better organization on Axis for items/NPCs.
+// 25/11/2019 - Wigifer - Updated all remaining <TIME> to <SERV.TIME> (56d update issue)
+
+//*************************//
+//*** Academy Equipment ***//
+//*************************//
+
+[ITEMDEF i_cap_leather_acd]
+NAME=Academy Leather Cap
+ID=i_cap_leather
+TYPE=t_armor_leather
+FLIP=1
+SKILLMAKE=TAILORING 10.0, t_sewing_kit
+RESOURCES=2 i_hides_cut, 1 i_thread
+ARMOR=20
+DUPELIST=01dba
+
+CATEGORY=Imperial uo
+SUBSECTION=Academy Items
+DESCRIPTION=Academy Leather Cap
+
+ON=@Create
+ATTR=attr_newbie | attr_identified
+HITPOINTS={25 35}
+
+ON=@Equip
+IF !(<SRC.ISACADEMY>)
+EMOTE rips apart when you try to fit into it.
+REMOVE
+ENDIF
+
+[ITEMDEF i_sleeves_leather_acd]
+ID=i_sleeves_leather
+NAME=Academy Leather Sleeves
+TYPE=t_armor_leather
+RESOURCES=8 i_hides_cut, 1 i_thread
+WEIGHT=2
+FLIP=1
+ARMOR=30
+REQSTR=10
+VALUE=71
+DUPELIST=013c8,013cd,013cf
+SKILLMAKE=TAILORING 30.0, ARMSLORE 30.0, t_sewing_kit
+
+CATEGORY=Imperial uo
+SUBSECTION=Academy Items
+DESCRIPTION=Academy Leather Sleeves
+
+ON=@Create
+ATTR=attr_newbie | attr_identified
+HITPOINTS={31 37}
+
+ON=@Equip
+IF !(<SRC.ISACADEMY>)
+EMOTE rips apart when you try to fit into it.
+REMOVE
+ENDIF
+
+[ITEMDEF i_gloves_leather_acd]
+ID=i_gloves_leather
+NAME=Academy Leather Gloves
+TYPE=t_armor_leather
+RESOURCES=3 i_hides_cut, 1 i_thread
+WEIGHT=1
+FLIP=1
+ARMOR=20
+REQSTR=10
+VALUE=27
+DUPELIST=013ce
+SKILLMAKE=TAILORING 30.0, ARMSLORE 27.0, t_sewing_kit
+
+CATEGORY=Imperial uo
+SUBSECTION=Academy Items
+DESCRIPTION=Academy Leather Gloves
+
+ON=@Create
+ATTR=attr_newbie | attr_identified
+HITPOINTS={31 37}
+
+ON=@Equip
+IF !(<SRC.ISACADEMY>)
+EMOTE rips apart when you try to fit into it.
+REMOVE
+ENDIF
+
+[ITEMDEF i_gorget_leather_acd]
+ID=i_gorget_leather
+NAME=Academy Leather Gorget
+TYPE=t_armor_leather
+RESOURCES=4 i_hides_cut, 1 i_thread
+WEIGHT=1
+FLIP=1
+ARMOR=20
+REQSTR=10
+VALUE=34
+SKILLMAKE=TAILORING 30.0, ARMSLORE 25.0, t_sewing_kit
+
+CATEGORY=Imperial uo
+SUBSECTION=Academy Items
+DESCRIPTION=Academy Leather Gorget
+
+ON=@Create
+ATTR=attr_newbie | attr_identified
+HITPOINTS={31 37}
+
+ON=@Equip
+IF !(<SRC.ISACADEMY>)
+EMOTE rips apart when you try to fit into it.
+REMOVE
+ENDIF
+
+
+[ITEMDEF i_leggings_leather_acd]
+ID=i_leggings_leather
+NAME=Academy Leather Leggings
+TYPE=t_armor_leather
+RESOURCES=10 i_hides_cut, 2 i_thread
+WEIGHT=4
+FLIP=1
+LAYER = layer_pants
+ARMOR=20
+REQSTR=10
+VALUE=93
+DUPELIST=013d2
+SKILLMAKE=TAILORING 40.0, ARMSLORE 32.0, t_sewing_kit
+
+CATEGORY=Imperial uo
+SUBSECTION=Academy Items
+DESCRIPTION=Academy Leather Leggings
+
+ON=@Create
+ATTR=attr_newbie | attr_identified
+HITPOINTS={31 37}
+
+ON=@Equip
+IF !(<SRC.ISACADEMY>)
+EMOTE rips apart when you try to fit into it.
+REMOVE
+ENDIF
+
+[ITEMDEF i_tunic_leather_acd]
+ID=i_tunic_leather
+NAME=Academy Leather Tunic
+TYPE=t_armor_leather
+RESOURCES=12 i_hides_cut, 2 i_thread
+WEIGHT=6
+FLIP=1
+ARMOR=12
+REQSTR=15
+VALUE=115
+DUPELIST=013d3
+SKILLMAKE=TAILORING 40.0, ARMSLORE 35.0, t_sewing_kit
+
+CATEGORY=Imperial uo
+SUBSECTION=Academy Items
+DESCRIPTION=Academy Leather Tunic
+
+ON=@Create
+ATTR=attr_newbie | attr_identified
+HITPOINTS={31 37}
+
+ON=@Equip
+IF !(<SRC.ISACADEMY>)
+EMOTE rips apart when you try to fit into it.
+REMOVE
+ENDIF
+
+//********************************************************************//
+
+//////////////////
+///Plate Armor///
+////////////////
+
+[TEMPLATE plate_acd_full]
+NAME=Upgraded Academy Armor
+CONTAINER=i_bag
+
+CATEGORY=Imperial uo
+SUBSECTION=Academy Items
+DESCRIPTION=Academy Upgraded Full Armor
+
+ITEM = i_platemail_gorget_acd
+ITEM = i_platemail_gloves_acd
+ITEM = i_platemail_arms_acd
+ITEM = i_platemail_leggings_acd
+ITEM = i_platemail_chest_acd
+ITEM = i_bascinet_acd
+ITEM = i_katana_acd
+ITEM = i_kryss_acd
+ITEM = i_maul_acd
+
+[ITEMDEF i_platemail_gorget_acd]
+ID=01413
+TDATA1 = mat_steel
+NAME = Academy Plate Gorget
+TYPE = T_ARMOR
+FLIP = 1
+RESOURCES = 10 i_ingot_copper, 1 i_coal
+WEIGHT = 5
+ARMOR = 20
+REQSTR = 30
+
+CATEGORY=Imperial uo
+SUBSECTION=Academy Items
+DESCRIPTION=Academy Plate Gorget
+
+ON=@Create
+ATTR=attr_newbie | attr_identified
+COLOR = 0529
+HITPOINTS = 46
+
+ON=@Equip
+IF !(<SRC.ISACADEMY>)
+EMOTE the armor breaks when you try to fit into it.
+REMOVE
+ENDIF
+
+
+[ITEMDEF i_platemail_gloves_acd]
+ID = 01414
+TDATA1 = mat_steel
+NAME = Academy Gauntlets
+TYPE = T_ARMOR
+FLIP = 1
+RESOURCES = 12 i_ingot_copper, 1 i_coal
+WEIGHT = 6
+ARMOR = 20
+REQSTR = 30
+DUPELIST = 01418
+
+
+CATEGORY=Imperial uo
+SUBSECTION=Academy Items
+DESCRIPTION=Academy Gauntlets
+
+ON=@Create
+ATTR=attr_newbie | attr_identified
+COLOR = 0529
+HITPOINTS = 46
+
+ON=@Equip
+IF !(<SRC.ISACADEMY>)
+EMOTE the armor breaks when you try to fit into it.
+REMOVE
+ENDIF
+
+[ITEMDEF i_platemail_arms_acd]
+ID = 01410
+TDATA1 = mat_steel
+NAME = Academy Armplates
+TYPE = T_ARMOR
+FLIP = 1
+SKILLMAKE = BLACKSMITHING 497, ARMSLORE 0
+RESOURCES = 18 i_ingot_copper, 1 i_coal
+WEIGHT = 16
+ARMOR = 30
+REQSTR = 40
+DUPELIST = 01417
+
+CATEGORY=Imperial uo
+SUBSECTION=Academy Items
+DESCRIPTION=Academy Armplates
+
+ON=@Create
+ATTR=attr_newbie | attr_identified
+COLOR = 0529
+HITPOINTS = 46
+
+ON=@Equip
+IF !(<SRC.ISACADEMY>)
+EMOTE the armor breaks when you try to fit into it.
+REMOVE
+ENDIF
+
+
+[ITEMDEF i_platemail_leggings_acd]
+ID = 01411
+TDATA1 = mat_steel
+NAME = Academy Legplates
+TYPE = T_ARMOR
+LAYER = layer_legs
+FLIP = 1
+RESOURCES = 20 i_ingot_copper, 1 i_coal
+WEIGHT = 21
+ARMOR = 15
+REQSTR = 40
+DUPELIST = 0141a
+
+
+CATEGORY=Imperial uo
+SUBSECTION=Academy Items
+DESCRIPTION=Academy Legplates
+
+ON=@Create
+ATTR=attr_newbie | attr_identified
+COLOR = 0529
+HITPOINTS = 46
+
+ON=@Equip
+IF !(<SRC.ISACADEMY>)
+EMOTE the armor breaks when you try to fit into it.
+REMOVE
+ENDIF
+
+
+[ITEMDEF i_platemail_chest_acd]
+ID = 01415
+TDATA1 = mat_steel
+NAME = Academy Breastplate
+TYPE = T_ARMOR
+FLIP = 1
+RESOURCES = 25 i_ingot_copper, 1 i_coal
+WEIGHT = 21
+ARMOR = 10
+REQSTR = 50
+DUPELIST = 01416
+
+CATEGORY=Imperial uo
+SUBSECTION=Academy Items
+DESCRIPTION=Academy Breastplate
+
+ON=@Create
+ATTR=attr_newbie | attr_identified
+COLOR=0529
+HITPOINTS=46
+
+ON=@Equip
+IF !(<SRC.ISACADEMY>)
+EMOTE the armor breaks when you try to fit into it.
+REMOVE
+ENDIF
+
+[ITEMDEF i_bascinet_acd]
+ID = 0140c
+TDATA1=mat_steel
+NAME=Academy Bascinet
+TYPE=T_ARMOR
+FLIP=1
+RESOURCES=15 i_ingot_copper
+WEIGHT=6
+ARMOR=20
+REQSTR=10
+DUPELIST = 0140d
+
+CATEGORY=Imperial uo
+SUBSECTION=Academy Items
+DESCRIPTION=Academy Bascinet
+
+ON=@Create
+ATTR=attr_newbie | attr_identified
+COLOR = 0529
+HITPOINTS = 46
+
+ON=@Equip
+IF !(<SRC.ISACADEMY>)
+EMOTE the armor breaks when you try to fit into it.
+REMOVE
+ENDIF
+
+
+//********************************************************************//
+
+//////////////////
+///Weapons    ///
+////////////////
+
+[ITEMDEF i_katana_acd]
+ID = 013fe
+NAME = Academy Katana
+WEIGHT = 5
+TYPE = T_WEAPON_SWORD
+TDATA1 = mat_steel
+FLIP = 1
+DAM = 7, 28
+SKILL = Swordsmanship
+REQSTR = 30
+TWOHANDS = N
+DUPELIST = 013ff
+ON = @Create
+HITPOINTS = 78
+COLOR = 0529
+ATTR=attr_newbie | attr_identified
+ON = @DClick
+return = <wpn_dclick_bladed>
+ON = @Targon_ground
+return = <wpn_targon_ground_bladed>
+ON = @Targon_char
+return = <wpn_targon_char_bladed>
+ON = @Targon_item
+return = <wpn_targon_item_bladed>
+
+ON=@Equip
+IF !(<SRC.ISACADEMY>)
+EMOTE the weapon breaks when you try to use it.
+REMOVE
+ENDIF
+
+[ITEMDEF i_kryss_acd]
+ID = 01400
+NAME = Academy Kryss
+WEIGHT = 4
+TYPE = T_WEAPON_FENCE
+TDATA1 = mat_steel
+FLIP = 1
+DAM = 5, 22
+SKILL = Fencing
+REQSTR = 25
+TWOHANDS = N
+DUPELIST = 01401
+ON = @Create
+HITPOINTS = 78
+COLOR = 0529
+ATTR=attr_newbie | attr_identified
+ON = @DClick
+return = <wpn_dclick_bladed>
+ON = @Targon_ground
+return = <wpn_targon_ground_bladed>
+ON = @Targon_char
+return = <wpn_targon_char_bladed>
+ON = @Targon_item
+return = <wpn_targon_item_bladed>
+
+ON=@Equip
+IF !(<SRC.ISACADEMY>)
+EMOTE the weapon breaks when you try to use it.
+REMOVE
+ENDIF
+
+
+[ITEMDEF i_maul_acd]
+ID = 0143a
+NAME = Academy Maul
+WEIGHT = 8
+TYPE = T_WEAPON_MACE_SMITH
+TDATA1 = mat_steel
+FLIP = 1
+DAM = 5, 39
+SKILL = Mace Fighting
+REQSTR = 40
+TWOHANDS = N
+DUPELIST = 0143b
+ON = @Create
+HITPOINTS = 91
+COLOR = 0529
+ATTR=attr_newbie | attr_identified
+ON = @DClick
+return = <wpn_dclick_blunt>
+ON = @Targon_ground
+return = <wpn_targon_ground_blunt>
+ON = @Targon_char
+return = <wpn_targon_char_blunt>
+ON = @Targon_item
+return = <wpn_targon_item_blunt>
+
+ON=@Equip
+IF !(<SRC.ISACADEMY>)
+EMOTE the weapon breaks when you try to use it.
+REMOVE
+ENDIF
+//********************************************************************//
+
+/////////////////////
+//Academy Clothes///
+///////////////////
+
+[ITEMDEF i_robe_academy]
+ID	= i_robe
+NAME	= Academy Robe
+TYPE	= T_CLOTHING
+ARMOR	= 17
+DYE	= 0
+
+ON = @Create
+   attr    	= 5
+   HITPOINTS	= 50
+   COLOR	= 0529
+
+ON=@EQUIP
+
+IF (<SRC.TAG0.ACADEMY>==1)
+SRC.SYSMESSAGE  You put on your Academy Robe.
+EQUIP 
+RETURN 0   
+ELSE
+SRC.SYSMESSAGE  You can't use this robe.
+EMOTE The robe crumbles to dust.
+REMOVE
+ENDIF
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Academy Items
+DESCRIPTION=Academy Robe
+
+//********************************************************************//
+
+[ITEMDEF i_robe_academy_g]
+ID	= i_robe
+NAME	= Academy Gold Robe
+TYPE	= T_CLOTHING
+ARMOR	= 22
+VALUE	= 500
+DYE	= 0
+
+ON=@Create
+ATTR=5
+HITPOINTS=50
+COLOR=0f8 
+
+ON=@EQUIP
+
+IF (<SRC.tag0.academy>==2)
+SRC.SYSMESSAGE You put on your Academy Gold Robe.
+EQUIP 
+RETURN 0   
+ELSE 
+SRC.SYSMESSAGE You are not an Academy Graduate Member.
+EMOTE The robe crumbles to dust.
+REMOVE
+ENDIF
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Academy Items
+DESCRIPTION=Academy Gold Robe
+
+//********************************************************************//
+
+[ITEMDEF i_shield_kite_acd]
+ID = 01b74
+TDATA1 = mat_steel
+NAME = Academy Shield
+TYPE = t_shield
+FLIP = 1
+DYE = 1
+WEIGHT = 16
+ARMOR = 10
+REQSTR = 35
+DUPELIST = 01b75
+VALUE=250
+RESOURCES = 4 i_ingot_steel
+
+ON=@Create
+COLOR=0529
+HITPOINTS=60
+
+ON=@EQUIP
+
+IF (<SRC.TAG0.ACADEMY>==1)
+SRC.SYSMESSAGE  You equip your Academy Shield.
+EQUIP 
+RETURN 0   
+ELSE
+SRC.SYSMESSAGE You can't use this shield.
+SRC.SYSMESSAGE The Academy Shield crumbles to dust.
+REMOVE
+ENDIF
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Academy Items
+DESCRIPTION=Academy Shield
+
+//********************************************************************//
+
+[ITEMDEF i_sash_acd]
+NAME = Academy sash
+ID = i_sash
+WEIGHT=1
+TYPE=T_CLOTHING
+DYE=1
+ARMOR=1
+VALUE=75
+
+ON=@CREATE
+COLOR = 0529
+HITPOINTS={11 40}
+
+ON=@EQUIP
+IF (<SRC.TAG0.ACADEMY>==1)
+SRC.SYSMESSAGE  You put on your Academy Sash.
+EQUIP 
+RETURN 0   
+ELSE
+SRC.SYSMESSAGE You can't use this sash.
+SRC.SYSMESSAGE The Academy Sash crumbles to dust.
+REMOVE
+ENDIF
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Academy Items
+DESCRIPTION=Academy Sash
+
+//********************************************************************//
+
+[ITEMDEF i_hat_tricorne_acd]
+ID=i_hat_tricorne
+NAME = Academy Tricorne
+WEIGHT=2
+TYPE=T_CLOTHING
+DYE=1
+ARMOR=3
+VALUE=75
+
+ON=@CREATE
+
+COLOR=0529
+HITPOINTS={21 23}
+
+ON=@EQUIP
+
+IF (<SRC.TAG0.ACADEMY>==1)
+SRC.SYSMESSAGE  You put on your Academy Tricorne.
+EQUIP 
+RETURN 0   
+ELSE
+SRC.SYSMESSAGE You can't use this hat.
+SRC.SYSMESSAGE The Academy Tricorne crumbles to dust.
+REMOVE
+ENDIF
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Academy Items
+DESCRIPTION=Academy Tricorne
+
+//********************************************************************//
+
+[ITEMDEF i_cape_acd]
+ID=i_cape
+NAME = Academy Cape
+WEIGHT=3
+TYPE=T_CLOTHING
+DYE=1
+ARMOR=5
+VALUE=100
+
+ON=@Create
+COLOR = 0529
+HITPOINTS={11 40}
+
+ON=@EQUIP
+
+IF (<SRC.TAG0.ACADEMY>==1)
+SRC.SYSMESSAGE You put on your Academy Cape.
+EQUIP 
+RETURN 0   
+ELSE
+SRC.SYSMESSAGE You can't use this cape.
+SRC.SYSMESSAGE The Academy Cape crumbles to dust.
+REMOVE
+ENDIF
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Academy Items
+DESCRIPTION=Academy Cape
+
+//********************************************************************//
+
+[ITEMDEF i_hat_wizards_acd]
+ID=i_hat_wizards
+NAME = Academy Wizard’s Hat
+WEIGHT=2
+TYPE=T_CLOTHING
+DYE=1
+ARMOR=3
+VALUE=75
+
+ON=@CREATE
+
+COLOR=0529
+HITPOINTS={21 23}
+
+ON=@EQUIP
+
+IF (<SRC.TAG0.ACADEMY>==1)
+SRC.SYSMESSAGE You put on your Academy Wizard’s Hat.
+EQUIP 
+RETURN 0   
+ELSE
+SRC.SYSMESSAGE You can't use this hat.
+SRC.SYSMESSAGE The Academy Wizard’s Hat crumbles to dust.
+REMOVE
+ENDIF
+RETURN 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Academy Items
+DESCRIPTION=Academy Wizard’s Hat
+
+
+//********************************************************************//
+//                            ACADEMY NPCS                            //
+//********************************************************************//
+[CHARDEF C_H_Sherwood]
+DEFNAME=C_H_Sherwood
+NAME=Sherwood, the Academy Rancher
+ID=C_MAN
+DESIRES=i_gold,e_notoriety
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+TSPEECH=spk_horse
+
+TSPEECH = spk_trainer_acd
+TSPEECH = spk_shopkeepACD
+
+ON=@Create
+   NPC=BRAIN_ANIMAL_TRAINER 
+   COLOR=colors_skin
+   STR={36 50}
+   DEX={34 48}
+   INT={28 42}
+
+   AnimalLore=100.0
+   Taming=100.0
+   Herding=100.0
+
+   ITEMNEWBIE=random_male_hair
+   COLOR=colors_hair
+   ITEMNEWBIE=random_facial_hair
+   COLOR=match_hair
+
+ON=@NPCRestock
+   ITEM=RANDOM_LIGHT
+   ITEM=i_shirt_plain
+   COLOR=colors_all
+   ITEM=random_pants
+   COLOR=colors_all
+   ITEM=i_boots_calf
+   COLOR=colors_neutral
+   ITEM=random_coin_purse
+
+   SELL=i_pet_horse_tan,{0 2}
+   SELL=i_pet_horse_gray,{0 2}
+   SELL=i_pet_horse_brown_lt,{0 2}
+   SELL=i_pet_horse_brown_dk,{0 2}
+   SELL=i_pet_horse_pack,{0 2}
+
+CATEGORY=Imperial uo
+SUBSECTION=NPCs
+DESCRIPTION=Sherwood
+
+//********************************************************************//
+[CHARDEF C_H_Lucy]
+DEFNAME=C_H_Lucy
+NAME=Lucy the Academy Bartender
+ID=C_WOMAN
+
+DESIRES=i_gold,e_notoriety
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+
+TSPEECH = spk_trainer_acd
+TSPEECH = spk_shopkeepACD
+
+ON=@Create
+   NPC=brain_vendor
+   COLOR=colors_skin
+   STR={36 50}
+   DEX={36 50}
+   INT={121 135}
+
+   Cooking=100.0
+   Inscription=100.0
+   Cartography=100.0
+
+   ITEMNEWBIE=random_female_hair
+   COLOR=colors_hair
+
+ON=@NPCRestock
+   ITEM=RANDOM_LIGHT
+   ITEM=i_dress_plain
+   COLOR=colors_all
+   ITEM=random_shoes
+   COLOR=colors_neutral
+   ITEM=i_apron_half
+   ITEM=random_coin_purse
+
+   SELL=VENDOR_S_WAITER
+   SELL=i_Academy_wine
+
+CATEGORY=Imperial uo
+SUBSECTION=NPCs
+DESCRIPTION=Lucy
+
+//********************************************************************//
+[CHARDEF c_h_guard_Albert] 
+//Male GUARD 
+DEFNAME=C_H_GUARD_npc 
+NAME=Albert
+ID=C_MAN 
+DAM=75,105 
+ARMOR=96
+
+
+TSPEECH = spk_trainer_acd
+
+DESIRES=i_gold 
+
+CATEGORY=Imperial uo
+SUBSECTION=NPCs
+DESCRIPTION=Albert
+
+ON=@Create 
+   TITLE=Academy Guard
+   NPC=brain_vendor 
+   COLOR=03ff
+   STR={1000 1300} 
+   DEX={500 700} 
+   INT={151 165} 
+   
+   Parrying=100.0
+   Swordsmanship=100.0
+   FARMING=100.0
+
+   ITEMNEWBIE=i_hair_short
+   COLOR=03e1
+   ITEMNEWBIE=02040
+   COLOR=03e1
+
+ON=@NPCRestock 
+   ITEMNEWBIE=013bf
+   ITEMNEWBIE=013be
+   ITEMNEWBIE=i_sword_broad_chrome
+   ITEMNEWBIE=01714
+   COLOR=0259
+   ITEMNEWBIE=i_Cape
+   COLOR=0259
+   ITEMNEWBIE=01711
+   ITEMNEWBIE=i_sash
+   COLOR=002
+   NAME=Hero of Skara Bridge
+   ITEMNEWBIE=01b74
+   COLOR=0259
+
+ON=@NPCRefuseItem 
+   SAY I cannot be bribed. Be gone. 
+   return 1 
+
+//********************************************************************//
+[CHARDEF c_h_guard_Felix] 
+//Male GUARD 
+DEFNAME=C_H_GUARD_npc 
+NAME=Felix
+ID=C_MAN 
+DAM=75,105 
+ARMOR=96
+
+
+TSPEECH = spk_trainer_acd
+TSPEECH=spk_shopkeepACD
+
+DESIRES=i_gold 
+
+CATEGORY=Imperial uo
+SUBSECTION=NPCs
+DESCRIPTION=Felix
+
+ON=@Create 
+   TITLE=Academy Guard
+   NPC=brain_VENDOR  
+   COLOR=03ff
+   STR={1000 1300} 
+   DEX={500 700} 
+   INT={151 165} 
+
+   Stealing=100.0
+   Stealth=100.0
+   Hiding=100.0
+   LockPicking=100.0
+
+   ITEMNEWBIE=i_hair_long
+   COLOR=03e1
+
+ON=@NPCRestock 
+   ITEMNEWBIE=013bf
+   ITEMNEWBIE=013be
+   ITEMNEWBIE=i_spear_short_steel
+   NAME=Nightsleeper
+   ITEMNEWBIE=i_Cape
+   COLOR=0259
+   ITEMNEWBIE=01711
+   ITEMNEWBIE=i_sash
+   COLOR=0259
+   ITEMNEWBIE=01715
+   COLOR=0259
+
+ON=@NPCRefuseItem 
+   SAY I cannot be bribed. be gone. 
+   return 1
+
+   SELL	= i_fruit_cabbage,{2 8}
+   SELL	= i_fruit_lettuce,{2 8}
+   SELL	= i_hay_sheaf,{2 8}
+   SELL	= i_fruit_cantelope,{2 8}
+   SELL	= i_fruit_carrot,{2 8}
+   SELL	= i_fruit_honeydewmelon,{2 8}
+   SELL	= i_fruit_squash,{2 8}
+   SELL	= i_fruit_onion,{2 8}
+   SELL	= i_fruit_pumpkin,{2 8}
+   SELL	= i_tomatoe,{2 8}
+
+
+
+[CHARDEF c_h_guard_Brutus] 
+//Male GUARD 
+DEFNAME=C_H_GUARD_npc 
+NAME=Brutus
+ID=C_MAN 
+DAM=75,105 
+ARMOR=96
+
+
+TSPEECH = spk_trainer_acd
+
+DESIRES=i_gold
+
+CATEGORY=Imperial uo
+SUBSECTION=NPCs
+DESCRIPTION=Brutus
+
+ON=@Create 
+   TITLE=Academy Guard
+   NPC=brain_VENDOR  
+   COLOR=03ff
+   STR={1000 1300} 
+   DEX={500 700} 
+   INT={151 165} 
+
+   Macefighting=100.0
+   Mining=100.0
+   Blacksmithing=100.0
+ 
+   ITEMNEWBIE=02044
+   COLOR=025
+
+ON=@NPCRestock 
+   ITEMNEWBIE=013bf
+   ITEMNEWBIE=013be
+   ITEMNEWBIE=0143b
+   ITEMNEWBIE=i_Cape
+   COLOR=0259
+   ITEMNEWBIE=01711
+   ITEMNEWBIE=i_sash
+   COLOR=0259
+   ITEMNEWBIE=01b74
+   COLOR=0259
+
+ON=@NPCRefuseItem 
+   SAY I cannot be bribed. be gone. 
+   return 1
+
+//********************************************************************//
+[CHARDEF c_h_guard_Rufus] 
+//Male GUARD 
+DEFNAME=C_H_GUARD_npc 
+NAME=Rufus
+ID=C_MAN 
+DAM=75,105 
+ARMOR=96
+
+
+TSPEECH = spk_trainer_acd
+
+DESIRES=i_gold 
+
+CATEGORY=Imperial uo
+SUBSECTION=NPCs
+DESCRIPTION=Rufus
+
+ON=@Create 
+   TITLE=Academy Guard
+   NPC=brain_GUARD
+   COLOR=03ff
+   STR={1000 1300} 
+   DEX={500 700} 
+   INT={151 165} 
+
+   Anatomy=100.0
+   Detection=100.0
+   Tactics=100.0
+
+   ITEMNEWBIE=0203d
+   COLOR=color_brown
+   ITEMNEWBIE=0203f
+   COLOR=color_brown
+
+ON=@NPCRestock 
+   ITEMNEWBIE=013bf
+   ITEMNEWBIE=013be
+   ITEMNEWBIE=013fb
+   ITEMNEWBIE=i_Cape
+   COLOR=0259
+   ITEMNEWBIE=01711
+   ITEMNEWBIE=i_sash
+   COLOR=0259
+
+ON=@NPCRefuseItem 
+   SAY I cannot be bribed. be gone. 
+   return 1
+
+//********************************************************************//
+[CHARDEF C_H_HEALER_ACD]
+DEFNAME=C_H_HEALER_ACD
+NAME=Mortisa
+ID=C_WOMAN
+AVERSIONS=T_TRAP
+DESIRES=i_gold,e_notoriety,i_reag_GARLIC,i_reag_GINSENG,i_cloth
+
+
+TSPEECH = spk_trainer_acd
+TSPEECH=spk_shopkeepACD
+
+ON=@Create
+   TITLE = Gypsy Healer
+   COLOR=0973
+   STR={71 85}
+   DEX={81 95}
+   INT={300 400}
+
+   ItemID = 100.0
+   Healing = 100.0
+   EvaluatingIntel = 100.0
+
+   NPC=brain_healer
+
+   ITEMNEWBIE=i_hair_long
+   COLOR=0747
+
+ON=@NPCRestock
+   ITEMNEWBIE=01f01
+   color=084e
+   ITEM=i_sandals  
+   SELL=VENDOR_S_HEALER_SHOP
+ 
+CATEGORY=Imperial uo
+SUBSECTION=NPCs
+DESCRIPTION=Mortisa
+
+
+//********************************************************************//
+[CHARDEF C_H_ali_acd]
+DEFNAME=C_H_ali_acd
+NAME=Ali
+ID=C_MAN
+HIREDAYWAGE=50
+DESIRES=i_gold,e_notoriety
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+
+TSPEECH = spk_trainer_acd
+TSPEECH=spk_shopkeepACD
+
+ON=@Create
+   TITLE = Mad Academy Shopkeeper
+   NPC=brain_vendor
+   COLOR=colors_skin
+   FLAGS=028000005
+   NEED=i_gold
+
+   STR={66 80}
+   DEX=90
+   INT={66 80}
+
+   Tailoring = 100.0
+   Tinkering = 100.0
+   Carpentry = 100.0
+   Lumberjacking = 100.0
+
+   ITEMNEWBIE=i_lantern
+   ITEMNEWBIE=i_hair_long
+   COLOR=03d6
+   ITEMNEWBIE=i_beard_long
+   COLOR=match_hair
+
+   ITEMNEWBIE=01f03
+   COLOR=0529
+   ITEMNEWBIE=01718
+   COLOR=0529
+   ITEMNEWBIE=01711
+
+
+   SELL=VENDOR_S_ARMORER
+   SELL=VENDOR_S_WEAPONSMITH
+   SELL	= i_hat_tricorne_ACD
+   SELL	= i_hat_wizards_ACD
+   SELL	= i_cape_ACD
+   SELL	= i_shield_kite_ACD
+   SELL	= i_sash_ACD
+   SELL	= i_bread_loaf,{6 34}
+   SELL	= i_drum,{1 3}
+   SELL	= i_reag_spider_silk,{51 106}
+   SELL	= i_reag_sulfur_ash,{51 106}
+   SELL	= i_reag_nightshade,{51 106}
+   SELL	= i_reag_mandrake_root,{51 106}
+   SELL	= i_reag_ginseng,{51 106}
+   SELL	= i_reag_garlic,{51 106}
+   SELL	= i_reag_black_pearl,{51 106}
+   SELL	= i_reag_blood_moss,{51 106}
+   SELL	= i_rune_marker,{2 5}
+   SELL	= i_book_songs_war, { 1 3 }
+   SELL	= i_bottle_hair_dye,{3 18}
+   SELL	= i_potion_RefreshLess,{3 7}
+   SELL	= i_potion_AgilityLess,{3 7}
+   SELL	= i_potion_nightsight,{3 7}
+   SELL	= i_potion_HealLess,{3 7}
+   SELL	= i_potion_StrengthLess,{3 7}
+   SELL	= i_potion_PoisonLess,{3 7}
+   SELL	= i_potion_CureLess,{3 7}
+   SELL	= i_potion_ExplosionLess,{1 3}
+   SELL=i_bag,{1 5}
+
+
+CATEGORY=Imperial uo
+SUBSECTION=NPCs
+DESCRIPTION=Ali (adventure shop)
+
+//********************************************************************//
+[CHARDEF C_H_FISHER_ACD]
+DEFNAME=C_H_FISHER_ACD
+NAME=Simon
+ID=C_MAN
+DESIRES=i_gold,e_notoriety,r_water
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+
+TSPEECH = spk_trainer_acd
+TSPEECH=spk_shopkeepACD
+
+ON=@Create
+   TITLE = Look Out
+   NPC=brain_vendor
+   COLOR=colors_skin
+   STR={61 75}
+   DEX={61 75}
+   INT={41 55}
+
+   Fishing=100.0
+   COOKING = 100.0
+   Survival=100.0
+
+   ITEMNEWBIE=0203f
+   COLOR=match_hair
+
+ON=@NPCRestock
+   ITEM=RANDOM_LIGHT
+   ITEM=i_shirt_plain
+   COLOR=colors_all
+   ITEM=random_pants
+   COLOR=colors_all
+   ITEM=random_shoes
+   COLOR=colors_neutral
+   ITEM=i_fishing_pole
+   ITEMNEWBIE=i_sash
+   COLOR=0529
+
+   SELL=VENDOR_S_FISHER
+   SELL=i_arrow,{5 15}
+
+CATEGORY=Imperial uo
+SUBSECTION=NPCs
+DESCRIPTION=Simon (fisherman)
+
+//********************************************************************//
+[CHARDEF c_Barnaby]
+NAME	= Barnaby
+ID	= c_mongbat
+SOUND	= snd_MONSTER_GARGYL1
+ICON	= i_pet_mongbat
+CAN	= MT_WALK|MT_FLY|MT_USEHANDS
+TEVENTS	= e_npc_daemon
+DAM	= 3,17
+ARMOR	= 20
+RESOURCES=8 i_ribs_raw
+FOODTYPE=15 t_meat_raw
+AVERSIONS=t_TRAP,r_civilization
+
+ON=@Create
+   TITLE = Academy Mascot
+   COLOR	= 0215
+   NPC	= brain_monster
+   FAME	= 5
+   KARMA	= {4000 4999}
+
+   STR	= {105 145}
+   DEX	= {80 90}
+   INT	= {81 105}
+
+   PARRYING	= {35.0 45.0}
+   MAGERY	= {70.0 85.0}
+   MAGICRESISTANCE={60.0 75.0}
+   TACTICS	= {40.0 60.0}
+   WRESTLING	= {60.0 70.0}
+
+CATEGORY=Imperial uo
+SUBSECTION=NPCs
+DESCRIPTION=Barnaby
+
+//********************************************************************//
+[CHARDEF C_H_Penelope_ACD]
+DEFNAME=C_H_Penelope_ACD
+NAME=Lady Penelope
+ID=C_Woman
+DESIRES=i_gold,e_notoriety,r_water
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+
+TSPEECH = spk_trainer_acd
+
+ON=@Create
+   NPC=brain_vendor
+   TITLE = Head of the Academy
+   COLOR=03ff
+   STR={261 375}
+   DEX={261 375}
+   INT={241 355}
+
+   Musicianship=100.0
+   Peacemaking=100.0
+   Provocation=100.0
+   ArmsLore=100.0
+
+   ITEMNEWBIE=0203c
+   COLOR=06a5
+
+ON=@NPCRestock
+   ITEMNEWBIE=01711
+   ITEMNEWBIE=01f01
+   COLOR=01f
+   ITEMNEWBIE=01713
+   COLOR=01f
+   ITEMNEWBIE=013c6
+   COLOR=01f
+   ITEMNEWBIE=i_spellbook
+   NAME= Book of the Academy
+   ITEMNEWBIE=i_sash
+   COLOR=0529
+
+CATEGORY=Imperial uo
+SUBSECTION=NPCs
+DESCRIPTION=Lady Penelope
+
+//********************************************************************//
+[CHARDEF C_H_Robin_ACD]
+DEFNAME=C_H_Robin_ACD
+NAME=Sir Robin
+ID=C_Man
+DESIRES=i_gold,e_notoriety,r_water
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+
+TSPEECH = spk_trainer_acd
+
+ON=@Create
+   NPC=brain_vendor
+   TITLE=Academy Weapon Trainer
+   COLOR=colors_skin
+   STR={61 75}
+   DEX={61 75}
+   INT={41 55}
+
+   SWORDSMANSHIP = 100.0
+   MACEFIGHTING = 100.0
+   FENCING = 100.0
+   WRESTLING = 100.0
+
+   ITEMNEWBIE=0203f
+   COLOR=match_hair
+
+ON=@NPCRestock
+   ITEMNEWBIE=01410
+   COLOR=0973
+   NAME= Armour of Dust
+   ITEMNEWBIE=01411
+   COLOR=0973
+   NAME= Armour of Dust
+   ITEMNEWBIE=0140c
+   COLOR=0973
+   NAME= Armour of Dust
+   ITEMNEWBIE=01413
+   COLOR=0973
+   NAME= Armour of Dust
+   ITEMNEWBIE=01414
+   COLOR=0973
+   NAME= Armour of Dust
+   ITEMNEWBIE=01415
+   COLOR=0973
+   NAME= Armour of Dust
+   ITEMNEWBIE=i_sash
+   COLOR=0529
+   ITEMNEWBIE=01b74
+   COLOR=0529
+   ITEMNEWBIE=i_Cape
+   COLOR=0529
+   ITEMNEWBIE=0f5e
+   COLOR=0529
+
+CATEGORY=Imperial uo
+SUBSECTION=NPCs
+DESCRIPTION=Sir Robin
+
+//********************************************************************//
+[CHARDEF C_H_Morki_ACD]
+DEFNAME=C_H_Morki_ACD
+NAME=Morki
+ID=C_Man
+DESIRES=i_gold,e_notoriety,r_water
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+
+TSPEECH = spk_trainer_acd
+TSPEECH=spk_shopkeepACD
+
+ON=@Create
+   NPC=brain_vendor
+   TITLE = Academy Magic Trainer
+   COLOR=colors_skin
+   STR={261 375}
+   DEX={261 375}
+   INT={241 355}
+
+   Magery=100.0
+   MagicResistance=100.0
+   Meditation=100.0
+
+   ITEMNEWBIE=0203f
+   COLOR=match_hair
+ 
+ON=@NPCRestock
+   ITEM=i_boots_calf
+   COLOR=045e
+   ITEMNEWBIE=i_robe
+   COLOR=0f8 
+   ITEMNEWBIE=i_staff_black_cherry
+
+   SELL	= i_reag_spider_silk,{100 150}
+   SELL	= i_reag_sulfur_ash,{100 150}
+   SELL	= i_reag_nightshade,{100 150}
+   SELL	= i_reag_mandrake_root,{100 150}
+   SELL	= i_reag_ginseng,{100 150}
+   SELL	= i_reag_garlic,{100 150}
+   SELL	= i_reag_black_pearl,{100 150}
+   SELL	= i_reag_blood_moss,{100 150}
+
+CATEGORY=Imperial uo
+SUBSECTION=NPCs
+DESCRIPTION=Morki
+
+
+//********************************************************************//
+[CHARDEF C_H_Swiftar_ACD]
+DEFNAME=C_H_Swiftar_ACD
+NAME=Swiftar
+ID=C_Man
+DESIRES=i_gold,e_notoriety,r_water
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+
+TSPEECH = spk_trainer_acd
+TSPEECH = spk_shopkeepACD
+
+ON=@Create
+   NPC=brain_vendor
+   TITLE = Academy Ranger
+   COLOR=colors_skin
+   STR={361 475}
+   DEX={361 475}
+   INT={341 455}
+
+   Bowcraft=100.0
+   Tracking=100.0
+   Archery=100.0
+
+   ITEMNEWBIE=0203f
+   COLOR=match_hair
+
+ON=@NPCRestock
+   ITEMNEWBIE=i_bow_cherry
+   ITEMNEWBIE=i_CAPE
+   COLOR=0529
+   ITEMNEWBIE=i_SASH
+   COLOR=0529
+   ITEMNEWBIE=i_leather_sleeves
+   COLOR=0599
+   ITEMNEWBIE=i_leather_tunic
+   COLOR=045e
+   ITEMNEWBIE=i_leather_gloves
+   COLOR=045e
+   ITEMNEWBIE=i_leather_leggings
+   COLOR=0599
+   ITEMNEWBIE=i_leather_gorget
+   COLOR=045e
+   ITEM=i_boots_calf
+   COLOR=045e
+   ITEMNEWBIE=i_sash
+   COLOR=0529
+
+   SELL	= i_bread_loaf,{1 5}
+   SELL=i_bag,{1 5}
+   SELL=i_torch,{1 15}
+   SELL=i_arrow,{5 20}
+   SELL=i_xbolt,{5 20}
+
+CATEGORY=Imperial uo
+SUBSECTION=NPCs
+DESCRIPTION=Swiftar
+
+//********************************************************************//
+[CHARDEF C_H_Gatekeeper_ACD]
+DEFNAME=C_H_Gatekeeper_ACD
+NAME=The Gatekeeper
+ID=C_Man
+DESIRES=i_gold,e_notoriety,r_water
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+
+TSPEECH = spk_trainer_acd
+TSPEECH = spk_shopkeepACD
+
+ON=@Create
+   NPC=brain_vendor
+   TITLE =   
+   COLOR=00973
+   STR={561 675}
+   DEX={561 675}
+   INT={541 655}
+
+   Necromancy=0
+   Netherlore=100.0
+
+
+ON=@NPCRestock
+   ITEMNEWBIE=random_shoes
+   COLOR=colors_neutral
+   ITEMNEWBIE=i_spell_book
+   ITEMNEWBIE=i_robe_gatemaster
+   COLOR=001
+   ITEMNEWBIE=i_staff_black_cherry
+   COLOR=0529
+   name=Staff of Doom
+   Necromancy=0
+
+   SELL	= i_reag_nightshade,{1 3}
+   SELL	= i_potion_RefreshLess,{1 3}
+   SELL	= i_potion_AgilityLess,{1 3}
+   SELL	= i_potion_nightsight,{1 3}
+   SELL	= i_potion_HealLess,{1 3}
+   SELL	= i_potion_StrengthLess,{1 3}
+   SELL	= i_potion_PoisonLess,{1 3}
+   SELL	= i_potion_CureLess,{1 3}
+   SELL	= i_potion_ExplosionLess,{1 3}
+
+CATEGORY=Imperial uo
+SUBSECTION=NPCs
+DESCRIPTION=Gatemaster
+
+[ITEMDEF i_robe_gatemaster]
+ID	= i_deathshroud
+NAME	= Robe of Doom
+TYPE	= T_CLOTHING
+ARMOR	= 5
+DYE	= 0
+
+ON = @Create
+  HITPOINTS	= 350
+  COLOR		= 001
+
+CATEGORY=Imperial uo
+SUBSECTION=Academy Items
+DESCRIPTION=Gate Master Robe
+
+//********************************************************************//
+[ITEMDEF i_Academy_wine]
+NAME=The Almighty Academy Wine
+ID=09c7
+VALUE=17
+
+ON=@Create
+attr = 1
+
+CATEGORY=Imperial uo
+SUBSECTION=Academy Items
+DESCRIPTION=Academy Wine
+
+[ITEMDEF i_acd_travel_gate] 
+ID=i_moongate_blue
+TYPE=0 
+NAME=Academy Adventure Gate [50gps]
+
+CATEGORY=Imperial uo
+SUBSECTION=Academy Items
+DESCRIPTION=Academy Wine
+
+ON=@Create 
+   COLOR=00529
+
+ON=@DCLICK
+   if ( <SRC.ISACADEMY>)
+      DIALOG d_ark_travel  
+      RETURN 0   
+   else 
+      SRC.SYSMESSAGE  You are not a Academy Member.
+      SRC.SYSMESSAGE  The Gate will not let you pass.
+      src.move s 1
+   endif
+   return 1
+
+
+//********************************************************************//
+//                           ACADEMY TRAVEL                           //
+//********************************************************************//
+[DIALOG d_ark_travel] // INFO 
+0,0 // Position 
+resizepic 100 100 2600 400 300 // Curved Grey background 
+page 0 // Page 0 
+resizepic 116 165 5100 369 25 
+button 150 366 247 248 1 0 0 
+
+dtext 125 168 0 MISC
+button 200 169 5209 5003 0 1 1
+dtext 240 168 0 DUNGEONS 
+button 340 169 5209 5003 0 2 2
+
+dtext 170 130 1157 The Academy Adventure Gate
+
+page 1
+   dtext 140 200 995 Britain Graveyard
+   button 120 200 1209 1210 1 0 4 
+   dtext 140 220 995 Jhelom Cemetery
+   button 120 220 1209 1210 1 0 5 
+   dtext 140 240 995 Vesper Cemetery
+   button 120 240 1209 1210 1 0 6 
+   dtext 140 260 995 Cove Orc Fort
+   button 120 260 1209 1210 1 0 7 
+   dtext 140 280 995 Goblin Outpost
+   button 120 280 1209 1210 1 0 8 
+
+page 2
+   dtext 140 200 995 Covetous
+   button 120 200 1209 1210 1 0 18
+   dtext 140 220 995 Despise
+   button 120 220 1209 1210 1 0 20
+//   dtext 140 240 995 Destard
+//   button 120 240 1209 1210 1 0 21
+//   dtext 140 280 995 Wrong
+//   button 120 280 1209 1210 1 0 24
+   
+
+[DIALOG d_ark_travel BUTTON] 
+ONBUTTON=0 
+   SRC.SRC.SYSMESSAGE =Menu Aborted 
+ONBUTTON=4 //Britain Graveyard
+      SRC.GO 1384,1492,10
+ONBUTTON=5 //Jhelom Cemetery
+      SRC.GO 1294,3719,0
+ONBUTTON=6 //Vesper Cemetery
+      SRC.GO 2782,868,0
+ONBUTTON=7 // Cove Orc Fort 
+      SRC.GO 2187,1293
+ONBUTTON=8 //Goblin Outpost
+      SRC.GO 2060,803,40
+ONBUTTON=18 //Covetous 
+      SRC.GO 2499,922,0
+ONBUTTON=20 //Despise 
+      SRC.GO 1301,1080,0
+ONBUTTON=21 //Destard 
+      SRC.GO 1176,2639,0 
+ONBUTTON=24 //Wrong   
+      SRC.GO 2044,238,10
+   return 1
+
+
+//********************************************************************//
+//                     ACADEMY TRAINING SYSTEM                        //
+//********************************************************************//
+[FUNCTION f_train_common_acd]
+  VAR.LEARN	= 0
+  if ( 0<SRC.TAG.SKILL.LASTTRAIN> == 0 )
+     SRC.TAG.SKILL.LASTTRAIN	= 0
+  endif
+
+  if ( !strcmp( "<args>", "skill" ) )
+     SAY You must ask me about a specific skill!
+     return 0
+  endif
+  
+  SKILL_NUM_acd <args>
+
+  // unknown skill
+  if ( <var.skill_num> == -1 )
+     SAY That's not any skill that I've heard of.
+     return 1
+  endif
+
+  VAR.SKILL	= <eval <var.skill_num>>
+
+  VAR.MAX		= <eval ((<<VAR.SKILL>> * 50)/100)> //<eval ((<<VAR.SKILL>> * <serv.NPCTRAINPERCENT>)/100)>
+  if ( <VAR.MAX> > <VAR.train_percent> )
+     VAR.MAX	= <VAR.train_percent>
+  endif
+
+  if ( <SRC.<var.skill>> >= <VAR.MAX> )
+     SAY There's nothing you can learn from me about that.
+     return 1
+  endif
+  
+  VAR.LEARN	= <eval (<VAR.MAX> - <SRC.<VAR.SKILL>>)>
+  if ( <VAR.LEARN> > 60 )
+     VAR.LEARN	= 60
+  endif
+  VAR.COST	= <eval ( 100 + ((<src.<var.skill>>/45) * (<src.<var.skill>>/45) * <var.learn> * <VAR.skill_cost_mult> )/250) )>
+
+
+[FUNCTION f_train_cost]
+  if ( <SRC.SKILLTOTAL> >= 1000.0 )
+     SAY There is nothing I could teach you.
+     return 1
+  endif
+
+  VAR.SKILL_NUM_PREFIX_acd	= cost
+  f_train_common_acd <args>
+  if ( <VAR.LEARN> == 0 )
+     return 1
+  endif
+  SAY The cost for such a lesson would be <eval <var.cost>>gp.
+
+
+[SPEECH spk_trainer_acd]
+ON=lesson *
+   IF !( <SRC.tag0.academy>==1)
+      SAY Sorry, I only Train Academy members.
+      RETURN 1
+//ELSEIF ( !strcmpi( "<ARGS>", "Poisoning" ) )
+      //SAY Sorry I cannot teach that skill anymore...
+      //RETURN 1
+   ELSE
+      if ( <NPC> >= brain_human && <NPC> <= brain_thief )
+         f_train_lesson_acd <args>
+         return 1	// process no more.
+      endif
+      return 0	// process more.
+   ENDIF
+
+ON=lesson*
+   IF !(<SRC.tag0.academy>==1)
+      SAY Sorry, I only Train Academy members
+      RETURN 1
+//ELSEIF ( !strcmpi( "<ARGS>", "Poisoning" ) )
+      //SAY Sorry I cannot teach that skill anymore...
+      //RETURN 1   
+   ELSE
+      if ( <NPC> >= brain_human && <NPC> <= brain_thief )
+         SAY A lesson? About which skill?
+         return 1	// process no more.
+      endif
+      return 0	// process more.
+   ENDIF
+	      
+ON=cost *
+	// Can they teach skills ?
+	if ( <NPC> >= brain_human && <NPC> <= brain_thief )
+	   f_train_cost <args>
+	   return 1	// process no more.
+	endif
+	return 0	// process more.
+
+ON=cost*
+	if ( <NPC> >= brain_human && <NPC> <= brain_thief )
+	   SAY Cost? For what?
+	   return 1	// process no more.
+	endif
+	return 0	// process more.
+
+ON=*train*
+ON=*teach*
+	// Can they teach skills ?
+	if ( <NPC> >= brain_human && <NPC> <= brain_thief )
+	   f_train <args>
+	   return 1	// process no more.
+	endif
+	return 0	// process more.
+
+
+[FUNCTION f_TRAIN]
+  if ( !strcmpi( "<args>", "TRAIN" ) || !strcmpi( "<args>", "TEACH" ) )
+     f_train_showACD
+     return 0
+  endif  
+  SAY For the cost of a lesson on a given skill, say 'cost (skill)'. To receive a lesson, say 'lesson (skill)', and I'll charge you accordingly.
+	
+
+
+[FUNCTION f_train_lesson_acd]
+  VAR.SKILL_NUM_PREFIX_acd	= lesson
+  f_train_common_acd <args>
+  if ( <VAR.LEARN> == 0 )
+     return 1
+  endif
+
+  if ( <SRC.SKILLTOTAL> >= 1000.0 )
+     SAY There is nothing I could teach you.
+     return 1
+  endif
+
+  if ( <eval ( <SERV.TIME> - <SRC.TAG.SKILL.LASTTRAIN> )> < time_k_lesson )
+     SAY You seem tired. Take some time to reflect on what you've learned so far and then come back.
+     return 1
+  endif
+
+  if ( <VAR.LEARN> > 40 )
+    VAR.LEARN	= <eval ( <var.learn> - rand(20) )>
+  endif
+
+  if ( !<src.restest <var.cost> i_gold> )
+     SAY You don't seem to have that sort of money...
+     return 1
+  endif
+
+  VAR.PREV_SKILL	= <<VAR.SKILL>> 
+//IF ( <VAR.SKILL> == 01E)
+//SAY Sorry I can't teach you anything about Poisoning...
+//RETURN 1  
+//ENDIF
+  SRC.TRY SRC.<VAR.SKILL>	= <eval (<SRC.<VAR.SKILL>> + <VAR.LEARN>)>
+  if ( <VAR.PREV_SKILL> == <SRC.<VAR.SKILL>> )
+     src.message *you learn nothing*
+     return 1
+  endif
+
+  src.CONSUME <var.cost> i_gold
+  SRC.UPDATE
+
+  SRC.TAG.SKILL.LASTTRAIN	= <SERV.TIME>
+
+  SRC.MESSAGE *you listen carefully*
+  DORAND 2
+     SAY Let me show you something more about it...
+     SAY I hope you managed to learn something...
+  ENDDO
+
+  
+
+// well, might as well take the chance to place the max to learn here
+[FUNCTION SKILL_NUM_acd]
+VAR.skill_num	= -1
+if ( 0 )
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> Alchemy" ) )
+   VAR.skill_num	= 0
+   VAR.train_percent	= 550
+   VAR.skill_cost_mult	= 62
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> Assessment" ) )
+   VAR.skill_num	= 1
+   VAR.train_percent	= 700
+   VAR.skill_cost_mult	=  62
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> Creature lore" ) )
+   VAR.skill_num	= 2
+   VAR.train_percent	= 700
+   VAR.skill_cost_mult	=  62
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> Item lore" ) )
+   VAR.skill_num	= 3
+   VAR.train_percent	= 700
+   VAR.skill_cost_mult	=  62
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> Arms lore" ) )
+   VAR.skill_num	= 4
+   VAR.train_percent	= 700
+   VAR.skill_cost_mult	=  62
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> Shieldfighting" ) )
+   VAR.skill_num	= 5
+   VAR.train_percent	= 550
+   VAR.skill_cost_mult	= 62
+//elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> Begging" ) )
+   //VAR.skill_num	= 6
+   //VAR.train_percent	= 350
+   //VAR.skill_cost_mult	= 62
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> Blacksmithing" ) )
+   VAR.skill_num	= 7
+   VAR.train_percent	= 550
+   VAR.skill_cost_mult	= 62
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> Bowery" ) )
+   VAR.skill_num	= 8
+   VAR.train_percent	= 550
+   VAR.skill_cost_mult	= 62
+//elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> Peacemaking" ) )
+   //VAR.skill_num	= 9
+   //VAR.train_percent	= 550
+   //VAR.skill_cost_mult	= 62
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> Camping" ) )
+   VAR.skill_num	= 10
+   VAR.train_percent	= 550
+   VAR.skill_cost_mult	=  62
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> Carpentry" ) )
+   VAR.skill_num	= 11
+   VAR.train_percent	= 550
+   VAR.skill_cost_mult	= 62
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> Cartography" ) )
+   VAR.skill_num	= 12
+   VAR.train_percent	= 550
+   VAR.skill_cost_mult	= 62
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> Cooking" ) )
+   VAR.skill_num	= 13
+   VAR.train_percent	= 550
+   VAR.skill_cost_mult	=  62
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> Detection" ) )
+   VAR.skill_num	= 14
+   VAR.train_percent	= 550
+   VAR.skill_cost_mult	= 62
+//elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> Enticement" ) )
+  // VAR.skill_num	= 15
+   //VAR.train_percent	= 550
+   //VAR.skill_cost_mult	= 62
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> Mystic lore" ) )
+   VAR.skill_num	= 16
+   VAR.train_percent	= 700
+   VAR.skill_cost_mult	= 62
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> Healing" ) )
+   VAR.skill_num	= 17
+   VAR.train_percent	= 550
+   VAR.skill_cost_mult	= 62
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> Fishing" ) )
+   VAR.skill_num	= 18
+   VAR.train_percent	= 550
+   VAR.skill_cost_mult	=  62
+//elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> Forensics" ) )
+  // VAR.skill_num	= 19
+   //VAR.train_percent	= 550
+   //VAR.skill_cost_mult	= 62
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> Farming" ) )
+   VAR.skill_num	= 20
+   VAR.train_percent	= 550
+   VAR.skill_cost_mult	= 62
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> Hiding" ) )
+   VAR.skill_num	= 21
+   VAR.train_percent	= 550
+   VAR.skill_cost_mult	= 62
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> Songs of War" ) )
+   VAR.skill_num	= 22
+   VAR.train_percent	= 550
+   VAR.skill_cost_mult	= 62
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> Inscription" ) )
+   VAR.skill_num	= 23
+   VAR.train_percent	= 550
+   VAR.skill_cost_mult	= 62
+//elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> Lock Picking" ) )
+  // VAR.skill_num	= 24
+  // VAR.train_percent	= 550
+   //VAR.skill_cost_mult	= 62
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> Magery" ) )
+   VAR.skill_num	= 25
+   VAR.train_percent	= 550
+   VAR.skill_cost_mult	= 62
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> Resist Magic" ) )
+   VAR.skill_num	= 26
+   VAR.train_percent	= 550
+   VAR.skill_cost_mult	= 62
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> Tactics" ) )
+   VAR.skill_num	= 27
+   VAR.train_percent	= 550
+   VAR.skill_cost_mult	= 62
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> Snooping" ) )
+   VAR.skill_num	= 28
+   VAR.train_percent	= 550
+   VAR.skill_cost_mult	= 62
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> Musicianship" ) )
+   VAR.skill_num	= 29
+   VAR.train_percent	= 550
+   VAR.skill_cost_mult	= 62
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> Poisoning" ) )
+   VAR.skill_num	= 30
+   VAR.train_percent	= 550
+   VAR.skill_cost_mult	= 62
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> Archery" ) )
+   VAR.skill_num	= 31
+   VAR.train_percent	= 550
+   VAR.skill_cost_mult	= 62
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> Necromancy" ) )
+   VAR.skill_num	= 32
+   VAR.train_percent	= 550
+   VAR.skill_cost_mult	= 62
+//elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> Stealing" ) )
+  // VAR.skill_num	= 33
+   //VAR.train_percent	= 550
+   //VAR.skill_cost_mult	= 62
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> Tailoring" ) )
+   VAR.skill_num	= 34
+   VAR.train_percent	= 550
+   VAR.skill_cost_mult	= 62
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> Taming" ) )
+   VAR.skill_num	= 35
+   VAR.train_percent	= 550
+   VAR.skill_cost_mult	= 62
+//elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> TasteId" ) )
+   //VAR.skill_num	= 36
+   //VAR.train_percent	= 700
+   //VAR.skill_cost_mult	= 62
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> Tinkering" ) )
+   VAR.skill_num	= 37
+   VAR.train_percent	= 550
+   VAR.skill_cost_mult	= 62
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> Tracking" ) )
+   VAR.skill_num	= 38
+   VAR.train_percent	= 550
+   VAR.skill_cost_mult	= 62
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> Masonry" ) )
+   VAR.skill_num	= 39
+   VAR.train_percent	= 550
+   VAR.skill_cost_mult	= 62
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> Swordsmanship" ) )
+   VAR.skill_num	= 40
+   VAR.train_percent	= 550
+   VAR.skill_cost_mult	= 62
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> MaceFighting" ) )
+   VAR.skill_num	= 41
+   VAR.train_percent	= 550
+   VAR.skill_cost_mult	= 62
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> Fencing" ) )
+   VAR.skill_num	= 42
+   VAR.train_percent	= 550
+   VAR.skill_cost_mult	= 62
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> Wrestling" ) )
+   VAR.skill_num	= 43
+   VAR.train_percent	= 550
+   VAR.skill_cost_mult	= 62
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> Lumberjacking" ) )
+   VAR.skill_num	= 44
+   VAR.train_percent	= 550
+   VAR.skill_cost_mult	= 62
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> Mining" ) )
+   VAR.skill_num	= 45
+   VAR.train_percent	= 550
+   VAR.skill_cost_mult	= 62
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> Meditation" ) )
+   VAR.skill_num	= 46
+   VAR.train_percent	= 550
+   VAR.skill_cost_mult	= 62
+elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> Stealth" ) )
+   VAR.skill_num	= 47
+   VAR.train_percent	= 550
+   VAR.skill_cost_mult	= 62
+//elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> RemoveTrap" ) )
+   //VAR.skill_num	= 48
+   //VAR.train_percent	= 550
+   //VAR.skill_cost_mult	= 62
+//elseif ( !strcmpi( "<args>", "<VAR.SKILL_NUM_PREFIX_acd> Necromancy" ) )
+   //VAR.skill_num	= 49
+   //VAR.train_percent	= 550
+   //VAR.skill_cost_mult	= 62
+else
+   VAR.skill_num	= -1
+   VAR.train_percent	= 0
+   VAR.skill_cost_mult	= 62
+endif
+VAR.skill_num_prefix	=
+
+[FUNCTION f_train_showacd]
+  VAR.skill_cur	= -1
+  VAR.train_msg = ""
+  f_train_add Alchemy
+  f_train_add Assessment
+  f_train_add Creature lore
+  f_train_add Item lore
+  f_train_add Arms lore
+  f_train_add Shieldfighting
+  f_train_add // Begging
+  f_train_add Blacksmithing
+  f_train_add Bowery
+  f_train_add // Peacemaking
+  f_train_add Survival
+  f_train_add Carpentry
+  f_train_add // Cartography
+  f_train_add Cooking
+  f_train_add Detection
+  f_train_add // Enticement
+  f_train_add Mystic lore
+  f_train_add Healing
+  f_train_add Fishing
+  f_train_add // Forensics
+  f_train_add Farming
+  f_train_add Hiding
+  f_train_add Provocation
+  f_train_add Inscription
+  f_train_add // LockPicking
+  f_train_add Magery
+  f_train_add Resist magic
+  f_train_add Tactics
+  f_train_add Snooping
+  f_train_add Musicianship
+  f_train_add Poisoning
+  f_train_add Archery
+  f_train_add Necromancy
+  f_train_add // Stealing
+  f_train_add Tailoring
+  f_train_add Taming
+  f_train_add // TasteId
+  f_train_add Tinkering
+  f_train_add Tracking
+  f_train_add // Masonry
+  f_train_add Swordsmanship
+  f_train_add Macefighting
+  f_train_add Fencing
+  f_train_add Wrestling
+  f_train_add Lumberjacking
+  f_train_add Mining
+  f_train_add Meditation
+  f_train_add Stealth
+  f_train_add // RemoveTrap
+  
+  
+
+  if ( !strcmp( "<var.train_msg>", "" ) )
+     SAY There is nothing I can teach you.
+  else
+     SAY I can tell you about <var.train_msg>.
+  endif
+
+[SPEECH spk_shopkeepACD]
+ON = restock
+   if !( <SRC.ISGM> )
+      SAY There is nothing wrong with my stock!
+      return 1
+   endif
+   TAG.VEND_RESTOCK	= 0
+   SRC.SYSMESSAGE Vendor will restock next time someone tries to buy or sell something.
+
+ON=*what*thou*sell*
+ON=*what*thou*sale*
+ON=*what*you*sell*
+ON=*what*you*sale*
+ON=*can*you*sell*
+ON=*can*you*sale*
+  DORAND 4
+    SAY Why, I sell the same things that any other <JOB> would sell.
+    SAY If thou dost look around my shop, I'm sure it will become obvious to thee.
+    SAY I am a <JOB>.  What wouldst thou expect me to sell?
+    SAY I sell fairy dust.  What dost thou think a <JOB> would sell?
+  ENDDO
+
+ON=*sell*
+ON=*thou*purchase*
+ON=*you*purchase*
+ON=*you*buy*
+ON=*I*sale*  
+   IF (<SRC.FLAGS> & statf_dead)
+      SRC.SYSMESSAGE @025 The dead cannot make transactions, friend...
+      RETURN 1
+   ENDIF
+  if ( <vendor_restock> )
+     return 1
+  endif
+  vendor_reprice
+  SELL
+
+ON = test buy
+   if !( <SRC.ISGM> )
+      return 0
+   endif
+   vendor_reprice_buy
+   BUY
+   return 1
+
+ON = test sell
+   if !( <SRC.ISGM> )
+      return 0
+   endif
+   vendor_reprice_sell
+   SELL
+   return 1
+
+ON=*buy*
+ON=*supplies*
+ON=*wares*
+   IF (<SRC.FLAGS> & statf_dead)
+      SRC.SYSMESSAGE @025 The dead cannot make transactions, friend...
+      RETURN 1
+   ENDIF
+   if !(<SRC.tag0.academy>==1)
+      SAY Sorry I only sell to Academy members
+      RETURN 1
+   ELSE   
+     if ( <vendor_restock> )
+        return 1
+     endif
+     vendor_reprice
+     BUY
+   ENDIF
+
+ON=Hi
+ON=Hello
+ON=Hail
+ON=Greet
+  SAY Hi fellow adventurer.  
+
+ON=Bye
+ON=Goodbye
+ON=Farewell
+  SAY Fare thee well.  
+  BYE
+
+ON=What do you do
+ON=Job 
+  SAY I sell useful supplies.
+  BYE
+
+
+//********************************************************************//
+//                    ACADEMY GRADUATION ITEMS                        //
+//********************************************************************//
+[ITEMDEF i_academy_scroll]
+DEFNAME=i_academy_scroll
+ID=i_scroll_blank
+NAME=Academy Graduation Certificate
+TYPE=t_normal
+
+on=@create
+attr = 4
+color = 0529
+
+on=@dclick
+if (<more1> == 0)
+name = <src.name>'s Academy Graduation Certificate
+sayua 0529,0,0,eng,Congratulations <src.name> On Graduating From the Academy
+more1 = 1
+return 1
+else
+sayua 0529,0,0,eng,Congratulations On Graduating From the Academy
+return 1
+endif
+
+
+//********************************************************************//
+//                       ACADEMY START ITEMS                          //
+//********************************************************************//
+
+[ITEMDEF i_academy_recall_stone]
+DEFNAME=i_academy_recall_stone
+ID=i_rune_marker
+NAME=The "Cat" (Academy recall stone)
+TYPE=t_normal
+
+on=@create
+   attr = 08015
+   color = 0529
+   more1 = 9
+   more2 = <SRC.uid>
+
+on=@click
+   src.sysmessage The Cat has <More1> Uses Left.
+
+on=@dclick
+
+   IF ( !strcmpi( "<REGION.NAME>", "Britain Cowpen" ) )
+   SRC.SYSMESSAGE You can't use that in here.
+   RETURN 1
+   endif
+   
+   IF ( !(0<src.tag.cat_using> > 0) || (<src.skilltotal> > 4000) )
+      src.consume 1 i_academy_recall_stone
+      src.sysmessage The CAT stone turns into dust...
+      src.tag.cat_using =
+      REMOVE
+      return 1
+   ELSEIF (<more2> == 0)
+      more2 = <src.uid>
+      Return 1
+   ELSEIF ( (<MORE> > 1) && (<MORE2>=<SRC.uid>) && (<src.isacademy>)) // the srone has more than 1 use.
+      more1=<more1>-1   
+      src.go 2010,2741,30
+      src.sysmessage You Have <More1> Uses Left.
+      src.tag.cat_using = <src.tag.cat_using>-1
+      return 1
+   ELSEIF ( (<MORE> = 1) && (<MORE2>=<SRC.uid>) && (<src.isacademy>)) // the stone has one use and will vanish after this one
+      src.go 2010,2741,30
+      SRC.CONSUME 1 i_academy_recall_stone
+      src.sysmessage You see the CAT turn into dust.
+      src.tag.cat_using =
+      REMOVE
+      return 1
+   ENDIF
+
+CATEGORY=Imperial uo
+SUBSECTION=Academy Items
+DESCRIPTION=Academy Recall Stone
+
+
+[ITEMDEF i_academy_bag]
+DEFNAME=i_academy_bag
+ID=i_bag
+NAME=Academy Goodies
+TYPE=t_container
+
+on=@create
+	SRC.NEWITEM i_shield_kite_acd
+	SRC.ACT.EQUIP
+	SRC.NEWITEM i_cape_acd
+	SRC.ACT.EQUIP
+	SRC.NEWITEM i_sash_acd
+	SRC.ACT.EQUIP
+	SRC.NEWITEM i_hat_tricorne_acd
+	SRC.ACT.EQUIP
+
+CATEGORY=Imperial uo
+SUBSECTION=Academy Items
+DESCRIPTION=Guild Stone
+
+//********************************************************************//
+//                    ACADEMY ENLISTMENT STONE                        //
+//********************************************************************//
+[ITEMDEF i_academy_stone]
+DEFNAME=i_academy_stone
+ID=i_guildstone
+NAME=Academy Join Stone
+TYPE=t_normal
+
+ON=@CREATE
+COLOR=0529
+
+ON=@CLICK
+IF !(<SRC.ISACADEMY>)
+SAYUA 0529,0,0,eng,Join The Academy!
+ELSE
+SAYUA 0529,0,0,eng,Double click to visit your Academy Profile here!
+ENDIF
+RETURN 1
+
+ON=@DCLICK
+
+IF (<SRC.ISACADEMY>)
+DIALOG d_academy_profile
+SRC.SYSMESSAGE @0529 Welcome back, <SRC.NAME>!
+RETURN 1
+
+ELSEIF (<SRC.SKILLTOTAL> > 6000) 
+SAYUA 0529,0,0,eng,Sorry, you are too experienced. There’s nothing we can teach you now.
+RETURN 1
+
+ELSEIF (<SRC.TAG0.ACADEMY> == 3) 
+SAYUA 0529,0,0,eng,Sorry, you can't join the Academy again.
+RETURN 1
+
+ELSE
+SAYUA 0529,0,0,eng,Welcome to The Academy!
+
+SRC.TAG.ACADEMY=1
+SRC.TAG.CURRENTARANK=Academy Trainee
+SRC.TAG.ACADEMY.SHOWTITLE=1
+//SRC.EVENTS +e_academy_name
+SRC.TAG.CAT_USING=9
+
+//IF !(<SRC.ACCOUNT.TAG.CLAIMEDACADEMYSKILL> == 1)
+//SRC.ACCOUNT.TAG.ELIGIBLEFORSKILL = 1
+//SRC.ACCOUNT.TAG.ALLOCATEDSKILL = 20
+//SRC.SYSMESSAGE You have been given 20% free skill in anything you like. Use .claimskill to allocate it!
+//ENDIF
+//SRC.ACCOUNT.TAG.CLAIMEDACADEMYSKILL = 1
+
+SRC.NEWITEM i_robe_academy
+SRC.ACT.EQUIP
+SRC.NEWITEM i_academy_recall_stone
+SRC.ACT.BOUNCE
+SRC.NEWITEM i_shield_kite_acd
+NEW.ATTR = 5
+SRC.ACT.EQUIP
+SRC.NEWITEM i_cape_acd
+NEW.ATTR = 5
+SRC.ACT.EQUIP
+SRC.NEWITEM i_sash_acd
+NEW.ATTR = 5
+SRC.ACT.EQUIP
+SRC.NEWITEM i_hat_tricorne_acd
+NEW.ATTR = 5
+SRC.ACT.EQUIP	
+SRC.NEWITEM i_cap_leather_acd
+SRC.ACT.EQUIP
+SRC.NEWITEM i_GORGET_LEATHER_acd
+SRC.ACT.EQUIP
+SRC.NEWITEM i_GLOVES_LEATHER_acd
+SRC.ACT.EQUIP
+SRC.NEWITEM i_SLEEVES_LEATHER_acd
+SRC.ACT.EQUIP
+SRC.NEWITEM i_LEGGINGS_LEATHER_acd
+SRC.ACT.EQUIP
+SRC.NEWITEM i_TUNIC_LEATHER_acd
+SRC.ACT.BOUNCE
+SRC.NEWITEM magery_newbie
+SRC.ACT.BOUNCE
+SRC.NEWITEM i_spellbook
+NEW.MORE 16777213
+NEW.MORE2 00
+NEW.ATTR attr_magic|attr_newbie
+SRC.ACT.BOUNCE
+		
+RETURN 1
+ENDIF
+
+CATEGORY=Imperial uo
+SUBSECTION=Academy Items
+DESCRIPTION=Academy Stone
+
+
+
+
+
+
+
+
+
+
+
+
+[DIALOG d_academy_profile]
+0,0
+page 0
+gumppic 108 53 2600
+gumppic 579 53 2602
+gumppic 108 97 2603
+gumppic 579 97 2605
+gumppic 108 413 2606
+gumppic 579 413 2608
+gumppic 152 97 2604
+gumppic 421 114 5057
+gumppic 152 413 2607
+gumppic 152 53 2601
+button 150 166 208 209 1 0 1
+button 150 199 208 209 1 0 2
+//button 150 232 208 209 1 0 3
+button 150 265 208 209 1 0 4
+button 150 298 208 209 1 0 5
+button 150 331 208 209 1 0 12
+text 261 89 0 0
+text 176 164 0 1
+text 176 198 0 2
+text 176 332 0 3
+//text 176 230 0 4
+text 176 264 0 5
+text 176 298 0 6
+text 160 358 0 7
+text 160 380 0 8
+text 160 404 0 9
+gumppic 169 80 5504
+gumppic 506 80 5504
+button 434 158 208 209 1 0 6
+button 434 190 208 209 1 0 7
+button 434 222 208 209 1 0 8
+button 434 255 208 209 1 0 9
+button 434 289 208 209 1 0 10
+button 434 323 208 209 1 0 11
+button 434 357 208 209 1 0 13
+dtext 459 357 0 Dreamers UO Website
+text 459 289 0 10
+text 459 189 0 11
+text 459 221 0 12
+text 459 254 0 13
+text 459 157 0 14
+text 459 323 0 15
+
+
+[DIALOG d_academy_profile text]
+Welcome to the Trinsic Academy!
+Add Paperdoll Title
+Remove Paperdoll Title
+Resign
+Add/Remove Name Title
+Next Rank (400.0 Skill Points)
+Graduate (600.0 Skill Points)
+You currently have <SRC.FAME> fame.
+You currently have <SRC.KARMA> karma.
+You currently have <SRC.KILLS> kills.
+Trinsic Map Guide
+Commands
+GM Help
+Loyalty Shop
+Companion Information
+Stats
+
+[DIALOG d_academy_profile button]
+
+ON=1 // add paper doll title
+
+IF (<SRC.ISACADEMY>)
+SRC.TITLE=<SRC.TAG.CURRENTARANK>
+SRC.SYSMESSAGE @0529 Title added.
+ENDIF
+RETURN 1
+
+
+ON=2 // remove paper doll title
+
+IF (<SRC.ISACADEMY>)
+SRC.TITLE=
+SRC.SYSMESSAGE @0529 Title Removed.
+ENDIF
+RETURN 1
+
+ON=3 // add/remove name title
+
+IF (<SRC.TAG.ACADEMY.SHOWTITLE> == 01)
+SRC.TAG.ACADEMY.SHOWTITLE=0
+SRC.SYSMESSAGE @0529 Title removed from your name.
+ELSEIF (<SRC.TAG.ACADEMY.SHOWTITLE> == 0)
+SRC.TAG.ACADEMY.SHOWTITLE=1
+SRC.SYSMESSAGE @0529 Title added to your name.
+ELSE
+SRC.SYSMESSAGE @0529 You are not a member.
+ENDIF
+RETURN 1
+
+ON=4 // next rank
+
+IF (<SRC.TAG.ACADEMY> == 01) && (<SRC.SKILLTOTAL> >= 4000) && !(<SRC.TAG0.CLAIMEDACADEMYRANKPRIZE>==1)
+SAYUA 0529,0,0,eng,Congratulations! <src.name> has advanced a rank in The Academy!
+SERV.ALLCLIENTS SYSMESSAGE @0529 Congratulations to <src.name> for advancing a rank in the Academy!
+SRC.TAG.CURRENTARANK=Academy Member
+SRC.TAG.ACADEMYRANK=1
+SRC.NEWITEM plate_acd_full
+SRC.ACT.BOUNCE
+SRC.TAG.CLAIMEDACADEMYRANKPRIZE=1
+ELSE
+SRC.SYSMESSAGE @0529 You do not enough skill to advance a rank yet!
+ENDIF
+RETURN 1
+
+ON=5 // graduate
+DIALOG d_graduation
+
+ON=12 // resign
+DIALOG d_academy_leave
+
+ON=6 // companion information
+DIALOG d_companion_info
+
+ON=7 // commands
+DIALOG d_uCommands
+
+ON=8 // gm help
+DIALOG d_help
+
+ON=9 // loyalty shop
+DIALOG d_loyalty
+
+ON=10 // trinsic map guide
+trinsic
+
+ON=11 // stats
+SRC.stats
+
+ON=13 // website
+SRC.WEBLINK www.dreamersuo.com
+
+
+
+
+
+
+[DIALOG d_academy_leave]
+0,0
+page 0
+resizepic 189 172 9200 399 240
+text 328 184 0 0
+text 238 210 0 1
+text 290 228 0 2
+text 202 252 0 3
+text 276 271 0 4
+text 210 298 0 5
+text 300 318 0 6
+text 308 346 0 7
+button 298 378 1154 1153 1 0 1
+button 440 378 1151 1150 1 0 2
+
+[DIALOG d_academy_leave text]
+The Trinsic Academy
+By leaving the Academy, you can never join back.
+All the privileges will be gone.
+However, if you want to join another faction, you must leave
+The Academy and follow your own way.
+It's not recommended to leave The Academy until you have
+enough experience and skill.
+Do you want to proceed?
+
+[DIALOG d_academy_leave button]
+
+ON=1
+
+SRC.TAG.ACADEMY=3
+SRC.TAG.CURRENTARANK=
+SRC.TAG.ACADEMYRANK=
+SRC.TAG.ACADEMY.SHOWTITLE=
+SRC.TAG.CLAIMEDACADEMYRANKPRIZE=
+SRC.TAG.ACADEMYTRADERQUEST=
+SRC.TAG.ACADEMYTRADERQUESTFINISH=
+SRC.TAG.ACADEMYMAGEQUEST=
+SRC.TAG.ACADEMYMAGEQUESTFINISH=
+SRC.TAG.ACADEMYMAGEQUEST2=
+SRC.TAG.ACADEMYMAGEQUEST2FINISH=
+SRC.TAG.ACADEMYMAGEQUEST3=
+SRC.TAG.ACADEMYMAGEQUEST3FINISH=
+
+SRC.TITLE=
+SRC.EVENTS -e_academy_name
+SRC.TAG.CAT_USING=
+SRC.SYSMESSAGE @0525 You are no longer part of the Academy. Follow your own way now. Good luck!
+RETURN 1
+
+
+[DIALOG d_companion_info]
+0,0
+page 0
+resizepic 160 115 9200 331 234
+gumppic 174 129 5587
+text 300 127 0 0
+text 249 152 0 1
+text 235 171 0 2
+text 221 190 0 3
+text 199 209 0 4
+text 171 285 0 5
+text 171 228 0 6
+text 171 259 0 7
+text 171 310 0 8
+button 442 315 1154 1153 1 0 0
+
+[DIALOG d_companion_info text]
+The Companions
+Companions are experienced players
+selected by the Staff Team to help and
+guide new players through our universe.
+Below, you can find useful commands to talk
+.listcom  -  Used to list all Companions on Duty.
+to Companions. Don't hesitate to ask any question!
+.comchat  -  Used to activate Companion Chat.
+.q  -  Used to talk to a Companion.
+
+
+
+
+
+
+
+[EVENTS e_academy_name]
+
+ON=@CLICK
+IF ((<MEMORYFINDTYPE.memory_guild.UID>) && !(<FINDID.i_rune_incognito.uid>))
+      OBJ=<MEMORYFINDTYPE.MEMORY_GUILD.LINK.UID>
+      FOR 0 <EVAL <OBJ.MEMBER.COUNT>-1>
+         IF (<OBJ.MEMBER.<EVAL <LOCAL._FOR>>.UID> == <UID>)
+            TRY OBJ.MEMBER.<EVAL <LOCAL._FOR>>.SHOWABBREV=0
+         ENDIF
+      ENDFOR
+      IF (0<TAG.GUILDABBREVIATION>)
+         TRY MESSAGE @<f_guildabbreviation_color> [<UID.<memoryfindtype.memory_guild.LINK>.ABBREV>]
+      ENDIF
+   ENDIF
+   
+//IF (<TAG0.GUILDABBREVIATION>)
+//MESSAGE = @<f_guildabbreviation_color> [<UID.<memoryfindtype.memory_guild.LINK>.ABBREV>]
+//ENDIF
+
+IF (<TAG0.ACADEMY.SHOWTITLE> == 0) && !(<ISMURDERER>) && !(<ISKARMAEVIL>) && !(<ISKARMANEUTRAL>) && !(<FLAGS> & statf_criminal)
+MESSAGE = @00cd <NAME> [A]
+ELSEIF (<TAG0.ACADEMY.SHOWTITLE> == 0) && (<ISMURDERER>) || (<ISKARMAEVIL>)
+MESSAGE = @021 <NAME> [A]
+ELSEIF (<TAG0.ACADEMY.SHOWTITLE> == 0) && (<ISKARMANEUTRAL>) && (<FLAGS> & statf_criminal)
+MESSAGE = <NAME> [A] [criminal]
+ELSEIF (<TAG0.ACADEMY.SHOWTITLE> == 0) && (<ISKARMANEUTRAL>)
+MESSAGE = <NAME> [A]
+ELSEIF (<TAG0.ACADEMY.SHOWTITLE> == 0) && (<FLAGS> & statf_criminal)
+MESSAGE = <NAME> [A] [criminal]
+ELSEIF (<TAG0.ACADEMY.SHOWTITLE> == 0) && (<FLAGS> & statf_criminal) && (<ISMURDERER>) || (<ISKARMAEVIL>)
+MESSAGE = @021 <NAME> [A]
+ENDIF
+
+IF (<TAG0.ACADEMY.SHOWTITLE> == 1) && !(<ISMURDERER>) && !(<ISKARMAEVIL>) && !(<ISKARMANEUTRAL>) && !(<FLAGS> & statf_criminal)
+MESSAGE = @00cd <NAME>, <TAG.CURRENTARANK>
+ELSEIF (<TAG0.ACADEMY.SHOWTITLE> == 1) && (<ISMURDERER>) || (<ISKARMAEVIL>)
+MESSAGE = @021 <NAME>, <TAG.CURRENTARANK>
+ELSEIF (<TAG0.ACADEMY.SHOWTITLE> == 1) && (<ISKARMANEUTRAL>) && (<FLAGS> & statf_criminal)
+MESSAGE = <NAME>, <TAG.CURRENTARANK> [criminal]
+ELSEIF (<TAG0.ACADEMY.SHOWTITLE> == 1) && (<ISKARMANEUTRAL>)
+MESSAGE = <NAME>, <TAG.CURRENTARANK>
+ELSEIF (<TAG0.ACADEMY.SHOWTITLE> == 1) && (<FLAGS> & statf_criminal)
+MESSAGE = <NAME>, <TAG.CURRENTARANK> [criminal]
+ELSEIF (<TAG0.ACADEMY.SHOWTITLE> == 1) && (<FLAGS> & statf_criminal) && (<ISMURDERER>) || (<ISKARMAEVIL>)
+MESSAGE = @021 <NAME>, <TAG.CURRENTARANK>
+ENDIF
+RETURN 1
+
+
+
+
+[DIALOG d_graduation]
+0,0
+page 0
+resizepic 196 155 9200 394 189
+text 203 197 0 0
+text 346 170 0 1
+text 205 219 0 2
+text 214 241 0 3
+text 199 261 0 4
+text 334 281 0 5
+text 303 309 0 6
+resizepic 195 349 9200 394 23
+button 333 349 1154 1153 1 0 1
+button 431 349 1152 1150 1 0 2
+
+[DIALOG d_graduation text]
+When you graduate, you still belong to The Academy, however,
+The Graduation
+you will lose some features that only Academy members have,
+such as talking to the Academy NPCs. If you want to join 
+another faction or leave The Academy forever, you should click
+the option "Resign".
+Do you want to graduate now?
+
+[DIALOG d_graduation button]
+
+ON=1
+
+IF (<SRC.TAG.ACADEMY> == 01) && (<SRC.TAG0.ACADEMYRANK> == 01) && (<SRC.SKILLTOTAL> > 6000)
+SAYUA 0529,0,0,eng,Congratulations! <src.name> has graduated from The Academy!
+SERV.ALLCLIENTS SYSMESSAGE @0529 Congratulations to <src.name> for graduating from the Academy!
+SRC.TAG.ACADEMY=2
+SRC.TAG.CURRENTARANK=Academy Graduate
+SRC.TAG.ACADEMYRANK=
+SRC.NEWITEM i_academy_scroll
+SRC.ACT.EQUIP
+SRC.NEWITEM i_robe_academy_g
+SRC.ACT.EQUIP
+ELSE
+SRC.SYSMESSAGE @0529 You do not have enough skill to graduate yet!
+ENDIF
+RETURN 1
+
+
+
+
+
+
+
+
+
+
+
+//*************************************************************//
+////Newbie Dungeon Level 2 Monsters and Quests
+////The UO Project, 2013
+//////////////////////////////////
+
+//////////////////
+//Monsters
+//////////////////
+
+//Orc Boss
+
+[CHARDEF c_newbie_orc_boss]
+DEFNAME=c_newbie_orc_boss
+ID=c_orc
+NAME=Chief Orc
+SOUND=snd_MONSTER_ORC1
+ICON=i_pet_ORC
+ANIM=078c7f
+DAM=3,9
+ARMOR=14
+CAN=MT_WALK|MT_RUN|MT_USEHANDS|MT_EQUIP
+RESOURCES=8 i_ribs_raw
+FOODTYPE=15 t_meat_raw
+
+CATEGORY=Imperial uo
+SUBSECTION=Academy Newbie Dungeon Level 2
+DESCRIPTION=Chief Orc
+
+ON=@Create
+	COLOR=0a13
+	NPC=brain_monster
+	FAME=5
+	KARMA={-1000 -5000}
+	STR={96 120}
+	HITS=200
+	DEX={81 105}
+	INT={36 60}
+	PARRYING={50.0 75.0}
+	MAGICRESISTANCE={50.0 75.0}
+	TACTICS={55.0 80.0}
+	WRESTLING={50.0 70.0}
+
+ON=@NPCRestock
+	ITEM=i_magical_ginseng
+	ITEM=i_gold,{750 800}
+	ITEM=i_FIG_abysmallhorror,R25
+	
+ON=@DEATH
+IF (RAND(100) < 15) // Chance de Dropar. Assim é 5%
+SERV.NEWITEM=i_rare_chest_newbie_dungeon_key  // ID da chave que vai dropar
+NEW.CONT=<SRC.UID>
+ENDIF
+
+
+//SKELETON Boss	
+	
+[CHARDEF c_newbie_skeleton_boss]
+DEFNAME=c_newbie_skeleton_boss
+ID=c_skeleton
+NAME=Chief Skeleton
+SOUND=SND_MONSTER_SKLETN1
+ICON=I_PET_SKELETON
+ANIM=078C7F
+DAM=10,16
+ARMOR=24
+RESOURCES	= 10 t_eerie_stuff, 1 i_reag_heart_zombie
+CAN=MT_WALK|MT_RUN|MT_USEHANDS
+
+ON=@Create
+	COLOR=0a13
+	NPC=brain_monster
+	STR={96 120}
+	HITS=320
+	DEX={81 100}
+	INT={36 60}
+	SWORDSMANSHIP={40.0 60.0}
+	PARRYING={50.0 70.0}
+	MAGICRESISTANCE={35.0 60.0}
+	TACTICS={50.0 75.0}
+	WRESTLING={50.0 75.0}
+	FAME=5
+	KARMA={-2000 -2999}
+
+ON=@NPCRestock
+	ITEM=i_gold,{250 400}	
+	ITEM=i_fig_arcanedaemon,R25
+	ITEM=i_luck_stone
+	
+	
+ON=@DEATH
+IF (RAND(100) < 18) // Chance de Dropar. Assim é 5%
+SERV.NEWITEM=i_rare_chest_newbie_dungeon_key  // ID da chave que vai dropar
+NEW.CONT=<SRC.UID>
+ENDIF	
+	
+//ZOMBIE Boss
+
+[CHARDEF c_newbie_zombie_boss]
+DEFNAME=c_newbie_zombie_boss
+ID=c_zombie
+NAME=Chief Zombie
+SOUND=snd_MONSTER_ZOMBIE1
+ICON=i_pet_ZOMBIE
+ANIM=078c7f
+DAM=9,14
+ARMOR=34
+RESOURCES	= 10 t_eerie_stuff, 1 i_reag_heart_zombie
+CAN=MT_WALK|MT_RUN|MT_USEHANDS
+
+ON=@Create
+	COLOR=0a13
+	NPC=brain_monster
+	STR={96 120}
+	HITS=320
+	DEX={81 100}
+	INT={36 60}
+	SWORDSMANSHIP={40.0 60.0}
+	PARRYING={50.0 70.0}
+	MAGICRESISTANCE={35.0 60.0}
+	TACTICS={50.0 75.0}
+	WRESTLING={50.0 75.0}
+	FAME=5
+	KARMA={-2000 -2999}
+
+ON=@NPCRestock
+	ITEM=i_magical_nightshade
+	ITEM=i_gold,{250 300}
+	ITEM=i_fig_arcanedaemon,R25
+
+ON=@DEATH
+IF (RAND(100) < 18) // Chance de Dropar. Assim é 5%
+SERV.NEWITEM=i_rare_chest_newbie_dungeon_key  // ID da chave que vai dropar
+NEW.CONT=<SRC.UID>
+ENDIF	
+	
+
+//Spider Boss
+
+[CHARDEF c_newbie_spider_boss]
+DEFNAME=c_newbie_spider_boss
+ID=c_spider_giant
+NAME=Chief Spider
+SOUND=snd_MONSTER_GISPIDR1
+ICON=i_pet_spider_giant
+ANIM=078c7f
+DAM=10,20
+ARMOR=45
+RESOURCES=10 i_ribs_raw
+CAN=MT_WALK|MT_USEHANDS
+FOODTYPE=15 t_meat_raw
+
+ON=@Create
+	COLOR=0a13
+	NPC=brain_monster
+	STR={175 255}
+	HITS=1000
+	DEX={66 85}
+	INT={56 80}
+	SWORDSMANSHIP={70.0 90.0}
+	PARRYING={65.0 80.0}
+	MAGICRESISTANCE={55.0 80.0}
+	TACTICS={70.0 90.0}
+	WRESTLING={60.0 90.0}
+	FAME=5
+	KARMA={-3000 -3999}
+	//ALIGNMENT=EVIL
+
+ON=@NPCRestock
+	ITEM=i_magical_mandrake
+	ITEM=i_gold,{350 600}
+	ITEM=i_fig_bakekitsune,R7
+	
+ON=@DEATH
+IF (RAND(100) < 35) // Chance de Dropar. Assim é 5%
+SERV.NEWITEM=i_rare_chest_newbie_dungeon_key  // ID da chave que vai dropar
+NEW.CONT=<SRC.UID>
+ENDIF	
+
+//Scorpion Boss
+
+[CHARDEF c_newbie_scorpion_boss]
+DEFNAME=c_newbie_scorpion_boss
+ID=c_scorpion_giant
+NAME=Chief Giant Scorpion
+SOUND=snd_MONSTER_GSCORP1
+ICON=i_pet_SCORP
+ANIM=078c7f
+DAM=14,25
+ARMOR=55
+
+CAN=MT_WALK|MT_RUN|MT_USEHANDS
+FOODTYPE=15 t_meat_raw
+
+
+ON=@Create
+	COLOR=0a13
+	NPC=brain_monster
+	FAME=5
+	KARMA={-2000 -2999}
+	//ALIGNMENT=EVIL
+	STR={195 305}
+	HITS=1500
+	DEX={86 105}
+	INT={66 90}
+	PARRYING={75.0 95.0}
+	MagicResistance={65.0 90.0}
+	TACTICS={85.0 100.0}
+	WRESTLING={70.0 100.0}
+
+ON=@NPCRestock
+	ITEM=i_gem_spirit
+	ITEM=i_gold,{550 800}
+	ITEM=i_fig_bakekitsune,R5
+	
+ON=@DEATH
+IF (RAND(100) < 35) // Chance de Dropar. Assim é 5%
+SERV.NEWITEM=i_rare_chest_newbie_dungeon_key  // ID da chave que vai dropar
+NEW.CONT=<SRC.UID>
+ENDIF	
+
+//////////////////
+//Quest NPCs
+//////////////////
+
+[CHARDEF c_academy_mage]
+ID=c_man
+NAME=Bruce, The Mage
+CAN=MT_WALK|MT_FLY|MT_FEMALE 
+TSPEECH=spk_academymage_quest
+
+CATEGORY=Imperial uo
+SUBSECTION=Academy Newbie Dungeon Level 2
+DESCRIPTION=Academy Mage
+
+On=@Create 
+COLOR=colors_skin
+FLAGS=statf_invul|statf_freeze
+STR=1000
+DEX=1000
+INT=1000
+KARMA=10000
+ITEMNEWBIE=i_hat_tricorne
+COLOR=0529
+ITEMNEWBIE=013f8
+ITEMNEWBIE=i_robe 
+COLOR=0529
+ITEMNEWBIE=i_boots_calf 
+COLOR=0529
+ITEMNEWBIE=i_hair_long 
+COLOR=0455
+
+[SPEECH spk_academymage_quest] 
+ON=*hi* 
+ON=*hello* 
+ON=*hail* 
+ON=*greeting* 
+ON=*sup* 
+ON=*Bruce*
+SAY Greetings adventurer. I have three jobs for you. Say QUEST 1, QUEST 2 or QUEST 3 to know more about them.
+	SRC.SYSMESSAGE @021 Say QUEST 1, QUEST 2 or QUEST 3 to learn more information.
+	SRC.SYSMESSAGE @048a To complete the quests say 'complete orc quest' or 'complete spider quest' or 'complete zombie quest'.
+Return 1
+ENDIF
+
+ 
+ON=*QUEST 1* 
+IF (<SRC.TAG0.ACADEMYMAGEQUEST> == 01)
+	DIALOG d_quest_inquest1
+ELSEIF (<SRC.TAG0.ACADEMYMAGEQUESTFINISH> == 01) 
+	DIALOG d_quest_completed
+ELSE
+	DIALOG d_quest_orc
+ENDIF 
+ENDIF
+Return 1 
+
+ON=*complete orc quest* 
+IF ( (<SRC.TAG0.ACADEMYMAGEQUEST> == 01) && (<SRC.RESTEST 1 i_magical_ginseng>) )
+	SRC.CONSUME 1 i_magical_ginseng
+	DIALOG d_quest_thanks
+	SRC.SYSMESSAGE @021 Good Work! 
+	SERV.NEWITEM=i_gold
+	NEW.AMOUNT=2000
+	NEW.BOUNCE 
+	SRC.NEWITEM=i_bag_forth_circle
+	SRC.ACT.BOUNCE 
+	SRC.TAG0.ACADEMYMAGEQUESTFINISH=01
+	SRC.TAG0.ACADEMYMAGEQUEST=
+ELSEIF	(<SRC.TAG0.ACADEMYMAGEQUESTFINISH> == 01)
+	DIALOG d_quest_completed
+ELSE 
+	DIALOG d_quest_noitem
+	SRC.SYSMESSAGE @021 You need the Magical Ginseng in order to complete the Quest!
+ENDIF
+ENDIF 
+RETURN 1
+
+ON=*QUEST 2* 
+IF (<SRC.TAG0.ACADEMYMAGEQUEST2> == 01)
+DIALOG d_quest_inquest1
+ELSEIF (<SRC.TAG0.ACADEMYMAGEQUEST2FINISH> == 01) 
+DIALOG d_quest_completed
+ELSE
+DIALOG d_quest_ZOMBIE
+ENDIF 
+ENDIF
+RETURN 1 
+
+ON=*complete zombie quest* 
+IF ( (<SRC.TAG0.ACADEMYMAGEQUEST2> == 01) && (<SRC.RESTEST 1 i_magical_nightshade>) )
+	SRC.CONSUME i_magical_nightshade
+	DIALOG d_quest_thanks
+	SRC.SYSMESSAGE @021 Good Work! 
+	SERV.NEWITEM=i_gold
+	NEW.AMOUNT=2000
+	NEW.BOUNCE
+	SRC.NEWITEM=i_bag_fifth_circle
+	SRC.ACT.BOUNCE 
+	SRC.TAG0.ACADEMYMAGEQUEST2FINISH=01
+	SRC.TAG0.ACADEMYMAGEQUEST2=
+ELSEIF	(<SRC.TAG0.ACADEMYMAGEQUEST2FINISH> == 01)
+	DIALOG d_quest_completed
+ELSE 
+	DIALOG d_quest_noitem
+	SRC.SYSMESSAGE @021 You need the Magical Nightshade in order to complete the Quest!
+ENDIF
+ENDIF 
+Return 1
+
+ON=*quest 3* 
+IF (<SRC.TAG0.ACADEMYMAGEQUEST3> == 01)
+DIALOG d_quest_inquest1
+ELSEIF (<SRC.TAG0.ACADEMYMAGEQUEST3FINISH> == 01) 
+DIALOG d_quest_completed
+ELSE
+DIALOG d_quest_Spider
+ENDIF 
+ENDIF
+Return 1 
+
+ON=*complete spider quest* 
+IF ((<SRC.TAG0.ACADEMYMAGEQUEST3> == 01) && (<SRC.RESTEST 1 i_magical_mandrake>) )
+	SRC.CONSUME i_magical_mandrake
+	DIALOG d_quest_thanks
+	SRC.SYSMESSAGE @021 Good Work! 
+	SERV.NEWITEM=i_gold
+	NEW.AMOUNT=2000
+	NEW.BOUNCE
+	SRC.NEWITEM=i_bag_sixth_circle
+	SRC.ACT.BOUNCE 
+	SRC.TAG0.ACADEMYMAGEQUEST3FINISH=01
+	SRC.TAG0.ACADEMYMAGEQUEST3=
+ELSEIF	(<SRC.TAG.ACADEMYMAGEQUEST3FINISH> == 01)
+	DIALOG d_quest_completed
+ELSE 
+	DIALOG d_quest_noitem
+	SRC.SYSMESSAGE @021 You need the Magical Mandrake Root in order to complete the Quest!
+ENDIF
+ENDIF 
+Return 1
+
+
+[CHARDEF c_academy_trader]
+ID=c_woman
+NAME=Muriel, The Academy Trader
+CAN=MT_WALK|MT_FLY|MT_FEMALE 
+TSPEECH=spk_academytrader_quest
+
+CATEGORY=Imperial uo
+SUBSECTION=Academy Newbie Dungeon Level 2
+DESCRIPTION=Academy Trader
+
+
+On=@Create 
+COLOR=colors_skin
+FLAGS=statf_invul|statf_freeze
+STR=1000
+DEX=1000
+INT=1000
+KARMA=10000
+ITEMNEWBIE=i_robe 
+COLOR=0529
+ITEMNEWBIE=i_boots_calf 
+COLOR=0529
+ITEMNEWBIE=i_hair_long 
+COLOR=07a1
+
+[SPEECH spk_academytrader_quest] 
+ON=*hi* 
+ON=*hello* 
+ON=*hail* 
+ON=*greeting* 
+ON=*sup* 
+ON=*Muriel*
+
+IF (<SRC.TAG0.ACADEMYTRADERQUEST> == 01)
+DIALOG d_quest_inquest1
+ELSEIF (<SRC.TAG0.ACADEMYTRADERQUESTFINISH> == 01)
+DIALOG d_quest_completed 
+ELSE
+SAY Greetings adventurer. If you are truly mighty ask me about my 'quest'.
+SRC.SYSMESSAGE @021 Say QUEST to learn more information.  
+ENDIF
+Return 1
+
+ 
+ON=*quest* 
+IF (<SRC.TAG0.ACADEMYTRADERQUEST> == 01)
+DIALOG d_quest_inquest1
+ELSEIF (<SRC.TAG0.ACADEMYTRADERQUESTFINISH> == 01) 
+DIALOG d_quest_completed
+ELSE
+DIALOG d_quest_trader
+ENDIF
+Return 1 
+ON=*reward*
+ON=*complete* 
+IF ( (<SRC.TAG0.ACADEMYTRADERQUEST> == 01) && (<SRC.RESTEST 1 i_gem_spirit>) )
+ SRC.CONSUME 1 i_gem_spirit
+ DIALOG d_quest_thanks
+ SRC.SYSMESSAGE @021 Good Work! 
+ SERV.NEWITEM=i_gold
+ NEW.AMOUNT=2000
+ NEW.BOUNCE 
+ SRC.NEWITEM=i_bag_seventh_circle
+ SRC.ACT.BOUNCE 
+ src.tag0.ACADEMYTRADERQUESTFINISH=1
+ src.tag0.ACADEMYTRADERQUEST=
+ELSEIF (<src.tag0.ACADEMYTRADERQUESTFINISH> == 01)
+DIALOG d_quest_completed
+ELSE
+ DIALOG d_quest_noitem
+ SRC.SYSMESSAGE @021 Muriel needs the Gem of Spirit in order to complete the Quest!
+ENDIF
+RETURN 1
+
+
+//////////////////
+//Door and Key
+//////////////////
+
+[ITEMDEF i_chieflizard_key]
+ID=01012
+NAME=Chief Lizard Man Key
+TYPE=T_SCRIPT
+ARMOR=5
+DYE=0
+
+CATEGORY=Imperial uo
+SUBSECTION=Academy Newbie Dungeon Quests
+DESCRIPTION=Chief Lizard Man Key
+
+[ITEMDEF i_chieflizard_door]
+ID=i_wall_sandstone_6
+NAME=Chief Lizard Man Door
+TYPE=T_Script
+
+ON=@Create
+Attr=08010
+COLOR=0a13
+
+ON=@CLICK
+src.message You notice a magically locked door.
+	
+ON=@Dclick	
+if ((<morex> = 0) && (<SRC.RESTEST i_chieflizard_key 1>))
+MOREX = 1 //Open
+TIMER = 1800 //Have to run to 30 seconds
+z -23 //open the door
+DISPID=i_wall_sandstone_6
+TYPE=T_Script
+update
+src.message You open the door with the Chief Lizard Man Key.
+SRC.consume i_chieflizard_key 1
+SOUND 019c
+return 1
+else
+MOREX = 0 //Closed
+Timer = -1 //Always close
+z 0 //Close the door
+DISPID = i_wall_sandstone_6
+TYPE=T_Script
+Update
+return 1
+endif
+src.message The door is held shut with a magical lock
+
+ON=@Timer
+	if <morex> = 0 //Closed
+		return 1  //Do nothing
+	else
+		MOREX = 0 //Closed
+		Timer = -1 //Always close
+		LINK.z 0 //Hide the trigger
+		DISPID = i_wall_sandstone_6
+TYPE	= T_Script
+		update
+		return 1
+	endif
+
+CATEGORY=Imperial uo
+SUBSECTION=Academy Newbie Dungeon Quests
+DESCRIPTION=Chief Lizard Man Door
+
+/////////////////
+//Quest Items
+/////////////////
+
+[ITEMDEF i_gem_spirit] 
+ID=i_worldgem_lg
+NAME=Gem of the Spirit
+VALUE=1 
+WEIGHT=5
+TYPE=t_normal
+
+CATEGORY=Imperial uo
+SUBSECTION=Academy Newbie Dungeon Quests
+DESCRIPTION=Gem of the Spirit
+
+ON=@Create 
+COLOR=086a
+
+ON=@DClick
+return 1
+
+[ITEMDEF i_magical_ginseng] 
+ID=018ec
+NAME=Magical Ginseng
+VALUE=1 
+WEIGHT=5
+TYPE=t_normal
+
+CATEGORY=Imperial uo
+SUBSECTION=Academy Newbie Dungeon Quests
+DESCRIPTION=Magical Ginseng
+
+ON=@Create 
+COLOR=09f3
+
+ON=@DClick
+return 1
+
+[ITEMDEF i_magical_nightshade] 
+ID=018e7
+NAME=Magical Nightshade
+VALUE=1 
+WEIGHT=5
+TYPE=t_normal
+
+CATEGORY=Imperial uo
+SUBSECTION=Academy Newbie Dungeon Quests
+DESCRIPTION=Magical Nightshade
+
+ON=@Create 
+COLOR=09f3
+
+ON=@DClick
+return 1
+
+[ITEMDEF i_magical_mandrake] 
+ID=018dd
+NAME=Magical Mandrake Root
+VALUE=1 
+WEIGHT=5
+TYPE=t_normal
+
+CATEGORY=Imperial uo
+SUBSECTION=Academy Newbie Dungeon Quests
+DESCRIPTION=Magical Mandrake Root
+
+ON=@Create 
+COLOR=09f3
+
+ON=@DClick
+return 1
+
+
+//////QUEST DIALOGS
+
+/////ORC QUEST
+
+[DIALOG d_quest_orc]
+0,0
+page 0
+// Main page
+resizepic 50 50 1228 400 300
+text 125 55 0 0
+page 1
+text 115 100 4 1
+text 115 125 4 2
+text 115 150 4 3
+text 115 175 4 4
+text 115 200 4 5
+text 115 225 4 6
+button 240 280 4023 4025 1 0 90
+
+[DIALOG d_quest_orc TEXT]
+Orc Quest
+An evil Chief Orc stole my Magical Ginseng. 
+I need it to make my Ultimate Spell. 
+Can you find it for me? In return, 
+I'll give you the entire forth circle for your 
+spell book.
+How about it?
+
+[DIALOG d_quest_orc BUTTON]
+ONBUTTON=90
+IF (<SRC.TAG.ACADEMYMAGEQUEST> == 01)
+	DIALOG d_quest_inquest2
+ELSEIF (<SRC.TAG.ACADEMYMAGEQUESTFINISH> == 01)
+	DIALOG d_quest_completed
+ELSE
+DIALOG d_quest_orc_accept
+SRC.TAG.ACADEMYMAGEQUEST=1 
+ENDIF
+ENDIF
+Return 1
+
+
+[DIALOG d_quest_orc_accept]
+0,0
+page 0
+// Main page
+resizepic 50 50 1228 400 300
+text 125 55 0 0
+page 1
+text 115 100 4 1
+text 115 125 4 2
+text 115 150 4 3
+text 115 175 4 4
+text 115 200 4 5
+text 115 225 4 6
+button 240 280 4023 4025 1 0 90
+
+[DIALOG d_quest_orc_accept TEXT]
+Orc Quest
+Thank you very much.
+I last heard that the Orc was wandering
+in this dungeon. 
+When you have the Magical Ginseng come to me and 
+say 'COMPLETE ORC QUEST'.
+
+
+//Zombie QUEST
+
+[DIALOG d_quest_zombie]
+0,0
+page 0
+// Main page
+resizepic 50 50 1228 400 300
+text 125 55 0 0
+page 1
+text 115 100 4 1
+text 115 125 4 2
+text 115 150 4 3
+text 115 175 4 4
+text 115 200 4 5
+text 115 225 4 6
+button 240 280 4023 4025 1 0 91
+
+[DIALOG d_quest_Zombie TEXT]
+Zombie Quest
+An evil Chief Zombie stole my Magical Nightshade. 
+I need it to make my Ultimate Spell. 
+Can you find it for me? In return, 
+I'll give you the entire fifth circle for your 
+spell book.
+How about it?
+
+[DIALOG d_quest_zombie BUTTON]
+ONBUTTON=91
+IF (<SRC.TAG.ACADEMYMAGEQUEST2> == 01)
+DIALOG d_quest_inquest2
+ELSEIF (<SRC.TAG.ACADEMYMAGEQUEST2FINISH> == 01)
+DIALOG d_quest_completed
+ELSE
+DIALOG d_quest_zombie_accept
+SRC.TAG.ACADEMYMAGEQUEST2=1 
+ENDIF
+ENDIF
+Return 1
+
+
+[DIALOG d_quest_zombie_accept]
+0,0
+page 0
+// Main page
+resizepic 50 50 1228 400 300
+text 125 55 0 0
+page 1
+text 115 100 4 1
+text 115 125 4 2
+text 115 150 4 3
+text 115 175 4 4
+text 115 200 4 5
+text 115 225 4 6
+button 240 280 4023 4025 1 0 90
+
+[DIALOG d_quest_zombie_accept TEXT]
+Zombie Quest
+Thank you very much.
+I last heard that the Zombie was wandering
+in this dungeon. When you have the
+Magical Nightshade come to me and 
+say 'COMPLETE ZOMBIE QUEST'.
+
+//Spider QUEST
+
+[DIALOG d_quest_Spider]
+0,0
+page 0
+// Main page
+resizepic 50 50 1228 400 300
+text 125 55 0 0
+page 1
+text 115 100 4 1
+text 115 125 4 2
+text 115 150 4 3
+text 115 175 4 4
+text 115 200 4 5
+text 115 225 4 6
+button 240 280 4023 4025 1 0 92
+
+[DIALOG d_quest_Spider TEXT]
+Spider Quest
+An evil Chief Spider stole my Magical Mandrake Root. 
+I need it to make my Ultimate Spell. 
+Can you find it for me? In return, 
+I'll give you the entire sixth circle for your 
+spell book.
+How about it?
+
+[DIALOG d_quest_Spider BUTTON]
+ONBUTTON=92
+IF (<SRC.TAG.ACADEMYMAGEQUEST3> == 01)
+DIALOG d_quest_inquest2
+ELSEIF (<SRC.TAG.ACADEMYMAGEQUEST3FINISH> == 01)
+DIALOG d_quest_completed
+ELSE
+DIALOG d_quest_Spider_accept
+SRC.TAG.ACADEMYMAGEQUEST3=1 
+ENDIF
+ENDIF
+Return 1
+
+[DIALOG d_quest_Spider_accept]
+0,0
+page 0
+// Main page
+resizepic 50 50 1228 400 300
+text 125 55 0 0
+page 1
+text 115 100 4 1
+text 115 125 4 2
+text 115 150 4 3
+text 115 175 4 4
+text 115 200 4 5
+text 115 225 4 6
+button 240 280 4023 4025 1 0 90
+
+[DIALOG d_quest_Spider_accept TEXT]
+Spider Quest
+Thank you very much.
+I last heard that the Spider was wandering
+in this dungeon. When you have the
+Magical Mandrake Root come to me and 
+say 'COMPLETE Spider QUEST'.
+
+//TRADER QUEST
+
+
+[DIALOG d_quest_trader]
+0,0
+page 0
+// Main page
+resizepic 50 50 1228 400 300
+text 125 55 0 0
+page 1
+text 115 100 4 1
+text 115 125 4 2
+text 115 150 4 3
+text 115 175 4 4
+text 115 200 4 5
+text 115 225 4 6
+button 240 280 4023 4025 1 0 93
+
+[DIALOG d_quest_trader TEXT]
+Giant Scorpion Quest
+An evil Chief Giant Scorpion stole the Gem 
+I needed to make the perfect armor! 
+Can you get it back? 
+In return, I will give you powerfull
+scrolls of the seventh circle!
+How about it?
+
+[DIALOG d_quest_trader BUTTON]
+ONBUTTON=93
+IF (<SRC.TAG.SRC.TAG.ACADEMYTRADERQUEST> == 01)
+DIALOG d_quest_inquest2
+ELSEIF (<SRC.TAG.ACADEMYTRADERQUESTFINISH> == 01)
+DIALOG d_quest_completed
+ELSE
+DIALOG d_quest_trader_accept
+SRC.TAG.ACADEMYTRADERQUEST=1
+ENDIF
+ENDIF
+Return 1
+
+[DIALOG d_quest_trader_accept]
+0,0
+page 0
+// Main page
+resizepic 50 50 1228 400 300
+text 125 55 0 0
+page 1
+text 115 100 4 1
+text 115 125 4 2
+text 115 150 4 3
+text 115 175 4 4
+text 115 200 4 5
+text 115 225 4 6
+button 240 280 4023 4025 1 0 90
+
+[DIALOG d_quest_trader_accept TEXT]
+Giant Scorpion Quest
+Thanks, you will be rewarded with powerfull scrolls.
+I last heard that the Giant Scorpion was wandering
+in this dungeon. 
+When you have finished, bring the Gem Spirit
+and say 'COMPLETE'.
+
+
+///////Dialogs for all
+
+[DIALOG d_quest_completed]
+0,0
+page 0
+// Main page
+resizepic 50 50 1228 400 300
+text 125 55 0 0
+page 1
+text 115 100 4 1
+text 115 125 4 2
+text 115 150 4 3
+text 115 175 4 4
+text 115 200 4 5
+text 115 225 4 6
+button 240 280 4023 4025 1 0 91
+
+[DIALOG d_quest_completed TEXT]
+Already Completed
+You already have completed this quest, 
+I thank thee for the help!
+
+[DIALOG d_quest_inquest1]
+0,0
+page 0
+// Main page
+resizepic 50 50 1228 400 300
+text 125 55 0 0
+page 1
+text 115 100 4 1
+text 115 125 4 2
+text 115 150 4 3
+text 115 175 4 4
+text 115 200 4 5
+text 115 225 4 6
+button 240 280 4023 4025 1 0 91
+
+[DIALOG d_quest_inquest1 TEXT]
+Already in the Quest
+I've already told you the details
+of my quest and you have agreed to help.
+Have you forgotten?
+
+
+[DIALOG d_quest_thanks]
+0,0
+page 0
+// Main page
+resizepic 50 50 1228 400 300
+text 125 55 0 0
+page 1
+text 115 100 4 1
+text 115 125 4 2
+text 115 150 4 3
+text 115 175 4 4
+text 115 200 4 5
+text 115 225 4 6
+button 240 280 4023 4025 1 0 91
+
+[DIALOG d_quest_thanks TEXT]
+Thank you!
+I thank you for completing the quest. 
+Here is your reward.
+
+[DIALOG d_quest_noitem]
+0,0
+page 0
+// Main page
+resizepic 50 50 1228 400 300
+text 125 55 0 0
+page 1
+text 115 100 4 1
+text 115 125 4 2
+text 115 150 4 3
+text 115 175 4 4
+text 115 200 4 5
+text 115 225 4 6
+button 240 280 4023 4025 1 0 91
+
+[DIALOG d_quest_noitem TEXT]
+No Items!
+You have not retrieved the item I seek. 
+Are you trying to fool me?
+
+/////////////////////////////
+// Newbie dungeon monsters //
+/////////////////////////////
+
+[CHARDEF c_scorpion_acd]
+DEFNAME=c_scorpion_acd
+ID=c_scorpion_giant
+NAME=Giant Scorpion
+SOUND=snd_MONSTER_GSCORP1
+ICON=i_pet_SCORP
+ANIM=078c7f
+CAN=MT_WALK
+
+DAM=6,19
+ARMOR=25
+RESOURCES=8 i_ribs_raw
+
+ON=@Create
+  COLOR=0529
+  NPC=brain_monster
+  COLOR=0529
+  FAME=5
+  KARMA={-1000 -4999}
+  HITS=300
+  STR={85 99}
+  DEX={70 100}
+  INT={85 92}
+  MACEFIGHTING={65.0 75.0}
+  PARRYING={65.0 65.0}
+  MAGICRESISTANCE={60.0 70.0}
+  TACTICS={70.0 80.0}
+  WRESTLING={65.0 70.0}
+  
+ON=@DEATH
+IF (RAND(100) < 25) // Chance de Dropar. Assim é 5%
+SERV.NEWITEM=i_rare_chest_newbie_dungeon_key  // ID da chave que vai dropar
+NEW.CONT=<SRC.UID>
+ENDIF
+
+ON=@NPCRESTOCK
+ITEM=i_gold,{275 325}
+ITEM=i_reward_ticket, {25 50}
+ITEM=i_potion_heal, {2 3}
+ITEM=i_fig_bakekitsune,R15
+
+
+[CHARDEF c_spider_acd]
+DEFNAME=c_spider_acd
+NAME=Giant Spider
+ID=c_spider_giant
+SOUND=snd_MONSTER_GISPIDR1
+ICON=i_pet_SPIDER_GIANT
+ANIM=078c7f
+DAM=8,19
+ARMOR=15
+RESOURCES={ 3 8 } i_reag_spider_silk
+CAN=MT_WALK
+
+ON=@Create
+  COLOR=0529
+  NPC=brain_monster
+  COLOR=0529
+  FAME=5
+  KARMA={-1000 -4999}
+  HITS=200
+  STR={75 90}
+  DEX={50 90}
+  INT={65 82}
+  MACEFIGHTING={55.0 75.0}
+  PARRYING={55.0 65.0}
+  MAGICRESISTANCE={40.0 50.0}
+  TACTICS={50.0 70.0}
+  WRESTLING={55.0 70.0}
+  
+ON=@DEATH
+IF (RAND(100) < 25) // Chance de Dropar. Assim é 5%
+SERV.NEWITEM=i_rare_chest_newbie_dungeon_key  // ID da chave que vai dropar
+NEW.CONT=<SRC.UID>
+ENDIF
+
+ON=@NPCRESTOCK
+ITEM=i_gold,{175 225}
+ITEM=i_reward_ticket, {25 50}
+ITEM=i_potion_heal, {1 2}
+ITEM=i_fig_bakekitsune,R15
+
+
+
+[CHARDEF c_zombie_acd]
+DEFNAME		= c_zombie_acd
+ID= c_zombie
+NAME		= Zombie
+SOUND		= snd_MONSTER_ZOMBIE1
+ICON		= i_pet_ZOMBIE
+ANIM		= 078c7f
+CAN		= MT_WALK
+DAM		= 7,11
+ARMOR		= 9
+RESOURCES	= 10 t_eerie_stuff, 1 i_reag_heart_zombie
+
+ON=@Create
+  COLOR=0529
+  NPC=brain_monster
+  COLOR=0529
+  FAME=5
+  KARMA={-1000 -4999}
+  STR={35 70}
+  DEX={40 80}
+  INT={55 72}
+  MACEFIGHTING={35.0 55.0}
+  PARRYING={35.0 45.0}
+  MAGICRESISTANCE={20.0 30.0}
+  TACTICS={30.0 50.0}
+  WRESTLING={35.0 50.0}
+
+ON=@NPCRESTOCK
+ITEM=i_gold,{75 125}
+ITEM=i_reward_ticket, {25 50}
+ITEM=i_potion_heal
+ITEM=i_fig_arcanedaemon,R35
+
+ON=@DEATH
+IF (RAND(100) < 12) // Chance de Dropar. Assim é 5%
+SERV.NEWITEM=i_rare_chest_newbie_dungeon_key  // ID da chave que vai dropar
+NEW.CONT=<SRC.UID>
+ENDIF
+
+
+
+[CHARDEF c_orc_acd]
+DEFNAME=c_orc_acd
+ID= c_orc_w_club
+NAME=#NAMES_ORC the Orc
+SOUND=snd_MONSTER_ORC1
+ICON=i_pet_ORC
+ANIM=078c7f
+DAM=5,12
+ARMOR=14
+CAN=MT_WALK|MT_RUN|MT_USEHANDS|MT_EQUIP
+RESOURCES=8 i_ribs_raw,1 i_Orc_spine
+
+ON=@Create
+  NPC=brain_monster
+  COLOR=0529
+  FAME=5
+  KARMA={-1000 -4999}
+  STR={35 70}
+  DEX={40 80}
+  INT={55 72}
+  MACEFIGHTING={35.0 55.0}
+  PARRYING={35.0 45.0}
+  MAGICRESISTANCE={20.0 30.0}
+  TACTICS={30.0 50.0}
+  WRESTLING={35.0 50.0}
+
+ON=@NPCRESTOCK
+ITEM=i_gold,{50 125}
+ITEM=i_reward_ticket, {25 50}
+ITEM=i_potion_heal
+ITEM=i_FIG_abysmallhorror,R35
+
+ON=@DEATH
+IF (RAND(100) < 8) // Chance de Dropar. Assim é 5%
+SERV.NEWITEM=i_rare_chest_newbie_dungeon_key  // ID da chave que vai dropar
+NEW.CONT=<SRC.UID>
+ENDIF
+
+
+[CHARDEF c_harpy_acd]
+DEFNAME=c_harpy_acd
+ID= c_harpy
+NAME=Harpy
+SOUND=snd_MONSTER_HARPY1
+ICON=i_pet_harpy
+DAM=10,15
+ARMOR=18
+CAN=MT_WALK|MT_FLY|MT_FEMALE|MT_USEHANDS
+RESOURCES=9 i_ribs_raw,50 i_feather
+
+ON=@Create
+  COLOR=0529
+  NPC=brain_monster
+  COLOR=0529
+  FAME=5
+  KARMA={-1000 -4999}
+  STR={35 70}
+  DEX={40 80}
+  INT={55 72}
+  MACEFIGHTING={35.0 55.0}
+  PARRYING={35.0 45.0}
+  MAGICRESISTANCE={20.0 30.0}
+  TACTICS={30.0 50.0}
+  WRESTLING={35.0 50.0}
+
+ON=@NPCRESTOCK
+ITEM=i_gold,{275 325}
+ITEM=i_reward_ticket, {25 50}
+ITEM=i_potion_heal, {2 3}
+
+[CHARDEF c_skeleton_acd]
+DEFNAME=c_skeleton_Acd
+ID=c_skeleton
+NAME=Skeleton
+ID=c_skeleton_w_sword
+DAM=10,15
+ARMOR=15
+RESOURCES=8 i_reag_bone
+
+ON=@Create
+  COLOR=0529
+  NPC=brain_monster
+  COLOR=0529
+  FAME=5
+  KARMA={-1000 -4999}
+  STR={35 70}
+  DEX={40 80}
+  INT={55 72}
+  MACEFIGHTING={35.0 55.0}
+  PARRYING={35.0 45.0}
+  MAGICRESISTANCE={20.0 30.0}
+  TACTICS={30.0 50.0}
+  WRESTLING={35.0 50.0}
+
+ON=@NPCRESTOCK
+ITEM=i_gold,{75 125}
+ITEM=i_reward_ticket, {25 50}
+ITEM=i_potion_heal
+ITEM=i_fig_arcanedaemon,R35
+
+ON=@DEATH
+IF (RAND(100) < 12) // Chance de Dropar. Assim é 5%
+SERV.NEWITEM=i_rare_chest_newbie_dungeon_key  // ID da chave que vai dropar
+NEW.CONT=<SRC.UID>
+ENDIF
+
+
+
+[EOF]
+
+
+//dfgdfgdfgdfgdf
+//dfgdfgdfgfd Apaga isto em baixo 
+
+//ON=@DEATH
+//IF (RAND(100) < 4) // Chance de Dropar. Assim é 5%
+//SERV.NEWITEM=i_imperial_REAPER_key  // ID da chave que vai dropar
+//NEW.CONT=<SRC.UID>
+//ENDIF
+

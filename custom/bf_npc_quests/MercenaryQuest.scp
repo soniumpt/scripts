@@ -1,0 +1,398 @@
+//Larden McGriffen Quest
+//Mercenary Quest - Idea by Itamu, scripted by Wren
+
+[CHARDEF c_h_Larden]
+   Name=Larden McGriffen
+   ID=c_man
+   DAM={10,15}
+   DESIRES=i_gold,e_notoriety
+   AVERSIONS=t_TRAP,t_eerie_stuff
+   TSPEECH=spk_human_default
+   TSPEECH=spk_quest_darrell
+
+ON=@NPCSeeNewPlayer
+   IF !( 0<SRC.TAG.NPC_QUEST_START_2> & NPCQ_MercLarden )
+      IF (0<SRC.TAG.MERCRANK> >= 01)
+         SAY What is this? A Mercenary? Oh please <src.name> , I need your help! I have a score that needs settled!
+      ELSE
+         SAY Hello <src.name>. I have a problem, can you help me?
+      ENDIF
+   ELSE
+      IF (0<SRC.TAG.MERCRANK> >= 01)
+         SAY Well met <SRC.NAME>, Have you avenged my men?
+      ELSE
+         SAY Hello again <SRC.NAME>, Have you found my goods?
+      ENDIF
+   ENDIF
+        
+ON=@Create
+   NPC=brain_human
+   COLOR=colors_skin
+   STR={66 80}
+   DEX={66 80}
+   INT={61 75}
+
+   FENCING=75.0
+   PARRYING=75.0
+   SWORDSMANSHIP=75.0
+   WRESTLING=75.0
+   MACEFIGHTING=75.0
+   TACTICS=75.0
+
+   ITEMNEWBIE=random_male_hair
+   COLOR=colors_hair
+   ITEMNEWBIE=random_facial_hair
+   COLOR=match_hair
+   ITEM=i_candle
+   ITEM=i_shirt_plain
+   COLOR=colors_all
+   ITEM=random_pants
+   COLOR=colors_all
+   ITEM=random_shoes
+   COLOR=colors_neutral
+   ITEM=i_lantern
+   ITEM=random_coin_purse
+  
+ON=@NPCRestock
+   ITEM=i_candle
+   ITEM=i_shirt_plain
+   COLOR=colors_all
+   ITEM=random_pants
+   COLOR=colors_all
+   ITEM=random_shoes
+   COLOR=colors_neutral
+   ITEM=i_lantern
+   ITEM=random_coin_purse
+ 
+   CATEGORY=Imperial uo
+   SUBSECTION=MercLarden Quest
+   DESCRIPTION=Larden McGriffen
+
+[SPEECH spk_quest_Larden]
+ON=*help*
+ON=*quest*
+   IF ( 0<SRC.TAG.NPC_QUEST_START_2> & NPCQ_MercLarden )
+      SAY You are already helping me <SRC.SEX milord/milady>
+   ELSEIF (0<SRC.TAG.MERCRANK> > 02)
+      SAY My business is in shambles, my stock almost depleted!
+      SAY Those awful thieves in the tunnels outside have stolen my goods and murdered the men I sent to retrieve them.
+      SAY As a Mercenary I'm sure you know the business...you see...I don't just want my goods...I want revenge!!
+      SAY Say "Agree" if you agree to help me <SRC.SEX milord/milady>
+   ELSE
+      SAY My business is in shambles! My stock is almost depleted!
+      SAY I've contracted my suppliers to bring me more, but they are continually harassed by those awful thieves in the tunnels outside Wind.
+      SAY I would prefer a mercenary but you will have to do I guess, would you help me collect what is rightfully mine?
+      SAY Say "Agree" if you agree to help me <SRC.SEX milord/milady>
+   ENDIF
+   RETURN 1
+   
+ON=*agree*
+   IF ( 0<SRC.TAG.NPC_QUEST_DONE_2> & NPCQ_MercLarden )
+      SAY You have already helped me.
+   ELSEIF ( 0<SRC.TAG.NPC_QUEST_START_2> & NPCQ_MercLarden )
+      SAY You allready agreed to do help me.
+   ELSEIF (0<SRC.TAG.MERCRANK> > 02)
+      SRC.TAG.NPC_QUEST_START_2 = <eval ( 0<SRC.TAG.NPC_QUEST_START_2> | NPCQ_MercLarden )>
+      SAY You'll find them outside in the tunnels through the mountain. 
+      SAY Bring me my goods yes...but bring me a head as well.
+   ELSE
+      SRC.TAG.NPC_QUEST_START_2 = <eval ( 0<SRC.TAG.NPC_QUEST_START_2> | NPCQ_MercLarden )>
+      SAY You'll find them outside in the tunnels through the mountain. 
+      SAY Bring me my goods and I will reward you.
+   ENDIF
+   RETURN 1
+
+ON=*Location*
+ON=*Place*                           
+   IF ( 0<SRC.TAG.NPC_QUEST_DONE_2> & NPCQ_MercLarden )
+      SAY You have already helped me.
+   ELSEIF ( 0<SRC.TAG.NPC_QUEST_START_2> & NPCQ_MercLarden )
+      SAY I told you, they're outside Wind in the tunnels that wind through the mountain!
+   ENDIF
+   RETURN 1
+   
+ON=*reward*
+   IF ( 0<SRC.TAG.NPC_QUEST_DONE_2> & NPCQ_MercLarden )
+      SAY You have already helped me.
+   ELSEIF !( 0<SRC.TAG.NPC_QUEST_START_2> & NPCQ_MercLarden )
+      SAY You must agree to help me to get the information <SRC.SEX milord/milady>
+   ELSEIF (( 0<SRC.TAG.NPC_QUEST_START_2> & NPCQ_MercLarden ) && !<SRC.RESTEST 1 i_goods_Larden>)
+      SAY Return my goods and I shall reward you <SRC.SEX milord/milady>
+   ELSEIF <SRC.RESTEST 1 i_goods_Larden>
+      IF (<SRC.RESTEST i_head_Ivan> && (0<SRC.TAG.MERCRANK> > 02))
+         SRC.SYSMESSAGE <NAME> hands you your reward and hurries off to stock his shelves with a satisfied grin on his face.
+         
+         SRC.CONSUME 1 i_goods_Larden
+         SRC.CONSUME 1 i_head_Ivan
+         
+         SRC.NEWITEM tm_reward_Larden_Goods
+         SRC.ACT.BOUNCE
+         SRC.NEWITEM tm_reward_Larden_Revenge
+         SRC.ACT.BOUNCE
+         
+         SRC.TAG.NPC_QUEST_START_2 = <eval ( 0<SRC.TAG.NPC_QUEST_START_2> &~ NPCQ_MercLarden )>
+         SRC.TAG.NPC_QUEST_DONE_2 = <eval ( 0<SRC.TAG.NPC_QUEST_DONE_2> | NPCQ_MercLarden )>
+         
+         REMOVE
+         ANNOUNCE <SRC.NAME> has made the merchants' route to Wind much safer and earned esteem among the Mercenaries.
+         RETURN 0
+      ELSE
+         SRC.SYSMESSAGE <NAME> hands you a reasonable pile of gold and hurries away to stock his shelves.
+         
+         SRC.CONSUME 1 i_goods_Larden
+         
+         SRC.NEWITEM tm_reward_Larden_Goods
+         SRC.ACT.BOUNCE
+         
+         SRC.TAG.NPC_QUEST_START_2 = <eval ( 0<SRC.TAG.NPC_QUEST_START_2> &~ NPCQ_MercLarden )>
+         SRC.TAG.NPC_QUEST_DONE_2 = <eval ( 0<SRC.TAG.NPC_QUEST_DONE_2> | NPCQ_MercLarden )>
+         
+         REMOVE
+         ANNOUNCE <SRC.NAME> has made the merchants' route to Wind a bit safer.
+         RETURN 0
+      ENDIF
+   ENDIF
+   RETURN 1
+
+[ITEMDEF i_goods_Larden]
+   Name=Larden's Provisions
+   ID=i_crate_LG
+   TYPE=t_script
+   WEIGHT=1
+
+   CATEGORY=Imperial uo
+   SUBSECTION=MercLarden Quest
+   DESCRIPTION=Larden's Goods
+
+
+[ITEMDEF i_head_Ivan]
+   Name=Head of the Vile Ivan
+   ID=i_flesh_head2
+   TYPE=t_script
+   WEIGHT=1
+
+   CATEGORY=Imperial uo
+   SUBSECTION=MercLarden Quest
+   DESCRIPTION=Ivan's Head
+
+
+[TEMPLATE tm_Reward_Larden_Goods]
+   ITEM=i_gold,{5000}
+
+
+[TEMPLATE tm_Reward_Larden_Revenge]
+   ITEM=i_gold,{5000}
+   ITEM=i_cape_td
+
+
+[ITEMDEF i_cape_td]
+NAME=Thief Destroyer
+ID=i_cape
+WEIGHT=3
+VALUE=5000
+DYE=0
+	
+ON=@CREATE
+QUALITY 	= 200
+ATTR    	= 05
+HITPOINTS	={50 130}
+COLOR 		= 0846
+
+ON=@EQUIP 
+IF (0<SRC.tag.Mercenary> <= 2)
+   SRC.MESSAGE You can't equip this robe
+   UNEQUIP
+   RETURN 1
+ENDIF
+
+CATEGORY=Imperial uo
+SUBSECTION=MercLarden Quest
+DESCRIPTION=Theif Destroyer Cloak
+
+
+[CHARDEF c_theif_Frederick]
+   NAME=#Frederick the Bandit
+   ID=C_MAN
+   CAN=MT_EQUIP|MT_USEHANDS|MT_WALK
+   DESIRES=i_gold,e_notoriety
+   AVERSIONS=t_TRAP,t_eerie_stuff
+   DAM	= 10,30
+   ARMOR = 30
+
+   TSPEECH=spk_human_prime
+   TSPEECH=jobBrigand
+   TSPEECH=spk_needs
+   TSPEECH=spk_rehello
+   TSPEECH=spk_human_default
+
+   TEVENTS=e_Human_HearUnk
+   TEVENTS=e_Human_ConvInit
+   TEVENTS=e_Human_Greet
+   TEVENTS=e_Human_Space
+   TEVENTS=e_Human_Needs
+   TEVENTS=e_Human_Refuse
+
+ON=@Create
+   COLOR=colors_skin
+   STR={500 600}
+   DEX={100 200}
+   INT={500 600}
+
+   HIDING={45.0 68.0}
+   SNOOPING={75.0 90.0}
+   STEALING={75.0 90.0}
+   PARRYING={55.0 78.0}
+   FENCING={55.0 78.0}
+   SWORDSMANSHIP={35.0 58.0}
+   MAGICRESISTANCE={45.0 58.0}
+   TACTICS={55.0 78.0}
+
+   NPC=brain_thief
+
+   KARMA={-3000 -4000}
+   FAME={2500 4000}
+
+   ITEMNEWBIE=random_male_hair
+   COLOR=colors_hair
+   ITEMNEWBIE=random_facial_hair
+   COLOR=match_hair
+
+ON=@NPCRestock
+   ITEMNEWBIE=I_TUNIC_STUDDED
+   COLOR=0afc
+   NAME=Snake Skin Tunic
+   ITEMNEWBIE=I_GORGET_STUDDED
+   COLOR=0afc
+   NAME=Snake Skin Gorget
+   ITEMNEWBIE=I_LEGGINGS_STUDDED
+   COLOR=0afc
+   NAME=Snake Skin Leggings
+   ITEMNEWBIE=I_GLOVES_STUDDED
+   COLOR=0afc
+   NAME=Snake Skin Gloves
+   ITEMNEWBIE=I_BOOTS_CALF
+   COLOR=0afc
+   NAME=Snake Skin Boots
+
+   ITEMNEWBIE=i_kyrss_adamantine   
+   ITEM=random_coin_purse
+   ITEM=i_goods_Larden
+
+   CATEGORY=Imperial uo
+   SUBSECTION=MercLarden Quest
+   DESCRIPTION=Frederick
+
+
+[CHARDEF c_theif_Ivan]
+   NAME=Ivan the Bandit
+   ID=C_MAN
+   CAN=MT_EQUIP|MT_USEHANDS|MT_WALK
+   DESIRES=i_gold,e_notoriety
+   AVERSIONS=t_TRAP,t_eerie_stuff
+
+   TSPEECH=spk_human_prime
+   TSPEECH=jobBrigand
+   TSPEECH=spk_needs
+   TSPEECH=spk_rehello
+   TSPEECH=spk_human_default
+
+   TEVENTS=e_Human_HearUnk
+   TEVENTS=e_Human_ConvInit
+   TEVENTS=e_Human_Greet
+   TEVENTS=e_Human_Space
+   TEVENTS=e_Human_Needs
+   TEVENTS=e_Human_Refuse
+
+ON=@Create
+   COLOR=colors_skin
+   STR={1000 1500}
+   DEX={81 95}
+   INT={61 75}
+
+   HIDING={45.0 68.0}
+   SNOOPING={75.0 90.0}
+   STEALING={75.0 90.0}
+   PARRYING={55.0 78.0}
+   SWORDSMANSHIP={35.0 58.0}
+   MAGICRESISTANCE={45.0 58.0}
+   TACTICS={55.0 78.0}
+
+   NPC=brain_thief
+
+   KARMA={-3000 -4000}
+   FAME={2500 4000}
+
+   ITEMNEWBIE=random_male_hair
+   COLOR=colors_hair
+   ITEMNEWBIE=random_facial_hair
+   COLOR=match_hair
+
+ON=@NPCSeeNewPlayer
+   IF !<FINDID.M_ETHEREAL.UID>
+   	SERV.NEWITEM M_ETHEREAL
+   	EQUIP <NEW.UID>
+   ENDIF
+   RETURN 0
+
+ON=@NPCRestock
+   ITEMNEWBIE=I_TUNIC_STUDDED
+   COLOR=0afc
+   NAME=Snake Skin Tunic
+   ITEMNEWBIE=I_GORGET_STUDDED
+   COLOR=0afc
+   NAME=Snake Skin Gorget
+   ITEMNEWBIE=I_LEGGINGS_STUDDED
+   COLOR=0afc
+   NAME=Snake Skin Leggings
+   ITEMNEWBIE=I_GLOVES_STUDDED
+   COLOR=0afc
+   NAME=Snake Skin Gloves
+   ITEMNEWBIE=I_BOOTS_CALF
+   COLOR=0afc
+   NAME=Snake Skin Boots
+   
+   ITEM=random_coin_purse
+   ITEM=i_head_Ivan
+
+   CATEGORY=Imperial uo
+   SUBSECTION=MercLarden Quest
+   DESCRIPTION=Ivan
+   
+
+[ItemDef M_Ethereal]
+id=i_memory
+Name=Ethereal Effect
+type=t_eq_script
+
+ON=@Create
+   TIMER=120
+
+ON=@UNEQUIP
+   SRC.COLOR=<SRC.OSKIN>
+   SRC.FINDID(I_TUNIC_STUDDED).COLOR=0afc
+   SRC.FINDID(I_GORGET_STUDDED).COLOR=0afc
+   SRC.FINDID(I_LEGGINGS_STUDDED).COLOR=0afc
+   SRC.FINDID(I_GLOVES_STUDDED).COLOR=0afc
+   SRC.FINDID(I_BOOTS_CALF).COLOR=0afc
+   SRC.FINDLAYER(LAYER_HAIR).COLOR=colors_hair
+   SRC.FINDLAYER(LAYER_BEARD).COLOR=<SRC.FINDLAYER(LAYER_HAIR).COLOR>
+   RETURN 1
+   
+ON=@Timer
+   IF (<CONT.COLOR>=07fff)
+      REMOVE
+   ELSE
+      TIMER=600
+      CONT.COLOR=07fff
+      CONT.FINDID(I_TUNIC_STUDDED).COLOR=07fff
+      CONT.FINDID(I_GORGET_STUDDED).COLOR=07fff
+      CONT.FINDID(I_LEGGINGS_STUDDED).COLOR=07fff
+      CONT.FINDID(I_GLOVES_STUDDED).COLOR=07fff
+      CONT.FINDID(I_BOOTS_CALF).COLOR=07fff
+      CONT.FINDLAYER(LAYER_HAIR).COLOR=07fff
+      CONT.FINDLAYER(LAYER_BEARD).COLOR=07fff
+   ENDIF   
+   RETURN 1   
+   
+
+[EOF]

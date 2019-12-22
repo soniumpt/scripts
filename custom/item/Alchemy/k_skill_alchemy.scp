@@ -1,0 +1,822 @@
+//Wren Feb 08 '04 - fixed referece to a type i_potion keg....type does not exist changed to check that baseid with i_keg_potion
+//Wren Sep 25 '04 - added poisons to the craftables
+// 25/11/2019 - Wigifer - Updated all remaining <TIME> to <SERV.TIME> (56d update issue)
+
+[ITEMDEF 0f0e]	//Empty Potion Bottle
+DEFNAME		= i_bottle_empty
+TYPE		= T_POTION_EMPTY
+SKILLMAKE	= TINKERING 21.3, t_tinker_tools
+RESOURCES	= 1 i_ingot_iron
+VALUE		= 9
+WEIGHT		= 1
+CATEGORY	= Provisions - Alchemy & Magic
+SUBSECTION	= Magical Items
+DESCRIPTION	= Empty Alchemist Bottle
+
+
+ON=@DClick
+TARGET Where do you want to fill the bottle from?
+RETURN 1
+
+ON=@Targon_item
+  IF (<SRC.TARG.TYPE> = t_corpse )
+   IF (<SRC.NECROMANCY> > 10.0 ) && (<SRC.NETHERLORE> > 10.0 ) //check for basic necromancy & netherlore
+     IF (0<SRC.TARG.TAG.HARVESTED> = 1 )
+       src.sysmessage You tear it apart but fail to find anything useful
+       return 1
+     ENDIF  
+     IF ( !<src.restest 1 i_bottle_empty> )
+            src.sysmessage You dont have a bottle to put anything in..
+            return 1
+     ENDIF
+     IF ( !<src.restest 1 i_dagger_shadow> )
+            src.sysmessage You dont have a suitable dagger on you..
+            return 1
+     ENDIF
+     IF (<SRC.TARG.LINK> == 04fffffff) //npc
+ 	     IF (<SRC.TARG.TIMER> < 240)
+		    src.sysmessage This corpse is too old...
+		    return 1 	        
+ 	     ENDIF
+     ELSEIF (<SRC.ACT.CONT.LINK.ISPlayer> )
+ 	     IF (<SRC.TARG.TIMER> < 530) //pc
+		    src.sysmessage This corpse is too old...
+		    return 1 	        
+ 	     ENDIF     
+     ENDIF
+        //do specific reags        
+//sacrifice
+    IF (<SRC.TARG.region.type>==i_multi_pentagram_necro)
+         IF (<SRC.TARG.AMOUNT> == 223)  //lamb
+               IF (<SRC.NECROMANCY> > 10.0 ) && (<SRC.NETHERLORE> > 5.0 )
+    	       src.sysmessage @0021 As its life ebbs away, you stick the knife on the corpse, twist it, pull it out and watch as the blood slowly drips into the bottle...
+    	       SRC.TARG.TAG.HARVESTED = 1
+    	       SRC.CONSUME=i_BOTTLE_EMPTY
+    	       SERV.NEWITEM i_blood_lamb
+               NEW.CONT <SRC.UID>
+               src.SKILLCHECK_START		Skill_Necromancy
+    	       Return 1
+    	       ENDIF
+       	ELSEIF (<SRC.TARG.AMOUNT> == 211)  //bear
+       	
+               IF (<SRC.NECROMANCY> > 49.9 ) && (<SRC.NETHERLORE> > 24.9 )
+               src.say <SRC.TARG.region.type> <SRC.TARG.AMOUNT>
+    	       src.sysmessage @0021 As its life ebbs away, you stick the knife on the corpse, twist it, pull it out and watch as the blood slowly drips into the bottle...
+    	       SRC.TARG.TAG.HARVESTED = 1
+    	       SRC.CONSUME=i_BOTTLE_EMPTY
+    	       SERV.NEWITEM i_blood_bear
+               NEW.CONT <SRC.UID>
+               src.SKILLCHECK_START		Skill_Necromancy
+    	       Return 1
+    	       ENDIF
+       	ELSEIF (<SRC.TARG.AMOUNT> == 231) || (<SRC.TARG.AMOUNT> == 216) //cow
+               IF (<SRC.NECROMANCY> > 19.9 ) && (<SRC.NETHERLORE> > 10.0 )
+    	       src.sysmessage @0021 As its life ebbs away, you stick the knife on the corpse, twist it, pull it out and watch as the blood slowly drips into the bottle...
+    	       SRC.TARG.TAG.HARVESTED = 1
+    	       SRC.CONSUME=i_BOTTLE_EMPTY
+    	       SERV.NEWITEM i_blood_cow
+               NEW.CONT <SRC.UID>
+               src.SKILLCHECK_START		Skill_Necromancy
+    	       Return 1
+    	       ENDIF    	       
+       	ELSEIF (<SRC.TARG.AMOUNT> == 52)  //snake
+               IF (<SRC.NECROMANCY> > 79.9 ) && (<SRC.NETHERLORE> > 39.9 )
+    	       src.sysmessage @0021 As its life ebbs away, you stick the knife on the corpse, twist it, pull it out and watch as the blood slowly drips into the bottle...
+    	       SRC.TARG.TAG.HARVESTED = 1
+    	       SRC.CONSUME=i_BOTTLE_EMPTY
+    	       SERV.NEWITEM i_blood_snake
+               NEW.CONT <SRC.UID>
+               src.SKILLCHECK_START		Skill_Necromancy
+    	       Return 1
+    	       ENDIF
+       	ELSEIF (<SRC.TARG.AMOUNT> == 400)  //human
+               IF (<SRC.NECROMANCY> > 64.9 ) && (<SRC.NETHERLORE> > 40.0 )
+    	       src.sysmessage @0021 You kneel next to the man, as he is drawing his last shallow breaths you slit his throat, you see the deep terror in his eyes as you start to fill your bottle with the blood spurting out of his neck. The gurgling screams stop just as you gather the last drop...
+    	       SRC.TARG.TAG.HARVESTED = 1
+    	       SRC.CONSUME=i_BOTTLE_EMPTY
+    	       SERV.NEWITEM i_blood_human
+               NEW.CONT <SRC.UID>
+               src.SKILLCHECK_START		Skill_Necromancy
+    	       Return 1
+    	       ENDIF
+       	ELSEIF (<SRC.TARG.AMOUNT> == 401)  //human
+               IF (<SRC.NECROMANCY> > 64.9 ) && (<SRC.NETHERLORE> > 40.0 )
+    	       src.sysmessage @0021 You kneel next to the woman, as she is drawing her last shallow breaths you slit her throat, you see the deep terror in her eyes as you start to fill your bottle with the blood spurting out of her neck. The gurgling screams stop just as you gather the last drop...
+    	       SRC.TARG.TAG.HARVESTED = 1
+    	       SRC.CONSUME=i_BOTTLE_EMPTY
+    	       SERV.NEWITEM i_blood_human
+               NEW.CONT <SRC.UID>
+               src.SKILLCHECK_START		Skill_Necromancy
+    	       Return 1
+    	       ENDIF    	       
+       	ENDIF
+     ENDIF
+    
+    
+    
+    ENDIF
+        //blood of your own
+     IF (<SRC.TARG.LINK.UID> == <SRC.UID>)
+       	IF (<SRC.NECROMANCY> > 30.0 ) && (<SRC.NETHERLORE> > 15.0 )
+	       src.sysmessage @0021 You kneel next to your lifeless corpse, with a sigh of despair you make a small incision on the wrist and draw blood into the waiting bottle...
+	       SRC.TARG.TAG.HARVESTED = 1
+	       SRC.CONSUME=i_BOTTLE_EMPTY
+	       SERV.NEWITEM i_blood_own
+               NEW.CONT <SRC.UID>
+               src.SKILLCHECK_START		Skill_Necromancy
+	       Return 1
+   	ELSE
+      	       Src.sysmessage You dont have high enough skill to harvest this corpse
+      	       return 1
+   	ENDIF
+     ENDIF
+     
+        //blood of servants
+     IF (<SRC.TARG.LINK.ISORDER> ) || (<SRC.TARG.LINK.ISCHAOS> )
+       	IF (<SRC.NECROMANCY> > 50.0 ) && (<SRC.NETHERLORE> > 25.0 )
+       	    IF (<SRC.TARG.LINK.BODY> == c_man )
+	       src.sysmessage @0021 You kneel next to the man, as he is drawing his last shallow breaths you slit his throat, you see the deep terror in his eyes as you start to fill your bottle with the blood spurting out of his neck. The gurgling screams stop just as you gather the last drop...
+	       SRC.TARG.TAG.HARVESTED = 1
+	       SRC.CONSUME=i_BOTTLE_EMPTY
+	       SERV.NEWITEM i_blood_servants
+               NEW.CONT <SRC.UID>
+               src.SKILLCHECK_START		Skill_Necromancy
+	       Return 1
+	    ELSEIF (<SRC.TARG.LINK.BODY> == c_woman )
+	       src.sysmessage @0021 You kneel next to the woman, as she is drawing her last shallow breaths you slit her throat, you see the deep terror in her eyes as you start to fill your bottle with the blood spurting out of her neck. The gurgling screams stop just as you gather the last drop...
+	       SRC.TARG.TAG.HARVESTED = 1
+	       SRC.CONSUME=i_BOTTLE_EMPTY
+	       SERV.NEWITEM i_blood_servants
+               NEW.CONT <SRC.UID>
+               src.SKILLCHECK_START		Skill_Necromancy
+	       Return 1
+	    ENDIF
+   	ELSE
+      	       Src.sysmessage You dont have high enough skill to harvest this corpse
+      	       return 1
+   	ENDIF
+     ENDIF
+
+       //blood of a murderer
+     IF !(<SRC.TARG.LINK> == 04fffffff)
+     IF (<SRC.TARG.LINK.KILLS> > 3) || (<SRC.TARG.LINK.KARMA> < -2000) 
+       	IF (<SRC.NECROMANCY> > 80.0 ) && (<SRC.NETHERLORE> > 40.0 )
+	       src.sysmessage @0021 You press your knife into the corpses blackened heart and fill your bottle with the blood dribbling out...
+	       SRC.TARG.TAG.HARVESTED = 1
+	       SRC.CONSUME=i_BOTTLE_EMPTY
+	       SERV.NEWITEM i_blood_murderer
+               NEW.CONT <SRC.UID>
+               src.SKILLCHECK_START		Skill_Necromancy
+	       Return 1
+   	ELSE
+      	       Src.sysmessage You dont have high enough skill to harvest this corpse
+      	       return 1
+   	ENDIF
+     ENDIF 
+     ENDIF
+     
+        //blood of the innocent
+     IF !(<SRC.TARG.LINK> == 04fffffff)
+     IF (<SRC.TARG.LINK.KILLS> < 3) || (<SRC.TARG.LINK.KARMA> > -2000) 
+       	IF (<SRC.NECROMANCY> > 35.0 ) && (<SRC.NETHERLORE> > 20.0 )
+	       src.sysmessage @0021 You press your knife into the corpses honest heart and fill your bottle with the blood dribbling out...
+	       SRC.TARG.TAG.HARVESTED = 1
+	       SRC.CONSUME=i_BOTTLE_EMPTY
+	       SERV.NEWITEM i_blood_innocent
+               NEW.CONT <SRC.UID>
+               src.SKILLCHECK_START		Skill_Necromancy
+	       Return 1
+   	ELSE
+      	       Src.sysmessage You dont have high enough skill to harvest this corpse
+      	       return 1
+   	ENDIF
+     ENDIF
+     ENDIF
+
+        //blood of liche
+     IF (<SRC.TARG.LINK> == 04fffffff)
+     IF (<SRC.TARG.AMOUNT> == 24)
+       	IF (<SRC.NECROMANCY> > 70.0 ) && (<SRC.NETHERLORE> > 35.0 )
+	       src.sysmessage @0021 You peel back the rotting layers of flesh, using your knife you cut through the layers of decomposing muscle and skin until you find a vein, using your bottle you collect the thick blackened blood...
+	       SRC.TARG.TAG.HARVESTED = 1
+	       SRC.CONSUME=i_BOTTLE_EMPTY
+	       SERV.NEWITEM i_blood_liche
+               NEW.CONT <SRC.UID>
+               src.SKILLCHECK_START		Skill_Necromancy
+	       Return 1
+   	ELSE
+      	       Src.sysmessage You dont have high enough skill to harvest this corpse
+      	       return 1
+   	ENDIF
+     ENDIF
+     ENDIF
+
+     IF (<SRC.TARG.LINK> == 04fffffff)
+     IF (<SRC.TARG.AMOUNT> == 26)
+       	IF (<SRC.NECROMANCY> > 40.0 ) && (<SRC.NETHERLORE> > 20.0 )
+	       src.sysmessage @0021 You peel back the rotting layers of flesh to scrape dust from its decrepid bones...
+	       SRC.TARG.TAG.HARVESTED = 1
+	       SRC.CONSUME=i_BOTTLE_EMPTY
+	       SERV.NEWITEM i_blood_wraith
+               NEW.CONT <SRC.UID>
+               src.SKILLCHECK_START		Skill_Necromancy
+	       Return 1
+   	ELSE
+      	       Src.sysmessage You dont have high enough skill to harvest this corpse
+      	       return 1
+   	ENDIF
+     ENDIF
+     ENDIF
+     //undeads
+     IF (<SRC.TARG.LINK> == 04fffffff)
+     IF (<SRC.TARG.AMOUNT> == 154) || (<SRC.TARG.AMOUNT> == 50) || (<SRC.TARG.AMOUNT> == 3) || (<SRC.TARG.AMOUNT> == 56) || (<SRC.TARG.AMOUNT> == 970)
+       	IF (<SRC.NECROMANCY> > 60.0) && (<SRC.NETHERLORE> > 30.0)
+	       src.sysmessage @0021 You peel back the rotting layers of flesh to scrape dust from its decrepid bones...
+	       SRC.TARG.TAG.HARVESTED = 1
+	       SRC.CONSUME=i_BOTTLE_EMPTY
+	       SERV.NEWITEM i_blood_undead
+               NEW.CONT <SRC.UID>
+               src.SKILLCHECK_START		Skill_Necromancy
+	       Return 1
+   	ELSE
+      	       Src.sysmessage You dont have high enough skill to harvest this corpse
+      	       return 1
+   	ENDIF
+     ENDIF
+     ENDIF
+
+               //corpse essence
+     IF (<SRC.TARG.LINK> == 04fffffff)
+     IF (<SRC.TARG.AMOUNT> == 400)
+       	IF (<SRC.NECROMANCY> > 25.0 ) && (<SRC.NETHERLORE> > 10.0 )
+	       src.sysmessage @0021 You ignore the screams as you plunge your knife deep into his chest, you scoop up the blood spilling everywhere and hurriedly force it into the bottle...
+	       SRC.TARG.TAG.HARVESTED = 1
+	       SRC.CONSUME=i_BOTTLE_EMPTY
+	       SERV.NEWITEM i_blood_corpse
+               NEW.CONT <SRC.UID>
+               src.SKILLCHECK_START		Skill_Necromancy
+	       Return 1
+   	ELSE
+      	       Src.sysmessage You dont have high enough skill to harvest this corpse
+      	       return 1
+   	ENDIF
+     ELSEIF (<SRC.TARG.AMOUNT> == 401)
+       	IF (<SRC.NECROMANCY> > 25.0 ) && (<SRC.NETHERLORE> > 10.0 )
+	       src.sysmessage @0021 You ignore the screams as you plunge your knife deep into her chest, you scoop up the blood spilling everywhere and hurriedly force it into the bottle...
+	       SRC.TARG.TAG.HARVESTED = 1
+	       SRC.CONSUME=i_BOTTLE_EMPTY
+	       SERV.NEWITEM i_blood_corpse
+               NEW.CONT <SRC.UID>
+               src.SKILLCHECK_START		Skill_Necromancy
+	       Return 1
+   	ELSE
+      	       Src.sysmessage You dont have high enough skill to harvest this corpse
+      	       return 1
+   	ENDIF
+     ENDIF
+     ENDIF
+
+
+
+
+
+
+   ELSE
+      Src.sysmessage You dont have high enough skill to harvest this corpse
+      return 1
+   ENDIF
+  ENDIF
+
+  IF (<SRC.TARG.BASEID> != i_keg_potion )
+     src.sysmessage You can't fill the bottle from there.
+     return 1
+  endif
+
+  if ( (<SRC.TARG.morex> == 0) || (<SRC.TARG.MORE2> == 0) )
+     src.sysmessage The keg is empty.
+     return 1
+  endif
+
+  SOUND		= snd_Z_END_LIQUID
+  SRC.NEWITEM	= <SRC.TARG.MORE2>
+  SRC.ACT.MOREz	= <SRC.TARG.MOREz> //restore skillvalue 
+  SRC.ACT.ATTR	= 0
+  SRC.ACT.TIMER	= -1
+  SRC.ACT.CONT	= <SRC.UID>
+  SRC.TARG.MOREX	= <SRC.TARG.MOREX> - 1
+  IF (<SRC.TARG.MOREX> == 0)
+     SRC.TARG.NAME	=	//set original name
+     SRC.TARG.MORE2	= 0	//clear potion id	
+     SRC.TARG.MOREz	= 0	//clear makeskillvalue
+     SRC.SYSMESSAGE You fill the bottle with the last drops of the liquid.
+  ELSE
+     SRC.TARG.NAME	= a <NAME> Keg(<SRC.TARG.MOREX>)
+     SRC.SYSMESSAGE You fill the bottle with the liquid.
+  ENDIF
+  CONSUME 1
+  RETURN 1
+
+[ITEMDEF 0e9b]	//Mortar & Pestle
+DEFNAME 	= i_mortar_pestle
+VALUE		= 170
+TYPE		= t_script
+RESOURCES	= 5 i_ingot_iron
+WEIGHT		= 1
+SKILLMAKE	= TINKERING 70.0,t_tinker_tools
+
+ON=@Create
+  MORE1		= 3
+  TAG.SKILL	= 0.0
+  TAG.ID	= 
+  TYPE		= T_MORTAR
+  
+ON = @Click
+   if ( 0<TAG.CLICKED> == 0 )
+      TAG.CLICKED = <SERV.TIME>
+   endif
+   MESSAGE <NAME>
+   if ( !strcmp( "<TAG.ID>", "" ) )
+      return 1
+   endif
+
+   if ( (<SERV.TIME> - <TAG.CLICKED>) > 15 )
+      MESSAGE (click again to clear)
+   else
+      NAME		=
+      TAG.ID	=
+      TAG.SKILL	= 0.0
+      MESSAGE *You wash the mortar and clear the pestle*
+   endif
+   TAG.CLICKED	= <SERV.TIME>
+   return 1
+
+ON=@ContextMenuRequest
+SRC.AddContextEntry 747,5121
+   
+ON=@ContextMenuSelect
+IF (<ARGN>==747)
+      NAME		=
+      TAG.ID	=
+      TAG.SKILL	= 0.0
+      MESSAGE *You wash the mortar and clear the pestle*
+      resendtooltip
+ENDIF
+   
+ON=@DClick
+   if (<TOPOBJ.UID> != <SRC.UID> )
+      src.sysmessage You must have the mortar and pestle in your pack.
+      return 1
+   endif
+
+   if (<MORE1> != 3 )
+      SRC.NEWITEM	i_mortar_pestle
+      SRC.ACT.BOUNCE
+      REMOVE
+      SRC.ACT.USE
+      return 1
+   endif
+
+   if ( !strcmp( "<TAG.ID>", "") )
+     SRC.ACT		= <UID>
+     SRC.SKILLMENU sm_alchemy
+     return 1
+   endif
+
+   if (<SRC.ACTION> != -1 )
+      SRC.SYSMESSAGE You must wait to perform another action.
+      return 1
+   endif
+
+SERV.NEWITEM <TAG.ID>
+REF1=<NEW>
+if ( (<REF1.TYPE> == t_potion) && (<SRC.RESTEST i_bottle_empty> == 0) )
+SRC.SYSMESSAGE You have no bottles for your potion.
+elseif (<SRC.RESTEST <REF1.RESOURCES>> == 0 )
+SRC.SYSMESSAGE You need <REF1.RESMAKE> to produce <REF1.NAME>.
+elseif ( !<SRC.CANMAKE <REF1.BASEID>> )
+SRC.SYSMESSAGE You haven't got the faintest idea on how to produce <REF1..NAME>.
+else
+SRC.SYSMESSAGE You start producing <REF1.NAME>.
+SRC.MAKEITEM = <TAG.ID>
+SRC.TAG.MAKEITEM.LEVEL = <TAG.SKILL>
+endif
+REF1.REMOVE
+return 1
+
+
+[FUNCTION dialog_skill_alchemy]
+  TAG.POTIONS	= 0
+  VAR.CANMAKE	= 0
+
+  DSA_POTION  i_potion_CureLess
+    DSA_SKILL 15.0
+    DSA_DESC1 Instantly cures even the simpler
+    DSA_DESC2 poisons
+    DSA_DESC3 " "
+  DSA_POTION  i_potion_NightSight
+    DSA_SKILL 20.0
+    DSA_DESC1 Allows perfect sight even in the
+    DSA_DESC2 most pure darkness
+    DSA_DESC3 ""
+  DSA_POTION  i_potion_RefreshLess
+    DSA_SKILL 30.0
+    DSA_DESC1 Instantly restores a small amount of
+    DSA_DESC2 stamina
+    DSA_DESC3 " "
+  DSA_POTION  i_potion_HealLess
+    DSA_SKILL 33.0
+    DSA_DESC1 Instantly restores a small amount of
+    DSA_DESC2 health
+    DSA_DESC3 " "
+  DSA_POTION  i_potion_ExplosionLess
+    DSA_SKILL 36.0
+    DSA_DESC1 When thrown, creates a small explosion,
+    DSA_DESC2 damaging everyone in the close vicinity
+    DSA_DESC3 ""
+  DSA_POTION  i_potion_AgilityLess
+    DSA_SKILL 40.0
+    DSA_DESC1 Temporarily increases Dexterity 
+    DSA_DESC2 by a small amount
+    DSA_DESC3 ""
+  DSA_POTION  i_potion_StrengthLess
+    DSA_SKILL 45.0
+    DSA_DESC1 Temporarily increases Strength
+    DSA_DESC2 by a small amount
+    DSA_DESC3 ""
+  DSA_POTION  i_potion_PoisonLess
+    DSA_SKILL 45.0
+    DSA_DESC1 Used to apply a weak
+    DSA_DESC2 poison on certain weapons
+    DSA_DESC3 ""
+  DSA_POTION  i_potion_ClevernessLess
+    DSA_SKILL 50.0
+    DSA_DESC1 Temporarily increases Intelligence
+    DSA_DESC2 by a small amount
+    DSA_DESC3 ""
+  DSA_POTION  i_potion_Refresh
+    DSA_SKILL 52.0
+    DSA_DESC1 Instantly restores a significant amount
+    DSA_DESC2 of stamina
+    DSA_DESC3 " "
+  DSA_POTION  i_potion_EmpowerLess
+    DSA_SKILL 53.0
+    DSA_DESC1 Unknown
+    DSA_DESC2 " "
+    DSA_DESC3 " "
+  DSA_POTION  i_potion_Heal
+    DSA_SKILL 54.0
+    DSA_DESC1 Instantly restores a significant amount
+    DSA_DESC2 of health
+    DSA_DESC3 " "
+  DSA_POTION  i_potion_Explosion
+    DSA_SKILL 55.0
+    DSA_DESC1 When thrown, creates an explosion, 
+    DSA_DESC2 damaging everyone in the close vicinity
+    DSA_DESC3 ""
+  DSA_POTION  i_potion_Cure
+    DSA_SKILL 56.0
+    DSA_DESC1 Instantly cures even the average
+    DSA_DESC2 poisons
+    DSA_DESC3 " "
+  DSA_POTION  i_potion_Agility
+    DSA_SKILL 60.0
+    DSA_DESC1 Temporarily increases Dexterity
+    DSA_DESC2 by a significant amount
+    DSA_DESC3 ""
+  DSA_POTION  i_potion_PermanenceLess
+    DSA_SKILL 61.0
+    DSA_DESC1 Doubles the duration of the benefitial
+    DSA_DESC2 spells already in effect
+    DSA_DESC3 ""
+  DSA_POTION  i_potion_StoneSkin
+    DSA_SKILL 63.0
+    DSA_DESC1 Hardens the skin to stone, thus raising
+    DSA_DESC2 defense. It's effect is less noticeable
+    DSA_DESC3 the  stronger the Armour equipped.
+  DSA_POTION  i_potion_Strength
+    DSA_SKILL 64.0
+    DSA_DESC1 Temporarily increases Strength
+    DSA_DESC2 by a significant amount
+    DSA_DESC3 ""
+  DSA_POTION  i_potion_Poison
+    DSA_SKILL 65.0
+    DSA_DESC1 Used to apply an average
+    DSA_DESC2 poison on certain weapons
+    DSA_DESC3 ""
+  DSA_POTION  i_potion_ManaLess
+    DSA_SKILL 66.0
+    DSA_DESC1 Instantly restores a small amount of
+    DSA_DESC2 mana
+    DSA_DESC3 " "
+  DSA_POTION  i_potion_Empower
+    DSA_SKILL 67.0
+    DSA_DESC1 Unknown
+    DSA_DESC2 " "
+    DSA_DESC3 " "
+  DSA_POTION  i_potion_Cleverness
+    DSA_SKILL 68.0
+    DSA_DESC1 Temporarily increases Intelligence
+    DSA_DESC2 by a significant amount
+    DSA_DESC3 ""
+  DSA_POTION  i_potion_Permanence
+    DSA_SKILL 70.0
+    DSA_DESC1 Triples the duration of the benefitial
+    DSA_DESC2 spells already in effect
+    DSA_DESC3 " "
+  DSA_POTION  i_potion_CureGreat
+    DSA_SKILL 71.0
+    DSA_DESC1 Instantly cures even the deadlier
+    DSA_DESC2 poisons
+    DSA_DESC3 " " 
+  DSA_POTION  i_potion_RefreshGreat
+    DSA_SKILL 72.0
+    DSA_DESC1 Instantly restores a large amount
+    DSA_DESC2 of stamina
+    DSA_DESC3 " "  
+  DSA_POTION  i_potion_AgilityGreat
+    DSA_SKILL 74.0
+    DSA_DESC1 Temporarily increases Dexterity
+    DSA_DESC2 by a large amount
+    DSA_DESC3 ""
+  DSA_POTION  i_potion_ExplosionGreat
+    DSA_SKILL 76.0
+    DSA_DESC1 When thrown, creates a large explosion, 
+    DSA_DESC2 damaging everyone in the close vicinity
+    DSA_DESC3 ""
+  DSA_POTION  i_potion_StrengthGreat
+    DSA_SKILL 78.0
+    DSA_DESC1 Temporarily increases Strength
+    DSA_DESC2 by a large amount
+    DSA_DESC3 ""
+  DSA_POTION  i_potion_SteelSkin
+    DSA_SKILL 80.0
+    DSA_DESC1 Hardens the skin to steel, thus raising
+    DSA_DESC2 defense. It's effect is less noticeable
+    DSA_DESC3 the  stronger the Armour equipped.
+  DSA_POTION  i_potion_Mana
+    DSA_SKILL 84.0
+    DSA_DESC1 Instantly restores a significant amount
+    DSA_DESC2 of mana
+    DSA_DESC3 " "
+  DSA_POTION  i_potion_HealGreat
+    DSA_SKILL 86.0
+    DSA_DESC1 Instantly restores a large amount
+    DSA_DESC2 of health
+    DSA_DESC3 " "   
+  DSA_POTION  i_potion_ClevernessGreat
+    DSA_SKILL 88.0
+    DSA_DESC1 Temporarily increases Intelligence
+    DSA_DESC2 by a large amount
+    DSA_DESC3 ""
+  DSA_POTION  i_potion_PermanenceGreat
+    DSA_SKILL 90.0
+    DSA_DESC1 Quads the duration of the benefitial
+    DSA_DESC2 spells already in effect
+    DSA_DESC3 " "
+  DSA_POTION  i_potion_PoisonGreat
+    DSA_SKILL 90.0
+    DSA_DESC1 Used to apply a strong
+    DSA_DESC2 poison on certain weapons
+    DSA_DESC3 ""
+  DSA_POTION  i_potion_EmpowerGreat
+    DSA_SKILL 93.0
+    DSA_DESC1 Unknown
+    DSA_DESC2 " "
+    DSA_DESC3 " "
+  DSA_POTION  i_potion_Invisibility
+    DSA_SKILL 95.0
+    DSA_DESC1 This potion renders every particle in your
+    DSA_DESC2 body translucent, as long as you remain
+    DSA_DESC3 imobile
+  DSA_POTION  i_potion_Shrink
+    DSA_SKILL 97.0
+    DSA_DESC1 Shrinks small pets, allowing them to
+    DSA_DESC2 be carried with relative ease.
+    DSA_DESC3 " "
+  DSA_POTION  i_potion_ManaGreat
+    DSA_SKILL 99.0
+    DSA_DESC1 Instantly restores a large amount
+    DSA_DESC2 of mana
+    DSA_DESC3 " "
+  DSA_POTION  i_potion_ShrinkGreat
+    DSA_SKILL 100.0
+    DSA_DESC1 Shrinks large pets, allowing them to
+    DSA_DESC2 be carried with relative ease.
+    DSA_DESC3 " "
+  DSA_POTION  i_potion_ra
+    DSA_SKILL 100.0
+    DSA_DESC1 Allows the effects of reactive
+    DSA_DESC2 armour to be used in potion form.
+    DSA_DESC3 " "
+  DSA_POTION  i_potion_Emblaze
+    DSA_SKILL 100.0
+    DSA_DESC1 Unknown
+    DSA_DESC2 " "
+    DSA_DESC3 " "
+  DSA_POTION  i_potion_hope
+      DSA_SKILL 115.0
+      DSA_DESC1 Unknown
+      DSA_DESC2 " "
+      DSA_DESC3 " "
+  DSA_POTION i_potion_PoisonFood
+    DSA_SKILL 101.0
+    DSA_DESC1 Used to apply a strong
+    DSA_DESC2 poison to food and drinks
+    DSA_DESC3 " "
+  DSA_POTION  i_potion_PoisonDeadly
+    DSA_SKILL 105.0
+    DSA_DESC1 Used to apply a deadly
+    DSA_DESC2 poison on certain weapons
+    DSA_DESC3 ""
+    DSA_POTION  i_blood_vampire
+      DSA_SKILL 100.0
+      DSA_DESC1 Used by
+      DSA_DESC2 necromancers
+    DSA_DESC3 ""
+        DSA_POTION  i_blood_wither
+          DSA_SKILL 100.0
+          DSA_DESC1 Used by
+          DSA_DESC2 necromancers
+    DSA_DESC3 ""
+        DSA_POTION  i_blood_strangle
+          DSA_SKILL 100.0
+          DSA_DESC1 Used by
+          DSA_DESC2 necromancers
+    DSA_DESC3 ""
+
+  if (<TAG.POTIONS> == 0 )
+    SRC.SYSMESSAGE You can't make anything with what you have.
+    return 1
+  endif
+
+  TAG.CURR.N		= 0
+  DSA_NEXT
+  DIALOG d_skill_alchemy
+
+
+[FUNCTION DSA_POTION]
+  VAR.CANMAKE	= 0
+  VAR.MAKE_ACT	= <SRC.ACT>
+  SRC.NEWITEM 	= <args>
+
+
+[FUNCTION DSA_SKILL]
+  //if !(<SRC.RESTEST <SRC.ACT.RESOURCES>> )
+
+  if (<SRC.ALCHEMY> < <args> )
+    SRC.ACT.REMOVE
+    SRC.ACT		= <VAR.MAKE_ACT>
+    return 1
+  endif
+
+  VAR.CANMAKE	= 1
+  TAG.POTIONS	= <eval (<TAG.POTIONS> + 1)>
+  TRY TAG.POTION.<TAG.POTIONS>.SKILL	= <ARGS>
+  TRY TAG.POTION.<TAG.POTIONS>.ID	= <SRC.ACT.BASEID>
+  TRY TAG.POTION.<TAG.POTIONS>.NAME	= <SRC.ACT.NAME>
+  TRY TAG.POTION.<TAG.POTIONS>.RESMAKE	= <SRC.ACT.RESMAKE>
+  TRY TAG.POTION.<TAG.POTIONS>.RESOURCES	= <SRC.ACT.RESOURCES>
+  SRC.ACT.REMOVE
+  SRC.ACT		= <VAR.MAKE_ACT>
+
+
+[FUNCTION DSA_DESC1]
+  if (<VAR.CANMAKE> )
+    TRY TAG.POTION.<TAG.POTIONS>.DESC1	= <args>
+  endif
+[FUNCTION DSA_DESC2]
+  if (<VAR.CANMAKE> )
+    TRY TAG.POTION.<TAG.POTIONS>.DESC2	= <args>
+  endif
+[FUNCTION DSA_DESC3]
+  if (<VAR.CANMAKE> )
+    TRY TAG.POTION.<TAG.POTIONS>.DESC3	= <args>
+  endif
+[FUNCTION DSA_NEXT]
+  if (<TAG.CURR.N> == <TAG.POTIONS> )
+     return 1
+  endif
+  TAG.CURR.N		= <eval (<TAG.CURR.N>+1)>
+  
+  if (<TAG.CURR.N> == 1 )
+    VAR.PAGE0		= 1
+    VAR.PAGE1		= 2
+    VAR.PAGE2		= 3
+  elseif (<TAG.CURR.N> == <TAG.POTIONS> )
+    VAR.PAGE0		= 2
+    VAR.PAGE1		= 1
+    VAR.PAGE2		= 3
+  else
+    VAR.PAGE0		= 3
+    VAR.PAGE1		= 2
+    VAR.PAGE2		= 1
+  endif
+[FUNCTION DSA_PREV]
+  if (<TAG.CURR.N> == 1 )
+     return 1
+  endif
+  TAG.CURR.N		= <eval (<TAG.CURR.N>-1)>
+  
+  if (<TAG.CURR.N> == 1 )
+    VAR.PAGE0		= 1
+    VAR.PAGE1		= 2
+    VAR.PAGE2		= 3
+  elseif (<TAG.CURR.N> == <TAG.POTIONS> )
+    VAR.PAGE0		= 2
+    VAR.PAGE1		= 1
+    VAR.PAGE2		= 3
+  else
+    VAR.PAGE0		= 3
+    VAR.PAGE1		= 2
+    VAR.PAGE2		= 1
+  endif
+  
+   
+[DIALOG d_skill_alchemy]
+100, 100
+
+page 0
+  resizepic 20 0 2600 374 334 // Curved Grey background 
+  //gumppic   0  0   8016	// -- with patch only
+  text 60  45  0   1
+  text 70  65 61  10
+  text 60 100  0   2
+  croppedtext 70 120 290 40 51 14
+
+  text 60 200  0  3
+  text 70 220 41 11
+  text 70 240 41 12
+  text 70 260 41 13
+
+  button 300 70 2122 2123 1 0 5	// -- with patch only
+
+page <VAR.PAGE0>
+  button 320 284 <eval 01196> <eval 01197> 1 0 1
+  //button 320 284 8018 8018 1 0 1	// -- with patch only
+page <VAR.PAGE1>
+  button 320   0 <eval 0119a> <eval 01199> 1 0 2
+  //button 320   0 8017 8017 1 0 2	// -- with patch only
+page <VAR.PAGE2>
+  button 320 284 <eval 01196> <eval 01197> 1 0 1
+  //button 320 284 8018 8018 1 0 1	// -- with patch only
+  
+  button 320   0 <eval 0119a> <eval 01199> 1 0 2
+  //button 320   0 8017 8017 1 0 2	// -- with patch only
+  
+
+[DIALOG d_skill_alchemy TEXT]
+Potion recipes			// 0
+Recipe:
+Ingredients:
+Description:
+.
+.
+.
+.
+.
+.
+<TAG.POTION.<TAG.CURR.N>.NAME>		// 10
+<TAG.POTION.<TAG.CURR.N>.DESC1>		// 11
+<TAG.POTION.<TAG.CURR.N>.DESC2>		// 12
+<TAG.POTION.<TAG.CURR.N>.DESC3>		// 13
+<TAG.POTION.<TAG.CURR.N>.RESMAKE>	// 14
+<TAG.POTION.<TAG.CURR.N>.SKILL>		// 15
+.					// 16
+
+
+[DIALOG d_skill_alchemy BUTTON]
+ON = 1	// next
+   DSA_NEXT
+   DSA_APPLY
+   DIALOG d_skill_alchemy
+   return 1
+ON = 2	// prev
+   DSA_PREV
+   DSA_APPLY
+   DIALOG d_skill_alchemy
+   return 1
+ON = 0
+   SRC.SYSMESSAGE You set up the mortar to produce <TAG.POTION.<TAG.CURR.N>.NAME>.
+   DSA_APPLY
+   DSA_CLEARTAGS
+   return 1
+
+
+[FUNCTION DSA_APPLY]
+   TAG.ID	= <TAG.POTION.<TAG.CURR.N>.ID>
+   TAG.SKILL	= <TAG.POTION.<TAG.CURR.N>.SKILL>
+   NAME		=
+   NAME		= <NAME> (<TAG.POTION.<TAG.CURR.N>.NAME>)
+   SOUND		= 0057
+   
+
+[FUNCTION DSA_CLEARTAGS]
+   SERV.NEWITEM i_mortar_pestle
+   NEW.TAG.CLICKED=<TAG.CLICKED>
+   NEW.TAG.ID=<TAG.ID>
+   NEW.TAG.SKILL=<TAG.SKILL>
+   NEW.NAME=<NAME>
+   NEW.BOUNCE
+   REMOVE
+
+[EOF]

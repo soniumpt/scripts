@@ -1,0 +1,289 @@
+//****************************************************************************
+//SPHERE by : Menasoft �1997-2000
+//www.sphereserver.com
+// All SPHERE script files and formats are copyright Menasoft & Partners.
+// This file may be freely edited for personal use, but may not be distributed
+// in whole or in part, in any format without express written permission from
+// Menasoft & Partners.  All donations and contributions
+// become the property of Menasoft & Partners.
+//****************************************************************************
+// FILE LAST UPDATED: Sat, Sept 2, 2000
+//
+VERSION=0.54
+
+//--CHANGELOG--
+//02/06/2018 - Wigifer - Added Newbie Quest 1 Part 1 stuff
+
+// In the process of moving this stuff to scripts.
+
+
+[ITEMDEF i_yell_timer]
+ID=i_memory
+TYPE=t_eq_script
+NAME=Yell Timer
+
+ON=@CREATE
+   TIMER=3
+   MORE1=0
+   
+ON=@TIMER
+   REMOVE
+   RETURN 1
+
+[ITEMDEF i_wtb_timer]
+ID=i_memory
+TYPE=t_eq_script
+NAME=WTB Timer
+
+ON=@CREATE
+   TIMER=10
+   MORE1=0
+   
+ON=@TIMER
+   REMOVE
+   RETURN 1
+
+[SPEECH spk_player]
+// All players speech filtered through here.
+	   
+ON=#vendorbuydupe*
+   SERV.LOG <SRC.NAME> is speaking about or trying #vendorbuydupe
+
+ON=#vendor*
+   SERV.LOG <SRC.NAME> is speaking about or trying #vendor
+
+ON=#v*
+   SERV.LOG <SRC.NAME> is speaking about or trying #v
+
+ON=I must consider my sins
+   sysmessage You look deep inside your soul...
+
+ON=*I resign from my guild*
+If (0<tag.candidate> = 1)
+			tag.candidate
+			tag.ref1
+			tag.ref2
+			tag.ref3
+			sysmessage You revoke your candidacy
+			return 1
+ENDIF
+IF (<MEMORYFINDTYPE(memory_guild).UID>) 
+		IF (<SRC.MEMORYFINDTYPE.memory_fight>)
+		sysmessage Perhaps you should wait a while after battle...
+		return 1
+		ENDIF
+	f_guildsys_removecharfromguild <memoryfindtype.memory_guild.link.uid>,<uid>
+	sysmessage you have now resigned from your guild....
+   return 1
+ELSE
+	sysmessage You are not in a guild...
+ENDIF
+   
+ON=I resign from my town
+
+ON=Guard help *
+ON=Guards*
+ON=Help Guards*
+   // trying to call guards for help
+   return 0
+   
+ON=*
+   IF (<ARGN1> == <DEF.TALKMODE_YELL>)
+   // --Begin Newbie Quest stuff --
+      IF ((<SRC.TAG0.NPC_QUEST_START_3> & NPCQ_NewbieQuest_1) && (<SRC.TAG0.NEWBIEQUESTPHASE>=1))
+         f_newbie_introduction_1_part1_done
+      ENDIF
+   // --End Newbie Quest stuff --
+		IF ((<VAR0.WORLDCHATDISABLED>==1) && !(<ISGM>))
+			SRC.SYSMESSAGE World chat is currently disabled.
+			RETURN 0
+		ENDIF
+	//SRC.SYSMESSAGE World chat is currently disabled.
+	//RETURN 0
+      IF ( <ISGM> || <ISCOUNS> || <ISCOMPANION> )
+         SERV.ALLCLIENTS chat_world_staff <ARGS>
+      ELSE
+		 IF ((<SRC.FINDID.i_yell_timer.MORE1> >= 2) && (<SRC.FINDID.i_yell_timer.TIMER> > 6))
+			 SRC.SYSMESSAGE You cannot yell for another <EVAL <SRC.FINDID.i_yell_timer.TIMER>-6> seconds!
+			 RETURN 1
+		  ENDIF
+	  
+			IF (<SRC.TAG0.WORLDCHAT.MUTE> == 1)
+				 SRC.SYSMESSAGE You are blocked from using the world chat
+				 RETURN 1
+			ENDIF
+			
+			IF (<SRC.TAG0.INEVENT> == 1) 
+				 SRC.SYSMESSAGE You can't use this while in a PvP. Use .e instead.
+				 RETURN 1
+			ENDIF
+
+ 		IF STRMATCH( "JAIL", "<SRC.REGION.NAME>" )
+                src.sysmessage You can't talk through the worldchat in jail.
+		return 1
+                endif
+
+			SERV.ALLCLIENTS chat_world <ARGS>
+      ENDIF
+      IF !(<SRC.FINDID.i_yell_timer.UID>)
+         SRC.NEWITEM i_yell_timer
+         SRC.ACT.CONT=<SRC.UID>
+      ELSEIF (<SRC.FINDID.i_yell_timer.MORE1> = 0) 
+         SRC.FINDID.i_yell_timer.MORE1=1
+         SRC.FINDID.i_yell_timer.TIMER=<SRC.FINDID.i_yell_timer.TIMER> + 6
+      ELSEIF (<SRC.FINDID.i_yell_timer.MORE1> = 1) 
+         SRC.FINDID.i_yell_timer.MORE1=2
+         SRC.FINDID.i_yell_timer.TIMER=<SRC.FINDID.i_yell_timer.TIMER> + 10
+      ELSE
+         SRC.FINDID.i_yell_timer.TIMER=<SRC.FINDID.i_yell_timer.TIMER> + 14
+      ENDIF
+   
+     RETURN 1
+   ENDIF
+
+on=*[a-z]*
+if (<src.tag0.event.id>==2)
+try uid.<var0.juiz>.sysmessage @88 <src.tag0.event.charname>(<src>): <args>
+return 1
+endif
+
+ON=*[0-9]*
+IF (<args> > 9) && (<src.tag0.event.id>==2)
+try uid.<var0.juiz>.sysmessage @88 <src.tag0.event.charname>(<src>): <args>
+return 1
+ENDIF
+if (<src.tag0.event.id>==2) && !(<uid.<src.region.uid>.type>==t_multi)
+try uid.<var0.juiz>.sysmessage @88 <src.tag0.event.charname>(<src>): <args>
+return 1
+endif
+
+
+[SPEECH spk_pet]
+
+// Pets that cannot talk
+
+ON=TRANSFER
+	IF ( <SRC.ISDEAD> )
+	RETURN 1
+	ENDIF
+ON=*ATTACK
+	IF ( <SRC.ISDEAD> )
+	RETURN 1
+	ENDIF
+ON=*COME
+	IF ( <SRC.ISDEAD> )
+	RETURN 1
+	ENDIF
+ON=*DEFEND ME
+	IF ( <SRC.ISDEAD> )
+	RETURN 1
+	ENDIF
+ON=*DISMISS
+	IF ( <SRC.ISDEAD> )
+	RETURN 1
+	ENDIF
+ON=*DROP	// "GIVE" ?
+	IF ( <SRC.ISDEAD> )
+	RETURN 1
+	ENDIF
+ON=*DROP ALL
+	IF ( <SRC.ISDEAD> )
+	RETURN 1
+	ENDIF
+ON=*FETCH
+	IF ( <SRC.ISDEAD> )
+	RETURN 1
+	ENDIF
+ON=*FOLLOW
+	IF ( <SRC.ISDEAD> )
+	RETURN 1
+	ENDIF
+ON=*FOLLOW ME
+	IF ( <SRC.ISDEAD> )
+	RETURN 1
+	ENDIF
+ON=*FRIEND
+	IF ( <SRC.ISEVENT.e_donator_mounts> ) && !<src.ISGM>
+	SRC.SYSMESSAGE You Cannot do that whilst on a Donator Mount
+	RETURN 1
+	ENDIF
+	IF ( <SRC.ISDEAD> )
+	RETURN 1
+	ENDIF
+ON=*GO
+	IF ( <SRC.ISDEAD> )
+	RETURN 1
+	ENDIF
+ON=*GUARD
+	IF ( <SRC.ISDEAD> )
+	RETURN 1
+	ENDIF
+ON=*GUARD ME
+	IF ( <SRC.ISDEAD> )
+	RETURN 1
+	ENDIF
+ON=*KILL
+	IF ( <SRC.ISDEAD> )
+	RETURN 1
+	ENDIF
+ON=*RELEASE
+
+	IF ( <SRC.ISDEAD> )
+	RETURN 1
+	ENDIF
+ON=SPEAK
+
+	IF ( <SRC.ISDEAD> )
+	RETURN 1
+	ENDIF
+ON=*STAY
+	IF ( <SRC.ISDEAD> )
+	RETURN 1
+	ENDIF
+ON=*STAY HERE
+	IF ( <SRC.ISDEAD> )
+	RETURN 1
+	ENDIF
+ON=*STOP
+	IF ( <SRC.ISDEAD> )
+	RETURN 1
+	ENDIF
+
+
+
+[SPEECH spk_hireling]
+// Pets that can talk.
+ON=ATTACK
+ON=BOUGHT
+ON=CASH
+ON=COME
+ON=DEFEND ME
+ON=DISMISS
+ON=DROP	// "GIVE" ?
+ON=DROP ALL
+ON=EQUIP
+ON=EQUIP ALL
+ON=FETCH
+ON=FOLLOW
+ON=FOLLOW ME
+ON=FRIEND
+ON=GET DRESSED
+ON=GO
+ON=GUARD
+ON=GUARD ME
+ON=INVENTORY
+ON=KILL
+ON=PRICE	// may have args ?
+ON=RECIEVED
+ON=RELEASE
+ON=SAMPLES
+ON=SPEAK
+ON=STATUS
+ON=STAY
+ON=STAY HERE
+ON=STOCK
+ON=STOP
+ON=SUIT UP
+ON=TRANSFER
+
+[EOF]

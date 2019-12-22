@@ -1,0 +1,1048 @@
+// CHANGELOG
+// =========
+//
+// 18/08/18 - Wigifer - Removed references to e_all_npc 
+//
+
+// *****************************************************************
+//                     Bizzaro Hythloth Entry Items
+// *****************************************************************
+   
+[ITEMDEF i_bizzaro_hythloth_entrance]
+ID=0edc
+NAME=Bizzaro Hythloth Entrance Stone
+
+ON=@CREATE
+   COLOR=0aee
+   
+ON=@DCLICK
+   DIALOG d_bizzaro_hythloth_entry
+   RETURN 1
+
+
+[ITEMDEF i_bizzaro_hythloth_exit]
+ID=0edc
+NAME=Bizzaro Hythloth Exit
+
+ON=@CREATE
+   COLOR=0aee
+
+ON=@DCLICK
+ //  IF (<SRC.ISGM>)
+ //     SRC.SYSMESSAGE This is not for GM usage. You'll just wipe your pack.
+ //     RETURN 1
+ //  ENDIF
+   SRC.MENU M_BIZHYTHLOTHEXIT
+   RETURN 1
+ 
+[MENU M_BIZHYTHLOTHEXIT]
+Are you sure you would like to quit?
+ON=0 Yes
+f_exitbizhythlothwin
+ON=0 No
+SRC.SYSMESSAGE Good luck then! Exits can be found at the entrance to every floor!
+
+[FUNCTION f_exitbizhythlothwin]
+   VAR.BIZZAROGOLD
+   IF !(<SRC.HITS>=0)
+      SRC.GENERATEBIZZAROGOLD 1
+   ENDIF
+   SRC.HITS=<SRC.STR>
+   SRC.RESURRECT
+   SRC.UNEQUIPALL
+   SRC.UNEQUIPSTEED
+   SRC.REVERTBACKPACK
+   SRC.BIZZARORESTORESKILLS
+   SRC.GO <SRC.TAG.BIZZARO.ORIGIN>
+   SRC.RESEND
+   SRC.UPDATE
+//   SRC.EVENTS -e_bizzaro_hythloth
+   SERV.LOG <SRC.NAME>:<SRC.ACCOUNT>:<SRC.UID> has left BIZZARO HYTHLOTH! They now have <EVAL <SRC.ACCOUNT.TAG0.BIZZARO.HYTHLOTH.POINTS>> Bizzaro hythloth Points.
+   SRC.SYSMESSAGE @51 Well done <SRC.NAME>! You now have <EVAL <SRC.ACCOUNT.TAG0.BIZZARO.HYTHLOTH.POINTS>> Bizzaro Hythloth Points
+   RETURN 1
+   
+// *****************************************************************
+//                       Bizzaro Hythloth Gump
+// *****************************************************************
+
+[DIALOG d_bizzaro_hythloth_entry]
+50,50
+page 0
+resizepic 0 0 9250 500 450 // -Main Background-
+dtext 165 10 65 Welcome to Bizzaro Hythloth!
+button 500 20 9741 9741 0 1 0 //------------ 
+button 508 20 9741 9741 0 1 0 //Go to Page 1
+button 516 20 9741 9741 0 1 0 //------------
+resizepic 500 20 9200 24 100  //Fake Button 1
+
+button 500 120 9741 9741 0 2 0 //------------ 
+button 508 120 9741 9741 0 2 0 //Go to Page 2
+button 516 120 9741 9741 0 2 0 //------------
+resizepic 500 120 9200 24 100   //Fake Button 2
+
+button 500 220 9741 9741 0 3 0 //------------ 
+button 508 220 9741 9741 0 3 0 //Go to Page 3
+button 516 220 9741 9741 0 3 0 //------------
+resizepic 500 220 9200 24 100   //Fake Button 3
+
+button 500 320 9741 9741 0 4 0 //------------ 
+button 508 320 9741 9741 0 4 0 //Go to Page 4
+button 516 320 9741 9741 0 4 0 //------------
+resizepic 500 320 9200 24 100   //Fake Button 4
+
+page 1
+
+dtext 510 30 025 I
+dtext 508 45 025 N
+dtext 508 60 025 F
+dtext 508 75 025 O
+
+dtext 508 130 05 E
+dtext 508 145 05 Q
+dtext 508 160 05 U
+dtext 510 175 05 I
+dtext 508 190 05 P
+
+dtext 508 230 05 S
+dtext 508 245 05 P
+dtext 508 260 05 E
+dtext 508 275 05 L
+dtext 508 290 05 L
+
+dtext 508 330 05 S
+dtext 508 345 05 T
+dtext 508 360 05 A
+dtext 508 375 05 R
+dtext 508 390 05 T
+
+dtext 150 40 025 Information about Bizzaro World
+
+dtext 30 70 07a0 Bizzaro World is a series of dungeons and areas where your character
+dtext 30 90 07a0 build is unimportant. Suitable for both casual and hardcore gamers,
+dtext 30 110 07a0 Bizzaro World sends you into a dungeon especially created for a certain
+dtext 30 130 07a0 difficulty level. All stats, skills and equipment are set prior to entry.
+dtext 30 150 07a0 All equipment and any steeds you have are transferred to your bank.
+dtext 30 170 07a0 All skills and stats you have are restored upon exit.
+
+dtext 150 220 025 Information about Bizzaro Hythloth
+
+dtext 30 250 07a3 Difficulty: 4/5  ---  Reccomended Party: 3-4  ---  Prizes: Good
+
+dtext 30 290 07a0 Bizzaro Hythloth is a high difficulty dungeon. You will need to work
+dtext 30 310 07a0 with at least one, if not two or three, other characters to assist you in
+dtext 30 330 07a0 this dungeon. Please note that whilst each character has a minimum
+dtext 30 350 07a0 loadout, you will need to work together to progress. The end section
+dtext 30 370 07a0 will require a full team of five characters to progress.
+dtext 30 410 07a4 TIP: Your priest can unlock various offensive spells! Find them!
+
+
+page 2
+
+dtext 510 30 05 I
+dtext 508 45 05 N
+dtext 508 60 05 F
+dtext 508 75 05 O
+
+dtext 508 130 025 E
+dtext 508 145 025 Q
+dtext 508 160 025 U
+dtext 510 175 025 I
+dtext 508 190 025 P
+
+dtext 508 230 05 S
+dtext 508 245 05 P
+dtext 508 260 05 E
+dtext 508 275 05 L
+dtext 508 290 05 L
+
+dtext 508 330 05 S
+dtext 508 345 05 T
+dtext 508 360 05 A
+dtext 508 375 05 R
+dtext 508 390 05 T
+
+dtext 20 40 07a1 Warrior Class
+dtext 30 60 07a0 Str\Int\Dex
+dtext 120 60 07a3 150\50\100
+dtext 30 75 07a0 HP\MP\Stam
+dtext 120 75 07a3 200\25\100
+dtext 30 90 07a0 Blade Weaps
+dtext 120 90 07a3 120.0%
+dtext 30 105 07a0 Parrying
+dtext 120 105 07a3 120.0%
+dtext 30 120 07a0 Tactics
+dtext 120 120 07a3 120.0%
+dtext 30 135 07a0 Assessment
+dtext 120 135 07a3 100.0%
+dtext 30 150 07a0 Healing
+dtext 120 150 07a3 40.0%
+
+dtext 225 60 07a0 Helm\Neck
+dtext 300 60 07a3 Adamantine Plate Helm\Gorget
+dtext 225 75 07a0 Chest
+dtext 300 75 07a3 Adamantine Platemail Breastplate
+dtext 225 90 07a0 Legs
+dtext 300 90 07a3 Adamantine Platemail Legplates
+dtext 225 105 07a0 Arms
+dtext 300 105 07a3 Adamantine Platemail Armplates
+dtext 225 120 07a0 Gloves
+dtext 300 120 07a3 Adamantine Platemail Gauntlets
+dtext 225 135 07a0 Shield
+dtext 300 135 07a3 Adamantine Kite Shield
+dtext 225 150 07a0 Weapon
+dtext 300 150 07a3 Stronghold Katana
+
+
+
+dtext 20 170 07a1 Priest Class
+dtext 30 190 07a0 Str\Int\Dex
+dtext 120 190 07a3 50\200\75
+dtext 30 205 07a0 HP\MP\Stam
+dtext 120 205 07a3 125\250\50
+dtext 30 220 07a0 Magery
+dtext 120 220 07a3 150.0%
+dtext 30 235 07a0 Myst. Lore
+dtext 120 235 07a3 150.0%
+dtext 30 250 07a0 Meditation
+dtext 120 250 07a3 100.0%
+dtext 30 265 07a0 Mag. Resist
+dtext 120 265 07a3 100.0%
+
+dtext 225 190 07a0 Helm\Neck
+dtext 300 190 07a3 Adamantine Chainmail Coif
+dtext 225 205 07a0 Chest
+dtext 300 205 07a3 Adamantine Chainmail Tunic
+dtext 225 220 07a0 Legs
+dtext 300 220 07a3 Adamantine Chainmail Leggings
+dtext 225 235 07a0 Arms
+dtext 300 235 07a3 None
+dtext 225 250 07a0 Gloves
+dtext 300 250 07a3 None
+dtext 225 265 07a0 Shield
+dtext 300 265 07a3 None
+dtext 225 280 07a0 Weapon
+dtext 300 280 07a3 Spellbook
+
+
+
+dtext 20 300 07a1 Rogue Class
+dtext 30 320 07a0 Str\Int\Dex
+dtext 120 320 07a3 100\50\150
+dtext 30 335 07a0 HP\MP\Stam
+dtext 120 335 07a3 150\25\150
+dtext 30 350 07a0 Archery
+dtext 120 350 07a3 100.0%
+dtext 30 365 07a0 Assessment
+dtext 120 365 07a3 100.0%
+dtext 30 380 07a0 Tactics
+dtext 120 380 07a3 100.0%
+dtext 30 395 07a0 Hiding
+dtext 120 395 07a3 100.0%
+dtext 30 410 07a0 Stealth
+dtext 120 410 07a3 100.0%
+
+dtext 225 320 07a0 Helm\Neck
+dtext 300 320 07a3 Adamantine Nose Helm
+dtext 225 335 07a0 Chest
+dtext 300 335 07a3 Adamantine Ringmail Tunic
+dtext 225 350 07a0 Legs
+dtext 300 350 07a3 Adamantine Platemail Leggings
+dtext 225 365 07a0 Arms
+dtext 300 365 07a3 None
+dtext 225 380 07a0 Gloves
+dtext 300 380 07a3 Adamantine Ringmail Gloves
+dtext 225 395 07a0 Shield
+dtext 300 395 07a3 None
+dtext 225 410 07a0 Weapon
+dtext 300 410 07a3 Heavy Cherry Crossbow
+
+page 3
+
+dtext 510 30 05 I
+dtext 508 45 05 N
+dtext 508 60 05 F
+dtext 508 75 05 O
+
+dtext 508 130 05 E
+dtext 508 145 05 Q
+dtext 508 160 05 U
+dtext 510 175 05 I
+dtext 508 190 05 P
+
+dtext 508 230 025 S
+dtext 508 245 025 P
+dtext 508 260 025 E
+dtext 508 275 025 L
+dtext 508 290 025 L
+
+dtext 508 330 05 S
+dtext 508 345 05 T
+dtext 508 360 05 A
+dtext 508 375 05 R
+dtext 508 390 05 T
+
+dtext 20 50 07a1 First Circle
+
+dtext 20 80 07a0 Heal 
+dtext 20 100 07a0 Night Sight
+dtext 20 120 07a0 Reactive Armor
+
+dtext 140 50 07a1 Second Circle
+
+dtext 140 80 07a0 Agility
+dtext 140 100 07a0 Cunning
+dtext 140 120 07a0 Cure
+dtext 140 140 07a0 Protection
+dtext 140 160 07a0 Strength
+
+dtext 260 50 07a1 Third Circle
+
+dtext 260 80 07a0 Wall of Stone
+
+dtext 380 50 07a1 Fourth Circle
+
+dtext 380 80 07a0 Greater Heal
+dtext 380 100 07a0 Arch Cure
+dtext 380 120 07a0 Arch Protection
+
+dtext 20 250 07a1 Fifth Circle
+
+dtext 20 280 07a0 Dispel Field
+
+dtext 140 250 07a1 Sixth Circle
+
+dtext 140 280 07a0 Invisibility
+dtext 140 300 07a0 Dispel
+
+dtext 260 250 07a1 Seventh Circle
+
+dtext 260 280 07a0 Mass Dispel
+
+dtext 380 250 07a1 Eighth Circle
+
+dtext 380 280 07a0 Resurrection
+
+page 4
+
+dtext 510 30 05 I
+dtext 508 45 05 N
+dtext 508 60 05 F
+dtext 508 75 05 O
+
+dtext 508 130 05 E
+dtext 508 145 05 Q
+dtext 508 160 05 U
+dtext 510 175 05 I
+dtext 508 190 05 P
+
+dtext 508 230 05 S
+dtext 508 245 05 P
+dtext 508 260 05 E
+dtext 508 275 05 L
+dtext 508 290 05 L
+
+dtext 508 330 025 S
+dtext 508 345 025 T
+dtext 508 360 025 A
+dtext 508 375 025 R
+dtext 508 390 025 T
+
+dtext 185 60 085 **WARNING**
+dtext 30 80 0125 You will only exit this instance by doing one of the following:
+dtext 30 100 0125 # Exit through the exit stone on each floor.
+dtext 130 180 035 **You cannot be PK'd in this instance**
+dtext 185 220 085 **REWARDS**
+dtext 30 240 0125 Bizzaro Hythloth Points - Earned when leaving the dungeon ALIVE OR DEAD
+dtext 30 260 0125 Gold - Earned only when leaving the dungeon ALIVE - Transferred to bank
+dtext 30 300 035 Click ENTER next to your chosen class to enter immediately.
+
+button 190 340 248 247 1 0 100 // WARRIOR
+button 190 370 248 247 1 0 101 // PRIEST
+button 190 400 248 247 1 0 102 // ROGUE
+
+dtext 260 340 085 Warrior
+dtext 260 370 085 Priest
+dtext 260 400 085 Rogue
+
+[DIALOG d_bizzaro_hythloth_entry TEXT]
+
+[DIALOG d_bizzaro_hythloth_entry BUTTON]
+ONBUTTON=100
+   IF (<SRC.HITS> < <SRC.STR>)
+      SRC.SYSMESSAGE You must be at full health to enter Bizzaro Hythloth
+      RETURN 1
+   ENDIF
+   IF (<DISTANCE> > 4)
+      SRC.SYSMESSAGE Please stand closer to the entry stone.
+      RETURN 1
+   ENDIF
+   SERV.LOG :: BIZZARO LOG :: <SRC.NAME>:<SRC.ACCOUNT>:<SRC.UID> has entered BIZZARO SHAME!
+   SRC.SAY All Stop
+   SRC.UNEQUIPALL
+   SRC.UNEQUIPSTEED
+   SRC.BACKPACKTOBANK
+   SRC.BIZZAROSTORESKILLS
+   SRC.BIZZAROHYTHWARSETUP
+   SRC.RESEND
+   SRC.UPDATE
+   // SRC.EVENTS +e_bizzaro_hythloth
+   SRC.SYSMESSAGE @42 Welcome to Bizzaro Hythloth! Be warned, empty bottles, bows and crossbows, arrows, bolts and reags are PROCURED ON SITE.
+   SRC.SAY All Stay
+   SRC.TAG.BIZZARO.ORIGIN=<SRC.P>
+   SRC.GO "BIZZARO HYTHLOTH LEVEL 1"
+   IF (<SRC.FINDID.m_recall_delay.UID>)
+         SERV.LOG ::CHEATER:: <SRC.NAME>:<SRC.ACCOUNT.NAME>:<SRC.UID> is attempting to recall cheat into Bizzaro Shame!
+         SERV.Y ::CHEATER:: <SRC.NAME>:<SRC.ACCOUNT.NAME>:<SRC.UID> is attempting to recall cheat into Bizzaro Shame!
+         SRC.FINDID.m_recall_delay.REMOVE
+   ENDIF
+   SRC.RESEND
+   SRC.UPDATE
+
+ONBUTTON=101
+   IF (<SRC.HITS> < <SRC.STR>)
+      SRC.SYSMESSAGE You must be at full health to enter Bizzaro Hythloth
+      RETURN 1
+   ENDIF
+   IF (<DISTANCE> > 4)
+      SRC.SYSMESSAGE Please stand closer to the entry stone.
+      RETURN 1
+   ENDIF
+   SERV.LOG :: BIZZARO LOG :: <SRC.NAME>:<SRC.ACCOUNT>:<SRC.UID> has entered BIZZARO SHAME!
+   SRC.SAY All Stop
+   SRC.UNEQUIPALL
+   SRC.UNEQUIPSTEED
+   SRC.BACKPACKTOBANK
+   SRC.BIZZAROSTORESKILLS
+   SRC.BIZZAROHYTHPRISETUP
+   SRC.RESEND
+   SRC.UPDATE
+   // SRC.EVENTS +e_bizzaro_hythloth
+   SRC.SYSMESSAGE @42 Welcome to Bizzaro Hythloth! Be warned, empty bottles, bows and crossbows, arrows, bolts and reags are PROCURED ON SITE.
+   SRC.SAY All Stay
+   SRC.TAG.BIZZARO.ORIGIN=<SRC.P>
+   SRC.GO "BIZZARO HYTHLOTH LEVEL 1"
+   IF (<SRC.FINDID.m_recall_delay.UID>)
+         SERV.LOG ::CHEATER:: <SRC.NAME>:<SRC.ACCOUNT.NAME>:<SRC.UID> is attempting to recall cheat into Bizzaro Shame!
+         SERV.Y ::CHEATER:: <SRC.NAME>:<SRC.ACCOUNT.NAME>:<SRC.UID> is attempting to recall cheat into Bizzaro Shame!
+         SRC.FINDID.m_recall_delay.REMOVE
+   ENDIF
+   SRC.RESEND
+   SRC.UPDATE
+   
+ONBUTTON=102
+   IF (<SRC.HITS> < <SRC.STR>)
+      SRC.SYSMESSAGE You must be at full health to enter Bizzaro Hythloth
+      RETURN 1
+   ENDIF
+   IF (<DISTANCE> > 4)
+      SRC.SYSMESSAGE Please stand closer to the entry stone.
+      RETURN 1
+   ENDIF
+   SERV.LOG :: BIZZARO LOG :: <SRC.NAME>:<SRC.ACCOUNT>:<SRC.UID> has entered BIZZARO SHAME!
+   SRC.SAY All Stop
+   SRC.UNEQUIPALL
+   SRC.UNEQUIPSTEED
+   SRC.BACKPACKTOBANK
+   SRC.BIZZAROSTORESKILLS
+   SRC.BIZZAROHYTHROGSETUP
+   SRC.RESEND
+   SRC.UPDATE
+   // SRC.EVENTS +e_bizzaro_hythloth
+   SRC.SYSMESSAGE @42 Welcome to Bizzaro Hythloth! Be warned, empty bottles, bows and crossbows, arrows, bolts and reags are PROCURED ON SITE.
+   SRC.SAY All Stay
+   SRC.TAG.BIZZARO.ORIGIN=<SRC.P>
+   SRC.GO "BIZZARO HYTHLOTH LEVEL 1"
+   IF (<SRC.FINDID.m_recall_delay.UID>)
+         SERV.LOG ::CHEATER:: <SRC.NAME>:<SRC.ACCOUNT.NAME>:<SRC.UID> is attempting to recall cheat into Bizzaro Shame!
+         SERV.Y ::CHEATER:: <SRC.NAME>:<SRC.ACCOUNT.NAME>:<SRC.UID> is attempting to recall cheat into Bizzaro Shame!
+         SRC.FINDID.m_recall_delay.REMOVE
+   ENDIF
+   SRC.RESEND
+   SRC.UPDATE
+
+
+// *****************************************************************
+//                        Bizzaro Equip Layout
+// *****************************************************************
+
+[FUNCTION BIZZAROHYTHWARSETUP]
+ALLSKILLS=0
+SWORDSMANSHIP=120.0
+PARRYING=120.0
+ANATOMY=100.0
+HEALING=40.0
+TACTICS=120.0
+OSTR=150
+OINT=50
+ODEX=100
+MAXHITS=200
+HITS=200
+MAXMANA=25
+MANA=25
+MAXSTAM=100
+STAM=100
+SERV.NEWITEM i_platemail_gorget_adamantine
+NEW.EQUIP <UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+NEW.COLOR=0aee
+SERV.NEWITEM i_helm_nose_adamantine
+NEW.EQUIP <UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+NEW.COLOR=0aee
+SERV.NEWITEM i_platemail_gloves_adamantine
+NEW.EQUIP <UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+NEW.COLOR=0aee
+SERV.NEWITEM i_platemail_arms_adamantine
+NEW.EQUIP <UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+NEW.COLOR=0aee
+SERV.NEWITEM i_platemail_leggings_adamantine
+NEW.EQUIP <UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+NEW.COLOR=0aee
+SERV.NEWITEM i_platemail_chest_adamantine
+NEW.EQUIP <UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+NEW.COLOR=0aee
+SERV.NEWITEM i_shield_kite_adamantine
+NEW.EQUIP <UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+NEW.COLOR=0aee
+SERV.NEWITEM i_katana_stronghold
+NEW.EQUIP <UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+NEW.COLOR=0aee
+SERV.NEWITEM i_pet_OSTARD_Forest
+NEW.TAG.ILLEGALBIZZAROITEM=1
+NEW.MORE1 c_orn_bizzaro
+NEW.COLOR 0aee
+NEW.NAME Bizzaro Orn
+NEW.BOUNCE <UID>
+
+
+[FUNCTION BIZZAROHYTHPRISETUP]
+ALLSKILLS=0
+MAGERY=150.0
+EVALUATINGINTEL=150.0
+MEDITATION=100.0
+MAGICRESISTANCE=150.0
+OSTR=50
+OINT=200
+ODEX=75
+MAXHITS=125
+HITS=125
+MAXMANA=250
+MANA=250
+MAXSTAM=50
+STAM=50
+SERV.NEWITEM i_chainmail_leggings_adamantine
+NEW.EQUIP <UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+NEW.COLOR=0aee
+SERV.NEWITEM i_chainmail_tunic_adamantine
+NEW.EQUIP <UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+NEW.COLOR=0aee
+SERV.NEWITEM i_chainmail_coif_adamantine
+NEW.EQUIP <UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+NEW.COLOR=0aee
+SERV.NEWITEM i_spellbook
+NEW.TAG.ILLEGALBIZZAROITEM=1
+NEW.COLOR=0aee
+NEW.MORE1=01380c768
+NEW.MORE2=004200902
+NEW.BOUNCE <UID>
+SERV.NEWITEM i_pet_OSTARD_Forest
+NEW.TAG.ILLEGALBIZZAROITEM=1
+NEW.MORE1 c_orn_bizzaro
+NEW.COLOR 0aee
+NEW.NAME Bizzaro Orn
+NEW.BOUNCE <UID>
+SERV.NEWITEM i_bag
+NEW.BOUNCE <UID>
+OBJ=<NEW.UID>
+SERV.NEWITEM i_reag_black_pearl
+NEW.CONT <OBJ.UID>
+NEW.AMOUNT=10
+SERV.NEWITEM i_reag_blood_moss
+NEW.CONT <OBJ.UID>
+NEW.AMOUNT=10
+SERV.NEWITEM i_reag_garlic
+NEW.CONT <OBJ.UID>
+NEW.AMOUNT=10
+SERV.NEWITEM i_reag_ginseng
+NEW.CONT <OBJ.UID>
+NEW.AMOUNT=10
+SERV.NEWITEM i_reag_mandrake_root
+NEW.CONT <OBJ.UID>
+NEW.AMOUNT=10
+SERV.NEWITEM i_reag_nightshade
+NEW.CONT <OBJ.UID>
+NEW.AMOUNT=10
+SERV.NEWITEM i_reag_spider_silk
+NEW.CONT <OBJ.UID>
+NEW.AMOUNT=10
+SERV.NEWITEM i_reag_sulfur_ash
+NEW.CONT <OBJ.UID>
+NEW.AMOUNT=10
+
+
+[FUNCTION BIZZAROHYTHROGSETUP]
+ALLSKILLS=0
+ARCHERY=100.0
+TACTICS=100.0
+ANATOMY=100.0
+HIDING=100.0
+STEALTH=100.0
+OSTR=100
+OINT=50
+ODEX=150
+MAXHITS=150
+HITS=150
+MAXMANA=50
+MANA=50
+MAXSTAM=150
+STAM=150
+SERV.NEWITEM i_platemail_gorget_adamantine
+NEW.EQUIP <UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+NEW.COLOR=0aee
+SERV.NEWITEM i_helm_nose_adamantine
+NEW.EQUIP <UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+NEW.COLOR=0aee
+SERV.NEWITEM i_ringmail_gloves_adamantine
+NEW.EQUIP <UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+NEW.COLOR=0aee
+SERV.NEWITEM i_platemail_leggings_adamantine
+NEW.EQUIP <UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+NEW.COLOR=0aee
+SERV.NEWITEM i_chainmail_tunic_adamantine
+NEW.EQUIP <UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+NEW.COLOR=0aee
+SERV.NEWITEM i_crossbow_heavy_cherry
+NEW.EQUIP <UID>
+NEW.TAG.ILLEGALBIZZAROITEM=1
+NEW.COLOR=0aee
+SERV.NEWITEM i_pet_OSTARD_Forest
+NEW.TAG.ILLEGALBIZZAROITEM=1
+NEW.MORE1 c_orn_bizzaro
+NEW.COLOR 0aee
+NEW.NAME Bizzaro Orn
+NEW.BOUNCE <UID>
+SERV.NEWITEM i_xbolt
+NEW.TAG.ILLEGALBIZZAROITEM=1
+NEW.COLOR 0aee
+NEW.AMOUNT=100
+NEW.BOUNCE <UID>
+
+// *****************************************************************
+//                        Bizzaro Characters
+// *****************************************************************
+
+//********************************************************************//
+//                              FLOOR 1                               //
+//********************************************************************//
+
+
+
+[CHARDEF c_bizzaro_siren]
+ID		= c_harpy
+NAME		= Bizzaro Siren
+SOUND		= snd_MONSTER_HARPY1
+ICON		= i_pet_HARPY
+ANIM		= 03f8c7f
+DAM		= 4, 10
+ARMOR		= 18
+CAN		= MT_WALK|MT_FLY|MT_FEMALE|MT_USEHANDS
+RESOURCES	= 9 i_ribs_raw,50 i_feather
+FOODTYPE	= 5 t_meat_raw
+DESIRES		= i_gold, c_harpy
+AVERSIONS	= r_civilization
+TEVENTS		= e_npc_harpy
+
+CATEGORY=Bizzaro World
+SUBSECTION=Bizzaro Hythloth
+DESCRIPTION=Siren
+
+ON=@Create
+  COLOR         = 0aee
+  NPC		= brain_monster
+  FAME		= {300 1000}
+  KARMA		= {-2000 -2999}
+  MAXHITS	= {140 160}
+  HITS          = <MAXHITS>
+  STR		= {120 150}
+  DEX		= {86 110}
+  INT		= {51 77}
+  PARRYING	= {75.0 90.0}
+  MAGICRESISTANCE={50.0 65.0}
+  TACTICS	= {80.0 100.0}
+  WRESTLING	= {75.0 90.0}
+  ITEM= i_gold,{50 200}
+  ITEM=i_bandage,{10 20}
+  ITEM=tm_loot_reagents_easy
+  ITEM=i_potion_manaless
+
+ON=@GETITEMVARS
+   TAG.BIZZAROMONSTER=1
+   TAG.BIZZARODUNGEON=HYTHLOTH
+   TAG.BIZZAROPOINTS=1  
+
+
+[CHARDEF c_bizzaro_gargoyle]
+ID=c_gargoyle
+NAME=Bizzaro Gargoyle
+SOUND=snd_MONSTER_GARGYL1
+ICON=i_pet_GARG
+ANIM=03fbc7f
+CAN=MT_WALK|MT_FLY|MT_USEHANDS
+TEVENTS=e_npc_daemon
+DAM=6,25
+ARMOR=25
+RESOURCES=8 i_ribs_raw
+FOODTYPE=15 t_meat_raw
+DESIRES=c_GARGOYLE
+AVERSIONS=t_TRAP,r_civilization
+
+CATEGORY=Bizzaro World
+SUBSECTION=Bizzaro Hythloth
+DESCRIPTION=Gargoyle
+
+ON=@Create
+  COLOR         = 0aee
+  NPC		= brain_monster
+  FAME		= {300 1000}
+  KARMA		= {-2000 -2999}
+  MAXHITS	= {250 350}
+  HITS          = <MAXHITS>
+  STR		= {120 150}
+  DEX		= {86 110}
+  INT		= {51 77}
+  PARRYING	= {75.0 90.0}
+  MAGICRESISTANCE={50.0 65.0}
+  TACTICS	= {80.0 100.0}
+  WRESTLING	= {75.0 90.0}
+  ITEM=i_gold,{100 250}
+  ITEM=tm_loot_reagents_easy
+  ITEM=i_xbolt,{10 30}
+  ITEM=i_potion_manaless,{1 2}
+
+ON=@GETITEMVARS
+   TAG.BIZZAROMONSTER=1
+   TAG.BIZZARODUNGEON=HYTHLOTH
+   TAG.BIZZAROPOINTS=2
+
+
+[CHARDEF c_bizzaro_gargoyle_king]
+ID=c_gargoyle
+NAME=Bizzaro Gargoyle King
+SOUND=snd_MONSTER_GARGYL1
+ICON=i_pet_GARG
+ANIM=03fbc7f
+CAN=MT_WALK|MT_FLY|MT_USEHANDS
+TEVENTS=e_npc_daemon
+DAM=15,25
+ARMOR=25
+RESOURCES=8 i_ribs_raw
+FOODTYPE=15 t_meat_raw
+DESIRES=c_GARGOYLE
+AVERSIONS=t_TRAP,r_civilization
+
+CATEGORY=Bizzaro World
+SUBSECTION=Bizzaro Hythloth
+DESCRIPTION=Gargoyle King
+
+ON=@Create
+  COLOR         = 0aea
+  NPC		= brain_monster
+  FAME		= {300 1000}
+  KARMA		= {-2000 -2999}
+  MAXHITS	= {650 850}
+  HITS          = <MAXHITS>
+  STR		= {120 150}
+  DEX		= {86 110}
+  INT		= {51 77}
+  PARRYING	= {75.0 90.0}
+  MAGICRESISTANCE={50.0 65.0}
+  TACTICS	= {80.0 100.0}
+  WRESTLING	= {75.0 90.0}
+  ITEM=i_gold,{500 750}
+  ITEM=tm_loot_reagents_easy
+  ITEM=i_scroll_harm
+  ITEM=i_xbolt,{40 50}
+  ITEM=i_bandage,{10 20}
+  ITEM=i_potion_mana,{1 3}
+
+ON=@GETITEMVARS
+   TAG.BIZZAROMONSTER=1
+   TAG.BIZZARODUNGEON=HYTHLOTH
+   TAG.BIZZAROPOINTS=10
+
+
+
+[CHARDEF c_bizzaro_drunken_master]
+ID=c_man
+NAME=Drunken Master
+ICON=i_pet_MAN
+CAN=MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS
+FOODTYPE=15 t_food, t_fruit
+DESIRES=i_gold,e_notoriety
+AVERSIONS=t_TRAP,t_eerie_stuff
+BLOODCOLOR=0
+DAM=20,26
+ARMOR=25
+
+ON=@Create
+   NPC=brain_human
+   COLOR=colors_skin
+   FAME	= 1500
+   KARMA = -5000
+   STR={250 275}
+   INT={50 75}
+   DEX={150 175}
+   MAXHITS=900
+   HITS=<MAXHITS>
+   PARRYING=100.0
+   WRESTLING=115.0
+   MAGICRESISTANCE=25.0
+   TACTICS=130.0
+   ITEMNEWBIE=i_shirt_fancy
+   COLOR=0aee
+   ITEMNEWBIE=i_pants_long
+   COLOR=0aee
+   ITEM=i_gold,{500 750}
+   ITEM=tm_loot_reagents_easy
+   ITEM=i_scroll_bless
+   ITEM=i_xbolt,{40 50}
+   ITEM=i_bandage,{10 20}
+   ITEM=i_potion_mana,{1 3}
+   
+ON=@HIT
+   SAY *Hic*
+   
+ON=@GETHIT
+   SAY *Hic*
+
+ON=@GETITEMVARS
+   TAG.BIZZAROMONSTER=1
+   TAG.BIZZARODUNGEON=HYTHLOTH
+   TAG.BIZZAROPOINTS=15
+
+//********************************************************************//
+//                              FLOOR 2                               //
+//********************************************************************//
+
+[CHARDEF c_bizzaro_mongbat]
+ID=C_MONGBAT
+SOUND=snd_MONSTER_MNGBAT1
+ICON=i_pet_mongbat
+NAME=Bizzaro Mongbat
+DAM=12,24
+ARMOR=30
+
+CATEGORY=Bizzaro World
+SUBSECTION=Bizzaro Hythloth
+DESCRIPTION=Mongbat
+
+ON=@Create
+  COLOR         = 0aee
+  NPC		= brain_monster
+  FAME		= {300 1000}
+  KARMA		= {-2000 -2999}
+  MAXHITS	= {300 400}
+  HITS          = <MAXHITS>
+  STR		= {120 150}
+  DEX		= {86 110}
+  INT		= {51 77}
+  PARRYING	= {85.0 95.0}
+  MAGICRESISTANCE={50.0 65.0}
+  TACTICS	= {90.0 100.0}
+  WRESTLING	= {85.0 90.0}
+  MAGERY        = 50.0
+  ITEM=i_gold,{250 500}
+  ITEM=tm_loot_reagents_easy
+  ITEM=i_xbolt,{10 30}
+  ITEM=i_potion_mana,{1 2}
+
+ON=@GETITEMVARS
+   TAG.BIZZAROMONSTER=1
+   TAG.BIZZARODUNGEON=HYTHLOTH
+   TAG.BIZZAROPOINTS=3
+
+
+[CHARDEF c_bizzaro_monk]
+ID=c_man
+NAME=Bizzaro Monk
+ICON=i_pet_MAN
+CAN=MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS
+FOODTYPE=15 t_food, t_fruit
+DESIRES=i_gold,e_notoriety
+AVERSIONS=t_TRAP,t_eerie_stuff
+BLOODCOLOR=0
+DAM=12,24
+ARMOR=30
+
+ON=@Create
+   NPC=brain_human
+   COLOR=colors_skin
+   FAME	= 1500
+   KARMA = -5000
+   STR={250 275}
+   INT={50 75}
+   DEX={150 175}
+   MAXHITS={400 550}
+   HITS=<MAXHITS>
+   PARRYING=100.0
+   WRESTLING=115.0
+   MAGICRESISTANCE=25.0
+   TACTICS=130.0
+   ITEMNEWBIE=i_shirt_fancy
+   COLOR=0aee
+   ITEMNEWBIE=i_pants_long
+   COLOR=0aee
+   ITEM=i_gold,{250 500}
+   ITEM=tm_loot_reagents_easy
+   ITEM=i_xbolt,{10 20}
+   ITEM=i_bandage,{10 20}
+   ITEM=i_potion_mana,{1 3}
+   
+ON=@GETITEMVARS
+   TAG.BIZZAROMONSTER=1
+   TAG.BIZZARODUNGEON=HYTHLOTH
+   TAG.BIZZAROPOINTS=4
+
+
+   
+[CHARDEF c_bizzaro_monk_saicho]
+ID=c_man
+NAME=Saicho
+ICON=i_pet_MAN
+CAN=MT_EQUIP|MT_WALK|MT_RUN|MT_USEHANDS
+FOODTYPE=15 t_food, t_fruit
+DESIRES=i_gold,e_notoriety
+AVERSIONS=t_TRAP,t_eerie_stuff
+BLOODCOLOR=0
+DAM=22,27
+ARMOR=30
+
+ON=@Create
+   NPC=brain_human
+   COLOR=colors_skin
+   FAME	= 1500
+   KARMA = -5000
+   STR={250 275}
+   INT={50 75}
+   DEX={150 175}
+   MAXHITS=1100
+   HITS=<MAXHITS>
+   PARRYING=100.0
+   WRESTLING=115.0
+   MAGICRESISTANCE=25.0
+   TACTICS=130.0
+   ITEMNEWBIE=i_shirt_fancy
+   COLOR=0aee
+   ITEMNEWBIE=i_pants_long
+   COLOR=0aee
+   ITEM=i_gold,{250 500}
+   ITEM=tm_loot_reagents_easy
+   ITEM=i_xbolt,{30 60}
+   ITEM=i_bandage,{20 50}
+   ITEM=i_scroll_flamestrike
+   ITEM=i_potion_managreat,{2 4}
+   
+ON=@GETITEMVARS
+   TAG.BIZZAROMONSTER=1
+   TAG.BIZZARODUNGEON=HYTHLOTH
+   TAG.BIZZAROPOINTS=20   
+
+   
+// *****************************************************************
+//   GROUP PUZZLE 1: Hitting the switches at the right time!
+// *****************************************************************   
+   
+[ITEMDEF i_bizzaro_hythloth_switchpuzzle_1]
+ID=i_lever
+FLIP=0
+NAME=Lever 1
+
+ON=@CREATE
+   VAR.BIZZAROHYTHLOTH.SWITCHPUZZLE.1=<UID>
+   
+ON=@DCLICK
+   IF (<UID.<VAR.BIZZAROHYTHLOTH.SWITCHPUZZLE.CONTROL>.MORE1>==10)
+      MESSAGE The switch does not appear to be functional yet.
+   ELSEIF (<UID.<VAR.BIZZAROHYTHLOTH.SWITCHPUZZLE.CONTROL>.MORE1>==0)
+      SRC.EMOTE pull the lever
+      UID.<VAR.BIZZAROHYTHLOTH.SWITCHPUZZLE.CONTROL>.MORE1=1
+      UID.<VAR.BIZZAROHYTHLOTH.SWITCHPUZZLE.CONTROL>.TIMER=3
+   ELSE
+      UID.<VAR.BIZZAROHYTHLOTH.SWITCHPUZZLE.CONTROL>.MORE1=<EVAL <UID.<VAR.BIZZAROHYTHLOTH.SWITCHPUZZLE.CONTROL>.MORE1> + 1
+   ENDIF
+   
+[ITEMDEF i_bizzaro_hythloth_switchpuzzle_2]
+ID=i_lever
+FLIP=0
+NAME=Lever 2
+
+ON=@CREATE
+   VAR.BIZZAROHYTHLOTH.SWITCHPUZZLE.2=<UID>
+   
+ON=@DCLICK
+   IF (<UID.<VAR.BIZZAROHYTHLOTH.SWITCHPUZZLE.CONTROL>.MORE1>==10)
+      MESSAGE The switch does not appear to be functional yet.
+   ELSEIF (<UID.<VAR.BIZZAROHYTHLOTH.SWITCHPUZZLE.CONTROL>.MORE1>==0)
+      SRC.EMOTE pull the lever
+      UID.<VAR.BIZZAROHYTHLOTH.SWITCHPUZZLE.CONTROL>.MORE1=1
+      UID.<VAR.BIZZAROHYTHLOTH.SWITCHPUZZLE.CONTROL>.TIMER=3
+   ELSE
+      UID.<VAR.BIZZAROHYTHLOTH.SWITCHPUZZLE.CONTROL>.MORE1=<EVAL <UID.<VAR.BIZZAROHYTHLOTH.SWITCHPUZZLE.CONTROL>.MORE1> + 1
+   ENDIF
+   
+[ITEMDEF i_bizzaro_hythloth_switchpuzzle_3]
+ID=i_lever
+FLIP=0
+NAME=Lever 3
+
+ON=@CREATE
+   VAR.BIZZAROHYTHLOTH.SWITCHPUZZLE.3=<UID>
+   
+ON=@DCLICK
+   IF (<UID.<VAR.BIZZAROHYTHLOTH.SWITCHPUZZLE.CONTROL>.MORE1>==10)
+      MESSAGE The switch does not appear to be functional yet.
+   ELSEIF (<UID.<VAR.BIZZAROHYTHLOTH.SWITCHPUZZLE.CONTROL>.MORE1>==0)
+      SRC.EMOTE pull the lever
+      UID.<VAR.BIZZAROHYTHLOTH.SWITCHPUZZLE.CONTROL>.MORE1=1
+      UID.<VAR.BIZZAROHYTHLOTH.SWITCHPUZZLE.CONTROL>.TIMER=3
+   ELSE
+      UID.<VAR.BIZZAROHYTHLOTH.SWITCHPUZZLE.CONTROL>.MORE1=<EVAL <UID.<VAR.BIZZAROHYTHLOTH.SWITCHPUZZLE.CONTROL>.MORE1> + 1
+   ENDIF
+   
+[ITEMDEF i_bizzaro_hythloth_switchpuzzle_control]
+ID=012a2
+FLIP=0
+NAME=Lever 1
+
+ON=@CREATE
+   VAR.BIZZAROHYTHLOTH.SWITCHPUZZLE.CONTROL=<UID>
+   
+ON=@TIMER
+   IF (<MORE1> = 0)
+      TIMER=1
+      RETURN 1
+   ELSEIF (<MORE1> = 3)
+      TIMER=1
+      MORE1 = 10
+   ELSEIF (<MORE1> = 10)
+      MORE1 = 0
+      TIMER=1
+   ELSE
+      MORE1 = 0
+   ENDIF
+
+

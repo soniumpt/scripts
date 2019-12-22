@@ -1,0 +1,58 @@
+// by Mordaunt.
+
+[PLEVEL 1]
+point
+
+[FUNCTION point]
+NEWITEM=i_pointer
+SRC.ACT.EQUIP
+
+[ITEMDEF i_pointer]
+NAME=pointer
+ID=i_memory 
+TYPE=t_eq_script 
+WEIGHT=0
+
+ON=@CREATE
+ATTR=attr_invis
+
+ON=@EQUIP
+TARGETG
+SRC.SYSMESSAGE Who/what do you wish to point to?
+RETURN 1
+
+ON=@TARGON_CHAR
+SRC.SAYU *<SRC.NAME> points at <SRC.TARG.NAME>*
+SRC.TARG.SAY *<SRC.NAME> points here*
+REMOVE
+RETURN 1
+
+ON=@TARGON_ITEM
+SRC.SAYU *<SRC.NAME> points at <src.targ.name>*
+SRC.TARG.SAY *<SRC.NAME> points here*
+REMOVE
+RETURN 1
+
+ON=@TARGON_GROUND 
+VAR.POINTERNAME=<SRC.NAME>
+SRC.NEWitem=c_point       
+SRC.ACT.P=<SRC.TARGP>
+SRC.ACT.UPDATE
+SRC.SAYU *<SRC.NAME> is pointing*
+REMOVE
+RETURN 1
+
+[ITEMDEF c_point]
+ID=i_gold
+TYPE=t_coin
+
+ON=@CREATE 
+ATTR=attr_move_never
+TIMERF 1, f_talk
+TIMERF 2, remove
+
+[FUNCTION f_talk]
+MESSAGE @07ac <VAR.POINTERNAME> points here!
+VAR.POINTERNAME=
+
+[EOF]

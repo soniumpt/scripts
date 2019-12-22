@@ -1,0 +1,137 @@
+//-----------------
+//- Player Emotes -
+//-----------------
+
+[FUNCTION ah]
+SAY @10 *<SRC.NAME> nods <SRC.SEX his/her> head*
+IF (<SRC.BODY>==c_man)
+   SFX 1049
+ELSEIF (<SRC.BODY>==c_woman)
+   SFX 778
+ENDIF
+RETURN 1
+
+[FUNCTION kiss]
+SAY @10 *<SRC.NAME> blows a kiss*
+IF (<SRC.BODY>==c_man)
+   SFX 1072
+ELSEIF (<SRC.BODY>==c_woman)
+   SFX 800
+ENDIF
+RETURN 1
+
+[FUNCTION massage]
+SAY @10 *<SRC.NAME> enjoys a nice massage*
+IF (<SRC.BODY>==c_man)
+   SFX 1342
+ELSEIF (<SRC.BODY>==c_woman)
+   SFX 1339
+ENDIF
+RETURN 1
+
+//--------------
+//-Temp for Lil-
+//--------------
+
+[CHARDEF c_slayer_guard]
+NAME=#NAMES_HUMANMALE the Slayer
+ID=C_MAN
+CAN=MT_WALK|MT_RUN|MT_EQUIP
+ICON=i_pet_MAN
+BLOODCOLOR=0599
+
+ON=@Create
+NPC=brain_monster
+COLOR=0599
+KARMA={-5000 -10000}
+STR={750 900}
+DEX={90 120}
+INT={40 65}
+
+
+FENCING={180.0 250.0}
+TACTICS={180.0 250.0}
+PARRYING={150.0 250.0}
+MAGICRESISTANCE={80.0 150.0}
+POISONING={90.0 100.0}
+
+
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_shoes
+COLOR=0599
+ITEMNEWBIE=i_dragon_sleeves
+COLOR=0599
+ITEMNEWBIE=i_dragon_chest
+COLOR=0599
+ITEMNEWBIE=i_dragon_gloves
+COLOR=0599
+ITEMNEWBIE=i_dragon_leggings
+COLOR=0599
+ITEMNEWBIE=i_kryss_adamantine
+MOREZ=100
+COLOR=0599
+ITEMNEWBIE=i_shield_kite_composite
+COLOR=0599
+
+ON=@HIT
+POISON 1000
+
+ON=@NPCRestock
+ITEM=AVERAGE_GOLD_PILE
+ITEM=i_potion_poison
+
+DESCRIPTION=Slayer Guard
+SUBSECTION=NPC's
+CATEGORY=lil eddie
+
+
+[CHARDEF c_slayer_mage]
+NAME=#NAMES_HUMANMALE the Slayer
+ID=C_MAN
+CAN=MT_WALK|MT_RUN|MT_EQUIP
+ICON=i_pet_MAN
+BLOODCOLOR=0599
+
+ON=@Create
+NPC=brain_monster
+COLOR=0599
+KARMA={-5000 -10000}
+STR={500 750}
+DEX={90 120}
+INT={350 500}
+
+MAGERY={180.0 250.0}
+EvaluatingIntel={180.0 250.0}
+MAGICRESISTANCE={150.0 250.0}
+POISONING={90.0 100.0}
+ALIGNMENT=EVIL
+
+ITEMNEWBIE=random_male_hair
+COLOR=colors_hair
+ITEMNEWBIE=random_shoes
+COLOR=0599
+ITEMNEWBIE=i_dragon_sleeves
+COLOR=0599
+ITEMNEWBIE=i_dragon_chest
+COLOR=0599
+ITEMNEWBIE=i_dragon_gloves
+COLOR=0599
+ITEMNEWBIE=i_dragon_leggings
+COLOR=0599
+ITEMNEWBIE=i_spellbook
+COLOR=0599
+ADDSPELL=s_magic_arrow
+ADDSPELL=s_poison
+ADDSPELL=s_lightning
+ADDSPELL=s_harm
+ADDSPELL=s_weaken
+ADDSPELL=s_heal
+
+ON=@NPCRestock
+ITEM=AVERAGE_GOLD_PILE
+ITEM=i_potion_cure
+
+DESCRIPTION=Slayer Mage
+SUBSECTION=NPC's
+CATEGORY=lil eddie

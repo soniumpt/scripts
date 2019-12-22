@@ -1,0 +1,4138 @@
+//---------------------------------------------------------------
+//By: Charm, alteration of Raists scribe table.
+//---------------------------------------------------------------
+
+
+[TYPEDEF t_reag_chest]
+ON=@DCLICK
+   IF ( (<LINK> == 04fffffff) || (<LINK.TYPE> != t_multi) || (<SRC.ISGM>) )
+      //Don't check trusts because we're not linked to a house
+   ELSE
+      IF ( <LINK.SRCHOUSE_owner> )
+      ELSEIF ( <LINK.SRCHOUSE_friend> ) 
+        IF !( <ATTR> & attr_blessed )
+           SRC.SYSMESSAGE You are not trusted enough to use this chest.
+           RETURN 1
+        ENDIF
+      ELSE
+        SRC.SYSMESSAGE You are not trusted enough to use this chest.
+        RETURN 1
+      ENDIF
+   ENDIF
+
+   IF ( <DISTANCE> > 3 )
+      SRC.SYSMESSAGE You are too far away.
+   Else
+      DIALOG d_reag_chest
+   EndIf
+   RETURN 1    
+
+ON=@TARGON_ITEM//requires that both the regs and the chest are in the pack.
+   If ( !(<DISTANCE> > 3) && (<SRC.TARG.CONT>==<SRC.FINDLAYER.21.UID>) )  
+      ADDTOCHESTREGS     
+   Else
+      SRC.SYSMESSAGE You must have the item in your pack and be near the chest.
+   EndIf
+   RETURN 1
+
+ON=@DropOn_Self
+   If ( !(<DISTANCE> > 3) )  
+	     If (<ARGO.BASEID>==i_reag_blood_moss)
+	          TAG.bloodmoss = <EVAL (<ARGO.AMOUNT>+0<TAG.bloodmoss>)>
+	     ElseIf (<ARGO.BASEID>==i_reag_sulfur_ash)
+	          TAG.sulfash = <EVAL (<ARGO.AMOUNT>+0<TAG.sulfash>)>
+	     ElseIf (<ARGO.BASEID>==i_reag_spider_silk)
+	          TAG.silk = <EVAL (<ARGO.AMOUNT>+0<TAG.silk>)>
+	     ElseIf (<ARGO.BASEID>==i_reag_black_pearl)
+	          TAG.pearl = <EVAL (<ARGO.AMOUNT>+0<TAG.pearl>)>
+	     ElseIf (<ARGO.BASEID>==i_reag_garlic)
+	          TAG.garlic = <EVAL (<ARGO.AMOUNT>+0<TAG.garlic>)>
+	     ElseIf (<ARGO.BASEID>==i_reag_ginseng)
+	          TAG.ginseng = <EVAL (<ARGO.AMOUNT>+0<TAG.ginseng>)>
+	     ElseIf (<ARGO.BASEID>==i_reag_mandrake_root)
+	          TAG.mandrake = <EVAL (<ARGO.AMOUNT>+0<TAG.mandrake>)>
+	     ElseIf (<ARGO.BASEID>==i_reag_nightshade)
+	          TAG.nightshade = <EVAL (<ARGO.AMOUNT>+0<TAG.nightshade>)>
+	     ElseIf (<ARGO.BASEID>==i_reag_obsidian)
+	          TAG.obsidian = <EVAL (<ARGO.AMOUNT>+0<TAG.obsidian>)>
+	     ElseIf (<ARGO.BASEID>==i_reag_pig_iron)
+	          TAG.pigiron = <EVAL (<ARGO.AMOUNT>+0<TAG.pigiron>)>
+	     ElseIf (<ARGO.BASEID>==i_reag_executioners_cap)
+	          TAG.execap = <EVAL (<ARGO.AMOUNT>+0<TAG.execap>)>
+	     ElseIf (<ARGO.BASEID>==i_reag_worm_heart)
+	          TAG.wyrms = <EVAL (<ARGO.AMOUNT>+0<TAG.wyrms>)>
+	     ElseIf (<ARGO.BASEID>==i_reag_pumice)
+	          TAG.pumice = <EVAL (<ARGO.AMOUNT>+0<TAG.pumice>)>
+	     ElseIf (<ARGO.BASEID>==i_reag_ectoplasm_vial)
+	          TAG.ecto = <EVAL (<ARGO.AMOUNT>+0<TAG.ecto>)>
+	     ElseIf (<ARGO.BASEID>==i_reag_dead_wood)
+	          TAG.darkwood = <EVAL (<ARGO.AMOUNT>+0<TAG.darkwood>)>
+	     ElseIf (<ARGO.BASEID>==i_reag_batwing)
+	          TAG.batwings = <EVAL (<ARGO.AMOUNT>+0<TAG.batwings>)>
+	     ElseIf (<ARGO.BASEID>==i_reag_eye_of_newt)
+	          TAG.eyenewt = <EVAL (<ARGO.AMOUNT>+0<TAG.eyenewt>)>
+	     ElseIf (<ARGO.BASEID>==i_reag_dragons_heart)
+	          TAG.dheart = <EVAL (<ARGO.AMOUNT>+0<TAG.dheart>)>
+	     ElseIf (<ARGO.BASEID>==i_reag_bone)
+	          TAG.bones = <EVAL (<ARGO.AMOUNT>+0<TAG.bones>)>
+	     ElseIf (<ARGO.BASEID>==i_reag_brimstone)
+	          TAG.brimstone = <EVAL (<ARGO.AMOUNT>+0<TAG.brimstone>)>
+	     ElseIf (<ARGO.BASEID>==i_reag_fertile_dirt)
+	          TAG.dirt = <EVAL (<ARGO.AMOUNT>+0<TAG.dirt>)>
+	     ElseIf (<ARGO.BASEID>==i_reag_blood_spawn)
+	          TAG.bloodspawn = <EVAL (<ARGO.AMOUNT>+0<TAG.bloodspawn>)>
+	     ElseIf (<ARGO.BASEID>==i_reag_blackmoor)
+	          TAG.blackmoor = <EVAL (<ARGO.AMOUNT>+0<TAG.blackmoor>)>
+	     ElseIf (<ARGO.BASEID>==i_reag_serpent_scale)
+	          TAG.nox = <EVAL (<ARGO.AMOUNT>+0<TAG.nox>)>
+	     ElseIf (<ARGO.BASEID>==i_orc_spine)
+	          TAG.orc = <EVAL (<ARGO.AMOUNT>+0<TAG.orc>)>
+	     ElseIf (<ARGO.BASEID>==i_mongbat_jaw)
+	          TAG.jaws = <EVAL (<ARGO.AMOUNT>+0<TAG.jaws>)>
+	     ElseIf (<ARGO.BASEID>==i_reag_blood_vial)
+	          TAG.vials = <EVAL (<ARGO.AMOUNT>+0<TAG.vials>)>
+	     ElseIf (<ARGO.BASEID>==i_reag_volcanic_ash)
+	          TAG.volcanic = <EVAL (<ARGO.AMOUNT>+0<TAG.volcanic>)>
+	     ElseIf (<ARGO.BASEID>==i_reag_dragon_blood)
+	          TAG.dblood = <EVAL (<ARGO.AMOUNT>+0<TAG.dblood>)>
+	     ElseIf (<ARGO.BASEID>==i_angel_dust)
+	          TAG.dust = <EVAL (<ARGO.AMOUNT>+0<TAG.dust>)>
+	     ElseIf (<ARGO.BASEID>==i_gem_shadow)
+	          TAG.gems = <EVAL (<ARGO.AMOUNT>+0<TAG.gems>)>
+	     ElseIf (<ARGO.BASEID>==i_balron_bones)
+	          TAG.balron = <EVAL (<ARGO.AMOUNT>+0<TAG.balron>)>
+	     ElseIf (<ARGO.BASEID>==i_reag_daemon_bone)
+	          TAG.daemonbones = <EVAL (<ARGO.AMOUNT>+0<TAG.daemonbones>)>
+	     Else
+	         Src.Sysmessage That doesn't look like a valid item.
+	         RETURN 1
+	     EndIf
+	     ARGO.REMOVE
+	     RETURN 1
+   
+  
+
+
+[ITEMDEF i_reag_chest]
+NAME  =Reagents Chest
+ID    =0e43
+TYPE  =t_reag_chest
+WEIGHT=90
+SKILLMAKE=CARPENTRY 85.0, t_carpentry
+RESOURCES=30 i_log_pine, 10 i_nails_iron
+CATEGORY=Items by Professions
+SUBSECTION=Magery
+DUPELIST=0e42, 0e43
+
+ON=@CREATE
+COLOR=00
+
+
+[DIALOG d_reag_chest]
+
+0,0
+page 0
+gumppic  186 266 5154//5154 is the middle picture
+gumppic  46  266 5154
+gumppic  46  156 5154
+gumppic  186 156 5154
+gumppic  186 46  5154
+gumppic  46  46  5154
+//tilepic  47  47  8312
+gumppic  81  46  5154//middle picture to cut the arrows borders
+gumppic  46  91  5154//middle pitcure to cut the arrows borders
+gumppic  10  10  5150//top left border
+gumppic  336 10  5152//top right border
+gumppic  186 10  5151//middle top border
+gumppic  30  10  5151
+gumppic  10  376 5156//bottom right border
+gumppic  336 376 5158//bottom right border
+gumppic  30  376 5157//middle bottom border
+gumppic  186 376 5157
+gumppic  10  46  5153//5153 is the left border
+gumppic  336 46  5155//the right border
+gumppic  10  156 5153
+gumppic  336 156 5155
+gumppic  10  266 5153
+gumppic  336 266 5155
+
+//headings
+dtext    170 60  255 Amount
+dtext    270 60  255 Extract
+button   255 80 2104 2103 1 0 101
+dtext    270 75  255 ( <EVAL <TAG.DEFAULT_EXTRACT>> )
+
+//Add Scrolls Button
+dtext    246 356 255 Add Items
+button   332 358  55  55  1  0 100
+
+//Page heading
+dtext    40  340 255  Page:
+
+//Page buttons
+dtext    50  355 255   1:
+button   60  360 2104 2103 0 1  1
+
+dtext    95  355 255   2:
+button   110 360 2104 2103 0 2  2
+
+dtext    145 355 255   3:
+button   160 360 2104 2103 0 3  3
+
+dtext    195 355 255   4:
+button   210 360 2104 2103 0 4  4
+
+
+page 1
+
+dtext    40  110 255 Blood Moss
+dtext    190 110 255 <EVAL 0<TAG.bloodmoss>>
+button   285 112 1210 1209 1 0 11
+
+dtext    40  135 255 Sulfurous Ash
+dtext    190 135 255 <EVAL 0<TAG.sulfash>>
+button   285 137 1210 1209 1 0 12
+
+dtext    40  160 255 Spiders Silk
+dtext    190 160 255 <EVAL 0<TAG.silk>>
+button   285 162 1210 1209 1 0 13
+
+dtext    40  185 255 Black Pearl
+dtext    190 185 255 <EVAL 0<TAG.pearl>>
+button   285 187 1210 1209 1 0 14
+
+dtext    40  210 255 Garlic
+dtext    190 210 255 <EVAL 0<TAG.garlic>>
+button   285 212 1210 1209 1 0 15
+
+dtext    40  235 255 Ginseng
+dtext    190 235 255 <EVAL 0<TAG.ginseng>>
+button   285 237 1210 1209 1 0 16
+
+dtext    40  260 255 Mandrake Root
+dtext    190 260 255 <EVAL 0<TAG.mandrake>>
+button   285 262 1210 1209 1 0 17
+
+dtext    40  285 255 Nightshade
+dtext    190 285 255 <EVAL 0<TAG.nightshade>>
+button   285 287 1210 1209 1 0 18
+
+page 2
+
+dtext    40  110 255 Obsidian
+dtext    190 110 255 <EVAL 0<TAG.obsidian>>
+button   285 112 1210 1209 1 0 21
+
+dtext    40  135 255 Pig Iron
+dtext    190 135 255 <EVAL 0<TAG.pigiron>>
+button   285 137 1210 1209 1 0 22
+
+dtext    40  160 255 Executioners Cap
+dtext    190 160 255 <EVAL 0<TAG.execap>>
+button   285 162 1210 1209 1 0 23
+
+dtext    40  185 255 Wyrms Heart
+dtext    190 185 255 <EVAL 0<TAG.wyrms>>
+button   285 187 1210 1209 1 0 24
+
+dtext    40  210 255 Pumice
+dtext    190 210 255 <EVAL 0<TAG.pumice>>
+button   285 212 1210 1209 1 0 25
+
+dtext    40  235 255 Ectoplasym Vials
+dtext    190 235 255 <EVAL 0<TAG.ecto>>
+button   285 237 1210 1209 1 0 26
+
+dtext    40  260 255 Dark Wood
+dtext    190 260 255 <EVAL 0<TAG.darkwood>>
+button   285 262 1210 1209 1 0 27
+
+dtext    40  285 255 Bat Wings
+dtext    190 285 255 <EVAL 0<TAG.batwings>>
+button   285 287 1210 1209 1 0 28
+
+page 3
+
+dtext    40  110 255 Eye of Newt
+dtext    190 110 255 <EVAL 0<TAG.eyenewt>>
+button   285 112 1210 1209 1 0 31
+
+dtext    40  135 255 Dragon Hearts
+dtext    190 135 255 <EVAL 0<TAG.dheart>>
+button   285 137 1210 1209 1 0 32
+
+dtext    40  160 255 Bones
+dtext    190 160 255 <EVAL 0<TAG.bones>>
+button   285 162 1210 1209 1 0 33
+
+dtext    40  185 255 Brimstone
+dtext    190 185 255 <EVAL 0<TAG.brimstone>>
+button   285 187 1210 1209 1 0 34
+
+dtext    40  210 255 Fertile Dirt
+dtext    190 210 255 <EVAL 0<TAG.dirt>>
+button   285 212 1210 1209 1 0 35
+
+dtext    40  235 255 Bloodspawn
+dtext    190 235 255 <EVAL 0<TAG.bloodspawn>>
+button   285 237 1210 1209 1 0 36
+
+dtext    40  260 255 Blackmoor
+dtext    190 260 255 <EVAL 0<TAG.blackmoor>>
+button   285 262 1210 1209 1 0 37
+
+dtext    40  285 255 Nox Crystals
+dtext    190 285 255 <EVAL 0<TAG.nox>>
+button   285 287 1210 1209 1 0 38
+
+dtext    40  310 255 Daemon Bones
+dtext    190 310 255 <EVAL 0<TAG.daemonbones>>
+button   285 312 1210 1209 1 0 39
+
+page 4
+
+dtext    40  110 255 Orc Spines
+dtext    190 110 255 <EVAL 0<TAG.orc>>
+button   285 112 1210 1209 1 0 41
+
+dtext    40  135 255 Mongbat Jaws
+dtext    190 135 255 <EVAL 0<TAG.jaws>>
+button   285 137 1210 1209 1 0 42
+
+dtext    40  160 255 Blood Vial
+dtext    190 160 255 <EVAL 0<TAG.vials>>
+button   285 162 1210 1209 1 0 43
+
+dtext    40  185 255 Volcanic Ash
+dtext    190 185 255 <EVAL 0<TAG.volcanic>>
+button   285 187 1210 1209 1 0 44
+
+dtext    40  210 255 Dragon Blood
+dtext    190 210 255 <EVAL 0<TAG.dblood>>
+button   285 212 1210 1209 1 0 45
+
+dtext    40  235 255 Angel Dust
+dtext    190 235 255 <EVAL 0<TAG.dust>>
+button   285 237 1210 1209 1 0 46
+
+dtext    40  260 255 Black Gems
+dtext    190 260 255 <EVAL 0<TAG.gems>>
+button   285 262 1210 1209 1 0 47
+
+dtext    40  285 255 Balron Bone
+dtext    190 285 255 <EVAL 0<TAG.balron>>
+button   285 287 1210 1209 1 0 48
+
+
+[DIALOG d_reag_chest BUTTON]
+ON=0
+
+ON=11
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_reag_chest 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.bloodmoss> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.bloodmoss = <EVAL (<TAG.bloodmoss>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_reag_blood_moss, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_reag_chest 1
+      Else
+         DIALOG d_reag_chest 1
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=12
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_reag_chest 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.sulfash> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.sulfash = <EVAL (<TAG.sulfash>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_reag_sulfur_ash, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_reag_chest 1
+      Else
+      DIALOG d_reag_chest 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=13
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_reag_chest 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.silk> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.silk = <EVAL (<TAG.silk>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_reag_spider_silk, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_reag_chest 1
+      Else
+      DIALOG d_reag_chest 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=14
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_reag_chest 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.pearl> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.pearl = <EVAL (<TAG.pearl>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_reag_black_pearl, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_reag_chest 1
+      Else
+      DIALOG d_reag_chest 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=15
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_reag_chest 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.garlic> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.garlic = <EVAL (<TAG.garlic>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_reag_garlic, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_reag_chest 1
+      Else
+      DIALOG d_reag_chest 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=16
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_reag_chest 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.ginseng> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.ginseng = <EVAL (<TAG.ginseng>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_reag_ginseng, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_reag_chest 1
+      Else
+      DIALOG d_reag_chest 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF   
+ON=17
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_reag_chest 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.mandrake> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.mandrake = <EVAL (<TAG.mandrake>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_reag_mandrake_root, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_reag_chest 1
+      Else
+      DIALOG d_reag_chest 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF  
+ON=18
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_reag_chest 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.nightshade> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.nightshade = <EVAL (<TAG.nightshade>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_reag_nightshade, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_reag_chest 1
+      Else
+      DIALOG d_reag_chest 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+
+ON=21
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_reag_chest 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.obsidian> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.obsidian = <EVAL (<TAG.obsidian>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_reag_obsidian, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_reag_chest 2
+      Else
+      DIALOG d_reag_chest 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=22
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_reag_chest 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.pigiron> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.pigiron = <EVAL (<TAG.pigiron>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_reag_pig_iron, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_reag_chest 2
+      Else
+      DIALOG d_reag_chest 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=23
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_reag_chest 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.execap> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.execap = <EVAL (<TAG.execap>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_reag_executioners_cap, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_reag_chest 2
+      Else
+      DIALOG d_reag_chest 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=24
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_reag_chest 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.wyrms> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.wyrms = <EVAL (<TAG.wyrms>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_reag_worm_heart, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_reag_chest 2
+      Else
+      DIALOG d_reag_chest 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=25
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_reag_chest 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.pumice> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.pumice = <EVAL (<TAG.pumice>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_reag_pumice, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_reag_chest 2
+      Else
+      DIALOG d_reag_chest 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=26
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_reag_chest 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.ecto> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.ecto = <EVAL (<TAG.ecto>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_reag_ectoplasm_vial, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_reag_chest 2
+      Else
+      DIALOG d_reag_chest 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=27
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_reag_chest 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.darkwood> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.darkwood = <EVAL (<TAG.darkwood>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_reag_dead_wood, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_reag_chest 2
+      Else
+      DIALOG d_reag_chest 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=28
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_reag_chest 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.batwings> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.batwings = <EVAL (<TAG.batwings>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_reag_batwing, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_reag_chest 2
+      Else
+         DIALOG d_reag_chest 2
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+
+ON=31
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_reag_chest 3
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.eyenewt> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.eyenewt = <EVAL (<TAG.eyenewt>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_reag_eye_of_newt, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_reag_chest 3
+      Else
+         DIALOG d_reag_chest 3
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=32
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_reag_chest 3
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.dheart> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.dheart = <EVAL (<TAG.dheart>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_reag_dragons_heart, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_reag_chest 3
+      Else
+         DIALOG d_reag_chest 3
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=33
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_reag_chest 3
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.bones> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.bones = <EVAL (<TAG.bones>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_reag_bone, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_reag_chest 3
+      Else
+         Dialog d_reag_chest 3
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=34
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_reag_chest 3
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.brimstone> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.brimstone = <EVAL (<TAG.brimstone>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_reag_brimstone, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_reag_chest 3
+      Else
+         DIALOG d_reag_chest 3
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=35
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_reag_chest 3
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.dirt> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.dirt = <EVAL (<TAG.dirt>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_reag_fertile_dirt, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_reag_chest 3
+      Else
+         DIALOG d_reag_chest 3
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=36
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_reag_chest 3
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.bloodspawn> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.bloodspawn = <EVAL (<TAG.bloodspawn>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_reag_blood_spawn, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_reag_chest 3
+      Else
+         DIALOG d_reag_chest 3
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=37
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_reag_chest 3
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.blackmoor> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.blackmoor = <EVAL (<TAG.blackmoor>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_reag_blackmoor, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_reag_chest 3
+      Else
+         DIALOG d_reag_chest 3
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=38
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_reag_chest 3
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.nox> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.nox = <EVAL (<TAG.nox>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_reag_serpent_scale, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_reag_chest 3
+      Else
+         DIALOG d_reag_chest 3
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=39
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_reag_chest 3
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.daemonbones> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.daemonbones = <EVAL (<TAG.daemonbones>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_reag_daemon_bone, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_reag_chest 3
+      Else
+         DIALOG d_reag_chest 3
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+
+ON=41
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_reag_chest 4
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.orc> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.orc = <EVAL (<TAG.orc>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_orc_spine, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_reag_chest 4
+      Else
+         DIALOG d_reag_chest 4
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=42
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_reag_chest 4
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.jaws> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.jaws = <EVAL (<TAG.jaws>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_mongbat_jaw, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_reag_chest 4
+      Else
+         DIALOG d_reag_chest 4
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=43
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_reag_chest 4
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.vials> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.vials = <EVAL (<TAG.vials>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_reag_blood_vial, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_reag_chest 4
+      Else
+         DIALOG d_reag_chest 4
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=44
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_reag_chest 4
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.volcanic> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.volcanic = <EVAL (<TAG.volcanic>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_reag_volcanic_ash, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_reag_chest 4
+      Else
+         DIALOG d_reag_chest 4
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=45
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_reag_chest 4
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.dblood> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.dblood = <EVAL (<TAG.dblood>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_reag_dragon_blood, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_reag_chest 4
+      Else
+         DIALOG d_reag_chest 4
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=46
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_reag_chest 4
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.dust> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.dust = <EVAL (<TAG.dust>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_angel_dust, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_reag_chest 4
+      Else
+         DIALOG d_reag_chest 4
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=47
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_reag_chest 4
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.gems> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.gems = <EVAL (<TAG.gems>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_gem_shadow, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_reag_chest 4
+      Else
+         DIALOG d_reag_chest 4
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=48
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_reag_chest 4
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+    ELSE
+       If (<TAG.balron> >= <TAG.DEFAULT_EXTRACT>)
+          TAG.balron = <EVAL (<TAG.balron>-<TAG.DEFAULT_EXTRACT>)>
+          SERV.NEWITEM i_balron_bones, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_reag_chest 4
+       Else
+          DIALOG d_reag_chest 4
+          SRC.SYSMESSAGE Please set how many of the item you wish to extract
+       EndIf   
+   ENDIF
+
+
+
+ON=100
+   TARGET Target the items you wish to place inside the chest.
+   DIALOG d_reag_chest 1
+
+ON = 101
+   DIALOG d_reag_extract
+   
+   
+[FUNCTION ADDTOCHESTREGS]
+If (<SRC.TARG.BASEID>==i_reag_blood_moss)
+     TAG.bloodmoss = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.bloodmoss>)>
+ElseIf (<SRC.TARG.BASEID>==i_reag_sulfur_ash)
+     TAG.sulfash = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.sulfash>)>
+ElseIf (<SRC.TARG.BASEID>==i_reag_spider_silk)
+     TAG.silk = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.silk>)>
+ElseIf (<SRC.TARG.BASEID>==i_reag_black_pearl)
+     TAG.pearl = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.pearl>)>
+ElseIf (<SRC.TARG.BASEID>==i_reag_garlic)
+     TAG.garlic = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.garlic>)>
+ElseIf (<SRC.TARG.BASEID>==i_reag_ginseng)
+     TAG.ginseng = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.ginseng>)>
+ElseIf (<SRC.TARG.BASEID>==i_reag_mandrake_root)
+     TAG.mandrake = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.mandrake>)>
+ElseIf (<SRC.TARG.BASEID>==i_reag_nightshade)
+     TAG.nightshade = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.nightshade>)>
+ElseIf (<SRC.TARG.BASEID>==i_reag_obsidian)
+     TAG.obsidian = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.obsidian>)>
+ElseIf (<SRC.TARG.BASEID>==i_reag_pig_iron)
+     TAG.pigiron = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.pigiron>)>
+ElseIf (<SRC.TARG.BASEID>==i_reag_executioners_cap)
+     TAG.execap = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.execap>)>
+ElseIf (<SRC.TARG.BASEID>==i_reag_worm_heart)
+     TAG.wyrms = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.wyrms>)>
+ElseIf (<SRC.TARG.BASEID>==i_reag_pumice)
+     TAG.pumice = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.pumice>)>
+ElseIf (<SRC.TARG.BASEID>==i_reag_ectoplasm_vial)
+     TAG.ecto = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.ecto>)>
+ElseIf (<SRC.TARG.BASEID>==i_reag_dead_wood)
+     TAG.darkwood = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.darkwood>)>
+ElseIf (<SRC.TARG.BASEID>==i_reag_batwing)
+     TAG.batwings = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.batwings>)>
+ElseIf (<SRC.TARG.BASEID>==i_reag_eye_of_newt)
+     TAG.eyenewt = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.eyenewt>)>
+ElseIf (<SRC.TARG.BASEID>==i_reag_dragons_heart)
+     TAG.dheart = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.dheart>)>
+ElseIf (<SRC.TARG.BASEID>==i_reag_bone)
+     TAG.bones = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.bones>)>
+ElseIf (<SRC.TARG.BASEID>==i_reag_brimstone)
+     TAG.brimstone = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.brimstone>)>
+ElseIf (<SRC.TARG.BASEID>==i_reag_fertile_dirt)
+     TAG.dirt = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.dirt>)>
+ElseIf (<SRC.TARG.BASEID>==i_reag_blood_spawn)
+     TAG.bloodspawn = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.bloodspawn>)>
+ElseIf (<SRC.TARG.BASEID>==i_reag_blackmoor)
+     TAG.blackmoor = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.blackmoor>)>
+ElseIf (<SRC.TARG.BASEID>==i_reag_serpent_scale)
+     TAG.nox = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.nox>)>
+ElseIf (<SRC.TARG.BASEID>==i_orc_spine)
+     TAG.orc = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.orc>)>
+ElseIf (<SRC.TARG.BASEID>==i_mongbat_jaw)
+     TAG.jaws = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.jaws>)>
+ElseIf (<SRC.TARG.BASEID>==i_reag_blood_vial)
+     TAG.vials = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.vials>)>
+ElseIf (<SRC.TARG.BASEID>==i_reag_volcanic_ash)
+     TAG.volcanic = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.volcanic>)>
+ElseIf (<SRC.TARG.BASEID>==i_reag_dragon_blood)
+     TAG.dblood = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.dblood>)>
+ElseIf (<SRC.TARG.BASEID>==i_angel_dust)
+     TAG.dust = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.dust>)>
+ElseIf (<SRC.TARG.BASEID>==i_gem_shadow)
+     TAG.gems = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.gems>)>
+ElseIf (<SRC.TARG.BASEID>==i_balron_bones)
+     TAG.balron = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.balron>)>
+ElseIf (<SRC.TARG.BASEID>==i_reag_daemon_bone)
+     TAG.daemonbones = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.daemonbones>)>
+Else
+    Src.Sysmessage That doesn't look like a valid item.
+    RETURN 1
+EndIf
+SRC.TARG.REMOVE
+RETURN 1
+
+
+
+[DIALOG d_reag_extract]
+0,0
+page 0
+gumppic   20  20 35
+dtext 34 35 0 Default
+dtext 34 50 0 Extract
+dtext 34 65 0 Amount
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_reag_extract TEXT]
+<EVAL <TAG.DEFAULT_EXTRACT>>
+
+[DIALOG d_reag_extract BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   IF ( <EVAL <ARGTXT[1]>> > 0 ) && (<EVAL <ARGTXT[1]>> < 1000)
+      TAG.DEFAULT_EXTRACT = <EVAL <ARGTXT[1]>>
+      SRC.SYSMESSAGE You have set the default extract value to <EVAL <TAG.DEFAULT_EXTRACT>>
+   ELSE
+      TAG.DEFAULT_EXTRACT =
+      SRC.SYSMESSAGE You have chosen to clear the default value.
+   ENDIF
+   DIALOG d_reag_chest 1
+   
+
+
+
+//---------------------------------------------------------------
+//By Raistilin Majere (RaistilinPk@hotmail.com)
+//Tweaked for trusts/moved events to a type & added skillmenu by Wren (Wren@uo.UOProject.net)
+//Edited Heavily by: Charm to a potion barrel.
+//---------------------------------------------------------------
+
+
+[TYPEDEF t_potion_barrel]
+ON=@DCLICK
+   IF ( (<LINK> == 04fffffff) || (<LINK.TYPE> != t_multi) || (<SRC.ISGM>) )
+      //Don't check trusts because we're not linked to a house
+   ELSE
+      IF ( <LINK.SRCHOUSE_owner> )
+      ELSEIF ( <LINK.SRCHOUSE_friend> ) 
+        IF !( <ATTR> & attr_blessed )
+           SRC.SYSMESSAGE You are not trusted enough to use this barrel.
+           RETURN 1
+        ENDIF
+      ELSE
+        SRC.SYSMESSAGE You are not trusted enough to use this barrel.
+        RETURN 1
+      ENDIF
+   ENDIF
+
+   IF ( <DISTANCE> > 3 )
+      SRC.SYSMESSAGE You are too far away
+   Else
+      DIALOG d_potion_barrel
+   EndIf
+   RETURN 1    
+
+ON=@TARGON_ITEM//requires that both the pots and the barrel are in the pack
+   If ( !(<DISTANCE> > 3) && (<SRC.TARG.CONT>==<SRC.FINDLAYER.21.UID>) )  
+      ADDTOBARREL     
+   Else
+      SRC.SYSMESSAGE You must have the item in your pack and be near the barrel
+   EndIf
+   RETURN 1
+   
+ON=@DropOn_Self
+   If ( !(<DISTANCE> > 3) )  
+If (<argo.BASEID>==i_potion_cureless)
+     TAG.lcpoison = <EVAL (<argo.AMOUNT>+0<TAG.lcpoison>)>
+ElseIf (<argo.BASEID>==i_potion_nightsight)
+     TAG.nightsight = <EVAL (<argo.AMOUNT>+0<TAG.nightsight>)>
+ElseIf (<argo.BASEID>==i_potion_refreshless)
+     TAG.lrefresh = <EVAL (<argo.AMOUNT>+0<TAG.lrefresh>)>
+ElseIf (<argo.BASEID>==i_potion_healless)
+     TAG.lheal = <EVAL (<argo.AMOUNT>+0<TAG.lheal>)>
+ElseIf (<argo.BASEID>==i_potion_empowerless)
+     TAG.lempower = <EVAL (<argo.AMOUNT>+0<TAG.lempower>)>
+ElseIf (<argo.BASEID>==i_potion_explosionless)
+     TAG.lexplosion = <EVAL (<argo.AMOUNT>+0<TAG.lexplosion>)>
+ElseIf (<argo.BASEID>==i_potion_agilityless)
+     TAG.lagility = <EVAL (<argo.AMOUNT>+0<TAG.lagility>)>
+ElseIf (<argo.BASEID>==i_potion_strengthless)
+     TAG.lstrength = <EVAL (<argo.AMOUNT>+0<TAG.lstrength>)>
+ElseIf (<argo.BASEID>==i_potion_clevernessless)
+     TAG.lcleverness = <EVAL (<argo.AMOUNT>+0<TAG.lcleverness>)>
+ElseIf (<argo.BASEID>==i_potion_refresh)
+     TAG.refresh = <EVAL (<argo.AMOUNT>+0<TAG.refresh>)>
+ElseIf (<argo.BASEID>==i_potion_heal)
+     TAG.heal = <EVAL (<argo.AMOUNT>+0<TAG.heal>)>
+ElseIf (<argo.BASEID>==i_potion_explosion)
+     TAG.explosion = <EVAL (<argo.AMOUNT>+0<TAG.explosion>)>
+ElseIf (<argo.BASEID>==i_potion_cure)
+     TAG.cpoison = <EVAL (<argo.AMOUNT>+0<TAG.cpoison>)>
+ElseIf (<argo.BASEID>==i_potion_agility)
+     TAG.agility = <EVAL (<argo.AMOUNT>+0<TAG.agility>)>
+ElseIf (<argo.BASEID>==i_potion_permanenceless)
+     TAG.lperm = <EVAL (<argo.AMOUNT>+0<TAG.lperm>)>
+ElseIf (<argo.BASEID>==i_potion_stoneskin)
+     TAG.stonesink = <EVAL (<argo.AMOUNT>+0<TAG.stoneskin>)>
+ElseIf (<argo.BASEID>==i_potion_strength)
+     TAG.strength = <EVAL (<argo.AMOUNT>+0<TAG.strength>)>
+ElseIf (<argo.BASEID>==i_potion_manaless)
+     TAG.lmana = <EVAL (<argo.AMOUNT>+0<TAG.lmana>)>
+ElseIf (<argo.BASEID>==i_potion_empower)
+     TAG.empower = <EVAL (<argo.AMOUNT>+0<TAG.empower>)>
+ElseIf (<argo.BASEID>==i_potion_cleverness)
+     TAG.cleverness = <EVAL (<argo.AMOUNT>+0<TAG.cleverness>)>
+ElseIf (<argo.BASEID>==i_potion_permanence)
+     TAG.perm = <EVAL (<argo.AMOUNT>+0<TAG.perm>)>
+ElseIf (<argo.BASEID>==i_potion_curegreat)
+     TAG.gcpoison = <EVAL (<argo.AMOUNT>+0<TAG.gcpoison>)>
+ElseIf (<argo.BASEID>==i_potion_refreshgreat)
+     TAG.grefresh = <EVAL (<argo.AMOUNT>+0<TAG.grefresh>)>
+ElseIf (<argo.BASEID>==i_potion_agilitygreat)
+     TAG.gagility = <EVAL (<argo.AMOUNT>+0<TAG.gagility>)>
+ElseIf (<argo.BASEID>==i_potion_explosiongreat)
+     TAG.gexplosion = <EVAL (<argo.AMOUNT>+0<TAG.gexplosion>)>
+ElseIf (<argo.BASEID>==i_potion_strengthgreat)
+     TAG.gstrength = <EVAL (<argo.AMOUNT>+0<TAG.gstrength>)>
+ElseIf (<argo.BASEID>==i_potion_steelskin)
+     TAG.steelskin = <EVAL (<argo.AMOUNT>+0<TAG.steelskin>)>
+ElseIf (<argo.BASEID>==i_potion_mana)
+     TAG.mana = <EVAL (<argo.AMOUNT>+0<TAG.mana>)>
+ElseIf (<argo.BASEID>==i_potion_healgreat)
+     TAG.gheal = <EVAL (<argo.AMOUNT>+0<TAG.gheal>)>
+ElseIf (<argo.BASEID>==i_potion_clevernessgreat)
+     TAG.gcleverness = <EVAL (<argo.AMOUNT>+0<TAG.gcleverness>)>
+ElseIf (<argo.BASEID>==i_potion_permanencegreat)
+     TAG.gperm = <EVAL (<argo.AMOUNT>+0<TAG.gperm>)>
+ElseIf (<argo.BASEID>==i_potion_empowergreat)
+     TAG.gempower = <EVAL (<argo.AMOUNT>+0<TAG.gempower>)>
+ElseIf (<argo.BASEID>==i_potion_invisibility)
+     TAG.translucency = <EVAL (<argo.AMOUNT>+0<TAG.translucency>)>
+ElseIf (<argo.BASEID>==i_potion_shrink)
+     TAG.shrink = <EVAL (<argo.AMOUNT>+0<TAG.shrink>)>
+ElseIf (<argo.BASEID>==i_potion_managreat)
+     TAG.gmana = <EVAL (<argo.AMOUNT>+0<TAG.gmana>)>
+ElseIf (<argo.BASEID>==i_potion_shrinkgreat)
+     TAG.gshrink = <EVAL (<argo.AMOUNT>+0<TAG.gshrink>)>
+ElseIf (<argo.BASEID>==i_potion_ra)
+     TAG.spiritarmor = <EVAL (<argo.AMOUNT>+0<TAG.spiritarmor>)>
+ElseIf (<argo.BASEID>==i_potion_emblaze)
+     TAG.emblaze = <EVAL (<argo.AMOUNT>+0<TAG.emblaze>)>
+ElseIf (<argo.BASEID>==i_potion_hope)
+     TAG.hope = <EVAL (<argo.AMOUNT>+0<TAG.hope>)>
+ElseIf (<argo.BASEID>==i_softperp_dye)
+     TAG.softpurple = <EVAL (<argo.AMOUNT>+0<TAG.softpurple>)>
+ElseIf (<argo.BASEID>==i_green_dye)
+     TAG.green = <EVAL (<argo.AMOUNT>+0<TAG.green>)>
+ElseIf (<argo.BASEID>==i_softgreen_dye)
+     TAG.softgreen = <EVAL (<argo.AMOUNT>+0<TAG.softgreen>)>
+ElseIf (<argo.BASEID>==i_black_dye)
+     TAG.pitchblack = <EVAL (<argo.AMOUNT>+0<TAG.pitchblack>)>
+ElseIf (<argo.BASEID>==i_softblue_dye)
+     TAG.softblue = <EVAL (<argo.AMOUNT>+0<TAG.softblue>)>
+ElseIf (<argo.BASEID>==i_blue_dye)
+     TAG.blue = <EVAL (<argo.AMOUNT>+0<TAG.blue>)>
+ElseIf (<argo.BASEID>==i_passionpurp_dye)
+     TAG.passionpurple = <EVAL (<argo.AMOUNT>+0<TAG.passionpurple>)>
+ElseIf (<argo.BASEID>==i_bronze_dye)
+     TAG.bronze = <EVAL (<argo.AMOUNT>+0<TAG.bronze>)>
+ElseIf (<argo.BASEID>==i_purple_dye)
+     TAG.purple = <EVAL (<argo.AMOUNT>+0<TAG.purple>)>
+ElseIf (<argo.BASEID>==i_pwhite_dye)
+     TAG.purewhite = <EVAL (<argo.AMOUNT>+0<TAG.purewhite>)>
+ElseIf (<argo.BASEID>==i_hardpink_dye)
+     TAG.strongpink = <EVAL (<argo.AMOUNT>+0<TAG.strongpink>)>
+ElseIf (<argo.BASEID>==i_swamp_dye)
+     TAG.swamp = <EVAL (<argo.AMOUNT>+0<TAG.swamp>)>
+ElseIf (<argo.BASEID>==i_white_dye)
+     TAG.white = <EVAL (<argo.AMOUNT>+0<TAG.white>)>
+ElseIf (<argo.BASEID>==i_softpink_dye)
+     TAG.passionpink = <EVAL (<argo.AMOUNT>+0<TAG.passionpink>)>
+ElseIf (<argo.BASEID>==i_fog_dye)
+     TAG.fog = <EVAL (<argo.AMOUNT>+0<TAG.fog>)>
+ElseIf (<argo.BASEID>==i_dkbronze_dye)
+     TAG.darkbronze = <EVAL (<argo.AMOUNT>+0<TAG.darkbronze>)>
+ElseIf (<argo.BASEID>==i_angel_dye)
+     TAG.angel = <EVAL (<argo.AMOUNT>+0<TAG.angel>)>
+ElseIf (<argo.BASEID>==i_fire_dye)
+     TAG.fire = <EVAL (<argo.AMOUNT>+0<TAG.fire>)>
+ElseIf (<argo.BASEID>==i_cardinal_dye)
+     TAG.cardinal = <EVAL (<argo.AMOUNT>+0<TAG.cardinal>)>
+ElseIf (<argo.BASEID>==i_ice_dye)
+     TAG.ice = <EVAL (<argo.AMOUNT>+0<TAG.ice>)>
+ElseIf (<argo.BASEID>==i_rblack_dye)
+     TAG.black = <EVAL (<argo.AMOUNT>+0<TAG.black>)>
+ElseIf (<argo.BASEID>==i_rain_dye)
+     TAG.rain = <EVAL (<argo.AMOUNT>+0<TAG.rain>)>
+ElseIf (<argo.BASEID>==i_sunset_dye)
+     TAG.sunset = <EVAL (<argo.AMOUNT>+0<TAG.sunset>)>
+ElseIf (<argo.BASEID>==i_mellowyellow_dye)
+     TAG.mellowyellow = <EVAL (<argo.AMOUNT>+0<TAG.mellowyellow>)>
+ElseIf (<argo.BASEID>==i_forest_dye)
+     TAG.forest = <EVAL (<argo.AMOUNT>+0<TAG.forest>)>
+ElseIf (<argo.BASEID>==i_peppermint_dye)
+     TAG.peppermint = <EVAL (<argo.AMOUNT>+0<TAG.peppermint>)>
+ElseIf (<argo.BASEID>==i_silkenpurple_dye)
+     TAG.silkenpurple = <EVAL (<argo.AMOUNT>+0<TAG.silkenpurple>)>
+ElseIf (<argo.BASEID>==i_cerulean_dye)
+     TAG.cerulean = <EVAL (<argo.AMOUNT>+0<TAG.cerulean>)>
+ElseIf (<argo.BASEID>==i_dread_dye)
+     TAG.dread = <EVAL (<argo.AMOUNT>+0<TAG.dread>)>
+ElseIf (<argo.BASEID>==i_deepseablue_dye)
+     TAG.deepseablue = <EVAL (<argo.AMOUNT>+0<TAG.deepseablue>)>
+ElseIf (<argo.BASEID>==i_purplerain_dye)
+     TAG.purplerain = <EVAL (<argo.AMOUNT>+0<TAG.purplerain>)>
+ElseIf (<argo.BASEID>==i_frozenblue_dye)
+     TAG.frozenblue = <EVAL (<argo.AMOUNT>+0<TAG.frozenblue>)>
+ElseIf (<argo.BASEID>==i_citrus_dye)
+     TAG.citrus = <EVAL (<argo.AMOUNT>+0<TAG.citrus>)>
+ElseIf (<argo.BASEID>==i_classicpassionpink_dye)
+     TAG.classicpassionpink = <EVAL (<argo.AMOUNT>+0<TAG.classicpassionpink>)>
+ElseIf (<argo.BASEID>==i_strongpink_dye)
+     TAG.classicstrongpink = <EVAL (<argo.AMOUNT>+0<TAG.classicstrongpink>)>
+ElseIf (<argo.BASEID>==i_classicfire_dye)
+     TAG.classicfire = <EVAL (<argo.AMOUNT>+0<TAG.classicfire>)>
+ElseIf (<argo.BASEID>==i_heavenlywhite_dye)
+     TAG.heavenlywhite = <EVAL (<argo.AMOUNT>+0<TAG.heavenlywhite>)>
+ElseIf (<argo.BASEID>==i_vorpal_dye)
+     TAG.vorpal = <EVAL (<argo.AMOUNT>+0<TAG.vorpal>)>
+ElseIf (<argo.BASEID>==i_bottle_empty)
+     TAG.bottle = <EVAL (<argo.AMOUNT>+0<TAG.bottle>)>
+Else
+    Src.Sysmessage That doesn't look like a valid item.
+    RETURN 1
+EndIf
+argo.REMOVE
+RETURN 1
+
+
+[ITEMDEF i_potion_barrel]
+NAME  =Potion Rack
+ID    =i_testtube_rack_full
+TYPE  =t_potion_barrel
+WEIGHT=90
+SKILLMAKE=CARPENTRY 75.0, t_carpentry
+RESOURCES=10 i_log_pine, 4 i_bottle_empty, 10 i_nails_iron, 5 i_hinge_iron
+CATEGORY=Items by Professions
+SUBSECTION=Alchemy
+
+ON=@CREATE
+    COLOR=00
+
+
+
+[DIALOG d_potion_barrel]
+
+0,0
+page 0
+gumppic  186 266 5154//5154 is the middle picture
+gumppic  46  266 5154
+gumppic  46  156 5154
+gumppic  186 156 5154
+gumppic  186 46  5154
+gumppic  46  46  5154
+//tilepic  47  47  8312
+gumppic  81  46  5154//middle picture to cut the arrows borders
+gumppic  46  91  5154//middle pitcure to cut the arrows borders
+gumppic  10  10  5150//top left border
+gumppic  336 10  5152//top right border
+gumppic  186 10  5151//middle top border
+gumppic  30  10  5151
+gumppic  10  376 5156//bottom right border
+gumppic  336 376 5158//bottom right border
+gumppic  30  376 5157//middle bottom border
+gumppic  186 376 5157
+gumppic  10  46  5153//5153 is the left border
+gumppic  336 46  5155//the right border
+gumppic  10  156 5153
+gumppic  336 156 5155
+gumppic  10  266 5153
+gumppic  336 266 5155
+
+//headings
+dtext    170 60  255 Amount
+dtext    270 60  255 Extract
+button   255 80 2104 2103 1 0 101
+dtext    270 75  255 ( <EVAL <TAG.DEFAULT_EXTRACT>> )
+
+//Add Scrolls Button
+dtext    246 356 255 Add Items
+button   332 358  55  55  1  0 100
+
+//Page heading
+dtext    40  340 255  Page:
+
+//Page buttons
+dtext    50  355 255   1:
+button   60  360 2104 2103 0 1  1
+
+dtext    95  355 255   2:
+button   110 360 2104 2103 0 2  2
+
+dtext    145 355 255   3:
+button   160 360 2104 2103 0 3  3
+
+dtext    195 355 255   4:
+button   210 360 2104 2103 0 4  4
+
+dtext    45  375 255   5:
+button   60  380 2104 2103 0 5  5
+
+dtext    95  375 255   6:
+button   110 380 2104 2103 0 6  6
+
+dtext    145 375 255   7:
+button   160 380 2104 2103 0 7  7
+
+dtext    195 375 255   8:
+button   210 380 2104 2103 0 8  8
+
+dtext    270 375 255   9:
+button   285 380 2104 2103 0 9  9
+
+
+page 1
+
+//Scrolls and corresponding buttons
+dtext    40  110 255 Lesser Cure Poison
+dtext    190 110 255 <EVAL 0<TAG.lcpoison>>
+button   285 112 1210 1209 1 0 11
+
+dtext    40  135 255 Night Sight
+dtext    190 135 255 <EVAL 0<TAG.nightsight>>
+button   285 137 1210 1209 1 0 12
+
+dtext    40  160 255 Lesser Refresh
+dtext    190 160 255 <EVAL 0<TAG.lrefresh>>
+button   285 162 1210 1209 1 0 13
+
+dtext    40  185 255 Lesser Heal
+dtext    190 185 255 <EVAL 0<TAG.lheal>>
+button   285 187 1210 1209 1 0 14
+
+dtext    40  210 255 Lesser Empower
+dtext    190 210 255 <EVAL 0<TAG.lempower>>
+button   285 212 1210 1209 1 0 15
+
+dtext    40  235 255 Lesser Explosion
+dtext    190 235 255 <EVAL 0<TAG.lexplosion>>
+button   285 237 1210 1209 1 0 16
+
+dtext    40  260 255 Lesser Agility
+dtext    190 260 255 <EVAL 0<TAG.lagility>>
+button   285 262 1210 1209 1 0 17
+
+dtext    40  285 255 Lesser Strength
+dtext    190 285 255 <EVAL 0<TAG.lstrength>>
+button   285 287 1210 1209 1 0 18
+
+dtext    40  310 255 Lesser Cleverness
+dtext    190 310 255 <EVAL 0<TAG.lcleverness>>
+button   285 312 1210 1209 1 0  19
+
+page 2
+
+dtext    40  110 255 Refresh
+dtext    190 110 255 <EVAL 0<TAG.refresh>>
+button   285 112 1210 1209 1 0 21
+
+dtext    40  135 255 Heal
+dtext    190 135 255 <EVAL 0<TAG.heal>>
+button   285 137 1210 1209 1 0 22
+
+dtext    40  160 255 Explosion
+dtext    190 160 255 <EVAL 0<TAG.explosion>>
+button   285 162 1210 1209 1 0 23
+
+dtext    40  185 255 Cure Poison
+dtext    190 185 255 <EVAL 0<TAG.cpoison>>
+button   285 187 1210 1209 1 0 24
+
+dtext    40  210 255 Agility
+dtext    190 210 255 <EVAL 0<TAG.agility>>
+button   285 212 1210 1209 1 0 25
+
+dtext    40  235 255 Lesser Permanence
+dtext    190 235 255 <EVAL 0<TAG.lperm>>
+button   285 237 1210 1209 1 0 26
+
+dtext    40  260 255 Stone Skin
+dtext    190 260 255 <EVAL 0<TAG.stoneskin>>
+button   285 262 1210 1209 1 0 27
+
+dtext    40  285 255 Strength
+dtext    190 285 255 <EVAL 0<TAG.strength>>
+button   285 287 1210 1209 1 0 28
+
+dtext    40  310 255 Lesser Mana Refresh
+dtext    190 310 255 <EVAL 0<TAG.lmana>>
+button   285 312 1210 1209 1 0  29
+
+page 3
+
+dtext    40  110 255 Empower
+dtext    190 110 255 <EVAL 0<TAG.empower>>
+button   285 112 1210 1209 1 0 31
+
+dtext    40  135 255 Cleverness
+dtext    190 135 255 <EVAL 0<TAG.cleverness>>
+button   285 137 1210 1209 1 0 32
+
+dtext    40  160 255 Permanence
+dtext    190 160 255 <EVAL 0<TAG.perm>>
+button   285 162 1210 1209 1 0 33
+
+dtext    40  185 255 Greater Cure Poison
+dtext    190 185 255 <EVAL 0<TAG.gcpoison>>
+button   285 187 1210 1209 1 0 34
+
+dtext    40  210 255 Greater Refresh
+dtext    190 210 255 <EVAL 0<TAG.grefresh>>
+button   285 212 1210 1209 1 0 35
+
+dtext    40  235 255 Greater Agility
+dtext    190 235 255 <EVAL 0<TAG.gagility>>
+button   285 237 1210 1209 1 0 36
+
+dtext    40  260 255 Greater Explosion
+dtext    190 260 255 <EVAL 0<TAG.gexplosion>>
+button   285 262 1210 1209 1 0 37
+
+dtext    40  285 255 Greater Strength
+dtext    190 285 255 <EVAL 0<TAG.gstrength>>
+button   285 287 1210 1209 1 0 38
+
+dtext    40  310 255 Steel Skin
+dtext    190 310 255 <EVAL 0<TAG.steelskin>>
+button   285 312 1210 1209 1 0  39
+
+page 4
+
+dtext    40  110 255 Mana Refresh
+dtext    190 110 255 <EVAL 0<TAG.mana>>
+button   285 112 1210 1209 1 0 41
+
+dtext    40  135 255 Greater Heal
+dtext    190 135 255 <EVAL 0<TAG.gheal>>
+button   285 137 1210 1209 1 0 42
+
+dtext    40  160 255 Greater Cleverness
+dtext    190 160 255 <EVAL 0<TAG.gcleverness>>
+button   285 162 1210 1209 1 0 43
+
+dtext    40  185 255 Greater Permanence
+dtext    190 185 255 <EVAL 0<TAG.gperm>>
+button   285 187 1210 1209 1 0 44
+
+dtext    40  210 255 Greater Empower
+dtext    190 210 255 <EVAL 0<TAG.gempower>>
+button   285 212 1210 1209 1 0 45
+
+dtext    40  235 255 Translucency
+dtext    190 235 255 <EVAL 0<TAG.translucency>>
+button   285 237 1210 1209 1 0 46
+
+dtext    40  260 255 Shrink
+dtext    190 260 255 <EVAL 0<TAG.shrink>>
+button   285 262 1210 1209 1 0 47
+
+dtext    40  285 255 Greater Mana Refresh
+dtext    190 285 255 <EVAL 0<TAG.gmana>>
+button   285 287 1210 1209 1 0 48
+
+dtext    40  310 255 Greater Shrink
+dtext    190 310 255 <EVAL 0<TAG.gshrink>>
+button   285 312 1210 1209 1 0  49
+
+page 5
+
+dtext    40  110 255 Spirit Armor
+dtext    190 110 255 <EVAL 0<TAG.spiritarmor>>
+button   285 112 1210 1209 1 0 51
+
+dtext    40  135 255 Emblaze
+dtext    190 135 255 <EVAL 0<TAG.emblaze>>
+button   285 137 1210 1209 1 0 52
+
+dtext    40  160 255 Hope
+dtext    190 160 255 <EVAL 0<TAG.hope>>
+button   285 162 1210 1209 1 0 53
+
+dtext    40  185 255 Soft Purple
+dtext    190 185 255 <EVAL 0<TAG.softpurple>>
+button   285 187 1210 1209 1 0 54
+
+dtext    40  210 255 Green
+dtext    190 210 255 <EVAL 0<TAG.green>>
+button   285 212 1210 1209 1 0 55
+
+dtext    40  235 255 Soft Green
+dtext    190 235 255 <EVAL 0<TAG.softgreen>>
+button   285 237 1210 1209 1 0 56
+
+dtext    40  260 255 Pitch Black
+dtext    190 260 255 <EVAL 0<TAG.pitchblack>>
+button   285 262 1210 1209 1 0 57
+
+dtext    40  285 255 Soft Blue
+dtext    190 285 255 <EVAL 0<TAG.softblue>>
+button   285 287 1210 1209 1 0 58
+
+dtext    40  310 255 Blue
+dtext    190 310 255 <EVAL 0<TAG.blue>>
+button   285 312 1210 1209 1 0  59
+
+page 6
+
+dtext    40  110 255 Passion Purple
+dtext    190 110 255 <EVAL 0<TAG.passionpurple>>
+button   285 112 1210 1209 1 0 61
+
+dtext    40  135 255 Bronze
+dtext    190 135 255 <EVAL 0<TAG.bronze>>
+button   285 137 1210 1209 1 0 62
+
+dtext    40  160 255 Purple
+dtext    190 160 255 <EVAL 0<TAG.purple>>
+button   285 162 1210 1209 1 0 63
+
+dtext    40  185 255 Pure White
+dtext    190 185 255 <EVAL 0<TAG.purewhite>>
+button   285 187 1210 1209 1 0 64
+
+dtext    40  210 255 Strong Pink
+dtext    190 210 255 <EVAL 0<TAG.strongpink>>
+button   285 212 1210 1209 1 0 65
+
+dtext    40  235 255 Swamp
+dtext    190 235 255 <EVAL 0<TAG.swamp>>
+button   285 237 1210 1209 1 0 66
+
+dtext    40  260 255 White
+dtext    190 260 255 <EVAL 0<TAG.white>>
+button   285 262 1210 1209 1 0 67
+
+dtext    40  285 255 Passion Pink
+dtext    190 285 255 <EVAL 0<TAG.passionpink>>
+button   285 287 1210 1209 1 0 68
+
+dtext    40  310 255 Fog
+dtext    190 310 255 <EVAL 0<TAG.fog>>
+button   285 312 1210 1209 1 0  69
+
+page 7
+
+dtext    40  110 255 Dark Bronze
+dtext    190 110 255 <EVAL 0<TAG.darkbronze>>
+button   285 112 1210 1209 1 0 71
+
+dtext    40  135 255 Angel
+dtext    190 135 255 <EVAL 0<TAG.angel>>
+button   285 137 1210 1209 1 0 72
+
+dtext    40  160 255 Fire
+dtext    190 160 255 <EVAL 0<TAG.fire>>
+button   285 162 1210 1209 1 0 73
+
+dtext    40  185 255 Cardinal
+dtext    190 185 255 <EVAL 0<TAG.cardinal>>
+button   285 187 1210 1209 1 0 74
+
+dtext    40  210 255 Ice Blue
+dtext    190 210 255 <EVAL 0<TAG.iceblue>>
+button   285 212 1210 1209 1 0 75
+
+dtext    40  235 255 Black
+dtext    190 235 255 <EVAL 0<TAG.black>>
+button   285 237 1210 1209 1 0 76
+
+dtext    40  260 255 Rain
+dtext    190 260 255 <EVAL 0<TAG.rain>>
+button   285 262 1210 1209 1 0 77
+
+dtext    40  285 255 Sunset
+dtext    190 285 255 <EVAL 0<TAG.sunset>>
+button   285 287 1210 1209 1 0 78
+
+dtext    40  310 255 Mellow Yellow
+dtext    190 310 255 <EVAL 0<TAG.mellowyellow>>
+button   285 312 1210 1209 1 0  79
+
+page 8
+
+dtext    40  110 255 Forest
+dtext    190 110 255 <EVAL 0<TAG.forest>>
+button   285 112 1210 1209 1 0 81
+
+dtext    40  135 255 Peppermint
+dtext    190 135 255 <EVAL 0<TAG.peppermint>>
+button   285 137 1210 1209 1 0 82
+
+dtext    40  160 255 Silken Purple
+dtext    190 160 255 <EVAL 0<TAG.silkenpurple>>
+button   285 162 1210 1209 1 0 83
+
+dtext    40  185 255 Cerulean
+dtext    190 185 255 <EVAL 0<TAG.cerulean>>
+button   285 187 1210 1209 1 0 84
+
+dtext    40  210 255 Dread
+dtext    190 210 255 <EVAL 0<TAG.dread>>
+button   285 212 1210 1209 1 0 85
+
+dtext    40  235 255 Deep Sea Blue
+dtext    190 235 255 <EVAL 0<TAG.deepseablue>>
+button   285 237 1210 1209 1 0 86
+
+dtext    40  260 255 Phantom
+dtext    190 260 255 <EVAL 0<TAG.phantom>>
+button   285 262 1210 1209 1 0 87
+
+dtext    40  285 255 Spectre
+dtext    190 285 255 <EVAL 0<TAG.spectre>>
+button   285 287 1210 1209 1 0 88
+
+dtext    40  310 255 Electric Blue
+dtext    190 310 255 <EVAL 0<TAG.electricblue>>
+button   285 312 1210 1209 1 0 89
+
+page 9
+
+dtext    40  110 255 Purple Rain
+dtext    190 110 255 <EVAL 0<TAG.purplerain>>
+button   285 112 1210 1209 1 0 91
+
+dtext    40  135 255 Frozen Blue
+dtext    190 135 255 <EVAL 0<TAG.frozenblue>>
+button   285 137 1210 1209 1 0 92
+
+dtext    40  160 255 Citrus
+dtext    190 160 255 <EVAL 0<TAG.citrus>>
+button   285 162 1210 1209 1 0 93
+
+dtext    40  185 255 Classic Passion Pink
+dtext    190 185 255 <EVAL 0<TAG.classicpassionpink>>
+button   285 187 1210 1209 1 0 94
+
+dtext    40  210 255 Classic Strong Pink
+dtext    190 210 255 <EVAL 0<TAG.classicstrongpink>>
+button   285 212 1210 1209 1 0 95
+
+dtext    40  235 255 Classic Fire
+dtext    190 235 255 <EVAL 0<TAG.classicfire>>
+button   285 237 1210 1209 1 0 96
+
+dtext    40  260 255 Heavenly White
+dtext    190 260 255 <EVAL 0<TAG.heavenlywhite>>
+button   285 262 1210 1209 1 0 97
+
+dtext    40  285 255 Vorpal
+dtext    190 285 255 <EVAL 0<TAG.Vorpal>>
+button   285 287 1210 1209 1 0 98
+
+dtext    40  310 255 Empty Bottle
+dtext    190 310 255 <EVAL 0<TAG.bottle>>
+button   285 312 1210 1209 1 0 99
+
+
+[DIALOG d_potion_barrel BUTTON]//what each button does
+ON=0
+
+ON=11
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.lcpoison> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.lcpoison = <EVAL (<TAG.lcpoison>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_potion_cureless, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 1
+      Else
+         DIALOG d_potion_barrel 1
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=12
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.nightsight> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.nightsight = <EVAL (<TAG.nightsight>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_potion_nightsight, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 1
+      Else
+      DIALOG d_potion_barrel 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=13
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.lrefresh> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.lrefresh = <EVAL (<TAG.lrefresh>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_potion_refreshless, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 1
+      Else
+      DIALOG d_potion_barrel 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=14
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.lheal> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.lheal = <EVAL (<TAG.lheal>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_potion_healless, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 1
+      Else
+      DIALOG d_potion_barrel 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=15
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.lempower> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.lempower = <EVAL (<TAG.lempower>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_potion_empowerless, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 1
+      Else
+      DIALOG d_potion_barrel 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=16
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.lexplosion> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.lexplosion = <EVAL (<TAG.lexplosion>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_potion_explosionless, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 1
+      Else
+      DIALOG d_potion_barrel 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF   
+ON=17
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.lagility> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.lagility = <EVAL (<TAG.lagility>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_potion_agilityless, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 1
+      Else
+      DIALOG d_potion_barrel 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF  
+ON=18
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.lstrength> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.lstrength = <EVAL (<TAG.lstrength>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_potion_strengthless, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 2
+      Else
+      DIALOG d_potion_barrel 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+
+// NEEDS ADDING TO ALL X9
+ON=19
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.lcleverness> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.lcleverness = <EVAL (<TAG.lcleverness>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_potion_clevernessless, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 1
+      Else
+      DIALOG d_potion_barrel 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+
+ON=21
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.refresh> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.refresh = <EVAL (<TAG.refresh>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_potion_refresh, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 2
+      Else
+      DIALOG d_potion_barrel 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=22
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.heal> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.heal = <EVAL (<TAG.heal>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_potion_heal, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 2
+      Else
+      DIALOG d_potion_barrel 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=23
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.explosion> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.explosion = <EVAL (<TAG.explosion>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_potion_explosion, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 2
+      Else
+      DIALOG d_potion_barrel 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=24
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.cpoison> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.cpoison = <EVAL (<TAG.cpoison>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_potion_cure, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 2
+      Else
+      DIALOG d_potion_barrel 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=25
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.agility> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.agility = <EVAL (<TAG.agility>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_potion_agility, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 2
+      Else
+      DIALOG d_potion_barrel 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=26
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.lperm> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.lperm = <EVAL (<TAG.lperm>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_potion_permanenceless, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 2
+      Else
+      DIALOG d_potion_barrel 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=27
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.stoneskin> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.stoneskin = <EVAL (<TAG.stoneskin>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_potion_stoneskin, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 2
+      Else
+      DIALOG d_potion_barrel 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=28
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.strength> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.strength = <EVAL (<TAG.strength>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_potion_strength, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 2
+      Else
+         DIALOG d_potion_barrel 2
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=29
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 3
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.lmana> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.lmana = <EVAL (<TAG.lmana>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_potion_manaless, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 3
+      Else
+         DIALOG d_potion_barrel 3
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=31
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 3
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.empower> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.empower = <EVAL (<TAG.empower>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_potion_empower, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 3
+      Else
+         DIALOG d_potion_barrel 3
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=32
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 3
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.cleverness> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.cleverness = <EVAL (<TAG.cleverness>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_potion_cleverness, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 3
+      Else
+         DIALOG d_potion_barrel 3
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=33
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 3
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.perm> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.perm = <EVAL (<TAG.perm>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_potion_permanence, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 3
+      Else
+         Dialog d_potion_barrel 3
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=34
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 3
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.gcpoison> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.gcpoison = <EVAL (<TAG.gcpoison>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_potion_curegreat, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 3
+      Else
+         DIALOG d_potion_barrel 3
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=35
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 3
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.grefresh> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.grefresh = <EVAL (<TAG.grefresh>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_potion_refreshgreat, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 3
+      Else
+         DIALOG d_potion_barrel 3
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=36
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 3
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.gagility> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.gagility = <EVAL (<TAG.gagility>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_potion_agilitygreat, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 3
+      Else
+         DIALOG d_potion_barrel 3
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=37
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 3
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.gexplosion> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.gexplosion = <EVAL (<TAG.gexplosion>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_potion_explosiongreat, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 3
+      Else
+         DIALOG d_potion_barrel 3
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=38
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 3
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.gstrength> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.gstrength = <EVAL (<TAG.gstrength>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_potion_strengthgreat, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 3
+      Else
+         DIALOG d_potion_barrel 3
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=39
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 4
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.steelskin> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.steelskin = <EVAL (<TAG.steelskin>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_potion_steelskin, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 4	
+      Else
+         DIALOG d_potion_barrel 4
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=41
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 4
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.mana> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.mana = <EVAL (<TAG.mana>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_potion_mana, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 4
+      Else
+         DIALOG d_potion_barrel 4
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=42
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 4
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.gheal> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.gheal = <EVAL (<TAG.gheal>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_potion_healgreat, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 4
+      Else
+         DIALOG d_potion_barrel 4
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=43
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 4
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.gcleverness> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.gcleverness = <EVAL (<TAG.gcleverness>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_potion_clevernessgreat, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 4
+      Else
+         DIALOG d_potion_barrel 4
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=44
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 4
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.gperm> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.gperm = <EVAL (<TAG.gperm>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_potion_permanencegreat, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 4
+      Else
+         DIALOG d_potion_barrel 4
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=45
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 4
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.gempower> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.gempower = <EVAL (<TAG.gempower>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_potion_empowergreat, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 4
+      Else
+         DIALOG d_potion_barrel 4
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=46
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 4
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.translucency> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.translucency = <EVAL (<TAG.translucency>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_potion_invisibility, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 4
+      Else
+         DIALOG d_potion_barrel 4
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=47
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 4
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.shrink> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.shrink = <EVAL (<TAG.shrink>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_potion_shrink, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 4
+      Else
+         DIALOG d_potion_barrel 4
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=48
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 4
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+    ELSE
+       If (<TAG.gmana> >= <TAG.DEFAULT_EXTRACT>)
+          TAG.gmana = <EVAL (<TAG.gmana>-<TAG.DEFAULT_EXTRACT>)>
+          SERV.NEWITEM i_potion_managreat, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 4
+       Else
+          DIALOG d_potion_barrel 4
+          SRC.SYSMESSAGE Please set how many of the item you wish to extract
+       EndIf   
+   ENDIF
+ON=49
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 4
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+    ELSE
+       If (<TAG.gshrink> >= <TAG.DEFAULT_EXTRACT>)
+          TAG.gshrink = <EVAL (<TAG.gshrink>-<TAG.DEFAULT_EXTRACT>)>
+          SERV.NEWITEM i_potion_shrinkgreat, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 4
+       Else
+          DIALOG d_potion_barrel 4
+          SRC.SYSMESSAGE Please set how many of the item you wish to extract
+       EndIf   
+   ENDIF
+ON=51
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 5
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.spiritarmor> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.spiritarmor = <EVAL (<TAG.spiritarmor>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_potion_ra, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 5
+      Else
+         DIALOG d_potion_barrel 5
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF  
+ON=52
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 5
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.emblaze> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.emblaze = <EVAL (<TAG.emblaze>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_potion_emblaze, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 5
+      Else
+         DIALOG d_potion_barrel 5
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF  
+ON=53
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 5
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.hope> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.hope = <EVAL (<TAG.hope>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_potion_hope, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 5
+      Else
+         DIALOG d_potion_barrel 5
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF  
+ON=54
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 5
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.softpurple> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.softpurple = <EVAL (<TAG.softpurple>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_softperp_dye, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 5
+      Else
+         DIALOG d_potion_barrel 5
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF  
+ON=55
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 5
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.green> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.green = <EVAL (<TAG.green>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_green_dye, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 5
+      Else
+         DIALOG d_potion_barrel 5
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF  
+ON=56
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 5
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.softgreen> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.softgreen = <EVAL (<TAG.softgreen>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_softgreen_dye, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 5
+      Else
+         DIALOG d_potion_barrel 5
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF  
+ON=57
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 5
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.pitchblack> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.pitchblack = <EVAL (<TAG.pitchblack>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_black_dye, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 5
+      Else
+         DIALOG d_potion_barrel 5
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF  
+ON=58
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 5
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.softblue> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.softblue = <EVAL (<TAG.softblue>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_softblue_dye, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 5
+      Else
+         DIALOG d_potion_barrel 5
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF  
+ON=59
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 5
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.blue> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.blue = <EVAL (<TAG.blue>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_blue_dye, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 5
+      Else
+         DIALOG d_potion_barrel 5
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=61
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 6
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.passionpurple> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.passionpurple = <EVAL (<TAG.passionpurple>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_passionpurp_dye, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 6
+      Else
+         Dialog d_dispel
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF  
+ON=62
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 6
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.bronze> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.bronze = <EVAL (<TAG.bronze>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_bronze_dye, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 6
+      Else
+         DIALOG d_potion_barrel 6
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF  
+ON=63
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 6
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.purple> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.purple = <EVAL (<TAG.purple>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_purple_dye, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 6
+      Else
+         DIALOG d_potion_barrel 6
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF  
+ON=64
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 6
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.purewhite> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.purewhite = <EVAL (<TAG.purewhite>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_pwhite_dye, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 6
+      Else
+         DIALOG d_potion_barrel 6
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF  
+ON=65
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 6
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.strongpink> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.strongpink = <EVAL (<TAG.strongpink>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_hardpink_dye, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 6
+      Else
+         DIALOG d_potion_barrel 6
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF  
+ON=66
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 6
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.swamp> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.swamp = <EVAL (<TAG.swamp>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_swamp_dye, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 6
+      Else
+         DIALOG d_potion_barrel 6
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF  
+ON=67
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 6
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.white> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.white = <EVAL (<TAG.white>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_white_dye, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 6
+      Else
+         DIALOG d_potion_barrel 6
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF  
+ON=68
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 6
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.passionpink> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.passionpink = <EVAL (<TAG.passionpink>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_softpink_dye, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 6
+      Else
+         DIALOG d_potion_barrel 6
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF  
+ON=69
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 6
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.fog> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.fog = <EVAL (<TAG.fog>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_fog_dye, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 6
+      Else
+         DIALOG d_potion_barrel 6
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF  
+ON=71
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 7
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.darkbronze> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.darkbronze = <EVAL (<TAG.darkbronze>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_dkbrown_dye, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 7
+      Else
+         DIALOG d_potion_barrel 7
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=72
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 7
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.angel> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.angel = <EVAL (<TAG.angel>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_angel_dye, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 7
+      Else
+         DIALOG d_potion_barrel 7
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF  
+ON=73
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 7
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.fire> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.fire = <EVAL (<TAG.fire>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_fire_dye, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 7
+      Else
+         DIALOG d_potion_barrel 7
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF  
+ON=74
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 7
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.cardinal> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.cardinal = <EVAL (<TAG.cardinal>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_cardinal_dye, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 7
+      Else
+         DIALOG d_potion_barrel 7
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF  
+ON=75
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 7
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.iceblue> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.iceblue = <EVAL (<TAG.iceblue>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_ice_dye, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 7
+      Else
+         DIALOG d_potion_barrel 7
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF  
+ON=76
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 7
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.black> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.black = <EVAL (<TAG.black>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_rblack_dye, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 7
+      Else
+         DIALOG d_potion_barrel 7
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF 
+ON=77
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 7
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.rain> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.rain = <EVAL (<TAG.rain>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_rain_dye, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 7
+      Else
+         DIALOG d_potion_barrel 7
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF 
+ON=78
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 7
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.sunset> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.sunset = <EVAL (<TAG.sunset>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_sunset_dye, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 7
+      Else
+         DIALOG d_potion_barrel 7
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF 
+ON=79
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 7
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.mellowyellow> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.mellowyellow = <EVAL (<TAG.mellowyellow>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_mellowyellow_dye, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 7
+      Else
+         DIALOG d_potion_barrel 7
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=81
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 8
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.forest> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.forest = <EVAL (<TAG.forest>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_forest_dye, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 8
+      Else
+         DIALOG d_potion_barrel 8
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF 
+ON=82
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 8
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.peppermint> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.peppermint = <EVAL (<TAG.peppermint>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_peppermint_dye, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 8
+      Else
+         DIALOG d_potion_barrel 8
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF 
+ON=83
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 8
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.silkenpurple> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.silkenpurple = <EVAL (<TAG.silkenpurple>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_silkenpurple_dye, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 8
+      Else
+         DIALOG d_potion_barrel 8
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF    
+ON=84
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 8
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.cerulean> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.cerulean = <EVAL (<TAG.cerulean>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_cerulean_dye, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 8
+      Else
+         DIALOG d_potion_barrel 8
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=85
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 8
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.dread> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.dread = <EVAL (<TAG.dread>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_dread_dye, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 8
+      Else
+         DIALOG d_potion_barrel 8
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=86
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 8
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.deepseablue> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.deepseablue = <EVAL (<TAG.deepseablue>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_deepseablue_dye, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 8
+      Else
+         DIALOG d_potion_barrel 8
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=87
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 8
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.phantom> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.phantom = <EVAL (<TAG.phantom>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_phantom_dye, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 8
+      Else
+         DIALOG d_potion_barrel 8
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=88
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 8
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.spectre> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.spectre = <EVAL (<TAG.spectre>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_spectre_dye, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 8
+      Else
+         DIALOG d_potion_barrel 8
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF  
+ON=89
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 8
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.electricblue> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.electricblue = <EVAL (<TAG.electricblue>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_electricblue_dye, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 8
+      Else
+         DIALOG d_potion_barrel 8
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF 
+ON=91
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 9
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.purplerain> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.purplerain = <EVAL (<TAG.purplerain>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_purplerain_dye, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 9
+      Else
+         DIALOG d_potion_barrel 9
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF        
+ON=92
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 9
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.frozenblue> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.frozenblue = <EVAL (<TAG.frozenblue>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_frozenblue_sye, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 9
+      Else
+         DIALOG d_potion_barrel 9
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF 
+ON=93
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 9
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.citrus> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.citrus = <EVAL (<TAG.citrus>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_citrus_dye, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 9
+      Else
+         DIALOG d_potion_barrel 9
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF  
+ON=94
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 9
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.classicpassionpink> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.classicpassionpink = <EVAL (<TAG.classicpassionpink>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_classicpassionpink_dye, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 9
+      Else
+         DIALOG d_potion_barrel 9
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF 
+ON=95
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 9
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.classicstrongpink> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.classicstrongpink = <EVAL (<TAG.classicstrongpink>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_strongpink_dye, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 9
+      Else
+         DIALOG d_potion_barrel 9
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=96
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 9
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.classicfire> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.classicfire = <EVAL (<TAG.classicfire>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_classicfire_dye, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 9
+      Else
+         DIALOG d_potion_barrel 9
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=97
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 9
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.heavenlywhite> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.heavenlywhite = <EVAL (<TAG.heavenlywhite>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_heavenlywhite_dye, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 9
+      Else
+         DIALOG d_potion_barrel 9
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=98
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 9
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.vorpal> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.vorpal = <EVAL (<TAG.vorpal>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_vorpal_dye, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 9
+      Else
+         DIALOG d_potion_barrel 9
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=99
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_potion_barrel 9
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.bottle> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.bottle = <EVAL (<TAG.bottle>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_bottle_empty, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_potion_barrel 9
+      Else
+         DIALOG d_potion_barrel 9
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+
+ON=100
+   TARGET Target the items you wish to place inside the rack.
+   DIALOG d_potion_barrel 1
+
+ON = 101
+   DIALOG d_set_extract
+   
+   
+[FUNCTION ADDTOBARREL]
+If (<SRC.TARG.BASEID>==i_potion_cureless)
+     TAG.lcpoison = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.lcpoison>)>
+ElseIf (<SRC.TARG.BASEID>==i_potion_nightsight)
+     TAG.nightsight = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.nightsight>)>
+ElseIf (<SRC.TARG.BASEID>==i_potion_refreshless)
+     TAG.lrefresh = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.lrefresh>)>
+ElseIf (<SRC.TARG.BASEID>==i_potion_healless)
+     TAG.lheal = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.lheal>)>
+ElseIf (<SRC.TARG.BASEID>==i_potion_empowerless)
+     TAG.lempower = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.lempower>)>
+ElseIf (<SRC.TARG.BASEID>==i_potion_explosionless)
+     TAG.lexplosion = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.lexplosion>)>
+ElseIf (<SRC.TARG.BASEID>==i_potion_agilityless)
+     TAG.lagility = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.lagility>)>
+ElseIf (<SRC.TARG.BASEID>==i_potion_strengthless)
+     TAG.lstrength = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.lstrength>)>
+ElseIf (<SRC.TARG.BASEID>==i_potion_clevernessless)
+     TAG.lcleverness = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.lcleverness>)>
+ElseIf (<SRC.TARG.BASEID>==i_potion_refresh)
+     TAG.refresh = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.refresh>)>
+ElseIf (<SRC.TARG.BASEID>==i_potion_heal)
+     TAG.heal = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.heal>)>
+ElseIf (<SRC.TARG.BASEID>==i_potion_explosion)
+     TAG.explosion = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.explosion>)>
+ElseIf (<SRC.TARG.BASEID>==i_potion_cure)
+     TAG.cpoison = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.cpoison>)>
+ElseIf (<SRC.TARG.BASEID>==i_potion_agility)
+     TAG.agility = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.agility>)>
+ElseIf (<SRC.TARG.BASEID>==i_potion_permanenceless)
+     TAG.lperm = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.lperm>)>
+ElseIf (<SRC.TARG.BASEID>==i_potion_stoneskin)
+     TAG.stonesink = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.stoneskin>)>
+ElseIf (<SRC.TARG.BASEID>==i_potion_strength)
+     TAG.strength = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.strength>)>
+ElseIf (<SRC.TARG.BASEID>==i_potion_manaless)
+     TAG.lmana = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.lmana>)>
+ElseIf (<SRC.TARG.BASEID>==i_potion_empower)
+     TAG.empower = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.empower>)>
+ElseIf (<SRC.TARG.BASEID>==i_potion_cleverness)
+     TAG.cleverness = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.cleverness>)>
+ElseIf (<SRC.TARG.BASEID>==i_potion_permanence)
+     TAG.perm = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.perm>)>
+ElseIf (<SRC.TARG.BASEID>==i_potion_curegreat)
+     TAG.gcpoison = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.gcpoison>)>
+ElseIf (<SRC.TARG.BASEID>==i_potion_refreshgreat)
+     TAG.grefresh = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.grefresh>)>
+ElseIf (<SRC.TARG.BASEID>==i_potion_agilitygreat)
+     TAG.gagility = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.gagility>)>
+ElseIf (<SRC.TARG.BASEID>==i_potion_explosiongreat)
+     TAG.gexplosion = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.gexplosion>)>
+ElseIf (<SRC.TARG.BASEID>==i_potion_strengthgreat)
+     TAG.gstrength = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.gstrength>)>
+ElseIf (<SRC.TARG.BASEID>==i_potion_steelskin)
+     TAG.steelskin = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.steelskin>)>
+ElseIf (<SRC.TARG.BASEID>==i_potion_mana)
+     TAG.mana = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.mana>)>
+ElseIf (<SRC.TARG.BASEID>==i_potion_healgreat)
+     TAG.gheal = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.gheal>)>
+ElseIf (<SRC.TARG.BASEID>==i_potion_clevernessgreat)
+     TAG.gcleverness = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.gcleverness>)>
+ElseIf (<SRC.TARG.BASEID>==i_potion_permanencegreat)
+     TAG.gperm = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.gperm>)>
+ElseIf (<SRC.TARG.BASEID>==i_potion_empowergreat)
+     TAG.gempower = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.gempower>)>
+ElseIf (<SRC.TARG.BASEID>==i_potion_invisibility)
+     TAG.translucency = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.translucency>)>
+ElseIf (<SRC.TARG.BASEID>==i_potion_shrink)
+     TAG.shrink = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.shrink>)>
+ElseIf (<SRC.TARG.BASEID>==i_potion_managreat)
+     TAG.gmana = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.gmana>)>
+ElseIf (<SRC.TARG.BASEID>==i_potion_shrinkgreat)
+     TAG.gshrink = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.gshrink>)>
+ElseIf (<SRC.TARG.BASEID>==i_potion_ra)
+     TAG.spiritarmor = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.spiritarmor>)>
+ElseIf (<SRC.TARG.BASEID>==i_potion_emblaze)
+     TAG.emblaze = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.emblaze>)>
+ElseIf (<SRC.TARG.BASEID>==i_potion_hope)
+     TAG.hope = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.hope>)>
+
+ElseIf (<SRC.TARG.BASEID>==i_softperp_dye)
+     TAG.softpurple = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.softpurple>)>
+ElseIf (<SRC.TARG.BASEID>==i_green_dye)
+     TAG.green = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.green>)>
+ElseIf (<SRC.TARG.BASEID>==i_softgreen_dye)
+     TAG.softgreen = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.softgreen>)>
+ElseIf (<SRC.TARG.BASEID>==i_black_dye)
+     TAG.pitchblack = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.pitchblack>)>
+ElseIf (<SRC.TARG.BASEID>==i_softblue_dye)
+     TAG.softblue = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.softblue>)>
+ElseIf (<SRC.TARG.BASEID>==i_blue_dye)
+     TAG.blue = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.blue>)>
+ElseIf (<SRC.TARG.BASEID>==i_passionpurp_dye)
+     TAG.passionpurple = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.passionpurple>)>
+ElseIf (<SRC.TARG.BASEID>==i_bronze_dye)
+     TAG.bronze = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.bronze>)>
+ElseIf (<SRC.TARG.BASEID>==i_purple_dye)
+     TAG.purple = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.purple>)>
+ElseIf (<SRC.TARG.BASEID>==i_pwhite_dye)
+     TAG.purewhite = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.purewhite>)>
+ElseIf (<SRC.TARG.BASEID>==i_hardpink_dye)
+     TAG.strongpink = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.strongpink>)>
+ElseIf (<SRC.TARG.BASEID>==i_swamp_dye)
+     TAG.swamp = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.swamp>)>
+ElseIf (<SRC.TARG.BASEID>==i_white_dye)
+     TAG.white = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.white>)>
+ElseIf (<SRC.TARG.BASEID>==i_softpink_dye)
+     TAG.passionpink = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.passionpink>)>
+ElseIf (<SRC.TARG.BASEID>==i_fog_dye)
+     TAG.fog = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.fog>)>
+ElseIf (<SRC.TARG.BASEID>==i_dkbronze_dye)
+     TAG.darkbronze = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.darkbronze>)>
+ElseIf (<SRC.TARG.BASEID>==i_angel_dye)
+     TAG.angel = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.angel>)>
+ElseIf (<SRC.TARG.BASEID>==i_fire_dye)
+     TAG.fire = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.fire>)>
+ElseIf (<SRC.TARG.BASEID>==i_cardinal_dye)
+     TAG.cardinal = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.cardinal>)>
+ElseIf (<SRC.TARG.BASEID>==i_ice_dye)
+     TAG.ice = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.ice>)>
+ElseIf (<SRC.TARG.BASEID>==i_rblack_dye)
+     TAG.black = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.black>)>
+ElseIf (<SRC.TARG.BASEID>==i_rain_dye)
+     TAG.rain = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.rain>)>
+ElseIf (<SRC.TARG.BASEID>==i_sunset_dye)
+     TAG.sunset = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.sunset>)>
+ElseIf (<SRC.TARG.BASEID>==i_mellowyellow_dye)
+     TAG.mellowyellow = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.mellowyellow>)>
+ElseIf (<SRC.TARG.BASEID>==i_forest_dye)
+     TAG.forest = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.forest>)>
+ElseIf (<SRC.TARG.BASEID>==i_peppermint_dye)
+     TAG.peppermint = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.peppermint>)>
+ElseIf (<SRC.TARG.BASEID>==i_silkenpurple_dye)
+     TAG.silkenpurple = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.silkenpurple>)>
+ElseIf (<SRC.TARG.BASEID>==i_cerulean_dye)
+     TAG.cerulean = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.cerulean>)>
+ElseIf (<SRC.TARG.BASEID>==i_dread_dye)
+     TAG.dread = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.dread>)>
+ElseIf (<SRC.TARG.BASEID>==i_deepseablue_dye)
+     TAG.deepseablue = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.deepseablue>)>
+ElseIf (<SRC.TARG.BASEID>==i_purplerain_dye)
+     TAG.purplerain = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.purplerain>)>
+ElseIf (<SRC.TARG.BASEID>==i_frozenblue_dye)
+     TAG.frozenblue = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.frozenblue>)>
+ElseIf (<SRC.TARG.BASEID>==i_citrus_dye)
+     TAG.citrus = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.citrus>)>
+ElseIf (<SRC.TARG.BASEID>==i_classicpassionpink_dye)
+     TAG.classicpassionpink = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.classicpassionpink>)>
+ElseIf (<SRC.TARG.BASEID>==i_strongpink_dye)
+     TAG.classicstrongpink = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.classicstrongpink>)>
+ElseIf (<SRC.TARG.BASEID>==i_classicfire_dye)
+     TAG.classicfire = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.classicfire>)>
+ElseIf (<SRC.TARG.BASEID>==i_heavenlywhite_dye)
+     TAG.heavenlywhite = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.heavenlywhite>)>
+ElseIf (<SRC.TARG.BASEID>==i_vorpal_dye)
+     TAG.vorpal = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.vorpal>)>
+ElseIf (<SRC.TARG.BASEID>==i_bottle_empty)
+     TAG.bottle = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.bottle>)>
+Else
+    Src.Sysmessage That doesn't look like a valid item.
+    RETURN 1
+EndIf
+SRC.TARG.REMOVE
+RETURN 1
+
+[DIALOG d_set_extract]
+0,0
+page 0
+gumppic   20  20 35
+dtext 34 35 0 Default
+dtext 34 50 0 Extract
+dtext 34 65 0 Amount
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_set_extract TEXT]
+<EVAL <TAG.DEFAULT_EXTRACT>>
+
+[DIALOG d_set_extract BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   IF ( <EVAL <ARGTXT[1]>> > 0 ) && (<EVAL <ARGTXT[1]>> < 1000)
+      TAG.DEFAULT_EXTRACT = <EVAL <ARGTXT[1]>>
+      SRC.SYSMESSAGE You have set the default extract value to <EVAL <TAG.DEFAULT_EXTRACT>>
+   ELSE
+      TAG.DEFAULT_EXTRACT =
+      SRC.SYSMESSAGE You have chosen to clear the default value.
+   ENDIF
+   DIALOG d_potion_barrel 1
+   
+   
+   
+   
+[TYPEDEF t_log_crate]
+ON=@DCLICK
+   IF ( (<LINK> == 04fffffff) || (<LINK.TYPE> != t_multi) || (<SRC.ISGM>) )
+      //Don't check trusts because we're not linked to a house
+   ELSE
+      IF ( <LINK.SRCHOUSE_owner> )
+      ELSEIF ( <LINK.SRCHOUSE_friend> ) 
+        IF !( <ATTR> & attr_blessed )
+           SRC.SYSMESSAGE You are not trusted enough to use this crate.
+           RETURN 1
+        ENDIF
+      ELSE
+        SRC.SYSMESSAGE You are not trusted enough to use this crate.
+        RETURN 1
+      ENDIF
+   ENDIF
+
+   IF ( <DISTANCE> > 3 )
+      SRC.SYSMESSAGE You are too far away.
+   Else
+      DIALOG d_log_crate
+   EndIf
+   RETURN 1    
+
+ON=@TARGON_ITEM//requires that both the regs and the crate are in the pack.
+   If ( !(<DISTANCE> > 3) && (<SRC.TARG.CONT>==<SRC.FINDLAYER.21.UID>) )  
+      ADDTOCRATELOGS     
+   Else
+      SRC.SYSMESSAGE You must have the item in your pack and be near the crate.
+   EndIf
+   RETURN 1
+
+ON=@DropOn_Self
+   If ( !(<DISTANCE> > 3) )  
+If (<ARGO.BASEID>==i_nails_iron)
+     TAG.nails = <EVAL (<ARGO.AMOUNT>+0<TAG.nails>)>
+ElseIf (<ARGO.BASEID>==i_hatchet)
+     TAG.hatchet = <EVAL (<ARGO.AMOUNT>+0<TAG.hatchet>)>
+ElseIf (<ARGO.BASEID>==i_saw)
+     TAG.saw = <EVAL (<ARGO.AMOUNT>+0<TAG.saw>)>
+ElseIf (<ARGO.BASEID>==i_log_pine)
+     TAG.pine = <EVAL (<ARGO.AMOUNT>+0<TAG.pine>)>
+ElseIf (<ARGO.BASEID>==i_log_eucalyptus)
+     TAG.eucalyptus = <EVAL (<ARGO.AMOUNT>+0<TAG.eucalyptus>)>
+ElseIf (<ARGO.BASEID>==i_log_rose)
+     TAG.rose = <EVAL (<ARGO.AMOUNT>+0<TAG.rose>)>
+ElseIf (<ARGO.BASEID>==i_log_holly)
+     TAG.holly = <EVAL (<ARGO.AMOUNT>+0<TAG.holly>)>
+ElseIf (<ARGO.BASEID>==i_log_ironwood)
+     TAG.ironwood = <EVAL (<ARGO.AMOUNT>+0<TAG.ironwood>)>
+ElseIf (<ARGO.BASEID>==i_log_oak)
+     TAG.oak = <EVAL (<ARGO.AMOUNT>+0<TAG.oak>)>
+ElseIf (<ARGO.BASEID>==i_log_interleaved)
+     TAG.interleaved = <EVAL (<ARGO.AMOUNT>+0<TAG.interleaved>)>
+ElseIf (<ARGO.BASEID>==i_log_mahogany)
+     TAG.mahogany = <EVAL (<ARGO.AMOUNT>+0<TAG.mahogany>)>
+ElseIf (<ARGO.BASEID>==i_log_cherry)
+     TAG.cherry = <EVAL (<ARGO.AMOUNT>+0<TAG.cherry>)>
+ElseIf (<ARGO.BASEID>==i_log_composite)
+     TAG.compo = <EVAL (<ARGO.AMOUNT>+0<TAG.compo>)>
+ElseIf (<ARGO.BASEID>==i_imbued_cherry)
+     TAG.imbued = <EVAL (<ARGO.AMOUNT>+0<TAG.imbued>)>
+ElseIf (<ARGO.BASEID>==i_log_myst)
+     TAG.myst = <EVAL (<ARGO.AMOUNT>+0<TAG.myst>)>
+Else
+    Src.Sysmessage That doesn't look like a valid item.
+    RETURN 1
+EndIf
+ARGO.REMOVE
+RETURN 1
+
+
+[ITEMDEF i_log_crate]
+NAME  =Lumberjacks Crate
+ID    =i_crate_md
+TYPE  =t_log_crate
+WEIGHT=90
+SKILLMAKE=CARPENTRY 65.0, t_carpentry
+RESOURCES=30 i_log_pine, 10 i_nails_iron
+CATEGORY=Items by Professions
+SUBSECTION=Lumberjack
+DUPELIST=0e3f, i_crate_lg, 0e3d, i_crate_small, 0e7e
+
+ON=@CREATE
+COLOR=00
+
+
+[DIALOG d_log_crate]
+
+0,0
+page 0
+gumppic  186 266 5154//5154 is the middle picture
+gumppic  46  266 5154
+gumppic  46  156 5154
+gumppic  186 156 5154
+gumppic  186 46  5154
+gumppic  46  46  5154
+//tilepic  47  47  8312
+gumppic  81  46  5154//middle picture to cut the arrows borders
+gumppic  46  91  5154//middle pitcure to cut the arrows borders
+gumppic  10  10  5150//top left border
+gumppic  336 10  5152//top right border
+gumppic  186 10  5151//middle top border
+gumppic  30  10  5151
+gumppic  10  376 5156//bottom right border
+gumppic  336 376 5158//bottom right border
+gumppic  30  376 5157//middle bottom border
+gumppic  186 376 5157
+gumppic  10  46  5153//5153 is the left border
+gumppic  336 46  5155//the right border
+gumppic  10  156 5153
+gumppic  336 156 5155
+gumppic  10  266 5153
+gumppic  336 266 5155
+
+//headings
+dtext    170 60  255 Amount
+dtext    270 60  255 Extract
+button   255 80 2104 2103 1 0 101
+dtext    270 75  255 ( <EVAL <TAG.DEFAULT_EXTRACT>> )
+
+//Add Scrolls Button
+dtext    246 356 255 Add Items
+button   332 358  55  55  1  0 100
+
+//Page heading
+dtext    40  340 255  Page:
+
+//Page buttons
+dtext    75  355 255   Previous
+button   60  360 2104 2103 0 1  1
+
+dtext    165  355 255   Next
+button   200 360 2104 2103 0 2  2
+
+
+
+page 1
+
+dtext    40  110 255 Pine
+dtext    190 110 255 <EVAL 0<TAG.pine>>
+button   285 112 1210 1209 1 0 11
+
+dtext    40  135 255 Eucalyptus
+dtext    190 135 255 <EVAL 0<TAG.eucalyptus>>
+button   285 137 1210 1209 1 0 12
+
+dtext    40  160 255 Rose
+dtext    190 160 255 <EVAL 0<TAG.rose>>
+button   285 162 1210 1209 1 0 13
+
+dtext    40  185 255 Holly
+dtext    190 185 255 <EVAL 0<TAG.holly>>
+button   285 187 1210 1209 1 0 14
+
+dtext    40  210 255 Oak
+dtext    190 210 255 <EVAL 0<TAG.oak>>
+button   285 212 1210 1209 1 0 15
+
+dtext    40  235 255 Ironwood
+dtext    190 235 255 <EVAL 0<TAG.ironwood>>
+button   285 237 1210 1209 1 0 16
+
+dtext    40  260 255 Interleaved
+dtext    190 260 255 <EVAL 0<TAG.interleaved>>
+button   285 262 1210 1209 1 0 17
+
+dtext    40  285 255 Mahogany
+dtext    190 285 255 <EVAL 0<TAG.mahogany>>
+button   285 287 1210 1209 1 0 18
+
+page 2
+
+dtext    40  110 255 Cherry
+dtext    190 110 255 <EVAL 0<TAG.cherry>>
+button   285 112 1210 1209 1 0 21
+
+dtext    40  135 255 Composite
+dtext    190 135 255 <EVAL 0<TAG.compo>>
+button   285 137 1210 1209 1 0 22
+
+dtext    40  160 255 Imbued Cherry
+dtext    190 160 255 <EVAL 0<TAG.imbued>>
+button   285 162 1210 1209 1 0 23
+
+dtext    40  185 255 Myst
+dtext    190 185 255 <EVAL 0<TAG.myst>>
+button   285 187 1210 1209 1 0 24
+
+dtext    40  210 255 Saw
+dtext    190 210 255 <EVAL 0<TAG.saw>>
+button   285 212 1210 1209 1 0 25
+
+dtext    40  235 255 Hatchet
+dtext    190 235 255 <EVAL 0<TAG.hatchet>>
+button   285 237 1210 1209 1 0 26
+
+dtext    40  260 255 Iron Nails
+dtext    190 260 255 <EVAL 0<TAG.nails>>
+button   285 262 1210 1209 1 0 27
+
+
+
+
+[DIALOG d_log_crate BUTTON]
+ON=0
+
+ON=11
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_log_crate 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.pine> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.pine = <EVAL (<TAG.pine>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_log_pine, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_log_crate 1
+      Else
+         DIALOG d_log_crate 1
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=12
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_log_crate 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.eucalyptus> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.eucalyptus = <EVAL (<TAG.eucalyptus>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_log_eucalyptus, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_log_crate 1
+      Else
+      DIALOG d_log_crate 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=13
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_log_crate 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.rose> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.rose = <EVAL (<TAG.rose>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_log_rose, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_log_crate 1
+      Else
+      DIALOG d_log_crate 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=14
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_log_crate 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.holly> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.holly = <EVAL (<TAG.holly>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_log_holly, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_log_crate 1
+      Else
+      DIALOG d_log_crate 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=15
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_log_crate 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.oak> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.oak = <EVAL (<TAG.oak>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_log_oak, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_log_crate 1
+      Else
+      DIALOG d_log_crate 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=16
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_log_crate 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.ironwood> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.ironwood = <EVAL (<TAG.ironwood>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_log_ironwood, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_log_crate 1
+      Else
+      DIALOG d_log_crate 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF   
+ON=17
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_log_crate 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.interleaved> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.interleaved = <EVAL (<TAG.interleaved>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_log_interleaved, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_log_crate 1
+      Else
+      DIALOG d_log_crate 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF  
+ON=18
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_log_crate 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.mahogany> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.mahogany = <EVAL (<TAG.mahogany>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_log_mahogany, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_log_crate 1
+      Else
+      DIALOG d_log_crate 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+
+ON=21
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_log_crate 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.cherry> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.cherry = <EVAL (<TAG.cherry>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_log_cherry, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_log_crate 2
+      Else
+      DIALOG d_log_crate 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=22
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_log_crate 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.compo> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.compo = <EVAL (<TAG.compo>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_log_composite, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_log_crate 2
+      Else
+      DIALOG d_log_crate 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=23
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_log_crate 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.imbued> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.imbued = <EVAL (<TAG.imbued>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_imbued_cherry, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_log_crate 2
+      Else
+      DIALOG d_log_crate 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=24
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_log_crate 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.myst> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.myst = <EVAL (<TAG.myst>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_log_myst, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_log_crate 2
+      Else
+      DIALOG d_log_crate 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=25
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_log_crate 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.saw> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.saw = <EVAL (<TAG.saw>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_saw, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_log_crate 2
+      Else
+      DIALOG d_log_crate 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=26
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_log_crate 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.hatchet> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.hatchet = <EVAL (<TAG.hatchet>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_hatchet, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_log_crate 2
+      Else
+      DIALOG d_log_crate 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=27
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_log_crate 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.nails> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.nails = <EVAL (<TAG.nails>-<TAG.DEFAULT_EXTRACT>)>
+		 FOR <EVAL <TAG.DEFAULT_EXTRACT>>
+			SERV.NEWITEM i_nails_iron, 1, <SRC.FINDLAYER.21.UID>
+		 ENDFOR
+         DIALOG d_log_crate 2
+      Else
+      DIALOG d_log_crate 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+
+
+ON=100
+   TARGET Target the items you wish to place inside the chest.
+   DIALOG d_log_crate 1
+
+ON = 101
+   DIALOG d_log_extract
+   
+   
+[FUNCTION ADDTOCRATELOGS]
+If (<SRC.TARG.BASEID>==i_nails_iron)
+     TAG.nails = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.nails>)>
+ElseIf (<SRC.TARG.BASEID>==i_hatchet)
+     TAG.hatchet = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.hatchet>)>
+ElseIf (<SRC.TARG.BASEID>==i_saw)
+     TAG.saw = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.saw>)>
+ElseIf (<SRC.TARG.BASEID>==i_log_pine)
+     TAG.pine = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.pine>)>
+ElseIf (<SRC.TARG.BASEID>==i_log_eucalyptus)
+     TAG.eucalyptus = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.eucalyptus>)>
+ElseIf (<SRC.TARG.BASEID>==i_log_rose)
+     TAG.rose = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.rose>)>
+ElseIf (<SRC.TARG.BASEID>==i_log_holly)
+     TAG.holly = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.holly>)>
+ElseIf (<SRC.TARG.BASEID>==i_log_ironwood)
+     TAG.ironwood = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.ironwood>)>
+ElseIf (<SRC.TARG.BASEID>==i_log_oak)
+     TAG.oak = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.oak>)>
+ElseIf (<SRC.TARG.BASEID>==i_log_interleaved)
+     TAG.interleaved = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.interleaved>)>
+ElseIf (<SRC.TARG.BASEID>==i_log_mahogany)
+     TAG.mahogany = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.mahogany>)>
+ElseIf (<SRC.TARG.BASEID>==i_log_cherry)
+     TAG.cherry = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.cherry>)>
+ElseIf (<SRC.TARG.BASEID>==i_log_composite)
+     TAG.compo = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.compo>)>
+ElseIf (<SRC.TARG.BASEID>==i_imbued_cherry)
+     TAG.imbued = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.imbued>)>
+ElseIf (<SRC.TARG.BASEID>==i_log_myst)
+     TAG.myst = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.myst>)>
+Else
+    Src.Sysmessage That doesn't look like a valid item.
+    RETURN 1
+EndIf
+SRC.TARG.REMOVE
+RETURN 1
+
+[DIALOG d_log_extract]
+0,0
+page 0
+gumppic   20  20 35
+dtext 34 35 0 Default
+dtext 34 50 0 Extract
+dtext 34 65 0 Amount
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_log_extract TEXT]
+<EVAL <TAG.DEFAULT_EXTRACT>>
+
+[DIALOG d_log_extract BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   IF ( <EVAL <ARGTXT[1]>> > 0 ) && (<EVAL <ARGTXT[1]>> < 1000)
+      TAG.DEFAULT_EXTRACT = <EVAL <ARGTXT[1]>>
+      SRC.SYSMESSAGE You have set the default extract value to <EVAL <TAG.DEFAULT_EXTRACT>>
+   ELSE
+      TAG.DEFAULT_EXTRACT =
+      SRC.SYSMESSAGE You have chosen to clear the default value.
+   ENDIF
+   DIALOG d_log_crate 1
+   
+
+  
+  
+  
+//---------------------------------------------------------------
+//By: Charm, alteration of Raists scribe table.
+//---------------------------------------------------------------
+
+
+[TYPEDEF t_ingot_chest]
+ON=@DCLICK
+   IF ( (<LINK> == 04fffffff) || (<LINK.TYPE> != t_multi) || (<SRC.ISGM>) )
+      //Don't check trusts because we're not linked to a house
+   ELSE
+      IF ( <LINK.SRCHOUSE_owner> )
+      ELSEIF ( <LINK.SRCHOUSE_friend> ) 
+        IF !( <ATTR> & attr_blessed )
+           SRC.SYSMESSAGE You are not trusted enough to use this chest.
+           RETURN 1
+        ENDIF
+      ELSE
+        SRC.SYSMESSAGE You are not trusted enough to use this chest.
+        RETURN 1
+      ENDIF
+   ENDIF
+
+   IF ( <DISTANCE> > 3 )
+      SRC.SYSMESSAGE You are too far away.
+   Else
+      DIALOG d_ingot_chest
+   EndIf
+   RETURN 1    
+
+ON=@TARGON_ITEM//requires that both the regs and the chest are in the pack.
+   If ( !(<DISTANCE> > 3) && (<SRC.TARG.CONT>==<SRC.FINDLAYER.21.UID>) )  
+      ADDTOCHESTINGOTS     
+   Else
+      SRC.SYSMESSAGE You must have the item in your pack and be near the chest.
+   EndIf
+   RETURN 1
+
+ON=@DropOn_Self
+   If ( !(<DISTANCE> > 3) )  
+If (<ARGO.BASEID>==i_ingot_copper)
+     TAG.copper = <EVAL (<ARGO.AMOUNT>+0<TAG.copper>)>
+ElseIf (<ARGO.BASEID>==i_coal)
+     TAG.coal = <EVAL (<ARGO.AMOUNT>+0<TAG.coal>)>
+ElseIf (<ARGO.BASEID>==i_ingot_iron)
+     TAG.iron = <EVAL (<ARGO.AMOUNT>+0<TAG.iron>)>
+ElseIf (<ARGO.BASEID>==i_ingot_tin)
+     TAG.tin = <EVAL (<ARGO.AMOUNT>+0<TAG.tin>)>
+ElseIf (<ARGO.BASEID>==i_ingot_bronze)
+     TAG.bronze = <EVAL (<ARGO.AMOUNT>+0<TAG.bronze>)>
+ElseIf (<ARGO.BASEID>==i_ingot_steel)
+     TAG.steel = <EVAL (<ARGO.AMOUNT>+0<TAG.steel>)>
+ElseIf (<ARGO.BASEID>==i_ingot_ferrum)
+     TAG.ferrum = <EVAL (<ARGO.AMOUNT>+0<TAG.ferrum>)>
+ElseIf (<ARGO.BASEID>==i_ingot_silver)
+     TAG.silver = <EVAL (<ARGO.AMOUNT>+0<TAG.silver>)>
+ElseIf (<ARGO.BASEID>==i_ingot_gold)
+     TAG.gold = <EVAL (<ARGO.AMOUNT>+0<TAG.gold>)>
+ElseIf (<ARGO.BASEID>==i_ingot_chrome)
+     TAG.chrome = <EVAL (<ARGO.AMOUNT>+0<TAG.chrome>)>
+ElseIf (<ARGO.BASEID>==i_ingot_titanium)
+     TAG.titanium = <EVAL (<ARGO.AMOUNT>+0<TAG.titanium>)>
+ElseIf (<ARGO.BASEID>==i_ingot_terathane)
+     TAG.terathane = <EVAL (<ARGO.AMOUNT>+0<TAG.terathane>)>
+ElseIf (<ARGO.BASEID>==i_ingot_shadow)
+     TAG.shadow = <EVAL (<ARGO.AMOUNT>+0<TAG.shadow>)>
+ElseIf (<ARGO.BASEID>==i_ingot_agapite)
+     TAG.agapite = <EVAL (<ARGO.AMOUNT>+0<TAG.agapite>)>
+ElseIf (<ARGO.BASEID>==i_ingot_valorite)
+     TAG.valorite = <EVAL (<ARGO.AMOUNT>+0<TAG.valorite>)>
+ElseIf (<ARGO.BASEID>==i_ingot_verite)
+     TAG.verite = <EVAL (<ARGO.AMOUNT>+0<TAG.verite>)>
+ElseIf (<ARGO.BASEID>==i_ingot_verminard)
+     TAG.verminard = <EVAL (<ARGO.AMOUNT>+0<TAG.verminard>)>
+ElseIf (<ARGO.BASEID>==i_ingot_stronghold)
+     TAG.stronghold = <EVAL (<ARGO.AMOUNT>+0<TAG.stronghold>)>
+ElseIf (<ARGO.BASEID>==i_ingot_adamantine)
+     TAG.adamantine = <EVAL (<ARGO.AMOUNT>+0<TAG.adamantine>)>
+ElseIf (<ARGO.BASEID>==i_ingot_skargard)
+     TAG.skargard = <EVAL (<ARGO.AMOUNT>+0<TAG.skargard>)>
+ElseIf (<ARGO.BASEID>==i_ingot_entit)
+     TAG.et = <EVAL (<ARGO.AMOUNT>+0<TAG.et>)>
+ElseIf (<ARGO.BASEID>==i_ingot_mytheril)
+     TAG.mytheril = <EVAL (<ARGO.AMOUNT>+0<TAG.mytheril>)>
+ElseIf (<ARGO.BASEID>==i_ingot_blackrock)
+     TAG.blackrock = <EVAL (<ARGO.AMOUNT>+0<TAG.blackrock>)>
+ElseIf (<ARGO.BASEID>==i_ingot_bloodrock)
+     TAG.bloodrock = <EVAL (<ARGO.AMOUNT>+0<TAG.bloodrock>)>
+ElseIf (<ARGO.BASEID>==i_ingot_phoenix)
+     TAG.phoenix = <EVAL (<ARGO.AMOUNT>+0<TAG.phoenix>)>
+ElseIf (<ARGO.BASEID>==i_hammer_smith)
+     TAG.smithhammer = <EVAL (<ARGO.AMOUNT>+0<TAG.smithhammer>)>
+Else
+    Src.Sysmessage That doesn't look like a valid item.
+    RETURN 1
+EndIf
+ARGO.REMOVE
+RETURN 1
+
+[EOF]
+
+//[ITEMDEF i_ingot_chest]
+//NAME  =Blacksmiths Chest
+//ID    =0e41
+//TYPE  =t_ingot_chest
+//WEIGHT=90
+//SKILLMAKE=TINKERING 85.0, t_tinker_tools
+//RESOURCES=10 i_ingot_bronze, 10 i_ingot_tin, 10 i_nails_copper
+//CATEGORY=Items by Professions
+//SUBSECTION=Magery
+//DUPELIST=i_chest_metal_brass
+
+//ON=@CREATE
+//COLOR=0220
+
+
+//[DIALOG d_ingot_chest]
+
+//0,0
+//page 0
+//gumppic  186 266 5154//5154 is the middle picture
+//gumppic  46  266 5154
+//gumppic  46  156 5154
+//gumppic  186 156 5154
+//gumppic  186 46  5154
+//gumppic  46  46  5154
+//tilepic  47  47  8312
+//gumppic  81  46  5154//middle picture to cut the arrows borders
+//gumppic  46  91  5154//middle pitcure to cut the arrows borders
+//gumppic  10  10  5150//top left border
+//gumppic  336 10  5152//top right border
+//gumppic  186 10  5151//middle top border
+//gumppic  30  10  5151
+//gumppic  10  376 5156//bottom right border
+//gumppic  336 376 5158//bottom right border
+//gumppic  30  376 5157//middle bottom border
+//gumppic  186 376 5157
+//gumppic  10  46  5153//5153 is the left border
+//gumppic  336 46  5155//the right border
+//gumppic  10  156 5153
+//gumppic  336 156 5155
+//gumppic  10  266 5153
+//gumppic  336 266 5155
+
+//headings
+//dtext    170 60  255 Amount
+//dtext    270 60  255 Extract
+//button   255 80 2104 2103 1 0 101
+//dtext    270 75  255 ( <EVAL <TAG.DEFAULT_EXTRACT>> )
+
+//Add Scrolls Button
+//dtext    246 356 255 Add Items
+//button   332 358  55  55  1  0 100
+
+//Page heading
+//dtext    40  340 255  Page:
+
+//Page buttons
+//dtext    50  355 255   1:
+//button   60  360 2104 2103 0 1  1
+
+//dtext    95  355 255   2:
+//button   110 360 2104 2103 0 2  2
+
+//dtext    145 355 255   3:
+//button   160 360 2104 2103 0 3  3
+
+
+//page 1
+//dtext    40  110 255 Coal
+//dtext    190 110 255 <EVAL 0<TAG.coal>>
+//button   285 112 1210 1209 1 0 41
+
+//dtext    40  135 255 Copper
+//dtext    190 135 255 <EVAL 0<TAG.copper>>
+//button   285 137 1210 1209 1 0 11
+
+//dtext    40  160 255 Iron
+//dtext    190 160 255 <EVAL 0<TAG.iron>>
+//button   285 162 1210 1209 1 0 12
+
+//dtext    40  185 255 Tin
+//dtext    190 185 255 <EVAL 0<TAG.tin>>
+//button   285 187 1210 1209 1 0 13
+
+//dtext    40  210 255 Bronze
+//dtext    190 210 255 <EVAL 0<TAG.bronze>>
+//button   285 212 1210 1209 1 0 14
+
+//dtext    40  235 255 Steel
+//dtext    190 235 255 <EVAL 0<TAG.steel>>
+//button   285 237 1210 1209 1 0 15
+
+//dtext    40  260 255 Silver
+//dtext    190 260 255 <EVAL 0<TAG.silver>>
+//button   285 262 1210 1209 1 0 17
+
+//dtext    40  285 255 Gold
+//dtext    190 285 255 <EVAL 0<TAG.gold>>
+//button   285 287 1210 1209 1 0 18
+
+//page 2
+
+//dtext    40  110 255 Titanium
+//dtext    190 110 255 <EVAL 0<TAG.titanium>>
+//button   285 112 1210 1209 1 0 22
+
+//dtext    40  135 255 Terathane
+//dtext    190 135 255 <EVAL 0<TAG.terathane>>
+//button   285 137 1210 1209 1 0 23
+
+//dtext    40  160 255 Shadow
+//dtext    190 160 255 <EVAL 0<TAG.shadow>>
+//button   285 162 1210 1209 1 0 24
+
+//dtext    40  185 255 Agapite
+//dtext    190 185 255 <EVAL 0<TAG.agapite>>
+//button   285 187 1210 1209 1 0 25
+
+//dtext    40  210 255 Valorite
+//dtext    190 210 255 <EVAL 0<TAG.valorite>>
+//button   285 212 1210 1209 1 0 26
+
+//dtext    40  235 255 Verite
+//dtext    190 235 255 <EVAL 0<TAG.verite>>
+//button   285 237 1210 1209 1 0 27
+
+//dtext    40  260 255 Verminard
+//dtext    190 260 255 <EVAL 0<TAG.verminard>>
+//button   285 262 1210 1209 1 0 28
+
+//dtext    40  285 255 Stronghold
+//dtext    190 285 255 <EVAL 0<TAG.stronghold>>
+//button   285 287 1210 1209 1 0 31
+
+//page 3
+
+//dtext    40  110 255 Adamantine
+//dtext    190 110 255 <EVAL 0<TAG.adamantine>>
+//button   285 112 1210 1209 1 0 32
+
+//dtext    40  135 255 Skargard
+//dtext    190 135 255 <EVAL 0<TAG.skargard>>
+//button   285 137 1210 1209 1 0 33
+
+//dtext    40  160 255 Mytheril
+//dtext    190 160 255 <EVAL 0<TAG.mytheril>>
+//button   285 162 1210 1209 1 0 35
+
+//dtext    40  185 255 Blackrock
+//dtext    190 185 255 <EVAL 0<TAG.blackrock>>
+//button   285 187 1210 1209 1 0 36
+
+//dtext    40  210 255 Bloodrock
+//dtext    190 210 255 <EVAL 0<TAG.bloodrock>>
+//button   285 212 1210 1209 1 0 37
+
+//dtext    40  235 255 Phoenix
+//dtext    190 235 255 <EVAL 0<TAG.phoenix>>
+//button   285 237 1210 1209 1 0 38
+
+//dtext    40  260 255 Enriched Titanium
+//dtext    190 260 255 <EVAL 0<TAG.et>>
+//button   285 262 1210 1209 1 0 34
+
+//dtext    40  285 255 Smith Hammer
+//dtext    190 285 255 <EVAL 0<TAG.smithhammer>>
+//button   285 287 1210 1209 1 0 39
+
+
+
+
+[DIALOG d_ingot_chest BUTTON]
+ON=0
+
+ON=11
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_ingot_chest 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.copper> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.copper = <EVAL (<TAG.copper>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_ingot_copper, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_ingot_chest 1
+      Else
+         DIALOG d_ingot_chest 1
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=12
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_ingot_chest 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.iron> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.iron = <EVAL (<TAG.iron>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_ingot_iron, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_ingot_chest 1
+      Else
+      DIALOG d_ingot_chest 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=13
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_ingot_chest 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.tin> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.tin = <EVAL (<TAG.tin>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_ingot_tin, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_ingot_chest 1
+      Else
+      DIALOG d_ingot_chest 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=14
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_ingot_chest 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.bronze> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.bronze = <EVAL (<TAG.bronze>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_ingot_bronze, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_ingot_chest 1
+      Else
+      DIALOG d_ingot_chest 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=15
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_ingot_chest 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.steel> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.steel = <EVAL (<TAG.steel>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_ingot_steel, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_ingot_chest 1
+      Else
+      DIALOG d_ingot_chest 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=16
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_ingot_chest 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.ferrum> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.ferrum = <EVAL (<TAG.ferrum>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_ingot_ferrum, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_ingot_chest 1
+      Else
+      DIALOG d_ingot_chest 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF   
+ON=17
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_ingot_chest 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.silver> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.silver = <EVAL (<TAG.silver>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_ingot_silver, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_ingot_chest 1
+      Else
+      DIALOG d_ingot_chest 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF  
+ON=18
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_ingot_chest 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.gold> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.gold = <EVAL (<TAG.gold>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_ingot_gold, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_ingot_chest 1
+      Else
+      DIALOG d_ingot_chest 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+
+ON=21
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_ingot_chest 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.chrome> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.chrome = <EVAL (<TAG.chrome>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_ingot_chrome, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_ingot_chest 2
+      Else
+      DIALOG d_ingot_chest 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=22
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_ingot_chest 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.titanium> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.titanium = <EVAL (<TAG.titanium>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_ingot_titanium, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_ingot_chest 2
+      Else
+      DIALOG d_ingot_chest 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=23
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_ingot_chest 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.terathane> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.terathane = <EVAL (<TAG.terathane>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_ingot_terathane, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_ingot_chest 2
+      Else
+      DIALOG d_ingot_chest 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=24
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_ingot_chest 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.shadow> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.shadow = <EVAL (<TAG.shadow>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_ingot_shadow, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_ingot_chest 2
+      Else
+      DIALOG d_ingot_chest 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=25
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_ingot_chest 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.agapite> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.agapite = <EVAL (<TAG.agapite>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_ingot_agapite, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_ingot_chest 2
+      Else
+      DIALOG d_ingot_chest 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=26
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_ingot_chest 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.valorite> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.valorite = <EVAL (<TAG.valorite>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_ingot_valorite, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_ingot_chest 2
+      Else
+      DIALOG d_ingot_chest 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=27
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_ingot_chest 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.verite> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.verite = <EVAL (<TAG.verite>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_ingot_verite, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_ingot_chest 2
+      Else
+      DIALOG d_ingot_chest 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=28
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_ingot_chest 2
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.verminard> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.verminard = <EVAL (<TAG.verminard>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_ingot_verminard, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_ingot_chest 2
+      Else
+         DIALOG d_ingot_chest 2
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+
+ON=31
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_ingot_chest 3
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.stronghold> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.stronghold = <EVAL (<TAG.stronghold>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_ingot_stronghold, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_ingot_chest 3
+      Else
+         DIALOG d_ingot_chest 3
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=32
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_ingot_chest 3
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.adamantine> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.adamantine = <EVAL (<TAG.adamantine>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_ingot_adamantine, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_ingot_chest 3
+      Else
+         DIALOG d_ingot_chest 3
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=33
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_ingot_chest 3
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.skargard> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.skargard = <EVAL (<TAG.skargard>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_ingot_skargard, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_ingot_chest 3
+      Else
+         Dialog d_ingot_chest 3
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=34
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_ingot_chest 3
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.et> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.et = <EVAL (<TAG.et>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_ingot_entit, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_ingot_chest 3
+      Else
+         DIALOG d_ingot_chest 3
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=35
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_ingot_chest 3
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.mytheril> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.mytheril = <EVAL (<TAG.mytheril>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_ingot_mytheril, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_ingot_chest 3
+      Else
+         DIALOG d_ingot_chest 3
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=36
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_ingot_chest 3
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.blackrock> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.blackrock = <EVAL (<TAG.blackrock>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_ingot_blackrock, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_ingot_chest 3
+      Else
+         DIALOG d_ingot_chest 3
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=37
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_ingot_chest 3
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.bloodrock> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.bloodrock = <EVAL (<TAG.bloodrock>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_ingot_bloodrock, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_ingot_chest 3
+      Else
+         DIALOG d_ingot_chest 3
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=38
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_ingot_chest 3
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.phoenix> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.phoenix = <EVAL (<TAG.phoenix>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_ingot_phoenix, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_ingot_chest 3
+      Else
+         DIALOG d_ingot_chest 3
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+ON=39
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_ingot_chest 3
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.smithhammer> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.smithhammer = <EVAL (<TAG.smithhammer>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_hammer_smith, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_ingot_chest 3
+      Else
+         DIALOG d_ingot_chest 3
+         SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf  	  
+   ENDIF
+ON=41
+   IF (0<TAG.DEFAULT_EXTRACT>=0)
+      DIALOG d_ingot_chest 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+   ELSE
+      If (<TAG.coal> >= <TAG.DEFAULT_EXTRACT>)
+         TAG.coal = <EVAL (<TAG.coal>-<TAG.DEFAULT_EXTRACT>)>
+         SERV.NEWITEM i_coal, <EVAL <TAG.DEFAULT_EXTRACT>>, <SRC.FINDLAYER.21.UID>
+         DIALOG d_ingot_chest 1
+      Else
+      DIALOG d_ingot_chest 1
+      SRC.SYSMESSAGE Please set how many of the item you wish to extract
+      EndIf   
+   ENDIF
+
+
+
+ON=100
+   TARGET Target the items you wish to place inside the chest.
+   DIALOG d_ingot_chest 1
+
+ON = 101
+   DIALOG d_ingot_extract
+   
+   
+[FUNCTION ADDTOCHESTINGOTS]
+If (<SRC.TARG.BASEID>==i_ingot_copper)
+     TAG.copper = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.copper>)>
+ElseIf (<SRC.TARG.BASEID>==i_coal)
+     TAG.coal = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.coal>)>
+ElseIf (<SRC.TARG.BASEID>==i_ingot_iron)
+     TAG.iron = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.iron>)>
+ElseIf (<SRC.TARG.BASEID>==i_ingot_tin)
+     TAG.tin = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.tin>)>
+ElseIf (<SRC.TARG.BASEID>==i_ingot_bronze)
+     TAG.bronze = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.bronze>)>
+ElseIf (<SRC.TARG.BASEID>==i_ingot_steel)
+     TAG.steel = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.steel>)>
+ElseIf (<SRC.TARG.BASEID>==i_ingot_ferrum)
+     TAG.ferrum = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.ferrum>)>
+ElseIf (<SRC.TARG.BASEID>==i_ingot_silver)
+     TAG.silver = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.silver>)>
+ElseIf (<SRC.TARG.BASEID>==i_ingot_gold)
+     TAG.gold = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.gold>)>
+ElseIf (<SRC.TARG.BASEID>==i_ingot_chrome)
+     TAG.chrome = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.chrome>)>
+ElseIf (<SRC.TARG.BASEID>==i_ingot_titanium)
+     TAG.titanium = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.titanium>)>
+ElseIf (<SRC.TARG.BASEID>==i_ingot_terathane)
+     TAG.terathane = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.terathane>)>
+ElseIf (<SRC.TARG.BASEID>==i_ingot_shadow)
+     TAG.shadow = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.shadow>)>
+ElseIf (<SRC.TARG.BASEID>==i_ingot_agapite)
+     TAG.agapite = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.agapite>)>
+ElseIf (<SRC.TARG.BASEID>==i_ingot_valorite)
+     TAG.valorite = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.valorite>)>
+ElseIf (<SRC.TARG.BASEID>==i_ingot_verite)
+     TAG.verite = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.verite>)>
+ElseIf (<SRC.TARG.BASEID>==i_ingot_verminard)
+     TAG.verminard = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.verminard>)>
+ElseIf (<SRC.TARG.BASEID>==i_ingot_stronghold)
+     TAG.stronghold = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.stronghold>)>
+ElseIf (<SRC.TARG.BASEID>==i_ingot_adamantine)
+     TAG.adamantine = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.adamantine>)>
+ElseIf (<SRC.TARG.BASEID>==i_ingot_skargard)
+     TAG.skargard = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.skargard>)>
+ElseIf (<SRC.TARG.BASEID>==i_ingot_entit)
+     TAG.et = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.et>)>
+ElseIf (<SRC.TARG.BASEID>==i_ingot_mytheril)
+     TAG.mytheril = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.mytheril>)>
+ElseIf (<SRC.TARG.BASEID>==i_ingot_blackrock)
+     TAG.blackrock = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.blackrock>)>
+ElseIf (<SRC.TARG.BASEID>==i_ingot_bloodrock)
+     TAG.bloodrock = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.bloodrock>)>
+ElseIf (<SRC.TARG.BASEID>==i_ingot_phoenix)
+     TAG.phoenix = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.phoenix>)>
+ElseIf (<SRC.TARG.BASEID>==i_hammer_smith)
+     TAG.smithhammer = <EVAL (<SRC.TARG.AMOUNT>+0<TAG.smithhammer>)>
+Else
+    Src.Sysmessage That doesn't look like a valid item.
+    RETURN 1
+EndIf
+SRC.TARG.REMOVE
+RETURN 1
+
+[DIALOG d_ingot_extract]
+0,0
+page 0
+gumppic   20  20 35
+dtext 34 35 0 Default
+dtext 34 50 0 Extract
+dtext 34 65 0 Amount
+textentry 36  85 46 20 255 1 0
+
+//buttons
+button   87   34 2510 2510 1 0 1001
+button   87   87 2510 2510 1 0 1002
+
+[DIALOG d_ingot_extract TEXT]
+<EVAL <TAG.DEFAULT_EXTRACT>>
+
+[DIALOG d_ingot_extract BUTTON]
+ON=1001
+   RETURN 1
+
+ON=1002
+   IF ( <EVAL <ARGTXT[1]>> > 0 ) && (<EVAL <ARGTXT[1]>> < 1000)
+      TAG.DEFAULT_EXTRACT = <EVAL <ARGTXT[1]>>
+      SRC.SYSMESSAGE You have set the default extract value to <EVAL <TAG.DEFAULT_EXTRACT>>
+   ELSE
+      TAG.DEFAULT_EXTRACT =
+      SRC.SYSMESSAGE You have chosen to clear the default value.
+   ENDIF
+   DIALOG d_ingot_chest 1
+   

@@ -1,0 +1,416 @@
+//Consolidated Scripts and cleaned up scripts by Boo, Jak, and Raist - Wren // - July 26, 2005
+//Changed robe/ rune/ e_companion color and added Britain + Trinsic to rune and reduced comchat requirement to 6k account minutes - Anya // - April 19, 2009
+// Script cleaned and system improved by Pink Panther 24/10/2013
+
+[PLEVEL 1]
+COM
+LISTCOM
+COMCHAT
+Q
+COMPANION
+
+[FUNCTION ISCOMPANION]
+IF (<TAG0.COMPANION> == 01)
+RETURN 1
+ENDIF
+RETURN 0
+
+//********************************************************************//
+//                          COMPANION FUNCTIONS                       //
+//********************************************************************//
+
+// Function used by anyone with .comchat activated to view a list of current Companions ONLINE and ONDUTY.
+
+[FUNCTION listcom] 
+
+IF (<src.TAG0.PLAYERCHAT>==1)
+	serv.allclients listcom_r <TAG.COMPANION>
+	return 1
+ELSE
+	sysmessage @0afe You need to activate the companion chat to use this command. Type .comchat to do so.
+ENDIF
+
+[FUNCTION listcom_r] 
+IF ((<TAG0.COMPANION>==1) && (<tag0.companion.onduty>==1))
+   SRC.SYSMESSAGE @048 List of Online and On-Duty Companions:
+   SRC.SYSMESSAGE @035 <NAME>: <REGION.NAME>
+Return 1
+Endif
+
+// Function used by Companions ONDUTY to talk between them. GM's can also have access to this chat if they have .comchat enabled
+
+[Function com] 
+
+IF (<SRC.TAG0.COMPANION>==1)
+	IF (<SRC.TAG0.companion.onduty>==1)
+		VAR.LASTMSG=<ARGS>
+		VAR.LASTPERSON=<SRC.NAME>
+		SERV.ALLCLIENTS com_r <TAG.COMPANION>
+		RETURN 1
+	ELSE
+		SRC.SYSMESSAGE You are not on duty. Type .companion to go on duty.
+		RETURN 1
+	ENDIF
+ELSE
+	IF (<SRC.ISGM>) 
+		IF (<SRC.TAG0.PLAYERCHAT>==1)
+			VAR.LASTMSG=<ARGS>
+			VAR.LASTPERSON=<SRC.NAME>
+			SERV.ALLCLIENTS com_r <TAG.COMPANION>
+			RETURN 1
+		ELSE
+			SRC.SYSMESSAGE You must activate .comchat in order to access this chat.
+			RETURN 1
+		ENDIF
+	ELSE 
+		SRC.SYSMESSAGE You cannot use this command!
+		RETURN 1
+	ENDIF
+ENDIF
+RETURN 1
+
+
+[Function com_r]
+IF (((<TAG0.COMPANION>==1) && (<TAG0.companion.onduty>==1)) || ((<ISGM>) && (<TAG0.PLAYERCHAT>==1)))
+   SYSMESSAGE @048 [ <VAR.LASTPERSON>] <VAR.LASTMSG>
+   RETURN 1
+ELSE
+   RETURN 1
+ENDIF
+
+// Function used by Companions to activate or de-activate the Companion Mode
+
+[FUNCTION Companion] 
+
+IF !(<SRC.TAG0.companion> == 1)
+   SRC.SYSMESSAGE You are not a companion
+   RETURN 1
+ELSEIF ( <SRC.TAG0.boopvper> = 1 )
+   SRC.SYSMESSAGE You cannot use this rune while using the cowpen.
+   RETURN 1
+ENDIF
+
+IF ( <SRC.REGION.FLAGS> & region_flag_guarded ) || ( <SRC.REGION.FLAGS> & region_flag_safe ) || ( <SRC.REGION.FLAGS> & region_flag_no_pvp )|| ( <SRC.REGION.DEFNAME> = a_dungeon_4 ) || ( <SRC.REGION.DEFNAME> = a_britain_cowpen_1 )
+   IF  <SRC.ISEVENT.e_companion>
+      src.events = -e_companion
+	  src.tag.companion.onduty =
+      SRC.SYSMESSAGE @07a1 Companion Status DEACTIVATED
+   ELSE
+      src.events = +e_companion
+	  src.tag.companion.onduty = 1
+      SRC.SYSMESSAGE @07a1 Companion Status Activated      
+   ENDIF
+ELSE
+   SRC.SYSMESSAGE You must be in a guarded or safe zone to go on-duty.
+ENDIF
+RETURN 1
+
+
+//********************************************************************//
+//                             ON DUTY EVENT                          //
+//********************************************************************//
+[Events e_companion]
+On=@Click
+   MESSAGE @0afe [Companion On Duty]
+
+
+//********************************************************************//
+//                            COMPANION ROBE                          //
+//********************************************************************//
+
+// Robe used by Companions when ONDUTY. Can only be used by the robe owner.
+// GM's must set the robe owner by double clicking it and targeting the desired companion
+// This robe provides NightSight
+
+[ITEMDEF i_robe_companion] 
+ID=i_robe
+NAME=Companion's Robe
+TYPE=t_script
+
+ON=@CREATE
+   TYPE=t_clothing
+   ATTR=05
+   HITPOINTS	= 150
+   COLOR=0afe
+   
+ON=@DCLICK
+   IF (<SRC.ISGM>)
+      TARGET Who do you want to set as the owner of the robe
+      RETURN 1
+   ENDIF
+   
+   IF !(strmatch("<TAG.ACCOUNTOWNER>","<SRC.ACCOUNT>"))
+		SRC.SYSMESSAGE This does not belong to you.
+		REMOVE
+		RETURN 1
+	ENDIF
+	
+	IF !(<SRC.TAG0.companion>==1)
+		SRC.SYSMESSAGE You are not a Companion.
+		REMOVE
+		RETURN 1
+	ENDIF
+	
+	IF !(<SRC.TAG0.companion.onduty>==1)
+		SRC.SYSMESSAGE  You are not on duty. Type .companion to go on duty.
+		RETURN 1
+	ENDIF
+	
+	
+ON=@TARGON_CHAR
+   LINK=<SRC.TARG.UID>
+   TAG.ORIGINALOWNER=<SRC.TARG.NAME>
+   TAG.ACCOUNTOWNER=<SRC.TARG.ACCOUNT>
+   SRC.SYSMESSAGE @88 Owner set
+   SERV.LOG <SRC.ACCOUNT> <SRC.NAME> <SRC.UID> Gaves a <NAME> <UID> to <SRC.TARG.ACCOUNT> <SRC.TARG.NAME> <SRC.TARG.UID>
+   RETURN 1
+   
+ON=@Equip
+	
+	 IF !(strmatch("<TAG.ACCOUNTOWNER>","<SRC.ACCOUNT>"))
+		SRC.SYSMESSAGE This does not belong to you.
+		REMOVE
+		RETURN 1
+   ENDIF
+   
+   IF !(<SRC.TAG0.companion>==1)
+		SRC.SYSMESSAGE You are not a Companion.
+		REMOVE
+		RETURN 1
+	ENDIF
+	
+	IF !(<SRC.TAG0.companion.onduty>==1)
+		SRC.SYSMESSAGE  You are not on duty. Type .companion to go on duty.
+		RETURN 1
+	ELSE
+		SRC.SYSMESSAGE @0afe You put on your Companion Robe!
+	ENDIF
+   
+   	IF !(<SRC.NIGHTSIGHT>)
+		 SRC.NIGHTSIGHT
+	ENDIF
+	
+ON=@Unequip
+	IF (<SRC.NIGHTSIGHT>)
+		 SRC.NIGHTSIGHT
+	ENDIF
+
+
+//********************************************************************//
+//                            COMPANION RUNE                          //
+//                       Scripted by Jak 05.11.2003                   //
+//********************************************************************//
+
+// Rune used by Companions ONDUTY to be teleported to Trinsic Academy, Minoc, Britain or Ocllo.
+// They can use the "Original location" option to be teleported back to where they first were.
+
+[ITEMDEF i_COMPANION_RUNE] 
+ID=01f14
+NAME=Companion Rune 
+TYPE=t_normal
+SUBSECTION=Stones
+CATEGORY=Imperial uo
+DESCRIPTION=Holy Stone
+
+ON=@CREATE
+   COLOR=07a1
+   NAME=Companion Rune 
+   ATTR=05
+
+ON=@DCLICK
+   IF (<SRC.TAG0.companion>==1)
+	  IF (<SRC.TAG0.companion.onduty>==1)
+      DIALOG d_travel_companion
+	  ELSE
+	  SRC.SYSMESSAGE You are not on duty. Type .companion to go on duty.
+	  RETURN 1
+	  ENDIF
+   ELSE
+      SRC.SYSMESSAGE You are not a Companion
+      REMOVE
+   ENDIF
+   RETURN 1 
+
+
+[DIALOG d_travel_companion] 
+0,0 
+page 0 
+nomove 
+nodispose 
+resizepic 150 100 2600 360 280
+dtext 260 120 0 Companion Travel System 
+
+dtext 235 160 0 Occlo
+button 215 160 208 209 1 0 2 
+dtext 235 180 0 Trinsic Academy
+button 215 180 208 209 1 0 3 
+dtext 235 200 0 Britain
+button 215 200 208 209 1 0 4
+dtext 235 220 0 Minoc
+button 215 220 208 209 1 0 5
+dtext 235 240 0 Newbie Dungeon
+button 215 240 208 209 1 0 6
+
+dtext 235 280 0 Original Location 
+button 215 280 208 209 1 0 1 
+
+button 290 320 5200 5201 1 0 0 // Cancel
+
+[DIALOG d_travel_companion BUTTON] 
+ONBUTTON=0
+
+ONBUTTON=1
+IF (<SRC.ISEVENT.e_companion>)
+   IF (<TAG0.ORIGINAL_LOCATION>>0)
+      SRC.GO <TAG.ORIGINAL_LOCATION>
+      TAG.ORIGINAL_LOCATION =
+   ELSE
+      SRC.SYSMESSAGE No previous location saved.
+   ENDIF
+ENDIF
+
+ONBUTTON=2
+IF (<SRC.ISEVENT.e_companion>)
+   IF !(<SRC.REGION.DEFNAME>=a_ocllo_7) && !(<SRC.REGION.DEFNAME>=a_ocllo_territory_1) && !(<SRC.REGION.DEFNAME>=a_dungeon_4)
+      TAG.ORIGINAL_LOCATION = <SRC.P>
+   ENDIF
+   
+   SRC.NEWITEM i_companion_block
+   SRC.ACT.P=<SRC.P>
+   
+   SRC.GO Ocllo
+ELSE
+   SRC.SYSMESSAGE You must be on-duty to travel with this rune.
+ENDIF
+
+ONBUTTON=3
+IF (<SRC.ISEVENT.e_companion>)
+   IF !(<SRC.REGION.DEFNAME>=a_ocllo_7) && !(<SRC.REGION.DEFNAME>=a_ocllo_territory_1) && !(<SRC.REGION.DEFNAME>=a_dungeon_4)
+      TAG.ORIGINAL_LOCATION = <SRC.P>
+   ENDIF
+   
+   SRC.NEWITEM i_companion_block
+   SRC.ACT.P=<SRC.P>
+   
+   SRC.GO 2010,2741,30
+ELSE
+   SRC.SYSMESSAGE You must be on-duty to travel with this rune.
+ENDIF
+
+ONBUTTON=4
+IF (<SRC.ISEVENT.e_companion>)
+   IF !(<SRC.REGION.DEFNAME>=a_ocllo_7) && !(<SRC.REGION.DEFNAME>=a_ocllo_territory_1) && !(<SRC.REGION.DEFNAME>=a_dungeon_4)
+      TAG.ORIGINAL_LOCATION = <SRC.P>
+   ENDIF
+   
+   SRC.NEWITEM i_companion_block
+   SRC.ACT.P=<SRC.P>
+   
+   SRC.GO 1432,1703,13
+ELSE
+   SRC.SYSMESSAGE You must be on-duty to travel with this rune.
+ENDIF
+
+ONBUTTON=5
+IF (<SRC.ISEVENT.e_companion>)
+   IF !(<SRC.REGION.DEFNAME>=a_ocllo_7) && !(<SRC.REGION.DEFNAME>=a_ocllo_territory_1) && !(<SRC.REGION.DEFNAME>=a_dungeon_4)
+      TAG.ORIGINAL_LOCATION = <SRC.P>
+   ENDIF
+   
+   SRC.NEWITEM i_companion_block
+   SRC.ACT.P=<SRC.P>
+   
+   SRC.GO Minoc
+ELSE
+   SRC.SYSMESSAGE You must be on-duty to travel with this rune.
+ENDIF
+
+ONBUTTON=6
+IF (<SRC.ISEVENT.e_companion>)
+   IF !(<SRC.REGION.DEFNAME>=a_ocllo_7) && !(<SRC.REGION.DEFNAME>=a_ocllo_territory_1) && !(<SRC.REGION.DEFNAME>=a_dungeon_4)
+      TAG.ORIGINAL_LOCATION = <SRC.P>
+   ENDIF
+   
+   SRC.NEWITEM i_companion_block
+   SRC.ACT.P=<SRC.P>
+   
+   SRC.GO 6215,729
+ELSE
+   SRC.SYSMESSAGE You must be on-duty to travel with this rune.
+ENDIF
+
+[ITEMDEF i_companion_block]
+NAME=Companion Travel Field
+ID=i_fx_sparkle
+
+ON=@CREATE
+   TIMER=3
+   ATTR=attr_static|attr_move_never
+   COLOR=0b4d
+
+ON=@timer
+   REMOVE
+   RETURN 1
+   
+
+
+//********************************************************************//
+//                       COMPANION QUERY SYSTEM                       //
+//                          Scripted by Raist                         //
+//********************************************************************//
+
+// Function used by players with less than 10.000 Minutes connect time to activate the Companion chat.
+// GM's and Companions can activate this chat even with more than 10.000 minutes
+
+[FUNCTION comchat]	
+	
+IF (<account.totalconnecttime> < 10000)
+	If !(strcmpi("<SRC.TAG.PLAYERCHAT>",""))
+	SRC.TAG.PLAYERCHAT = 1
+	sysmessage @0afe You have enabled the companion query system
+	Else
+	SRC.TAG.PLAYERCHAT = 
+	sysmessage @0afe You have disabled the companion query system
+	EndIf
+	sysmessage @0afe You have <eval (10000 - <account.totalconnecttime>)> minutes left to use the companion query system.
+ELSE
+	IF ((<SRC.ISGM>) || (<SRC.TAG0.COMPANION>==1))
+		If !(strcmpi("<SRC.TAG.PLAYERCHAT>",""))
+			SRC.TAG.PLAYERCHAT = 1
+			sysmessage @0afe You have enabled the companion query system
+		Else
+		SRC.TAG.PLAYERCHAT = 
+		sysmessage @0afe You have disabled the companion query system
+		ENDIF
+	ELSE
+	sysmessage @0afe Your account is too old to use the companion query system.
+	ENDIF
+ENDIF
+
+// Function used to talk in the companion chat, by players, companions and gm's. Comchat must be enabled! 
+
+[FUNCTION q]	
+
+IF (<SRC.TAG.PLAYERCHAT>==1)
+	VAR.LASTMSG=<ARGS>			
+    VAR.LASTPERSON=<SRC.NAME>
+    SERV.ALLCLIENTS pchat_r 1
+Else
+	SRC.SYSMESSAGE @0afe You cannot use this command unless comchat is enabled!  Type .comchat to enable.
+EndIf
+RETURN 1
+
+[Function pchat_r] 
+IF (<TAG0.PLAYERCHAT>==1)
+	IF (<SRC.ISCOMPANION>)
+	SYSMESSAGE @035 [Companion: Companion Chat] <VAR.LASTPERSON>: <VAR.LASTMSG>
+	ELSE
+    SYSMESSAGE @035 [Player: Companion Chat] <VAR.LASTPERSON>: <VAR.LASTMSG>
+	ENDIF
+ENDIF
+RETURN 1
+
+[EOF]
+
+
+

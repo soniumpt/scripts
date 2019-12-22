@@ -1,0 +1,1326 @@
+// Company Delivery Missions
+// -------------------------
+//
+// Version 0.8
+//
+// CHANGELOG OVERVIEW (Marks end of each phase)
+// --------------------------------------------
+// 
+// Version 0.1, 18th June 2006: Company Delivery Memory basics coded
+// Version 0.2, 23rd June 2006: Fakedelivery testing function added for beta testing
+// Version 0.2a, 24th June 2006: Comments made for Company Delivery Memory, 1st target NPC added 
+// Version 0.3, 11th July 2006: Fakedelivery function modified, Core Functions added alongside
+// Version 0.4, 17th July 2006: Heavy cleanup, alteration of TAG functionality
+// Version 0.5, 21st July 2006: Fakedelivery fully functional, "Alpha Dry" delivery operational
+// Version 0.5a, 22nd July 2006: A few cleanups to remove undefined symbols
+// Version 0.6, 3rd August 2006: Operationability fixed, 4 further target NPC's added.
+// Version 0.7, 19th August 2006: A few cleanups to remove undefined symbols, a few bugs re: Delivery fixed
+// Version 0.8, 24th August 2006: Compatibility with gump in j_gm_gump.scp (Temp placer) fully achieved
+//
+// CONTENTS
+// --------
+//
+// Contained within are various NPC's which are the targets of basic delivery missions.
+// 
+//
+// IMPORTANT NOTES
+// ---------------
+//
+//
+// - This is the core, but it is referenced to by various companies where relevant.
+// - This script should not have actual companies added to it. Please copy the format of actual companies
+//   as you will find in "scripts\custom\bf_npc_quests\companies\", and add them as individual scripts.
+// - This core can be used for Non-Company Delivery Quests. In order to do so please follow the commands
+//   below:
+//     @ The item being delivered in script must have under @CREATE "TAG.ISQUESTDELIVERY=1"
+//     @ The variables "VAR.TARGET" and "VAR.DELIVERYITEM" must be set up as normal (See Noteworthy
+//       Tags below).
+//     @ The resulting function from the delivery must be set in the delivery item's
+//       <TAG.QUESTDELIVERYFUNCTION> in order for it to work.
+//
+//
+// NOTEWORTHY VARIABLES
+// --------------------
+//
+// - <VAR.NPCDELIVERY.(insert number)> is set when the NPC is spawned. It is also renewed periodically
+//   through a central function. This means that the NPC's can be moved across the world as appropriate
+//   without resetting numerous variables.
+//     @ Note that, on the offchance that two of the same are spawned, there will be an alert in staff
+//       channel.
+// - <VAR.DELIVERYMINUTES> must be set externally in whatever event is to be utilised to create the item
+//   if you do not wish to use the default 30 minute time. Confused? Copy and paste as follows (minus
+//   the comments, and replacing "x" with the number of minutes):
+//
+//   VAR.DELIVERYMINUTES=x
+//   SERV.NEWITEM i_delivery_memory
+//   NEW.EQUIP <SRC.UID>
+//
+//   (Obviously phase out <SRC.UID> for whatever you intend to be using...)
+//   Note that this variable must be set in MINUTES, there is no functionality for the use of seconds,
+//   nor would there be likely need to be. Does 30 seconds mean that much?...
+//
+//
+// NOTEWORTHY TAGS
+// ---------------
+//
+// - <TAG.COMPANY> is used on memory items as the placeholder for the company name used in full character
+//   tags as storage.
+//     @ For example, Vesper Roast Chicken is referred to in tags as VespRoastChick
+//        "   "  "    The Union of Britannian Guards is referred to as UnionBritGuards
+//     @ A list of these can be found in NPC Quest Mask. Remove NPCE_ from the mask, and you have the tag.
+// - <TAG.TARGET> is a placeholder for the UID of the NPC that will be delivered to, set by
+//   <VAR.TARGET> before "i_delivery_memory" creation.
+// - <TAG.DELIVERYITEM> is a placeholder for the UID\Serial of the Delivery Item given at the start of the
+//   mission, set by <LOCAL.DELIVERYITEM> before "i_delivery_memory" creation.
+// - <TAG.ISDELIVERY>, whilst unused in this script, is set to 1 if the item is a delivery object.
+//     @ Note that this tag is fundamental to the ISDELIVERY function.
+//
+//
+// SECURITY PROTOCOLS
+// ------------------
+//
+// - "SERV.LOG :COMPANY ERROR:"
+//     @ Implemented in "i_delivery_memory" under the timer event
+//        * Relays if the non-quest delivery item stored is actually a delivery item. Should this
+//          not be the case, a mIRC bot broadcast will be issued to the staff channel.
+//     @ Implemented in any Targets @NPCRestock and @Create
+//        * Relays if the NPC is not currently able to claim it's position as a core Target NPC.
+//     @ Note: This will happen with ANY ingame text containing the segment ":COMPANY ERROR:"
+//     @ mIRC Code: if (:COMPANY ERROR: isin %temp) { sends %temp }  
+// - "ISDELIVERY"
+//     @ This function is called on any item marked for delivery, to ensure that no non-delivery items
+//       are accidently removed. On top of this, this serves to ensure that delivery items are removed
+//       on success or failure, in order to prevent trash decoration\contraband and enhance security.
+// - "ISQUESTDELIVERY"
+//     @ This function is called to ensure that, should the delivery item in question be for a quest,
+//       it follows that path. This prevents many possible mission\quest-crossover bugs.
+
+
+
+// --------------
+// - Core Items -
+// --------------
+
+[ITEMDEF i_delivery_memory]
+ID=0232a
+NAME=Company Delivery Memory
+TYPE=t_eq_script
+
+
+ON=@EQUIP
+   TAG.DELIVERYITEM=<VAR.DELIVERYITEM>
+   TAG.TARGET=<VAR.TARGET>
+   TAG.COMPANY=<VAR.COMPANY>
+   TIMER=60
+   IF (0<VAR.DELIVERYMINUTES>) // *1
+      MORE1=<EVAL <VAR.DELIVERYMINUTES>>
+      MORE2=<EVAL <VAR.DELIVERYMINUTES>>
+   ELSE
+      MORE1=30
+      MORE2=30
+   ENDIF
+   CONT.ARROWQUEST <UID.<VAR.NPCDELIVERY.<TAG.TARGET>>.P.X> <UID.<VAR.NPCDELIVERY.<TAG.TARGET>>.P.Y> // *2
+   TAG.DISTANCE=<DISTANCE <UID.<VAR.NPCDELIVERY.<VAR.TARGET>>.UID>> // *3
+   CONT.SYSMESSAGE @53 You have accepted the delivery to <UID.<VAR.NPCDELIVERY.<TAG.TARGET>>.NAME> in <UID.<VAR.NPCDELIVERY.<TAG.TARGET>>.REGION.NAME>. // *4
+   CONT.SYSMESSAGE @65 You can find <UID.<VAR.NPCDELIVERY.<TAG.TARGET>>.SEX his/her> approximate location by following the arrow.
+   CONT.SYSMESSAGE @78 You have around <EVAL <MORE1>> minutes. Good luck!
+   VAR.COMPANY=
+   VAR.TARGET=
+   VAR.DELIVERYITEM=
+   VAR.DELIVERYMINUTES=
+   
+ON=@TIMER
+   MORE1=<EVAL <MORE1> - 1> // *5
+   IF (<MORE1> > 0)
+      CONT.MESSAGE @78 You have <EVAL <MORE1>> minutes left! // *6
+      CONT.ARROWQUEST <UID.<VAR.NPCDELIVERY.<TAG.TARGET>>.P.X> <UID.<VAR.NPCDELIVERY.<TAG.TARGET>>.P.Y>
+      TIMER=60
+      RETURN 1
+   ELSE
+      CONT.SYSMESSAGE @25 You have run out of time!
+      IF (0<UID.<TAG.DELIVERYITEM>.ISQUESTDELIVERY>) // *7
+         IF (0<UID.<TAG.DELIVERYITEM>.TAG.QUESTDELIVERYFUNCTION>)
+            TRY UID.<TAG.DELIVERYITEM>.TAG.QUESTDELIVERYFUNCTION
+         ENDIF
+         TRY UID.<TAG.DELIVERYITEM>.REMOVE
+      ELSE   
+         CONT.TAG.<TAG.COMPANY>.REP=<EVAL <CONT.TAG.<TAG.COMPANY>.REP> - 3> // *8
+         IF (<CONT.TAG.<TAG.COMPANY>.REP> <= 0)
+            TRY CONT.TAG.<TAG.COMPANY>.REP=0
+            TRY CONT.TAG.HASBEENSACKEDBY=<eval ( <CONT.TAG.HASBEENSACKEDBY> | <TAG.COMPANY> )>
+            TRY CONT.TAG.COMPANIESEMPLOYEDBY=<eval ( <CONTTAG.COMPANIESEMPLOYEDBY> |~ <TAG.COMPANY> )>
+            CONT.SYSMESSAGE You have been sacked by your employer!
+         ELSE
+            CONT.SYSMESSAGE You have lost status in the eyes of your employer.
+         ENDIF
+         IF (<UID.<TAG.DELIVERYITEM>.ISDELIVERY>) // *9
+            UID.<TAG.DELIVERYITEM>.REMOVE
+         ELSE
+            SERV.LOG :COMPANY ERROR: UID <UID.<TAG.DELIVERYITEM>.UID> was stored as a delivery, but not marked as one! // *10
+            CONT.SYSMESSAGE @70 *This item has potentially broken. Staff have been notified and will arrive to quarantine it ASAP.*
+         ENDIF
+      ENDIF
+      CONT.ARROWQUEST 
+      REMOVE
+   ENDIF
+
+
+// *1 = <VAR.DELIVERYMINUTES> is set prior to the creation of this item. If you wish to use a time other than 30
+//      minutes, please refer to the documentation in the heading as to how you can do this.
+// *2 = ARROWQUEST works on an X and Y variable, but not a UID instead. Therefore, we use the existing X and Y
+//      of the Target NPC as a "rough marker". This is also why we give the target name during comment section *3
+// *3 = Distance only works if the distance to the SRC is set, ergo we set the SRC to the target at this point.   
+// *4 = In order to maintain the minimum of confusion, we give the target name, region, AND state that the co-ords
+//      given are an APPROXIMATE location.
+// *5 = The MORE1 acts as a minute-marker. Remember in this that the TIMER is in +Server Ticks+ and not real life
+//      seconds. Ergo, the extra tick in resetting the TIMER to 60 should balance it out, as server ticks are
+//      approximately accurate to 1/10th of a real life second.
+// *6 = The other use of MORE1. Allows for a reasonable marker to display "you have x time left omgwtfstfu".
+//      We also update the ARROWQUEST at this time, in order to keep all things current and semi-correct.
+// *7 = The extension <.ISQUESTDELIVERY> is a custom command. Please refer to the "Important Notes" section in the
+//      header of this script for more information.
+// *8 = <TAG.COMPANY> is set in @EQUIP. For the importance of <TAG.COMPANY>, refer to the Important Notes section in
+//      the header of the script. For the extensions <.REP> and <.HASBEENSACKED>, refer to the Company Core.
+// *9 = The extension <.ISDELIVERY> is a custom command. Further documentation on this function is made later in the
+//      script, where the function is created.
+// *10 = This is a security feature. Checks to see, via the ISDELIVERY function, if the item registered to the memory
+//       was indeed marked as a delivery item. If not, the "SERV.LOG :COMPANY ERROR:" is called. Otherwise, the delivery
+//       item is safely removed to prevent contraband, or a load of useless decoration on the server.
+//       For information on the LOG entry, refer to "SECURITY PROTOCOLS".
+
+
+
+[ITEMDEF i_delivery_target_remover]
+ID=i_memory
+NAME=Delivery Target Remover
+TYPE=t_eq_script
+
+ON=@CREATE
+   TIMER=1
+
+ON=@TIMER
+   LOCAL.NPCDELIVERY=<UID.<VAR.NPCDELIVERY.<EVAL <TAG.NUMBER>>>>
+   LOCAL.NPCID=c_delivery_target_npc_<EVAL <TAG.NUMBER>>
+   IF ( (<UID.<LOCAL.NPCDELIVERY>.BASEID> == <LOCAL.NPCID>) && (<LOCAL.NPCDELIVERY> != <LINK.UID>) )
+      SERV.LOG :COMPANY ERROR: <LINK.NAME> already exists in the game world. The new position will register until the old spawn is removed.
+      LINK.REMOVE
+   ELSE   
+      TRY VAR.NPCDELIVERY.<TAG.NUMBER>=<LINK.UID>
+   ENDIF
+   REMOVE
+   RETURN 1
+
+
+
+
+
+
+// -------------------
+// - Core Item Types -
+// -------------------
+
+[TYPEDEF t_delivery_company]
+
+ON=@DCLICK
+   TARGET Select the person or object to deliver this object to...
+   RETURN 1
+
+ON=@TARGON_ITEM
+   IF (<FINDDELIVERYMEM>)
+      IF (<ISDELIVERYTARGET>)
+         IF (<ISQUESTDELIVERY>)
+            IF (0<TAG.QUESTDELIVERYFUNCTION>)
+               TRY TAG.QUESTDELIVERYFUNCTION
+            ENDIF
+            SRC.ARROWQUEST
+            OBJ=<SRC.FINDID.i_delivery_memory.UID>
+            OBJ.REMOVE
+            REMOVE
+         ELSE   
+            TRY SRC.TAG.<TAG.COMPANY>.REP=<EVAL <SRC.TAG.<TAG.COMPANY>.REP> + 1>
+            SRC.SYSMESSAGE @20 You have gained reputation with your employer!
+            OBJ=<SRC.FINDID.i_delivery_memory.UID>
+            IF (0<OBJ.TAG.DISTANCE> >= 3000)
+               TRY SRC.TAG.<TAG.COMPANY>.REP=<EVAL <SRC.TAG.<TAG.COMPANY>.REP> + 4>
+               SRC.SYSMESSAGE @25 You have also been awarded a lot of bonus reputation and a 50% payrise for this extra-long distance delivery!
+               VAR.DELIVERYDISTANCEREWARD=300
+            ELSEIF (0<OBJ.TAG.DISTANCE> >= 1500)
+               TRY SRC.TAG.<TAG.COMPANY>.REP=<EVAL <SRC.TAG.<TAG.COMPANY>.REP> + 2>
+               SRC.SYSMESSAGE @25 You have also been awarded a reasonable amount of bonus reputation and a 25% payrise for this extra-long distance delivery!
+               VAR.DELIVERYDISTANCEREWARD=250
+            ELSEIF (0<OBJ.TAG.DISTANCE> >= 750)
+               TRY SRC.TAG.<TAG.COMPANY>.REP=<EVAL <SRC.TAG.<TAG.COMPANY>.REP> + 1>
+               SRC.SYSMESSAGE @25 You have also been awarded a little bonus reputation for this long distance delivery!
+               VAR.DELIVERYDISTANCEREWARD=200
+            ELSE
+               VAR.DELIVERYDISTANCEREWARD=200
+            ENDIF
+            DELIVERYTIMELEFTPERCENT
+            VAR.GOLDREWARD=
+            OBJ=<SRC.FINDID.i_delivery_memory.UID>
+            VAR.GOLDREWARD=<EVAL <OBJ.TAG.DISTANCE> / 100>
+            VAR.GOLDREWARD=<EVAL <VAR.GOLDREWARD>*<VAR.REWARDPERCENT>>
+            IF (<VAR.GOLDREWARD> < 10)
+               VAR.GOLDREWARD=10
+            ELSEIF (<VAR.GOLDREWARD> > 65000)
+               VAR.GOLDREWARD=65000
+            ENDIF
+            SRC.SYSMESSAGE You have been rewarded a payment of <EVAL <VAR.GOLDREWARD>>
+            SERV.NEWITEM i_gold
+            NEW.AMOUNT <VAR.GOLDREWARD>
+            VAR.GOLDREWARD=
+            NEW.BOUNCE <SRC.UID>
+            SRC.ARROWQUEST
+            OBJ=<SRC.FINDID.i_delivery_memory.UID>
+            OBJ.REMOVE
+            IF (<ISDELIVERY>) // *9
+               REMOVE
+            ELSE
+               SERV.LOG :COMPANY ERROR: UID <UID> was stored as a delivery, but not marked as one!
+               SRC.SYSMESSAGE @70 *This item has potentially broken. Staff have been notified and will arrive to quarantine it ASAP.*
+            ENDIF
+         ENDIF
+      ELSE
+         SRC.SYSMESSAGE This is not the target of your delivery!
+      ENDIF
+   ELSE
+      SERV.LOG :COMPANY ERROR: UID <UID> was used as a delivery, but no delivery memory was found!
+      SRC.SYSMESSAGE @70 *This item has potentially broken. Staff have been notified and will arrive to quarantine it ASAP.*
+   ENDIF
+   RETURN 1
+
+ON=@TARGON_CHAR
+   IF (<FINDDELIVERYMEM>)
+      IF (<ISDELIVERYTARGET>)
+         IF (<ISQUESTDELIVERY>)
+            IF (0<TAG.QUESTDELIVERYFUNCTION>)
+               TRY TAG.QUESTDELIVERYFUNCTION
+            ENDIF
+            SRC.ARROWQUEST
+            OBJ=<SRC.FINDID.i_delivery_memory.UID>
+            OBJ.REMOVE
+            REMOVE
+         ELSE   
+            TRY SRC.TAG.<TAG.COMPANY>.REP=<EVAL <SRC.TAG.<TAG.COMPANY>.REP> + 1>
+            OBJ=<SRC.FINDID.i_delivery_memory.UID>
+            SRC.SYSMESSAGE @20 You have gained reputation with your employer! (Approximate distance of delivery: <EVAL <OBJ.TAG.DISTANCE>> tiles)
+            IF (0<OBJ.TAG.DISTANCE> >= 3000)
+               TRY SRC.TAG.<TAG.COMPANY>.REP=<EVAL <SRC.TAG.<TAG.COMPANY>.REP> + 4>
+               SRC.SYSMESSAGE @25 You have also been awarded a lot of bonus reputation and a 50% payrise for this extra-long distance delivery!
+               VAR.DELIVERYDISTANCEREWARD=300
+            ELSEIF (0<OBJ.TAG.DISTANCE> >= 1500)
+               TRY SRC.TAG.<TAG.COMPANY>.REP=<EVAL <SRC.TAG.<TAG.COMPANY>.REP> + 2>
+               SRC.SYSMESSAGE @25 You have also been awarded a reasonable amount of bonus reputation and a 25% payrise for this extra-long distance delivery!
+               VAR.DELIVERYDISTANCEREWARD=250
+            ELSEIF (0<OBJ.TAG.DISTANCE> >= 750)
+               TRY SRC.TAG.<TAG.COMPANY>.REP=<EVAL <SRC.TAG.<TAG.COMPANY>.REP> + 1>
+               SRC.SYSMESSAGE @25 You have also been awarded a little bonus reputation for this long distance delivery!
+               VAR.DELIVERYDISTANCEREWARD=200
+            ELSE
+               VAR.DELIVERYDISTANCEREWARD=200
+            ENDIF
+            DELIVERYTIMELEFTPERCENT
+            VAR.GOLDREWARD=
+            OBJ=<SRC.FINDID.i_delivery_memory.UID>
+            VAR.GOLDREWARD=<EVAL <OBJ.TAG.DISTANCE> / 100>
+            VAR.GOLDREWARD=<EVAL <VAR.GOLDREWARD>*<VAR.REWARDPERCENT>>
+            IF (<VAR.GOLDREWARD> < 10)
+               VAR.GOLDREWARD=10
+            ELSEIF (<VAR.GOLDREWARD> > 65000)
+               VAR.GOLDREWARD=65000
+            ENDIF
+            SRC.SYSMESSAGE You have been rewarded a payment of <EVAL <VAR.GOLDREWARD>>
+            SERV.NEWITEM i_gold
+            NEW.AMOUNT <VAR.GOLDREWARD>
+            VAR.GOLDREWARD=
+            NEW.BOUNCE <SRC.UID>
+            IF (0<TAG.ISFOOD>=1)
+               IF ((<SRC.KILLS> > 4) && (0<SRC.TARG.TAG.ISGOOD>=1))
+                  DORAND 5
+                     SRC.TARG.SAY Yes um... Thank you for this... Now <SRC.SEX sir/ma'am> could you leave? It's not that I'm afraid but I... well...
+                     SRC.TARG.SAY They employ you <SRC.NAME>?! You're not going to... You know... May I enjoy one last meal of <NAME> first please?...
+                     SRC.TARG.SAY You've made your extremely tasty delivery. You have until I finish this <NAME> to scram vile <SRC.NAME>, before I smite thee...
+                     SRC.TARG.SAY Well I suppose even the evil have to make a living, thank you <SRC.NAME>.
+                     SRC.TARG.SAY Mmm, tasty <NAME>!... It's ok, I won't judge you, good or evil we unite in the name of food anyhow!
+                  ENDDO
+               ELSEIF ((<SRC.KILLS> > 4) && (0<SRC.TARG.TAG.ISGOOD>=0))
+                  DORAND 5
+                     SRC.TARG.SAY I always knew you'd end up delivering <NAME> to me, you waste of space for a criminal!
+                     SRC.TARG.SAY I see even you, <SRC.NAME>, have been caught up in the new wave of capitalism across Britannia... Fool... I'll rob your pockets too...
+                     SRC.TARG.SAY Brother <SRC.NAME>, thank you for bringing my <NAME>! Allow me to share this tasty treat with you, along with an extremely Bloody Mary!
+                     SRC.TARG.SAY My <NAME> had best not have gone off... Move along little <SRC.SEX boy/girl> before you become my starter...
+                     SRC.TARG.SAY Ah, yes my <NAME>! Excellent. Now begone <SRC.NAME>!
+                  ENDDO
+               ELSEIF ((<SRC.KARMA> > -3000) && (0<SRC.TARG.TAG.ISGOOD>=1))
+                  DORAND 5
+                     SRC.TARG.SAY Thank you <SRC.NAME>, I look forward to every meal of <NAME>! Care to stop for a glass of wine before you get back to work?
+                     SRC.TARG.SAY Excellent. What's your name?... Ah, <SRC.NAME>. Well thank you for this!
+                     SRC.TARG.SAY Ah they found a delivery <SRC.SEX boy/girl> in the end, I've been waiting for this for hours! I thought I was going to starve...
+                     SRC.TARG.SAY Aha, my <NAME> has arrived! And still fresh! I appreciate this young <SRC.SEX sir/madam>.
+                     SRC.TARG.SAY What? My <NAME>? Oh wow, that was sooner than I had expected! Amazing, send my thanks to your employer!
+                  ENDDO
+               ELSEIF ((<SRC.KARMA> > -3000) && (0<SRC.TARG.TAG.ISGOOD>=0))
+                  DORAND 5
+                     SRC.TARG.SAY It's about time I got this <NAME>. Now run along little <SRC.SEX boy/girl>...
+                     SRC.TARG.SAY Look, you've delivered this <SRC.NAME>, now get out of my sight! Or I'll use your bones for toothpicks!
+                     SRC.TARG.SAY Grr, they can't make a <SRC.TARG.SEX guy/gal> wait like this for my <NAME>! Hurry up and hand it over!
+                     SRC.TARG.SAY Look here goody goody, you've made the delivery, now scram before I rip your heart out of your chest and eat that as well!
+                     SRC.TARG.SAY Ooh look... My <NAME> has finally been delivered... About time too... I'm starving... Almost enough to eat you too...
+                  ENDDO
+               ELSEIF ((<SRC.KARMA> <= -3000) && (0<SRC.TARG.TAG.ISGOOD>=1))
+                  DORAND 5
+                     SRC.TARG.SAY Yes um... Thank you for this... Now <SRC.SEX sir/ma'am> could you leave? It's not that I'm afraid but I... well...
+                     SRC.TARG.SAY They employ you <SRC.NAME>?! You're not going to... You know... May I enjoy one last meal of <NAME> first please?...
+                     SRC.TARG.SAY You've made your extremely tasty delivery. You have until I finish this <NAME> to scram vile <SRC.NAME>, before I smite thee...
+                     SRC.TARG.SAY Well I suppose even the evil have to make a living, thank you <SRC.NAME>.
+                     SRC.TARG.SAY Mmm, tasty <NAME>!... It's ok, I won't judge you, good or evil we unite in the name of food anyhow!
+                  ENDDO
+               ELSEIF ((<SRC.KARMA> <= -3000) && (0<SRC.TARG.TAG.ISGOOD>=0))
+                  DORAND 5
+                     SRC.TARG.SAY I always knew you'd end up delivering <NAME> to me, you waste of space for a criminal!
+                     SRC.TARG.SAY I see even you, <SRC.NAME>, have been caught up in the new wave of capitalism across Britannia... Fool... I'll rob your pockets too...
+                     SRC.TARG.SAY Brother <SRC.NAME>, thank you for bringing my <NAME>! Allow me to share this tasty treat with you, along with an extremely Bloody Mary!
+                     SRC.TARG.SAY My <NAME> had best not have gone off... Move along little <SRC.SEX boy/girl> before you become my starter...
+                     SRC.TARG.SAY Ah, yes my <NAME>! Excellent. Now begone <SRC.NAME>!
+                  ENDDO
+               ENDIF
+            ELSE
+               IF ((<SRC.KILLS> > 4) && (0<SRC.TARG.TAG.ISGOOD>=1))
+                  DORAND 5
+                     SRC.TARG.SAY Yes um... Thank you for this... Now <SRC.SEX sir/ma'am> could you leave? It's not that I'm afraid but I... well...
+                     SRC.TARG.SAY They employ you <SRC.NAME>?! You're not going to... You know... Do anything to me are you?... Please?...
+                     SRC.TARG.SAY You've made your delivery, now scram vile <SRC.NAME> before I smite thee...
+                     SRC.TARG.SAY Well I suppose even the evil have to make a living, thank you <SRC.NAME>.
+                     SRC.TARG.SAY Ah, yes my <NAME>!... What? I won't pour scorn on you, even the worst of us can deliver <NAME>s with kindness. Thank you kindly!
+                  ENDDO
+               ELSEIF ((<SRC.KILLS> > 4) && (0<SRC.TARG.TAG.ISGOOD>=0))
+                  DORAND 5
+                     SRC.TARG.SAY The nefarious <SRC.NAME>, lowered down to delivering my <NAME>? Ha! I look forward to killing you in combat soon enough...
+                     SRC.TARG.SAY I see even you, <SRC.NAME>, have been caught up in the new wave of capitalism across Britannia... Fool... I'll rob your pockets too...
+                     SRC.TARG.SAY Brother <SRC.NAME>, thank you for bringing my <NAME> post haste! Let us celebrate by bathing in the blood of 1000 virgins!
+                     SRC.TARG.SAY It's about time I got this <NAME>. Now run along little <SRC.SEX boy/girl>... You'll die regardless!
+                     SRC.TARG.SAY Ah, yes my <NAME>! Excellent. Now begone <SRC.NAME>!
+                  ENDDO
+               ELSEIF ((<SRC.KARMA> > -3000) && (0<SRC.TARG.TAG.ISGOOD>=1))
+                  DORAND 5
+                     SRC.TARG.SAY Thank you <SRC.NAME>, I have been waiting for this with great anticipation!
+                     SRC.TARG.SAY Excellent. What's your name?... Ah, <SRC.NAME>. Well thank you for this!
+                     SRC.TARG.SAY Ah they found a delivery <SRC.SEX boy/girl>, I've been waiting for this for weeks! Thank you!
+                     SRC.TARG.SAY Aha, my <NAME> has arrived! I've been waiting for this for a while! I appreciate this young <SRC.SEX sir/madam>.
+                     SRC.TARG.SAY What? My <NAME>? Oh wow, that was sooner than I had expected! Amazing, send my thanks to your employer!
+                  ENDDO
+               ELSEIF ((<SRC.KARMA> > -3000) && (0<SRC.TARG.TAG.ISGOOD>=0))
+                  DORAND 5
+                     SRC.TARG.SAY It's about time I got this <NAME>. Now run along little <SRC.SEX boy/girl>...
+                     SRC.TARG.SAY Look, you've delivered this <SRC.NAME>, now get out of my sight!
+                     SRC.TARG.SAY Grr, they can't make a <SRC.TARG.SEX guy/gal> wait like this and expect us not to <SRC.TARG.SEX kill/castrate> the delivery <SRC.SEX sir/madam>...
+                     SRC.TARG.SAY Look here goody goody, you've made the delivery, now scram before I rip your heart out of your chest!
+                     SRC.TARG.SAY Ooh look... My <NAME> has finally been delivered... About time too...
+                  ENDDO
+               ELSEIF ((<SRC.KARMA> <= -3000) && (0<SRC.TARG.TAG.ISGOOD>=1))
+                  DORAND 5
+                     SRC.TARG.SAY Yes um... Thank you for this... Now <SRC.SEX sir/ma'am> could you leave? It's not that I'm afraid but I... well...
+                     SRC.TARG.SAY They employ you <SRC.NAME>?! You're not going to... You know... Do anything to me are you?... Please?...
+                     SRC.TARG.SAY You've made your delivery, now scram vile <SRC.NAME> before I smite thee...
+                     SRC.TARG.SAY Well I suppose even the evil have to make a living, thank you <SRC.NAME>.
+                     SRC.TARG.SAY Ah, yes my <NAME>!... What? I won't pour scorn on you, even the worst of us can deliver <NAME>s with kindness. Thank you kindly!
+                  ENDDO
+               ELSEIF ((<SRC.KARMA> <= -3000) && (0<SRC.TARG.TAG.ISGOOD>=0))
+                  DORAND 5
+                     SRC.TARG.SAY The nefarious <SRC.NAME>, lowered down to delivering my <NAME>? Ha! I look forward to killing you in combat soon enough...
+                     SRC.TARG.SAY I see even you, <SRC.NAME>, have been caught up in the new wave of capitalism across Britannia... Fool... I'll rob your pockets too...
+                     SRC.TARG.SAY Brother <SRC.NAME>, thank you for bringing my <NAME> post haste! Let us celebrate by bathing in the blood of 1000 virgins!
+                     SRC.TARG.SAY It's about time I got this <NAME>. Now run along little <SRC.SEX boy/girl>... You'll die regardless!
+                     SRC.TARG.SAY Ah, yes my <NAME>! Excellent. Now begone <SRC.NAME>!
+                  ENDDO
+               ENDIF
+            ENDIF
+            SRC.ARROWQUEST
+            OBJ=<SRC.FINDID.i_delivery_memory.UID>
+            OBJ.REMOVE
+            IF (<ISDELIVERY>) // *9
+               REMOVE
+            ELSE
+               SERV.LOG :COMPANY ERROR: UID <UID> was used as a delivery, but not marked as one!
+               SRC.SYSMESSAGE @70 *This item has potentially broken. Staff have been notified and will arrive to quarantine it upon your paging.*
+            ENDIF
+         ENDIF
+      ELSE
+         SRC.SYSMESSAGE This is not the target of your delivery!
+      ENDIF
+   ELSE
+      SERV.LOG :COMPANY ERROR: UID <UID> was marked as a delivery, but no delivery memory was found!
+      SRC.SYSMESSAGE @70 -This item has potentially broken. Staff have been notified and will arrive to quarantine it upon your paging.-
+   ENDIF
+   RETURN 1
+
+
+[TYPEDEF t_delivery_teleport]
+
+ON=@STEP
+   IF (<SRC.FINDID.i_hjfl_delivery.UID>)
+      DORAND 2
+         VAR.X=<EVAL <EVAL RAND(15)>+1425>
+         VAR.X=<EVAL <EVAL RAND(15)>-1425>
+      ENDDO
+      DORAND 2
+         VAR.Y=<EVAL <EVAL RAND(15)>+1436>
+         VAR.Y=<EVAL <EVAL RAND(15)>-1436>
+      ENDDO
+      SRC.GO 2151,2090,0,0
+   ELSE
+      SRC.MESSAGE You must be on a delivery mission for Honest Joes to use this teleporter...
+      SRC.GO 2713,2101
+   ENDIF
+
+  
+// ------------------
+// - Core Functions -
+// ------------------
+
+
+[FUNCTION ISDELIVERY]
+   IF (0<TAG.ISDELIVERY> == 1)
+      RETURN 1
+   ELSE
+      RETURN 0
+   ENDIF
+
+   
+[FUNCTION ISQUESTDELIVERY]
+   IF (0<TAG.ISQUESTDELIVERY> == 1)
+      RETURN 1
+   ELSE
+      RETURN 0
+   ENDIF
+
+
+[FUNCTION FINDDELIVERYMEM]
+   OBJ=<SRC.FINDID.i_delivery_memory.UID>
+   IF (<OBJ.TAG.DELIVERYITEM> = <UID>)
+      RETURN 1
+   ELSE
+      RETURN 0
+   ENDIF
+
+[FUNCTION ISDELIVERYTARGET]
+   OBJ=<SRC.FINDID.i_delivery_memory.UID>
+   IF (<VAR.NPCDELIVERY.<OBJ.TAG.TARGET>> = <SRC.TARG.UID>)
+      RETURN 1
+   ELSE
+      RETURN 0
+   ENDIF
+
+
+[FUNCTION DELIVERYTIMELEFTPERCENT]
+   OBJ=<SRC.FINDID.i_delivery_memory.UID>
+   VAR.TOTALTIME=<EVAL <OBJ.MORE2>*60>
+   VAR.TIMELEFT=<EVAL <EVAL <OBJ.MORE1>*60>+<EVAL <OBJ.TIMER>>>
+   IF !(0<VAR.DELIVERYDISTANCEREWARD>)
+      VAR.DELIVERYDISTANCEREWARD=200
+   ENDIF
+   VAR.REWARDPERCENT=<EVAL <EVAL <VAR.DELIVERYDISTANCEREWARD>>*<EVAL <VAR.TIMELEFT>>>
+   VAR.REWARDPERCENT=<EVAL <EVAL <VAR.REWARDPERCENT>>/<EVAL <VAR.TOTALTIME>>>
+
+[FUNCTION F_JOB_TARGET]
+   VAR.TARGETNPC=<EVAL <EVAL RAND(12)>+1>
+   IF (<UID.<VAR.NPCDELIVERY.<VAR.TARGETNPC>>.KARMA> >= <VAR.KARMAMIN>) && (<UID.<VAR.NPCDELIVERY.<VAR.TARGETNPC>>.KARMA> <= <VAR.KARMAMAX>)
+      IF ((<VAR.GUARDED>==0) && (<UID.<VAR.NPCDELIVERY.<VAR.TARGETNPC>>.REGION.GUARDED>)) // Cannot be guarded
+         IF !(<VAR.ATTEMPTS>)
+            VAR.ATTEMPTS=1
+            F_JOB_TARGET
+         ELSEIF (<VAR.ATTEMPTS> == 5)
+            SERV.LOG Fail defining guarded region <EVAL <VAR.ATTEMPTS>> times - removed: <UID.<VAR.NPCDELIVERY.<VAR.TARGETNPC>>.NAME>
+            VAR.REMOVEJOB=1
+            SERV.LOG UID Meant to be removed <VAR.JOBITEM>
+            VAR.ATTEMPTS=0
+            RETURN 1
+         ELSE
+            VAR.ATTEMPTS=<EVAL <VAR.ATTEMPTS> + 1>
+            F_JOB_TARGET
+         ENDIF
+         RETURN 1
+      ENDIF
+      IF ((<VAR.UNGUARDED>==0) && !(<UID.<VAR.NPCDELIVERY.<VAR.TARGETNPC>>.REGION.GUARDED>)) // Cannot be unguarded
+         IF !(<VAR.ATTEMPTS>)
+            VAR.ATTEMPTS=1
+            F_JOB_TARGET
+         ELSEIF (<VAR.ATTEMPTS> == 5)
+            SERV.LOG Fail defining guarded region <EVAL <VAR.ATTEMPTS>> times - removed: <UID.<VAR.NPCDELIVERY.<VAR.TARGETNPC>>.NAME>
+            VAR.REMOVEJOB=1
+            SERV.LOG UID Meant to be removed <VAR.JOBITEM>
+            VAR.ATTEMPTS=0
+            RETURN 1
+         ELSE
+            VAR.ATTEMPTS=<EVAL <VAR.ATTEMPTS> + 1>
+            F_JOB_TARGET
+         ENDIF
+         RETURN 1
+      ENDIF
+      IF !(0<VAR.NPCDELIVERY.<VAR.TARGETNPC>>)
+         VAR.REMOVEJOB=1
+      ELSE
+         SERV.LOG NPC set <EVAL <VAR.TARGETNPC>>
+         TAG.TARGETNPC=<VAR.TARGETNPC>
+      ENDIF
+   ELSE
+      VAR.REMOVEJOB=1
+   ENDIF
+   RETURN 1
+      
+[FUNCTION NPCDELIVERY]
+
+IF !(<ARGS>)
+   SRC.SYSMESSAGE @12 Please enter an argument.
+ELSE
+   SRC.SYSMESSAGE @12 VAR.NPCDELIVERY.<ARGS> is <VAR.NPCDELIVERY.<ARGS>>
+ENDIF
+
+   
+// ------------------
+// - Test Functions -
+// ------------------
+
+[FUNCTION deliverydistance]
+SAY <DISTANCE <UID.<VAR.NPCDELIVERY.1>.UID>>
+
+
+[FUNCTION fakedelivery]
+SERV.NEWITEM i_robe
+NEW.TYPE=t_delivery_company
+NEW.TAG.COMPANY=bollocks
+NEW.TAG.ISDELIVERY=1
+NEW.BOUNCE <SRC.UID>
+VAR.TARGET=<UID.<VAR.NPCDELIVERY.5>.UID>
+VAR.COMPANY=bollocks
+VAR.DELIVERYITEM=<NEW.UID>
+VAR.DELIVERYMINUTES=30
+SERV.NEWITEM i_delivery_memory
+SERV.B <NEW.TAG.DELIVERYITEM>
+NEW.EQUIP <SRC.UID>
+
+[FUNCTION testemployment_vrc]
+SRC.TAG.COMPANIESEMPLOYEDBY=<eval ( <SRC.TAG.COMPANIESEMPLOYEDBY> | NPCE_VespRoastChick )>
+SRC.TAG.COMPANIESEMPLOYEDBY=<eval ( <SRC.TAG.COMPANIESEMPLOYEDBY> &~ NPCE_HonJoeFreshLamb )>
+SRC.TAG.NPCE_VespRoastChick.REP=25
+SRC.SYSMESSAGE @32 Vesper Roast Chicken Employment Test Enabled!
+SERV.LOG <SRC.NAME> (<SRC.ACCOUNT.NAME>) is testing Vesper Roast Chicken - If it's a player, get him!
+
+[FUNCTION testemployment_hjfl]
+SRC.TAG.COMPANIESEMPLOYEDBY=<eval ( <SRC.TAG.COMPANIESEMPLOYEDBY> | NPCE_HonJoeFreshLamb )>
+SRC.TAG.COMPANIESEMPLOYEDBY=<eval ( <SRC.TAG.COMPANIESEMPLOYEDBY> &~ NPCE_VespRoastChick )>
+SRC.TAG.NPCE_HonJoeFreshLamb.REP=25
+SRC.SYSMESSAGE @32 Honest Joes Employment Test Enabled!
+SERV.LOG <SRC.NAME> (<SRC.ACCOUNT.NAME>) is testing Honest Joes - If it's a player, get him!
+
+// ----------------
+// - Target NPC's -
+// ----------------
+
+[CHARDEF c_delivery_target_npc_1]
+ID=c_woman
+NAME=Jess
+DAM=5,12 
+ARMOR=200
+
+DESIRES=i_gold,e_notoriety,t_magic
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+TSPEECH=spk_human_default
+
+
+TEVENTS=e_Human_HearUnk
+TEVENTS=e_Human_Needs
+TEVENTS=e_Human_Refuse
+TEVENTS=e_Human_Environ
+
+CATEGORY=Delivery Core
+SUBSECTION=Target NPC's
+DESCRIPTION=1 - Jess
+
+ON=@CREATE
+   TAG.ISGOOD=1
+   NPC=brain_human
+   COLOR=0401
+   STR=200
+   INT=300
+   DEX=100
+   WRESTLING=1000
+   TACTICS=1000
+   MAGERY=1000
+   NECROMANCY=1000
+   EVALUATINGINTEL=1000
+   MAGICRESISTANCE=1000
+   ITEMNEWBIE=i_kimono
+   COLOR=09b1
+   ITEMNEWBIE=i_hair_long
+   TIMER=-1
+   COLOR=0488
+   ITEMNEWBIE=i_boots_thigh
+
+ON=@NPCRESTOCK
+   TAG.ISGOOD=1
+   SERV.NEWITEM i_delivery_target_remover
+   EQUIP <NEW.UID>
+   NEW.LINK <UID>
+   NEW.TAG.NUMBER="1"
+
+
+[CHARDEF c_delivery_target_npc_2]
+ID=c_woman
+NAME=Helena
+DAM=5,12 
+ARMOR=200
+
+DESIRES=i_gold,e_notoriety,t_magic
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+TSPEECH=spk_human_default
+
+
+TEVENTS=e_Human_HearUnk
+TEVENTS=e_Human_Needs
+TEVENTS=e_Human_Refuse
+TEVENTS=e_Human_Environ
+
+CATEGORY=Delivery Core
+SUBSECTION=Target NPC's
+DESCRIPTION=2 - Helena
+
+ON=@CREATE
+   TAG.ISGOOD=1
+   NPC=brain_human
+   COLOR=0401
+   STR=200
+   INT=300
+   DEX=100
+   WRESTLING=1000
+   TACTICS=1000
+   MAGERY=1000
+   NECROMANCY=1000
+   EVALUATINGINTEL=1000
+   MAGICRESISTANCE=1000
+   ITEMNEWBIE=i_elven_female_shirt2
+   COLOR=0f
+   ITEMNEWBIE=i_skirt_short
+   COLOR=0e
+   ITEMNEWBIE=i_elven_boots
+   COLOR=0d
+   ITEMNEWBIE=i_hair_elven_flower
+   TIMER=-1
+   COLOR=0160
+
+ON=@NPCRESTOCK
+   TAG.ISGOOD=1
+   SERV.NEWITEM i_delivery_target_remover
+   EQUIP <NEW.UID>
+   NEW.LINK <UID>
+   NEW.TAG.NUMBER="2"
+   
+   
+[CHARDEF c_delivery_target_npc_3]
+ID=c_man
+NAME=Kakashi
+DAM=5,12 
+ARMOR=200
+
+DESIRES=i_gold,e_notoriety,t_magic
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+TSPEECH=spk_human_default
+
+
+TEVENTS=e_Human_HearUnk
+TEVENTS=e_Human_Needs
+TEVENTS=e_Human_Refuse
+TEVENTS=e_Human_Environ
+
+CATEGORY=Delivery Core
+SUBSECTION=Target NPC's
+DESCRIPTION=3 - Kakashi
+
+ON=@CREATE
+   TAG.ISGOOD=1
+   NPC=brain_human
+   COLOR=0401
+   STR=200
+   INT=300
+   DEX=100
+   WRESTLING=1000
+   TACTICS=1000
+   MAGERY=1000
+   NECROMANCY=1000
+   EVALUATINGINTEL=1000
+   MAGICRESISTANCE=1000
+   ITEMNEWBIE=i_leather_ninja_jacket
+   COLOR=01f6
+   ITEMNEWBIE=i_leather_ninja_pants
+   COLOR=01f6
+   ITEMNEWBIE=i_leather_ninja_mitts
+   COLOR=01f6
+   ITEMNEWBIE=i_leather_mempo
+   COLOR=01f6
+   ITEMNEWBIE=i_sandals_ninja
+   COLOR=01f6
+   ITEMNEWBIE=i_hair_elven_spike
+   TIMER=-1
+
+ON=@NPCRESTOCK
+   TAG.ISGOOD=1
+   SERV.NEWITEM i_delivery_target_remover
+   EQUIP <NEW.UID>
+   NEW.LINK <UID>
+   NEW.TAG.NUMBER="3"   
+   
+   
+[CHARDEF c_delivery_target_npc_4]
+ID=c_man
+NAME=James
+DAM=5,12 
+ARMOR=200
+
+DESIRES=i_gold,e_notoriety,t_magic
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+TSPEECH=spk_human_default
+
+
+TEVENTS=e_Human_HearUnk
+TEVENTS=e_Human_Needs
+TEVENTS=e_Human_Refuse
+TEVENTS=e_Human_Environ
+
+CATEGORY=Delivery Core
+SUBSECTION=Target NPC's
+DESCRIPTION=4 - James
+
+ON=@CREATE
+   TAG.ISGOOD=1
+   NPC=brain_human
+   COLOR=0401
+   STR=200
+   INT=300
+   DEX=100
+   WRESTLING=1000
+   TACTICS=1000
+   MAGERY=1000
+   NECROMANCY=1000
+   EVALUATINGINTEL=1000
+   MAGICRESISTANCE=1000
+   ITEMNEWBIE=i_doublet
+   COLOR=0481
+   ITEMNEWBIE=i_pants_long
+   COLOR=052d
+   ITEMNEWBIE=i_shoes_plain
+   COLOR=025
+   ITEMNEWBIE=i_hair_elven_spike
+   COLOR=05ae
+   TIMER=-1
+
+ON=@NPCRESTOCK
+   TAG.ISGOOD=1
+   SERV.NEWITEM i_delivery_target_remover
+   EQUIP <NEW.UID>
+   NEW.LINK <UID>
+   NEW.TAG.NUMBER="4"   
+   
+
+[CHARDEF c_delivery_target_npc_5]
+ID=c_man
+NAME=Jack
+DAM=5,12 
+ARMOR=200
+
+DESIRES=i_gold,e_notoriety,t_magic
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+TSPEECH=spk_human_default
+
+
+TEVENTS=e_Human_HearUnk
+TEVENTS=e_Human_Needs
+TEVENTS=e_Human_Refuse
+TEVENTS=e_Human_Environ
+
+CATEGORY=Delivery Core
+SUBSECTION=Target NPC's
+DESCRIPTION=5 - Jack
+
+ON=@CREATE
+   TAG.ISGOOD=0
+   NPC=brain_human
+   COLOR=0401
+   STR=400
+   INT=100
+   DEX=100
+   KARMA=-10000
+   SWORDSMANSHIP=1000
+   TACTICS=1000
+   MAGERY=1000
+   EVALUATINGINTEL=1000
+   MAGICRESISTANCE=1000
+   ITEMNEWBIE=i_shirt_fancy
+   COLOR=0278
+   ITEMNEWBIE=i_sash
+   COLOR=0160
+   ITEMNEWBIE=i_pants_long
+   COLOR=0455
+   ITEMNEWBIE=i_boots_calf
+   COLOR=03d6
+   ITEMNEWBIE=i_hair_long
+   COLOR=03d6
+   TIMER=-1
+   ITEMNEWBIE=i_bandana
+   COLOR=01
+   ITEMNEWBIE=i_scimitar_adamantine
+   ATTR=05
+
+ON=@NPCRESTOCK
+   TAG.ISGOOD=0
+   SERV.NEWITEM i_delivery_target_remover
+   EQUIP <NEW.UID>
+   NEW.LINK <UID>
+   NEW.TAG.NUMBER="5"      
+   
+ON=@NPCLookAtChar
+   RETURN 1
+   
+
+[CHARDEF c_delivery_target_npc_6]
+ID=c_woman
+NAME=Sharon
+DAM=5,12 
+ARMOR=200
+
+DESIRES=i_gold,e_notoriety,t_magic
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+TSPEECH=spk_human_default
+
+
+TEVENTS=e_Human_HearUnk
+TEVENTS=e_Human_Needs
+TEVENTS=e_Human_Refuse
+TEVENTS=e_Human_Environ
+
+CATEGORY=Delivery Core
+SUBSECTION=Target NPC's
+DESCRIPTION=6 - Sharon
+
+ON=@CREATE
+   TAG.ISGOOD=1
+   NPC=brain_human
+   COLOR=0401
+   STR=400
+   INT=100
+   DEX=100
+   KARMA=10000
+   WRESTLING=1000
+   TACTICS=1000
+   MAGERY=1000
+   EVALUATINGINTEL=1000
+   MAGICRESISTANCE=1000
+   ITEMNEWBIE=i_dress_full
+   COLOR=0278
+   ITEMNEWBIE=i_shoes_plain
+   ITEMNEWBIE=i_hair_long
+   COLOR=075d
+   TIMER=-1
+
+ON=@NPCRESTOCK
+   TAG.ISGOOD=1
+   SERV.NEWITEM i_delivery_target_remover
+   EQUIP <NEW.UID>
+   NEW.LINK <UID>
+   NEW.TAG.NUMBER="6"      
+   
+   
+[CHARDEF c_delivery_target_npc_7]
+ID=c_man
+NAME=Robert
+DAM=5,12 
+ARMOR=200
+
+DESIRES=i_gold,e_notoriety,t_magic
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+TSPEECH=spk_human_default
+
+
+TEVENTS=e_Human_HearUnk
+TEVENTS=e_Human_Needs
+TEVENTS=e_Human_Refuse
+TEVENTS=e_Human_Environ
+
+CATEGORY=Delivery Core
+SUBSECTION=Target NPC's
+DESCRIPTION=7 - Robert
+
+ON=@CREATE
+   TAG.ISGOOD=1
+   NPC=brain_human
+   COLOR=0401
+   STR=400
+   INT=100
+   DEX=100
+   KARMA=10000
+   SWORDSMANSHIP=1000
+   TACTICS=1000
+   MAGERY=1000
+   EVALUATINGINTEL=1000
+   MAGICRESISTANCE=1000
+   ITEMNEWBIE=i_doublet
+   COLOR=0148
+   ITEMNEWBIE=i_pants_long
+   COLOR=01
+   ITEMNEWBIE=i_boots_calf
+   ITEMNEWBIE=i_hair_elven_spike
+   COLOR=032
+   TIMER=-1
+   ITEMNEWBIE=i_sword_long_adamantine
+   QUALITY=150
+   ATTR=05
+
+ON=@NPCRESTOCK
+   TAG.ISGOOD=1
+   SERV.NEWITEM i_delivery_target_remover
+   EQUIP <NEW.UID>
+   NEW.LINK <UID>
+   NEW.TAG.NUMBER="7"      
+
+
+
+[CHARDEF c_delivery_target_npc_8]
+ID=c_man
+NAME=Ben
+DAM=5,12 
+ARMOR=200
+
+DESIRES=i_gold,e_notoriety,t_magic
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+TSPEECH=spk_human_default
+
+
+TEVENTS=e_Human_HearUnk
+TEVENTS=e_Human_Needs
+TEVENTS=e_Human_Refuse
+TEVENTS=e_Human_Environ
+
+CATEGORY=Delivery Core
+SUBSECTION=Target NPC's
+DESCRIPTION=8 - Ben
+
+ON=@CREATE
+   TAG.ISGOOD=0
+   NPC=brain_human
+   COLOR=0401
+   STR=400
+   INT=100
+   DEX=100
+   KARMA=-5000
+   SWORDSMANSHIP=1000
+   TACTICS=1000
+   MAGERY=1000
+   EVALUATINGINTEL=1000
+   MAGICRESISTANCE=1000
+   ITEMNEWBIE=i_shirt_plain
+   COLOR=025
+   ITEMNEWBIE=i_pants_long
+   COLOR=025
+   ITEMNEWBIE=i_boots_calf
+   ITEMNEWBIE=i_hair_short
+   COLOR=032
+   TIMER=-1
+
+ON=@NPCRESTOCK
+   TAG.ISGOOD=0
+   SERV.NEWITEM i_delivery_target_remover
+   EQUIP <NEW.UID>
+   NEW.LINK <UID>
+   NEW.TAG.NUMBER="8" 
+   
+   
+[CHARDEF c_delivery_target_npc_9]
+ID=c_man
+NAME=Charlie
+DAM=5,12 
+ARMOR=200
+
+DESIRES=i_gold,e_notoriety,t_magic
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+TSPEECH=spk_human_default
+
+
+TEVENTS=e_Human_HearUnk
+TEVENTS=e_Human_Needs
+TEVENTS=e_Human_Refuse
+TEVENTS=e_Human_Environ
+
+CATEGORY=Delivery Core
+SUBSECTION=Target NPC's
+DESCRIPTION=9 - Charlie
+
+ON=@CREATE
+   TAG.ISGOOD=0
+   NPC=brain_human
+   COLOR=0401
+   STR=400
+   INT=100
+   DEX=100
+   KARMA=-5000
+   FENCING=1000
+   TACTICS=1000
+   MAGERY=1000
+   EVALUATINGINTEL=1000
+   MAGICRESISTANCE=1000
+   ITEMNEWBIE=i_shirt_plain
+   COLOR=012
+   ITEMNEWBIE=i_bandanna
+   COLOR=01
+   ITEMNEWBIE=i_pants_short
+   COLOR=01
+   ITEMNEWBIE=i_boots_thigh
+   ITEMNEWBIE=i_hair_long
+   COLOR=032
+   TIMER=-1
+   ITEMNEWBIE=i_spear_long_verminard
+   ATTR=05
+
+ON=@NPCRESTOCK
+   TAG.ISGOOD=0
+   SERV.NEWITEM i_delivery_target_remover
+   EQUIP <NEW.UID>
+   NEW.LINK <UID>
+   NEW.TAG.NUMBER="9"    
+   
+ON=@NPCLookAtChar
+   RETURN 1   
+   
+   
+[CHARDEF c_delivery_target_npc_10]
+ID=c_woman
+NAME=Rosie
+DAM=5,12 
+ARMOR=200
+
+DESIRES=i_gold,e_notoriety,t_magic
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+TSPEECH=spk_human_default
+
+
+TEVENTS=e_Human_HearUnk
+TEVENTS=e_Human_Needs
+TEVENTS=e_Human_Refuse
+TEVENTS=e_Human_Environ
+
+CATEGORY=Delivery Core
+SUBSECTION=Target NPC's
+DESCRIPTION=10 - Rosie
+
+ON=@CREATE
+   TAG.ISGOOD=0
+   NPC=brain_human
+   COLOR=0401
+   STR=400
+   INT=100
+   DEX=100
+   KARMA=-3000
+   FENCING=1000
+   TACTICS=1000
+   MAGERY=1000
+   EVALUATINGINTEL=1000
+   MAGICRESISTANCE=1000
+   ITEMNEWBIE=i_armor_female_harness_amazon
+   COLOR=0964
+   ITEMNEWBIE=i_leather_leggings
+   COLOR=06ad
+   ITEMNEWBIE=i_boots_thigh
+   COLOR=0978
+   ITEMNEWBIE=i_hair_long
+   COLOR=01
+   TIMER=-1
+
+ON=@NPCRESTOCK
+   TAG.ISGOOD=0
+   SERV.NEWITEM i_delivery_target_remover
+   EQUIP <NEW.UID>
+   NEW.LINK <UID>
+   NEW.TAG.NUMBER="10"    
+   
+ON=@NPCLookAtChar
+   RETURN 1    
+   
+
+[CHARDEF c_delivery_target_npc_11]
+ID=c_woman
+NAME=Michelle
+DAM=5,12 
+ARMOR=200
+
+DESIRES=i_gold,e_notoriety,t_magic
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+TSPEECH=spk_human_default
+
+
+TEVENTS=e_Human_HearUnk
+TEVENTS=e_Human_Needs
+TEVENTS=e_Human_Refuse
+TEVENTS=e_Human_Environ
+
+CATEGORY=Delivery Core
+SUBSECTION=Target NPC's
+DESCRIPTION=11 - Michelle
+
+ON=@CREATE
+   TAG.ISGOOD=0
+   NPC=brain_human
+   COLOR=0401
+   STR=400
+   INT=100
+   DEX=100
+   KARMA=-3000
+   FENCING=1000
+   TACTICS=1000
+   MAGERY=1000
+   EVALUATINGINTEL=1000
+   MAGICRESISTANCE=1000
+   ITEMNEWBIE=i_armor_female_harness_amazon
+   COLOR=027
+   ITEMNEWBIE=i_leather_leggings
+   COLOR=0942
+   ITEMNEWBIE=i_boots_thigh
+   COLOR=0978
+   ITEMNEWBIE=i_hair_2_pigtails
+   COLOR=0488
+   TIMER=-1
+
+ON=@NPCRESTOCK
+   TAG.ISGOOD=0
+   SERV.NEWITEM i_delivery_target_remover
+   EQUIP <NEW.UID>
+   NEW.LINK <UID>
+   NEW.TAG.NUMBER="11"    
+   
+ON=@NPCLookAtChar
+   RETURN 1      
+   
+   
+[CHARDEF c_delivery_target_npc_12]
+ID=c_man
+NAME=MCX
+DAM=5,12 
+ARMOR=200
+
+DESIRES=i_gold,e_notoriety,t_magic
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+TSPEECH=spk_human_default
+
+
+TEVENTS=e_Human_HearUnk
+TEVENTS=e_Human_Needs
+TEVENTS=e_Human_Refuse
+TEVENTS=e_Human_Environ
+
+CATEGORY=Delivery Core
+SUBSECTION=Target NPC's
+DESCRIPTION=12 - MCX
+
+ON=@CREATE
+   TAG.ISGOOD=0
+   NPC=brain_human
+   COLOR=0401
+   STR=400
+   INT=100
+   DEX=100
+   KARMA=-5000
+   SWORDSMANSHIP=1000
+   TACTICS=1000
+   MAGERY=1000
+   EVALUATINGINTEL=1000
+   MAGICRESISTANCE=1000
+   ITEMNEWBIE=i_shirt_fancy
+   COLOR=01
+   ITEMNEWBIE=i_bandanna
+   COLOR=025
+   ITEMNEWBIE=i_pants_long
+   COLOR=01
+   ITEMNEWBIE=i_boots_calf
+   COLOR=01
+   ITEMNEWBIE=i_hair_short
+   COLOR=032
+   TIMER=-1
+   ITEMNEWBIE=i_halberd_verminard
+   ATTR=05
+
+ON=@NPCRESTOCK
+   TAG.ISGOOD=0
+   SERV.NEWITEM i_delivery_target_remover
+   EQUIP <NEW.UID>
+   NEW.LINK <UID>
+   NEW.TAG.NUMBER="12"    
+   
+ON=@NPCLookAtChar
+   RETURN 1   
+   
+   
+[CHARDEF c_delivery_target_npc_13]
+ID=c_man
+NAME=Simon
+DAM=5,12 
+ARMOR=200
+
+DESIRES=i_gold,e_notoriety,t_magic
+AVERSIONS=t_TRAP,t_eerie_stuff
+
+TSPEECH=spk_human_default
+
+
+TEVENTS=e_Human_HearUnk
+TEVENTS=e_Human_Needs
+TEVENTS=e_Human_Refuse
+TEVENTS=e_Human_Environ
+
+CATEGORY=Delivery Core
+SUBSECTION=Target NPC's
+DESCRIPTION=13 - Simon
+
+ON=@CREATE
+   TAG.ISGOOD=1
+   NPC=brain_human
+   COLOR=0401
+   STR=400
+   INT=100
+   DEX=100
+   KARMA=8000
+   SWORDSMANSHIP=1000
+   TACTICS=1000
+   MAGERY=1000
+   EVALUATINGINTEL=1000
+   MAGICRESISTANCE=1000
+   ITEMNEWBIE=i_shirt_plain
+   COLOR=032
+   ITEMNEWBIE=i_pants_long
+   COLOR=06ad
+   ITEMNEWBIE=i_boots_calf
+   COLOR=01
+   ITEMNEWBIE=i_hair_short
+   COLOR=032
+   TIMER=-1
+   ITEMNEWBIE=i_beard_goatee
+   COLOR=032
+   TIMER=-1
+   ITEMNEWBIE=i_halberd_verite
+   ATTR=05
+   QUALITY=125
+
+ON=@NPCRESTOCK
+   TAG.ISGOOD=1
+   SERV.NEWITEM i_delivery_target_remover
+   NEW.LINK <UID>
+   NEW.TAG.NUMBER="13"
+   EQUIP <NEW.UID>

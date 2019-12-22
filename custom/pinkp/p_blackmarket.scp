@@ -1,0 +1,571 @@
+//*********************************************************************************************************//
+//                         The Black Market Created by Pink Panther                                        //
+//*********************************************************************************************************//
+
+[CHARDEF c_h_blackmarket]
+DEFNAME= c_h_blackmarket
+NAME= Madam Maia
+ID=C_woman
+TSPEECH=spk_blackmarket
+TEVENTS=e_blackmarket_title
+
+ON=@Create
+NPC=brain_vendor
+TITLE = The Black Market Dealer
+COLOR=040b
+FLAGS=01
+TIMERF 5, f_blackmitemrestock // The first stock will come in 5 seconds. TIMERF calls the function on the said timer.
+
+STR={86 100}
+DEX={66 80}
+INT={61 75}
+
+ITEMNEWBIE=i_dress_full
+COLOR=0455
+ITEMNEWBIE=i_cap
+COLOR=0455
+ITEMNEWBIE=i_sandals
+COLOR=0455
+
+ON=@NPCSeeNewPlayer
+SAY Hey Hey Hey!
+SAY Have you heard about my last deal?
+SAY Will you miss the chance to purchase a <tag.blackmitemname> for <tag.blackmitemvaluename>?
+SAY Hurry up! I only have one item available in stock for sale!
+
+[SPEECH spk_blackmarket]
+
+ON=*Hi*
+SAY Hello, what brings you here? Looking for a <tag.blackmitemname>?
+
+ON=*buy*
+   IF (<SRC.FLAGS> & statf_dead)
+      SRC.SYSMESSAGE @025 The dead cannot make transactions, friend...
+      RETURN 1
+   ENDIF
+   IF (<TAG0.BLACKMSOLDOUT> == 01) // If she sold something, she is sold out, no goods to buy.
+SAY Too late. This 3-Days item has been sold already.
+RETURN 1
+ELSE
+DIALOG d_blackmarket
+RETURN 1
+endif
+
+[EVENTS e_blackmarket_title]
+
+ON=@CLICK
+MESSAGE=@07a1 [The Black Market]
+MESSAGE=@07bb Madam Maia
+RETURN 1
+
+// DIALOGS
+
+[DIALOG d_blackmarket]
+0,0
+page 0
+resizepic 48 66 3600 393 450
+resizepic 87 270 3000 317 145
+text 105 140 2300 0
+text 190 100 347 1
+text 105 170 2300 2
+text 105 200 2300 3
+text 105 230 2300 4
+text 192 285 0 5
+text 100 325 0 6
+<tag.blackmitemimage>
+text 216 445 2300 7
+button 175 442 2152 2154 1 0 1
+
+[DIALOG d_blackmarket text]
+This is the Black Market Dealer, Madam Maia.
+The Black Market
+Every 3 Days she will have ONE extremely rare
+item available in stock for sale.
+Hurry up and be the first to close the deal!
+This 3-Days deal is:
+<tag.blackmitemname> - <tag.blackmitemvaluename>
+Close the deal!
+
+[DIALOG d_blackmarket button]
+
+ONBUTTON=1
+IF (<tag.blackmsoldout> == 1)
+src.sysmessage Too late! This item has been sold already.
+return 1
+endif
+
+IF (<SRC.GOLD> >= <tag.blackmitemvalue>)
+SRC.NEWITEM = <tag.blackmitem>
+SRC.ACT.BOUNCE
+SRC.GOLD -= <tag.blackmitemvalue>
+TAG.BLACKMSOLDOUT=1 // After selling, TAG SOLD OUT = 1
+SERV.B @04a The Black Market has just closed another deal. <tag.blackmitemname> has been sold to <src.name> for <tag.blackmitemvaluename>!
+SERV.LOG <SRC.ACCOUNT>:<SRC.NAME>:<SRC.UID> bought a <tag.blackmitemname> for <tag.blackmitemvaluename> from The Black Market.
+ELSE
+SRC.SYSMESSAGE You don't have enough gold for this.
+ENDIF
+RETURN 1
+
+// Function to pick a random item
+
+[FUNCTION f_blackmitemrestock]
+
+DORAND 26
+BEGIN
+tag.blackmitem= i_platemail_leggings_phoenix
+tag.blackmitemname = Phoenix Legplates
+tag.blackmitemvalue = 1500000
+tag.blackmitemvaluename = 1.500.000 Gold Pieces
+tag.blackmitemimage= tilepichue 216 362 5137 47
+END
+BEGIN
+tag.blackmitem= i_armor_female_plate_phoenix
+tag.blackmitemname = Phoenix Female Breastplate
+tag.blackmitemvalue = 1875000
+tag.blackmitemvaluename = 1.875.000 Gold Pieces
+tag.blackmitemimage= tilepichue 216 362 7173 47
+END
+BEGIN
+tag.blackmitem= i_platemail_arms_phoenix
+tag.blackmitemname = Phoenix Armplates
+tag.blackmitemvalue = 1350000
+tag.blackmitemvaluename = 1.350.000 Gold Pieces
+tag.blackmitemimage= tilepichue 216 362 5136 47
+END
+BEGIN
+tag.blackmitem= i_warrior_tunic
+tag.blackmitemname = Warriors Tunic
+tag.blackmitemvalue = 1500000
+tag.blackmitemvaluename = 1.500.000 Gold Pieces
+tag.blackmitemimage= tilepichue 216 362 5055 36
+END
+BEGIN
+tag.blackmitem= i_warrior_leggings
+tag.blackmitemname = Warriors Leggings
+tag.blackmitemvalue = 1500000
+tag.blackmitemvaluename = 1.500.000 Gold Pieces
+tag.blackmitemimage= tilepichue 216 362 5054 36
+END
+BEGIN
+tag.blackmitem= i_warrior_sleeves
+tag.blackmitemname = Warriors Sleeves
+tag.blackmitemvalue = 1125000
+tag.blackmitemvaluename = 1.125.000 Gold Pieces
+tag.blackmitemimage= tilepichue 216 362 5061 36
+END
+BEGIN
+tag.blackmitem= i_mage_hat
+tag.blackmitemname = Magic Users Hat
+tag.blackmitemvalue = 2000000
+tag.blackmitemvaluename = 2.000.000 Gold Pieces
+tag.blackmitemimage= tilepichue 216 362 5912 5
+END
+BEGIN
+tag.blackmitem= i_mage_leggings
+tag.blackmitemname = Magic Users Leggings
+tag.blackmitemvalue = 1500000
+tag.blackmitemvaluename = 1.500.000 Gold Pieces
+tag.blackmitemimage= tilepichue 216 362 5054 5
+END
+BEGIN
+tag.blackmitem= i_mage_tunic
+tag.blackmitemname = Magic Users Tunic
+tag.blackmitemvalue = 2000000
+tag.blackmitemvaluename = 2.000.000 Gold Pieces
+tag.blackmitemimage= tilepichue 216 362 5055 5
+END
+BEGIN
+tag.blackmitem= i_sash_warrior_20
+tag.blackmitemname = +20.0 Sash of Warriors
+tag.blackmitemvalue = 1000000
+tag.blackmitemvaluename = 1.000.000 Gold Pieces
+tag.blackmitemimage= tilepichue 216 362 5441 3000
+END
+BEGIN
+tag.blackmitem= i_circlet_brilliance_10
+tag.blackmitemname = +10.0 Circlet of Brilliance
+tag.blackmitemvalue = 1500000
+tag.blackmitemvaluename = 1.500.000 Gold Pieces
+tag.blackmitemimage= tilepichue 216 362 5439 3000
+END
+BEGIN
+tag.blackmitem= i_sandals_speed_10
+tag.blackmitemname = +10.0 Sandals of Speed
+tag.blackmitemvalue = 1500000
+tag.blackmitemvaluename = 1.500.000 Gold Pieces
+tag.blackmitemimage= tilepichue 216 362 5901 3000
+END
+BEGIN
+tag.blackmitem= i_gloves_might_10
+tag.blackmitemname = +10.0 Gloves of Might
+tag.blackmitemvalue = 1500000
+tag.blackmitemvaluename = 1.500.000 Gold Pieces
+tag.blackmitemimage= tilepichue 216 362 5099 3000
+END
+BEGIN
+tag.blackmitem= i_blade_tunic
+tag.blackmitemname = Blade-User Tunic
+tag.blackmitemvalue = 1000000
+tag.blackmitemvaluename = 1.000.000 Gold Pieces
+tag.blackmitemimage= tilepichue 216 362 5055 777
+END
+BEGIN
+tag.blackmitem= i_blade_leggings
+tag.blackmitemname = Blade-User Leggings
+tag.blackmitemvalue = 1000000
+tag.blackmitemvaluename = 1.000.000 Gold Pieces
+tag.blackmitemimage= tilepichue 216 362 5054 777
+END
+BEGIN
+tag.blackmitem= i_blade_sleeves
+tag.blackmitemname = Blade-User Sleeves
+tag.blackmitemvalue = 750000
+tag.blackmitemvaluename = 750.000 Gold Pieces
+tag.blackmitemimage= tilepichue 216 362 5061 777
+END
+BEGIN
+tag.blackmitem= i_fencing_tunic
+tag.blackmitemname = Fencer Tunic
+tag.blackmitemvalue = 1000000
+tag.blackmitemvaluename = 1.000.000 Gold Pieces
+tag.blackmitemimage= tilepichue 216 362 5055 1116
+END
+BEGIN
+tag.blackmitem= i_fencing_leggings
+tag.blackmitemname = Fencer Leggings
+tag.blackmitemvalue = 1000000
+tag.blackmitemvaluename = 1.000.000 Gold Pieces
+tag.blackmitemimage= tilepichue 216 362 5054 1116
+END
+BEGIN
+tag.blackmitem= i_fencing_sleeves
+tag.blackmitemname = Fencer Sleeves
+tag.blackmitemvalue = 750000
+tag.blackmitemvaluename = 750.000 Gold Pieces
+tag.blackmitemimage= tilepichue 216 362 5061 1116
+END
+BEGIN
+tag.blackmitem= i_blunt_tunic
+tag.blackmitemname = Blunt-User Tunic
+tag.blackmitemvalue = 1000000
+tag.blackmitemvaluename = 1.000.000 Gold Pieces
+tag.blackmitemimage= tilepichue 216 362 5055 36
+END
+BEGIN
+tag.blackmitem= i_blunt_leggings
+tag.blackmitemname = Blunt-User Leggings
+tag.blackmitemvalue = 1000000
+tag.blackmitemvaluename = 1.000.000 Gold Pieces
+tag.blackmitemimage= tilepichue 216 362 5054 36
+END
+BEGIN
+tag.blackmitem= i_blunt_sleeves
+tag.blackmitemname = Blunt-User Sleeves
+tag.blackmitemvalue = 750000
+tag.blackmitemvaluename = 750.000 Gold Pieces
+tag.blackmitemimage= tilepichue 216 362 5061 36
+END
+BEGIN
+tag.blackmitem= i_alchemy3
+tag.blackmitemname = +3.0 Apron of Alchemy
+tag.blackmitemvalue = 1500000
+tag.blackmitemvaluename = 1.500.000 Gold Pieces
+tag.blackmitemimage= tilepichue 216 362 5437 47
+END
+BEGIN
+tag.blackmitem= i_carpentry3
+tag.blackmitemname = +3.0 Apron of Carpentry
+tag.blackmitemvalue = 1500000
+tag.blackmitemvaluename = 1.500.000 Gold Pieces
+tag.blackmitemimage= tilepichue 216 362 5437 47
+END
+BEGIN
+tag.blackmitem= i_bowery3
+tag.blackmitemname = +3.0 Apron of Bowcraft
+tag.blackmitemvalue = 1500000
+tag.blackmitemvaluename = 1.500.000 Gold Pieces
+tag.blackmitemimage= tilepichue 216 362 5437 47
+END
+BEGIN
+tag.blackmitem= i_blacksmith3
+tag.blackmitemname = +3.0 Apron of Blacksmithing
+tag.blackmitemvalue = 1500000
+tag.blackmitemvaluename = 1.500.000 Gold Pieces
+tag.blackmitemimage= tilepichue 216 362 5437 47
+END
+ENDDO
+serv.b @04a The Black Market has a new deal for you! Don't miss the chance to buy one <tag.blackmitemname> for <tag.blackmitemvaluename> during the next 3 days.
+SERV.LOG The Black Market restocked an <tag.blackmitemname>  <tag.blackmitem> for <tag.blackmitemvaluename> <tag.blackmitemvalue>
+TAG.LASTRESTOCKTIME= <SERV.RTIME>
+
+TIMERF 216000, f_blackmitemrestock
+TAG.BLACKMSOLDOUT=
+
+
+//********************************************************//
+// Top Tier Stat Magical Items                            //
+// Sash of Warriors +20                                   //
+// Gloves of Might +10                                    //
+// Sandals of Speed +10                                   //
+// Circlet of Brilliance +10                              //
+//********************************************************//
+
+
+[ITEMDEF i_sash_warrior_20]
+NAME	= sash
+ID	= i_sash
+TDATA1  = mat_mytheril
+TYPE	= t_armor
+DYE	= 0
+ARMOR	= 24
+WEIGHT	= 2.5
+VALUE	= 10000
+
+ON = @Create
+   COLOR	= 07b5
+   ATTR		= attr_magic
+   MOREz	= 10
+ON = @Equip
+   if ( <MORE1h> == 0 )
+      HITPOINTS	= { 40 60 }
+   endif
+   EQUIPCANCEL 0
+   if ( !<ISIDENTIFIED> )
+      return 0
+   endif
+ON = @Unequip
+   if ( !<UNEQUIPCANCEL> && <ISIDENTIFIED> )
+   endif
+ON = @DClick
+   return <DCLICKCANCEL>
+ON = @Identify
+   NAME = "+<eval (<MOREz>*2)>.0 Sash of Warriors"
+ON = @ArmorEffect
+   // VAR.ARM.EFFECT.SWORD_PARRY = <eval <VAR.ARM.EFFECT.SWORD_PARRY> + (<MOREz>*2))>
+   VAR.ARM.EFFECT.WEAPON_BLOCK = <eval <VAR.ARM.EFFECT.WEAPON_BLOCK> + (<MOREz>*2))>
+ON = @Spelleffect
+   return 1
+   
+[ITEMDEF i_circlet_brilliance_10]
+NAME	= circlet
+ID	= i_bandana
+TDATA1  = mat_verite
+TYPE	= t_armor
+DYE	= 0
+ARMOR	= 30
+WEIGHT	= 1.5
+VALUE	= 42000
+
+ON = @Create
+   COLOR	= 0489
+   ATTR		= attr_magic
+   MOREz	= 10
+ON = @Equip
+   if ( <MORE1h> == 0 )
+      HITPOINTS	= { 40 60 }
+   endif
+   EQUIPCANCEL 0
+   if ( !<ISIDENTIFIED> )
+      return 0
+   endif
+   SRC.MODINT	= (<SRC.MODINT> + <MOREz>)
+ON = @Unequip
+   if ( !<UNEQUIPCANCEL> && <ISIDENTIFIED> )
+      SRC.MODINT	= (<SRC.MODINT> - <MOREz>)
+   endif
+ON = @DClick
+   return <DCLICKCANCEL>
+ON = @Identify
+   NAME = +<MOREz> Circlet of Brilliance
+//ON = @ArmorEffect
+//   MSG_EFFECT_ADD	= +<MOREz> intelligence
+ON = @Spelleffect
+   return 1
+
+   
+[ITEMDEF i_sandals_speed_10]
+NAME	= sandals
+ID	= i_sandals
+TYPE	= t_armor
+TDATA1  = mat_valorite
+DYE	= 0
+ARMOR	= 30
+WEIGHT	= 3.0
+VALUE	= 12000
+
+ON = @Create
+   COLOR	= 07b5
+   ATTR		= attr_magic
+   MOREz	= 10
+ON = @Equip
+   if ( <MORE1h> == 0 )
+      HITPOINTS	= { 40 60 }
+   endif
+   EQUIPCANCEL 0
+   if ( !<ISIDENTIFIED> )
+      return 0
+   endif
+   SRC.MODDEX	= (<SRC.MODDEX> + <MOREz>)
+   SRC.findlayer(24).unequip
+ON = @Unequip
+   if ( !<UNEQUIPCANCEL> && <ISIDENTIFIED> )
+      SRC.MODDEX	= (<SRC.MODDEX> - <MOREz>)
+   endif
+ON = @DClick
+   return <DCLICKCANCEL>
+ON = @Identify
+   NAME = +<MOREz> Sandals of Speed
+//ON = @ArmorEffect
+//   MSG_EFFECT_ADD	= +<MOREz> dexterity
+ON = @Spelleffect
+   return 1   
+   
+[ITEMDEF i_gloves_might_10]
+NAME	= gloves
+ID	= i_ringmail_gloves
+TYPE	= t_armor
+DYE	= 0
+TDATA1  = mat_adamantine
+ARMOR	= 40
+WEIGHT	= 3.0
+VALUE	= 59500
+
+ON = @Create
+   COLOR	= 0486
+   ATTR		= attr_magic
+   MOREz	= 10
+ON = @Equip
+   if ( <MORE1h> == 0 )
+      HITPOINTS	= { 40 60 }
+   endif
+   EQUIPCANCEL 0
+   if ( !<ISIDENTIFIED> )
+      return 0
+   endif
+   SRC.MODSTR	= (<SRC.MODSTR> + <MOREz>)
+ON = @Unequip
+   if ( !<UNEQUIPCANCEL> && <ISIDENTIFIED> )
+      SRC.MODSTR	= (<SRC.MODSTR> - <MOREz>)
+   endif
+ON = @DClick
+   return <DCLICKCANCEL>
+ON = @Identify
+   NAME = +<MOREz> Gloves of Might
+//ON = @ArmorEffect
+//   MSG_EFFECT_ADD	= +<MOREz> strength
+ON = @Spelleffect
+   return 1
+   
+   
+[ITEMDEF i_blacksmith1]
+NAME=Magical Apron of Blacksmithing
+ID=i_Apron_full
+TYPE=T_CLOTHING
+WEIGHT=1
+DUPELIST=01029
+
+ON=@Create
+COLOR=001e
+HITPOINTS={21 23}
+
+ON=@EQUIP 
+SRC.Blacksmithing=(<SRC.Blacksmithing> + 1.0) 
+SRC.MESSAGE As you wear the apron, you become more creative. 
+ON=@UNEQUIP 
+SRC.Blacksmithing=(<SRC.Blacksmithing> + -1.0) 
+SRC.MESSAGE As you unequip the apron, you become less creative. 
+
+[ITEMDEF i_blacksmith2]
+NAME=Ancient Apron of Blacksmithing
+ID=i_Apron_full
+TYPE=T_CLOTHING
+WEIGHT=1
+DUPELIST=01029
+
+ON=@Create
+COLOR=001e
+HITPOINTS={21 23}
+
+ON=@EQUIP 
+SRC.Blacksmithing=(<SRC.Blacksmithing> + 2.0) 
+SRC.MESSAGE As you wear the apron, you become more creative. 
+ON=@UNEQUIP 
+SRC.Blacksmithing=(<SRC.Blacksmithing> + -2.0) 
+SRC.MESSAGE As you unequip the apron, you become less creative. 
+
+[ITEMDEF i_blacksmith3]
+NAME=Ancient Apron of Blacksmithing
+ID=i_Apron_full
+TYPE=T_CLOTHING
+WEIGHT=1
+DUPELIST=01029
+
+ON=@Create
+COLOR=001e
+HITPOINTS={21 23}
+
+ON=@EQUIP 
+SRC.Blacksmithing=(<SRC.Blacksmithing> + 3.0) 
+SRC.MESSAGE As you wear the apron, you become more creative. 
+ON=@UNEQUIP 
+SRC.Blacksmithing=(<SRC.Blacksmithing> + -3.0) 
+SRC.MESSAGE As you unequip the apron, you become less creative. 
+
+
+[ITEMDEF i_bowery1]
+NAME=Magical Apron of Bowcraft
+ID=i_Apron_full
+TYPE=T_CLOTHING
+WEIGHT=1
+DUPELIST=01029
+
+ON=@Create
+COLOR=001e
+HITPOINTS={21 23}
+
+ON=@EQUIP 
+SRC.Bowcraft=(<SRC.Bowcraft> + 1.0) 
+SRC.MESSAGE As you wear the apron, you become more creative. 
+ON=@UNEQUIP 
+SRC.Bowcraft=(<SRC.Bowcraft> + -1.0) 
+SRC.MESSAGE As you unequip the apron, you become less creative. 
+
+[ITEMDEF i_bowery2]
+NAME=Ancient Apron of Bowcraft
+ID=i_Apron_full
+TYPE=T_CLOTHING
+WEIGHT=1
+DUPELIST=01029
+
+ON=@Create
+COLOR=001e
+HITPOINTS={21 23}
+
+ON=@EQUIP 
+SRC.Bowcraft=(<SRC.Bowcraft> + 2.0) 
+SRC.MESSAGE As you wear the apron, you become more creative. 
+ON=@UNEQUIP 
+SRC.Bowcraft=(<SRC.Bowcraft> + -2.0) 
+SRC.MESSAGE As you unequip the apron, you become less creative. 
+
+[ITEMDEF i_bowery3]
+NAME=Ancient Apron of Bowcraft
+ID=i_Apron_full
+TYPE=T_CLOTHING
+WEIGHT=1
+DUPELIST=01029
+
+ON=@Create
+COLOR=001e
+HITPOINTS={21 23}
+
+ON=@EQUIP 
+SRC.Bowcraft=(<SRC.Bowcraft> + 3.0) 
+SRC.MESSAGE As you wear the apron, you become more creative. 
+ON=@UNEQUIP 
+SRC.Bowcraft=(<SRC.Bowcraft> + -3.0) 
+SRC.MESSAGE As you unequip the apron, you become less creative. 
+
+
+
+[EOF]

@@ -1,0 +1,228 @@
+//*********************************************************************************************************//
+//                    Function to re-roll jewelry properties Created by Pink Panther                       //
+//*********************************************************************************************************//
+
+
+[FUNCTION f_jewelry_skill_changer125a]
+ 
+SRC.NEWITEM i_jewelry_skill_changer
+SRC.ACT.TARGET Please target the piece of Magic Jewelry you want to re-roll the Skill.
+RETURN 1
+ 
+ 
+[ITEMDEF i_jewelry_skill_changer]
+NAME=Jewelry Skill Changer Targetter
+ID=i_memory
+TYPE=T_EQ_SCRIPT
+LAYER=30
+ 
+ON=@CREATE
+ATTR=attr_decay
+   
+ON=@TARGON_ITEM
+ 
+IF (<SRC.TARG.BASEID>==i_skill_necklace_1) || (<SRC.TARG.BASEID>==i_skill_necklace_2) || (<SRC.TARG.BASEID>==i_skill_necklace_3) || (<SRC.TARG.BASEID>==i_skill_ring) || (<SRC.TARG.BASEID>==i_skill_earrings) || (<SRC.TARG.BASEID>==i_skill_bracelet)
+ 
+    IF !(<SRC.TARG.TOPOBJ.UID>==<SRC.UID>)
+        SRC.SYSMESSAGE You must have the desired Magic Jewelry inside your backpack in order to re-roll its Skill.
+                RETURN 1
+    ENDIF    
+       
+        DORAND 37
+                LOCAL.NEWSKILL = 0 // Alchemy
+                LOCAL.NEWSKILL = 1 // Assessment
+                LOCAL.NEWSKILL = 2 // Creature Lore
+                LOCAL.NEWSKILL = 3 // Item Lore
+                LOCAL.NEWSKILL = 4 // Arms Lore
+                LOCAL.NEWSKILL = 5 // Shieldfighting
+                //LOCAL.NEWSKILL = 6 // Unused
+                LOCAL.NEWSKILL = 7 // Blacksmithing
+                LOCAL.NEWSKILL = 8 // Bowery
+                //LOCAL.NEWSKILL = 9 // Songs of Peace
+                //LOCAL.NEWSKILL = 10 // Survival
+                LOCAL.NEWSKILL = 11 // Carpentry
+                LOCAL.NEWSKILL = 12 // Cartography
+                LOCAL.NEWSKILL = 13 // Cooking
+                LOCAL.NEWSKILL = 14 // Detection
+                //LOCAL.NEWSKILL = 15 // Songs of the World
+                LOCAL.NEWSKILL = 16 // Mystic Lore
+                LOCAL.NEWSKILL = 17 // Healing
+                LOCAL.NEWSKILL = 18 // Fishing
+                //LOCAL.NEWSKILL = 19 // Netherworld Lore
+                //LOCAL.NEWSKILL = 20 // Farming/Herding
+                LOCAL.NEWSKILL = 21 // Hiding
+                LOCAL.NEWSKILL = 22 // Songs of War
+                LOCAL.NEWSKILL = 23 // Inscription
+                //LOCAL.NEWSKILL = 24 // Lockpicking/Trap Removal
+                LOCAL.NEWSKILL = 25 // Magery
+                LOCAL.NEWSKILL = 26 // Resist Magic
+                LOCAL.NEWSKILL = 27 // Tactics
+                //LOCAL.NEWSKILL = 28 // Snooping
+                LOCAL.NEWSKILL = 29 // Musicianship
+                LOCAL.NEWSKILL = 30 // Poisoning
+                LOCAL.NEWSKILL = 31 // Archery
+                LOCAL.NEWSKILL = 32 // Necromancy
+                //LOCAL.NEWSKILL = 33 // Stealing
+                LOCAL.NEWSKILL = 34 // Tailoring
+                LOCAL.NEWSKILL = 35 // Taming
+                //LOCAL.NEWSKILL = 36 // Herbs Lore
+                LOCAL.NEWSKILL = 37 // Tinkering
+                //LOCAL.NEWSKILL = 38 // Tracking
+                LOCAL.NEWSKILL = 39 // Masonry
+                LOCAL.NEWSKILL = 40 // Blade Weapons
+                LOCAL.NEWSKILL = 41 // Blunt Weapons
+                LOCAL.NEWSKILL = 42 // Piercing Weapons
+                LOCAL.NEWSKILL = 43 // Unarmed Combat
+                LOCAL.NEWSKILL = 44 // Lumberjacking
+                LOCAL.NEWSKILL = 45 // Mining
+                LOCAL.NEWSKILL = 46 // Meditation
+                LOCAL.NEWSKILL = 47 // Stealth
+        ENDDO
+       
+        LOCAL.OLDSKILL = <SRC.TARG.MORE1>
+        IF (<LOCAL.OLDSKILL>=<LOCAL.NEWSKILL>)
+                SRC.SYSMESSAGE An error occured as you would've got the same Skill you currently have if the action proceeded. Please try again.
+                RETURN 1
+        ENDIF
+		
+		IF (<SRC.FINDID.i_jewelry_reroll_2>)
+			SRC.FINDID.i_jewelry_reroll_2.remove
+		ELSE  
+			VAR.GOLD=32500
+			SRC.CONSUMEGOLD_EVERYWHERE <EVAL (<VAR.GOLD>)>
+			IF (<VAR.CONSUMEGOLD> > 0)
+                SRC.SYSMESSAGE You are <eval <VAR.consumegold>>gp short.
+                RETURN 1
+			ENDIF
+		ENDIF
+                       
+        SERV.LOG :MAGIC JEWELRY SKILL CHANGER: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> is changing the Skill on <SRC.TARG.NAME> (<SRC.TARG.UID>)
+         
+        SRC.TARG.COLOR = color_skill_jewelry                       
+        SRC.TARG.MORE1 = <LOCAL.NEWSKILL>
+        LOCAL.NAME1 = <EVAL (<SRC.TARG.MORE2>/10)>
+        LOCAL.NAME2 = <EVAL (<SRC.TARG.MORE2>-(<LOCAL.NAME1>*10))>
+    IF (<SRC.TARG.BASEID>==i_skill_necklace_1) || (<SRC.TARG.BASEID>==i_skill_necklace_2) || (<SRC.TARG.BASEID>==i_skill_necklace_3)
+        LOCAL.NAME3 = necklace
+        ELSEIF (<SRC.TARG.BASEID>==i_skill_ring)
+        LOCAL.NAME3 = ring
+    ELSEIF (<SRC.TARG.BASEID>==i_skill_earrings)  
+        LOCAL.NAME3 = earrings
+    ELSEIF (<SRC.TARG.BASEID>==i_skill_bracelet)
+        LOCAL.NAME4 = bracelet
+    ENDIF
+                               
+    SRC.TARG.NAME <LOCAL.NAME3> of +<EVAL <LOCAL.NAME1>>.<EVAL <LOCAL.NAME2>> <SKILL_NAME <EVAL <SRC.TARG.MORE1>>>
+    SRC.SYSMESSAGE You now have a <SRC.TARG.NAME>
+    SERV.LOG :MAGIC JEWELRY SKILL CHANGER: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> now has a <SRC.TARG.NAME> (<SRC.TARG.UID>)
+       
+ELSE
+    SRC.SYSMESSAGE Please target a piece of Magic Jewelry with this.
+    RETURN 1
+ENDIF
+RETURN 1
+ 
+ON=@TARGON_CHAR
+SRC.SYSMESSAGE Please target a piece of Magic Jewelry with this.
+TIMER=1
+REMOVE
+RETURN 1
+ 
+ 
+ON=@TARGON_GROUND
+SRC.SYSMESSAGE Please target a piece of Magic Jewelry with this.
+TIMER=1
+REMOVE
+RETURN 1
+ 
+ 
+[FUNCTION f_jewelry_skillbonus_changer125a]
+ 
+SRC.NEWITEM i_jewelry_bonus_changer
+SRC.ACT.TARGET Please target the piece of Magic Jewelry you want to re-roll the Skill Bonus Amount.
+RETURN 1
+ 
+ 
+[ITEMDEF i_jewelry_bonus_changer]
+NAME=Jewelry Bonus Changer Targetter
+ID=i_memory
+TYPE=T_EQ_SCRIPT
+LAYER=30
+ 
+ON=@CREATE
+   ATTR=attr_decay
+   
+ON=@TARGON_ITEM
+ 
+ 
+IF (<SRC.TARG.BASEID>==i_skill_necklace_1) || (<SRC.TARG.BASEID>==i_skill_necklace_2) || (<SRC.TARG.BASEID>==i_skill_necklace_3) || (<SRC.TARG.BASEID>==i_skill_ring) || (<SRC.TARG.BASEID>==i_skill_earrings) || (<SRC.TARG.BASEID>==i_skill_bracelet)
+   
+        IF !(<SRC.TARG.TOPOBJ.UID>==<SRC.UID>)
+                SRC.SYSMESSAGE You must have the desired Magic Jewelry inside your backpack in order to re-roll its Skill Bonus Amount.
+        RETURN 1
+    ENDIF      
+               
+    IF (<SRC.TARG.BASEID>==i_skill_necklace_1) || (<SRC.TARG.BASEID>==i_skill_necklace_2) || (<SRC.TARG.BASEID>==i_skill_necklace_3)
+                LOCAL.NEWSKILLBONUS = RAND(40,60)
+    ELSEIF (<SRC.TARG.BASEID>==i_skill_ring) || (<SRC.TARG.BASEID>==i_skill_earrings) || (<SRC.TARG.BASEID>==i_skill_bracelet)
+                LOCAL.NEWSKILLBONUS = RAND(20,30)
+        ENDIF
+       
+        LOCAL.OLDSKILLBONUS = <SRC.TARG.MORE2>
+        IF (<LOCAL.OLDSKILLBONUS>=<LOCAL.NEWSKILLBONUS>)
+                SRC.SYSMESSAGE An error occured as you would've got the same Skill Bonus Amount you currently have if the action proceeded. Please try again.
+                RETURN 1
+        ENDIF
+                       
+        IF (<SRC.FINDID.i_jewelry_reroll_1>)
+			SRC.FINDID.i_jewelry_reroll_1.remove
+		ELSE  
+			VAR.GOLD=32500
+			SRC.CONSUMEGOLD_EVERYWHERE <EVAL (<VAR.GOLD>)>
+			IF (<VAR.CONSUMEGOLD> > 0)
+                SRC.SYSMESSAGE You are <eval <VAR.consumegold>>gp short.
+                RETURN 1
+			ENDIF
+		ENDIF
+                       
+        SERV.LOG :MAGIC JEWELRY BONUS CHANGER: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> is changing the Skill Bonus Amount on <SRC.TARG.NAME> (<SRC.TARG.UID>)
+        
+        SRC.TARG.COLOR = color_skill_jewelry                       
+        SRC.TARG.MORE2=<LOCAL.NEWSKILLBONUS>
+        LOCAL.NAME1=<EVAL (<SRC.TARG.MORE2>/10)>
+        LOCAL.NAME2=<EVAL (<SRC.TARG.MORE2>-(<LOCAL.NAME1>*10))>
+    IF (<SRC.TARG.BASEID>==i_skill_necklace_1) || (<SRC.TARG.BASEID>==i_skill_necklace_2) || (<SRC.TARG.BASEID>==i_skill_necklace_3)
+                LOCAL.NAME3=necklace
+        ELSEIF (<SRC.TARG.BASEID>==i_skill_ring)
+        LOCAL.NAME3=ring
+    ELSEIF (<SRC.TARG.BASEID>==i_skill_earrings)  
+        LOCAL.NAME3=earrings
+    ELSEIF (<SRC.TARG.BASEID>==i_skill_bracelet)
+        LOCAL.NAME4=bracelet
+    ENDIF
+                       
+    SRC.TARG.NAME <LOCAL.NAME3> of +<EVAL <LOCAL.NAME1>>.<EVAL <LOCAL.NAME2>> <SKILL_NAME <EVAL <SRC.TARG.MORE1>>>
+        SRC.SYSMESSAGE You now have a <SRC.TARG.NAME>
+    SERV.LOG :MAGIC JEWELRY BONUS CHANGER: <SRC.UID> <SRC.ACCOUNT> <SRC.NAME> now has a <SRC.TARG.NAME> (<SRC.TARG.UID>)
+       
+ELSE
+    SRC.SYSMESSAGE Please target a piece of Magic Jewelry with this.
+    RETURN 1
+ENDIF
+RETURN 1
+ 
+ON=@TARGON_CHAR
+SRC.SYSMESSAGE Please target a piece of Magic Jewelry with this.
+TIMER=1
+REMOVE
+RETURN 1
+ 
+ 
+ON=@TARGON_GROUND
+SRC.SYSMESSAGE Please target a piece of Magic Jewelry with this.
+TIMER=1
+REMOVE
+RETURN 1
+
+
+

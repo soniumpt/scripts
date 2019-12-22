@@ -1,0 +1,349 @@
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+                                                                        +
+//+                      MEMORY SHARD SKILLS SYSTEM                        +
+//+                                                                        +
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+                                                                        +
+//+                           AUTHOR: WIGIFER                              +
+//+                         CREATED: 23/08/2018                            +
+//+                     LATEST REVISION: 26/08/2018                        +
+//+                                                                        +
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+                                                                        +
+//+  Kell's skill system is the most bloated thing on the server. For      +
+//+  many years now, scripters have refrained from recoding it in case     +
+//+  everything blows up. This is despite it being an absolute drain on    +
+//+  the servers resources, and its ability to break from a simple timer   +
+//+  issue or the like. The idea here is to remove any scope for this,     +
+//+  as well as provide a secure and efficient system which will feel      +
+//+  mostly familiar to existing players.                                  +
+//+                                                                        +
+//+  Notably, Kell's skill roll system is generally easier to work with    +
+//+  than it first looks, but it has odd functional parts all over which   +
+//+  makes it difficult to manage. This script references a new            +
+//+  character manager, which is a consolidation of m_kell_periodic and    +
+//+  m_kell_control. There's no good reason to actually separate the       +
+//+  two, as tag management isn't an issue and nor is anything else.       +
+//+  By consolidating both items, we only need to (in future) find and     +
+//+  fix one item on any PC in the game.                                   +
+//+                                                                        +
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+                                                                        +
+//+ [CROSS DEPENDENCIES]                                                   +
+//+                                                                        +
+//+ k_MAIN_defs.scp            - This is where layer_char_manager is       +
+//+                              defined                                   +
+//+ j_character_controller.scp - The location of the character controller  +
+//+                                                                        +
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+                                                                        +
+//+ [CHANGELOG]                                                            +
+//+                                                                        +
+//+ 26/08/18 - Wigifer - Up until now, I've written one line. Anyone would +
+//+                      think I was reluctant to get this started, for    +
+//+                      fear of what would or wouldn't break!             +
+//+ 02/09/18 - Wigifer - Added an NPC clause and updated the manager       +
+//+                      checks as appropriate.                            +
+//+ 14/12/19 - Wigifer - Forgot to check for Skillrolls being enabled when +
+//+                      a skill check timer isn't ready...                +
+//+                                                                        +
+//+                                                                        +
+//+                                                                        +
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+                                                                        +
+//+ [TO DO]                                                                +
+//+                                                                        +
+//+ -                                                                      +
+//+                                                                        +
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+// ================
+// =   FUNCTION   =
+// = Skill Roller =
+// ================
+
+// USAGE: f_skillsuccess_rollskill <ARGN1>
+// ARGN1 = Skill ID number
+// UID.<LOCAL.CHARMANAGERUID> = Character Manager item
+// LOCAL.SKILLNAME = The skill to roll
+//
+// Similar to the original skill gain, but better commented and (arguably)
+// much more reasonably formatted.
+// 
+// What we do here is we check to see whether the character should be gaining or losing skill.
+// If we should be gaining, at this point we begin to roll for skills.
+// Skill gain is a flat chance, based on skill level. It allows for continuity based on level.
+//
+
+[FUNCTION f_skillsuccess_rollskill]
+// Check we're not firing on an NPC - It does happen apparently.
+IF (<EVAL <NPC>> > 0)
+   SYSMESSAGE @025 The system believes you are an NPC, so we're not rolling your skillsuccess.
+   SYSMESSAGE @030 If this is in error, please page immediately.
+ELSEIF !((<BASEID> == c_man) || (<BASEID> == c_woman))
+   SERV.LOG Potential non-human trying to roll skill. We're looking at <UID>::<NAME> trying to roll <ARGN1>::<SERV.SKILL(<ARGN1>).KEY>
+ELSE // Not on an NPC, proceed as normal
+   // == ADMIN ==
+   
+   // Call the Character Manager and set the UID.<LOCAL.CHARMANAGERUID> to the Character Manager
+   CALL f_prepare_character_manager
+   LOCAL.SKILLNAME = <SERV.SKILL(<ARGN1>).KEY>
+
+   // Buffer to prevent being over the skill cap
+   IF (<UID.<LOCAL.CHARMANAGERUID>.CONT.<LOCAL.SKILLNAME>> > 1000)
+      UID.<LOCAL.CHARMANAGERUID>.CONT.<LOCAL.SKILLNAME> = 1000
+      RETURN 1
+   ELSEIF (<UID.<LOCAL.CHARMANAGERUID>.CONT.<LOCAL.SKILLNAME>> == 1000)
+      RETURN 1
+   ENDIF
+   
+   // == SKILL LOSS ==
+   
+   // Check that there isn't a skill lock in place
+   IF ((<UID.<LOCAL.CHARMANAGERUID>.CONT.SKILLLOCK.<ARGN1>> == 1) && (<UID.<LOCAL.CHARMANAGERUID>.CONT.<LOCAL.SKILLNAME>> > 0))
+      SYSMESSAGE @0be You attempt to forget your knowledge of <LOCAL.SKILLNAME>... A bit redundant when you're using it already.
+      UID.<LOCAL.CHARMANAGERUID>.CONT.<LOCAL.SKILLNAME> -= 1
+      RETURN 1
+   ELSEIF (<UID.<LOCAL.CHARMANAGERUID>.CONT.SKILLLOCK.<ARGN1>> == 2)
+      IF (<TAG0.SHOW.SKILLROLLS> > 0)
+         SYSMESSAGE @0be Your ability to gain in <LOCAL.SKILLNAME> is currently locked, please unlock it in your Skills menu if you wish to raise it.
+      ENDIF
+      RETURN 1
+   ENDIF
+   
+   // We now try to lose in ALL skills pointing downward.
+   FOR 0 50
+      IF ((<UID.<LOCAL.CHARMANAGERUID>.CONT.SKILLLOCK.<EVAL <LOCAL._FOR>>> == 1) && (<UID.<LOCAL.CHARMANAGERUID>.CONT.<SERV.SKILL(<LOCAL._FOR>).KEY>> > 0))
+         SYSMESSAGE @0be You forget some knowledge of <SERV.SKILL(<LOCAL._FOR>).KEY>...
+         UID.<LOCAL.CHARMANAGERUID>.CONT.<SERV.SKILL(<LOCAL._FOR>).KEY> -= 1
+      ENDIF
+   ENDFOR
+   
+   // == SKILL GAIN ==
+   
+   // If the timer has rolled around, reset the timer and begin the skill rolling!
+   // We use SERV.RTICKS as this gives us the current real world time as a timestamp
+   // which can be used for before/after calcs with no major overhead such as a timer.
+   IF ((<UID.<LOCAL.CHARMANAGERUID>.TAG0.SKILL.<ARGN1>.NEXTROLL> <= 0) || (<EVAL <UID.<LOCAL.CHARMANAGERUID>.TAG0.SKILL.<ARGN1>.NEXTROLL>> < <SERV.RTICKS>))
+      UID.<LOCAL.CHARMANAGERUID>.TAG0.SKILL.<ARGN1>.NEXTROLL = <EVAL <SERV.RTICKS> + 5>
+      UID.<LOCAL.CHARMANAGERUID>.TAG0.SKILL.<ARGN1>.RESETTIME = -1
+      // Calculate the Skill Roll bound from the skill. This is always (<EVAL 1000 - SKILL> / 4)
+      LOCAL.SKILLROLLBOUND = <EVAL 1003 - <EVAL <UID.<LOCAL.CHARMANAGERUID>.CONT.<LOCAL.SKILLNAME>>>>
+      IF (<LOCAL.SKILLROLLBOUND> > 0)
+         LOCAL.SKILLROLLBOUND = <EVAL <LOCAL.SKILLROLLBOUND> / 4>
+      ELSE
+         IF (<EVAL <UID.<LOCAL.CHARMANAGERUID>.CONT.<LOCAL.SKILLNAME>>> <= 0)
+            LOCAL.SKILLROLLBOUND = 1000
+         ENDIF
+      ENDIF
+      // Of course we don't want it TOO low... If it's lower than 2.5%, fix it at 2.5%
+      IF (<LOCAL.SKILLROLLBOUND> < 25)
+         LOCAL.SKILLROLLBOUND = 25
+      ENDIF
+      
+      // = EXPERIENCE =
+      // First we add the skillrollbound to our experience.
+      // More than 100% Experience (1000) = RAISE!
+      UID.<LOCAL.CHARMANAGERUID>.TAG0.SKILL.<ARGN1>.EXP += <LOCAL.SKILLROLLBOUND>
+      // If our experience takes us over 1000, skill gain!
+      IF (<UID.<LOCAL.CHARMANAGERUID>.TAG0.SKILL.<ARGN1>.EXP> > 1000)
+         // Check to see if we send the skill roll message and send it if appropriate.
+         IF (<TAG0.SHOW.SKILLROLLS> > 0)
+            SYSMESSAGE @0962 [<LOCAL.SKILLNAME> Experience: <EVAL <UID.<LOCAL.CHARMANAGERUID>.TAG0.SKILL.<ARGN1>.EXP>>/1000 (Gained <EVAL <LOCAL.SKILLROLLBOUND>>)]
+            SYSMESSAGE @03f <LOCAL.SKILLNAME> raised by experience gain!
+         ENDIF
+         // We also allow some rollover here by only removing 1000 experience.
+         UID.<LOCAL.CHARMANAGERUID>.TAG0.SKILL.<ARGN1>.EXP -= 1000
+         // Raise this skill by +1. A little trickery here: Add it to the Character Manager's cont, as we do not necessarily have a source for skillgain here.
+         UID.<LOCAL.CHARMANAGERUID>.CONT.<LOCAL.SKILLNAME> += 1
+   
+      // = RANDOM ROLL =
+      // Next we see if we can randomly roll below this upper bound.
+      // The else is because we clearly did not gain enough experience.
+      ELSE
+         // This is our skill roll right here.
+         LOCAL.RANDOMSKILLROLL = <EVAL RAND(1000)>
+         // We succeeded on our skill roll here.
+         IF (<LOCAL.RANDOMSKILLROLL> < <LOCAL.SKILLROLLBOUND>)
+            IF (<TAG0.SHOW.SKILLROLLS> > 0)
+               SYSMESSAGE @0962 [<LOCAL.SKILLNAME> Experience: <EVAL <UID.<LOCAL.CHARMANAGERUID>.TAG0.SKILL.<ARGN1>.EXP>>/1000 (Gained <EVAL <LOCAL.SKILLROLLBOUND>>)]
+               SYSMESSAGE @0962 [<LOCAL.SKILLNAME> Random Gain: Must roll under <EVAL <LOCAL.SKILLROLLBOUND>>/1000 to randomly gain in <LOCAL.SKILLNAME>, rolled <EVAL <LOCAL.RANDOMSKILLROLL>>]
+               SYSMESSAGE @03f <LOCAL.SKILLNAME> raised by random roll!
+            ENDIF
+            UID.<LOCAL.CHARMANAGERUID>.CONT.<LOCAL.SKILLNAME> += 1
+         // We failed the skill roll here.
+         ELSE
+            IF (<TAG0.SHOW.SKILLROLLS> > 0)
+               SYSMESSAGE @0962 [<LOCAL.SKILLNAME> Experience: <EVAL <UID.<LOCAL.CHARMANAGERUID>.TAG0.SKILL.<ARGN1>.EXP>>/1000 (Gained <EVAL <LOCAL.SKILLROLLBOUND>>)]
+               SYSMESSAGE @0962 [<LOCAL.SKILLNAME> Random Gain: Must roll under <EVAL <LOCAL.SKILLROLLBOUND>>/1000 to randomly gain in <LOCAL.SKILLNAME>, rolled <EVAL <LOCAL.RANDOMSKILLROLL>>]
+               // Here we work out the estimated number of experience gains to succeed in future!
+               // Note this will always be short 1 due to the way Sphere ALWAYS rounds down an integer
+               LOCAL.GUARANTEEDGAIN = <EVAL 1000 - <UID.<LOCAL.CHARMANAGERUID>.TAG0.SKILL.<ARGN1>.EXP>>
+               LOCAL.GUARANTEEDGAIN = <EVAL <LOCAL.GUARANTEEDGAIN> / <LOCAL.SKILLROLLBOUND>>
+               LOCAL.GUARANTEEDGAIN += 1
+               SYSMESSAGE @028 <LOCAL.SKILLNAME> has not raised, next guaranteed gain in <EVAL <LOCAL.GUARANTEEDGAIN>> rolls!
+            ENDIF               
+         ENDIF
+      ENDIF
+   ELSE
+      IF (<TAG0.SHOW.SKILLROLLS> > 0)
+         SYSMESSAGE @038 Cannot roll for <LOCAL.SKILLNAME> as not enough time has passed since this skill was rolled. Available in <EVAL <EVAL <UID.<LOCAL.CHARMANAGERUID>.TAG0.SKILL.<ARGN1>.NEXTROLL>> - <SERV.RTICKS>> seconds.
+      ENDIF
+   ENDIF
+ENDIF
+      
+// ================
+// =   FUNCTION   =
+// = Stat  Roller =
+// ================
+
+// USAGE: f_skillsuccess_rollstat <ARGN1>
+// ARGN1 = Skill ID number
+// OBJ = Character Manager item
+// LOCAL.SKILLNAME = The skill to roll
+//
+// A new addition to the skill gain system as a separate function, this
+// checks to see if we can gain a stat at all.
+// 
+// A player has a base chance to roll for a stat, regardless of the skill or stat max.
+// Instead of a skill having a maximum it can go in a stat, the BONUS_STR/DEX/INT give us
+// the amount it rolls *towards* the next gain.
+
+[FUNCTION f_skillsuccess_rollstat]
+//SERV.LOG ::DEBUG:: <ACCOUNT>::<NAME>::<UID> is attempting to roll for stats...
+IF (<ISNPC>)
+   RETURN 1
+ENDIF
+// Call the Character Manager and set the OBJ to the Character Manager
+CALL f_prepare_character_manager
+OBJ = <LOCAL.CHARMANAGERUID>
+//SERV.LOG ::TEST:: Local obj is <OBJ.UID>::<OBJ.NAME>
+LOCAL.SKILLNAME = <SERV.SKILL(<ARGN1>).KEY>
+
+// == DATA PARITY CHECK == 
+IF ((<OBJ.TAG.CAPSTR> <= 10) && (<OBJ.TAG.CAPINT> <= 10) && (<OBJ.TAG.CAPDEX> <= 10)
+   OBJ.TAG.CAPSTR = 100
+   OBJ.TAG.CAPDEX = 100
+   OBJ.TAG.CAPINT = 75
+   SYSMESSAGE @025 Your Stat Caps were not set for some reason. This has been logged, please page for a GM and fix your stats.
+   SERV.LOG ::ERROR:: <ACCOUNT>::<NAME>::<UID> did not have stat caps set. This has been temporarily auto-fixed.
+ENDIF
+
+// If the timer has rolled around, reset the timer and begin the skill rolling!
+// We use SERV.RTICKS as this gives us the current real world time as a timestamp
+// which can be used for before/after calcs with no major overhead such as a timer.
+IF ((<OBJ.TAG0.STAT.NEXTROLL> <= 0) || (<EVAL <OBJ.TAG0.STAT.NEXTROLL>> < <EVAL <SERV.RTICKS>>))
+   //SERV.LOG ::DEBUG:: <ACCOUNT>::<NAME>::<UID> has rolled for stats...
+   OBJ.TAG0.STAT.NEXTROLL = <SERV.RTICKS> + 3
+   // == STAT REDUCTION ROLL ==
+   // Check to see if we're above any of our stat caps...
+   IF (<OBJ.TAG0.CAPSTR> < <OSTR>)
+      SRC.SYSMESSAGE @0be As you perform your act of <LOCAL.SKILLNAME>, you lessen the burdens on your muscles.
+      OSTR -= 1
+   ENDIF
+   IF (<OBJ.TAG0.CAPDEX> < <ODEX>)
+      SRC.SYSMESSAGE @0be As you perform your act of <LOCAL.SKILLNAME>, you lessen the burdens on your lungs.
+      ODEX -= 1
+   ENDIF
+   IF (<OBJ.TAG0.CAPINT> < <OINT>)
+      SRC.SYSMESSAGE @0be As you perform your act of <LOCAL.SKILLNAME>, you lessen the burdens on your mind.
+      OINT -= 1
+   ENDIF
+   // So what we do here is check by stat to see if we gain experience.
+   // For stats, there are no random rolls.
+   
+   // = STRENGTH =
+   // First, check that the skill can roll STR...
+   IF (<SERV.SKILL(<ARGN1>).BONUS_STR> > 0)
+      // Next, check our stat cap and our OSTR - If the OSTR is less, roll it!
+      IF (<OSTR> < <OBJ.TAG0.CAPSTR>)
+         // The experience added is equal to the BONUS_STR from the skill.
+         // Experience begins as the Bonus Str
+         LOCAL.STRGAIN = <EVAL <SERV.SKILL(<ARGN1>).BONUS_STR>>
+         // And then we add on 1/4 of the current skill
+         LOCAL.STRGAIN += <EVAL <OBJ.CONT.<LOCAL.SKILLNAME>> / 4>
+         OBJ.TAG0.STAT.STR.EXP += <EVAL <LOCAL.STRGAIN>>
+         // And we then add on 1/4 of the current character skill
+         // == EXPERIENCE ==
+         // Check to see if we've rolled over 1000
+         IF (<OBJ.TAG0.STAT.STR.EXP> > 1000)
+            IF (<TAG0.SHOW.SKILLROLLS> > 0)
+               SRC.SYSMESSAGE @0962 [Strength Experience: <EVAL <OBJ.TAG0.STAT.STR.EXP>>/1000 (Gained <EVAL <LOCAL.STRGAIN>>)]
+               SRC.SYSMESSAGE @03f Strength raised by experience gain!
+               SRC.OSTR += 1
+            ENDIF
+            OBJ.TAG0.STAT.STR.EXP -= 1000
+         ELSE
+            IF (<TAG0.SHOW.SKILLROLLS> > 0)
+               SRC.SYSMESSAGE @0962 [Strength Experience:<EVAL <OBJ.TAG0.STAT.STR.EXP>>/1000 (Gained <EVAL <LOCAL.STRGAIN>>)]
+               SRC.SYSMESSAGE @028 Strength has not raised.
+            ENDIF
+         ENDIF
+      ENDIF
+   ENDIF 
+   
+   // = DEXTERITY =
+   // First, check that the skill can roll DEX...
+   IF (<SERV.SKILL(<ARGN1>).BONUS_DEX> > 0)
+      // Next, check our stat cap and our ODEX - If the ODEX is less, roll it!
+      IF (<ODEX> < <OBJ.TAG0.CAPDEX>)
+         // The experience added is equal to the BONUS_DEX from the skill.
+         // Experience begins as the Bonus Dex
+         LOCAL.DEXGAIN = <EVAL <SERV.SKILL(<ARGN1>).BONUS_DEX>>
+         // And then we add on 1/4 of the current skill
+         LOCAL.DEXGAIN += <EVAL <OBJ.CONT.<LOCAL.SKILLNAME>> / 4>
+         OBJ.TAG0.STAT.DEX.EXP += <EVAL <LOCAL.DEXGAIN>>
+         // And we then add on 1/4 of the current character skill
+         // == EXPERIENCE ==
+         // Check to see if we've rolled over 1000
+         IF (<OBJ.TAG0.STAT.DEX.EXP> > 1000)
+            OBJ.TAG0.STAT.DEX.EXP -= 1000
+            IF (<TAG0.SHOW.SKILLROLLS> > 0)
+               SRC.SYSMESSAGE @0962 [Dexterity Experience: <EVAL <OBJ.TAG0.STAT.DEX.EXP>>/1000 (Gained <EVAL <LOCAL.DEXGAIN>>)]
+               SRC.SYSMESSAGE @03f Dexterity raised by experience gain!
+               SRC.ODEX += 1
+            ENDIF
+         ELSE
+            IF (<TAG0.SHOW.SKILLROLLS> > 0)
+               SRC.SYSMESSAGE @0962 [Dexterity Experience:<EVAL <OBJ.TAG0.STAT.DEX.EXP>>/1000 (Gained <EVAL <LOCAL.DEXGAIN>>)]
+               SRC.SYSMESSAGE @028 Dexterity has not raised.
+            ENDIF
+         ENDIF
+      ENDIF
+   ENDIF   
+   
+   // = INTELLIGENCE =
+   // First, check that the skill can roll INT...
+   IF (<SERV.SKILL(<ARGN1>).BONUS_INT> > 0)
+      // Next, check our stat cap and our OINT - If the OINT is less, roll it!
+      IF (<OINT> < <OBJ.TAG0.CAPINT>)
+         // The experience added is equal to the BONUS_INT from the skill.
+         // Experience begins as the Bonus Int
+         LOCAL.INTGAIN = <EVAL <SERV.SKILL(<ARGN1>).BONUS_INT>>
+         // And then we add on 1/4 of the current skill
+         LOCAL.INTGAIN += <EVAL <OBJ.CONT.<LOCAL.SKILLNAME>> / 4>
+         OBJ.TAG0.STAT.INT.EXP += <EVAL <LOCAL.INTGAIN>>
+         // And we then add on 1/4 of the current character skill
+         // == EXPERIENCE ==
+         // Check to see if we've rolled over 1000
+         IF (<OBJ.TAG0.STAT.INT.EXP> > 1000)
+            OBJ.TAG0.STAT.INT.EXP -= 1000
+            IF (<TAG0.SHOW.SKILLROLLS> > 0)
+               SRC.SYSMESSAGE @0962 [Intelligence Experience: <EVAL <OBJ.TAG0.STAT.INT.EXP>>/1000 (Gained <EVAL <LOCAL.INTGAIN>>)]
+               SRC.SYSMESSAGE @03f Intelligence raised by experience gain!
+               SRC.OINT += 1
+            ENDIF
+         ELSE
+            IF (<TAG0.SHOW.SKILLROLLS> > 0)
+               SRC.SYSMESSAGE @0962 [Intelligence Experience:<EVAL <OBJ.TAG0.STAT.INT.EXP>>/1000 (Gained <EVAL <LOCAL.INTGAIN>>)]
+               SRC.SYSMESSAGE @028 Intelligence has not raised.
+            ENDIF
+         ENDIF
+      ENDIF
+   ENDIF
+ELSE
+   //SERV.LOG ::DEBUG:: <ACCOUNT>::<NAME>::<UID> has not rolled for stats...
+ENDIF
+
+

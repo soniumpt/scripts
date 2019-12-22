@@ -1,0 +1,141 @@
+// #-----------#
+// # CHANGELOG #
+// #-----------#
+//
+// 19/08/18 - Wigifer - Removed random loot from these monsters, ready for conversion to the new f_central_loot table.
+
+//Edited for region kills dependable loot, by Yin(yinling@hong-kong-1.com) at 04.04.2006
+
+[CHARDEF b_hyth_hellfire]
+DEFNAME=b_hyth_hellfire
+ID=c_elem_fire
+NAME=Hell Fire
+SOUND=snd_ELEMENTL_FIRELEM1
+ICON=i_pet_elem_fire
+ANIM=079dff
+DAM=4,12
+ARMOR=20
+RESOURCES=8 t_MAGIC
+CAN=MT_WALK|MT_FIRE_IMMUNE|MT_RUN|MT_USEHANDS
+
+FOODTYPE=t_fire
+DESIRES=t_LAVA
+BLOODCOLOR=01
+
+CATEGORY=Monsters
+SUBSECTION=Elementals
+DESCRIPTION=Fire Elemental
+
+ON=@Create
+COLOR=00793
+NPC=brain_monster
+
+STR={625 755}
+DEX={365 385}
+INT={271 295}
+
+PARRYING={55.0 65.0}
+MAGERY={200.0 275.0}
+MAGICRESISTANCE={160.0 175.0}
+TACTICS={180.0 200.0}
+WRESTLING={170.0 200.0}
+
+FAME={1000 6000}
+KARMA={-4000 -4999}
+
+//ALIGNMENT=EVIL
+//SPELLCIRCLE=3 5
+
+ITEMNEWBIE=i_light_source
+ITEMNEWBIE=i_spellbook	// knows fire type spells.
+ADDSPELL=s_fire_field
+ADDSPELL=s_explosion
+ADDSPELL=s_flamestrike
+ADDSPELL=s_meteor_swarm
+ADDSPELL=s_summon_elem_fire
+
+
+ON=@Death
+// Create death explosion to damage those nearby.
+NEWITEM=i_fx_explode
+act.TYPE=T_EXPLOSION
+act.COLOR=00793
+act.ATTR=ATTR_MOVE_NEVER | ATTR_CAN_DECAY
+act.LINK=<uid>
+act.morex=10 // damage
+act.morey=090 // wFlags DAMAGE_GENERAL
+act.morez=2 // iDist
+act.p=<p>
+act.TIMERD=1 // immediate decay
+
+
+
+[CHARDEF b_hyth_hellservant]
+NAME	= Hell Servant
+ID	= c_mongbat
+SOUND	= snd_MONSTER_GARGYL1
+ICON	= i_pet_mongbat
+CAN	= MT_WALK|MT_FLY|MT_USEHANDS|MT_FIRE_IMMUNE
+TEVENTS	= e_npc_daemon
+
+DAM	= 5,25
+ARMOR	= 30
+RESOURCES=8 i_ribs_raw
+FOODTYPE=15 t_meat_raw
+AVERSIONS=t_TRAP,r_civilization
+
+CATEGORY=Monsters
+SUBSECTION=Daemons & Gargoyles
+DESCRIPTION=hell servant
+
+ON=@Create
+  COLOR	= 0846
+  NPC	= brain_monster
+  FAME	= {100 200}
+  KARMA	= {-4000 -4999}
+
+  STR	= {465 595}
+  DEX	= {100 130}
+  INT	= {85 90}
+
+  PARRYING	= {95.0 105.0}
+  MAGERY	= {70.0 85.0}
+  MAGICRESISTANCE={120.0 175.0}
+  TACTICS	= {70.0 80.0}
+  WRESTLING	= {100.0 120.0}
+
+
+[CHARDEF b_hyth_evileye]
+DEFNAME		= b_hyth_evileye
+NAME		= Evil Eye
+ID		= c_GAZER
+SOUND		= snd_MONSTER_GAZER1
+CAN		= MT_WALK|MT_FLY|MT_FIRE_IMMUNE
+DAM		= 10,31
+ARMOR		= 40
+RESOURCES	= 6 i_ribs_raw
+DESIRES		= c_gazer
+AVERSIONS	= r_civilization
+TEVENTS		= e_teleporter
+
+CATEGORY	= Monsters
+SUBSECTION	= Miscellaneous
+DESCRIPTION	= evil eye
+
+
+ON = @Create
+COLOR=colors_red
+  NPC		= brain_monster
+  FAME		= { 600 1000 }
+  KARMA		= {-4000 -4999 }
+  STR		= { 800 1250 }
+  DEX		= { 500 625 }
+  INT		= { 200 200 }
+  PARRYING	= { 65.0 75.0}
+  MAGERY	= { 190.0 200.0}
+  MAGICRESISTANCE={ 205.0 210.0}
+  TACTICS	= { 120.0 130.0}
+  WRESTLING	= { 120.0 140.0}
+
+
+[EOF]

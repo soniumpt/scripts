@@ -1,0 +1,2036 @@
+
+//Modified by Jessica Graham aka Wren  8-12-03
+//Wren - Oct 15 '03 - Moved out of k_skill_bard to better organize and prepare for peace & world songs
+//Wren - DEC 06 '03 - Modifed Direct Damage song again changing the way damage is dealt
+//Wren - Jan 12 '04 - Modified Screech a bit and modded forest sprite again a bit
+//Wren - Jan 18 '04 - Added Unhide on all but Prov and War Cry
+//Wren - Feb 02 '04 - Modded DAMAGE <5> on Screech to just DAMAGE 5
+//Wren - Feb 03 '04 - Added unpara victim of screech and worked on magic invis not comin off
+//Wren - Feb 05 '04 - Exhaustion wasn't removing if distance was too far, fixed
+//Wren - Feb 05 '04 - Commented out some stuff in Screech...think it's causing a crash
+//Wren - Mar 25 '04 - Upped Exhaustion stam drain
+//Wren - Apr 09 '04 - Added LOS check before Forest Sprite Summons
+//Wren - Apr 09 '04 - Added Update to try to solve problem with hiding
+//Wren - Apr 16 '04 - Fixed LOS check so it would remove mem obj - Change positive songs to blue text
+
+
+//GUMP for SONGS OF WAR BOOK-------------------------------------------------------
+
+[DIALOG d_songs_war]
+0, 0
+
+PAGE 0
+  gumppic 0 17 2200
+  dtext 230 140 0 prepare
+  dtext 220 160 0 instrument
+
+PAGE 1
+  button 294 22 <PAGE1> 2206 0 <PAGE1> 0
+
+  dtext   40 100 50 War Cry
+  button 225 70 5553 5554 1 0 1
+    
+PAGE 2
+  button  20 22 2205 2205 0 1 0
+  button 294 22 <PAGE2> 2206 0 <PAGE2> 0
+  
+  dtext   40 100 50 Exhaustion
+  button 225 70 5553 5554 1 0 2
+  
+PAGE 3
+  button  20 22 2205 2205 0 2 0
+  button 294 22 <PAGE3> 2206 0 <PAGE3> 0
+  
+  dtext   40 100 50 Lulls of
+  dtext   40 120 50 .    Meditation
+  button 225 70 5553 5554 1 0 3
+
+PAGE 4
+  button  20 22 2205 2205 0 3 0
+  button 294 22 <PAGE4> 2206 0 <PAGE4> 0
+  
+  dtext   40 100 50 Courage
+  dtext   40 120 50 .    of Heroes
+  button 225 70 5553 5554 1 0 4
+
+
+PAGE 5
+  button  20 22 2205 2205 0 4 0
+  button 294 22 <PAGE5> 2206 0 <PAGE5> 0
+  
+  dtext   40 100 50 Minuet
+  dtext   40 120 50 .   of Forests
+  button 225 70 5553 5554 1 0 5
+
+
+PAGE 6
+  button  20 22 2205 2205 0 5 0
+  button 294 22 <PAGE6> 2206 0 <PAGE6> 0
+  
+  dtext   40 100 50 Whispers
+  dtext   40 120 50 .    of Discord
+  button 225 70 5553 5554 1 0 6
+
+
+PAGE 7
+  button  20 22 2205 2205 0 6 0
+  button 294 22 <PAGE7> 2206 0 <PAGE7> 0
+  
+  dtext   40 100 50 Rhymes of
+  dtext   40 120 50 .    the Mind
+  button 225 70 5553 5554 1 0 7
+
+PAGE 8
+  button  20 22 2205 2205 0 7 0
+  button 294 22 <PAGE8> 2206 0 <PAGE8> 0
+  
+  dtext   40 100 50 Drums of
+  dtext   40 120 50 .    Battle
+  button 225 70 5553 5554 1 0 8
+
+PAGE 9
+  button  20 22 2205 2205 0 8 0
+  button 294 22 <PAGE9> 2206 0 <PAGE9> 0
+  
+  dtext   40 100 50 Mind Cloud
+  button 225 70 5553 5554 1 0 9
+
+PAGE 10
+  button  20 22 2205 2205 0 9 0
+  button 294 22 <PAGE10> 2206 0 <PAGE10> 0
+  
+  dtext   40 100 50 Screech 
+  dtext   40 120 50 .   of Wrath
+  button 225 70 5553 5554 1 0 10
+
+PAGE 11
+  button  20 22 2205 2205 0 10 0
+  
+  dtext   40 100 50 Spirits 
+  dtext   40 120 50 .   Uprising
+  button 225 70 5553 5554 1 0 11
+
+
+[DIALOG d_songs_war BUTTON]
+ON = 1
+   TAG.SONG.NAME	= "War Cry"
+   song_assign song_WarCry
+
+ON = 2
+   TAG.SONG.NAME	= "Exhaustion"
+   song_assign song_Exhaustion
+
+ON = 3
+   TAG.SONG.NAME	= "Lulls of Meditation"
+   song_assign song_Meditation
+
+ON = 4
+   TAG.SONG.NAME	= "Courage of Heroes"
+   song_assign song_Courage
+
+ON = 5
+   TAG.SONG.NAME	= "Minuet of Forests"
+   song_assign song_Sprite
+
+ON = 6
+   TAG.SONG.NAME	= "Whispers of Discord"
+   song_assign song_Discord
+
+ON = 7
+   TAG.SONG.NAME	= "Rhymes of the Mind"
+   song_assign song_MindRhymes
+
+ON = 8
+   TAG.SONG.NAME	= "Drums of Battle"
+   song_assign song_BattleDrums
+
+ON = 9
+   TAG.SONG.NAME	= "Mind Cloud"
+   song_assign song_MindCloud
+
+ON = 10
+   TAG.SONG.NAME	= "Screech of Wrath"
+   song_assign song_Screech
+
+ON = 11
+   TAG.SONG.NAME	= "Spirit's Uprising"
+   song_assign song_Uprising
+
+
+
+//SONG OF WAR BOOK ITEM -------------------------------------------------------------------
+
+[ITEMDEF i_book_songs_war]
+ID	= i_book_of_truth
+NAME	= Songs of War
+TYPE	= t_script
+VALUE	= 250
+
+ON = @Create
+  COLOR	= 03ca
+
+ON = @DClick
+
+  //Requires at least 30 Musicianship to use songs of war
+  IF ( <SRC.MUSICIANSHIP> < 30.0 )
+     SRC.SYSMESSAGE Your Musicianship skill is too low to read any of the musics.
+     return 1
+  ENDIF
+
+  //Check Songs of War skill level and set the number of pages in the gump to display
+  IF ( <SRC.PROVOCATION> < song_WarCry_level )
+     SRC.SYSMESSAGE You can't understand any song in this book.
+     return 1
+  ELSEIF ( <SRC.PROVOCATION> < song_WarCry_level )
+     MOREm	= 0
+  ELSEIF ( <SRC.PROVOCATION> < song_Exhaustion_level )
+     MOREm	= 2
+  ELSEIF ( <SRC.PROVOCATION> < song_Courage_level )
+     MOREm	= 3
+  ELSEIF ( <SRC.PROVOCATION> < song_Sprite_level )
+     MOREm	= 4
+  ELSEIF ( <SRC.PROVOCATION> < song_Discord_level )
+     MOREm	= 5
+  ELSEIF ( <SRC.PROVOCATION> < song_MindRhymes_level )
+     MOREM 	= 6
+  ELSEIF ( <SRC.PROVOCATION> < song_BattleDrums_level )
+     MOREm 	= 7
+  ELSEIF ( <SRC.PROVOCATION> < song_MindCloud_level )
+     MOREm 	= 8  
+  ELSEIF ( <SRC.PROVOCATION> < song_Screech_level )
+     MOREm 	= 9  
+  ELSEIF ( <SRC.PROVOCATION> < song_Uprising_level )
+     MOREm 	= 10  
+  ELSE
+     MOREm = 11
+  ENDIF
+
+  VAR.PAGE	= 0
+  VAR.PAGE2	= 0
+  DIALOG	d_songs_war
+  RETURN 1
+
+
+ON = @Targon_Item
+
+  //Can't assign a song to an instrument unless the instrument is in your backpack
+  IF ( <SRC.TARG.TOPOBJ.UID> != <SRC.UID> )
+     SRC.SYSMESSAGE You must have it in your backpack.
+     RETURN 1
+  ENDIF
+  
+  //Not sure....
+  IF ( <SRC.TARG.TYPE> == t_musical )
+     SRC.NEWITEM <SRC.TARG.BASEID>
+     SRC.ACT.BOUNCE
+     SRC.TARG.REMOVE
+
+  //If we target and instrument then set its reference to our book
+  ELSEIF ( <SRC.TARG.TYPE> == t_instrument )
+     SRC.ACT	= <SRC.TARG>
+
+  //Can't assign a song to anything but an instrument
+  ELSE
+     SRC.SYSMESSAGE That's not an instrument.
+     return 1
+  ENDIF
+
+  //Prepare the instrument
+  SRC.ACT.MOREz	= <MOREz>
+  SRC.ACT.TAG.SONG.NAME	= <TAG.SONG.NAME>
+  SRC.SYSMESSAGE You prepare the <SRC.ACT.NAME> for <SRC.ACT.TAG.SONG.NAME>.
+  RETURN 1
+
+
+
+
+
+//War Cry------------------------------------------------------------------------
+
+//This memory object triggers the speech and the limits frequency of the song
+[ItemDef M_AddWarCry]
+id=i_memory
+Name=War Cry Trigger Timer
+type=t_eq_script
+
+ON=@Create
+   TIMER=5
+   COLOR = 02
+
+ON=@UNEQUIP
+   //If this is the correct color we need to trigger the event
+   IF ( <COLOR> = 02 )
+      SRC.WarCryAffectSongArea
+      SRC.f_skillsuccess_rollskill 29
+      SRC.f_skillsuccess_rollskill 22
+      SRC.f_skillsuccess_rollstat 22
+   ENDIF
+
+ON=@Timer
+   //Add this item again of a different color to add a delay after the song
+   IF ( <COLOR> = 02 )
+      CONT.NEWITEM M_AddWarCry
+      CONT.ACT.COLOR = 03
+      CONT.ACT.TIMER = 10
+      CONT.EQUIP <CONT.ACT>
+      REMOVE
+   ELSE
+      REMOVE 
+   ENDIF
+   RETURN 1
+
+[FUNCTION WarCry]
+//If they are in range and in war mode there is a chance for them to yell a war cry
+IF ((<DISTANCE> > 10) || (<ACCOUNT.PLEVEL> > 1))
+   //Do nothing
+ELSE
+   IF (<FLAGS> & statf_war)
+      IF (<EVAL RAND(5)> > 2)
+
+         //Vary the Color of the Text
+         DOSWITCH <EVAL RAND(15)>	 
+            LOCAL.SONGCOLOR 14
+            LOCAL.SONGCOLOR 24
+            LOCAL.SONGCOLOR 34
+            LOCAL.SONGCOLOR 44
+            LOCAL.SONGCOLOR 54
+            LOCAL.SONGCOLOR 64
+            LOCAL.SONGCOLOR 74
+            LOCAL.SONGCOLOR 84
+            LOCAL.SONGCOLOR 94
+            LOCAL.SONGCOLOR 104
+            LOCAL.SONGCOLOR 114
+            LOCAL.SONGCOLOR 124
+            LOCAL.SONGCOLOR 134
+            LOCAL.SONGCOLOR 144
+            LOCAL.SONGCOLOR 154
+         END DO   
+
+         //Random message
+         DOSWITCH <EVAL RAND(14)>
+            SAYua <LOCAL.SONGCOLOR>, 0, 0, 0, HAVE AT THEE!
+            SAYua <LOCAL.SONGCOLOR>, 0, 0, 0, TASTE MY STEEL!
+            SAYua <LOCAL.SONGCOLOR>, 0, 0, 0, TODAY IS A GOOD DAY TO DIE!
+            SAYua <LOCAL.SONGCOLOR>, 0, 0, 0, PREPARE YOURSELF FOR BATTLE!
+            SAYua <LOCAL.SONGCOLOR>, 0, 0, 0, I SHALL SMITE THEE!
+            SAYua <LOCAL.SONGCOLOR>, 0, 0, 0, I SHALL SEND THEE TO MEET THY MAKER!
+            SAYua <LOCAL.SONGCOLOR>, 0, 0, 0, PREPARE TO DIE!
+            SAYua <LOCAL.SONGCOLOR>, 0, 0, 0, YOU'VE MET YOUR MATCH!
+            SAYua <LOCAL.SONGCOLOR>, 0, 0, 0, THIS DAY SHALL BE YOUR LAST!
+            SAYua <LOCAL.SONGCOLOR>, 0, 0, 0, VICTORY SHALL BE MINE!
+            SAYua <LOCAL.SONGCOLOR>, 0, 0, 0, JUSTICE SHALL PREVAIL!
+            SAYua <LOCAL.SONGCOLOR>, 0, 0, 0, FLEE BEFORE ME!
+            SAYua <LOCAL.SONGCOLOR>, 0, 0, 0, FOR STRENGTH AND HONOR!
+            SAYua <LOCAL.SONGCOLOR>, 0, 0, 0, CHARGE!
+         ENDDO
+      ENDIF
+   ENDIF
+ENDIF
+
+
+[Function WarCryAffectSongArea]
+serv.allclients WarCry <uid>
+
+
+
+
+
+//Exhaustion-----------------------------------------------------------------------
+//This object is needed because CanSee sucks & only works with a SRC not CONT
+[ITEMDEF M_song_Exhaustion_CanSee]	
+ID	= i_memory
+NAME	= Exhaustion Distance checker
+type	= t_eq_script
+
+ON=@Create
+   TIMER=2
+
+ON=@EQUIP
+   IF !( <SRC.TARG.CanSee> )
+      SRC.SYSMESSAGE They are too far away for them to hear your song...
+      SRC.FINDID.i_song_Exhaustion.REMOVE
+   ENDIF
+   RETURN 0
+
+ON=@TIMER
+   REMOVE
+   RETURN 1
+
+//Exhaustion --MAIN SCRIPT
+[ITEMDEF i_song_Exhaustion]
+ID	= i_lute
+TYPE	= t_eq_script
+LAYER	= layer_k_song
+NAME	= Exhaustion
+
+
+ON = @Equip
+   SRC.EVENTS +e_singing
+   TIMER	= 3
+   VAR.SONGCOLOR 50
+   SRC.SAY *starts singing*
+   SRC.SYSMESSAGE You start singing Exhaustion for <LINK.NAME>.
+
+   DOSWITCH <EVAL (<CONT.PROVOCATION> / 100)>
+      VAR.SONGSTAMDRAIN = 10	 //0-9.9
+      VAR.SONGSTAMDRAIN = 11     //10-19.9
+      VAR.SONGSTAMDRAIN = 12     //20-29.9
+      VAR.SONGSTAMDRAIN = 13     //30-39.9
+      VAR.SONGSTAMDRAIN = 14     //40-49.9
+      VAR.SONGSTAMDRAIN = 15     //50-59.9
+      VAR.SONGSTAMDRAIN = 16     //60-69.9
+      VAR.SONGSTAMDRAIN = 17     //70-79.9
+      VAR.SONGSTAMDRAIN = 18     //80-89.9
+      VAR.SONGSTAMDRAIN = 19     //90-99.9
+      VAR.SONGSTAMDRAIN = 20     //100.0
+   ENDDO
+
+ON = @UnEquip
+   SRC.EVENTS -e_singing
+   VAR.SONGCOLOR 50
+   SRC.SAY *stops singing*
+   SRC.SYSMESSAGE You stop singing.
+   SRC.f_skillsuccess_rollskill 22
+   SRC.f_skillsuccess_rollskill 29
+   SRC.f_skillsuccess_rollstat 22
+
+ON = @Timer
+   IF !( <CONT.FLAGS> & statf_war )
+      CONT.SYSMESSAGE You aren't ready to fight...
+      REMOVE
+      RETURN 1
+   ENDIF
+
+   //Unhide if hidden so it can be interrupted
+   IF ( <CONT.FLAGS> & statf_invisible ) 
+      CONT.FINDID(i_rune_invisibility).REMOVE
+      CONT.flags=<CONT.flags> &~ statf_invisible
+      CONT.UPDATE
+   ELSEIF ( <CONT.FLAGS> & statf_hidden )
+      CONT.flags=<CONT.flags> &~ statf_hidden
+      CONT.UPDATE
+   ENDIF
+
+
+   CONT.NEWITEM M_song_Exhaustion_CanSee
+   CONT.EQUIP <CONT.ACT>
+   
+   SONGS_CHECKFAIL_PROV
+
+   IF ( <SONGSTATE> & 1 )
+      VAR.SONGCOLOR	= 35
+   ELSE
+      VAR.SONGCOLOR	= 34
+   ENDIF
+
+
+   IF ( 0 )
+   ELSEIF ( <SONGSTATE> ==  0 )
+       SING_SAY	= Hush, Hush, <LINK.NAME>
+   ELSEIF ( <SONGSTATE> ==  1 )
+       SING_SAY	= Close your eyes my sweet
+   ELSEIF ( <SONGSTATE> ==  2 )
+       SING_SAY	= There is no reason to to fret
+   ELSEIF ( <SONGSTATE> ==  3 )
+       SING_SAY	= For I am here, do not forget
+
+       //Make Gray to the victim
+       LINK.NEWITEM i_damager
+       LINK.ACT.MORE1	= <CONT.UID>
+       LINK.ACT.LINK	= <LINK.UID>
+       LINK.ACT.P	= <CONT.P>
+       LINK.UPDATE
+
+       LINK.EFFECT=3,i_fx_curse,6,16,0
+       IF (<LINK.STAM> >= <VAR.SONGSTAMDRAIN>)
+         LINK.STAM = <EVAL (<LINK.STAM> +- <VAR.SONGSTAMDRAIN>)>
+       ELSE
+         LINK.STAM = 0
+       ENDIF
+   ELSEIF ( <SONGSTATE> ==  4 )
+       SING_SAY	= Your eyes grow heavy
+   ELSEIF ( <SONGSTATE> ==  5 )
+       SING_SAY	= Your body feels weak
+   ELSEIF ( <SONGSTATE> ==  6 )
+       SING_SAY	= You now have the urge
+   ELSEIF ( <SONGSTATE> ==  7 )
+       SING_SAY	= To sleep, to sleep
+       LINK.EFFECT=3,i_fx_curse,6,16,0
+       IF (<LINK.STAM> >= <VAR.SONGSTAMDRAIN>)
+         SAY <VAR.SONGSTAMDRAIN>
+         LINK.STAM = <EVAL (<LINK.STAM> +- <VAR.SONGSTAMDRAIN>)>
+       ELSE
+         LINK.STAM = 0
+       ENDIF
+   ELSEIF ( <SONGSTATE> ==  8 )
+       SING_SAY	= Lay down your sword
+   ELSEIF ( <SONGSTATE> ==  9 )
+       SING_SAY	= Lay down your shield
+   ELSEIF ( <SONGSTATE> == 10 )
+       SING_SAY	= Relax my dear and forever yield
+   ELSEIF ( <SONGSTATE> == 11 )
+       SING_SAY	= Hush, Hush, Sleep
+       LINK.EFFECT=3,i_fx_curse,6,16,0
+       IF (<LINK.STAM> >= <VAR.SONGSTAMDRAIN>)
+         LINK.STAM = <EVAL (<LINK.STAM> +- 0<VAR.SONGSTAMDRAIN>)>
+       ELSE
+         LINK.STAM = 0
+       ENDIF
+   ELSEIF ( <SONGSTATE> == 12 )
+      SING_SAY = *the end*
+      CONT.SKILLCHECK_RUN Skill_Provocation
+   ELSE
+      REMOVE
+      RETURN 1
+   ENDIF
+
+   SING_STATE
+   RETURN 1
+
+
+
+
+
+
+//LULLS OF MEDITATION-----------------------------------------------------------------------
+
+//Memory object that increase int and gives mana raises
+//This item is used for both Lulls of Meditation and Rhymes of the Mind
+[ItemDef M_SongINTIncrease]
+id=i_memory
+Name=Song INT Timer
+type=t_eq_script
+
+ON=@Create
+   TIMER    = 10
+   MOREx    = 0
+
+ON=@EQUIP
+   SRC.INT  = (<SRC.INT> + 10)
+   SRC.MANA = (<SRC.MANA> + 10)
+
+ON=@UNEQUIP
+   SRC.INT  = (<SRC.INT> +- 10)
+   IF <SRC.MANA> > <SRC.INT>   
+      SRC.MANA = <SRC.MANA>
+   ENDIF
+
+ON=@Timer
+   IF (<MOREx> = 0)
+      IF <CONT.MANA> < (<CONT.INT> - 9)
+         CONT.MANA = (<CONT.MANA> + 10)
+      ELSE
+         CONT.MANA = <CONT.INT>
+      ENDIF
+      MOREx = 1
+      TIMER = 15
+   ELSEIF (<MOREx> = 1)
+      IF <CONT.MANA> < (<CONT.INT> - 9)
+         CONT.MANA = (<CONT.MANA> + 10)
+      ELSE
+         CONT.MANA = <CONT.INT>
+      ENDIF
+      MOREx = 2
+      TIMER = 17
+   ELSEIF (<MOREx> = 2)
+      IF <CONT.MANA> < (<CONT.INT> - 9)
+         CONT.MANA = (<CONT.MANA> + 10)
+      ELSE
+         CONT.MANA = <CONT.INT>
+      ENDIF
+      MOREx = 3
+      TIMER = 268
+   ELSE
+      Remove 
+   ENDIF
+   
+   RETURN 1
+
+
+//This object is needed because CanSee sucks & only works with a SRC not CONT
+[ITEMDEF M_song_Meditation_CanSee]	
+ID	= i_memory
+NAME	= Meditation Distance checker
+type	= t_eq_script
+
+ON=@Create
+   TIMER=2
+
+ON=@EQUIP
+   IF !( <SRC.TARG.CanSee> )
+      SRC.SYSMESSAGE They are too far away for them to hear your song...
+      SRC.FINDID.i_song_meditation.REMOVE
+   ENDIF
+   RETURN 0
+
+ON=@TIMER
+   REMOVE
+   RETURN 1
+
+//LULLS OF MEDITATION -- MAIN SCRIPT
+[ITEMDEF i_song_meditation]
+ID	= i_lute
+TYPE	= t_eq_script
+LAYER	= layer_k_song
+NAME	= Lulls of Meditation
+
+
+ON = @Equip
+   SRC.EVENTS +e_singing
+   TIMER	= 3
+   VAR.SONGCOLOR 50
+   SRC.SAY *starts singing*
+   SRC.SYSMESSAGE You start singing Lulls of Meditation for <LINK.NAME>.
+
+   IF <SRC.UID> != <LINK.UID>
+      IF (<LINK.ISKARMAEVIL> || <LINK.ISMURDERER> || (<LINK.FLAGS> & statf_criminal))
+         SRC.CRIMINAL 1
+      END IF
+   END IF
+
+ON = @UnEquip
+   SRC.EVENTS -e_singing
+   VAR.SONGCOLOR 50
+   SRC.SAY *stops singing*
+   SRC.SYSMESSAGE You stop singing.
+   
+   IF ( <SONGSTATE> < 15 )
+      IF (<LINK.FINDID.M_SongINTIncrease>)
+         LINK.FINDID.M_SongINTIncrease.Remove
+      ENDIF
+   END IF
+   SRC.f_skillsuccess_rollskill 22
+   SRC.f_skillsuccess_rollskill 29
+   SRC.f_skillsuccess_rollstat 22
+
+ON = @Timer
+   if !( <LINK.FLAGS> & statf_war )
+      CONT.SYSMESSAGE They aren't ready to fight...
+      REMOVE
+      return 1
+   endif
+
+   //Unhide if hidden so it can be interrupted
+   IF ( <CONT.FLAGS> & statf_invisible ) 
+      CONT.FINDID(i_rune_invisibility).REMOVE
+      CONT.flags=<CONT.flags> &~ statf_invisible
+      CONT.UPDATE
+   ELSEIF ( <CONT.FLAGS> & statf_hidden )
+      CONT.flags=<CONT.flags> &~ statf_hidden
+      CONT.UPDATE
+   ENDIF
+
+   CONT.NEWITEM M_song_Meditation_CanSee
+   CONT.EQUIP <CONT.ACT>
+   
+   SONGS_CHECKFAIL_PROV
+   
+   IF ( <SONGSTATE> & 1 )
+      VAR.SONGCOLOR	= 6
+   ELSE
+      VAR.SONGCOLOR	= 5
+   ENDIF
+
+   IF ( 0 )
+   ELSEIF ( <SONGSTATE> ==  0 )
+       SING_SAY	= Listen closely to the song I bring, <LINK.NAME>
+   ELSEIF ( <SONGSTATE> ==  1 )
+       SING_SAY	= Of magic that flows in the very heart of the earth!
+   ELSEIF ( <SONGSTATE> ==  2 )
+       SING_SAY	= Relax your mind
+       LINK.NEWITEM M_SongINTIncrease
+       LINK.EQUIP <LINK.ACT>
+       LINK.MESSAGE *feeling focused*
+   ELSEIF ( <SONGSTATE> ==  3 )
+       SING_SAY	= Open your Soul
+   ELSEIF ( <SONGSTATE> ==  4 )
+       SING_SAY	= Let the magic once again be bonded to you!
+       LINK.MESSAGE *beginning to tap into your inner magic* 
+   ELSEIF ( <SONGSTATE> ==  5 )
+       SING_SAY	= Flowing through your veins,
+   ELSEIF ( <SONGSTATE> ==  6 )
+       SING_SAY	= Strengthening your Resolve,
+   ELSEIF ( <SONGSTATE> ==  7 )
+       SING_SAY	= Making you invincible before your foes!     
+   ELSEIF ( <SONGSTATE> ==  8 )
+       SING_SAY	= Stand tall now
+   ELSEIF ( <SONGSTATE> ==  9 )
+       SING_SAY	= Call now upon on the earth mother
+       LINK.MESSAGE *feeling in full the power within you*
+   ELSEIF ( <SONGSTATE> == 10 )
+       SING_SAY	= Entreat her to lend thee her power       
+   ELSEIF ( <SONGSTATE> == 11 )
+       SING_SAY	= Til victory brings thy foes to thy feet
+   ELSEIF ( <SONGSTATE> == 12 )
+       SING_SAY	= And HER justice has been wrought
+   ELSEIF ( <SONGSTATE> == 13 )
+      SING_SAY = through you
+      LINK.MESSAGE *feeling a final burst of energy reignite your soul*
+   ELSEIF ( <SONGSTATE> == 14 )
+   ELSEIF ( <SONGSTATE> == 15 )
+      SING_SAY = *the end*
+      CONT.SKILLCHECK_RUN Skill_Provocation
+   ELSE
+      REMOVE
+      RETURN 1
+   ENDIF
+
+   SING_STATE
+   RETURN 1
+
+
+
+
+
+//COURAGE OF HEROES------------------------------------------------------------------------
+
+[ItemDef M_SongSTRIncrease]
+id=i_memory
+Name=Song STR Timer
+type=t_eq_script
+
+ON=@Create
+   TIMER    = 300
+
+ON=@EQUIP
+   SRC.MODSTR  = (<SRC.MODSTR> + 10)
+   SRC.HITS = (<SRC.HITS> + 10)
+
+ON=@UNEQUIP
+   SRC.MODSTR  = (<SRC.MODSTR> +- 10)
+   IF <SRC.HITS> > <SRC.STR>   
+      SRC.HITS = <SRC.STR>
+   ENDIF
+   
+ON=@Timer
+   Remove 
+   RETURN 1
+
+
+[ItemDef M_SongDEXIncrease]
+id=i_memory
+Name=Song DEX Timer
+type=t_eq_script
+
+ON=@Create
+   TIMER = 290
+
+ON=@EQUIP
+   SRC.MODDEX  = (<SRC.MODDEX> + 10)
+   SRC.STAM = (<SRC.STAM> + 10)
+
+ON=@UNEQUIP
+   SRC.MODDEX  = (<SRC.MODDEX> +- 10)
+   IF <SRC.STAM > <SRC.DEX>
+      SRC.STAM = <SRC.DEX>
+   ENDIF
+   
+ON=@Timer
+   Remove 
+   RETURN 1
+
+
+[ITEMDEF M_song_Courage_CanSee]		//This object is needed because CanSee sucks & only works with a SRC not CONT
+ID	= i_memory
+NAME	= Courage Distance checker
+type	= t_eq_script
+
+ON=@Create
+   TIMER=2
+
+ON=@EQUIP
+   IF !( <SRC.TARG.CanSee> )
+      SRC.SYSMESSAGE They are too far away for them to hear your song...
+      SRC.FINDID.i_song_courage.REMOVE
+   ENDIF
+   RETURN 0
+
+ON=@TIMER
+   REMOVE
+   RETURN 1
+
+
+//COURAGE OF HEROES -- MAIN SCRIPT
+[ITEMDEF i_song_courage]
+ID	= i_lute
+TYPE	= t_eq_script
+LAYER	= layer_k_song
+NAME	= Courage of Heroes
+
+
+ON = @Equip
+   SRC.EVENTS +e_singing
+   TIMER	= 3
+   VAR.SONGCOLOR 50
+   SRC.SAY *starts singing*
+   SRC.SYSMESSAGE You start singing Courage of Heroes for <LINK.NAME>.
+
+   IF <SRC.UID> != <LINK.UID>
+      IF (<LINK.ISKARMAEVIL> || <LINK.ISMURDERER> || (<LINK.FLAGS> & statf_criminal))
+         SRC.CRIMINAL 1
+      END IF
+   END IF
+
+ON = @UnEquip
+   SRC.EVENTS -e_singing
+
+   VAR.SONGCOLOR 50
+   SRC.SAY *stops singing*
+   SRC.SYSMESSAGE You stop singing.
+
+   IF ( <SONGSTATE> < 15 )
+      IF (<LINK.FINDID.M_SongSTRIncrease>)
+         LINK.FINDID.M_SongSTRIncrease.Remove
+      ENDIF
+   END IF
+
+   IF ( <SONGSTATE> < 15 )
+      IF (<LINK.FINDID.M_SongDEXIncrease>)
+         LINK.FINDID.M_SongDEXIncrease.Remove
+      ENDIF
+   END IF
+   SRC.f_skillsuccess_rollskill 22
+   SRC.f_skillsuccess_rollskill 29
+   SRC.f_skillsuccess_rollstat 22
+   
+ON = @Timer
+   IF !( <LINK.FLAGS> & statf_war )
+      CONT.SYSMESSAGE They aren't ready to fight...
+      REMOVE
+      RETURN 1
+   ENDIF
+
+   //Unhide if hidden so it can be interrupted
+   IF ( <CONT.FLAGS> & statf_invisible ) 
+      CONT.FINDID(i_rune_invisibility).REMOVE
+      CONT.flags=<CONT.flags> &~ statf_invisible
+      CONT.UPDATE
+   ELSEIF ( <CONT.FLAGS> & statf_hidden )
+      CONT.flags=<CONT.flags> &~ statf_hidden
+      CONT.UPDATE
+   ENDIF
+
+   CONT.NEWITEM M_song_Courage_CanSee
+   CONT.EQUIP <CONT.ACT>
+
+   SONGS_CHECKFAIL_PROV
+
+   IF ( <SONGSTATE> & 1 )
+      VAR.SONGCOLOR	= 6
+   ELSE
+      VAR.SONGCOLOR	= 5
+   ENDIF
+
+   IF ( 0 )
+   ELSEIF ( <SONGSTATE> ==  0 )
+       SING_SAY	= Fly with your soul before you fight, <LINK.NAME>
+   ELSEIF ( <SONGSTATE> ==  1 )
+       SING_SAY	= your name in this world means death!
+   ELSEIF ( <SONGSTATE> ==  2 )
+       SING_SAY	= Hate invades your brain
+       LINK.NEWITEM M_SongSTRIncrease
+       LINK.EQUIP <LINK.ACT>
+       LINK.MESSAGE *feeling stronger*
+   ELSEIF ( <SONGSTATE> ==  3 )
+       SING_SAY	= Memories of ancestors awaken
+       LINK.NEWITEM M_SongDEXIncrease
+       LINK.EQUIP <LINK.ACT> 
+       LINK.MESSAGE *feeling confident*
+   ELSEIF ( <SONGSTATE> ==  4 )
+       SING_SAY	= Of times of glory, times of heroes
+   ELSEIF ( <SONGSTATE> ==  5 )
+       SING_SAY	= living or burning,
+   ELSEIF ( <SONGSTATE> ==  6 )
+       SING_SAY	= strength or loneliness,
+   ELSEIF ( <SONGSTATE> ==  7 )
+       SING_SAY	= winner or loser, it's true
+   ELSEIF ( <SONGSTATE> ==  8 )
+       SING_SAY	= yours is the choice
+   ELSEIF ( <SONGSTATE> ==  9 )
+       SING_SAY	= for the courage of long gone heroes
+   ELSEIF ( <SONGSTATE> == 10 )
+       SING_SAY	= breathes within you
+   ELSEIF ( <SONGSTATE> == 11 )
+       SING_SAY	= the courage
+   ELSEIF ( <SONGSTATE> == 12 )
+       SING_SAY	= of Heroes
+   ELSEIF ( <SONGSTATE> == 13 )
+      SING_SAY		= lives in you
+   ELSEIF ( <SONGSTATE> == 14 )
+   ELSEIF ( <SONGSTATE> == 15 )
+      SING_SAY		= *the end*
+      CONT.SKILLCHECK Provocation
+   ELSE
+      REMOVE
+      RETURN 1
+   ENDIF
+
+   SING_STATE
+   RETURN 1
+
+
+
+
+
+//MINUET OF FORESTS------------------------------------------------------------------------
+
+//This char is a wisp-like creature that is specific to Songs of War
+[CHARDEF 0999]
+DEFNAME=c_ForestSprite
+ID=c_wisp
+NAME=Forest Sprite
+ARMOR	= 30
+CATEGORY=Miscellaneous
+SUBSECTION=Sprite
+DESCRIPTION=Forest Sprite
+
+
+ON=@Create
+NPC=brain_animal
+FAME={0 100}
+KARMA=0
+COLOR=040
+
+STR={70 85}
+DEX={70 85}
+INT={70 85}
+
+PARRYING=80.0
+MAGERY=100.0
+MAGICRESISTANCE=60.0
+TACTICS=60.0
+WRESTLING=80.0
+
+ITEMNEWBIE=i_spellbook
+ADDSPELL=s_magic_arrow
+ADDSPELL=s_harm
+ADDSPELL=s_fireball
+ADDSPELL=s_poison
+ADDSPELL=s_teleport
+ADDSPELL=s_curse
+ADDSPELL=s_lightning
+ADDSPELL=s_mana_drain
+ADDSPELL=s_mind_blast
+ADDSPELL=s_summon_elem_air
+
+ITEMNEWBIE=i_light_source
+ITEMNEWBIE M_ForestSprite_Timer
+
+
+[ItemDef M_ForestSprite_Timer]
+id=i_memory
+Name=Forest Sprite Removal Timer
+type=t_eq_script
+
+ON=@Create
+   TIMER=25
+
+ON=@Timer
+   IF ( <CONT.COLOR> = 07fff )
+      CONT.REMOVE
+      REMOVE 
+   ELSE
+      CONT.COLOR=07fff
+      CONT.MESSAGE *wanders back to the woods*
+      TIMER=10
+   ENDIF
+   RETURN 1
+
+
+[ITEMDEF M_song_Sprite_Attack]		//This object is needed because Attack sucks & only works with a SRC not CONT
+ID	= i_memory
+NAME	= Initiate Attack
+type	= t_eq_script
+
+ON=@Create
+   TIMER=10
+
+ON=@EQUIP
+   SRC.NEWNPC c_ForestSprite
+
+   //Modify NPC STR and TIME based on Songs Level
+   IF ((<EVAL <LINK.PROVOCATION>> >= 50.0) && (<EVAL <LINK.PROVOCATION>> < 60.0))
+      SRC.ACT.STR=(<SRC.ACT.STR> + 10)
+      SRC.ACT.HITS=(<SRC.ACT.HITS> + 10)
+   ELSEIF ((<EVAL <LINK.PROVOCATION>> >= 60.0)  && (<EVAL <LINK.PROVOCATION>> < 70.0))
+      SRC.ACT.STR=(<SRC.ACT.STR> + 15)
+      SRC.ACT.HITS=(<SRC.ACT.HITS> + 15)
+      SRC.ACT.FINDID(M_ForestSprite_Timer).Timer=(<SRC.ACT.FINDID(M_ForestSprite_Timer).Timer> + 10)
+   ELSEIF ((<EVAL <LINK.PROVOCATION>> >= 70.0)  && (<EVAL <LINK.PROVOCATION>> < 80.0))
+      SRC.ACT.STR=(<SRC.ACT.STR> + 20)
+      SRC.ACT.HITS=(<SRC.ACT.HITS> + 20)
+      SRC.ACT.FINDID(M_ForestSprite_Timer).Timer=(<SRC.ACT.FINDID(M_ForestSprite_Timer).Timer> + 10)
+   ELSEIF ((<EVAL <LINK.PROVOCATION>> >= 80.0)  && (<EVAL <LINK.PROVOCATION>> < 90.0))
+      SRC.ACT.STR=(<SRC.ACT.STR> + 25)
+      SRC.ACT.HITS=(<SRC.ACT.HITS> + 25)
+      SRC.ACT.FINDID(M_ForestSprite_Timer).Timer=(<SRC.ACT.FINDID(M_ForestSprite_Timer).Timer> + 20)
+   ELSEIF ((<EVAL <LINK.PROVOCATION>> >= 90.0)  && (<EVAL <LINK.PROVOCATION>> < 100.0))
+      SRC.ACT.STR=(<SRC.ACT.STR> + 30)
+      SRC.ACT.HITS=(<SRC.ACT.HITS> + 30)
+      SRC.ACT.FINDID(M_ForestSprite_Timer).Timer=(<SRC.ACT.FINDID(M_ForestSprite_Timer).Timer> + 20)
+   ELSEIF (<EVAL <LINK.PROVOCATION>> = 100.0)
+      SRC.ACT.STR=(<SRC.ACT.STR> + 35)
+      SRC.ACT.HITS=(<SRC.ACT.HITS> + 35)
+      SRC.ACT.FINDID(M_ForestSprite_Timer).Timer=(<SRC.ACT.FINDID(M_ForestSprite_Timer).Timer> + 30)
+   ENDIF
+
+   SRC.ACT.GO <SRC.P>
+   SRC.ACT.ATTACK
+   SRC.ACT.ATTACK
+   RETURN 0
+
+ON=@TIMER
+   REMOVE
+   RETURN 1
+
+
+[ITEMDEF M_song_Sprite_CanSee]		//This object is needed because CanSee sucks & only works with a SRC not CONT
+ID	= i_memory
+NAME	= Sprite Distance checker
+type	= t_eq_script
+
+ON=@Create
+   TIMER=2
+
+ON=@EQUIP
+   IF !( <SRC.TARG.CanSee> )
+      SRC.SYSMESSAGE They are too far away for them to hear your song...
+      SRC.FINDID.i_song_Sprite.REMOVE
+   ENDIF
+   RETURN 0
+
+ON=@Timer
+   Remove 
+   RETURN 1
+
+
+[ITEMDEF M_song_Sprite_CanSeeLOS]
+ID	= i_memory
+NAME	= Sprite LOS Check
+TYPE	= t_eq_script
+ON=@Create
+   TIMER=2
+
+ON=@EQUIP
+   IF !( <SRC.TARG.CanSeeLOS> )
+      SRC.SYSMESSAGE The obstructions muffle your song too much for it to have an effect on them.
+      SRC.FINDID.i_song_Sprite.REMOVE
+   ENDIF
+   RETURN 0
+ON=@Timer
+   Remove 
+   RETURN 1
+
+
+//MINUET OF FORESTS -- MAIN SCRIPT
+[ITEMDEF i_song_Sprite]
+ID	= i_lute
+TYPE	= t_eq_script
+LAYER	= layer_k_song
+NAME	= Minuet of Forests
+
+ON = @Equip
+   SRC.EVENTS +e_singing
+   TIMER	= 3
+   VAR.SONGCOLOR 50
+   SRC.SAY *starts singing*
+   SRC.SYSMESSAGE You start singing Minuet of Forests against <LINK.NAME>.
+
+//   IF <SRC.UID> != <LINK.UID>
+//      IF (<LINK.ISKARMAGOOD> && !<LINK.ISMURDERER> && !<LINK.src_WASAGGRESSOR> && !<LINK.ISSPARING> && !(<LINK.FLAGS> & statf_criminal))
+//         SRC.CRIMINAL 1
+//      END IF
+//   END IF
+
+ON = @UnEquip
+   SRC.EVENTS -e_singing
+   VAR.SONGCOLOR 50
+   SRC.SAY *stops singing*
+   SRC.SYSMESSAGE You stop singing.
+   SRC.f_skillsuccess_rollskill 22
+   SRC.f_skillsuccess_rollskill 29
+   SRC.f_skillsuccess_rollstat 22
+
+ON = @Timer
+   IF !( <CONT.FLAGS> & statf_war )
+      CONT.SYSMESSAGE You aren't ready to fight...
+      REMOVE
+      RETURN 1
+   ENDIF
+
+   //Unhide if hidden so it can be interrupted
+   IF ( <CONT.FLAGS> & statf_invisible ) 
+      CONT.FINDID(i_rune_invisibility).REMOVE
+      CONT.flags=<CONT.flags> &~ statf_invisible
+      CONT.UPDATE
+   ELSEIF ( <CONT.FLAGS> & statf_hidden )
+      CONT.flags=<CONT.flags> &~ statf_hidden
+      CONT.UPDATE
+   ENDIF
+
+   IF ( <SONGSTATE> = 3 )
+      CONT.NEWITEM M_song_Sprite_CanSeeLOS
+      CONT.EQUIP <CONT.ACT>
+   ELSE 
+      CONT.NEWITEM M_song_Sprite_CanSee
+      CONT.EQUIP <CONT.ACT>
+   ENDIF
+
+   SONGS_CHECKFAIL_PROV
+
+   IF ( <SONGSTATE> & 1 )
+      VAR.SONGCOLOR	= 35
+   ELSE
+      VAR.SONGCOLOR	= 34
+   ENDIF
+
+   IF ( 0 )
+   ELSEIF ( <SONGSTATE> ==  0 )
+      SING_SAY	= Woods of splenderous green
+   ELSEIF ( <SONGSTATE> ==  1 )
+      SING_SAY	=  A being of pure light
+   ELSEIF ( <SONGSTATE> ==  2 )
+      SING_SAY	= Nature come to my aid
+   ELSEIF ( <SONGSTATE> ==  3 )
+      SING_SAY	= Grant me a Forest Sprite
+
+      //Make Gray to the victim
+      LINK.NEWITEM i_damager
+      LINK.ACT.MORE1	= <CONT.UID>
+      LINK.ACT.LINK	= <LINK.UID>
+      LINK.ACT.P	= <CONT.P>
+      LINK.UPDATE
+
+      LINK.NEWITEM M_song_Sprite_Attack		//Add the sprite attacking the player the song was sung against
+      LINK.ACT.LINK=<CONT.UID>
+      LINK.EQUIP <LINK.ACT>
+
+   ELSEIF ( <SONGSTATE> ==  4 )
+      SING_SAY	= *the end*
+      CONT.SKILLCHECK_RUN Skill_Provocation
+   ELSE
+      REMOVE
+      RETURN 1
+   ENDIF
+
+   SING_STATE
+   RETURN 1
+
+
+
+
+
+//Whispers of Discord----------------------------------------------------------
+[FUNCTION IGNORE_WAR]
+ if ( <MEMORYFINDTYPE.MEMORY_WAR_TARG.uid> )
+    VAR.MEM_ACT	= <ACT.UID>
+    ACT	        = <MEMORYFINDTYPE.MEMORY_WAR_TARG.uid>
+    ACT.COLOR	= <ACT.COLOR> & ~MEMORY_WAR_TARG
+    ACT		= <VAR.MEM_ACT>
+  endif
+
+[ITEMDEF i_damager]
+ID	= i_fx_sparkle
+TYPE	= t_script
+
+ON = @Create
+   TIMER	= 1
+   COLOR	= 0846
+ON = @Timer
+   REMOVE
+   return 1
+ON = @Step
+   if ( <MORE1> != <SRC.UID> )
+      return 0
+   endif
+   
+   LINK.TAG.HITS	= <LINK.HITS>
+   LINK.HITS		= (<LINK.HITS> + 1)   
+   LINK.DAMAGE 1
+   LINK.ANIM 6
+   LINK.HITS		= <LINK.TAG.HITS>
+   return 1
+
+
+
+
+
+//RHYMES OF THE MIND------------------------------------------------------------------------
+
+[ItemDef M_AddMindRhymes]
+id=i_memory
+Name=Rhymes of the Mind Trigger Timer
+type=t_eq_script
+
+ON=@Create
+   TIMER=2
+
+ON=@UNEQUIP
+   SRC.MindRhymesAffectSongArea
+
+ON=@Timer
+   Remove 
+   RETURN 1
+
+
+[FUNCTION StartMindRhymes]
+   CONT.NEWITEM M_AddMindRhymes
+   CONT.EQUIP <CONT.ACT>
+
+
+[FUNCTION MindRhymes]
+//Equip the intel/mana gains
+IF (<distance> <= 10)
+   IF (!<FINDID.M_SongINTIncrease>)
+      NEWITEM M_SongINTIncrease
+      EQUIP <ACT>
+   ENDIF
+ENDIF
+
+
+[Function MindRhymesAffectSongArea]
+serv.allclients MindRhymes <uid>
+
+
+//RHYMES OF THE MIND -- MAIN SCRIPT
+[ITEMDEF i_song_MindRhymes]
+ID	= i_lute
+TYPE	= t_eq_script
+LAYER	= layer_k_song
+NAME	= Rhymes of the Mind
+
+ON = @Equip
+   SRC.EVENTS +e_singing
+   TIMER	= 3
+   VAR.SONGCOLOR 50
+   SRC.SAY *starts singing*
+   SRC.SYSMESSAGE You start singing Rhymes of the Mind.
+
+ON = @UnEquip
+   SRC.EVENTS -e_singing
+   VAR.SONGCOLOR 50
+   SRC.SAY *stops singing*
+   SRC.SYSMESSAGE You stop singing.
+   SRC.f_skillsuccess_rollskill 22
+   SRC.f_skillsuccess_rollskill 29
+   SRC.f_skillsuccess_rollstat 22
+   
+ON = @Timer
+
+   //Unhide if hidden so it can be interrupted
+   IF ( <CONT.FLAGS> & statf_invisible ) 
+      CONT.FINDID(i_rune_invisibility).REMOVE
+      CONT.flags=<CONT.flags> &~ statf_invisible
+      CONT.UPDATE
+   ELSEIF ( <CONT.FLAGS> & statf_hidden )
+      CONT.flags=<CONT.flags> &~ statf_hidden
+      CONT.UPDATE
+   ENDIF
+
+   SONGS_CHECKFAIL_PROV
+
+   IF ( <SONGSTATE> & 1 )
+      VAR.SONGCOLOR	= 6
+   ELSE
+      VAR.SONGCOLOR	= 5
+   ENDIF
+
+   IF ( 0 )
+   ELSEIF ( <SONGSTATE> ==  0 )
+       SING_SAY	= Enter in the space
+   ELSEIF ( <SONGSTATE> ==  1 )
+       SING_SAY	= If you want to give chase
+   ELSEIF ( <SONGSTATE> ==  2 )
+       SING_SAY	= Flight of the mind
+   ELSEIF ( <SONGSTATE> ==  3 )
+       SING_SAY	= The soul and of the kind
+       StartMindRhymes    //Start int/mana effects for people who are in war mode in the area
+   ELSEIF ( <SONGSTATE> ==  4 )
+       SING_SAY	= Think fast son
+   ELSEIF ( <SONGSTATE> ==  5 )
+       SING_SAY	= Or you're gonna get done
+   ELSEIF ( <SONGSTATE> ==  6 )
+       SING_SAY	= Focus your power
+   ELSEIF ( <SONGSTATE> ==  7 )
+       SING_SAY	= And be the man of the hour
+   ELSEIF ( <SONGSTATE> ==  8 )
+       SING_SAY	= Thoughts are your fight
+   ELSEIF ( <SONGSTATE> ==  9 )
+       SING_SAY	= Quicker than light
+   ELSEIF ( <SONGSTATE> == 10 )
+       SING_SAY	= Smashing your foes
+   ELSEIF ( <SONGSTATE> == 11 )
+       SING_SAY	= And unleashing all your woes
+   ELSEIF ( <SONGSTATE> == 12 )
+       SING_SAY	= Power of the mind
+   ELSEIF ( <SONGSTATE> == 13 )
+      SING_SAY	= Of the spirit in kind
+   ELSEIF ( <SONGSTATE> == 14 )
+      SING_SAY  = Devestate your nemesis
+   ELSEIF ( <SONGSTATE> == 15 )
+      SING_SAY  =   Mind in the Netherest
+   ELSEIF ( <SONGSTATE> == 17 )
+      SING_SAY	= *the end*
+      CONT.SKILLCHECK_RUN Skill_Provocation
+   ELSE
+      REMOVE
+      RETURN 1
+   ENDIF
+
+   SING_STATE
+   RETURN 1
+
+
+
+
+
+//DRUMS OF BATTLE------------------------------------------------------------------------
+
+[ItemDef M_AddBattleDrums]
+id=i_memory
+Name=Drums of Battle Trigger Timer
+type=t_eq_script
+
+ON=@Create
+   TIMER=2
+
+ON=@UNEQUIP
+   SRC.BattleDrumsAffectSongArea
+
+ON=@Timer
+   Remove 
+   RETURN 1
+
+
+[FUNCTION StartBattleDrums]
+   CONT.NEWITEM M_AddBattleDrums
+   CONT.EQUIP <CONT.ACT>
+
+
+[FUNCTION BattleDrums]
+//If they don't have STR MemObj equip it, otherwise equip DEX MemObj
+IF (<distance> <= 10)
+   IF (!<FINDID.M_SongSTRIncrease>)
+      NEWITEM M_SongSTRIncrease
+      EQUIP <ACT>
+   ELSEIF (!<FINDID.M_SongDEXIncrease>)
+      NEWITEM M_SongDEXIncrease
+      EQUIP <ACT>
+   ENDIF
+ENDIF
+
+
+[Function BattleDrumsAffectSongArea]
+serv.allclients BattleDrums <uid>
+
+
+//DRUMS OF BATTLE -- MAIN SCRIPT
+[ITEMDEF i_song_BattleDrums]
+ID	= i_lute
+TYPE	= t_eq_script
+LAYER	= layer_k_song
+NAME	= Drums of Battle
+
+ON = @Equip
+   SRC.EVENTS +e_singing
+   TIMER	= 3
+   VAR.SONGCOLOR 50
+   SRC.SAY *starts singing*
+   SRC.SYSMESSAGE You start singing Drums of Battle.
+
+ON = @UnEquip
+   SRC.EVENTS -e_singing
+   VAR.SONGCOLOR 50
+   SRC.SAY *stops singing*
+   SRC.SYSMESSAGE You stop singing.
+   SRC.f_skillsuccess_rollskill 22
+   SRC.f_skillsuccess_rollskill 29
+   SRC.f_skillsuccess_rollstat 22
+   
+ON = @Timer
+
+   //Unhide if hidden so it can be interrupted
+   IF ( <CONT.FLAGS> & statf_invisible ) 
+      CONT.FINDID(i_rune_invisibility).REMOVE
+      CONT.flags=<CONT.flags> &~ statf_invisible
+      CONT.UPDATE
+   ELSEIF ( <CONT.FLAGS> & statf_hidden )
+      CONT.flags=<CONT.flags> &~ statf_hidden
+      CONT.UPDATE
+   ENDIF
+
+   SONGS_CHECKFAIL_PROV
+
+   IF ( <SONGSTATE> & 1 )
+      VAR.SONGCOLOR	= 6
+   ELSE
+      VAR.SONGCOLOR	= 5
+   ENDIF
+
+   IF ( 0 )
+   ELSEIF ( <SONGSTATE> ==  0 )
+       SING_SAY	= Listen! Drums! The sounds of a marching army
+   ELSEIF ( <SONGSTATE> ==  1 )
+       SING_SAY	= They are coming for you, you knew they would
+   ELSEIF ( <SONGSTATE> ==  2 )
+       SING_SAY	= No point to run now, stand ready to fight 
+   ELSEIF ( <SONGSTATE> ==  3 )
+       SING_SAY	= Armour and shield, good allies they will be
+       StartBattleDrums   //Start dex/str effects for people who are in war mode in the area
+   ELSEIF ( <SONGSTATE> ==  4 )
+       SING_SAY	= Do you see your enemies, closing in on you?
+   ELSEIF ( <SONGSTATE> ==  5 )
+       SING_SAY	= They are here soon, around us, do not be afraid 
+   ELSEIF ( <SONGSTATE> ==  6 )
+       SING_SAY	= Was that your friend they just killed? 
+   ELSEIF ( <SONGSTATE> ==  7 )
+       SING_SAY	= Suppress your sorrow, whip into a rage! 
+       StartBattleDrums
+   ELSEIF ( <SONGSTATE> ==  8 )
+       SING_SAY	= Leaping over bodies, your power unmatched 
+   ELSEIF ( <SONGSTATE> ==  9 )
+       SING_SAY	= With you there is no pardon, no mercy is shown 
+   ELSEIF ( <SONGSTATE> == 10 )
+       SING_SAY	= Your foes begin to flee, but you catch them with ease 
+   ELSEIF ( <SONGSTATE> == 11 )
+       SING_SAY	= As a wild beast you hunt them down with great speed 
+   ELSEIF ( <SONGSTATE> == 12 )
+       SING_SAY	= Your face is splattered with blood, some is your own 
+   ELSEIF ( <SONGSTATE> == 13 )
+      SING_SAY	= The armour feels heavy, much more then before 
+   ELSEIF ( <SONGSTATE> == 14 )
+      SING_SAY  = What rush of strength you had will soon be gone 
+   ELSEIF ( <SONGSTATE> == 15 )
+      SING_SAY  = Your foes lives were taken, your work is done. 
+   ELSEIF ( <SONGSTATE> == 17 )
+      SING_SAY	= *the end*
+      CONT.SKILLCHECK_RUN Skill_Provocation
+   ELSE
+      REMOVE
+      RETURN 1
+   ENDIF
+
+   SING_STATE
+   RETURN 1
+
+
+
+
+
+//MIND CLOUD-----------------------------------------------------------------------------
+
+//This is the memory object that actually starts and stops the 
+//hallucination by being equipped/unequipped from the person
+[ItemDef M_SongHallucinate]
+id=i_memory
+Name=Song Hallucinate Effect
+type=t_eq_script
+
+ON=@Create
+   TIMER    = 55
+
+ON=@EQUIP
+   SRC.FLAGS=<SRC.FLAGS>|000400000  
+   SRC.FIX 
+
+ON=@UNEQUIP
+   SRC.flags=<SRC.flags> &~ 000400000
+   SRC.FIX 
+
+ON=@Timer
+   Remove 
+   RETURN 1
+
+
+[ITEMDEF M_song_MindCloud_CanSee]		//This object is needed because CanSee sucks & only works with a SRC not CONT
+ID	= i_memory
+NAME	= MindCloud Distance checker
+type	= t_eq_script
+
+ON=@Create
+   TIMER=2
+
+ON=@EQUIP
+   IF !( <SRC.TARG.CanSee> )
+      SRC.SYSMESSAGE They are too far away for them to hear your song...
+      SRC.FINDID.i_song_MindCloud.REMOVE
+   ENDIF
+   RETURN 0
+
+ON=@Timer
+   Remove 
+   RETURN 1
+
+
+//MIND CLOUD -- MAIN SCRIPT
+[ITEMDEF i_song_MindCloud]
+ID	= i_lute
+TYPE	= t_eq_script
+LAYER	= layer_k_song
+NAME	= Mind Cloud
+
+ON = @Equip
+   SRC.EVENTS +e_singing
+   TIMER	= 3
+   VAR.SONGCOLOR 50
+   SRC.SAY *starts singing*
+   SRC.SYSMESSAGE You start singing Mind Cloud to <LINK.NAME>.
+
+//   IF <SRC.UID> != <LINK.UID>
+//      IF (<LINK.ISKARMAGOOD> && !<LINK.ISMURDERER> && !<LINK.src_WASAGGRESSOR> && !<LINK.ISSPARING> && !(<LINK.FLAGS> & statf_criminal))
+//         SRC.CRIMINAL 1
+//      END IF
+//   END IF
+
+ON = @UnEquip
+   SRC.EVENTS -e_singing
+   VAR.SONGCOLOR 50
+   SRC.SAY *stops singing*
+   SRC.SYSMESSAGE You stop singing.
+
+   IF (<LINK.FINDID.M_SongHallucinate>)			//If they are Hallucinating, Stop Hallucination
+      LINK.FINDID.M_SongHallucinate.Remove
+   ENDIF
+   SRC.f_skillsuccess_rollskill 22
+   SRC.f_skillsuccess_rollskill 29
+   SRC.f_skillsuccess_rollstat 22
+
+ON = @Timer 	
+   IF !( <CONT.FLAGS> & statf_war )
+      CONT.SYSMESSAGE You aren't ready to fight...
+      REMOVE
+      RETURN 1
+   ENDIF
+
+   //Unhide if hidden so it can be interrupted
+   IF ( <CONT.FLAGS> & statf_invisible ) 
+      CONT.FINDID(i_rune_invisibility).REMOVE
+      CONT.flags=<CONT.flags> &~ statf_invisible
+      CONT.UPDATE
+   ELSEIF ( <CONT.FLAGS> & statf_hidden )
+      CONT.flags=<CONT.flags> &~ statf_hidden
+      CONT.UPDATE
+   ENDIF
+
+   CONT.NEWITEM M_song_MindCloud_CanSee
+   CONT.EQUIP <CONT.ACT>
+
+   SONGS_CHECKFAIL_PROV
+
+   IF ( <SONGSTATE> & 1 )
+      VAR.SONGCOLOR	= 35
+   ELSE
+      VAR.SONGCOLOR	= 34
+   ENDIF
+
+   IF ( 0 )
+   ELSEIF ( <SONGSTATE> ==  0 )
+       SING_SAY	= Come into my nightmares, <LINK.NAME>
+   ELSEIF ( <SONGSTATE> ==  1 )
+       SING_SAY	=  Come into my dreams 
+   ELSEIF ( <SONGSTATE> ==  2 )
+       SING_SAY	= Come to my reality child 
+   ELSEIF ( <SONGSTATE> ==  3 )
+       SING_SAY	= of which you need to see 
+
+       //Make Gray to the victim
+       LINK.NEWITEM i_damager
+       LINK.ACT.MORE1	= <CONT.UID>
+       LINK.ACT.LINK	= <LINK.UID>
+       LINK.ACT.P	= <CONT.P>
+       LINK.UPDATE
+
+       LINK.NEWITEM M_SongHallucinate				//Start Hallucination
+       LINK.EQUIP <LINK.ACT>
+   ELSEIF ( <SONGSTATE> ==  4 )
+       SING_SAY	= Do not be scared, young <LINK.NAME>
+   ELSEIF ( <SONGSTATE> ==  5 )
+       SING_SAY	= for this is just a glimpse 
+   ELSEIF ( <SONGSTATE> ==  6 )
+      SING_SAY = of the the madness that plagues the world 
+   ELSEIF ( <SONGSTATE> ==  7 )
+      SING_SAY = of demons, ghosts, goblins and imps 
+   ELSEIF ( <SONGSTATE> ==  8 )
+      SING_SAY = Welcome to my nightmares, <LINK.NAME>
+   ELSEIF ( <SONGSTATE> ==  9 )
+      SING_SAY = Welcome to my dreams 
+   ELSEIF ( <SONGSTATE> ==  10 )
+      SING_SAY = Welcome to my reality child 
+   ELSEIF ( <SONGSTATE> ==  11 )
+      SING_SAY = and see the truth I see 
+   ELSEIF ( <SONGSTATE> ==  12 )
+      SING_SAY = Do not fall too far, <LINK.NAME>
+   ELSEIF ( <SONGSTATE> ==  13 )
+      SING_SAY = for the rabbit hole is deep 
+   ELSEIF ( <SONGSTATE> ==  14 )
+      SING_SAY = my reality is too much for you 
+   ELSEIF ( <SONGSTATE> ==  15 )
+      SING_SAY = Now you must awaken from this sleep  
+   ELSEIF ( <SONGSTATE> ==  16 )
+   ELSEIF ( <SONGSTATE> ==  17 )
+      SING_SAY = *the end* 
+      CONT.SKILLCHECK_RUN Skill_Provocation
+   ELSE
+      REMOVE
+      RETURN 1
+   ENDIF
+
+   SING_STATE
+   RETURN 1
+
+
+
+
+
+//SCREECH OF WRATH-----------------------------------------------------------------------
+[ITEMDEF M_song_Screech_CanSee]		//This object is needed because CanSee sucks & only works with a SRC not CONT
+ID	= i_memory
+NAME	= Screech Distance checker
+type	= t_eq_script
+
+ON=@Create
+   TIMER=2
+
+ON=@EQUIP
+   IF !( <SRC.TARG.CanSee> )
+      SRC.SYSMESSAGE They are too far away for them to hear your song...
+      SRC.FINDID.i_song_screech.REMOVE
+   ENDIF
+   RETURN 0
+ON=@Timer
+   Remove 
+   RETURN 1
+
+[ITEMDEF M_song_Screech_CanSeeLOS]
+ID	= i_memory
+NAME	= Screech LOS Check
+TYPE	= t_eq_script
+
+ON=@Create
+   TIMER=2
+
+ON=@EQUIP
+   IF !( <SRC.TARG.CanSeeLOS> )
+      SRC.SYSMESSAGE The obstructions muffle your song too much for it to have an effect on them.
+      SRC.FINDID.i_song_screech.REMOVE
+   ENDIF
+   RETURN 0
+
+ON=@Timer
+   Remove 
+   RETURN 1
+
+//SCREECH OF WRATH -- MAIN SCRIPT
+[ITEMDEF i_song_screech]
+ID	= i_lute
+TYPE	= t_eq_script
+LAYER	= layer_k_song
+NAME	= Screech of Wrath
+
+ON = @Equip
+   SRC.EVENTS +e_singing
+   TIMER	= 3
+   VAR.SONGCOLOR 50
+   SRC.SAY *starts singing*
+   IF (<LINK.ID> == c_m_phoenix)
+      SRC.SYSMESSAGE You realise that the phoenix will only drown your tune with it's own enchanting song...
+      REMOVE
+      RETURN 1
+   ELSEIF ((<LINK.ID> == c_m_balron) && ( RAND(10) != 1))
+      LINK.EMOTE roar
+      SRC.SYSMESSAGE The Balron's warcry drowns out any effect your song would have...
+      REMOVE
+      RETURN 1
+   ELSEIF (<LINK.ISNEWBIE>)
+      SRC.SYSMESSAGE You cannot harm new players.
+      REMOVE
+      RETURN 1
+   ELSEIF (0<LINK.TAG.SCREECH.UNAFFECTED>==1)
+      SRC.SYSMESSAGE As you start to sing, you realise that the <LINK.NAME> cannot be affected...
+      REMOVE
+      RETURN 1
+   ELSEIF ((0<LINK.TAG.SCREECH.CHANCE.LOW>==1) && ( RAND(4) != 1))
+      IF ((<LINK.BODY> == c_man) || (<LINK.BODY> == c_woman) || (<LINK.BODY> == c_elf_female) || (<LINK.BODY> == c_elf_male))
+         LINK.SAY NO! BEGONE! GO AWAY!
+         LINK.EMOTE cover <SRC.SEX his\her> ears
+         SRC.SYSMESSAGE <LINK.NAME> reacts quickly to your attempts to harm them through song...
+         REMOVE
+         RETURN 1
+      ELSE
+         LINK.EMOTE shake its head and cry out
+         SRC.SYSMESSAGE The animal instinct of the <LINK.NAME> causes it to cry out and drown the song
+         REMOVE
+         RETURN 1
+      ENDIF
+   ELSEIF ((0<LINK.TAG.SCREECH.CHANCE.GOOD>==1) && ( RAND(3) != 1))
+      IF ((<LINK.BODY> == c_man) || (<LINK.BODY> == c_woman) || (<LINK.BODY> == c_elf_female) || (<LINK.BODY> == c_elf_male))
+         LINK.SAY NO! BEGONE! GO AWAY!
+         LINK.EMOTE cover <SRC.SEX his\her> ears
+         SRC.SYSMESSAGE <LINK.NAME> reacts quickly to your attempts to harm them through song...
+         REMOVE
+         RETURN 1
+      ELSE
+         LINK.EMOTE shake its head and cry out
+         SRC.SYSMESSAGE The animal instinct of the <LINK.NAME> causes it to cry out and drown the song
+         REMOVE
+         RETURN 1
+      ENDIF
+   ELSEIF ((0<LINK.TAG.SCREECH.CHANCE.HIGH>==1) && ( RAND(2) != 1))
+      IF ((<LINK.BODY> == c_man) || (<LINK.BODY> == c_woman) || (<LINK.BODY> == c_elf_female) || (<LINK.BODY> == c_elf_male))
+         LINK.SAY NO! BEGONE! GO AWAY!
+         LINK.EMOTE cover <SRC.SEX his\her> ears
+         SRC.SYSMESSAGE <LINK.NAME> reacts quickly to your attempts to harm them through song...
+         REMOVE
+         RETURN 1
+      ELSE
+         LINK.EMOTE shake its head and cry out
+         SRC.SYSMESSAGE The animal instinct of the <LINK.NAME> causes it to cry out and drown the song
+         REMOVE
+         RETURN 1
+      ENDIF      
+   ENDIF
+       IF ( <SRC.REGION.GUARDED> )
+         SRC.SYSMESSAGE You can't sing this song with the guard nearby.
+		 REMOVE
+         RETURN 1
+      ENDIF
+   SRC.SYSMESSAGE You start singing Screech of Wrath to <LINK.NAME>.
+
+//   IF <SRC.UID> != <LINK.UID>
+//      IF (<LINK.ISKARMAGOOD> && !<LINK.ISMURDERER> && !<LINK.src_WASAGGRESSOR> && !<LINK.ISSPARING> && !(<LINK.FLAGS> & statf_criminal))
+//         SRC.CRIMINAL 1
+//      END IF
+//   END IF
+
+ON = @UnEquip
+   SRC.EVENTS -e_singing
+   VAR.SONGCOLOR 50
+   SRC.SAY *stops singing*
+   SRC.SYSMESSAGE You stop singing.
+   SRC.f_skillsuccess_rollskill 22
+   SRC.f_skillsuccess_rollskill 29
+   SRC.f_skillsuccess_rollstat 22
+   
+ON = @Timer
+      IF ( <CONT.REGION.GUARDED> )
+         CONT.SYSMESSAGE You can't sing this song with the guard nearby.
+		 REMOVE
+         RETURN 1
+      ENDIF
+   IF ( <LINK.HITS> = 0 )
+      CONT.SKILLCHECK_RUN Skill_Provocation
+      REMOVE
+      RETURN 1
+   ENDIF
+
+   IF !( <CONT.FLAGS> & statf_war )
+      CONT.SYSMESSAGE You aren't ready to fight...
+      REMOVE
+      RETURN 1
+   ENDIF
+
+   //Unhide if hidden so it can be interrupted
+   IF ( <CONT.FLAGS> & statf_invisible ) 
+      CONT.FINDID(i_rune_invisibility).REMOVE
+      CONT.flags=<CONT.flags> &~ statf_invisible
+      CONT.UPDATE
+   ELSEIF ( <CONT.FLAGS> & statf_hidden )
+      CONT.flags=<CONT.flags> &~ statf_hidden
+      CONT.UPDATE
+   ENDIF
+
+   IF (<SONGSTATE> = 3 )
+      CONT.NEWITEM M_song_Screech_CanSeeLOS
+      CONT.EQUIP <CONT.ACT>
+   ELSE
+      CONT.NEWITEM M_song_Screech_CanSee
+      CONT.EQUIP <CONT.ACT>
+   ENDIF
+
+   SONGS_CHECKFAIL_PROV
+
+   IF ( <SONGSTATE> & 1 )
+      VAR.SONGCOLOR	= 35
+   ELSE
+      VAR.SONGCOLOR	= 34
+   ENDIF
+
+   IF ( 0 )
+   ELSEIF ( <SONGSTATE> ==  0 )
+       SING_SAY	= Reaching High to Shattering Tones
+   ELSEIF ( <SONGSTATE> ==  1 )
+       SING_SAY	= Harsh and bitter as winters chill 
+
+       //Make Gray to the victim
+       LINK.NEWITEM i_damager
+       LINK.ACT.MORE1	= <CONT.UID>
+       LINK.ACT.LINK	= <LINK.UID>
+       LINK.ACT.P	= <CONT.P>
+       LINK.UPDATE
+
+       SOUND 0014		        //Wind blowing sound
+       
+       //Unparalyze
+       IF ( <LINK.FLAGS> & statf_freeze ) 
+          LINK.flags=<LINK.flags> &~ statf_freeze
+       ENDIF
+
+       //Damage
+       IF ((<EVAL <CONT.PROVOCATION>> >= 90.0) && (<EVAL <CONT.PROVOCATION>> < 95.0))
+          CONT.TAG.SONGDMG = <eval ({5 10})>
+          IF (<LINK.HITS> > <EVAL 0<CONT.TAG.SONGDMG>>)
+             LINK.HITS=(<LINK.HITS>+-<EVAL 0<CONT.TAG.SONGDMG>>)
+          ELSE
+             LINK.HITS=0
+          ENDIF
+       ELSEIF ((<EVAL <CONT.PROVOCATION>> >= 95.0)  && (<EVAL <CONT.PROVOCATION>> < 100.0))
+          CONT.TAG.SONGDMG = <eval ({5 15})>
+          IF (<LINK.HITS> > <EVAL 0<CONT.TAG.SONGDMG>>)
+             LINK.HITS=(<LINK.HITS>+-<EVAL 0<CONT.TAG.SONGDMG>>)
+          ELSE
+             LINK.HITS=0
+          ENDIF
+       ELSEIF (<EVAL <CONT.PROVOCATION>> = 100.0)
+          CONT.TAG.SONGDMG = <eval ({15 25})>
+          IF (<LINK.HITS> > <EVAL 0<CONT.TAG.SONGDMG>>)
+             LINK.HITS=(<LINK.HITS>+-<EVAL 0<CONT.TAG.SONGDMG>>)
+          ELSE
+             LINK.HITS=0
+          ENDIF
+       ENDIF
+
+   ELSEIF ( <SONGSTATE> ==  2 )
+       SING_SAY	= Tearing Skin, Breaking Bones
+   ELSEIF ( <SONGSTATE> ==  3 )
+       SING_SAY	= Shudder and Cringe ye will
+       SOUND 01c4		          //Skeleton creaking sound
+
+       //Unparalyze
+       IF ( <LINK.FLAGS> & statf_freeze ) 
+          LINK.flags=<LINK.flags> &~ statf_freeze
+       ENDIF
+
+       //Damage
+       IF ((<EVAL <CONT.PROVOCATION>> >= 90.0) && (<EVAL <CONT.PROVOCATION>> < 95.0))
+          CONT.TAG.SONGDMG = <eval ({5 15})>
+          IF (<LINK.HITS> > <EVAL 0<CONT.TAG.SONGDMG>>)
+             LINK.HITS=(<LINK.HITS>+-<EVAL 0<CONT.TAG.SONGDMG>>)
+          ELSE
+             LINK.HITS=0
+          ENDIF
+       ELSEIF ((<EVAL <CONT.PROVOCATION>> >= 95.0)  && (<EVAL <CONT.PROVOCATION>> < 100.0))
+          CONT.TAG.SONGDMG = <eval ({10 20})>
+          IF (<LINK.HITS> > <EVAL 0<CONT.TAG.SONGDMG>>)
+             LINK.HITS=(<LINK.HITS>+-<EVAL 0<CONT.TAG.SONGDMG>>)
+          ELSE
+             LINK.HITS=0
+          ENDIF
+       ELSEIF (<EVAL <CONT.PROVOCATION>> = 100.0)
+          CONT.TAG.SONGDMG = <eval ({15 25})>
+          IF (<LINK.HITS> > <EVAL 0<CONT.TAG.SONGDMG>>)
+             LINK.HITS=(<LINK.HITS>+-<EVAL 0<CONT.TAG.SONGDMG>>)
+          ELSE
+             LINK.HITS=0
+          ENDIF
+       ENDIF
+
+   ELSEIF ( <SONGSTATE> ==  4 )
+       SING_SAY	= As my music screams its shattering blows!
+   ELSEIF ( <SONGSTATE> ==  5 )
+       SING_SAY	= Flee fast my foes!
+       SOUND 00fe		         //sound...dunno how to explain it
+
+       //Unparalyze
+       IF ( <LINK.FLAGS> & statf_freeze ) 
+          LINK.flags=<LINK.flags> &~ statf_freeze
+       ENDIF
+
+       //Damage
+       IF ((<EVAL <CONT.PROVOCATION>> >= 90.0) && (<EVAL <CONT.PROVOCATION>> < 95.0))
+          CONT.TAG.SONGDMG = <eval ({10 15})>
+          IF (<LINK.HITS> > <EVAL 0<CONT.TAG.SONGDMG>>)
+             LINK.HITS=(<LINK.HITS>+-<EVAL 0<CONT.TAG.SONGDMG>>)
+          ELSE
+             LINK.HITS=0
+          ENDIF
+       ELSEIF ((<EVAL <CONT.PROVOCATION>> >= 95.0)  && (<EVAL <CONT.PROVOCATION>> < 100.0))
+          CONT.TAG.SONGDMG = <eval ({15 20})>
+          IF (<LINK.HITS> > <EVAL 0<CONT.TAG.SONGDMG>>)
+             LINK.HITS=(<LINK.HITS>+-<EVAL 0<CONT.TAG.SONGDMG>>)
+          ELSE
+             LINK.HITS=0
+          ENDIF
+       ELSEIF (<EVAL <CONT.PROVOCATION>> >= 100.0)
+          CONT.TAG.SONGDMG = <eval ({20 25})>
+          IF (<LINK.HITS> > <EVAL 0<CONT.TAG.SONGDMG>>)
+             LINK.HITS=(<LINK.HITS>+-<EVAL 0<CONT.TAG.SONGDMG>>)
+          ELSE
+             LINK.HITS=0
+          ENDIF
+       ENDIF
+   ELSEIF ( <SONGSTATE> == 6 )
+      SING_SAY		= *the end*
+      CONT.TAG.SONGDMG  =
+      CONT.SKILLCHECK_RUN Skill_Provocation
+   ELSE
+      REMOVE
+      RETURN 1
+   ENDIF
+
+   SING_STATE
+   RETURN 1
+
+
+
+
+
+//Spirits Uprising-----------------------------------------------------------------------
+
+//This function will bump the rider from their horse if the singer has enough animal lore
+[FUNCTION BumpRider]
+   IF ( <LINK.FLAGS> & statf_onhorse )
+
+      //Make a reference to the steed
+      LINK.ACT	= <LINK.findlayer(layer_horse).uid>
+      IF ( (<LINK.ACT.uid> == 0) || (<LINK.ACT.MORE2> == 0) )
+         //Horse, but no horse item!
+      ELSE
+      LINK.ACT = <LINK.findlayer(layer_horse).more2>
+	 IF (<LINK.TAG.ONDONARMOUNT> == 1)
+       	LINK.SYSMESSAGE Your steed stays true to you and ignores <CONT.NAME>'s song.
+	       CONT.SYSMESSAGE You haven't enough knowledge of this creature to motivate them to leave their master.
+   
+         //Check the required amount of lore required to ride the animal
+         ELSEIF (<CONT.ANIMALLORE> >= <LINK.ACT.ARMSLORE>)
+      	    LINK.SYSMESSAGE The <LINK.ACT.NAME> bumps you off its back.
+	    LINK.findlayer(layer_horse).MORE2	= 0
+	    LINK.findlayer(layer_horse).REMOVE
+	    LINK.ACT.P		= <LINK.P>
+	    LINK.ACT.FLAGS	= <LINK.ACT.FLAGS> & ~statf_ridden
+	    LINK.UPDATE
+	    LINK.ACT.UPDATE
+	    LINK.ACT.ANIM	5
+	    LINK.ACT.SOUND	<LINK.ACT.SOUND>
+            LINK.ANIM		21
+            CONT.SKILLCHECK_RUN Skill_ANIMALLORE
+         ELSE
+            LINK.SYSMESSAGE Your steed stays true to you and ignores <CONT.NAME>'s song.
+            CONT.SYSMESSAGE You haven't enough knowledge of this creature to motivate them to leave their master.
+         ENDIF
+      ENDIF
+   ENDIF
+
+[ITEMDEF M_song_Uprising_CanSee]		//This object is needed because CanSee sucks & only works with a SRC not CONT
+ID	= i_memory
+NAME	= Uprising Distance checker
+type	= t_eq_script
+
+ON=@Create
+   TIMER=2
+
+ON=@EQUIP
+   IF !( <SRC.TARG.CanSee> )
+      SRC.SYSMESSAGE They are too far away for them to hear your song...
+      SRC.FINDID.i_song_Uprising.REMOVE
+   ENDIF
+   RETURN 0
+
+ON=@Timer
+   Remove 
+   RETURN 1
+
+
+//Spirits Uprising -- MAIN SCRIPT
+[ITEMDEF i_song_Uprising]
+ID	= i_lute
+TYPE	= t_eq_script
+LAYER	= layer_k_song
+NAME	= Spirits Uprising
+
+ON = @Equip
+   SRC.EVENTS +e_singing
+   TIMER	= 3
+   VAR.SONGCOLOR 50
+   SRC.SAY *starts singing*
+   SRC.SYSMESSAGE You start singing Spirits Uprising to <LINK.NAME>.
+
+//   IF <SRC.UID> != <LINK.UID>
+//      IF (<LINK.ISKARMAGOOD> && !<LINK.ISMURDERER> && !<LINK.src_WASAGGRESSOR> && !<LINK.ISSPARING> && !(<LINK.FLAGS> & statf_criminal))
+//         SRC.CRIMINAL 1
+//      END IF
+//   END IF
+
+ON = @UnEquip
+   SRC.EVENTS -e_singing
+   VAR.SONGCOLOR 50
+   SRC.SAY *stops singing*
+   SRC.SYSMESSAGE You stop singing.
+   SRC.f_skillsuccess_rollskill 22
+   SRC.f_skillsuccess_rollskill 29
+   SRC.f_skillsuccess_rollstat 22
+   
+ON = @Timer
+   IF !( <CONT.FLAGS> & statf_war )
+      CONT.SYSMESSAGE You aren't ready to fight...
+      REMOVE
+      RETURN 1
+   ENDIF
+
+   //Unhide if hidden so it can be interrupted
+   IF ( <CONT.FLAGS> & statf_invisible ) 
+      CONT.FINDID(i_rune_invisibility).REMOVE
+      CONT.flags=<CONT.flags> &~ statf_invisible
+      CONT.UPDATE
+   ELSEIF ( <CONT.FLAGS> & statf_hidden )
+      CONT.flags=<CONT.flags> &~ statf_hidden
+      CONT.UPDATE
+   ENDIF
+
+   CONT.NEWITEM M_song_Uprising_CanSee
+   CONT.EQUIP <CONT.ACT>
+   
+   SONGS_CHECKFAIL_PROV
+
+   IF ( <SONGSTATE> & 1 )
+      VAR.SONGCOLOR	= 35
+   ELSE
+      VAR.SONGCOLOR	= 34
+   ENDIF
+
+   IF ( 0 )
+   ELSEIF ( <SONGSTATE> ==  0 )
+       SING_SAY	= O' Beast of Burden
+   ELSEIF ( <SONGSTATE> ==  1 )
+       SING_SAY	= Hear my tune
+   ELSEIF ( <SONGSTATE> ==  2 )
+       SING_SAY	= Dream of fields green and free
+   ELSEIF ( <SONGSTATE> ==  3 )
+       SING_SAY	= Forget thy master now
+   ELSEIF ( <SONGSTATE> ==  4 )
+       SING_SAY	= Remember thy home
+   ELSEIF ( <SONGSTATE> ==  5 )
+       SING_SAY	= And to the wilds do flee
+
+       //Make Gray to the victim
+       LINK.NEWITEM i_damager
+       LINK.ACT.MORE1	= <CONT.UID>
+       LINK.ACT.LINK	= <LINK.UID>
+       LINK.ACT.P	= <CONT.P>
+       LINK.UPDATE
+
+	
+       BumpRider
+   ELSEIF ( <SONGSTATE> == 6 )
+      SING_SAY		= *the end*
+      CONT.SKILLCHECK_RUN Skill_Provocation
+   ELSE
+      REMOVE
+      RETURN 1
+   ENDIF
+
+   SING_STATE
+   RETURN 1
+
+
+
+[EOF]

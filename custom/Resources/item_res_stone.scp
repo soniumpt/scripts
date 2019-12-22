@@ -1,0 +1,187 @@
+//Changelog:
+//==========
+//20/04/2003 - Firefly - Added this file, stone resources put into it
+//
+
+//********************************************************************//
+//                              RESOURCES                             //
+//********************************************************************//
+  
+[ITEMDEF i_resource_gypsum]
+NAME=gypsum
+ID=01bd3
+TYPE=t_ore
+SKILLMAKE=MINING 850
+TDATA1 = i_resource_plaster
+VALUE = 3
+WEIGHT = 1
+
+ON=@CREATE
+   COLOR=00aae
+   TYPE=t_s_mason   
+   
+ON=@DClick
+  SRC.SYSMESSAGE Use a forge to dehydrate the <name>.
+  return 1
+  
+[ITEMDEF i_resource_plaster]
+NAME=plaster
+ID=0eef
+TYPE=t_ingot
+RESOURCES	= 1 i_resource_gypsum
+SKILLMAKE	= MINING 500
+VALUE = 50
+WEIGHT = 3
+  
+ON=@CREATE
+  COLOR=00aae
+  TYPE=t_s_mason
+
+//********************************************************************//
+[ITEMDEF i_resource_sandstone]
+NAME=sandstone block%s
+ID=01be6
+weight=1
+TYPE=t_s_mason
+SKILLMAKE=MINING 850
+
+ON=@CREATE
+   COLOR=008a5
+
+//********************************************************************//
+[ITEMDEF i_resource_stone]
+NAME=stone block%s
+ID=01be6
+weight=1
+TYPE=t_s_mason
+SKILLMAKE=MINING 850
+
+ON=@CREATE
+   COLOR=00835
+
+//********************************************************************//
+[ITEMDEF i_resource_granite]
+NAME=granite block%s
+ID=01be6
+weight=1
+TYPE=t_s_mason
+SKILLMAKE=MINING 900
+
+ON=@CREATE
+   COLOR=00900
+
+//********************************************************************//
+[ITEMDEF i_resource_clay]
+NAME=clay
+ID=0eef
+weight=1
+TYPE=t_s_mason
+SKILLMAKE=MINING 900
+
+ON=@CREATE
+   COLOR=0046d
+
+//********************************************************************//
+[ITEMDEF i_resource_chalk]
+NAME=chalk
+ID=01be6
+weight=1
+TYPE=t_s_mason
+SKILLMAKE=MINING 1500
+
+ON=@CREATE
+   COLOR=003e5
+
+//********************************************************************//
+[ITEMDEF i_resource_limestone]
+NAME=limestone
+ID=01be6
+weight=1
+TYPE=t_s_mason
+SKILLMAKE=MINING 1500
+
+ON=@CREATE
+   COLOR=00039
+
+//********************************************************************//
+//                           RESOURCE SOURCES                         //
+//********************************************************************//
+[REGIONRESOURCE mr_stone]
+SKILL=50 100.0
+AMOUNT=1 6
+REAP=i_resource_stone
+REGEN=60*60*10
+ON=@ResourceFound
+   IF ( <SRC.TAG0.MINESTONE> == 0 )
+      OBJ = <ARGO.UID>
+      OBJ.MORE1=rand_ore
+   ENDIF
+
+[REGIONRESOURCE mr_sandstone]
+SKILL=65.0 100.0
+AMOUNT=1 5
+REAP=i_resource_sandstone
+REGEN=60*60*10
+ON=@ResourceFound
+   IF ( <SRC.TAG0.MINESTONE> == 0 )
+      OBJ = <ARGO.UID>
+      OBJ.MORE1=rand_ore
+   ENDIF
+
+[REGIONRESOURCE mr_gypsum]
+SKILL=85.0 100.0
+AMOUNT=1 4
+REAP=i_resource_gypsum
+REGEN=60*60*10
+ON=@ResourceFound
+   IF ( <SRC.TAG0.MINESTONE> == 0 )
+      OBJ = <ARGO.UID>
+      OBJ.MORE1=rand_ore
+   ENDIF
+
+[REGIONRESOURCE mr_granite]
+SKILL=95.0 100.0
+AMOUNT=1 3
+REAP=i_resource_granite
+REGEN=60*60*10
+ON=@ResourceFound
+   IF ( <SRC.TAG0.MINESTONE> == 0 )
+      OBJ = <ARGO.UID>
+      OBJ.MORE1=rand_ore
+   ENDIF
+
+[REGIONRESOURCE mr_clay]
+SKILL=80.0 100.0
+AMOUNT=1 3
+REAP=i_resource_clay
+REGEN=60*60*10
+ON=@ResourceFound
+   IF ( <SRC.TAG0.MINESTONE> == 0 )
+      OBJ = <ARGO.UID>
+      OBJ.MORE1=rand_ore
+   ENDIF
+
+//Future
+[REGIONRESOURCE mr_chalk]
+SKILL=150.0 150.0
+AMOUNT=1 2
+REAP=i_resource_chalk
+REGEN=60*60*10
+ON=@ResourceFound
+   IF ( <SRC.TAG0.MINESTONE> == 0 )
+      OBJ = <ARGO.UID>
+      OBJ.MORE1=rand_ore
+   ENDIF
+
+[REGIONRESOURCE mr_limestone]
+SKILL=150.0 150.0
+AMOUNT=1 2
+REAP=i_resource_limestone
+REGEN=60*60*10
+ON=@ResourceFound
+   IF ( <SRC.TAG0.MINESTONE> == 0 )
+      OBJ = <ARGO.UID>
+      OBJ.MORE1=rand_ore
+   ENDIF
+
+[EOF]

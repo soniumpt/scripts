@@ -1,0 +1,318 @@
+//*********************************************************************************************************//
+//                         Royal Rumble Gate Created by Pink Panther                                       //
+//                                                                                                         //
+// - Royal Rumble Gate to teleport players to one of X (up to 36) different locations                      //
+// - Double clicking the gate with .gm ON will ask for number of participants                              //
+// - When entering the gate, players will be randomly placed in one of the entry locations and stoned      //
+//*********************************************************************************************************//
+
+[ITEMDEF i_royalrumble_gate]
+ID=i_moongate_blue
+NAME=Royal Rumble Positioner Gate
+TYPE=t_Script
+
+ON=@CREATE
+COLOR=07b5
+
+TAG.COORD0=4081,318,0,10
+TAG.COORD1=4083,318,0,10
+TAG.COORD2=4085,318,0,10
+TAG.COORD3=4087,318,0,10
+TAG.COORD4=4089,318,0,10
+TAG.COORD5=4091,318,0,10
+TAG.COORD6=4093,318,0,10
+TAG.COORD7=4095,318,0,10
+TAG.COORD8=4097,318,0,10
+
+TAG.COORD9=4101,322,0,10
+TAG.COORD10=4101,324,0,10
+TAG.COORD11=4101,326,0,10
+TAG.COORD12=4101,328,0,10
+TAG.COORD13=4101,330,0,10
+TAG.COORD14=4101,332,0,10
+TAG.COORD15=4101,334,0,10
+TAG.COORD16=4101,336,0,10
+TAG.COORD17=4101,338,0,10
+
+TAG.COORD18=4097,342,0,10
+TAG.COORD19=4095,342,0,10
+TAG.COORD20=4093,342,0,10
+TAG.COORD21=4091,342,0,10
+TAG.COORD22=4089,342,0,10
+TAG.COORD23=4087,342,0,10
+TAG.COORD24=4085,342,0,10
+TAG.COORD25=4083,342,0,10
+TAG.COORD26=4081,342,0,10
+
+TAG.COORD27=4077,338,0,10
+TAG.COORD28=4077,336,0,10
+TAG.COORD29=4077,334,0,10
+TAG.COORD30=4077,332,0,10
+TAG.COORD31=4077,330,0,10
+TAG.COORD32=4077,328,0,10
+TAG.COORD33=4077,326,0,10
+TAG.COORD34=4077,324,0,10
+TAG.COORD35=4077,322,0,10
+
+ON=@DCLICK
+IF (<SRC.ISGM>)
+DIALOG d_royalrumble_gate
+RETURN 1
+ENDIF
+RETURN 1
+
+ON=@STEP
+
+//Check to see if all areas are full, if they are not, find an empty one and send the player there
+
+IF (<MORE1>==1)
+
+IF ( ( <EVAL <TAG.UsedPoint0>>=1 ) && ( <EVAL <TAG.UsedPoint1>>=1 ) && ( <EVAL <TAG.UsedPoint2>>=1 ) && ( <EVAL <TAG.UsedPoint3>>=1 ) && ( <EVAL <TAG.UsedPoint4>>=1 ) && ( <EVAL <TAG.UsedPoint5>>=1 ) && ( <EVAL <TAG.UsedPoint6>>=1 ) && ( <EVAL <TAG.UsedPoint7>>=1 ) && ( <EVAL <TAG.UsedPoint8>>=1 ))
+SRC.SYSMESSAGE All positions are full.
+ELSE
+RoyalRumblePlacement
+SRC.GO <TAG.Coord<EVAL <TAG.SendToPoint>>>
+SRC.STONE
+SRC.SYSMESSAGE @07A1 Your entering position in the Royal Rumble is: <EVAL <TAG.SendToPoint>+1>
+ENDIF
+
+ELSEIF (<MORE1>==2)
+
+IF ( ( <EVAL <TAG.UsedPoint0>>=1 ) && ( <EVAL <TAG.UsedPoint1>>=1 ) && ( <EVAL <TAG.UsedPoint2>>=1 ) && ( <EVAL <TAG.UsedPoint3>>=1 ) && ( <EVAL <TAG.UsedPoint4>>=1 ) && ( <EVAL <TAG.UsedPoint5>>=1 ) && ( <EVAL <TAG.UsedPoint6>>=1 ) && ( <EVAL <TAG.UsedPoint7>>=1 ) && ( <EVAL <TAG.UsedPoint8>>=1 ) && ( <EVAL <TAG.UsedPoint9>>=1 ) && ( <EVAL <TAG.UsedPoint10>>=1 ) && ( <EVAL <TAG.UsedPoint11>>=1 ) && ( <EVAL <TAG.UsedPoint12>>=1 ) && ( <EVAL <TAG.UsedPoint13>>=1 ) && ( <EVAL <TAG.UsedPoint14>>=1 ) && ( <EVAL <TAG.UsedPoint15>>=1 ) && ( <EVAL <TAG.UsedPoint16>>=1 ) && ( <EVAL <TAG.UsedPoint17>>=1 ))
+SRC.SYSMESSAGE All positions are full.
+ELSE
+RoyalRumblePlacement
+SRC.GO <TAG.Coord<EVAL <TAG.SendToPoint>>>
+SRC.STONE
+SRC.SYSMESSAGE @07A1 Your entering position in the Royal Rumble is: <EVAL <TAG.SendToPoint>+1>
+ENDIF
+
+ELSEIF (<MORE1>==3)
+
+IF ( ( <EVAL <TAG.UsedPoint0>>=1 ) && ( <EVAL <TAG.UsedPoint1>>=1 ) && ( <EVAL <TAG.UsedPoint2>>=1 ) && ( <EVAL <TAG.UsedPoint3>>=1 ) && ( <EVAL <TAG.UsedPoint4>>=1 ) && ( <EVAL <TAG.UsedPoint5>>=1 ) && ( <EVAL <TAG.UsedPoint6>>=1 ) && ( <EVAL <TAG.UsedPoint7>>=1 ) && ( <EVAL <TAG.UsedPoint8>>=1 ) && ( <EVAL <TAG.UsedPoint9>>=1 ) && ( <EVAL <TAG.UsedPoint10>>=1 ) && ( <EVAL <TAG.UsedPoint11>>=1 ) && ( <EVAL <TAG.UsedPoint12>>=1 ) && ( <EVAL <TAG.UsedPoint13>>=1 ) && ( <EVAL <TAG.UsedPoint14>>=1 ) && ( <EVAL <TAG.UsedPoint15>>=1 ) && ( <EVAL <TAG.UsedPoint16>>=1 ) && ( <EVAL <TAG.UsedPoint17>>=1 ) && ( <EVAL <TAG.UsedPoint18>>=1 ) && ( <EVAL <TAG.UsedPoint19>>=1 ) && ( <EVAL <TAG.UsedPoint20>>=1 ) && ( <EVAL <TAG.UsedPoint21>>=1 ) && ( <EVAL <TAG.UsedPoint22>>=1 ) && ( <EVAL <TAG.UsedPoint23>>=1 ) && ( <EVAL <TAG.UsedPoint24>>=1 ) && ( <EVAL <TAG.UsedPoint25>>=1 ) && ( <EVAL <TAG.UsedPoint26>>=1 ))
+SRC.SYSMESSAGE All positions are full.
+ELSE
+RoyalRumblePlacement
+SRC.GO <TAG.Coord<EVAL <TAG.SendToPoint>>>
+SRC.STONE
+SRC.SYSMESSAGE @07A1 Your entering position in the Royal Rumble is: <EVAL <TAG.SendToPoint>+1>
+ENDIF
+
+ELSEIF (<MORE1>==4)
+
+IF ( ( <EVAL <TAG.UsedPoint0>>=1 ) && ( <EVAL <TAG.UsedPoint1>>=1 ) && ( <EVAL <TAG.UsedPoint2>>=1 ) && ( <EVAL <TAG.UsedPoint3>>=1 ) && ( <EVAL <TAG.UsedPoint4>>=1 ) && ( <EVAL <TAG.UsedPoint5>>=1 ) && ( <EVAL <TAG.UsedPoint6>>=1 ) && ( <EVAL <TAG.UsedPoint7>>=1 ) && ( <EVAL <TAG.UsedPoint8>>=1 ) && ( <EVAL <TAG.UsedPoint9>>=1 ) && ( <EVAL <TAG.UsedPoint10>>=1 ) && ( <EVAL <TAG.UsedPoint11>>=1 ) && ( <EVAL <TAG.UsedPoint12>>=1 ) && ( <EVAL <TAG.UsedPoint13>>=1 ) && ( <EVAL <TAG.UsedPoint14>>=1 ) && ( <EVAL <TAG.UsedPoint15>>=1 ) && ( <EVAL <TAG.UsedPoint16>>=1 ) && ( <EVAL <TAG.UsedPoint17>>=1 ) && ( <EVAL <TAG.UsedPoint18>>=1 ) && ( <EVAL <TAG.UsedPoint19>>=1 ) && ( <EVAL <TAG.UsedPoint20>>=1 ) && ( <EVAL <TAG.UsedPoint21>>=1 ) && ( <EVAL <TAG.UsedPoint22>>=1 ) && ( <EVAL <TAG.UsedPoint23>>=1 ) && ( <EVAL <TAG.UsedPoint24>>=1 ) && ( <EVAL <TAG.UsedPoint25>>=1 ) && ( <EVAL <TAG.UsedPoint26>>=1 ) && ( <EVAL <TAG.UsedPoint27>>=1 ) && ( <EVAL <TAG.UsedPoint28>>=1 ) && ( <EVAL <TAG.UsedPoint29>>=1 ) && ( <EVAL <TAG.UsedPoint30>>=1 ) && ( <EVAL <TAG.UsedPoint31>>=1 ) && ( <EVAL <TAG.UsedPoint32>>=1 ) && ( <EVAL <TAG.UsedPoint33>>=1 ) && ( <EVAL <TAG.UsedPoint34>>=1 ) && ( <EVAL <TAG.UsedPoint35>>=1 ))
+SRC.SYSMESSAGE All positions are full.
+ELSE
+RoyalRumblePlacement
+SRC.GO <TAG.Coord<EVAL <TAG.SendToPoint>>>
+SRC.STONE
+SRC.SYSMESSAGE @07A1 Your entering position in the Royal Rumble is: <EVAL <TAG.SendToPoint>+1>
+ENDIF
+
+ELSE
+SRC.SYSMESSAGE This gate is not yet configured.
+RETURN 1
+ENDIF
+
+
+[FUNCTION RoyalRumblePlacement]
+
+//Get a random number
+IF (<MORE1>==1)
+TAG.SendToPoint=<EVAL Rand(9)>
+ELSEIF (<MORE1>==2)
+TAG.SendToPoint=<EVAL Rand(18)>
+ELSEIF (<MORE1>==3)
+TAG.SendToPoint=<EVAL Rand(27)>
+ELSEIF (<MORE1>==4)
+TAG.SendToPoint=<EVAL Rand(36)>
+ENDIF
+
+//If that coordinate hasn't been used send player, else look for another one
+If ( <EVAL <TAG.UsedPoint<EVAL <TAG.SendToPoint>>>> = 0 )
+TAG.UsedPoint<EVAL <TAG.SendToPoint>> = 1
+RETURN 1
+ELSE
+RoyalRumblePlacement
+ENDIF
+
+[DIALOG d_royalrumble_gate]
+0,0
+page 0
+resizepic 92 56 3600 230 200
+
+dtext 120 80 137 Select Number of Participants:
+
+dtext 155 110 2300 Lower or equal to 9
+button 135 115 1209 1210 1 0 1
+
+dtext 155 140 2300 From 10 to 18
+button 135 145 1209 1210 1 0 2
+
+dtext 155 170 2300 From 19 to 27
+button 135 175 1209 1210 1 0 3
+
+dtext 155 200 2300 From 28 to 36
+button 135 205 1209 1210 1 0 4
+
+[DIALOG d_royalrumble_gate button]
+ON=1
+MORE1=1
+resetroyalrumblegate
+SRC.SYSMESSAGE You selected "Lower or equal to 9" as Number of Participants and reseted the gate for use.
+RETURN 1
+ON=2
+MORE1=2
+resetroyalrumblegate
+SRC.SYSMESSAGE You selected "From 10 to 18" as Number of Participants and reseted the gate for use.
+RETURN 1
+ON=3
+MORE1=3
+resetroyalrumblegate
+SRC.SYSMESSAGE You selected "From 19 to 27" as Number of Participants and reseted the gate for use.
+RETURN 1
+ON=4
+MORE1=4
+resetroyalrumblegate
+SRC.SYSMESSAGE You selected "From 28 to 36" as Number of Participants and reseted the gate for use.
+RETURN 1
+
+[FUNCTION resetroyalrumblegate]
+TAG.UsedPoint0=0
+TAG.UsedPoint1=0
+TAG.UsedPoint2=0
+TAG.UsedPoint3=0
+TAG.UsedPoint4=0
+TAG.UsedPoint5=0
+TAG.UsedPoint6=0
+TAG.UsedPoint7=0
+TAG.UsedPoint8=0
+TAG.UsedPoint9=0
+TAG.UsedPoint10=0
+TAG.UsedPoint11=0
+TAG.UsedPoint12=0
+TAG.UsedPoint13=0
+TAG.UsedPoint14=0
+TAG.UsedPoint15=0
+TAG.UsedPoint16=0
+TAG.UsedPoint17=0
+TAG.UsedPoint18=0
+TAG.UsedPoint19=0
+TAG.UsedPoint20=0
+TAG.UsedPoint21=0
+TAG.UsedPoint22=0
+TAG.UsedPoint23=0
+TAG.UsedPoint24=0
+TAG.UsedPoint25=0
+TAG.UsedPoint26=0
+TAG.UsedPoint27=0
+TAG.UsedPoint28=0
+TAG.UsedPoint29=0
+TAG.UsedPoint30=0
+TAG.UsedPoint31=0
+TAG.UsedPoint32=0
+TAG.UsedPoint33=0
+TAG.UsedPoint34=0
+TAG.UsedPoint35=0
+
+
+  
+  
+//*********************************************************************************************************//
+//                         Royal Rumble Function Created by Pink Panther                                   //
+//                                                                                                         //                           
+// - Using .royalrumble will un-stone a player, allowing him to spell up and a countdown of 60 seconds     //
+//   will start. When the time runs out, the player will be placed into the arena.                         //
+//                                                                                                         //
+// This means that players have 60 seconds to spell up and every 60 seconds a new player enters the arena. //
+//*********************************************************************************************************//
+
+
+[FUNCTION royalrumble]
+
+  SRC.NEWITEM i_royalrumble_targetter
+  SRC.ACT.TARGET Target the player joining the Rumble within 60 seconds.
+  RETURN 1
+  
+[ITEMDEF i_royalrumble_targetter]
+NAME=Royal Rumble Targetter
+ID=i_memory
+TYPE=T_EQ_SCRIPT
+LAYER=30
+
+ON=@CREATE
+   ATTR=attr_decay
+
+ON=@TARGON_CHAR
+ 
+	  SERV.NEWITEM=i_royalrumble_delay
+	  SRC.TARG.EQUIP <NEW.UID>
+	  REMOVE
+      RETURN 1
+
+ON=@TARGON_ITEM
+  SRC.SYSMESSAGE You can't target an item!
+  TIMER=1
+  REMOVE
+  RETURN 1
+
+ON=@TARGON_GROUND
+  SRC.SYSMESSAGE You can't target the ground!
+  TIMER=1
+  REMOVE
+  RETURN 1
+    
+[Itemdef i_royalrumble_delay]
+Name=Royal Rumble Delay
+id=i_memory
+layer= 30
+TYPE=t_eq_script
+
+ON=@CREATE
+MORE1=1
+TIMER=28
+
+On=@timer
+   IF (<MORE1>==1)
+   CONT.SAY Entering the Rumble in 30 seconds... 
+   MORE1=2
+   TIMER=24
+   RETURN 1
+   ELSEIF (<MORE1>==2)
+   CONT.SAY Entering the Rumble in 5...
+   MORE1=3
+   TIMER=1
+   RETURN 1
+   ELSEIF (<MORE1>==3)
+   CONT.SAY 4
+   MORE1=4
+   TIMER=1
+   RETURN 1
+   ELSEIF (<MORE1>==4)
+   CONT.SAY 3
+   MORE1=5
+   TIMER=1
+   RETURN 1
+   ELSEIF (<MORE1>==5)
+   CONT.SAY 2
+   MORE1=6
+   TIMER=1
+   RETURN 1
+   ELSEIF (<MORE1>==6)
+   CONT.SAY 1
+   MORE1=7
+   TIMER=1
+   RETURN 1
+   ELSEIF (<MORE1>==7)
+   CONT.GO 4088,330,0,10
+   CONT.SYSMESSAGE @07a1 You have been teleported into the Rumble!
+   REGION.ALLCLIENTS SYSMESSAGE @07A1 <CONT.NAME> has entered the Rumble!
+   REMOVE
+   RETURN 1
+   ENDIF
+   RETURN 1
+   
+ON=@EQUIP
+	CONT.STONE
+	CONT.SYSMESSAGE @07a1 You now have 60 second to spell up before being teleported into the Rumble!
+	

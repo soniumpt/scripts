@@ -1,0 +1,5838 @@
+[function NPCDO]
+FORCHARS 15
+IF (<ISNPC>)
+ <args>
+ENDIF
+ENDFOR
+[SPEECH spk_shame_reaper]
+ON=*i give up*
+   if !( <src.npc> )
+		IF ((<src.FINDID.I_shame_reaper.UID>) && (<src.FINDID.I_shame_reaper.more1> >= 10))
+			IF <SRC.ISDEAD>
+				src.FINDID.I_shame_reaper.more1 = 310
+				src.FINDID.I_shame_reaper.timer = 1
+			ENDIF
+		ENDIF
+	ENDIF
+   RETURN 1
+ON=*im pathetic*
+   if !( <src.npc> )
+		IF ((<src.FINDID.I_shame_reaper.UID>) && (<src.FINDID.I_shame_reaper.more1> >= 10))
+			IF <SRC.ISDEAD>
+				src.FINDID.I_shame_reaper.more1 = 310
+				src.FINDID.I_shame_reaper.timer = 1
+			ENDIF
+		ENDIF
+	ENDIF
+   RETURN 1
+ON=*take me away*
+   if !( <src.npc> )
+		IF ((<src.FINDID.I_shame_reaper.UID>) && (<src.FINDID.I_shame_reaper.more1> >= 10))
+			IF <SRC.ISDEAD>
+				src.FINDID.I_shame_reaper.more1 = 310
+				src.FINDID.I_shame_reaper.timer = 1
+			ENDIF
+		ENDIF
+	ENDIF
+   RETURN 1
+  
+
+[FUNCTION ShameLogout]
+NEWITEM=i_shame_timerD
+NEW.P=<P>
+NEW.LINK=<UID>
+
+[ITEMDEF i_shame_timerD]
+ID=i_gold
+NAME=shame TIMERD
+TYPE=t_script
+
+ON=@CREATE
+ATTR=080
+TIMER=120
+
+ON=@TIMER
+IF (<LINK.ISONLINE> == 0)
+		IF (<LINK.FINDID.I_shame_reaper.UID>)
+		   LINK.EVENTS -e_shame_hider
+		   LINK.VISUALRANGE  18	
+		   LINK.GO 5146,1774,0,10
+		   LINK.RESURRECT
+		   LINK.GO 4307,984
+		   LINK.TAG.SHAMECORPSE
+		   LINK.TAG.SHAMECORPSEP
+			LINK.FINDID.I_shame_reaper.link.remove
+			LINK.FINDID.I_shame_reaper.remove
+			REMOVE
+            RETURN 1
+		ENDIF
+ENDIF
+REMOVE
+RETURN 1
+
+[CHARDEF C_shame_grim_reaper]
+DEFNAME=C_shame_grim_reaper
+NAME=The Grim Reaper
+ID=C_Man
+CAN=MT_NONMOVER
+DESIRES=i_gold,e_notoriety,r_water
+AVERSIONS=t_TRAP,t_eerie_stuff
+TSPEECH=spk_shame_reaper
+
+ON=@Create
+   COLOR=07fff
+   STR={561 675}
+   DEX={561 675}
+   INT={541 655}
+   Netherlore=100.0
+   MAXHITS=50000
+   TITLE = Death
+   KARMA = -100
+
+ON = @HitTry
+   return <try_dispel>
+
+ 
+on=@spelleffect
+DORAND 6
+SAY @03c2 How dare you mess with death itself!
+SAY @03c2 Want to join his corpse do you?
+SAY @03c2 Dont defy me!
+SAY @03c2 Dont push me!
+SAY @03c2 Ill be having your corpse!
+SAY @03c2 I am the grim reaper!
+ENDDO
+IF (!<src.NPC>)
+ 	IF !(<SRC.FLAGS> &statf_poisoned)
+	SRC.SPELLEFFECT S_POISON,9000,<UID>
+	endif
+ SRC.SPELLEFFECT s_lightning,5000,<UID>
+ENDIF
+ RETURN 1
+ 
+on=@gethit
+IF !(<SRC.ISPLAYER>)
+IF !(<SRC.FLAGS>&statf_pet)
+						   VAR.FORGIVER = <UID>
+						   SRC.FOR_MEMORY f_peace
+							VAR.FORGIVER = <SRC.UID>
+							FOR_MEMORY f_peace
+ENDIF
+ENDIF
+DORAND 6
+SAY @03c2 How dare you mess with death itself!
+SAY @03c2 Want to join his corpse do you?
+SAY @03c2 Dont defy me!
+SAY @03c2 Dont push me!
+SAY @03c2 Ill be having your corpse!
+SAY @03c2 I am the grim reaper!
+ENDDO
+IF (!<src.NPC>)
+IF !(<SRC.FLAGS> &statf_poisoned)
+SRC.SPELLEFFECT S_POISON,9000,<UID>
+endif
+ SRC.SPELLEFFECT s_lightning,5000,<UID>
+ ENDIF
+ RETURN 1
+   
+ON=@NPCRestock
+ITEMNEWBIE=RANDOM_LIGHT
+   ITEMNEWBIE=random_shoes
+   COLOR=001
+   ITEMNEWBIE=i_robe_grim_reaper
+   COLOR=001
+   ITEMNEWBIE=i_staff_black_cherry
+   COLOR=001
+
+[ITEMDEF i_robe_grim_reaper]
+ID	= i_deathshroud
+NAME	= Robe of Doom
+TYPE	= T_CLOTHING
+ARMOR	= 500
+DYE	= 0
+
+ON = @Create
+  HITPOINTS	= 350
+  COLOR		= 001
+
+[EVENTS e_shame_Curse]
+
+ON=@DEATH
+      if !( <npc> )
+	  VAR.TOTALSHAMEDEATHS = <EVAL <VAR.TOTALSHAMEDEATHS> + 1>
+      DORAND 15
+         SERV.ALLCLIENTS SYSMESSAGE @55,3,1 The monsters in Shame celebrate another victory
+         SERV.ALLCLIENTS SYSMESSAGE @55,3,1 The evil within Shame will be feasting on <src.name> tonight
+         SERV.ALLCLIENTS SYSMESSAGE @55,3,1 Another perishes fighting the darkness from deep within Shame
+         SERV.ALLCLIENTS SYSMESSAGE @55,3,1 <src.name> fails miserably against the forces of darkness within Shame
+         SERV.ALLCLIENTS SYSMESSAGE @55,3,1 The monsters in Shame have torn <src.name> to shreds
+         SERV.ALLCLIENTS SYSMESSAGE @55,3,1 The evil in Shame silences <src.name>'s screams 
+		 SERV.ALLCLIENTS SYSMESSAGE @55,3,1 <src.name> just became Orc meat in Shame
+		 SERV.ALLCLIENTS SYSMESSAGE @55,3,1 Another corpse just got added to the pile, deep within Shame
+		 SERV.ALLCLIENTS SYSMESSAGE @55,3,1 <src.name> lost the battle, and the war against Shame
+		 SERV.ALLCLIENTS SYSMESSAGE @55,3,1 <src.name> just became more meat for Shame's bonfires...
+		 SERV.ALLCLIENTS SYSMESSAGE @55,3,1 <src.name> just became lunch for Shame's minions...
+		 SERV.ALLCLIENTS SYSMESSAGE @55,3,1 <src.name> just became dinner for Medusa
+		 SERV.ALLCLIENTS SYSMESSAGE @55,3,1 <src.name> just became the <EVAL <VAR.TOTALSHAMEDEATHS>> corpse in Shame
+		 SERV.ALLCLIENTS SYSMESSAGE @55,3,1 Body number <EVAL <VAR.TOTALSHAMEDEATHS>> just hit the floor in Shame
+		 SERV.ALLCLIENTS SYSMESSAGE @55,3,1 Oh, heres another one <src.name>, Corpse number <EVAL <VAR.TOTALSHAMEDEATHS>>
+      ENDDO
+        return 0
+     endif   
+ON=@logout
+      if !( <src.npc> )
+		IF (<src.FINDID.I_shame_reaper.UID>)
+		   SRC.shamelogout
+            RETURN 1
+		ENDIF
+	ENDIF
+
+ON=@DEATHCorpse
+      if !( <npc> )
+		IF !(<FINDID.I_shame_reaper.UID>)
+		
+			TAG.SHAMECORPSE=<ARGO.UID>
+			TAG.SHAMECORPSEP=<ARGO.P>
+			   SERV.NEWNPC C_shame_grim_reaper
+			   NEW.P=<P>
+               NEW.HOME=<NEW.P>
+			   LOCAL.REAPERUID <new.uid>
+               NEW.REMOVETIMER 900
+			   NEW.EFFECT=3,i_FIRE_COLUMN,6,15,1	// flamestrike
+			   
+			   FACE <ARGO.UID>				
+				  serv.newitem I_shame_reaper
+				  new.link=<LOCAL.REAPERUID> 
+				  NEW.TAG.REAPERUID  = <LOCAL.REAPERUID>
+				  new.cont=<uid>
+				  try uid.<uid>.update
+			ENDIF
+		ENDIF	  
+		
+[ITEMDEF I_shame_reaper]
+ID=0232a
+NAME=Reaper Memory
+TYPE=t_eq_script
+
+on=@create
+	 TIMER = 2
+	 MORE1 = 1
+
+on=@timer
+IF !<cont.ISDEAD>
+LINK.SAY @00b92 Seems like you have been saved this time
+			CONT.TAG.SHAMECORPSE
+			CONT.TAG.SHAMECORPSEP
+			LINK.REMOVE
+			REMOVE
+RETURN 1
+ENDIF
+
+IF (<more1> = 1)
+	LINK.FACE <cont.uid>
+			DORAND 9
+					LINK.SAY @00b92 Oh heres another one for the pile
+					LINK.SAY @00b92 Sigh, another failure
+					LINK.SAY @00b92 Someone else who thought they had a chance
+					LINK.SAY @00b92 Hah! Pathetic
+					LINK.SAY @00b92 More bodies for the hall
+					LINK.SAY @00b92 Another corpse...
+					LINK.SAY @00b92 Another wannabe hero, lifeless on the ground
+					LINK.SAY @00b92 That must have hurt...
+					LINK.SAY @00b92 Sigh, another corpse
+			ENDDO
+	MORE1 = <eval (<MORE1> + 1)>
+	TIMER = 4
+	RETURN 1
+ELSEIF (<more1> = 2)
+	LINK.FACE <cont.uid>
+			DORAND 5
+					LINK.SAY @00b92 Come on then, lets get you out of here
+					LINK.SAY @00b92 You better come with me
+					LINK.SAY @00b92 Best move this before it decays to bones
+					LINK.SAY @00b92 Come on then you
+					LINK.SAY @00b92 Dont wander off
+			ENDDO
+	MORE1 = <eval (<MORE1> + 1)>
+	TIMER = 4
+	RETURN 1
+ELSEIF (<more1> = 3)
+	LINK.FACE <cont.uid>
+			DORAND 4
+					LINK.SAY @00b92 Ill take you away from here in 5 minutes
+					LINK.SAY @00b92 We will be leaving in 5 minutes
+					LINK.SAY @00b92 We will be off in 5 minutes
+					LINK.SAY @00b92 You better come with me in 5 minutes
+			ENDDO
+	MORE1 = <eval (<MORE1> + 1)>
+	TIMER = 4
+	RETURN 1
+ELSEIF (<more1> = 4)
+	LINK.FACE <cont.uid>
+			DORAND 4
+					LINK.SAY @00b92 Unless someone else is prepared to resurrect you?
+					LINK.SAY @00b92 or is someone else going to breathe life into you?
+					LINK.SAY @00b92 No friends here to resurrect you?
+					LINK.SAY @00b92 Everyone else seems too busy to help?
+			ENDDO
+	MORE1 = <eval (<MORE1> + 1)>
+	TIMER = 4
+	RETURN 1
+ELSEIF (<more1> = 5)
+	LINK.FACE <cont.uid>
+			DORAND 3
+					LINK.SAY @00b92 If I find enough gold on your corpse...
+					LINK.SAY @00b92 If you have enough gold on your corpse...
+					LINK.SAY @00b92 If i can scavenge enough gold off your corpse..
+			ENDDO
+	MORE1 = <eval (<MORE1> + 1)>
+	TIMER = 4
+	RETURN 1
+ELSEIF (<more1> = 6)
+	LINK.FACE <cont.uid>
+			DORAND 4
+					LINK.SAY @00b92 Then ill bring it with me...
+					LINK.SAY @00b92 Then I guess it can come too...
+					LINK.SAY @00b92 Then im sure we can arrange something...
+					LINK.SAY @00b92 Then you can pay me for a favour...
+			ENDDO
+	MORE1 = <eval (<MORE1> + 1)>
+	TIMER = 4
+	RETURN 1
+ELSEIF (<more1> = 7)
+	LINK.FACE <cont.uid>
+			DORAND 5
+					LINK.SAY @00b92 If you dont want to wait
+					LINK.SAY @00b92 If time is an issue
+					LINK.SAY @00b92 If you want to rush
+					LINK.SAY @00b92 If you dont stand a chance
+					LINK.SAY @00b92 If your bored
+			ENDDO
+	MORE1 = <eval (<MORE1> + 1)>
+	TIMER = 4
+	RETURN 1
+ELSEIF (<more1> = 8)
+	LINK.FACE <cont.uid>
+			DORAND 2
+					LINK.SAY @00b92 We can go now
+					LINK.SAY @00b92 We can leave now
+			ENDDO
+	MORE1 = <eval (<MORE1> + 1)>
+	TIMER = 4
+	RETURN 1
+ELSEIF (<more1> = 9)
+	LINK.FACE <cont.uid>
+					DORAND 3
+					LINK.SAY @00b92 Just say "take me away"
+					LINK.SAY @00b92 Just say "I give up"
+					LINK.SAY @00b92 Just say "Im Pathetic"
+			ENDDO
+	MORE1 = <eval (<MORE1> + 1)>
+	TIMER = 4
+	RETURN 1
+ELSEIF (<more1> = 10)
+	LINK.FACE <cont.uid>
+			DORAND 3
+					LINK.SAY @00b92 And we will leave immediately
+					LINK.SAY @00b92 And we will leave now
+					LINK.SAY @00b92 And we will leave sooner
+			ENDDO
+	MORE1 = <eval (<MORE1> + 1)>
+	TIMER = 10
+	TAG.STAGE = 0
+	RETURN 1
+ELSEIF (<eval(<more1>)> = 570)	
+		   LINK.ANIM 16
+		   CONT.RESURRECT
+		   CONT.GO 4307,983
+		   CONT.TAG.SHAMECORPSE
+		   CONT.TAG.SHAMECORPSEP
+			LINK.REMOVE
+			REMOVE
+            RETURN 1
+ELSEIF (<eval(<more1>)> = 570)	
+		   LINK.ANIM 16
+		   CONT.ANIM 020
+		   MORE1 = 580
+		   timer = 3
+		   RETURN 1
+ELSEIF (<eval(<more1>)> = 560)	
+		   LINK.SAY @00b92 An Corp
+		   LINK.ANIM 16
+		   MORE1 = 570
+		   timer = 3
+		   RETURN 1
+ELSEIF (<eval(<more1>)> = 550)	
+		   LINK.SAY @00b92 I cant imagine you want to stay here with me, best get you on your way
+		   LINK.ANIM 16
+		   MORE1 = 560
+		   timer = 3
+		   RETURN 1
+ELSEIF (<eval(<more1>)> = 500)	
+IF (<UID.<CONT.TAG.SHAMECORPSE>.RESTEST 30000 i_gold>) 
+	UID.<CONT.TAG.SHAMECORPSE>.CONTCONSUME i_gold 9000000
+	UID.<CONT.TAG.SHAMECORPSE>.CONTCONSUME i_gold 9000000
+	UID.<CONT.TAG.SHAMECORPSE>.P 5146,1774,0,10
+	UID.<CONT.TAG.SHAMECORPSE>.UPDATEx
+ENDIF
+		   CONT.EVENTS -e_shame_hider
+		   CONT.VISUALRANGE  18	
+		   CONT.GO 5146,1774,0,10
+		   LINK.GO 5146,1770,0,10
+		   LINK.FACE <cont.uid>
+		   CONT.FACE <link.uid>
+		   LINK.SAY @00b92 You are lucky to escape with even your life
+		   MORE1 = 550
+		   timer = 3
+		   RETURN 1
+ELSEIF (<eval(<more1>)> = 400)
+IF (<UID.<CONT.TAG.SHAMECORPSE>.RESTEST 30000 i_gold>) 
+	LINK.SAY @00b92 Looks like your corpse is coming as well
+ENDIF
+IF (!<UID.<CONT.TAG.SHAMECORPSE>.RESTEST 30000 i_gold>) 
+	LINK.SAY @00b92 Looks like your corpse is staying behind
+ENDIF
+more1 = 500
+timer = 2
+RETURN 1
+ELSEIF (<eval(<more1>)> >= 300)
+LINK.SAY @00b92 Come on then
+more1 = 400
+timer = 3
+RETURN 1
+ELSEIF (<eval(<more1>)> >= 240) && (<tag.stage> < 4)
+// 1 minutes
+LINK.SAY @00b92 Only 1 minute left, looks a bit hopeless here doesnt it just say  "I give up"
+TIMER = 10
+TAG.STAGE = 4
+RETURN 1
+ELSEIF (<eval(<more1>)> >=180) && (<tag.stage> < 3)
+// 2 minutes
+LINK.SAY @00b92 Only 2 minutes left, why dont you say  "take me away"
+TIMER = 10
+TAG.STAGE = 3
+RETURN 1
+ELSEIF (<eval(<more1>)> >= 120) && (<tag.stage> < 2)
+// 3 minutes
+LINK.SAY @00b92 Only 3 minutes left, lets not waste time just say  "Im Pathetic"
+TIMER = 10
+TAG.STAGE = 2
+RETURN 1
+ELSEIF (<eval(<more1>)> >= 60) && (0<tag.stage> < 1)
+// 4 minutes
+LINK.SAY @00b92 Only 4 minutes left, remember you can say  "I give up"
+TAG.STAGE = 1
+UID.<CONT.TAG.SHAMECORPSE>.TIMER = 310
+TIMER = 10
+RETURN 1
+ENDIF
+MORE1 = <eval (<MORE1> + 10)>
+TIMER = 10
+RETURN 1
+		
+[TYPEDEF t_telepad_mana]
+ON=@STEP
+  IF ( <SRC.mana> >=  <eval(<src.int> -10)> ) 
+    SRC.GO <morep>
+  ELSE
+	src.sysmessage You dont have enough Mana to use this gate
+  ENDIF
+  RETURN 1
+  
+[TYPEDEF t_telepad_annoying]
+ON=@TIMER
+   DORAND 7
+	MOREP =  5539,178
+	MOREP = 5551,241
+	MOREP = 5496,217
+	MOREP =  5483,245
+	MOREP =  5448,180
+	MOREP = 5438,232,10
+	MOREP = 5539,178
+	ENDDO
+	DORAND 7
+	COLOR =  00
+	COLOR =  09a2
+	COLOR =  0b4e
+	COLOR =  079a
+	COLOR =  007cc
+	COLOR =  048b
+	COLOR =  00483
+	ENDDO
+	DORAND 7
+	SAY Its this one
+	SAY No this one
+	SAY Exit
+	SAY Way Forward
+	SAY Ok its this one
+	SAY Maybe this one
+	SAY In Here!
+	ENDDO
+TIMER = {10 15}
+RETURN 1
+ON=@STEP
+  IF ( !<SRC.ISNPC> && !<src.ISDEAD> ) 
+	SRC.GO <morep>
+  ENDIF
+  RETURN 1
+  
+[ITEMDEF i_shame_moongate]
+ID=i_moongate_blue
+TYPE=t_script
+NAME=Gate of Shame
+
+ON=@CREATE
+   
+
+ON=@STEP
+   IF !(<SRC.ISDEAD>) && !(<SRC.ISNPC>)
+	  SRC.GO <morep>
+      RETURN 1
+   ENDIF
+
+CATEGORY=Miscellaneous
+SUBSECTION=Gates
+DESCRIPTION=Shame special gate
+
+[ITEMDEF i_visualrange_Gate]
+ID=i_moongate_blue
+TYPE=t_script
+NAME=Gate
+
+ON=@CREATE
+   morep = 1
+
+ON=@STEP
+IF (<more1> = 0)
+say more1 isnt set
+return 1
+ENDIF
+   IF !(<SRC.ISDEAD>)
+	  SRC.VISUALRANGE  <more1>
+	  SRC.GO <morep>
+	  src.update
+      RETURN 1
+   ENDIF
+
+CATEGORY=Miscellaneous
+SUBSECTION=Gates
+DESCRIPTION=Shame special gate
+
+[ITEMDEF i_shame_Gate]
+ID=i_moongate_blue
+TYPE=t_script
+NAME=Gate of Shame
+
+ON=@CREATE
+   
+
+ON=@STEP
+   IF !(<SRC.ISDEAD>)
+      SRC.EVENTS +e_shame_hider
+	  SRC.VISUALRANGE  1
+	  SRC.GO <morep>
+      RETURN 1
+   ENDIF
+
+CATEGORY=Miscellaneous
+SUBSECTION=Gates
+DESCRIPTION=Shame special gate
+
+[EVENTS e_shame_hider]
+
+ON=@DEATH
+sysmessage You will be automatically teleported out in 15 minutes if you are not resurrected, to leave now type .shamerelease
+      if !( <npc> )
+         TIMERF 900 shamerelease
+        return 0
+     endif   
+	 
+[FUNCTION shamerelease]
+	IF ( <FLAGS> & statf_dead )
+	   IF !(STRCMPI(Shame Level 4,<ROOM.NAME>))
+		   EVENTS -e_shame_hider
+		   VISUALRANGE  30
+		   GO 513,1564
+ENDIF
+
+[ITEMDEF i_legendary_scroll]
+ID=i_SCROLL_BLANK
+TYPE	= t_eq_script
+NAME	= legendary scroll
+VALUE	= 2000
+ON=@Create
+   DORAND 34
+      MORE1 = 0
+      MORE1 = 1
+      MORE1 = 2
+      MORE1 = 3
+      MORE1 = 4
+      MORE1 = 5
+      MORE1 = 7
+      MORE1 = 8
+      MORE1 = 11
+      MORE1 = 12
+      MORE1 = 13
+      MORE1 = 16
+      MORE1 = 17
+      MORE1 = 18
+      MORE1 = 21
+      MORE1 = 22
+      MORE1 = 23
+      MORE1 = 25
+      MORE1 = 26
+      MORE1 = 27
+      MORE1 = 29
+      MORE1 = 31
+      MORE1 = 34
+      MORE1 = 35
+      MORE1 = 37
+      MORE1 = 39
+      MORE1 = 40
+      MORE1 = 41
+      MORE1 = 42
+      MORE1 = 43
+      MORE1 = 44
+      MORE1 = 45
+      MORE1 = 46
+      MORE1 = 47
+   ENDDO
+   MORE2	= { 1 10 }
+   COLOR	= color_skill_jewelry
+   TYPE		= t_legendary_scroll
+   LOCAL.INT		= <eval (<more2>/10)>
+   LOCAL.DEC		= <eval (<MORE2> - (<LOCAL.INT>*10))>
+   NAME legendary scroll of +<eval <LOCAL.INT>>.<eval <LOCAL.DEC>> <SKILL_NAME <eval <more1>>>
+
+[TYPEDEF t_legendary_scroll]
+ON=@Click
+   MESSAGE Magic <NAME>
+   return 1
+ON=@DClick
+   IF (<SRC.FINDTYPE.t_skill_jewelry.UID>)
+         SRC.SYSMESSAGE You cannot use this while you wear or carry magic jewelry...
+         RETURN 1
+   endif
+   if ( !<ISIDENTIFIED> )
+      SRC.SYSMESSAGE This must be identified before you can understand it
+      return 1
+   endif
+   IF (<eval (<SRC.<eval <more1>>>)> < 1000)
+       SRC.SYSMESSAGE You dont feel ready to use this.
+       RETURN 1
+   ENDIF
+   IF (<eval (<SRC.<eval <more1>>>)> >= 1200)
+          SRC.SYSMESSAGE You dont feel this will help you.
+          RETURN 1
+   ENDIF
+   IF (<eval (<SRC.<eval <more1>>> + <MORE2>)> > 1200)
+             SRC.<eval <more1>>	= 120.0
+             SRC.SYSMESSAGE You read the legendary scroll.....
+             SRC.SYSMESSAGE You reach legendary status.....
+             SRC.TITLE  Legendary <SERV.SKILL(<MORE1>).TITLE>
+                LOCAL.INT		= <eval (<more2>/10)>
+   		LOCAL.DEC		= <eval (<MORE2> - (<LOCAL.INT>*10))>
+             SERV.LOG <SRC.ACCOUNT>:<SRC.NAME>-<SRC.UID> Half legendary scroll of +<eval <LOCAL.INT>>.<eval <LOCAL.DEC>> <SKILL_NAME <eval <more1>>>
+             REMOVE
+             RETURN 1
+   ENDIF
+   try SRC.<eval <more1>>	= <eval (<SRC.<eval <more1>>> + <MORE2>)>
+   LOCAL.INT		= <eval (<more2>/10)>
+   LOCAL.DEC		= <eval (<MORE2> - (<LOCAL.INT>*10))>
+   SERV.LOG <SRC.ACCOUNT>:<SRC.NAME>-<SRC.UID> Used legendary scroll of +<eval <LOCAL.INT>>.<eval <LOCAL.DEC>> <SKILL_NAME <eval <more1>>>
+   SRC.SYSMESSAGE You read the legendary scroll.....
+   REMOVE
+   return 1
+
+[FUNCTION f_ilshenar_death]
+   IF <ACT.ISPLAYER>
+      	IF (<STR> < 50)
+      		IF ( rand(25000) < 10 )
+      		   ACT.EMOTE discover a legendary scroll
+      		   SERV.LOG <ACT.ACCOUNT>:<ACT.NAME>-<ACT.UID> got a legendary scroll r25000
+      		   SERV.NEWITEM i_legendary_scroll, 1, <ACT.UID>
+            		   SOUND=01FC
+   		ENDIF
+      	ELSEIF (<STR> < 100)
+      		IF ( rand(15000) < 10 )
+      		   ACT.EMOTE discover a legendary scroll
+      		   SERV.LOG <ACT.ACCOUNT>:<ACT.NAME>-<ACT.UID> got a legendary scroll r15000
+      		   SERV.NEWITEM i_legendary_scroll, 1, <ACT.UID>
+            		   SOUND=01FC
+   		ENDIF
+   	ELSEIF (<STR> < 250)
+   		if ( rand(3000) < 10 )
+   		   ACT.EMOTE discover a hope potion
+   		   SERV.NEWITEM i_potion_hope, 1, <ACT.UID>
+   		ENDIF   	
+   		IF ( rand(6000) < 10 )
+   		   ACT.EMOTE discover a legendary scroll
+   		   SERV.LOG <ACT.ACCOUNT>:<ACT.NAME>-<ACT.UID> got a legendary scroll r6000
+   		   SERV.NEWITEM i_legendary_scroll, 1, <ACT.UID>
+         		   SOUND=01FC
+   		ENDIF
+	ELSEIF (<STR> < 500)
+	   		if ( rand(2000) < 10 )
+	   		   ACT.EMOTE discover a hope potion
+	   		   SERV.NEWITEM i_potion_hope, 1, <ACT.UID>
+   		ENDIF 
+		IF ( rand(4000) < 10 )
+		   ACT.EMOTE discover a legendary scroll
+		   SERV.LOG <ACT.ACCOUNT>:<ACT.NAME>-<ACT.UID> got a legendary scroll r4000
+		   SERV.NEWITEM i_legendary_scroll, 1, <ACT.UID>
+      		   SOUND=01FC
+   		ENDIF
+	ELSEIF (<STR> < 750)
+	   		if ( rand(1500) < 10 )
+	   		   ACT.EMOTE discover a hope potion
+	   		   SERV.NEWITEM i_potion_hope, 1, <ACT.UID>
+   		ENDIF 
+		IF ( rand(3000) < 10 )
+		   ACT.EMOTE discover a legendary scroll
+		   SERV.LOG <ACT.ACCOUNT>:<ACT.NAME>-<ACT.UID> got a legendary scroll r3000
+		   SERV.NEWITEM i_legendary_scroll, 1, <ACT.UID>
+      		   SOUND=01FC
+   		ENDIF
+	ELSEIF (<STR> < 1000)
+	   		if ( rand(1200) < 10 )
+	   		   ACT.EMOTE discover a hope potion
+	   		   SERV.NEWITEM i_potion_hope, 1, <ACT.UID>
+   		ENDIF 
+		IF ( rand(2500) < 10 )
+		   ACT.EMOTE discover a legendary scroll
+		   SERV.LOG <ACT.ACCOUNT>:<ACT.NAME>-<ACT.UID> got a legendary scroll r2500
+		   SERV.NEWITEM i_legendary_scroll, 1, <ACT.UID>
+      		   SOUND=01FC
+   		ENDIF
+	ELSEIF (<STR> < 1250)
+	   		if ( rand(1000) < 10 )
+	   		   ACT.EMOTE discover a hope potion
+	   		   SERV.NEWITEM i_potion_hope, 1, <ACT.UID>
+   		ENDIF 
+		IF ( rand(2000) < 10 )
+		   ACT.EMOTE discover a legendary scroll
+		   SERV.LOG <ACT.ACCOUNT>:<ACT.NAME>-<ACT.UID> got a legendary scroll r2000
+		   SERV.NEWITEM i_legendary_scroll, 1, <ACT.UID>
+      		   SOUND=01FC
+   		ENDIF	
+	ELSEIF (<STR> < 1500)
+	   		if ( rand(750) < 10 )
+	   		   ACT.EMOTE discover a hope potion
+	   		   SERV.NEWITEM i_potion_hope, 1, <ACT.UID>
+   		ENDIF 
+		IF ( rand(1500) < 10 )
+		   ACT.EMOTE discover a legendary scroll
+		   SERV.LOG <ACT.ACCOUNT>:<ACT.NAME>-<ACT.UID> got a legendary scroll r1500
+		   SERV.NEWITEM i_legendary_scroll, 1, <ACT.UID>
+      		   SOUND=01FC
+   		ENDIF
+	ELSEIF (<STR> < 1750)
+	   		if ( rand(500) < 10 )
+	   		   ACT.EMOTE discover a hope potion
+	   		   SERV.NEWITEM i_potion_hope, 1, <ACT.UID>
+   		ENDIF 
+		IF ( rand(1000) < 10 )
+		   ACT.EMOTE discover a legendary scroll
+		   SERV.LOG <ACT.ACCOUNT>:<ACT.NAME>-<ACT.UID> got a legendary scroll r1000
+		   SERV.NEWITEM i_legendary_scroll, 1, <ACT.UID>
+      		   SOUND=01FC
+   		ENDIF
+	ELSEIF (<STR> < 7000)
+	   		if ( rand(250) < 10 )
+	   		   ACT.EMOTE discover a hope potion
+	   		   SERV.NEWITEM i_potion_hope, 1, <ACT.UID>
+   		ENDIF 
+		IF ( rand(500) < 10 )
+		   ACT.EMOTE discover a legendary scroll
+		   SERV.LOG <ACT.ACCOUNT>:<ACT.NAME>-<ACT.UID> got a legendary scroll r500
+		   SERV.NEWITEM i_legendary_scroll, 1, <ACT.UID>
+      		   SOUND=01FC
+   		ENDIF
+	ENDIF
+    ENDIF
+
+
+[FUNCTION f_lw_1]
+   DORAND 2532
+VAR.LWP1 = Aamon
+VAR.LWP1 = Agalierept
+VAR.LWP1 = Agares
+VAR.LWP1 = Aglasis
+VAR.LWP1 = Aiwaz
+VAR.LWP1 = Astaroth
+VAR.LWP1 = Ayperos
+VAR.LWP1 = Azatoth
+VAR.LWP1 = Azmodaeus
+VAR.LWP1 = Azrael
+VAR.LWP1 = Barbatos
+VAR.LWP1 = Bathim
+VAR.LWP1 = Bathsin
+VAR.LWP1 = Bechard
+VAR.LWP1 = Botis
+VAR.LWP1 = Brulefer
+VAR.LWP1 = Bucon
+VAR.LWP1 = Buer
+VAR.LWP1 = Clauneck
+VAR.LWP1 = Clitheret
+VAR.LWP1 = Cthulhu
+VAR.LWP1 = El Chupacabra
+VAR.LWP1 = Eleogap
+VAR.LWP1 = Eliezer
+VAR.LWP1 = Eligor
+VAR.LWP1 = Faraii
+VAR.LWP1 = Fleurety
+VAR.LWP1 = Frimost
+VAR.LWP1 = Frucissiere
+VAR.LWP1 = Fruitimiere
+VAR.LWP1 = Glassyalabolas
+VAR.LWP1 = Guland
+VAR.LWP1 = Gusoyn
+VAR.LWP1 = Hael
+VAR.LWP1 = Haristum
+VAR.LWP1 = Heramael
+VAR.LWP1 = Hiepacth
+VAR.LWP1 = Huictiigara
+VAR.LWP1 = Humots
+VAR.LWP1 = Khil
+VAR.LWP1 = Marbas
+VAR.LWP1 = Mephistopheles
+VAR.LWP1 = Mersilde
+VAR.LWP1 = Minoson
+VAR.LWP1 = Molech
+VAR.LWP1 = Moloch
+VAR.LWP1 = Morail
+VAR.LWP1 = Musisin
+VAR.LWP1 = Naberrs
+VAR.LWP1 = Nebiros
+VAR.LWP1 = Nebirots
+VAR.LWP1 = Nyarlathotep
+VAR.LWP1 = Pentagnony
+VAR.LWP1 = Proculo
+VAR.LWP1 = Pruslas
+VAR.LWP1 = Pursan
+VAR.LWP1 = Rofocale
+VAR.LWP1 = Sargatans
+VAR.LWP1 = Satanchia
+VAR.LWP1 = Satanciae
+VAR.LWP1 = Segal
+VAR.LWP1 = Sergulath
+VAR.LWP1 = Sergutthy
+VAR.LWP1 = Sidragrosam
+VAR.LWP1 = Sirchade
+VAR.LWP1 = Starr
+VAR.LWP1 = Surgat
+VAR.LWP1 = Sustugriel
+VAR.LWP1 = Tarchimache
+VAR.LWP1 = Tarihimal
+VAR.LWP1 = Trimasel
+VAR.LWP1 = Vaelfar
+VAR.LWP1 = Wormius
+VAR.LWP1 = Yog-Sothoth
+VAR.LWP1 = Zoray
+VAR.LWP1 = Aegnor
+VAR.LWP1 = Aelfric
+VAR.LWP1 = Ainvar
+VAR.LWP1 = Alcor
+VAR.LWP1 = Arazion
+VAR.LWP1 = Ardarion
+VAR.LWP1 = Arkanis
+VAR.LWP1 = Athrax
+VAR.LWP1 = Barghest
+VAR.LWP1 = Baros
+VAR.LWP1 = Begarin
+VAR.LWP1 = Beynlore
+VAR.LWP1 = Burat
+VAR.LWP1 = Cairne
+VAR.LWP1 = Carthon
+VAR.LWP1 = Chamdar
+VAR.LWP1 = Ciric
+VAR.LWP1 = Cruzado
+VAR.LWP1 = Cyphrak
+VAR.LWP1 = Daelon
+VAR.LWP1 = Daktar
+VAR.LWP1 = Darkkill
+VAR.LWP1 = Darvain
+VAR.LWP1 = D'Harun
+VAR.LWP1 = Dracus
+VAR.LWP1 = Dradar
+VAR.LWP1 = Draelin
+VAR.LWP1 = Draenor
+VAR.LWP1 = Durodund
+VAR.LWP1 = Eklor
+VAR.LWP1 = Elrak
+VAR.LWP1 = Fangorn
+VAR.LWP1 = Farynthane
+VAR.LWP1 = Feenark
+VAR.LWP1 = Galtor
+VAR.LWP1 = Gemma
+VAR.LWP1 = Gragus
+VAR.LWP1 = Irian
+VAR.LWP1 = Israfel
+VAR.LWP1 = Jaden
+VAR.LWP1 = Jefahn
+VAR.LWP1 = Kalimus
+VAR.LWP1 = Kallomane
+VAR.LWP1 = Kanax
+VAR.LWP1 = Kelnos
+VAR.LWP1 = Kharn
+VAR.LWP1 = Khir
+VAR.LWP1 = Kragon
+VAR.LWP1 = K'shar
+VAR.LWP1 = Kylnath
+VAR.LWP1 = Larac
+VAR.LWP1 = Lathis
+VAR.LWP1 = Lenroc
+VAR.LWP1 = Lonthorynthoryl
+VAR.LWP1 = Lorreck
+VAR.LWP1 = Lyticant
+VAR.LWP1 = Mattrick
+VAR.LWP1 = Mazrim
+VAR.LWP1 = Modrei
+VAR.LWP1 = Morturus
+VAR.LWP1 = Muktar
+VAR.LWP1 = Murdon
+VAR.LWP1 = Murron
+VAR.LWP1 = Myndon
+VAR.LWP1 = Mythran
+VAR.LWP1 = Mytor
+VAR.LWP1 = Nabius
+VAR.LWP1 = Nalynkal
+VAR.LWP1 = Nazgul
+VAR.LWP1 = Paorin
+VAR.LWP1 = Quillan
+VAR.LWP1 = Rendar
+VAR.LWP1 = Sang Qui
+VAR.LWP1 = Scythyn
+VAR.LWP1 = Shilor
+VAR.LWP1 = Smaug
+VAR.LWP1 = Sobran
+VAR.LWP1 = Soltak
+VAR.LWP1 = Sorz
+VAR.LWP1 = Taban
+VAR.LWP1 = Telzar
+VAR.LWP1 = Teron
+VAR.LWP1 = Trethovian
+VAR.LWP1 = Tyrnar
+VAR.LWP1 = Ulath
+VAR.LWP1 = Vandor
+VAR.LWP1 = Vermithrax
+VAR.LWP1 = Vitar
+VAR.LWP1 = Vlade
+VAR.LWP1 = Volan
+VAR.LWP1 = Wydstrin
+VAR.LWP1 = Xaelin
+VAR.LWP1 = Xandor
+VAR.LWP1 = Xarthos
+VAR.LWP1 = Xaxtox
+VAR.LWP1 = X'calak
+VAR.LWP1 = Xenix
+VAR.LWP1 = Xiltanth
+VAR.LWP1 = Xylor
+VAR.LWP1 = Xystil
+VAR.LWP1 = Yazad
+VAR.LWP1 = Yllthane
+VAR.LWP1 = Ylthallynon
+VAR.LWP1 = Ythoryn
+VAR.LWP1 = Zalifar
+VAR.LWP1 = Zathrix
+VAR.LWP1 = Zunrek
+VAR.LWP1 = Aegnor
+VAR.LWP1 = Aelfric
+VAR.LWP1 = Ainvar
+VAR.LWP1 = Alcor
+VAR.LWP1 = Arazion
+VAR.LWP1 = Ardarion
+VAR.LWP1 = Arkanis
+VAR.LWP1 = Athrax
+VAR.LWP1 = Bainothil
+VAR.LWP1 = Banothil
+VAR.LWP1 = Barghest
+VAR.LWP1 = Baros
+VAR.LWP1 = Begarin
+VAR.LWP1 = Beynlore
+VAR.LWP1 = Burat
+VAR.LWP1 = Cairne
+VAR.LWP1 = Carthon
+VAR.LWP1 = Chamdar
+VAR.LWP1 = Ciric
+VAR.LWP1 = Cruzado
+VAR.LWP1 = Cyphrak
+VAR.LWP1 = Daelon
+VAR.LWP1 = Daktar
+VAR.LWP1 = Danaghir
+VAR.LWP1 = Darvain
+VAR.LWP1 = D'Harun
+VAR.LWP1 = Doraghir
+VAR.LWP1 = Dracus
+VAR.LWP1 = Dradar
+VAR.LWP1 = Draelin
+VAR.LWP1 = Draenor
+VAR.LWP1 = Durodund
+VAR.LWP1 = Eklor
+VAR.LWP1 = Elrak
+VAR.LWP1 = Fangorn
+VAR.LWP1 = Farynthane
+VAR.LWP1 = Feenark
+VAR.LWP1 = Galtor
+VAR.LWP1 = Garigor
+VAR.LWP1 = Gemma
+VAR.LWP1 = Gragus
+VAR.LWP1 = Ilzinias
+VAR.LWP1 = Irian
+VAR.LWP1 = Israfel
+VAR.LWP1 = Jaden
+VAR.LWP1 = Jefahn
+VAR.LWP1 = Jiltharis
+VAR.LWP1 = Kalimus
+VAR.LWP1 = Kallomane
+VAR.LWP1 = Kanax
+VAR.LWP1 = Kelnos
+VAR.LWP1 = Kharn
+VAR.LWP1 = Khir
+VAR.LWP1 = Kraenor
+VAR.LWP1 = Kragon
+VAR.LWP1 = Kranor
+VAR.LWP1 = Kranostil
+VAR.LWP1 = Kranostir
+VAR.LWP1 = Kraylin
+VAR.LWP1 = K'shar
+VAR.LWP1 = Kylnath
+VAR.LWP1 = Larac
+VAR.LWP1 = Lathis
+VAR.LWP1 = Lenroc
+VAR.LWP1 = Lilithack
+VAR.LWP1 = Limnoch
+VAR.LWP1 = Lonthorynthoryl
+VAR.LWP1 = Lorreck
+VAR.LWP1 = Lyticant
+VAR.LWP1 = Mattrick
+VAR.LWP1 = Mazrim
+VAR.LWP1 = Merkul
+VAR.LWP1 = Modrei
+VAR.LWP1 = Morturus
+VAR.LWP1 = Muktar
+VAR.LWP1 = Murdon
+VAR.LWP1 = Murron
+VAR.LWP1 = Myndon
+VAR.LWP1 = Mythran
+VAR.LWP1 = Mytor
+VAR.LWP1 = Nabius
+VAR.LWP1 = Nalynkal
+VAR.LWP1 = Nazgul
+VAR.LWP1 = Odilion
+VAR.LWP1 = Paorin
+VAR.LWP1 = Quain
+VAR.LWP1 = Quillan
+VAR.LWP1 = Rendar
+VAR.LWP1 = Ronlyn
+VAR.LWP1 = Sobran
+VAR.LWP1 = Soltak
+VAR.LWP1 = Sorz
+VAR.LWP1 = Staylin
+VAR.LWP1 = Taban
+VAR.LWP1 = Telzar
+VAR.LWP1 = Teron
+VAR.LWP1 = Terus
+VAR.LWP1 = Thaelin
+VAR.LWP1 = Thulack
+VAR.LWP1 = Trethovian
+VAR.LWP1 = Tyrin Kuhl
+VAR.LWP1 = Tyrnar
+VAR.LWP1 = Ulath
+VAR.LWP1 = Vandor
+VAR.LWP1 = Vantrom
+VAR.LWP1 = Vermithrax
+VAR.LWP1 = Vitar
+VAR.LWP1 = Vlade
+VAR.LWP1 = Volan
+VAR.LWP1 = Wydstrin
+VAR.LWP1 = Xaelin
+VAR.LWP1 = Xarthos
+VAR.LWP1 = Xaxtox
+VAR.LWP1 = X'calak
+VAR.LWP1 = Xenix
+VAR.LWP1 = Xiltanth
+VAR.LWP1 = Xylor
+VAR.LWP1 = Xystil
+VAR.LWP1 = Yazad
+VAR.LWP1 = Yllthane
+VAR.LWP1 = Ylthallynon
+VAR.LWP1 = Ythoryn
+VAR.LWP1 = Zain
+VAR.LWP1 = Zalifar
+VAR.LWP1 = Zasfus
+VAR.LWP1 = Zunrek
+VAR.LWP1 = Adgulg
+VAR.LWP1 = Aghed
+VAR.LWP1 = Agugh
+VAR.LWP1 = Aguk
+VAR.LWP1 = Almthu
+VAR.LWP1 = Alog
+VAR.LWP1 = Ambilge
+VAR.LWP1 = Apaugh
+VAR.LWP1 = Argha
+VAR.LWP1 = Argigoth
+VAR.LWP1 = Argug
+VAR.LWP1 = Arpigig
+VAR.LWP1 = Auhgan
+VAR.LWP1 = Azhug
+VAR.LWP1 = Bagdud
+VAR.LWP1 = Baghig
+VAR.LWP1 = Bahgigoth
+VAR.LWP1 = Bandagh
+VAR.LWP1 = Barfu
+VAR.LWP1 = Bargulg
+VAR.LWP1 = Baugh
+VAR.LWP1 = Bidgug
+VAR.LWP1 = Bildud
+VAR.LWP1 = Bilge
+VAR.LWP1 = Bog
+VAR.LWP1 = Boghat
+VAR.LWP1 = Bogugh
+VAR.LWP1 = Borgan
+VAR.LWP1 = Borug
+VAR.LWP1 = Braugh
+VAR.LWP1 = Brougha
+VAR.LWP1 = Brugagh
+VAR.LWP1 = Bruigig
+VAR.LWP1 = Buadagh
+VAR.LWP1 = Buggug
+VAR.LWP1 = Builge
+VAR.LWP1 = Buimghig
+VAR.LWP1 = Bulgan
+VAR.LWP1 = Bumhug
+VAR.LWP1 = Buomaugh
+VAR.LWP1 = Buordud
+VAR.LWP1 = Burghed
+VAR.LWP1 = Buugug
+VAR.LWP1 = Cabugbu
+VAR.LWP1 = Cagan
+VAR.LWP1 = Carguk
+VAR.LWP1 = Carthurg
+VAR.LWP1 = Clog
+VAR.LWP1 = Corgak
+VAR.LWP1 = Crothu
+VAR.LWP1 = Cubub
+VAR.LWP1 = Cukgilug
+VAR.LWP1 = Curbag
+VAR.LWP1 = Dabub
+VAR.LWP1 = Dakgorim
+VAR.LWP1 = Dakgu
+VAR.LWP1 = Dalthu
+VAR.LWP1 = Darfu
+VAR.LWP1 = Deakgu
+VAR.LWP1 = Dergu
+VAR.LWP1 = Derthag
+VAR.LWP1 = Digdug
+VAR.LWP1 = Diggu
+VAR.LWP1 = Dilug
+VAR.LWP1 = Ditgurat
+VAR.LWP1 = Dorgarag
+VAR.LWP1 = Dregu
+VAR.LWP1 = Dretkag
+VAR.LWP1 = Drigka
+VAR.LWP1 = Drikdarok
+VAR.LWP1 = Drutha
+VAR.LWP1 = Dudagog
+VAR.LWP1 = Dugarod
+VAR.LWP1 = Dugorim
+VAR.LWP1 = Duiltag
+VAR.LWP1 = Durbag
+VAR.LWP1 = Eagungad
+VAR.LWP1 = Eggha
+VAR.LWP1 = Eggugat
+VAR.LWP1 = Egharod
+VAR.LWP1 = Eghuglat
+VAR.LWP1 = Eichelberbog
+VAR.LWP1 = Ekganit
+VAR.LWP1 = Epkagut
+VAR.LWP1 = Ergoth
+VAR.LWP1 = Ertguth
+VAR.LWP1 = Ewkbanok
+VAR.LWP1 = Fagdud
+VAR.LWP1 = Faghig
+VAR.LWP1 = Fandagh
+VAR.LWP1 = Farfu
+VAR.LWP1 = Farghed
+VAR.LWP1 = Fargigoth
+VAR.LWP1 = Farod
+VAR.LWP1 = Faugh
+VAR.LWP1 = Feldgulg
+VAR.LWP1 = Fidgug
+VAR.LWP1 = Filge
+VAR.LWP1 = Fodagog
+VAR.LWP1 = Fogugh
+VAR.LWP1 = Fozhug
+VAR.LWP1 = Frikug
+VAR.LWP1 = Frug
+VAR.LWP1 = Frukag
+VAR.LWP1 = Fubdagog
+VAR.LWP1 = Fudhagh
+VAR.LWP1 = Fupgugh
+VAR.LWP1 = Furbog
+VAR.LWP1 = Futgarek
+VAR.LWP1 = Gaakt
+VAR.LWP1 = Garekk
+VAR.LWP1 = Gelub
+VAR.LWP1 = Gholug
+VAR.LWP1 = Gilaktug
+VAR.LWP1 = Ginug
+VAR.LWP1 = Gnabadug
+VAR.LWP1 = Gnadug
+VAR.LWP1 = Gnalurg
+VAR.LWP1 = Gnarg
+VAR.LWP1 = Gnarlug
+VAR.LWP1 = Gnorl
+VAR.LWP1 = Gnorth
+VAR.LWP1 = Gnoth
+VAR.LWP1 = Gnurl
+VAR.LWP1 = Golag
+VAR.LWP1 = Golub
+VAR.LWP1 = Gomatug
+VAR.LWP1 = Gomoku
+VAR.LWP1 = Gorgu
+VAR.LWP1 = Gorlag
+VAR.LWP1 = Grikug
+VAR.LWP1 = Grug
+VAR.LWP1 = Grukag
+VAR.LWP1 = Grukk
+VAR.LWP1 = Grung
+VAR.LWP1 = Gruul
+VAR.LWP1 = Guag
+VAR.LWP1 = Gubdagog
+VAR.LWP1 = Gudhagh
+VAR.LWP1 = Gug
+VAR.LWP1 = Gujarek
+VAR.LWP1 = Gujek
+VAR.LWP1 = Gujjab
+VAR.LWP1 = Gulm
+VAR.LWP1 = Gulrn
+VAR.LWP1 = Gunaakt
+VAR.LWP1 = Gunag
+VAR.LWP1 = Gunug
+VAR.LWP1 = Gurukk
+VAR.LWP1 = Guthakug
+VAR.LWP1 = Guthug
+VAR.LWP1 = Gutjja
+VAR.LWP1 = Hagob
+VAR.LWP1 = Hagu
+VAR.LWP1 = Hagub
+VAR.LWP1 = Haguk
+VAR.LWP1 = Hebub
+VAR.LWP1 = Hegug
+VAR.LWP1 = Hibub
+VAR.LWP1 = Hig
+VAR.LWP1 = Hogug
+VAR.LWP1 = Hoknath
+VAR.LWP1 = Hoknuk
+VAR.LWP1 = Hokulk
+VAR.LWP1 = Holkurg
+VAR.LWP1 = Horknuth
+VAR.LWP1 = Hrolkug
+VAR.LWP1 = Hugagug
+VAR.LWP1 = Hugmug
+VAR.LWP1 = Hugolm
+VAR.LWP1 = Ig
+VAR.LWP1 = Igmut
+VAR.LWP1 = Ignatz
+VAR.LWP1 = Ignorg
+VAR.LWP1 = Igubat
+VAR.LWP1 = Igug
+VAR.LWP1 = Igurg
+VAR.LWP1 = Ikgnath
+VAR.LWP1 = Ikkath
+VAR.LWP1 = Inkathu
+VAR.LWP1 = Inkathurg
+VAR.LWP1 = Isagubat
+VAR.LWP1 = Jogug
+VAR.LWP1 = Jokgagu
+VAR.LWP1 = Jolagh
+VAR.LWP1 = Jorgagu
+VAR.LWP1 = Jregh
+VAR.LWP1 = Jreghug
+VAR.LWP1 = Jugag
+VAR.LWP1 = Jughog
+VAR.LWP1 = Jughragh
+VAR.LWP1 = Jukha
+VAR.LWP1 = Jukkhag
+VAR.LWP1 = Julakgh
+VAR.LWP1 = Kabugbu
+VAR.LWP1 = Kagan
+VAR.LWP1 = Kaghed
+VAR.LWP1 = Kahigig
+VAR.LWP1 = Karfu
+VAR.LWP1 = Karguk
+VAR.LWP1 = Karrghed
+VAR.LWP1 = Karrhig
+VAR.LWP1 = Karthurg
+VAR.LWP1 = Kebub
+VAR.LWP1 = Kegigoth
+VAR.LWP1 = Kegth
+VAR.LWP1 = Kerghug
+VAR.LWP1 = Kertug
+VAR.LWP1 = Kilug
+VAR.LWP1 = Klapdud
+VAR.LWP1 = Klog
+VAR.LWP1 = Klughig
+VAR.LWP1 = Knagh
+VAR.LWP1 = Knaraugh
+VAR.LWP1 = Knodagh
+VAR.LWP1 = Knorgh
+VAR.LWP1 = Knuguk
+VAR.LWP1 = Knurigig
+VAR.LWP1 = Kodagog
+VAR.LWP1 = Kog
+VAR.LWP1 = Kogan
+VAR.LWP1 = Komarod
+VAR.LWP1 = Korgak
+VAR.LWP1 = Korgulg
+VAR.LWP1 = Koughat
+VAR.LWP1 = Kraugug
+VAR.LWP1 = Krilge
+VAR.LWP1 = Krothu
+VAR.LWP1 = Krouthu
+VAR.LWP1 = Krugbu
+VAR.LWP1 = Krugorim
+VAR.LWP1 = Kubub
+VAR.LWP1 = Kugbu
+VAR.LWP1 = Kukgilug
+VAR.LWP1 = Kulgha
+VAR.LWP1 = Kupgugh
+VAR.LWP1 = Kurbag
+VAR.LWP1 = Kurmbag
+VAR.LWP1 = Laghed
+VAR.LWP1 = Lamgugh
+VAR.LWP1 = Mabub
+VAR.LWP1 = Magdud
+VAR.LWP1 = Malthu
+VAR.LWP1 = Marfu
+VAR.LWP1 = Margulg
+VAR.LWP1 = Mazhug
+VAR.LWP1 = Meakgu
+VAR.LWP1 = Mergigoth
+VAR.LWP1 = Milug
+VAR.LWP1 = Mudagog
+VAR.LWP1 = Mugarod
+VAR.LWP1 = Mughragh
+VAR.LWP1 = Mugorim
+VAR.LWP1 = Murbag
+VAR.LWP1 = Naghat
+VAR.LWP1 = Naghig
+VAR.LWP1 = Naguk
+VAR.LWP1 = Nahgigoth
+VAR.LWP1 = Nakgu
+VAR.LWP1 = Narfu
+VAR.LWP1 = Nargulg
+VAR.LWP1 = Narhbub
+VAR.LWP1 = Narod
+VAR.LWP1 = Neghed
+VAR.LWP1 = Nehrakgu
+VAR.LWP1 = Nildud
+VAR.LWP1 = Nodagog
+VAR.LWP1 = Nofhug
+VAR.LWP1 = Nogugh
+VAR.LWP1 = Nomgulg
+VAR.LWP1 = Noogugh
+VAR.LWP1 = Nugbu
+VAR.LWP1 = Nughilug
+VAR.LWP1 = Nulgha
+VAR.LWP1 = Numhug
+VAR.LWP1 = Nurbag
+VAR.LWP1 = Nurghed
+VAR.LWP1 = Oagungad
+VAR.LWP1 = Oakgu
+VAR.LWP1 = Obghat
+VAR.LWP1 = Oggha
+VAR.LWP1 = Oggugat
+VAR.LWP1 = Ogharod
+VAR.LWP1 = Oghuglat
+VAR.LWP1 = Oguk
+VAR.LWP1 = Ohomdud
+VAR.LWP1 = Ohulhug
+VAR.LWP1 = Oilug
+VAR.LWP1 = Okganit
+VAR.LWP1 = Olaghig
+VAR.LWP1 = Olaugh
+VAR.LWP1 = Olmthu
+VAR.LWP1 = Olodagh
+VAR.LWP1 = Olog
+VAR.LWP1 = Omaghed
+VAR.LWP1 = Ombilge
+VAR.LWP1 = Omegugh
+VAR.LWP1 = Omogulg
+VAR.LWP1 = Omugug
+VAR.LWP1 = Onog
+VAR.LWP1 = Onubub
+VAR.LWP1 = Onugug
+VAR.LWP1 = Oodagh
+VAR.LWP1 = Oogorim
+VAR.LWP1 = Oogugbu
+VAR.LWP1 = Oomigig
+VAR.LWP1 = Opathu
+VAR.LWP1 = Opaugh
+VAR.LWP1 = Opeghat
+VAR.LWP1 = Opilge
+VAR.LWP1 = Opkagut
+VAR.LWP1 = Opoguk
+VAR.LWP1 = Oquagan
+VAR.LWP1 = Orgha
+VAR.LWP1 = Orgoth
+VAR.LWP1 = Orgug
+VAR.LWP1 = Orpigig
+VAR.LWP1 = Ortguth
+VAR.LWP1 = Otugbu
+VAR.LWP1 = Ougha
+VAR.LWP1 = Ougigoth
+VAR.LWP1 = Ouhgan
+VAR.LWP1 = Owkbanok
+VAR.LWP1 = Paghorim
+VAR.LWP1 = Pahgigoth
+VAR.LWP1 = Pahgorim
+VAR.LWP1 = Pakgu
+VAR.LWP1 = Parfu
+VAR.LWP1 = Pargu
+VAR.LWP1 = Parhbub
+VAR.LWP1 = Parod
+VAR.LWP1 = Peghed
+VAR.LWP1 = Pehrakgu
+VAR.LWP1 = Pergu
+VAR.LWP1 = Perthag
+VAR.LWP1 = Pigdug
+VAR.LWP1 = Piggu
+VAR.LWP1 = Pitgurat
+VAR.LWP1 = Podagog
+VAR.LWP1 = Pofhug
+VAR.LWP1 = Pomgulg
+VAR.LWP1 = Poogugh
+VAR.LWP1 = Porgarag
+VAR.LWP1 = Pregu
+VAR.LWP1 = Pretkag
+VAR.LWP1 = Prigka
+VAR.LWP1 = Prikdarok
+VAR.LWP1 = Prutha
+VAR.LWP1 = Pughilug
+VAR.LWP1 = Puiltag
+VAR.LWP1 = Purbag
+VAR.LWP1 = Qog
+VAR.LWP1 = Quadagh
+VAR.LWP1 = Quilge
+VAR.LWP1 = Quimghig
+VAR.LWP1 = Quomaugh
+VAR.LWP1 = Quordud
+VAR.LWP1 = Quugug
+VAR.LWP1 = Raghat
+VAR.LWP1 = Raguk
+VAR.LWP1 = Rakgu
+VAR.LWP1 = Rarfu
+VAR.LWP1 = Rebub
+VAR.LWP1 = Rilug
+VAR.LWP1 = Rodagog
+VAR.LWP1 = Rogan
+VAR.LWP1 = Romarod
+VAR.LWP1 = Routhu
+VAR.LWP1 = Rugbu
+VAR.LWP1 = Rugorim
+VAR.LWP1 = Rurbag
+VAR.LWP1 = Rurigig
+VAR.LWP1 = Sabub
+VAR.LWP1 = Saghig
+VAR.LWP1 = Sahgigoth
+VAR.LWP1 = Sahgorim
+VAR.LWP1 = Sakgu
+VAR.LWP1 = Salthu
+VAR.LWP1 = Saraugug
+VAR.LWP1 = Sarfu
+VAR.LWP1 = Sargulg
+VAR.LWP1 = Sarhbub
+VAR.LWP1 = Sarod
+VAR.LWP1 = Sbghat
+VAR.LWP1 = Seakgu
+VAR.LWP1 = Sguk
+VAR.LWP1 = Shomdud
+VAR.LWP1 = Shulhug
+VAR.LWP1 = Sildud
+VAR.LWP1 = Silge
+VAR.LWP1 = Silug
+VAR.LWP1 = Sinsbog
+VAR.LWP1 = Slaghig
+VAR.LWP1 = Slapdud
+VAR.LWP1 = Slaugh
+VAR.LWP1 = Slodagh
+VAR.LWP1 = Slog
+VAR.LWP1 = Slughig
+VAR.LWP1 = Smaghed
+VAR.LWP1 = Smegugh
+VAR.LWP1 = Smogulg
+VAR.LWP1 = Snog
+VAR.LWP1 = Snubub
+VAR.LWP1 = Snugug
+VAR.LWP1 = Sodagh
+VAR.LWP1 = Sog
+VAR.LWP1 = Sogorim
+VAR.LWP1 = Sogugbu
+VAR.LWP1 = Sogugh
+VAR.LWP1 = Sombilge
+VAR.LWP1 = Somigig
+VAR.LWP1 = Sonagh
+VAR.LWP1 = Sorgulg
+VAR.LWP1 = Sornaraugh
+VAR.LWP1 = Soughat
+VAR.LWP1 = Spathu
+VAR.LWP1 = Speghat
+VAR.LWP1 = Spilge
+VAR.LWP1 = Spoguk
+VAR.LWP1 = Squagan
+VAR.LWP1 = Stugbu
+VAR.LWP1 = Sudagog
+VAR.LWP1 = Sugarod
+VAR.LWP1 = Sugbu
+VAR.LWP1 = Sugha
+VAR.LWP1 = Sugigoth
+VAR.LWP1 = Sugorim
+VAR.LWP1 = Suhgan
+VAR.LWP1 = Sulgha
+VAR.LWP1 = Sulmthu
+VAR.LWP1 = Sumhug
+VAR.LWP1 = Sunodagh
+VAR.LWP1 = Sunuguk
+VAR.LWP1 = Supaugh
+VAR.LWP1 = Supgugh
+VAR.LWP1 = Surbag
+VAR.LWP1 = Surgha
+VAR.LWP1 = Surghed
+VAR.LWP1 = Surgug
+VAR.LWP1 = Surpigig
+VAR.LWP1 = Tagdud
+VAR.LWP1 = Taghig
+VAR.LWP1 = Tandagh
+VAR.LWP1 = Tarfu
+VAR.LWP1 = Targhed
+VAR.LWP1 = Targigoth
+VAR.LWP1 = Tarod
+VAR.LWP1 = Taugh
+VAR.LWP1 = Teldgulg
+VAR.LWP1 = Tidgug
+VAR.LWP1 = Tilge
+VAR.LWP1 = Todagog
+VAR.LWP1 = Tog
+VAR.LWP1 = Toghat
+VAR.LWP1 = Togugh
+VAR.LWP1 = Torgan
+VAR.LWP1 = Torug
+VAR.LWP1 = Tozhug
+VAR.LWP1 = Traugh
+VAR.LWP1 = Trilug
+VAR.LWP1 = Trougha
+VAR.LWP1 = Trugagh
+VAR.LWP1 = Truigig
+VAR.LWP1 = Tuggug
+VAR.LWP1 = Tulgan
+VAR.LWP1 = Turbag
+VAR.LWP1 = Turge
+VAR.LWP1 = Ulgan
+VAR.LWP1 = Ulmragha
+VAR.LWP1 = Ulmrougha
+VAR.LWP1 = Umhra
+VAR.LWP1 = Umragig
+VAR.LWP1 = Umruigig
+VAR.LWP1 = Ungagh
+VAR.LWP1 = Unrugagh
+VAR.LWP1 = Urag
+VAR.LWP1 = Uraugh
+VAR.LWP1 = Urg
+VAR.LWP1 = Urgan
+VAR.LWP1 = Urghat
+VAR.LWP1 = Urgran
+VAR.LWP1 = Urlgan
+VAR.LWP1 = Urmug
+VAR.LWP1 = Urug
+VAR.LWP1 = Urulg
+VAR.LWP1 = Vabugbu
+VAR.LWP1 = Vagan
+VAR.LWP1 = Vagrungad
+VAR.LWP1 = Vagungad
+VAR.LWP1 = Vakgar
+VAR.LWP1 = Vakgu
+VAR.LWP1 = Vakmu
+VAR.LWP1 = Valthurg
+VAR.LWP1 = Vambag
+VAR.LWP1 = Vamugbu
+VAR.LWP1 = Varbu
+VAR.LWP1 = Varbuk
+VAR.LWP1 = Varfu
+VAR.LWP1 = Vargan
+VAR.LWP1 = Varguk
+VAR.LWP1 = Varkgorim
+VAR.LWP1 = Varthurg
+VAR.LWP1 = Vegum
+VAR.LWP1 = Vergu
+VAR.LWP1 = Verlgu
+VAR.LWP1 = Verthag
+VAR.LWP1 = Verthurg
+VAR.LWP1 = Vetorkag
+VAR.LWP1 = Vidarok
+VAR.LWP1 = Vigdolg
+VAR.LWP1 = Vigdug
+VAR.LWP1 = Viggu
+VAR.LWP1 = Viggulm
+VAR.LWP1 = Viguka
+VAR.LWP1 = Vitgurat
+VAR.LWP1 = Vitgut
+VAR.LWP1 = Vlog
+VAR.LWP1 = Vlorg
+VAR.LWP1 = Vorgak
+VAR.LWP1 = Vorgarag
+VAR.LWP1 = Vothug
+VAR.LWP1 = Vregu
+VAR.LWP1 = Vretkag
+VAR.LWP1 = Vrigka
+VAR.LWP1 = Vrikdarok
+VAR.LWP1 = Vrogak
+VAR.LWP1 = Vrograg
+VAR.LWP1 = Vrothu
+VAR.LWP1 = Vruhag
+VAR.LWP1 = Vrutha
+VAR.LWP1 = Vubub
+VAR.LWP1 = Vugub
+VAR.LWP1 = Vuiltag
+VAR.LWP1 = Vukgilug
+VAR.LWP1 = Vultog
+VAR.LWP1 = Vulug
+VAR.LWP1 = Vurbag
+VAR.LWP1 = Wakgut
+VAR.LWP1 = Wanug
+VAR.LWP1 = Wapkagut
+VAR.LWP1 = Waruk
+VAR.LWP1 = Wauktug
+VAR.LWP1 = Wegub
+VAR.LWP1 = Welub
+VAR.LWP1 = Wholug
+VAR.LWP1 = Wilaktug
+VAR.LWP1 = Wingloug
+VAR.LWP1 = Winug
+VAR.LWP1 = Woabadug
+VAR.LWP1 = Woggha
+VAR.LWP1 = Woggugat
+VAR.LWP1 = Wogharod
+VAR.LWP1 = Woghuglat
+VAR.LWP1 = Woglug
+VAR.LWP1 = Wokganit
+VAR.LWP1 = Womkug
+VAR.LWP1 = Womrikug
+VAR.LWP1 = Wonabadug
+VAR.LWP1 = Worthag
+VAR.LWP1 = Wraog
+VAR.LWP1 = Wrug
+VAR.LWP1 = Wrukag
+VAR.LWP1 = Wrukaog
+VAR.LWP1 = Wubdagog
+VAR.LWP1 = Wudgh
+VAR.LWP1 = Wudhagh
+VAR.LWP1 = Wudugog
+VAR.LWP1 = Wuglat
+VAR.LWP1 = Wumanok
+VAR.LWP1 = Wumkbanok
+VAR.LWP1 = Wurgoth
+VAR.LWP1 = Wurmha
+VAR.LWP1 = Wurtguth
+VAR.LWP1 = Wurthu
+VAR.LWP1 = Wutgarek
+VAR.LWP1 = Xaakt
+VAR.LWP1 = Xago
+VAR.LWP1 = Xagok
+VAR.LWP1 = Xagu
+VAR.LWP1 = Xaguk
+VAR.LWP1 = Xarlug
+VAR.LWP1 = Xarpug
+VAR.LWP1 = Xegug
+VAR.LWP1 = Xepug
+VAR.LWP1 = Xig
+VAR.LWP1 = Xnath
+VAR.LWP1 = Xnaurl
+VAR.LWP1 = Xnurl
+VAR.LWP1 = Xoknath
+VAR.LWP1 = Xokuk
+VAR.LWP1 = Xolag
+VAR.LWP1 = Xolkug
+VAR.LWP1 = Xomath
+VAR.LWP1 = Xomkug
+VAR.LWP1 = Xomoku
+VAR.LWP1 = Xonoth
+VAR.LWP1 = Xorag
+VAR.LWP1 = Xorakk
+VAR.LWP1 = Xoroku
+VAR.LWP1 = Xoruk
+VAR.LWP1 = Xothkug
+VAR.LWP1 = Xruul
+VAR.LWP1 = Xuag
+VAR.LWP1 = Xug
+VAR.LWP1 = Xugaa
+VAR.LWP1 = Xugag
+VAR.LWP1 = Xugagug
+VAR.LWP1 = Xugar
+VAR.LWP1 = Xugarf
+VAR.LWP1 = Xugha
+VAR.LWP1 = Xugor
+VAR.LWP1 = Xugug
+VAR.LWP1 = Xujarek
+VAR.LWP1 = Xuk
+VAR.LWP1 = Xulgag
+VAR.LWP1 = Xunaakt
+VAR.LWP1 = Xunag
+VAR.LWP1 = Xunug
+VAR.LWP1 = Xurek
+VAR.LWP1 = Xurl
+VAR.LWP1 = Xurug
+VAR.LWP1 = Xurukk
+VAR.LWP1 = Xutag
+VAR.LWP1 = Xuthakug
+VAR.LWP1 = Xutjja
+VAR.LWP1 = Yaghed
+VAR.LWP1 = Yagnar
+VAR.LWP1 = Yagnatz
+VAR.LWP1 = Yahg
+VAR.LWP1 = Yahigig
+VAR.LWP1 = Yakgnath
+VAR.LWP1 = Yakha
+VAR.LWP1 = Yalakgh
+VAR.LWP1 = Yargug
+VAR.LWP1 = Yegigoth
+VAR.LWP1 = Yegoth
+VAR.LWP1 = Yerghug
+VAR.LWP1 = Yerug
+VAR.LWP1 = Ymafubag
+VAR.LWP1 = Yokgagu
+VAR.LWP1 = Yokgu
+VAR.LWP1 = Yolmar
+VAR.LWP1 = Yonkathu
+VAR.LWP1 = Yregh
+VAR.LWP1 = Yroh
+VAR.LWP1 = Ysagubar
+VAR.LWP1 = Yughragh
+VAR.LWP1 = Yugug
+VAR.LWP1 = Yukgnath
+VAR.LWP1 = Yukha
+VAR.LWP1 = Yulakgh
+VAR.LWP1 = Yunkathu
+VAR.LWP1 = Zabghat
+VAR.LWP1 = Zabub
+VAR.LWP1 = Zaghig
+VAR.LWP1 = Zahgigoth
+VAR.LWP1 = Zahgorim
+VAR.LWP1 = Zalthu
+VAR.LWP1 = Zaraugug
+VAR.LWP1 = Zarfu
+VAR.LWP1 = Zargulg
+VAR.LWP1 = Zarhbub
+VAR.LWP1 = Zarod
+VAR.LWP1 = Zeakgu
+VAR.LWP1 = Zguk
+VAR.LWP1 = Zildud
+VAR.LWP1 = Zilge
+VAR.LWP1 = Zilug
+VAR.LWP1 = Zinsbog
+VAR.LWP1 = Zlapdud
+VAR.LWP1 = Zlog
+VAR.LWP1 = Zlughig
+VAR.LWP1 = Zodagh
+VAR.LWP1 = Zog
+VAR.LWP1 = Zogugbu
+VAR.LWP1 = Zogugh
+VAR.LWP1 = Zombilge
+VAR.LWP1 = Zonagh
+VAR.LWP1 = Zorfu
+VAR.LWP1 = Zorgulg
+VAR.LWP1 = Zorhgigoth
+VAR.LWP1 = Zornaraugh
+VAR.LWP1 = Zoughat
+VAR.LWP1 = Zudagog
+VAR.LWP1 = Zugarod
+VAR.LWP1 = Zugbu
+VAR.LWP1 = Zugorim
+VAR.LWP1 = Zuhgan
+VAR.LWP1 = Zulgha
+VAR.LWP1 = Zulmthu
+VAR.LWP1 = Zumhug
+VAR.LWP1 = Zunodagh
+VAR.LWP1 = Zunuguk
+VAR.LWP1 = Zupaugh
+VAR.LWP1 = Zupgugh
+VAR.LWP1 = Zurbag
+VAR.LWP1 = Zurgha
+VAR.LWP1 = Zurghed
+VAR.LWP1 = Zurgug
+VAR.LWP1 = Zurpigig
+VAR.LWP1 = Adaneborn
+VAR.LWP1 = Adaneendil
+VAR.LWP1 = Adanehir
+VAR.LWP1 = Adanethin
+VAR.LWP1 = Aegcar
+VAR.LWP1 = Aegmor
+VAR.LWP1 = Aegnor
+VAR.LWP1 = Aegtor
+VAR.LWP1 = Aerandor
+VAR.LWP1 = Aeranion
+VAR.LWP1 = Amborn
+VAR.LWP1 = Amfin
+VAR.LWP1 = Amfindel
+VAR.LWP1 = Amgolfin
+VAR.LWP1 = Amthar
+VAR.LWP1 = Angcalion
+VAR.LWP1 = Angin
+VAR.LWP1 = Anglont
+VAR.LWP1 = Anndreth
+VAR.LWP1 = Annfindel
+VAR.LWP1 = Annhir
+VAR.LWP1 = Annred
+VAR.LWP1 = Araneg
+VAR.LWP1 = Aranelion
+VAR.LWP1 = Armidreth
+VAR.LWP1 = Armiduil
+VAR.LWP1 = Armieth
+VAR.LWP1 = Armiril
+VAR.LWP1 = Armirin
+VAR.LWP1 = Armithir
+VAR.LWP1 = Belael
+VAR.LWP1 = Belwain
+VAR.LWP1 = Bladordan
+VAR.LWP1 = Bladoril
+VAR.LWP1 = Bladorion
+VAR.LWP1 = Caranrod
+VAR.LWP1 = Caranthar
+VAR.LWP1 = Celeil
+VAR.LWP1 = Celenion
+VAR.LWP1 = Celerond
+VAR.LWP1 = Celeros
+VAR.LWP1 = Celethin
+VAR.LWP1 = Celethir
+VAR.LWP1 = Cuerdir
+VAR.LWP1 = Cuerdreth
+VAR.LWP1 = Cuerduil
+VAR.LWP1 = Cuermor
+VAR.LWP1 = Daeeth
+VAR.LWP1 = Daegon
+VAR.LWP1 = Daenion
+VAR.LWP1 = Deneandil
+VAR.LWP1 = Denedan
+VAR.LWP1 = Denedreth
+VAR.LWP1 = Denered
+VAR.LWP1 = Denerod
+VAR.LWP1 = Eardor
+VAR.LWP1 = Earion
+VAR.LWP1 = Earril
+VAR.LWP1 = Ecthael
+VAR.LWP1 = Ecthhil
+VAR.LWP1 = Ecthril
+VAR.LWP1 = Ecthros
+VAR.LWP1 = Ecththel
+VAR.LWP1 = Edrafindel
+VAR.LWP1 = Edramor
+VAR.LWP1 = Edrathar
+VAR.LWP1 = Eldagolfin
+VAR.LWP1 = Eldalas
+VAR.LWP1 = Eldaphin
+VAR.LWP1 = Eldarduil
+VAR.LWP1 = Eldarphin
+VAR.LWP1 = Eldarrod
+VAR.LWP1 = Eldarthel
+VAR.LWP1 = Eldor
+VAR.LWP1 = Eldreth
+VAR.LWP1 = Ellaeg
+VAR.LWP1 = Ellafinwe
+VAR.LWP1 = Ellathar
+VAR.LWP1 = Elphin
+VAR.LWP1 = Elroandil
+VAR.LWP1 = Elrohil
+VAR.LWP1 = Elrorandir
+VAR.LWP1 = Elroras
+VAR.LWP1 = Eltan
+VAR.LWP1 = Eludhel
+VAR.LWP1 = Elunaro
+VAR.LWP1 = Eluthar
+VAR.LWP1 = Eluthol
+VAR.LWP1 = Eluwe
+VAR.LWP1 = Eolcar
+VAR.LWP1 = Eolgon
+VAR.LWP1 = Eolhros
+VAR.LWP1 = Eoltan
+VAR.LWP1 = Ereihir
+VAR.LWP1 = Ereithel
+VAR.LWP1 = Erelandil
+VAR.LWP1 = Erelgalad
+VAR.LWP1 = Erelhir
+VAR.LWP1 = Erelnion
+VAR.LWP1 = Erelroth
+VAR.LWP1 = Erelthin
+VAR.LWP1 = Eresdan
+VAR.LWP1 = Eresgolfin
+VAR.LWP1 = Ereslas
+VAR.LWP1 = Eresnas
+VAR.LWP1 = Falabrimbor
+VAR.LWP1 = Falaros
+VAR.LWP1 = Fanuicalion
+VAR.LWP1 = Fanuidhel
+VAR.LWP1 = Fanuifin
+VAR.LWP1 = Fanuirond
+VAR.LWP1 = Fanuithel
+VAR.LWP1 = Feaandil
+VAR.LWP1 = Feathin
+VAR.LWP1 = Feathol
+VAR.LWP1 = Feator
+VAR.LWP1 = Finacalion
+VAR.LWP1 = Finaquendi
+VAR.LWP1 = Finarael
+VAR.LWP1 = Finarion
+VAR.LWP1 = Finarmor
+VAR.LWP1 = Finarod
+VAR.LWP1 = Finarrin
+VAR.LWP1 = Finartan
+VAR.LWP1 = Finhir
+VAR.LWP1 = Finlas
+VAR.LWP1 = Finthin
+VAR.LWP1 = Galandil
+VAR.LWP1 = Galdhel
+VAR.LWP1 = Galdhol
+VAR.LWP1 = Galrandir
+VAR.LWP1 = Galroth
+VAR.LWP1 = Gelnor
+VAR.LWP1 = Gelrandir
+VAR.LWP1 = Gelrin
+VAR.LWP1 = Geltan
+VAR.LWP1 = Gilael
+VAR.LWP1 = Gildreth
+VAR.LWP1 = Gileth
+VAR.LWP1 = Gilnion
+VAR.LWP1 = Gilthol
+VAR.LWP1 = Glorborn
+VAR.LWP1 = Gloreth
+VAR.LWP1 = Glorgalad
+VAR.LWP1 = Glorhil
+VAR.LWP1 = Glornion
+VAR.LWP1 = Glorphin
+VAR.LWP1 = Gorhros
+VAR.LWP1 = Gorlas
+VAR.LWP1 = Guildan
+VAR.LWP1 = Guildhol
+VAR.LWP1 = Guileg
+VAR.LWP1 = Guilgalad
+VAR.LWP1 = Guilgorm
+VAR.LWP1 = Guilrod
+VAR.LWP1 = Guilthel
+VAR.LWP1 = Gwinandil
+VAR.LWP1 = Gwincar
+VAR.LWP1 = Gwingon
+VAR.LWP1 = Gwinil
+VAR.LWP1 = Gwinnas
+VAR.LWP1 = Gwinthel
+VAR.LWP1 = Gwinthol
+VAR.LWP1 = Halael
+VAR.LWP1 = Haldhol
+VAR.LWP1 = Haleth
+VAR.LWP1 = Halfinwe
+VAR.LWP1 = Harhir
+VAR.LWP1 = Harrond
+VAR.LWP1 = Hathaldhol
+VAR.LWP1 = Hathaldir
+VAR.LWP1 = Hathalelion
+VAR.LWP1 = Hathalfinwe
+VAR.LWP1 = Idandil
+VAR.LWP1 = Iddir
+VAR.LWP1 = Idfindel
+VAR.LWP1 = Idgalad
+VAR.LWP1 = Idlont
+VAR.LWP1 = Idquendi
+VAR.LWP1 = Idthin
+VAR.LWP1 = Larfinwe
+VAR.LWP1 = Largil
+VAR.LWP1 = Larquendi
+VAR.LWP1 = Legodor
+VAR.LWP1 = Legothin
+VAR.LWP1 = Legothir
+VAR.LWP1 = Linael
+VAR.LWP1 = Lineg
+VAR.LWP1 = Lineth
+VAR.LWP1 = Linhil
+VAR.LWP1 = Linlont
+VAR.LWP1 = Linron
+VAR.LWP1 = Maedael
+VAR.LWP1 = Maedin
+VAR.LWP1 = Mahbrimbor
+VAR.LWP1 = Mahelion
+VAR.LWP1 = Mahil
+VAR.LWP1 = Mahnor
+VAR.LWP1 = Mahthol
+VAR.LWP1 = Mahwe
+VAR.LWP1 = Mithdhol
+VAR.LWP1 = Mithdor
+VAR.LWP1 = Mithgil
+VAR.LWP1 = Mithgorm
+VAR.LWP1 = Mithhir
+VAR.LWP1 = Mithmir
+VAR.LWP1 = Mithphin
+VAR.LWP1 = Mithras
+VAR.LWP1 = Mithroth
+VAR.LWP1 = Olelion
+VAR.LWP1 = Olphin
+VAR.LWP1 = Orofinwe
+VAR.LWP1 = Orohil
+VAR.LWP1 = Oroil
+VAR.LWP1 = Oronor
+VAR.LWP1 = Rumnaro
+VAR.LWP1 = Saefin
+VAR.LWP1 = Saegalad
+VAR.LWP1 = Saegon
+VAR.LWP1 = Saehros
+VAR.LWP1 = Saenaro
+VAR.LWP1 = Thoronendil
+VAR.LWP1 = Thoroneth
+VAR.LWP1 = Thoronfin
+VAR.LWP1 = Thoronthar
+VAR.LWP1 = Thorontor
+VAR.LWP1 = Thranfindel
+VAR.LWP1 = Thranras
+VAR.LWP1 = Thrantan
+VAR.LWP1 = Thranthin
+VAR.LWP1 = Turtan
+VAR.LWP1 = Urfindel
+VAR.LWP1 = Urlont
+VAR.LWP1 = Urnor
+VAR.LWP1 = Urtor
+VAR.LWP1 = Vorongorm
+VAR.LWP1 = Voronrandir
+VAR.LWP1 = Voronron
+VAR.LWP1 = Voronthar
+VAR.LWP1 = Voronthol
+VAR.LWP1 = Voronwain
+VAR.LWP1 = Alatadir
+VAR.LWP1 = Alatalorian
+VAR.LWP1 = Alatamire
+VAR.LWP1 = Alataniel
+VAR.LWP1 = Alatariel
+VAR.LWP1 = Alatathiel
+VAR.LWP1 = Alatawe
+VAR.LWP1 = Amadhel
+VAR.LWP1 = Amahil
+VAR.LWP1 = Amahriel
+VAR.LWP1 = Amailde
+VAR.LWP1 = Amareth
+VAR.LWP1 = Amariel
+VAR.LWP1 = Amathil
+VAR.LWP1 = Amawing
+VAR.LWP1 = Ardir
+VAR.LWP1 = Ardomiel
+VAR.LWP1 = Arebrian
+VAR.LWP1 = Aredir
+VAR.LWP1 = Arehriel
+VAR.LWP1 = Arereth
+VAR.LWP1 = Areriel
+VAR.LWP1 = Arerodel
+VAR.LWP1 = Arewe
+VAR.LWP1 = Arewen
+VAR.LWP1 = Ar-feidhel
+VAR.LWP1 = Ar-feihil
+VAR.LWP1 = Ar-feiiel
+VAR.LWP1 = Ar-feiilde
+VAR.LWP1 = Ar-feinor
+VAR.LWP1 = Arloth
+VAR.LWP1 = Arthien
+VAR.LWP1 = Berudhel
+VAR.LWP1 = Berudomiel
+VAR.LWP1 = Berudwa
+VAR.LWP1 = Berumire
+VAR.LWP1 = Beruniel
+VAR.LWP1 = Beruthiel
+VAR.LWP1 = Beruthil
+VAR.LWP1 = Celedwa
+VAR.LWP1 = Celeilde
+VAR.LWP1 = Celelaith
+VAR.LWP1 = Celelorian
+VAR.LWP1 = Celenor
+VAR.LWP1 = Celethil
+VAR.LWP1 = Celewe
+VAR.LWP1 = Celewen
+VAR.LWP1 = Eilidhel
+VAR.LWP1 = Eilidir
+VAR.LWP1 = Eilidwa
+VAR.LWP1 = Eilihil
+VAR.LWP1 = Eililorian
+VAR.LWP1 = Eiliwing
+VAR.LWP1 = Elbeilde
+VAR.LWP1 = Elbemire
+VAR.LWP1 = Elbenor
+VAR.LWP1 = Elberodel
+VAR.LWP1 = Elbethien
+VAR.LWP1 = Elbethil
+VAR.LWP1 = Eldhel
+VAR.LWP1 = Eldir
+VAR.LWP1 = Eldomiel
+VAR.LWP1 = Elemdir
+VAR.LWP1 = Elemdomiel
+VAR.LWP1 = Elemhriel
+VAR.LWP1 = Elemiel
+VAR.LWP1 = Elemilde
+VAR.LWP1 = Elemille
+VAR.LWP1 = Elemlorian
+VAR.LWP1 = Elemriel
+VAR.LWP1 = Elemwe
+VAR.LWP1 = Elemwen
+VAR.LWP1 = Elendwa
+VAR.LWP1 = Elenhriel
+VAR.LWP1 = Elenille
+VAR.LWP1 = Elenlorian
+VAR.LWP1 = Elenloth
+VAR.LWP1 = Elenniel
+VAR.LWP1 = Elenrie
+VAR.LWP1 = Elenriel
+VAR.LWP1 = Elenthien
+VAR.LWP1 = Elenthil
+VAR.LWP1 = Elilde
+VAR.LWP1 = Ellaith
+VAR.LWP1 = Ellorian
+VAR.LWP1 = Elniel
+VAR.LWP1 = Elnor
+VAR.LWP1 = Elreth
+VAR.LWP1 = Elrodel
+VAR.LWP1 = Elthiel
+VAR.LWP1 = Elwing
+VAR.LWP1 = Emelbrian
+VAR.LWP1 = Emeldomiel
+VAR.LWP1 = Emelhil
+VAR.LWP1 = Emelille
+VAR.LWP1 = Emellorian
+VAR.LWP1 = Emelriel
+VAR.LWP1 = Emelwing
+VAR.LWP1 = Eolbrian
+VAR.LWP1 = Eoldomiel
+VAR.LWP1 = Eoldwa
+VAR.LWP1 = Eolhriel
+VAR.LWP1 = Eollorian
+VAR.LWP1 = Eolloth
+VAR.LWP1 = Eolniel
+VAR.LWP1 = Eolwen
+VAR.LWP1 = Fimbredir
+VAR.LWP1 = Fimbredomiel
+VAR.LWP1 = Fimbrehriel
+VAR.LWP1 = Fimbrelorian
+VAR.LWP1 = Fimbreniel
+VAR.LWP1 = Fimbrethil
+VAR.LWP1 = Fimbrewe
+VAR.LWP1 = Fimbrewing
+VAR.LWP1 = Galaddomiel
+VAR.LWP1 = Galadhriel
+VAR.LWP1 = Galadilde
+VAR.LWP1 = Galadniel
+VAR.LWP1 = Galadriel
+VAR.LWP1 = Galadrodel
+VAR.LWP1 = Gloreanel
+VAR.LWP1 = Glorebrian
+VAR.LWP1 = Gloredhel
+VAR.LWP1 = Gloredomiel
+VAR.LWP1 = Gloredwa
+VAR.LWP1 = Glorehriel
+VAR.LWP1 = Glorelaith
+VAR.LWP1 = Glorerodel
+VAR.LWP1 = Glorethien
+VAR.LWP1 = Glorewing
+VAR.LWP1 = Itardwa
+VAR.LWP1 = Itarhriel
+VAR.LWP1 = Itarilde
+VAR.LWP1 = Itarille
+VAR.LWP1 = Itarnor
+VAR.LWP1 = Itarthien
+VAR.LWP1 = Itarthil
+VAR.LWP1 = Itarwen
+VAR.LWP1 = Ladwa
+VAR.LWP1 = Lahil
+VAR.LWP1 = Lathil
+VAR.LWP1 = Ludhel
+VAR.LWP1 = Luhil
+VAR.LWP1 = Luiel
+VAR.LWP1 = Luilde
+VAR.LWP1 = Lulorian
+VAR.LWP1 = Luriel
+VAR.LWP1 = Luthien
+VAR.LWP1 = Luthil
+VAR.LWP1 = Luwen
+VAR.LWP1 = Luwing
+VAR.LWP1 = Mirbrian
+VAR.LWP1 = Mirdir
+VAR.LWP1 = Mirdwa
+VAR.LWP1 = Mirhil
+VAR.LWP1 = Mirhriel
+VAR.LWP1 = Miriel
+VAR.LWP1 = Mirilde
+VAR.LWP1 = Mirille
+VAR.LWP1 = Mirlaith
+VAR.LWP1 = Mirloth
+VAR.LWP1 = Mirniel
+VAR.LWP1 = Mirnor
+VAR.LWP1 = Mirrodel
+VAR.LWP1 = Mirthien
+VAR.LWP1 = Mirwen
+VAR.LWP1 = Mirwing
+VAR.LWP1 = Nerdilde
+VAR.LWP1 = Nerdnor
+VAR.LWP1 = Nerdreth
+VAR.LWP1 = Nerdrodel
+VAR.LWP1 = Nerdthil
+VAR.LWP1 = Nerdwing
+VAR.LWP1 = Nieanel
+VAR.LWP1 = Niehil
+VAR.LWP1 = Niehriel
+VAR.LWP1 = Nieilde
+VAR.LWP1 = Nielorian
+VAR.LWP1 = Niemire
+VAR.LWP1 = Nieniel
+VAR.LWP1 = Nienor
+VAR.LWP1 = Nierodel
+VAR.LWP1 = Niewen
+VAR.LWP1 = Niewing
+VAR.LWP1 = Nimanel
+VAR.LWP1 = Nimdhel
+VAR.LWP1 = Nimniel
+VAR.LWP1 = Nimthien
+VAR.LWP1 = Nimwe
+VAR.LWP1 = Nindhel
+VAR.LWP1 = Nindir
+VAR.LWP1 = Ninlaith
+VAR.LWP1 = Ninmire
+VAR.LWP1 = Ninthil
+VAR.LWP1 = Ninwing
+VAR.LWP1 = Sirinlorian
+VAR.LWP1 = Sirinloth
+VAR.LWP1 = Sirinmire
+VAR.LWP1 = Sirinniel
+VAR.LWP1 = Sirinreth
+VAR.LWP1 = Sirinthil
+VAR.LWP1 = Sirinwing
+VAR.LWP1 = Undir
+VAR.LWP1 = Unhriel
+VAR.LWP1 = Unille
+VAR.LWP1 = Unniel
+VAR.LWP1 = Unwing
+VAR.LWP1 = Alegrot
+VAR.LWP1 = Andnon
+VAR.LWP1 = Andwart
+VAR.LWP1 = Ashbomb
+VAR.LWP1 = Bargebat
+VAR.LWP1 = Bargefilth
+VAR.LWP1 = Barner
+VAR.LWP1 = Bartgreen
+VAR.LWP1 = Batdeg
+VAR.LWP1 = Batmid
+VAR.LWP1 = Begle
+VAR.LWP1 = Beslime
+VAR.LWP1 = Bigrit
+VAR.LWP1 = Bingartle
+VAR.LWP1 = Bintark
+VAR.LWP1 = Binwipe
+VAR.LWP1 = Bittigrim
+VAR.LWP1 = Bittikil
+VAR.LWP1 = Bittipain
+VAR.LWP1 = Biwaz
+VAR.LWP1 = Blodgag
+VAR.LWP1 = Blodgru
+VAR.LWP1 = Blodverf
+VAR.LWP1 = Bloodwaz
+VAR.LWP1 = Bolbnacker
+VAR.LWP1 = Bomb
+VAR.LWP1 = Bombgru
+VAR.LWP1 = Bottom
+VAR.LWP1 = Boyer
+VAR.LWP1 = Boyker
+VAR.LWP1 = Bref
+VAR.LWP1 = Brefbok
+VAR.LWP1 = Brefni
+VAR.LWP1 = Brittlegrunt
+VAR.LWP1 = Brittlerock
+VAR.LWP1 = Brittlhurt
+VAR.LWP1 = Bugbitti
+VAR.LWP1 = Bumex
+VAR.LWP1 = Bumlip
+VAR.LWP1 = Bumrock
+VAR.LWP1 = Burrex
+VAR.LWP1 = Butt
+VAR.LWP1 = Buttbarge
+VAR.LWP1 = Buttbok
+VAR.LWP1 = Buttker
+VAR.LWP1 = Buttmid
+VAR.LWP1 = Buttwaz
+VAR.LWP1 = Buybeetle
+VAR.LWP1 = Buyfrad
+VAR.LWP1 = Buyslig
+VAR.LWP1 = Carclib
+VAR.LWP1 = Carhurt
+VAR.LWP1 = Chestslime
+VAR.LWP1 = Clibithy
+VAR.LWP1 = Clobbergrit
+VAR.LWP1 = Clutz
+VAR.LWP1 = Clutzottle
+VAR.LWP1 = Cotzu
+VAR.LWP1 = Daggrowl
+VAR.LWP1 = Dagturd
+VAR.LWP1 = Dagymuck
+VAR.LWP1 = Darkbref
+VAR.LWP1 = Deg
+VAR.LWP1 = Dergzug
+VAR.LWP1 = Dested
+VAR.LWP1 = Destu
+VAR.LWP1 = Destundy
+VAR.LWP1 = Dhakdum
+VAR.LWP1 = Diggybum
+VAR.LWP1 = Dipgree
+VAR.LWP1 = Dipgrit
+VAR.LWP1 = Dirkgan
+VAR.LWP1 = Dirkundy
+VAR.LWP1 = Dirtgrit
+VAR.LWP1 = Dirthurt
+VAR.LWP1 = Dirtmuck
+VAR.LWP1 = Dirtskank
+VAR.LWP1 = Dirtyyert
+VAR.LWP1 = Dug
+VAR.LWP1 = Dugclutz
+VAR.LWP1 = Dugdead
+VAR.LWP1 = Duggle
+VAR.LWP1 = Duggygrot
+VAR.LWP1 = Duggyyert
+VAR.LWP1 = Dumgree
+VAR.LWP1 = Dumgutt
+VAR.LWP1 = Edmoggy
+VAR.LWP1 = Erbe
+VAR.LWP1 = Erllip
+VAR.LWP1 = Erlnail
+VAR.LWP1 = Erlpork
+VAR.LWP1 = Erlsnuff
+VAR.LWP1 = Ert
+VAR.LWP1 = Exlard
+VAR.LWP1 = Exmorn
+VAR.LWP1 = Eybok
+VAR.LWP1 = Eylard
+VAR.LWP1 = Fadfoot
+VAR.LWP1 = Fadgood
+VAR.LWP1 = Fang
+VAR.LWP1 = Fangdeg
+VAR.LWP1 = Fangfoot
+VAR.LWP1 = Fanggle
+VAR.LWP1 = Fanggrime
+VAR.LWP1 = Farbart
+VAR.LWP1 = Farbyboy
+VAR.LWP1 = Fartyey
+VAR.LWP1 = Fartygrime
+VAR.LWP1 = Fartymuck
+VAR.LWP1 = Fartysnot
+VAR.LWP1 = Fatgrit
+VAR.LWP1 = Fattyey
+VAR.LWP1 = Fattygood
+VAR.LWP1 = Fattymeg
+VAR.LWP1 = Fattynacker
+VAR.LWP1 = Fattyster
+VAR.LWP1 = Filthnose
+VAR.LWP1 = Filthyert
+VAR.LWP1 = Filthyex
+VAR.LWP1 = Filthyguss
+VAR.LWP1 = Filthysnak
+VAR.LWP1 = Footungy
+VAR.LWP1 = Footwaste
+VAR.LWP1 = Fraddirk
+VAR.LWP1 = Fradhed
+VAR.LWP1 = Fradsludge
+VAR.LWP1 = Fragbe
+VAR.LWP1 = Fragdug
+VAR.LWP1 = Frakgutt
+VAR.LWP1 = Fraksnot
+VAR.LWP1 = Frakthe
+VAR.LWP1 = Frightbum
+VAR.LWP1 = Frightturd
+VAR.LWP1 = Frumsart
+VAR.LWP1 = Frumsludge
+VAR.LWP1 = Gabyee
+VAR.LWP1 = Gagbe
+VAR.LWP1 = Gagfad
+VAR.LWP1 = Gagly
+VAR.LWP1 = Gagwipe
+VAR.LWP1 = Ganteg
+VAR.LWP1 = Gartlebomb
+VAR.LWP1 = Ghulbutt
+VAR.LWP1 = Ghulerl
+VAR.LWP1 = Ghulwipe
+VAR.LWP1 = Gimpkiller
+VAR.LWP1 = Gitcat
+VAR.LWP1 = Githed
+VAR.LWP1 = Gitmoggy
+VAR.LWP1 = Gitnon
+VAR.LWP1 = Gitteg
+VAR.LWP1 = Glekun
+VAR.LWP1 = Glemeg
+VAR.LWP1 = Gleoz
+VAR.LWP1 = Goobarty
+VAR.LWP1 = Goorock
+VAR.LWP1 = Gorgolbottom
+VAR.LWP1 = Gorgolcat
+VAR.LWP1 = Gorgolkun
+VAR.LWP1 = Gorgolslime
+VAR.LWP1 = Grakabok
+VAR.LWP1 = Grakaert
+VAR.LWP1 = Grakaotis
+VAR.LWP1 = Grakapipi
+VAR.LWP1 = Greenblod
+VAR.LWP1 = Greendark
+VAR.LWP1 = Greenithy
+VAR.LWP1 = Greenrung
+VAR.LWP1 = Greeork
+VAR.LWP1 = Greeoz
+VAR.LWP1 = Grilldirty
+VAR.LWP1 = Grilldug
+VAR.LWP1 = Grillhorned
+VAR.LWP1 = Grillu
+VAR.LWP1 = Grimcrack
+VAR.LWP1 = Grimdeg
+VAR.LWP1 = Grimevomit
+VAR.LWP1 = Grimsqui
+VAR.LWP1 = Grimydagy
+VAR.LWP1 = Grimyskeg
+VAR.LWP1 = Grinu
+VAR.LWP1 = Gritdead
+VAR.LWP1 = Gritgreen
+VAR.LWP1 = Gritguck
+VAR.LWP1 = Grogdiggy
+VAR.LWP1 = Grolwaste
+VAR.LWP1 = Grosedark
+VAR.LWP1 = Groseteg
+VAR.LWP1 = Grotgun
+VAR.LWP1 = Grotrat
+VAR.LWP1 = Growldead
+VAR.LWP1 = Growley
+VAR.LWP1 = Growlgrot
+VAR.LWP1 = Growlmorn
+VAR.LWP1 = Growlpiss
+VAR.LWP1 = Grule
+VAR.LWP1 = Grulemoggy
+VAR.LWP1 = Grulldeg
+VAR.LWP1 = Gruntrat
+VAR.LWP1 = Grutbeer
+VAR.LWP1 = Grutderg
+VAR.LWP1 = Grutpuke
+VAR.LWP1 = Grutsarg
+VAR.LWP1 = Gruurt
+VAR.LWP1 = Guckrat
+VAR.LWP1 = Gun
+VAR.LWP1 = Gunbarrel
+VAR.LWP1 = Gunbrittl
+VAR.LWP1 = Gungag
+VAR.LWP1 = Gunsqui
+VAR.LWP1 = Guss
+VAR.LWP1 = Gutt
+VAR.LWP1 = Guttwee
+VAR.LWP1 = Guttwipe
+VAR.LWP1 = Hangwipe
+VAR.LWP1 = Hooert
+VAR.LWP1 = Hoosnot
+VAR.LWP1 = Hornedwee
+VAR.LWP1 = Humi
+VAR.LWP1 = Humidum
+VAR.LWP1 = Humihorned
+VAR.LWP1 = Humijohd
+VAR.LWP1 = Humisarg
+VAR.LWP1 = Hurtdagy
+VAR.LWP1 = Hurtfad
+VAR.LWP1 = Hurtnar
+VAR.LWP1 = Hurtsnot
+VAR.LWP1 = Hurtyed
+VAR.LWP1 = Ickywaz
+VAR.LWP1 = Iggrunt
+VAR.LWP1 = Iggybi
+VAR.LWP1 = Iggycrack
+VAR.LWP1 = Inhurt
+VAR.LWP1 = Insnuff
+VAR.LWP1 = Ithyrung
+VAR.LWP1 = Johdscabby
+VAR.LWP1 = Kargchest
+VAR.LWP1 = Kargkeg
+VAR.LWP1 = Karglard
+VAR.LWP1 = Kegdeg
+VAR.LWP1 = Kilguss
+VAR.LWP1 = Killy
+VAR.LWP1 = Killybarrel
+VAR.LWP1 = Killywimpy
+VAR.LWP1 = Kilrung
+VAR.LWP1 = Krulldirg
+VAR.LWP1 = Krullfoot
+VAR.LWP1 = Krullsludge
+VAR.LWP1 = Krullurt
+VAR.LWP1 = Kunlard
+VAR.LWP1 = Laddead
+VAR.LWP1 = Laddead
+VAR.LWP1 = Lardurt
+VAR.LWP1 = Leert
+VAR.LWP1 = Legrog
+VAR.LWP1 = Lencepuss
+VAR.LWP1 = Lerhock
+VAR.LWP1 = Lerhuck
+VAR.LWP1 = Lerhunx
+VAR.LWP1 = Leyert
+VAR.LWP1 = Lip
+VAR.LWP1 = Lipdiggy
+VAR.LWP1 = Marlbeetle
+VAR.LWP1 = Marlgorgol
+VAR.LWP1 = Marluzi
+VAR.LWP1 = Meanbolb
+VAR.LWP1 = Meanmuck
+VAR.LWP1 = Meanrung
+VAR.LWP1 = Megcrack
+VAR.LWP1 = Meggle
+VAR.LWP1 = Midcrik
+VAR.LWP1 = Midsluck
+VAR.LWP1 = Midslurp
+VAR.LWP1 = Miggyplop
+VAR.LWP1 = Miggypuss
+VAR.LWP1 = Miggystrong
+VAR.LWP1 = Miggyzar
+VAR.LWP1 = Moggygle
+VAR.LWP1 = Morfilth
+VAR.LWP1 = Morkslag
+VAR.LWP1 = Morn
+VAR.LWP1 = Mornkiller
+VAR.LWP1 = Morpump
+VAR.LWP1 = Moryee
+VAR.LWP1 = Mud
+VAR.LWP1 = Muddeg
+VAR.LWP1 = Mudugly
+VAR.LWP1 = Nackerzed
+VAR.LWP1 = Nail
+VAR.LWP1 = Nailgrule
+VAR.LWP1 = Nailhed
+VAR.LWP1 = Nailurt
+VAR.LWP1 = Narbomb
+VAR.LWP1 = Nargbutt
+VAR.LWP1 = Nargfud
+VAR.LWP1 = Nargstrong
+VAR.LWP1 = Nargwipe
+VAR.LWP1 = Nazvomit
+VAR.LWP1 = Nonfatty
+VAR.LWP1 = Nonsarg
+VAR.LWP1 = Noose
+VAR.LWP1 = Nooseguck
+VAR.LWP1 = Noosenail
+VAR.LWP1 = Nooseungy
+VAR.LWP1 = Nooseyert
+VAR.LWP1 = Nosebref
+VAR.LWP1 = Nosecat
+VAR.LWP1 = Noseclobber
+VAR.LWP1 = Noselard
+VAR.LWP1 = Noserung
+VAR.LWP1 = Ogdead
+VAR.LWP1 = Ork
+VAR.LWP1 = Orkgrule
+VAR.LWP1 = Orkturd
+VAR.LWP1 = Othguss
+VAR.LWP1 = Otisslip
+VAR.LWP1 = Ottle
+VAR.LWP1 = Ottledug
+VAR.LWP1 = Oz
+VAR.LWP1 = Ozmid
+VAR.LWP1 = Ozmoggy
+VAR.LWP1 = Ozzed
+VAR.LWP1 = Painwart
+VAR.LWP1 = Parjflab
+VAR.LWP1 = Piffnose
+VAR.LWP1 = Pipicat
+VAR.LWP1 = Pipigloop
+VAR.LWP1 = Pipigrot
+VAR.LWP1 = Pipigrot
+VAR.LWP1 = Pipiwart
+VAR.LWP1 = Pissjohd
+VAR.LWP1 = Pleclutz
+VAR.LWP1 = Plegrill
+VAR.LWP1 = Plopurt
+VAR.LWP1 = Probdug
+VAR.LWP1 = Probhurt
+VAR.LWP1 = Probnail
+VAR.LWP1 = Probugly
+VAR.LWP1 = Pukebart
+VAR.LWP1 = Pukebe
+VAR.LWP1 = Pukenon
+VAR.LWP1 = Pukeslip
+VAR.LWP1 = Pulgrule
+VAR.LWP1 = Pulstak
+VAR.LWP1 = Pulungy
+VAR.LWP1 = Pulwipe
+VAR.LWP1 = Pumpfilth
+VAR.LWP1 = Pumpgrule
+VAR.LWP1 = Pumppiff
+VAR.LWP1 = Pumpwee
+VAR.LWP1 = Punchfrum
+VAR.LWP1 = Punchsnot
+VAR.LWP1 = Puss
+VAR.LWP1 = Pussgit
+VAR.LWP1 = Pussyert
+VAR.LWP1 = Radher
+VAR.LWP1 = Ragorgol
+VAR.LWP1 = Rapunch
+VAR.LWP1 = Rarddher
+VAR.LWP1 = Rardsludge
+VAR.LWP1 = Rardsnak
+VAR.LWP1 = Rardwast
+VAR.LWP1 = Rashak
+VAR.LWP1 = Rat
+VAR.LWP1 = Rat
+VAR.LWP1 = Ratwart
+VAR.LWP1 = Rockdug
+VAR.LWP1 = Rotlence
+VAR.LWP1 = Rotturd
+VAR.LWP1 = Rotwert
+VAR.LWP1 = Rungboy
+VAR.LWP1 = Rungert
+VAR.LWP1 = Rungwert
+VAR.LWP1 = Sarg
+VAR.LWP1 = Sargflok
+VAR.LWP1 = Sarglad
+VAR.LWP1 = Sartdeg
+VAR.LWP1 = Scabbybug
+VAR.LWP1 = Scabbybum
+VAR.LWP1 = Scabbygrut
+VAR.LWP1 = Scabbyscum
+VAR.LWP1 = Scabfatty
+VAR.LWP1 = Scumlad
+VAR.LWP1 = Shagbuy
+VAR.LWP1 = Shakguss
+VAR.LWP1 = Shakum
+VAR.LWP1 = Skankdead
+VAR.LWP1 = Skankerl
+VAR.LWP1 = Skankfud
+VAR.LWP1 = Skin
+VAR.LWP1 = Skindum
+VAR.LWP1 = Sliggrim
+VAR.LWP1 = Slimebe
+VAR.LWP1 = Slimebe
+VAR.LWP1 = Slimebutt
+VAR.LWP1 = Slimeguck
+VAR.LWP1 = Slimeoth
+VAR.LWP1 = Slimescum
+VAR.LWP1 = Sludge
+VAR.LWP1 = Sludgebart
+VAR.LWP1 = Sludgedug
+VAR.LWP1 = Sludgegrunt
+VAR.LWP1 = Smellbottom
+VAR.LWP1 = Smellgag
+VAR.LWP1 = Smigburr
+VAR.LWP1 = Smigdeg
+VAR.LWP1 = Snotbottom
+VAR.LWP1 = Snotguck
+VAR.LWP1 = Snuffchest
+VAR.LWP1 = Snufffud
+VAR.LWP1 = Snuffgit
+VAR.LWP1 = Squiundy
+VAR.LWP1 = Squized
+VAR.LWP1 = Stakdark
+VAR.LWP1 = Stakfrad
+VAR.LWP1 = Stakmeg
+VAR.LWP1 = Ster
+VAR.LWP1 = Sterkeg
+VAR.LWP1 = Stikdeg
+VAR.LWP1 = Stikhed
+VAR.LWP1 = Stikvom
+VAR.LWP1 = Strongcotz
+VAR.LWP1 = Targrimy
+VAR.LWP1 = Tarhumi
+VAR.LWP1 = Tarmuck
+VAR.LWP1 = Teg
+VAR.LWP1 = Tegfang
+VAR.LWP1 = Tegguss
+VAR.LWP1 = Theithy
+VAR.LWP1 = Thenar
+VAR.LWP1 = Theoz
+VAR.LWP1 = Trobfad
+VAR.LWP1 = Trobork
+VAR.LWP1 = Turddiggy
+VAR.LWP1 = Turdfang
+VAR.LWP1 = Turdsludge
+VAR.LWP1 = Ugaggag
+VAR.LWP1 = Uggag
+VAR.LWP1 = Uggnsnot
+VAR.LWP1 = Uglylard
+VAR.LWP1 = Umgag
+VAR.LWP1 = Undybitti
+VAR.LWP1 = Undyoz
+VAR.LWP1 = Undypiss
+VAR.LWP1 = Ungysarg
+VAR.LWP1 = Ungysnak
+VAR.LWP1 = Urtscum
+VAR.LWP1 = Uzbref
+VAR.LWP1 = Uzex
+VAR.LWP1 = Uzidum
+VAR.LWP1 = Uzigrot
+VAR.LWP1 = Uzkilly
+VAR.LWP1 = Uzu
+VAR.LWP1 = Verfbottom
+VAR.LWP1 = Verfbum
+VAR.LWP1 = Verffud
+VAR.LWP1 = Verfwipe
+VAR.LWP1 = Vertdead
+VAR.LWP1 = Vertgrimy
+VAR.LWP1 = Vombog
+VAR.LWP1 = Vomitgrot
+VAR.LWP1 = Vomityuk
+VAR.LWP1 = Vomityum
+VAR.LWP1 = Vomungy
+VAR.LWP1 = Wartbum
+VAR.LWP1 = Wastbutt
+VAR.LWP1 = Wastdirt
+VAR.LWP1 = Wastger
+VAR.LWP1 = Wastgrule
+VAR.LWP1 = Wasthumi
+VAR.LWP1 = Wastotis
+VAR.LWP1 = Wasttoof
+VAR.LWP1 = Wazhed
+VAR.LWP1 = Wazhumi
+VAR.LWP1 = Wee
+VAR.LWP1 = Weeziggy
+VAR.LWP1 = Wert
+VAR.LWP1 = Wertkiller
+VAR.LWP1 = Wimpyhang
+VAR.LWP1 = Wimpyuz
+VAR.LWP1 = Wingbarrel
+VAR.LWP1 = Wipeex
+VAR.LWP1 = Wipepuss
+VAR.LWP1 = Wipesnak
+VAR.LWP1 = Wipeyed
+VAR.LWP1 = Yackgree
+VAR.LWP1 = Yedgrime
+VAR.LWP1 = Yeegrule
+VAR.LWP1 = Yert
+VAR.LWP1 = Yertbref
+VAR.LWP1 = Yertfad
+VAR.LWP1 = Yertgag
+VAR.LWP1 = Yertgrule
+VAR.LWP1 = Zarnbomb
+VAR.LWP1 = Zarnkiller
+VAR.LWP1 = Zedmeg
+VAR.LWP1 = Ziggyhorned
+VAR.LWP1 = Zogstik
+VAR.LWP1 = Zugdug
+VAR.LWP1 = Zughumi
+VAR.LWP1 = Alegra
+VAR.LWP1 = Andrel
+VAR.LWP1 = Ankfar
+VAR.LWP1 = Ashkor
+VAR.LWP1 = Barlo
+VAR.LWP1 = Barskel
+VAR.LWP1 = Bathsheba
+VAR.LWP1 = Batmid
+VAR.LWP1 = Besmulch
+VAR.LWP1 = Birgdor
+VAR.LWP1 = Bingartus
+VAR.LWP1 = Binmelus
+VAR.LWP1 = Bitaska
+VAR.LWP1 = Bitrovius
+VAR.LWP1 = Bittipain
+VAR.LWP1 = Biwaggle
+VAR.LWP1 = Blodgellin
+VAR.LWP1 = Blodmorg
+VAR.LWP1 = Bloodsil
+VAR.LWP1 = Bodmilgen
+VAR.LWP1 = Bombgru
+VAR.LWP1 = Bothril
+VAR.LWP1 = Bowrig
+VAR.LWP1 = Boyker
+VAR.LWP1 = Brefly
+VAR.LWP1 = Brefbesh
+VAR.LWP1 = Brittlhurt
+VAR.LWP1 = Bugfleva
+VAR.LWP1 = Burrell
+VAR.LWP1 = Buttbok
+VAR.LWP1 = Buttlerg
+VAR.LWP1 = Buttwilken
+VAR.LWP1 = Buysamba
+VAR.LWP1 = Carcelias
+VAR.LWP1 = Carhurt
+VAR.LWP1 = Cheskilia
+VAR.LWP1 = Clibitha
+VAR.LWP1 = Clobbergrot
+VAR.LWP1 = Cotzul
+VAR.LWP1 = Daggerowl
+VAR.LWP1 = Dagturspin
+VAR.LWP1 = Darkbrefrin
+VAR.LWP1 = Deggus
+VAR.LWP1 = Dergzug
+VAR.LWP1 = Dested
+VAR.LWP1 = Destun
+VAR.LWP1 = Dhakdum
+VAR.LWP1 = Dippendus
+VAR.LWP1 = Dirkundy
+VAR.LWP1 = Domalian
+VAR.LWP1 = Dovilius
+VAR.LWP1 = Dugdead
+VAR.LWP1 = Duggle
+VAR.LWP1 = Dumgree
+VAR.LWP1 = Dumplemier
+VAR.LWP1 = Edmoggen
+VAR.LWP1 = Erbeckius
+VAR.LWP1 = Erlliphin
+VAR.LWP1 = Erthgor
+VAR.LWP1 = Exlariot
+VAR.LWP1 = Exmorn
+VAR.LWP1 = Eyboktik
+VAR.LWP1 = Eylarvet
+VAR.LWP1 = Fadril
+VAR.LWP1 = Fadmis
+VAR.LWP1 = Fangire
+VAR.LWP1 = Fangdes
+VAR.LWP1 = Fangfool
+VAR.LWP1 = Fanggles
+VAR.LWP1 = Fanggrime
+VAR.LWP1 = Farbur
+VAR.LWP1 = Farby
+VAR.LWP1 = Fatlegrit
+VAR.LWP1 = Filthasium
+VAR.LWP1 = Footungrus
+VAR.LWP1 = Fraddish
+VAR.LWP1 = Fradhell
+VAR.LWP1 = Fragbez
+VAR.LWP1 = Fragdex
+VAR.LWP1 = Frightbur
+VAR.LWP1 = Frightturd
+VAR.LWP1 = Frumsarl
+VAR.LWP1 = Frumslush
+VAR.LWP1 = Gabyee
+VAR.LWP1 = Gagbest
+VAR.LWP1 = Gagfarkus
+VAR.LWP1 = Ganteil
+VAR.LWP1 = Gartlebomb
+VAR.LWP1 = Ghulbugh
+VAR.LWP1 = Gitnoll
+VAR.LWP1 = Gleoz
+VAR.LWP1 = Goobarnal
+VAR.LWP1 = Gooroll
+VAR.LWP1 = Gorgolbot
+VAR.LWP1 = Gorgolkun
+VAR.LWP1 = Grakaboil
+VAR.LWP1 = Grakaert
+VAR.LWP1 = Greeoz
+VAR.LWP1 = Grenfoul
+VAR.LWP1 = Grilldirt
+VAR.LWP1 = Grilldust
+VAR.LWP1 = Grillhorus
+VAR.LWP1 = Grillu
+VAR.LWP1 = Grinubule
+VAR.LWP1 = Gritdeath
+VAR.LWP1 = Gritgrey
+VAR.LWP1 = Grolwa
+VAR.LWP1 = Grosedark
+VAR.LWP1 = Growlgroth
+VAR.LWP1 = Growlpeln
+VAR.LWP1 = Grulet
+VAR.LWP1 = Grulldeg
+VAR.LWP1 = Gunbarstik
+VAR.LWP1 = Gungaggle
+VAR.LWP1 = Gunslither
+VAR.LWP1 = Gusstile
+VAR.LWP1 = Guttench
+VAR.LWP1 = Hangwipe
+VAR.LWP1 = Hoorta
+VAR.LWP1 = Hoosnoki
+VAR.LWP1 = Humihorned
+VAR.LWP1 = Humijohd
+VAR.LWP1 = Ickwazi
+VAR.LWP1 = Iggrentis
+VAR.LWP1 = Iggbil
+VAR.LWP1 = Inhurtha
+VAR.LWP1 = Ithyrung
+VAR.LWP1 = Jilmias
+VAR.LWP1 = Johdscabby
+VAR.LWP1 = Kargcheta
+VAR.LWP1 = Kargkev
+VAR.LWP1 = Kegdel
+VAR.LWP1 = Kilguss
+VAR.LWP1 = Krulldirl
+VAR.LWP1 = Krullfoot
+VAR.LWP1 = Krullsludge
+VAR.LWP1 = Laddeal
+VAR.LWP1 = Lardurk
+VAR.LWP1 = Leernile
+VAR.LWP1 = Legrof
+VAR.LWP1 = Lerhock
+VAR.LWP1 = Lerhumeus
+VAR.LWP1 = Leyert
+VAR.LWP1 = Lippus
+VAR.LWP1 = Marlbeet
+VAR.LWP1 = Marlgorgos
+VAR.LWP1 = Marluspian
+VAR.LWP1 = Meanmuz
+VAR.LWP1 = Meanroil
+VAR.LWP1 = Meggus
+VAR.LWP1 = Midcrian
+VAR.LWP1 = Midslurg
+VAR.LWP1 = Miggyzar
+VAR.LWP1 = Moggle
+VAR.LWP1 = Morfilth
+VAR.LWP1 = Morpumus
+VAR.LWP1 = Moryen
+VAR.LWP1 = Mudge
+VAR.LWP1 = Nackerz
+VAR.LWP1 = Nailgru
+VAR.LWP1 = Narbomb
+VAR.LWP1 = Nargwipe
+VAR.LWP1 = Nazvomit
+VAR.LWP1 = Nonsart
+VAR.LWP1 = Noseclosset
+VAR.LWP1 = Ogdearth
+VAR.LWP1 = Othguss
+VAR.LWP1 = Otisslip
+VAR.LWP1 = Ozmis
+VAR.LWP1 = Ozmoggen
+VAR.LWP1 = Painwarin
+VAR.LWP1 = Parjflask
+VAR.LWP1 = Piffnosh
+VAR.LWP1 = Pipical
+VAR.LWP1 = Pleclum
+VAR.LWP1 = Plegrive
+VAR.LWP1 = Probugus
+VAR.LWP1 = Pulgrulich
+VAR.LWP1 = Radherm
+VAR.LWP1 = Ragorgot
+VAR.LWP1 = Rardherl
+VAR.LWP1 = Ratwart
+VAR.LWP1 = Rockdun
+VAR.LWP1 = Rotlenck
+VAR.LWP1 = Rotwerk
+VAR.LWP1 = Rungion
+VAR.LWP1 = Rungile
+VAR.LWP1 = Sargius
+VAR.LWP1 = Sartdelim
+VAR.LWP1 = Scabble
+VAR.LWP1 = Scumlax
+VAR.LWP1 = Shagbule
+VAR.LWP1 = Skinflek
+VAR.LWP1 = Skindux
+VAR.LWP1 = Sliggris
+VAR.LWP1 = Slimebeg
+VAR.LWP1 = Smigburg
+VAR.LWP1 = Smigdev
+VAR.LWP1 = Snuffgis
+VAR.LWP1 = Stakdarber
+VAR.LWP1 = Sterken
+VAR.LWP1 = Stikdeth
+VAR.LWP1 = Stikvom
+VAR.LWP1 = Targrimus
+VAR.LWP1 = Tarhumos
+VAR.LWP1 = Teggle
+VAR.LWP1 = Theither
+VAR.LWP1 = Turddigger
+VAR.LWP1 = Ugaggag
+VAR.LWP1 = Umgaggle
+VAR.LWP1 = Undyok
+VAR.LWP1 = Ungysarkus
+VAR.LWP1 = Uzex
+VAR.LWP1 = Uzidus
+VAR.LWP1 = Verfbotkus
+VAR.LWP1 = Verfbile
+VAR.LWP1 = Verfflux
+VAR.LWP1 = Vombor
+VAR.LWP1 = Vomungry
+VAR.LWP1 = Wartbuttle
+VAR.LWP1 = Wastdirk
+VAR.LWP1 = Wasttoof
+VAR.LWP1 = Weegbil
+VAR.LWP1 = Weezigger
+VAR.LWP1 = Wipeed
+VAR.LWP1 = Yackgres
+VAR.LWP1 = Yertful
+VAR.LWP1 = Yertgag
+VAR.LWP1 = Zarnbobble
+VAR.LWP1 = Zarnkis
+VAR.LWP1 = Zedmeni
+VAR.LWP1 = Zogstix
+VAR.LWP1 = Zughumi
+VAR.LWP1 = Abghar
+VAR.LWP1 = Adgulim
+VAR.LWP1 = Aghermus
+VAR.LWP1 = Agugug
+VAR.LWP1 = Agukin
+VAR.LWP1 = Almtug
+VAR.LWP1 = Alogin
+VAR.LWP1 = Ambiltig
+VAR.LWP1 = Apaugbun
+VAR.LWP1 = Arghar
+VAR.LWP1 = Argigos
+VAR.LWP1 = Auhgal
+VAR.LWP1 = Azhux
+VAR.LWP1 = Bagdun
+VAR.LWP1 = Baghig
+VAR.LWP1 = Bahgigol
+VAR.LWP1 = Bandaga
+VAR.LWP1 = Barfux
+VAR.LWP1 = Bargulga
+VAR.LWP1 = Bidguv
+VAR.LWP1 = Bildud
+VAR.LWP1 = Bilgez
+VAR.LWP1 = Bogbon
+VAR.LWP1 = Bogham
+VAR.LWP1 = Bogugh
+VAR.LWP1 = Borgaz
+VAR.LWP1 = Boruga
+VAR.LWP1 = Brougha
+VAR.LWP1 = Brugaga
+VAR.LWP1 = Bruigiv
+VAR.LWP1 = Buggug
+VAR.LWP1 = Builgex
+VAR.LWP1 = Bumhuv
+VAR.LWP1 = Buomaugh
+VAR.LWP1 = Cabugbug
+VAR.LWP1 = Cagal
+VAR.LWP1 = Cargus
+VAR.LWP1 = Cloggus
+VAR.LWP1 = Corgaval
+VAR.LWP1 = Crothus
+VAR.LWP1 = Cubum
+VAR.LWP1 = Dabug
+VAR.LWP1 = Dakgorus
+VAR.LWP1 = Dakgul
+VAR.LWP1 = Deakguv
+VAR.LWP1 = Dergur
+VAR.LWP1 = Dilug
+VAR.LWP1 = Ditgurasus
+VAR.LWP1 = Dorgarvil
+VAR.LWP1 = Dretkap
+VAR.LWP1 = Druthax
+VAR.LWP1 = Dugorissa
+VAR.LWP1 = Duiltax
+VAR.LWP1 = Durbar
+VAR.LWP1 = Eagun
+VAR.LWP1 = Egghaba
+VAR.LWP1 = Eichelberbog
+VAR.LWP1 = Ergost
+VAR.LWP1 = Ertgulch
+VAR.LWP1 = Ewkbano
+VAR.LWP1 = Fagdus
+VAR.LWP1 = Faghir
+VAR.LWP1 = Farghed
+VAR.LWP1 = Fargigoth
+VAR.LWP1 = Farod
+VAR.LWP1 = Faugh
+VAR.LWP1 = Feldgulg
+VAR.LWP1 = Fidgug
+VAR.LWP1 = Filge
+VAR.LWP1 = Fodagog
+VAR.LWP1 = Fogugh
+VAR.LWP1 = Fozhug
+VAR.LWP1 = Frikug
+VAR.LWP1 = Frug
+VAR.LWP1 = Frukag
+VAR.LWP1 = Fubdagog
+VAR.LWP1 = Fudhagh
+VAR.LWP1 = Fupgugh
+VAR.LWP1 = Furbog
+VAR.LWP1 = Futgarek
+VAR.LWP1 = Gaakt
+VAR.LWP1 = Garekk
+VAR.LWP1 = Gelub
+VAR.LWP1 = Gholug
+VAR.LWP1 = Gilaktug
+VAR.LWP1 = Ginug
+VAR.LWP1 = Gnabadug
+VAR.LWP1 = Gnadug
+VAR.LWP1 = Gnalurg
+VAR.LWP1 = Gnarg
+VAR.LWP1 = Gnarlug
+VAR.LWP1 = Gnorl
+VAR.LWP1 = Gnorth
+VAR.LWP1 = Gnoth
+VAR.LWP1 = Gnurl
+VAR.LWP1 = Goku
+VAR.LWP1 = Golag
+VAR.LWP1 = Golum
+VAR.LWP1 = Golub
+VAR.LWP1 = Gomatur
+VAR.LWP1 = Gomokun
+VAR.LWP1 = Gorgolun
+VAR.LWP1 = Grikug
+VAR.LWP1 = Grug
+VAR.LWP1 = Grukart
+VAR.LWP1 = Grukksin
+VAR.LWP1 = Gudhagis
+VAR.LWP1 = Gugdin
+VAR.LWP1 = Gulm
+VAR.LWP1 = Gulrn
+VAR.LWP1 = Gunaakt
+VAR.LWP1 = Gunag
+VAR.LWP1 = Gunug
+VAR.LWP1 = Guruss
+VAR.LWP1 = Hagon
+VAR.LWP1 = Hagum
+VAR.LWP1 = Heguga
+VAR.LWP1 = Hibubin
+VAR.LWP1 = Hrolkug
+VAR.LWP1 = Hugagug
+VAR.LWP1 = Hugmuggin
+VAR.LWP1 = Hugolmis
+VAR.LWP1 = Ignis
+VAR.LWP1 = Ignorgal
+VAR.LWP1 = Igubal
+VAR.LWP1 = Inkathus
+VAR.LWP1 = Isagubal
+VAR.LWP1 = Jogar
+VAR.LWP1 = Jorgagu
+VAR.LWP1 = Jreghin
+VAR.LWP1 = Jughoble
+VAR.LWP1 = Kabugbun
+VAR.LWP1 = Kaganal
+VAR.LWP1 = Karrghes
+VAR.LWP1 = Karrhim
+VAR.LWP1 = Kebuba
+VAR.LWP1 = Kertuska
+VAR.LWP1 = Klughis
+VAR.LWP1 = Knodager
+VAR.LWP1 = Koglis
+VAR.LWP1 = Krilge
+VAR.LWP1 = Krouthux
+VAR.LWP1 = Kugbu
+VAR.LWP1 = Kukgil
+VAR.LWP1 = Kurbag
+VAR.LWP1 = Laghell
+VAR.LWP1 = Lambug
+VAR.LWP1 = Mabuska
+VAR.LWP1 = Magdurn
+VAR.LWP1 = Marfur
+VAR.LWP1 = Margulin
+VAR.LWP1 = Mugarosk
+VAR.LWP1 = Naghas
+VAR.LWP1 = Naghing
+VAR.LWP1 = Nakgub
+VAR.LWP1 = Narhbub
+VAR.LWP1 = Nofhug
+VAR.LWP1 = Nogufin
+VAR.LWP1 = Nomgula
+VAR.LWP1 = Nurghex
+VAR.LWP1 = Oakgur
+VAR.LWP1 = Oghuglaf
+VAR.LWP1 = Olmthux
+VAR.LWP1 = Omugur
+VAR.LWP1 = Onogon
+VAR.LWP1 = Onubuck
+VAR.LWP1 = Oodaga
+VAR.LWP1 = Opathlyn
+VAR.LWP1 = Opeghar
+VAR.LWP1 = Opoguga
+VAR.LWP1 = Ortgupu
+VAR.LWP1 = Owkbangdo
+VAR.LWP1 = Pakgush
+VAR.LWP1 = Pegheska
+VAR.LWP1 = Piggup
+VAR.LWP1 = Preguska
+VAR.LWP1 = Pretkal
+VAR.LWP1 = Quilgeska
+VAR.LWP1 = Quuguck
+VAR.LWP1 = Rakgu
+VAR.LWP1 = Rarfuska
+VAR.LWP1 = Routhusk
+VAR.LWP1 = Rurigisk
+VAR.LWP1 = Sabubil
+VAR.LWP1 = Sarfusk
+VAR.LWP1 = Seaklo
+VAR.LWP1 = Shulhurg
+VAR.LWP1 = Sinsbogle
+VAR.LWP1 = Slogdop
+VAR.LWP1 = Snugug
+VAR.LWP1 = Soggle
+VAR.LWP1 = Sombilge
+VAR.LWP1 = Sorgulgas
+VAR.LWP1 = Speghag
+VAR.LWP1 = Spoguk
+VAR.LWP1 = Sugarok
+VAR.LWP1 = Surbaba
+VAR.LWP1 = Tagduch
+VAR.LWP1 = Taghag
+VAR.LWP1 = Targigoth
+VAR.LWP1 = Tarol
+VAR.LWP1 = Tilgest
+VAR.LWP1 = Todagol
+VAR.LWP1 = Tozhug
+VAR.LWP1 = Traugnik
+VAR.LWP1 = Truigig
+VAR.LWP1 = Ugmel
+VAR.LWP1 = Ugghal
+VAR.LWP1 = Umhras
+VAR.LWP1 = Uragnix
+VAR.LWP1 = Urg
+VAR.LWP1 = Urganus
+VAR.LWP1 = Urugdug
+VAR.LWP1 = Vabugnum
+VAR.LWP1 = Vagrungard
+VAR.LWP1 = Valthurges
+VAR.LWP1 = Vambat
+VAR.LWP1 = Varfus
+VAR.LWP1 = Varganz
+VAR.LWP1 = Vetorkaz
+VAR.LWP1 = Vidaros
+VAR.LWP1 = Vigukal
+VAR.LWP1 = Vlogwart
+VAR.LWP1 = Vregus
+VAR.LWP1 = Vugub
+VAR.LWP1 = Wakgupher
+VAR.LWP1 = Wanuga
+VAR.LWP1 = Wholugga
+VAR.LWP1 = Woggugar
+VAR.LWP1 = Wruggin
+VAR.LWP1 = Wumkbanor
+VAR.LWP1 = Xagoter
+VAR.LWP1 = Xagum
+VAR.LWP1 = Xignis
+VAR.LWP1 = Xuag
+VAR.LWP1 = Xurles
+VAR.LWP1 = Yahigin
+VAR.LWP1 = Ymafubala
+VAR.LWP1 = Yregh
+VAR.LWP1 = Zaburg
+VAR.LWP1 = Zarod
+VAR.LWP1 = Zlapdud
+VAR.LWP1 = Zloglin
+VAR.LWP1 = Addranvan
+VAR.LWP1 = Addron
+VAR.LWP1 = Aethed
+VAR.LWP1 = Aetheor
+VAR.LWP1 = Aethir
+VAR.LWP1 = Aethor
+VAR.LWP1 = Aethyran
+VAR.LWP1 = Blircyn
+VAR.LWP1 = Caegwyn
+VAR.LWP1 = Caredd
+VAR.LWP1 = Carerraent
+VAR.LWP1 = Daeddyn
+VAR.LWP1 = Danyc
+VAR.LWP1 = Didoc
+VAR.LWP1 = Dyddyn
+VAR.LWP1 = Dyran
+VAR.LWP1 = Ginvan
+VAR.LWP1 = Glaedd
+VAR.LWP1 = Gleon
+VAR.LWP1 = Gleonnyn
+VAR.LWP1 = Gliran
+VAR.LWP1 = Gwigoynn
+VAR.LWP1 = Gwon
+VAR.LWP1 = Lenry
+VAR.LWP1 = Linvan
+VAR.LWP1 = Locyn
+VAR.LWP1 = Lonvan
+VAR.LWP1 = Lur
+VAR.LWP1 = Maennyn
+VAR.LWP1 = Moddry
+VAR.LWP1 = Rar
+VAR.LWP1 = Rhanvan
+VAR.LWP1 = Rharan
+VAR.LWP1 = Rhidry
+VAR.LWP1 = Rydd
+VAR.LWP1 = Sen
+VAR.LWP1 = Seodd
+VAR.LWP1 = Tenyc
+VAR.LWP1 = Tyllyn
+VAR.LWP1 = Tyrcyn
+VAR.LWP1 = Vaec
+VAR.LWP1 = Venvan
+VAR.LWP1 = Veonnan
+VAR.LWP1 = Veoryn
+VAR.LWP1 = Veryn
+VAR.LWP1 = Vudry
+VAR.LWP1 = Yradoc
+VAR.LWP1 = Yremire
+VAR.LWP1 = Yremyr
+VAR.LWP1 = Yreran
+VAR.LWP1 = Aloryan
+VAR.LWP1 = Alynoic
+VAR.LWP1 = Braena
+VAR.LWP1 = Brill
+VAR.LWP1 = Brodda
+VAR.LWP1 = Bryrka
+VAR.LWP1 = Calyan
+VAR.LWP1 = Ciryan
+VAR.LWP1 = Claengwen
+VAR.LWP1 = Clicla
+VAR.LWP1 = Cluniver
+VAR.LWP1 = Clyna
+VAR.LWP1 = Collyra
+VAR.LWP1 = Cyll
+VAR.LWP1 = Dealyan
+VAR.LWP1 = Delonna
+VAR.LWP1 = Dira
+VAR.LWP1 = Elalonna
+VAR.LWP1 = Gwana
+VAR.LWP1 = Gwolonna
+VAR.LWP1 = Jeana
+VAR.LWP1 = Jerka
+VAR.LWP1 = Jiryan
+VAR.LWP1 = Jwrka
+VAR.LWP1 = Jyniver
+VAR.LWP1 = Lynoic
+VAR.LWP1 = Meacla
+VAR.LWP1 = Merka
+VAR.LWP1 = Meryan
+VAR.LWP1 = Mibrylla
+VAR.LWP1 = Muniver
+VAR.LWP1 = Murka
+VAR.LWP1 = Mwryan
+VAR.LWP1 = Neangwen
+VAR.LWP1 = Nella
+VAR.LWP1 = Nivyan
+VAR.LWP1 = Nubrylla
+VAR.LWP1 = Rwnoic
+VAR.LWP1 = Ryryan
+VAR.LWP1 = Sabrylla
+VAR.LWP1 = Saengwen
+VAR.LWP1 = Silonna
+VAR.LWP1 = Sull
+VAR.LWP1 = Swrka
+VAR.LWP1 = Ysaniver
+VAR.LWP1 = Ysassa
+VAR.LWP1 = Ysoll
+VAR.LWP1 = Ysollyra
+VAR.LWP1 = Ysull
+VAR.LWP1 = Ysyssa
+   ENDDO
+
+[FUNCTION f_lw_2]
+DORAND 42
+VAR.LWP2 = Vanquisher
+VAR.LWP2 = Bane
+VAR.LWP2 = Slayer
+VAR.LWP2 = Master
+VAR.LWP2 = Hunter
+VAR.LWP2 = Breaker
+VAR.LWP2 = Crusher
+VAR.LWP2 = Stomper
+VAR.LWP2 = Caretaker
+VAR.LWP2 = Champion
+VAR.LWP2 = Cleaver
+VAR.LWP2 = Smasher
+VAR.LWP2 = Conqueror
+VAR.LWP2 = Saviour
+VAR.LWP2 = Guardian
+VAR.LWP2 = Defender
+VAR.LWP2 = Swatter
+VAR.LWP2 = Doom
+VAR.LWP2 = Dispatcher
+VAR.LWP2 = Defier
+VAR.LWP2 = Destiny
+VAR.LWP2 = Enemy
+VAR.LWP2 = Executioner
+VAR.LWP2 = Breaker
+VAR.LWP2 = Foe
+VAR.LWP2 = Warden
+VAR.LWP2 = Friend
+VAR.LWP2 = Cutter
+VAR.LWP2 = Slasher
+VAR.LWP2 = Hewer
+VAR.LWP2 = Hero
+VAR.LWP2 = Raider
+VAR.LWP2 = Guardian
+VAR.LWP2 = Lord
+VAR.LWP2 = Skirmisher
+VAR.LWP2 = Patron
+VAR.LWP2 = Nemesis
+VAR.LWP2 = Repulser
+VAR.LWP2 = Seeker
+VAR.LWP2 = Stinger
+VAR.LWP2 = Shredder
+VAR.LWP2 = Tamer
+ENDDO
+   
+
+[FUNCTION f_lw_3]
+DORAND 70
+VAR.LWP3 = of witches
+VAR.LWP3 = of dragons
+VAR.LWP3 = of men
+VAR.LWP3 = of children
+VAR.LWP3 = of serpents
+VAR.LWP3 = of the elements
+VAR.LWP3 = of shadows
+VAR.LWP3 = of the infected
+VAR.LWP3 = of the orcs
+VAR.LWP3 = of the lost lands
+VAR.LWP3 = of bears
+VAR.LWP3 = of shame
+VAR.LWP3 = of despise
+VAR.LWP3 = of deceit
+VAR.LWP3 = of doom
+VAR.LWP3 = of bugs
+VAR.LWP3 = of spiders
+VAR.LWP3 = of Lord Blackthorne
+VAR.LWP3 = of Lord British
+VAR.LWP3 = of the forgotten wastes
+VAR.LWP3 = of balrons
+VAR.LWP3 = of deamons
+VAR.LWP3 = of dragons
+VAR.LWP3 = of doom
+VAR.LWP3 = of britain
+VAR.LWP3 = of trinsic
+VAR.LWP3 = of evil
+VAR.LWP3 = of truth
+VAR.LWP3 = of beasts
+VAR.LWP3 = of notaries
+VAR.LWP3 = of dread
+VAR.LWP3 = of harpies
+VAR.LWP3 = of night
+VAR.LWP3 = of darkness
+VAR.LWP3 = of war
+VAR.LWP3 = of peace
+VAR.LWP3 = of women
+VAR.LWP3 = of fire
+VAR.LWP3 = of earth
+VAR.LWP3 = of wind
+VAR.LWP3 = of air
+VAR.LWP3 = of the wicked
+VAR.LWP3 = of the damned
+VAR.LWP3 = of giants
+VAR.LWP3 = of packhorses
+VAR.LWP3 = of law
+VAR.LWP3 = of order
+VAR.LWP3 = of chaos
+VAR.LWP3 = of Darkonians
+VAR.LWP3 = of Holy Knights
+VAR.LWP3 = of fangs
+VAR.LWP3 = of goblins
+VAR.LWP3 = of morale
+VAR.LWP3 = of confidence
+VAR.LWP3 = of corpses
+VAR.LWP3 = of orcs
+VAR.LWP3 = of beasts
+VAR.LWP3 = of the fallen
+VAR.LWP3 = of the truth
+VAR.LWP3 = of the guards
+VAR.LWP3 = of the past
+VAR.LWP3 = of the future
+VAR.LWP3 = of the agile
+VAR.LWP3 = of the bold
+VAR.LWP3 = of the brave
+VAR.LWP3 = of the daring
+VAR.LWP3 = of the merciful
+VAR.LWP3 = of trolls
+VAR.LWP3 = of tombs
+VAR.LWP3 = of wolves
+ENDDO
+
+[ITEMDEF i_sword_great_legendary]
+ID = 013b9
+NAME = legendary great sword
+WEIGHT = 8
+TYPE = T_WEAPON_SWORD
+TDATA1 = mat_adamantine
+FLIP = 1
+DAM = 11, 43
+SKILL = Swordsmanship
+REQSTR = 85
+TWOHANDS = N
+CATEGORY = Provisions - Weapons
+SUBSECTION = Swords
+DESCRIPTION = legendary great sword
+DUPELIST = 013ba
+ON = @Create
+HITPOINTS = 105
+COLOR = color_skill_jewelry
+f_lw_1
+f_lw_2
+f_lw_3
+NAME = <VAR.LWP1>, <VAR.LWP2> <VAR.LWP3>
+TAG.LEGENDARY = 1
+
+ON = @DClick
+return = <wpn_dclick_bladed>
+ON = @Targon_ground
+return = <wpn_targon_ground_bladed>
+ON = @Targon_char
+return = <wpn_targon_char_bladed>
+ON = @Targon_item
+return = <wpn_targon_item_bladed>
+
+
+//legendary bosses
+
+[FUNCTION StonePlayer]
+if <ARGS>
+STONE //Paralyse the player
+NEWITEM=i_stone_timerD
+NEW.P=<P>
+NEW.LINK=<UID>
+NEW.UPDATE
+ENDIF
+
+[ITEMDEF i_stone_timerD]
+ID=i_gold
+NAME=stone TIMERD
+TYPE=t_script
+
+ON=@CREATE
+ATTR=080
+TIMER=10
+
+ON=@TIMER
+IF (<LINK.STONE> == 1)
+LINK.STONE = 0
+LINK.SYSMESSAGE @0a4 You feel your skin loosening...
+	IF !(<LINK.FLAGS> &statf_poisoned)
+		LINK.SPELLEFFECT S_POISON,1600,<UID>
+		LINK.spelleffect s_curse, 1520, <UID>
+		LINK.SPELLEFFECT s_harm,1850,<UID>
+		LINK.SPELLEFFECT s_mana_vampire,1850,<UID>
+		
+	endif
+ENDIF
+REMOVE
+RETURN 1
+
+[EVENTS e_thrower]
+ON=@SPELLEFFECT
+EMOTE resist the spell
+RETURN 1
+
+ON = @HitTry
+   return <try_dispel>
+ON = @gethit
+IF !(<SRC.ISPLAYER>)
+IF !(<SRC.FLAGS>&statf_pet)
+						   VAR.FORGIVER = <UID>
+						   SRC.FOR_MEMORY f_peace
+							VAR.FORGIVER = <SRC.UID>
+							FOR_MEMORY f_peace
+ENDIF
+ENDIF
+GOTO <SRC.P>
+   if (<src.findlayer(layer_hand1).type>==t_weapon_bow )
+      IF ( RAND(2) == 1)
+         
+         return 1
+         findlayer(layer_k_control).TRIGGER @SkillFail
+      ENDIF
+   endif
+   if (<src.findlayer(layer_hand1).type>==t_weapon_xbow )
+      IF ( RAND(2) == 1)
+             
+         return 1
+         findlayer(layer_k_control).TRIGGER @SkillFail
+         ENDIF
+   endif
+   if (<src.findlayer(layer_hand2).type>==t_weapon_bow )
+      IF ( RAND(2) == 1 )
+        
+         return 1
+         findlayer(layer_k_control).TRIGGER @SkillFail
+      ENDIF
+   endif
+   if (<src.findlayer(layer_hand2).type>==t_weapon_xbow )
+      IF ( RAND(2) == 1 )
+             
+         return 1
+         findlayer(layer_k_control).TRIGGER @SkillFail
+      ENDIF
+   endif
+   
+   
+[chardef c_legdemon] 
+defname=c_legdemon
+name=Isliah
+ID=c_moloch
+SOUND=snd_monster_daemon1
+ICON=i_pet_fourarmed_daemon
+ARMOR=100
+
+TEVENTS=e_thrower
+TEVENTS=e_throw_player
+DAM=41,61
+RESOURCES=1 i_ore_iron
+CAN=MT_WALK|MT_RUN|MT_USEHANDS
+FOODTYPE=1 t_meat_raw 
+DESIRES=999 t_corpse
+RESDISPDNID=c_man
+RESLEVEL=2
+RESDISPDNHUE=33
+CATEGORY=New Monsters
+SUBSECTION=LBR
+DESCRIPTION=Legendary Throwing Demon
+
+ON=@NPCRESTOCK
+ITEM=i_fig_raiju,R2
+
+ON=@Create 
+   COLOR=0794
+   STR={1085 1185}
+   DEX={175 255}
+   INT={600 825}
+   MAXHITS=5000
+   PARRYING={90.0 100.0}
+   MAGERY={90.0 100.0}
+   HEALING={60.0 100.0}
+   MAGICRESISTANCE={450.0 600.0}
+   TACTICS={100.0 120.0}
+   WRESTLING={40.0 70.0}
+   DETECTION=200.0
+   NPC=brain_monster
+  
+   FAME={4000 8000}
+   KARMA={-6000 -6999}
+
+ON=@Death
+   y_region_loot_death
+   y_region_loot_calculator
+   loot_BALRON
+   addlootitem ,loot_newrares_hard,1
+   addlootrandom ,15,30,1,random_rare_3 
+   addlootitem ,loot_newrares_hard,1
+   addlootrandom ,15,30,1,random_rare_3 
+   IF (RAND(100) < 20) // Chance de Dropar. Assim é 5%
+   SERV.NEWITEM=i_imperial_s2_key  // ID da chave que vai dropar
+   NEW.CONT=<SRC.UID>
+   ENDIF
+   
+ON = @Hit
+   IF !(<SRC.ACT.BASEID>=m_kell_control)        
+            VAR.FORGIVER = <UID>
+            SRC.FOR_MEMORY f_peace
+            VAR.FORGIVER = <SRC.UID>
+            FOR_MEMORY f_peace
+            RETURN 1   
+   ENDIF
+
+[EVENTS e_medusa]
+ON=@SPELLEFFECT
+
+   IF ((<argn> == 20) || (<argn> == 39) || (<argn> == 47))
+      RETURN 1
+   ENDIF
+
+ON = @HitTry
+IF !(<SRC.ISPLAYER>)
+IF !(<SRC.FLAGS>&statf_pet)
+						   VAR.FORGIVER = <UID>
+						   SRC.FOR_MEMORY f_peace
+							VAR.FORGIVER = <SRC.UID>
+							FOR_MEMORY f_peace
+ENDIF
+ENDIF
+   return <try_dispel>
+ON = @gethit
+IF !(<SRC.ISPLAYER>)
+IF !(<SRC.FLAGS>&statf_pet)
+						   VAR.FORGIVER = <UID>
+						   SRC.FOR_MEMORY f_peace
+							VAR.FORGIVER = <SRC.UID>
+							FOR_MEMORY f_peace
+ENDIF
+ENDIF
+GOTO <SRC.P>
+   if (<src.findlayer(layer_hand1).type>==t_weapon_bow )
+      IF ( RAND(2) == 1)
+         
+         return 1
+         findlayer(layer_k_control).TRIGGER @SkillFail
+      ENDIF
+   endif
+   if (<src.findlayer(layer_hand1).type>==t_weapon_xbow )
+      IF ( RAND(2) == 1)
+             
+         return 1
+         findlayer(layer_k_control).TRIGGER @SkillFail
+         ENDIF
+   endif
+   if (<src.findlayer(layer_hand2).type>==t_weapon_bow )
+      IF ( RAND(2) == 1 )
+         
+         return 1
+         findlayer(layer_k_control).TRIGGER @SkillFail
+      ENDIF
+   endif
+   if (<src.findlayer(layer_hand2).type>==t_weapon_xbow )
+      IF ( RAND(2) == 1 )
+             
+         return 1
+         findlayer(layer_k_control).TRIGGER @SkillFail
+      ENDIF
+   endif
+ON=@NPCLOOKATCHAR
+ 
+IF !(<SRC.ISGM>)
+	IF (<SRC.ISPLAYER>)
+	     IF !( <FLAGS> & statf_freeze )
+		  IF (<SRC.STONE> == 0 )
+			if ( rand(100) > 75 )
+			   DORAND 6
+			      SAY @0a4 Look at my snakes
+			      SAY @0a4 Come here <src.name>
+			      SAY @0a4 Look into my eyes <src.name>?
+			      SAY @0a4 Feeling your skin harden <SRC.NAME>?
+			      SAY @0a4 Just a quick peak was it <SRC.NAME>?
+			      SAY @0a4 Fear my gaze <src.name>
+			   enddo
+			    SRC.stonePLAYER <DIR>
+			ENDIF
+		    ENDIF
+   	     ELSEIF ( rand(100) > 95 )
+	                       IF (<SRC.STONE> == 0 )
+	    	   			if ( rand(100) > 75 )
+	    	   			   DORAND 6
+	    	   			      SAY @0a4 Look at my snakes <src.name>
+	    	   			      SAY @0a4 Come here <src.name>
+	    	   			      SAY @0a4 Look into my eyes <src.name>?
+	    	   			      SAY @0a4 Feeling your skin harden <SRC.NAME>?
+	    	   			      SAY @0a4 Just a quick peak was it <SRC.NAME>?
+	    	   			      SAY @0a4 Fear my gaze <src.name>
+	    	   			   enddo
+	    	   			    SRC.stonePLAYER <DIR>
+	    	   			ENDIF
+	    	   		ENDIF
+  	     ENDIF
+   	    
+   	    ENDIF
+   	ENDIF
+   endif
+
+
+[chardef c_medusa] 
+ID=c_lady_m
+name=Medusa
+//SOUND=snd_monster_daemon1
+ICON=i_worldgem_bit
+RESLEVEL=2
+RESDISPDNHUE=33
+RESDISPDNID=c_man
+
+TEVENTS	= e_medusa
+DAM=20,30
+ARMOR=10
+RESOURCES=15 i_ribs_raw 
+DESIRES=i_gold,e_notoriety
+AVERSIONS=t_TRAP,t_eerie_stuff
+CAN=MT_WALK|MT_RUN|MT_USEHANDS|MT_EQUIP
+CATEGORY=New Monsters
+SUBSECTION=ML
+DESCRIPTION=Medusa
+
+
+ON=@Create 
+	NPC=brain_monster
+	FAME={100 3000} 
+	KARMA={-5000 -6999} 
+	STR={1800 2400}
+	MAXHITS=5000
+	INT={600 800} 
+	DEX={300 450} 
+	PARRYING={120.0 125.0}
+	MAGICRESISTANCE={120.0 125.0}
+	MAGERY={220.0 325.0}
+	TACTICS={120.0 125.0}
+	WRESTLING={120.0 125.0}
+
+ON=@NpcRestock
+	ITEMNEWBIE=i_spellbook
+	ITEM=i_fig_raiju,R5
+	ADDSPELL=s_harm
+  	ADDSPELL	= s_Hallucination
+
+on=@Death
+   y_region_loot_death
+   y_region_loot_calculator
+   loot_BALRON
+   addlootitem ,loot_newrares_hard,1
+   addlootrandom ,15,30,1,random_rare_3 
+   addlootitem ,loot_newrares_hard,1
+   addlootrandom ,15,30,1,random_rare_3
+   IF (RAND(100) < 13) // Chance de Dropar. Assim é 5%
+   SERV.NEWITEM=i_imperial_s2_key  // ID da chave que vai dropar
+   NEW.CONT=<SRC.UID>
+   ENDIF
+
+
+[EVENTS e_gspider]
+ON=@SPELLEFFECT
+   IF ((<argn> == 20) || (<argn> == 39) || (<argn> == 47))
+      RETURN 1
+   ENDIF
+   IF ( RAND(10) == 1)
+   SERV.NEWNPC C_DREAD_SPIDER
+   NEW.P=<P>
+   NEW.HOME=<NEW.P>
+   NEW.HOMEDIST=7
+   NEW.REMOVETIMER 40
+   ENDIF
+
+ON=@HitTry
+	IF !(<SRC.FLAGS> &statf_poisoned)
+	SRC.SPELLEFFECT S_POISON,9000,<UID>
+	endif
+   	return <try_dispel>
+ON = @gethit
+IF !(<SRC.ISPLAYER>)
+IF !(<SRC.FLAGS>&statf_pet)
+						   VAR.FORGIVER = <UID>
+						   SRC.FOR_MEMORY f_peace
+							VAR.FORGIVER = <SRC.UID>
+							FOR_MEMORY f_peace
+ENDIF
+ENDIF
+GOTO <SRC.P>
+   if (<src.findlayer(layer_hand1).type>==t_weapon_bow )
+      IF ( RAND(4) == 1)
+         
+         return 1
+         findlayer(layer_k_control).TRIGGER @SkillFail
+      ENDIF
+   endif
+   if (<src.findlayer(layer_hand1).type>==t_weapon_xbow )
+      IF ( RAND(4) == 1)
+             
+         return 1
+         findlayer(layer_k_control).TRIGGER @SkillFail
+         ENDIF
+   endif
+   if (<src.findlayer(layer_hand2).type>==t_weapon_bow )
+      IF ( RAND(4) == 1 )
+         
+         return 1
+         findlayer(layer_k_control).TRIGGER @SkillFail
+      ENDIF
+   endif
+   if (<src.findlayer(layer_hand2).type>==t_weapon_xbow )
+      IF ( RAND(4) == 1 )
+             
+         return 1
+         findlayer(layer_k_control).TRIGGER @SkillFail
+      ENDIF
+   endif
+on=@Death 
+IF !(STRCMPI(Shame Level 2,<ROOM.NAME>))
+SERV.NEWITEM=i_shame_moongate
+NEW.P=5604,96
+NEW.MOREP=5515,144,20
+NEW.ATTR=ATTR_DECAY|ATTR_MOVE_NEVER|ATTR_CAN_DECAY
+NEW.TIMER=120
+ENDIF
+
+[chardef c_legspider] 
+ID=c_Giant_Black_Widow
+name=Jerushal
+SOUND=snd_monster_gispidr1
+ICON=i_pet_spiderlord
+ARMOR=25
+
+TEVENTS=e_gspider
+DAM=11,35
+CAN=MT_WALK|MT_RUN|MT_USEHANDS
+FOODTYPE=1 t_meat_raw 
+DESIRES=i_gold,e_notoriety,e_horses,c_man,c_woman 
+RESDISPDNID=c_man
+RESLEVEL=2
+RESDISPDNHUE=0ad
+CATEGORY=New Monsters
+SUBSECTION=LBR
+DESCRIPTION=Giant Black Widow
+
+ON=@NPCRESTOCK
+ITEM=i_fig_raiju,R2
+
+ON=@Create 
+NPC=brain_monster
+FAME=3500 
+KARMA=-3500
+STR={1006 1200}
+MAXHITS=5000 6000
+INT={436 660}
+DEX={196 315}
+MAGICRESISTANCE={145.0 160.0}
+TACTICS={65.0 85.0}
+WRESTLING={70.0 85.0}
+ANATOMY={30.0 75.0}
+POISONING={360.0 480.0}
+
+
+ON=@Hit
+IF !(<SRC.FLAGS> &statf_poisoned)
+SRC.SPELLEFFECT S_POISON,9000,<UID>
+endif
+
+ON=@GetHit
+IF !(<SRC.ISPLAYER>)
+IF !(<SRC.FLAGS>&statf_pet)
+						   VAR.FORGIVER = <UID>
+						   SRC.FOR_MEMORY f_peace
+							VAR.FORGIVER = <SRC.UID>
+							FOR_MEMORY f_peace
+ENDIF
+ENDIF
+GOTO <SRC.P>
+IF !(<SRC.FLAGS> &statf_poisoned)
+SRC.SPELLEFFECT S_POISON,9000,<UID>
+endif
+IF ( RAND(7) == 1)
+SERV.NEWNPC C_DREAD_SPIDER
+NEW.P=<P>
+NEW.HOME=<NEW.P>
+NEW.HOMEDIST=7
+NEW.REMOVETIMER 40
+ENDIF
+
+on=@death
+   y_region_loot_death
+   y_region_loot_calculator
+   IF (RAND(100) < 25) // Chance de Dropar. Assim é 5%
+   SERV.NEWITEM=i_imperial_s2_key  // ID da chave que vai dropar
+   NEW.CONT=<SRC.UID>
+   ENDIF
+   loot_BALRON
+   addlootitem ,loot_newrares_hard,1
+   addlootrandom ,15,30,1,random_rare_3  
+
+[EVENTS e_orc_horde]
+ON=@SPELLEFFECT
+   IF ((<argn> == 20) || (<argn> == 39))
+      RETURN 1
+   ENDIF
+   
+ON=@NPCLOOKATCHAR
+if !(<src.npc>)
+if ( rand(100) > 75)
+	if (<src.mana> > 5)
+		    	   		  DORAND 6
+	    	   			      SAY @021e I smell mana....
+	    	   			      SAY @021e Whats that sickly stench
+	    	   			      SAY @021e Give me some of that!
+	    	   			      SAY @021e For the Horde!
+	    	   			      SAY @021e Ill have that!
+	    	   			      emote try to lick you
+	    	   			   enddo
+						   sfx 00a2
+						   SRC.SPELLEFFECT s_mana_vampire,1850,<UID>
+	ENDIF
+ENDIF
+ ENDIF
+ON = @gethit
+if ( (<SRC.FLAGS> & statf_conjured) )
+		    	   		  DORAND 6
+	    	   			      SAY @021e Ahahha Join the Horde!
+	    	   			      SAY @021e OoOoh That tickles! Stop it!
+	    	   			      SAY @021e Fool! You think that will work here?
+	    	   			      SAY @021e Ahahha Join us!
+	    	   			      SAY @021e Well Hello There
+	    	   			      emote cackles
+	    	   			   enddo
+						   anim 020
+						   var.orchorde = <uid>
+						   SAY Uus Rel Wis
+						   SFX 0107
+						   VAR.FORGIVER = <UID>
+						   SRC.FOR_MEMORY f_peace
+							VAR.FORGIVER = <SRC.UID>
+							FOR_MEMORY f_peace
+							
+							SRC.NEWITEM=i_memory
+						  SRC.ACT.COLOR=memory_harmedby
+						  SRC.ACT.LINK=<src.memoryfindtype(memory_ipet).uid>
+						  SRC.ACT.LAYER=layer_special
+						  SRC.ACT.CONT=<SRC.UID>
+						  src.attack  <src.memoryfindtype(memory_ipet).uid>
+						  
+						  src.memoryfindtype(memory_ipet).remove
+						  src.npc = brain_monster
+						  return 1
+endif
+   if (<src.findlayer(layer_hand1).type>==t_weapon_bow )
+      IF ( RAND(2) == 1)
+         return 1
+         findlayer(layer_k_control).TRIGGER @SkillFail
+      ENDIF
+   endif
+   if (<src.findlayer(layer_hand1).type>==t_weapon_xbow )
+      IF ( RAND(2) == 1)
+         return 1
+         findlayer(layer_k_control).TRIGGER @SkillFail
+         ENDIF
+   endif
+   if (<src.findlayer(layer_hand2).type>==t_weapon_bow )
+      IF ( RAND(2) == 1 )
+         return 1
+         findlayer(layer_k_control).TRIGGER @SkillFail
+      ENDIF
+   endif
+   if (<src.findlayer(layer_hand2).type>==t_weapon_xbow )
+      IF ( RAND(2) == 1 ) 
+         return 1
+         findlayer(layer_k_control).TRIGGER @SkillFail
+      ENDIF
+   endif
+
+[CHARDEF c_orc_Minion]
+NAME		= Orc Minion
+ID		= c_ORC
+RESOURCES	= 6 i_ribs_raw
+FOODTYPE	= 15 t_meat_raw
+DAM		= 3,18
+ARMOR		= 12
+TEVENTS=e_orc_horde
+DESIRES		= i_gold,spk_orc
+TSPEECH		= spk_orc
+
+ON=@Create
+  COLOR		= colors_blue
+  STR		= 175
+  DEX		= 80
+  INT		= 30
+  TAG.NUMBER = <EVAL RAND(50000)>
+  name = Orc Minion #<EVAL(<TAG.NUMBER>)>
+  IF (<TAG.NUMBER> <1000)
+    COLOR		= 019
+  STR		= 1075
+  hits = 1075
+  DEX		= 180
+  INT		= 120
+  ENDIF
+  MAGICRESISTANCE={50.0 75.0}
+  PARRYING	= {35.0 55.0}
+  TACTICS	= {55.0 80.0}
+  WRESTLING	= {165.0 195.0}
+
+  NPC		= BRAIN_MONSTER
+  
+  KARMA		= {-3000 -1000}
+  FAME		= {100 500}
+
+ON=@NPCRestock
+  CONTAINER	= i_backpack
+  ITEM		= { meager_gold_pile 3 average_gold_pile 1 }
+  ITEM		= { poor_gold_pile 1 meager_gold_pile 1 0 1 }
+  ITEM=i_fig_plaguebeast,R25
+
+
+ON=@Death
+   y_region_loot_death
+   y_region_loot_calculator
+   IF (0<TAG.NUMBER> <1000)
+   addlootgold ,3200
+			if ( rand(10)  = 1)
+		   addlootrandom ,3,5, 1, random_rare_all
+		   endif
+		    if ( rand(6) = 1)
+			ITEM=random_skill_1
+			endif
+	endif
+	   IF (RAND(100) < 5) // Chance de Dropar. Assim é 5%
+   SERV.NEWITEM=i_imperial_s1_key  // ID da chave que vai dropar
+   NEW.CONT=<SRC.UID>
+   ENDIF
+	
+  CATEGORY	= Shame
+  SUBSECTION	= NPC's
+  DESCRIPTION	= Orc Minion
+
+[ITEMDEF i_robe_cavalier]
+ID	= i_robe
+NAME	= Robe of the cavalier
+TYPE	= T_CLOTHING
+ARMOR	= 5
+DYE	= 0
+
+ON = @Create
+HITPOINTS	= 5
+COLOR=048a
+
+ON = @DROPON_Ground
+IF !(<SRC.ISGM>)
+	emote crumbles
+	remove
+ENDIF
+
+ON = @DROPON_ITEM
+IF <SRC.RESTEST 2 i_robe_cavalier>
+	emote crumbles
+	remove
+ENDIF
+
+ON = @Equip
+IF <SRC.RESTEST 2 i_robe_cavalier>
+	emote crumbles
+	remove
+ENDIF
+IF (0<tag.worn> == 1 )
+	emote crumbles
+	remove
+ELSE
+	tag.worn = 1
+ENDIF
+  
+[EVENTS e_mystcavalier]
+ON = @Click
+   KARMA	= -100
+
+ON=@SPELLEFFECT
+
+    IF ((<argn> == 20) || (<argn> == 39) || (<argn> == 47))
+      RETURN 1
+   ENDIF
+
+ON = @HitTry
+   return <try_dispel>
+   
+ON = @NPCSeeNewPlayer
+IF !(<src.npc>)
+    IF !( (<SRC.FINDLAYER(22).DEFNAME> == i_robe_cavalier)
+      SAY Die, trespasser!
+      ATTACK
+      return 1
+   endif
+ENDIF
+   if ( rand(100) > 20 )
+      return 0
+   endif
+
+   doswitch 6
+      SAY I Dont like the look of <src.name>
+	  SAY Not sure if I have seen <src.name> before
+	  SAY Hello <src.name>
+	  SAY I dont trust you as far as I could throw you <src.name>
+	  SAY Who are you <src.name>
+	  SAY What are you doing here <src.name>
+   enddo
+   return 0
+
+ON=@NPCLOOKATCHAR
+IF !(<src.npc>)
+   IF !( <SRC.FINDLAYER(22).DEFNAME> == i_robe_cavalier)
+      SAY Die, trespasser!
+      ATTACK
+      return 1
+   endif
+ENDIF
+   if ( rand(100) > 20 )
+      return 0
+   endif
+
+   doswitch 6
+      SAY I Dont like the look of <src.name>
+	  SAY Not sure if I have seen <src.name> before
+	  SAY Hello <src.name>
+	  SAY I dont trust you as far as I could throw you <src.name>
+	  SAY Who are you <src.name>
+	  SAY What are you doing here <src.name>
+   enddo
+   return 0
+
+  
+[CHARDEF c_h_mysteriouscavalry]
+ID=C_MAN
+NAME=#NAMES_DREAD_LORD the Cavalier
+SOUND=snd_HUMAN_M_DIE_01
+DAM=10,35
+ARMOR=35
+AVERSIONS=t_TRAP,t_eerie_stuff
+TEVENTS	= e_mystcavalier
+MOVERATE = 50
+TSPEECH=jobMageEvil
+
+ON=@Create
+  COLOR=colors_skin
+  STR={800 975}
+  DEX={120 150}
+  INT={80 100}
+  ANATOMY={60.0 80.0}
+  PARRYING={80.0 95.0}
+  SWORDSMANSHIP={80.0 92.0}
+  WRESTLING={67.0 90.0}
+  MAGICRESISTANCE={65.0 95.0}
+  TACTICS={80.0 96.0}
+  POISONING={90.0 100.0}
+  DETECTION	={80.0 90.0}
+  NPC=brain_monster
+  FAME=2000
+     KARMA	= -100
+
+
+  ITEMNEWBIE=random_male_hair
+  COLOR=colors_hair
+  ITEMNEWBIE=random_facial_hair
+  COLOR=match_hair
+  ITEMNEWBIE=i_platemail_gloves_titanium
+  ITEMNEWBIE=i_platemail_helm_titanium
+  ITEMNEWBIE=i_platemail_arms_titanium
+  ITEMNEWBIE=i_platemail_gorget_titanium
+  ITEMNEWBIE=i_platemail_chest_titanium
+  ITEMNEWBIE=i_platemail_leggings_titanium
+  ITEMNEWBIE=i_sword_long_b_titanium
+  ITEMNEWBIE=i_shield_heater_titanium
+  ITEM= i_robe_cavalier
+
+ON=@NPCRestock
+  ITEM={ random_jewel 1 0 5 }
+  ITEM=i_gold,{1450 2550}
+  ITEM=i_fig_quagmire,R5
+  
+  
+[CHARDEF c_shame_ghost_chief]//delucia? is this deliberate lol?
+  NAME=Ghost
+  ID=C_MAN
+
+  DAM=20,25
+  ARMOR=20
+
+  CAN=MT_GHOST|MT_EQUIP|MT_USEHANDS|MT_WALK|MT_MALE|MT_RUN|MT_FLY
+  TEVENTS=e_deceit_ghost
+  TEVENTS=e_undead
+  
+
+  BLOODCOLOR=0
+
+ON=@Create
+    COLOR=07ffff
+
+    STR={400 800}
+    DEX={81 95}
+    INT={50 60}
+
+    MAGICRESISTANCE={60.0 75.0}
+    TACTICS={70.0 90.0}
+    WRESTLING={40.0 55.0}
+    SWORDSMANSHIP=100.0
+    PARRYING={75.0 100.0}
+    ITEMID=66.0
+
+    NPC=BRAIN_UNDEAD
+
+    KARMA=-100
+    FAME={3500 5000}
+
+    ITEMNEWBIE=i_hair_krisna
+    COLOR=07fff
+    ITEMNEWBIE=i_sword_long_adamantine
+    ITEMNEWBIE=i_platemail_gloves
+    COLOR=07fff
+    ITEMNEWBIE=i_platemail_arms
+    COLOR=07fff
+    ITEMNEWBIE=i_platemail_gorget
+    COLOR=07fff
+    ITEMNEWBIE=i_platemail_chest
+    COLOR=07fff
+    ITEMNEWBIE=i_platemail_leggings
+    COLOR=07fff
+
+ON=@NPCRESTOCK
+    ITEM=i_ghostrecon
+
+ON=@GETHIT
+    FLAGS = (<FLAGS> & ~statf_insubstantial)
+  if ( rand(100) < 60 )
+     ACT.SOUND snd_SPELL_MANA_DRAIN
+     //	                   stats   RArmour   NSight   Prot    Incog    MReflect
+     VAR.LAYER = <eval ({  32 25   33 15     34 20    35 25   36  5    37 30     })>
+     VAR.DISPELL_ACT = <ACT>
+     ACT = <SRC.FINDLAYER.<var.layer>.uid>
+     if ( 0<ACT.UID> )
+        ACT.REMOVE
+     endif
+     ACT = <VAR.DISPELL_ACT>
+  endif
+
+ON=@DEATH
+IF (rand(100) > 20)
+f_death_shame 2500
+ENDIF
+    REMOVE
+    RETURN 1
+
+ON = @SpellEffect
+    if ( <args> == 48 )
+        FLAGS = (<FLAGS> & ~statf_insubstantial)
+    endif
+
+
+CATEGORY=Shame
+SUBSECTION=Ghosts
+DESCRIPTION=ghost commander
+
+
+[CHARDEF c_shame_ghost_archer]
+  NAME=Troubled Ghost
+  ID=C_MAN
+
+  DAM=10,20
+  ARMOR=15
+
+  CAN=MT_GHOST|MT_EQUIP|MT_USEHANDS|MT_WALK|MT_MALE|MT_RUN|MT_FLY
+  TEVENTS=e_shame_ghost
+  TEVENTS=e_undead
+  
+
+  BLOODCOLOR=0
+
+ON=@Create
+  COLOR=07fff
+
+  STR={70 90}
+  DEX={81 95}
+  INT={50 60}
+
+  ARCHERY={70.0 90.0}
+  TACTICS={70.0 90.0}
+  WRESTLING={25.0 40.0}
+  ITEMID=66.0
+
+  NPC=BRAIN_UNDEAD
+
+  KARMA=-100
+  FAME={4000 5000}
+
+  ITEMNEWBIE=i_crossbow_heavy_ghost
+  ITEMNEWBIE=i_CHAINMAIL_TUNIC
+  COLOR=07fff
+  ITEMNEWBIE=i_RINGMAIL_GLOVES
+  COLOR=07fff
+  ITEMNEWBIE=i_RINGMAIL_SLEEVES
+  COLOR=07fff
+  ITEMNEWBIE=i_CHAINMAIL_leggings
+  COLOR=07fff
+  ITEMNEWBIE=i_chainmail_coif
+  COLOR=07fff
+  ITEMNEWBIE=i_boots_calf
+  COLOR=07fff
+
+ON=@NPCRESTOCK
+    ITEM=i_ghostrecon
+
+ON=@GETHIT
+    FLAGS = (<FLAGS> & ~statf_insubstantial)
+
+ON=@DEATH
+IF (rand(100) > 70)
+f_death_shame 750
+ENDIF
+    REMOVE
+    RETURN 1
+
+ON = @SpellEffect
+    if ( <args> == 48 )
+        FLAGS = (<FLAGS> & ~statf_insubstantial)
+    endif
+
+
+CATEGORY=Shame
+SUBSECTION=Ghosts
+DESCRIPTION=ghost archer
+
+
+[CHARDEF c_shame_ghost_warrior]
+  NAME=Troubled Ghost
+  ID=C_MAN
+
+  CAN=MT_GHOST|MT_EQUIP|MT_USEHANDS|MT_WALK|MT_MALE|MT_RUN|MT_FLY
+  TEVENTS=e_shame_ghost
+  TEVENTS=e_undead
+  
+
+  DAM=10,20
+  ARMOR=15
+
+  BLOODCOLOR=0
+
+ON=@Create
+    COLOR=07fff
+
+    STR={250 500}
+    DEX={81 95}
+    INT={50 60}
+
+    MAGICRESISTANCE={35.0 45.0}
+    TACTICS={70.0 90.0}
+    SWORDSMANSHIP={70.0 90.0}
+
+    NPC=BRAIN_UNDEAD
+
+    KARMA=-100
+    FAME={2500 4000}
+
+    ITEMNEWBIE=i_sword_long_adamantine
+    ITEMNEWBIE=i_CHAINMAIL_TUNIC
+    COLOR=07fff
+    ITEMNEWBIE=i_RINGMAIL_GLOVES
+    COLOR=07fff
+    ITEMNEWBIE=i_RINGMAIL_SLEEVES
+    COLOR=07fff
+    ITEMNEWBIE=i_CHAINMAIL_leggings
+    COLOR=07fff
+    ITEMNEWBIE=i_chainmail_coif
+    COLOR=07fff
+    ITEMNEWBIE=i_boots_calf
+    COLOR=07fff
+
+ON=@NPCRESTOCK
+    ITEM=i_ghostrecon
+
+ON=@GETHIT
+    FLAGS = (<FLAGS> & ~statf_insubstantial)
+  if ( rand(100) < 40 )
+     ACT.SOUND snd_SPELL_MANA_DRAIN
+     //	                   stats   RArmour   NSight   Prot    Incog    MReflect
+     VAR.LAYER = <eval ({  32 25   33 15     34 20    35 25   36  5    37 30     })>
+     VAR.DISPELL_ACT = <ACT>
+     ACT = <SRC.FINDLAYER.<var.layer>.uid>
+     if ( 0<ACT.UID> )
+        ACT.REMOVE
+     endif
+     ACT = <VAR.DISPELL_ACT>
+  endif
+
+ON=@DEATH
+IF (rand(100) > 20)
+f_death_shame 1500
+ENDIF
+    REMOVE
+    RETURN 1
+
+ON = @SpellEffect
+    if ( <args> == 48 )
+        FLAGS = (<FLAGS> & ~statf_insubstantial)
+    endif
+
+
+CATEGORY=Shame
+SUBSECTION=Ghosts
+DESCRIPTION=ghost warrior
+
+
+[CHARDEF c_shame_ghost_chief]//delucia? is this deliberate lol?
+  NAME=Ghost
+  ID=C_MAN
+
+  DAM=20,25
+  ARMOR=20
+
+  CAN=MT_GHOST|MT_EQUIP|MT_USEHANDS|MT_WALK|MT_MALE|MT_RUN|MT_FLY
+  TEVENTS=e_deceit_ghost
+  TEVENTS=e_undead
+  
+
+  BLOODCOLOR=0
+
+ON=@Create
+    COLOR=07ffff
+
+    STR={400 800}
+    DEX={81 95}
+    INT={50 60}
+
+    MAGICRESISTANCE={60.0 75.0}
+    TACTICS={70.0 90.0}
+    WRESTLING={40.0 55.0}
+    SWORDSMANSHIP=100.0
+    PARRYING={75.0 100.0}
+    ITEMID=66.0
+
+    NPC=BRAIN_UNDEAD
+
+    KARMA=-100
+    FAME={3500 5000}
+
+    ITEMNEWBIE=i_hair_krisna
+    COLOR=07fff
+    ITEMNEWBIE=i_sword_long_adamantine
+    ITEMNEWBIE=i_platemail_gloves
+    COLOR=07fff
+    ITEMNEWBIE=i_platemail_arms
+    COLOR=07fff
+    ITEMNEWBIE=i_platemail_gorget
+    COLOR=07fff
+    ITEMNEWBIE=i_platemail_chest
+    COLOR=07fff
+    ITEMNEWBIE=i_platemail_leggings
+    COLOR=07fff
+
+ON=@NPCRESTOCK
+    ITEM=i_ghostrecon
+
+ON=@GETHIT
+    FLAGS = (<FLAGS> & ~statf_insubstantial)
+  if ( rand(100) < 60 )
+     ACT.SOUND snd_SPELL_MANA_DRAIN
+     //	                   stats   RArmour   NSight   Prot    Incog    MReflect
+     VAR.LAYER = <eval ({  32 25   33 15     34 20    35 25   36  5    37 30     })>
+     VAR.DISPELL_ACT = <ACT>
+     ACT = <SRC.FINDLAYER.<var.layer>.uid>
+     if ( 0<ACT.UID> )
+        ACT.REMOVE
+     endif
+     ACT = <VAR.DISPELL_ACT>
+  endif
+
+ON=@DEATH
+IF (rand(100) > 20)
+f_death_shame 2500
+ENDIF
+    REMOVE
+    RETURN 1
+
+ON = @SpellEffect
+    if ( <args> == 48 )
+        FLAGS = (<FLAGS> & ~statf_insubstantial)
+    endif
+
+
+CATEGORY=Shame
+SUBSECTION=Ghosts
+DESCRIPTION=ghost commander
+
+
+[SPAWN shame_ghosts]
+DEFNAME=SPAWN_shame_ghosts
+CATEGORY=Spawn Groups
+SUBSECTION=Shame
+DESCRIPTION=Ghosts
+
+RESOURCES=c_shame_ghost_chief 1
+RESOURCES=c_shame_ghost_warrior 2
+RESOURCES=c_shame_ghost_archer 3
+
+
+
+[EVENTS e_shame_ghost]
+ON=@ENVIRONCHANGE
+    KARMA = -100
+    ACTION = 067
+ON = @Click
+   KARMA	= -100
+
+ON = @HitTry
+   return <try_dispel>
+ON=@SPELLEFFECT
+      RETURN 1
+
+   
+ON = @NPCSeeNewPlayer
+KARMA	= -100
+IF (<src.ISPLAYER>)
+    IF ( (<SRC.FINDLAYER(22).DEFNAME> == i_robe_cavalier)
+	SFX 382
+      ATTACK
+      return 1
+   endif
+ENDIF
+   return 0
+
+ON=@NPCLOOKATCHAR
+KARMA	= -100
+IF (<src.ISPLAYER>)
+   IF ( <SRC.FINDLAYER(22).DEFNAME> == i_robe_cavalier)
+   SFX 382
+      ATTACK
+      return 1
+   endif
+ENDIF
+   return 0
+
+[CHARDEF c_m_shame_minor_ghost]
+  ID=c_ghost_man
+  NAME=Troubled Ghost
+  SOUND=snd_MONSTER_GHOST1
+
+  DAM=10,40
+  ARMOR=0
+  BLOODCOLOR=0
+
+  CAN=MT_GHOST|MT_WALK|MT_RUN|MT_FLY
+  TEVENTS=e_shame_ghost
+  TEVENTS=e_Undead
+  
+
+ON=@Create
+
+    NPC=BRAIN_UNDEAD
+    COLOR=00b4e
+
+    STR={50 80}
+    DEX={100 200}
+    INT={60 90}
+
+    TACTICS={100.0 200.0}
+    FENCING={100.0 200.0}
+    ITEMID=60.0
+    KARMA=-100
+    FAME={1500 3000}
+	ITEMNEWBIE=i_dagger_bloodrock
+
+ON=@NPCRESTOCK
+    ITEM=i_ghostrecon
+	ITEMNEWBIE=i_deathshroud
+
+ON=@GETHIT
+    FLAGS = (<FLAGS> & ~statf_insubstantial)
+  if ( rand(100) < 10 )
+     ACT.SOUND snd_SPELL_MANA_DRAIN
+     //	                   stats   RArmour   NSight   Prot    Incog    MReflect
+     VAR.LAYER = <eval ({  32 25   33 15     34 20    35 25   36  5    37 30     })>
+     VAR.DISPELL_ACT = <ACT>
+     ACT = <SRC.FINDLAYER.<var.layer>.uid>
+     if ( 0<ACT.UID> )
+        ACT.REMOVE
+     endif
+     ACT = <VAR.DISPELL_ACT>
+  endif
+
+ON=@DEATH
+IF (rand(100) > 70)
+f_death_shame 750
+ENDIF
+    REMOVE
+    RETURN 1
+
+ON = @SpellEffect
+    if ( <args> == 48 )
+        FLAGS = (<FLAGS> & ~statf_insubstantial)
+    endif
+
+
+CATEGORY=SHame
+SUBSECTION=Ghosts
+DESCRIPTION=lesser north spirit
+
+
+[FUNCTION f_death_shame]
+   NEWITEM i_gold
+   ACT.AMOUNT <args>
+   ACT.P = <P>
+   RETURN 0
+
+[CHARDEF c_m_gargoyle_brother]
+DEFNAME=c_m_gargoyle_brother
+ID=c_gargoyle
+NAME=Gargoyle Brother
+SOUND=snd_MONSTER_GARGYL1
+ICON=i_pet_GARG
+CAN=MT_WALK|MT_FLY
+TEVENTS=e_npc_daemon
+
+DAM=10, 30
+ARMOR=35
+RESOURCES=8 i_ribs_raw, 5 tm_rocks
+FOODTYPE=2 t_arock, 2 t_meat_raw
+DESIRES=c_m_gargoyle_stone,c_GARGOYLE,t_bone,i_gold,t_wand
+AVERSIONS=r_civilization
+
+CATEGORY=Shame
+SUBSECTION=Daemons & Gargoyles
+DESCRIPTION=Gargoyle Brother
+
+ON=@Create
+   COLOR=0006
+   STR={296 325}
+   DEX={86 105}
+   INT={105 110}
+
+   PARRYING={55.0 65.0}
+   MAGERY={50.0 65.0}
+   MAGICRESISTANCE={50.0 65.0}
+   TACTICS={150.0 170.0}
+   WRESTLING={50.0 70.0}
+   TAMING= {250.0 260.0}
+
+   NPC=brain_dragon
+
+   FAME={100 2000}
+   KARMA={-3000 -3999}
+   
+ON = @Hit
+   IF !(<SRC.ACT.BASEID>=m_kell_control)
+      IF ( <SRC.ACT.ICON> == 020D6 )
+            VAR.FORGIVER = <UID>
+            SRC.FOR_MEMORY f_peace
+            VAR.FORGIVER = <SRC.UID>
+            FOR_MEMORY f_peace
+            RETURN 1
+      ENDIF   
+   ENDIF
+ON=@Death
+VAR.gargbrocomplete = 1
+FORCHARS 10
+            IF (<BASEID>==c_m_gargoyle_brother)       
+			   VAR.gargbrocomplete = <eval (<VAR.gargbrocomplete> + 1)>
+            ENDIF
+	IF (<NPC> && (<BASEID>==c_m_gargoyle_brother)&& (<uid>!=<src.act.uid>))
+		IF (<color> = 0006)
+			emote Grow Stronger
+			str = 400
+			SFX 01f8
+			COLOR = 0005
+		ELSEIF (<color> = 0005)
+			emote Grow Stronger
+			str = 500
+			SFX 01f8
+			COLOR = 0004
+		ELSEIF (<color> = 0004)
+			emote Grow Stronger
+			str = 600
+			SFX 01f8
+			COLOR = 0003
+		ELSEIF (<color> = 0003)
+			emote Grow Stronger
+			str = 800
+			SFX 01f8
+			COLOR = 0002
+		ENDIF
+	ENDIF
+ENDFOR
+IF (<VAR.gargbrocomplete> = 2)
+
+f_shamespawn_1
+
+SERV.NEWITEM=i_shame_moongate
+NEW.P=5697,81,5
+NEW.MOREP=5699,59,5
+NEW.ATTR=ATTR_DECAY|ATTR_MOVE_NEVER|ATTR_CAN_DECAY
+NEW.TIMER=120
+ENDIF
+   y_region_loot_death
+   y_region_loot_calculator
+   addlootrandom ,10,25, 1, random_LOWER_MERC
+   loot_STONE_GARGOYLE
+   
+on=@gethit
+IF !(<SRC.ISPLAYER>)
+IF !(<SRC.FLAGS>&statf_pet)
+						   VAR.FORGIVER = <UID>
+						   SRC.FOR_MEMORY f_peace
+							VAR.FORGIVER = <SRC.UID>
+							FOR_MEMORY f_peace
+ENDIF
+ENDIF
+GOTO <SRC.P>
+IF (RAND(3)==1) && (<hits> <= 150)
+FORCHARS 5
+	IF (<NPC> && (<BASEID>==c_m_gargoyle_brother)&& (<uid>!=<src.act.uid>))
+		IF (<hits> >= 80)
+			src.act.say @03e Give me Strength!
+			say  @03e Have some of mine brother
+			src.act.hits = <eval (<src.act.hits> + 20)>
+			SFX 01fd
+		ENDIF
+	ENDIF
+ENDFOR
+ENDIF
+
+ON=@SPELLEFFECT
+    IF ((<argn> == 20) || (<argn> == 39) || (<argn> == 47))
+      RETURN 1
+   ENDIF
+   
+[FUNCTION f_shamespawn_1]
+
+IF (0<var.shamespawn.1>)
+TRY uid.<var.shamespawn.1>.remove
+ENDIF
+
+NEWITEM i_worldgem_bit
+var.shamespawn.1 = <new.uid>
+NEW.P = 5699,58,5
+NEW.TYPE 34
+NEW.AMOUNT 1
+NEW.MORE c_mana_daemon
+NEW.MOREP 1440 1441 5
+NEW.ATTR 00b0
+NEW.TIMER 1
+RETURN 1
+   
+[CHARDEF c_mana_daemon]
+DEFNAME=c_mana_daemon
+ID=c_daemon_w_sword
+NAME=Mana Daemon
+SOUND=snd_MONSTER_DAEMON1
+ICON=i_pet_DAEMON
+ANIM=03fbc7f
+CAN=MT_WALK|MT_FLY|MT_USEHANDS
+TEVENTS=e_npc_daemon
+
+DAM=20, 35
+ARMOR=75
+RESOURCES=9 i_ribs_raw, 8 i_reag_daemon_bone
+FOODTYPE=
+DESIRES=i_gold
+AVERSIONS=r_civilization
+     
+CATEGORY=Monsters
+SUBSECTION=Daemons & Gargoyles
+DESCRIPTION=Mana Daemon
+
+ON=@NPCRESTOCK
+ITEM=i_fig_shadowknight,1
+
+ON=@Create
+   TITLE=the mana Daemon
+
+   NPC=brain_monster
+   FAME={4000 8000}
+   KARMA={-5000 -5999}
+   COLOR=0798
+   STR={900 1355}
+   DEX={96 105}
+   INT={135 140}
+
+   SWORDSMANSHIP={85.0 95.0}
+   PARRYING={85.0 95.0}
+   MAGERY={70.0 85.0}
+   MAGICRESISTANCE={80.0 90.0}
+   MEDITATION={80.0 90.0}
+   TACTICS={80.0 90.0}
+   WRESTLING={80.0 90.0}
+   TAMING={280.0 290.0}
+   
+ON = @HitTry
+   return <try_dispel>
+   
+ON=@spelleffect
+IF (<mana> >= 30)
+if (( <argn> != 53 ) && ( <argn> != 37 ) && ( <argn> != 3 ) && ( <argn> != 31 ))
+FINDLAYER.layer_spell_paralyze.remove
+emote absorb the spell
+RETURN 1
+endif
+ENDIF
+
+ON=@GetHit
+IF !(<SRC.ISPLAYER>)
+IF !(<SRC.FLAGS>&statf_pet)
+						   VAR.FORGIVER = <UID>
+						   SRC.FOR_MEMORY f_peace
+							VAR.FORGIVER = <SRC.UID>
+							FOR_MEMORY f_peace
+ENDIF
+ENDIF
+GOTO <SRC.P>
+IF (RAND(8)==1) && (<mana> <= 50)
+FORCHARS 10
+	IF (!<NPC> && (<uid>!=<src.act.uid>))
+		IF (<mana> >= 10)
+			src.act.emote absorb some power
+			mana = <eval (<mana> - 10)>
+			src.act.mana = <eval (<src.act.mana> + 20)>
+			SFX 01fd
+		ENDIF
+	ENDIF
+ENDFOR
+ENDIF
+IF (<mana> >= 20)
+RETURN 1
+endif
+
+ON=@Death
+
+IF (0<var.shamespawn.1>)
+TRY uid.<var.shamespawn.1>.remove
+ENDIF
+
+f_shamespawn_2
+
+SERV.NEWITEM=i_shame_moongate
+NEW.P=5701,60,5
+NEW.NAME @07a1 To The Next Boss
+NEW.MOREP=5717,57,5
+NEW.ATTR=ATTR_DECAY|ATTR_MOVE_NEVER|ATTR_CAN_DECAY
+NEW.TIMER=120
+
+SERV.NEWITEM=i_shame_moongate
+NEW.P=5697,57,5
+NEW.MOREP=4307,984
+new.name @020 Exit from Shame
+new.color 00020
+NEW.ATTR=ATTR_DECAY|ATTR_MOVE_NEVER|ATTR_CAN_DECAY
+NEW.TIMER=240
+   y_region_loot_death
+   y_region_loot_calculator
+   addlootrandom ,5,20, 1, random_userorskill
+   loot_DAEMON_knight
+   addlootitem ,loot_newrares_Mod,1
+   addlootrandom ,5,10, 1, random_UPPER_MERC
+   loot_DAEMON_knight
+
+ON = @EnvironChange
+  if ( <FLAGS> & statf_conjured )
+     BODY	= c_daemon_w_sword_summoned
+     OBODY	= c_daemon_w_sword_summoned
+  endif
+  
+[FUNCTION f_shamespawn_2]
+
+IF (0<var.shamespawn.2>)
+TRY uid.<var.shamespawn.2>.remove
+ENDIF
+
+NEWITEM i_worldgem_bit
+var.shamespawn.2 = <new.uid>
+NEW.P = 5715,59,5
+NEW.TYPE 34
+NEW.AMOUNT 1
+NEW.MORE c_fire_beetle
+NEW.MOREP 1440 1441 5
+NEW.ATTR 00b0
+NEW.TIMER 1
+RETURN 1
+
+[CHARDEF c_fire_beetle]
+DEFNAME=c_fire_beetle
+NAME=fire beetle
+ID=c_rune_beetle
+ICON=i_pet_runebeetle
+SOUND=snd_monster_tera_drone1
+CAN=MT_WALK|MT_RUN
+DAM=15,38
+ARMOR=85
+DESIRES=r_caves,i_gold,t_gem
+AVERSIONS=r_civilization
+FOODTYPE=25 t_meat_raw
+RESOURCES=1 i_ribs_raw
+BLOODCOLOR=colors_blood
+MOVERATE=60
+TAG.PhysicalDamagePercent=30
+TAG.FireDamagePercent=70
+TEVENTS=e_carnivores2
+CATEGORY=Shame
+SUBSECTION=Mobs
+DESCRIPTION=FireBeetle
+ON=@Create
+	color=00b39
+   NPC=brain_monster
+   FAME={3000 3499}
+   KARMA={-3000 -3499}
+   STR={900 1650}
+   MAXHITS={850 900}
+   DEX={160 220}
+   MAXSTAM={400 720}
+   INT={65 90}
+   MAXMANA={45 60}
+   ANATOMY={55.0 85.0}
+   MAGICRESISTANCE={45.0 60.0}
+   TACTICS={70.0 85.0}
+   WRESTLING={112.0 125.0}
+   MODAR={0 50}
+   RESCOLD={35 45}
+   RESENERGY={35 45}
+   RESFIRE={90 100}
+   RESPOISON={35 45}
+
+ON=@SPELLEFFECT
+
+    IF ((<argn> == 20) || (<argn> == 39) || (<argn> == 47))
+	FINDLAYER.layer_spell_paralyze.remove
+      RETURN 1
+   ENDIF   
+   
+ON=@NPCRESTOCK
+ITEM=i_fig_skithopper,1
+
+ON=@Death
+
+   LOCAL.TMP=<OBJ>
+   OBJ=<UID>
+   FORCHARS 8
+      IF (<ISPLAYER>) || (<FLAGS> &statf_pet)
+         EFFECT 3,i_fx_explode,6,16,0
+		 EFFECT 3,i_fx_explode,6,16,0
+		 EFFECT 3,i_fx_explode,6,16,0
+         SYSMESSAGE @00b83 The flammable goo covering you bursts into flames
+      ENDIF
+   END
+   OBJ=<LOCAL.TMP>
+   
+IF (0<var.shamespawn.2>)
+TRY uid.<var.shamespawn.2>.remove
+ENDIF
+
+f_shamespawn_3
+
+SERV.NEWITEM=i_shame_moongate
+NEW.P=5717,61,5
+NEW.MOREP=5724,75
+NEW.NAME @07a1 To the next boss
+NEW.ATTR=ATTR_DECAY|ATTR_MOVE_NEVER|ATTR_CAN_DECAY
+NEW.TIMER=120
+SERV.NEWITEM=i_shame_moongate
+NEW.P=5713,57,5
+NEW.MOREP=4307,984
+new.name @020 Exit from Shame
+new.color 00020
+NEW.ATTR=ATTR_DECAY|ATTR_MOVE_NEVER|ATTR_CAN_DECAY
+NEW.TIMER=240
+      y_region_loot_death
+   y_region_loot_calculator
+   addlootrandom ,10,20, 1, random_userorskill
+   loot_DAEMON_knight
+   addlootitem ,loot_newrares_Mod,1
+   loot_DAEMON_knight
+   addlootitem ,loot_newrares_Mod,1
+ON=@Hit
+   //Flammable Goo
+   IF (RAND(2)==1)
+      IF (<MANA> >= 5)
+         SRC.SYSMESSAGE @00b83 The flammable goo covering you bursts into flames
+         MANA -= 5
+         SRC.EFFECT 3,i_fx_explode,6,16,0
+		 SRC.EFFECT 3,i_fx_explode,6,16,0
+      ELSE
+         SRC.SYSMESSAGE @00b83 Flammable goo sprays into the air
+      ENDIF
+   ENDIF
+ON = @HitTry
+   return <try_dispel>   
+   
+[FUNCTION f_shamespawn_3]
+
+IF (0<var.shamespawn.3>)
+TRY uid.<var.shamespawn.3>.remove
+ENDIF
+
+NEWITEM i_worldgem_bit
+var.shamespawn.3 = <new.uid>
+NEW.P = 5723,74
+NEW.TYPE 34
+NEW.AMOUNT 1
+NEW.MORE c_shame_switcher
+NEW.MOREP 1440 1441 5
+NEW.ATTR 00b0
+NEW.TIMER 1
+RETURN 1
+
+[EVENTS e_shame_switcher]
+ON=@SPELLEFFECT
+   IF ((<argn> == 20) || (<argn> == 39) || (<argn> == 47) || (<argn> == 39))
+   FINDLAYER.layer_spell_paralyze.remove
+      RETURN 1
+   ENDIF
+   IF (<argn> == 38)
+	IF ( RAND(3) == 1)
+      RETURN 1
+	ENDIF
+   ENDIF   
+ON=@NPCLOOKATCHAR
+if !(<src.npc>)
+	if ( rand(100) > 95)
+		    	   		  DORAND 6
+	    	   			      SAY @0b42 Fresh Meat
+	    	   			      SAY @0b42 Come here maggot
+	    	   			      SAY @0b42 You think you can beat me?!?
+	    	   			      SAY @0b42 Try harder!
+	    	   			      SAY @0b42 You have come all this way to die?
+	    	   			      SAY @0b42 Give Up!
+	    	   			   enddo
+	ENDIF
+ENDIF
+ON = @gethit
+if ( (<SRC.FLAGS> & statf_conjured) )
+						   VAR.FORGIVER = <UID>
+						   SRC.FOR_MEMORY f_peace
+							VAR.FORGIVER = <SRC.UID>
+							FOR_MEMORY f_peace
+							SRC.NEWITEM=i_memory
+						  SRC.ACT.COLOR=memory_harmedby
+						  SRC.ACT.LINK=<src.memoryfindtype(memory_ipet).uid>
+						  SRC.ACT.LAYER=layer_special
+						  SRC.ACT.CONT=<SRC.UID>
+						  src.attack  <src.memoryfindtype(memory_ipet).uid>
+						  src.memoryfindtype(memory_ipet).remove
+						  src.npc = brain_monster
+						  return 1
+endif
+   if (<src.findlayer(layer_hand1).type>==t_weapon_bow )
+      IF ( RAND(4) == 1)
+         return 1
+         findlayer(layer_k_control).TRIGGER @SkillFail
+      ENDIF
+   endif
+   if (<src.findlayer(layer_hand1).type>==t_weapon_xbow )
+      IF ( RAND(4) == 1)
+         return 1
+         findlayer(layer_k_control).TRIGGER @SkillFail
+         ENDIF
+   endif
+   if (<src.findlayer(layer_hand2).type>==t_weapon_bow )
+      IF ( RAND(4) == 1 )
+         return 1
+         findlayer(layer_k_control).TRIGGER @SkillFail
+      ENDIF
+   endif
+   if (<src.findlayer(layer_hand2).type>==t_weapon_xbow )
+      IF ( RAND(4) == 1 ) 
+         return 1
+         findlayer(layer_k_control).TRIGGER @SkillFail
+      ENDIF
+   endif
+ON = @HitTry
+   return <try_dispel>  
+ON = @hit
+	ARGN1 = <EVAL (<ARGN1>+<tag.level>)>
+	
+ON=@Death
+	IF (<tag.level> == 1)
+	  STR		= 300
+	  DEX		= 120
+	  INT		= 60
+	  HITS = <str>
+	  STAM = <dex>
+	  MANA = <int>
+	  TAG.LEVEL = 2
+	  MODAR 15
+	  name = Vampire Bat
+	  PARRYING={30.0 60.0}
+	  MAGERY={30.0 60.0}
+	  MAGICRESISTANCE={30.0 60.0}
+	  TACTICS={30.0 60.0}
+	  WRESTLING={30.0 60.0}
+	  DETECTION={30.0 60.0}
+	  BODY = c_vampire_bat
+	  OBODY = c_vampire_bat
+	  UPDATE
+	  SAY @0b42 That wasnt enough was it?
+	  emote Rise Again
+	  EVENTS=+e_shame_switcher
+	  RETURN 1
+	ELSEIF (<tag.level> == 02)
+	  STR		= 500
+	  DEX		= 140
+	  INT		= 90
+	  	  HITS = <str>
+	  STAM = <dex>
+	  MANA = <int>
+	  TAG.LEVEL = 3
+	  MODAR 30
+	  name = Imp
+	  PARRYING={40.0 70.0}
+	  MAGERY={40.0 70.0}
+	  MAGICRESISTANCE={40.0 70.0}
+	  TACTICS={40.0 70.0}
+	  WRESTLING={40.0 70.0}
+	  DETECTION={40.0 70.0}
+	  BODY = c_mongbat
+	  OBODY = c_mongbat
+	  UPDATE
+	  SAY @0b42 You are making me mad!
+	  emote Rise Again
+	  EVENTS=+e_shame_switcher
+	  RETURN 1
+	ELSEIF (<tag.level> == 3)
+	  STR		= 700
+	  DEX		= 160
+	  INT		= 110
+	  	  HITS = <str>
+	  STAM = <dex>
+	  MANA = <int>
+	  TAG.LEVEL = 4
+	  MODAR 40
+	  name = Gargoyle
+	  PARRYING={50.0 80.0}
+	  MAGERY={50.0 80.0}
+	  MAGICRESISTANCE={50.0 80.0}
+	  TACTICS={50.0 80.0}
+	  WRESTLING={50.0 80.0}
+	  DETECTION={50.0 80.0}
+	  BODY = c_gargoyle
+	  OBODY = c_gargoyle
+	  UPDATE
+	  SAY @0b42 Grrrrrrr
+	  emote Rise Again
+	  EVENTS=+e_shame_switcher
+	  RETURN 1
+	ELSEIF (<tag.level> == 4)
+	  STR		= 900
+	  DEX		= 180
+	  INT		= 130
+	  	  HITS = <str>
+	  STAM = <dex>
+	  MANA = <int>
+	  TAG.LEVEL = 5
+	  MODAR 60
+	  name = Impaler
+	  PARRYING={60.0 90.0}
+	  MAGERY={60.0 90.0}
+	  MAGICRESISTANCE={60.0 90.0}
+	  TACTICS={60.0 90.0}
+	  WRESTLING={60.0 90.0}
+	  DETECTION={60.0 90.0}
+	  BODY = c_impaler
+	  OBODY = c_impaler
+	  UPDATE
+	  SAY @0b42 Pitiful!
+	  emote Rise Again
+	  RETURN 1
+	ELSEIF (<tag.level> == 5)
+	  STR		= 1100
+	  DEX		= 190
+	  INT		= 160
+	  	  HITS = <str>
+	  STAM = <dex>
+	  MANA = <int>
+	  TAG.LEVEL = 6
+	  MODAR 80
+	  name = Daemon Knight
+	  PARRYING={70.0 110.0}
+	  MAGERY={70.0 110.0}
+	  MAGICRESISTANCE={70.0 110.0}
+	  TACTICS={70.0 110.0}
+	  WRESTLING={70.0 110.0}
+	  DETECTION={70.0 110.0}
+	  BODY = c_m_daemon_knight
+	  OBODY = c_m_daemon_knight
+	  UPDATE
+	  SAY @0b42 Pathetic!
+	  emote Rise Again
+	  RETURN 1
+	ELSEIF (<tag.level> == 6)
+	  STR		= 1300
+	  DEX		= 220
+	  INT		= 190
+	  	  HITS = <str>
+	  STAM = <dex>
+	  MANA = <int>
+	  TAG.LEVEL = 7
+	  MODAR 110
+	  name = Bone Daemon
+	  PARRYING={80.0 120.0}
+	  MAGERY={80.0 120.0}
+	  MAGICRESISTANCE={80.0 120.0}
+	  TACTICS={80.0 120.0}
+	  WRESTLING={80.0 120.0}
+	  DETECTION={80.0 120.0}
+	  BODY = c_bone_daemon
+	  OBODY = c_bone_daemon
+	  UPDATE
+	  SAY @0b42 Expected that did we?!
+	  emote Rise Again
+	  RETURN 1
+	ELSEIF (<tag.level> == 7)
+	  STR		= 1500
+	  DEX		= 250
+	  INT		= 210
+	  	  HITS = <str>
+	  STAM = <dex>
+	  MANA = <int>
+	  TAG.LEVEL = 8
+	  MODAR 150
+	  name = Daemon
+	  PARRYING={90.0 140.0}
+	  MAGERY={90.0 140.0}
+	  MAGICRESISTANCE={90.0 140.0}
+	  TACTICS={90.0 140.0}
+	  WRESTLING={90.0 140.0}
+	  DETECTION={90.0 140.0}
+	  BODY = c_daemon
+	  OBODY = c_daemon
+	  UPDATE
+	  SAY @0b42 Time to die
+	  emote Rise Again
+	  RETURN 1
+	ELSEIF (<tag.level> == 8)
+	  STR		= 2000
+	  DEX		= 280
+	  INT		= 250
+	  	  HITS = <str>
+	  STAM = <dex>
+	  MANA = <int>
+	  TAG.LEVEL = 9
+	  MODAR 250
+	  name = Balron
+	  PARRYING={110.0 160.0}
+	  MAGERY={110.0 160.0}
+	  MAGICRESISTANCE={110.0 160.0}
+	  TACTICS={110.0 160.0}
+	  WRESTLING={110.0 160.0}
+	  DETECTION={110.0 160.0}
+	  BODY = c_m_balron
+	  OBODY = c_m_balron
+	  UPDATE
+	  SAY @0b42 Right thats it
+	  emote Rise Again
+	  RETURN 1
+	ELSEIF (<tag.level> == 9)
+	  STR		= 2500
+	  DEX		= 280
+	  INT		= 450
+	  	  HITS = <str>
+	  STAM = <dex>
+	  MANA = <int>
+	  TAG.LEVEL = 10
+	  MODAR 350
+	  name = Ickveil
+	  PARRYING={150.0 200.0}
+	  MAGERY={150.0 200.0}
+	  MAGICRESISTANCE={150.0 200.0}
+	  TACTICS={150.0 200.0}
+	  WRESTLING={150.0 200.0}
+	  DETECTION={150.0 200.0}
+	  BODY = c_shadow_knight
+	  OBODY = c_shadow_knight
+	  UPDATE
+	  SAY @0b42 You've pushed me to the limit now!
+	  emote  finally appears
+	  RETURN 1
+	ELSEIF (<tag.level> == 10)
+	  //die
+      y_region_loot_death
+   y_region_loot_calculator
+   addlootrandom ,25,50, 1, random_userorskill
+   loot_DAEMON_knight
+   addlootitem ,loot_newrares_Mod,1
+   addlootrandom ,5,10, 1, random_userorskill
+   loot_DAEMON_knight
+   addlootitem ,loot_newrares_Mod,1
+   addlootrandom ,5,10, 1, random_UPPER_MERC
+   loot_DAEMON_knight
+   addlootitem ,loot_newrares_Mod,1
+   addlootrandom ,5,10, 1, random_UPPER_MERC
+   loot_DAEMON_knight
+   addlootitem ,random_userorskill,1
+   addlootitem ,i_imperial_supply_key,1
+   addlootitem ,i_fig_sphynx,1
+
+IF (0<var.shamespawn.3>)
+TRY uid.<var.shamespawn.3>.remove
+ENDIF
+
+f_shamespawn_5
+
+SERV.NEWITEM=i_shame_Gate
+NEW.P=5725,77,5
+NEW.MOREP=5731,91
+NEW.NAME @07a1 To The Next Boss
+NEW.ATTR=ATTR_DECAY|ATTR_MOVE_NEVER|ATTR_CAN_DECAY
+NEW.TIMER=240
+SERV.NEWITEM=i_shame_moongate
+NEW.P=5721,73,5
+NEW.MOREP=4307,984
+new.name @020 Exit from Shame
+new.color 00020
+NEW.ATTR=ATTR_DECAY|ATTR_MOVE_NEVER|ATTR_CAN_DECAY
+NEW.TIMER=240
+ENDIF
+
+[FUNCTION f_shamespawn_5]
+
+IF (0<var.shamespawn.5>)
+TRY uid.<var.shamespawn.5>.remove
+ENDIF
+
+NEWITEM i_worldgem_bit
+var.shamespawn.5 = <new.uid>
+NEW.P = 5728,88
+NEW.TYPE 34
+NEW.AMOUNT 1
+NEW.MORE c_m_shame_elemental
+NEW.MOREP 1440 1441 5
+NEW.ATTR 00b0
+NEW.TIMER 1
+
+IF (0<var.shamespawn.6>)
+TRY uid.<var.shamespawn.6>.remove
+ENDIF
+
+NEWITEM i_worldgem_bit
+var.shamespawn.6 = <new.uid>
+NEW.P = 5728,91
+NEW.TYPE 34
+NEW.AMOUNT 1
+NEW.MORE c_m_shame_elemental
+NEW.MOREP 1440 1441 5
+NEW.ATTR 00b0
+NEW.TIMER 1
+
+IF (0<var.shamespawn.7>)
+TRY uid.<var.shamespawn.7>.remove
+ENDIF
+
+NEWITEM i_worldgem_bit
+var.shamespawn.7 = <new.uid>
+NEW.P = 5728,93
+NEW.TYPE 34
+NEW.AMOUNT 1
+NEW.MORE c_m_shame_elemental
+NEW.MOREP 1440 1441 5
+NEW.ATTR 00b0
+NEW.TIMER 1
+
+IF (0<var.shamespawn.8>)
+TRY uid.<var.shamespawn.8>.remove
+ENDIF
+
+NEWITEM i_worldgem_bit
+var.shamespawn.8 = <new.uid>
+NEW.P = 5734,88
+NEW.TYPE 34
+NEW.AMOUNT 1
+NEW.MORE c_m_shame_elemental
+NEW.MOREP 1440 1441 5
+NEW.ATTR 00b0
+NEW.TIMER 1
+
+IF (0<var.shamespawn.9>)
+TRY uid.<var.shamespawn.9>.remove
+ENDIF
+
+NEWITEM i_worldgem_bit
+var.shamespawn.9 = <new.uid>
+NEW.P = 5733,91
+NEW.TYPE 34
+NEW.AMOUNT 1
+NEW.MORE c_m_shame_elemental
+NEW.MOREP 1440 1441 5
+NEW.ATTR 00b0
+NEW.TIMER 1
+
+IF (0<var.shamespawn.10>)
+TRY uid.<var.shamespawn.10>.remove
+ENDIF
+
+NEWITEM i_worldgem_bit
+var.shamespawn.10 = <new.uid>
+NEW.P = 5733,94
+NEW.TYPE 34
+NEW.AMOUNT 1
+NEW.MORE c_m_shame_elemental
+NEW.MOREP 1440 1441 5
+NEW.ATTR 00b0
+NEW.TIMER 1
+
+RETURN 1
+
+[CHARDEF c_shame_switcher]
+NAME		= 1
+ID		= c_chicken
+DEFNAME = c_shame_switcher
+RESOURCES	= 6 i_ribs_raw
+FOODTYPE	= 15 t_meat_raw
+DAM		= 15,40
+ICON=i_pet_dragon
+ARMOR		= 80
+TEVENTS=e_shame_switcher
+DESIRES		= i_gold
+CAN=MT_WALK|MT_FLY
+
+ON=@Create
+TAG.OVERRIDE.REGEN_0=4
+TAG.OVERRIDE.REGEN_1=4
+TAG.OVERRIDE.REGEN_2=4
+  COLOR		= 00783
+  STR		= 175
+  DEX		= 80
+  INT		= 30
+  TAG.LEVEL = 1
+  name = Chicken
+  PARRYING={30.0 50.0}
+  MAGERY={30.0 50.0}
+  MAGICRESISTANCE={30.0 50.0}
+  TACTICS={30.0 50.0}
+  WRESTLING={30.0 50.0}
+  DETECTION={30.0 50.0}
+
+  NPC		= BRAIN_MONSTER
+  KARMA		= {-3000 -1000}
+  FAME		= {100 500}
+
+ON=@NPCRestock
+  CONTAINER	= i_backpack
+  ITEM		= { meager_gold_pile 3 average_gold_pile 1 }
+  ITEM		= { poor_gold_pile 1 meager_gold_pile 1 0 1 }
+	
+CATEGORY	= Shame
+SUBSECTION	= NPC's
+DESCRIPTION	= Switcher
+
+
+[CHARDEF c_m_shame_elemental]
+DEFNAME=c_m_shame_elemental
+NAME=Esheet
+ID=c_elem_air
+SOUND=snd_ELEMENTL_AIRELEM1
+ICON=i_pet_elem_air
+DAM=13,35
+ARMOR=40
+RESOURCES=8 t_magic
+CAN=MT_WALK
+
+DESIRES=r_mountains
+
+CATEGORY=Monsters
+SUBSECTION=Elementals
+DESCRIPTION=Esheet
+
+ON=@Create
+   NPC=brain_monster
+   COLOR=00024
+
+   STR={425 555}
+   DEX={265 285}
+   INT={193 303}
+   FAME={2000 3000}
+   KARMA={-3000 -3999}
+
+   PARRYING={85.0 105.0}
+   MAGERY={85.0 105.0}
+   MAGICRESISTANCE={85.0 105.0}
+   TACTICS={85.0 105.0}
+   WRESTLING={85.0 105.0}
+
+ON = @HitTry
+   return <try_dispel>
+   
+on=@Death
+VAR.esheetcomplete = 1
+FORCHARS 10
+            IF (<BASEID>==c_m_shame_elemental)       
+			   VAR.esheetcomplete = <eval (<VAR.esheetcomplete> + 1)>
+            ENDIF
+	IF (<ISNPC> && (<BASEID>==c_m_shame_elemental)&& (<uid>!=<src.act.uid>))
+		IF (<color> = 00024)
+			emote spin faster
+			str = 600
+			WRESTLING=110
+			SFX 01f8
+			COLOR = 00023
+		ELSEIF (<color> = 00023)
+			emote spin faster
+			str = 700
+			WRESTLING=115
+			SFX 01f8
+			COLOR = 00022
+		ELSEIF (<color> = 00022)
+			emote spin faster
+			str = 800
+			WRESTLING=120
+			SFX 01f8
+			COLOR = 00021
+		ELSEIF (<color> = 00021)
+			emote spin faster
+			WRESTLING=150
+			str = 900
+			SFX 01f8
+			COLOR = 00020
+		ENDIF
+	ENDIF
+ENDFOR
+IF (<VAR.esheetcomplete> = 2)
+	FORCHARS 15
+		IF (!<NPC> && (<VISUALRANGE><=17))
+		VISUALRANGE 18
+		UPDATE
+		EVENTS -e_shame_hider
+		ENDIF
+	ENDFOR
+
+IF (0<var.shamespawn.5>)
+TRY uid.<var.shamespawn.5>.remove
+ENDIF
+
+IF (0<var.shamespawn.6>)
+TRY uid.<var.shamespawn.6>.remove
+ENDIF
+
+IF (0<var.shamespawn.7>)
+TRY uid.<var.shamespawn.7>.remove
+ENDIF
+
+IF (0<var.shamespawn.8>)
+TRY uid.<var.shamespawn.8>.remove
+ENDIF
+
+IF (0<var.shamespawn.9>)
+TRY uid.<var.shamespawn.9>.remove
+ENDIF
+
+IF (0<var.shamespawn.10>)
+TRY uid.<var.shamespawn.10>.remove
+ENDIF
+
+f_shamespawn_4
+
+SERV.NEWITEM=i_shame_moongate
+NEW.P=5733,93,5
+NEW.MOREP=5739,50,5
+NEW.NAME @07a1 To The Final Boss
+NEW.ATTR=ATTR_DECAY|ATTR_MOVE_NEVER|ATTR_CAN_DECAY
+NEW.TIMER=120
+SERV.NEWITEM=i_shame_moongate
+NEW.P=5729,89,5
+NEW.MOREP=4307,984
+new.name @020 Exit from Shame
+new.color 00020
+NEW.ATTR=ATTR_DECAY|ATTR_MOVE_NEVER|ATTR_CAN_DECAY
+NEW.TIMER=240
+ENDIF
+   y_region_loot_death
+   y_region_loot_calculator
+   loot_EFREET
+   loot_EFREET
+
+ON = @gethit
+IF !(<SRC.ISPLAYER>)
+IF !(<SRC.FLAGS>&statf_pet)
+						   VAR.FORGIVER = <UID>
+						   SRC.FOR_MEMORY f_peace
+							VAR.FORGIVER = <SRC.UID>
+							FOR_MEMORY f_peace
+ENDIF
+ENDIF
+GOTO <SRC.P>
+IF (!<src.ISNPC> && (<src.VISUALRANGE>>=2))
+src.VISUALRANGE 1
+src.EVENTS +e_shame_hider
+ENDIF
+if ( (<SRC.FLAGS> & statf_conjured) )
+						   VAR.FORGIVER = <UID>
+						   SRC.FOR_MEMORY f_peace
+							VAR.FORGIVER = <SRC.UID>
+							FOR_MEMORY f_peace
+							SRC.NEWITEM=i_memory
+						  SRC.ACT.COLOR=memory_harmedby
+						  SRC.ACT.LINK=<src.memoryfindtype(memory_ipet).uid>
+						  SRC.ACT.LAYER=layer_special
+						  SRC.ACT.CONT=<SRC.UID>
+						  src.attack  <src.memoryfindtype(memory_ipet).uid>
+						  src.memoryfindtype(memory_ipet).remove
+						  src.npc = brain_monster
+						  return 1
+endif
+   if (<src.findlayer(layer_hand1).type>==t_weapon_bow )
+      IF ( RAND(4) == 1)
+         return 1
+         findlayer(layer_k_control).TRIGGER @SkillFail
+      ENDIF
+   endif
+   if (<src.findlayer(layer_hand1).type>==t_weapon_xbow )
+      IF ( RAND(4) == 1)
+         return 1
+         findlayer(layer_k_control).TRIGGER @SkillFail
+         ENDIF
+   endif
+   if (<src.findlayer(layer_hand2).type>==t_weapon_bow )
+      IF ( RAND(4) == 1 )
+         return 1
+         findlayer(layer_k_control).TRIGGER @SkillFail
+      ENDIF
+   endif
+   if (<src.findlayer(layer_hand2).type>==t_weapon_xbow )
+      IF ( RAND(4) == 1 ) 
+         return 1
+         findlayer(layer_k_control).TRIGGER @SkillFail
+      ENDIF
+   endif
+
+ON=@SPELLEFFECT
+IF (!<src.NPC> && (<src.VISUALRANGE>>=2))
+src.VISUALRANGE 1
+src.EVENTS +e_shame_hider
+ENDIF
+    IF ((<argn> == 20) || (<argn> == 39) || (<argn> == 47))
+      RETURN 1
+   ENDIF
+   
+[FUNCTION f_shamespawn_4]
+
+IF (0<var.shamespawn.4>)
+TRY uid.<var.shamespawn.4>.remove
+ENDIF
+
+NEWITEM i_worldgem_bit
+var.shamespawn.4 = <new.uid>
+NEW.P = 5739,51
+NEW.TYPE 34
+NEW.AMOUNT 1
+NEW.MORE c_shame_dragon
+NEW.MOREP 1440 1441 5
+NEW.ATTR 00b0
+NEW.TIMER 1
+RETURN 1
+   
+[EVENTS e_shame_dragon]
+ON = @Hit
+IF ( RAND(10) == 1)
+	IF !(<SRC.FLAGS> &statf_poisoned)
+	SRC.SPELLEFFECT S_POISON,9000,<UID>
+	endif
+ENDIF
+ 
+   
+ON = @GetHit
+IF (RAND(70)==1) && (<hits> <= 30000)
+	FORCHARS 10
+		IF (!<NPC> && (<uid>!=<src.act.uid>))
+			IF (<hits> >= 40)
+				src.act.say @03e Give me Strength!
+				emote  feel weakened
+				src.act.hits = <eval (<src.act.hits> + 30)>
+				hits = <eval (<hits> - 30)>
+				SFX 01fd
+			ENDIF
+		ENDIF
+	ENDFOR
+ENDIF
+if ( (<SRC.FLAGS> & statf_conjured) )
+						   VAR.FORGIVER = <UID>
+						   SRC.FOR_MEMORY f_peace
+							VAR.FORGIVER = <SRC.UID>
+							FOR_MEMORY f_peace
+							SRC.NEWITEM=i_memory
+						  SRC.ACT.COLOR=memory_harmedby
+						  SRC.ACT.LINK=<src.memoryfindtype(memory_ipet).uid>
+						  SRC.ACT.LAYER=layer_special
+						  SRC.ACT.CONT=<SRC.UID>
+						  src.attack  <src.memoryfindtype(memory_ipet).uid>
+						  src.memoryfindtype(memory_ipet).remove
+						  src.npc = brain_monster
+						  return 1
+endif   
+IF !(<SRC.ISPLAYER>)
+IF !(<SRC.FLAGS>&statf_pet)
+						   VAR.FORGIVER = <UID>
+						   SRC.FOR_MEMORY f_peace
+							VAR.FORGIVER = <SRC.UID>
+							FOR_MEMORY f_peace
+ENDIF
+ENDIF
+GOTO <SRC.P>
+ON = @HitTry
+IF ( RAND(10) == 1)
+	IF !(<SRC.FLAGS> &statf_poisoned)
+	SRC.SPELLEFFECT S_POISON,9000,<UID>
+	endif
+ENDIF
+   return <try_dispel>
+
+ON = @PersonalSpace
+  if ( (<FLAGS> & statf_pet) || <SRC.ISGM> || <SRC.NPC> || <region.guarded> )
+     return 1
+  endif
+  if ( (<FLAGS> & statf_freeze) && !<SRC.NPC> )	// stepped on by a player
+     findlayer(LAYER_SPELL_Paralyze).remove
+  endif
+  IF !( <ACT> == 04fffffff )
+     if ( (<FLAGS> & statf_war) && !<ACT.NPC> )	// already fighting a player
+        return 1
+     endif
+  ENDIF
+  ATTACK
+  return 1
+
+ON = @NPCSeeNewPlayer
+  if ( (<FLAGS> & statf_pet) || <SRC.ISGM> || <SRC.NPC> || <region.guarded> )
+     return 1
+  endif
+  IF !( <ACT> == 04fffffff )
+     SERV.LOG <ACT>
+     if ( (<FLAGS> & statf_war) && !<ACT.NPC> )	// already fighting a player
+        return 1
+     endif
+  ENDIF
+  ATTACK
+  return 1
+
+ON = @SpellEffect
+  IF ((<argn> == 20) || (<argn> == 39) || (<argn> == 47))
+  FINDLAYER.layer_spell_paralyze.remove
+     emote resist your spell
+     return 1
+  endif
+
+
+
+[CHARDEF c_shame_dragon]
+ID		= c_dragon_red
+DEFNAME		= c_shame_dragon
+NAME		= Imperial Dragon
+SOUND		= snd_MONSTER_DRAGON1
+ICON		= i_pet_DRAGON
+ANIM		= 03f9c7f
+CAN		= MT_WALK|MT_RUN|MT_FLY|MT_FIRE_IMMUNE
+DAM		= 35,50
+ARMOR		= 120
+RESOURCES	= 20 i_ribs_raw, 8 i_reag_dragon_blood, 1 i_dragonhide_red, 1 i_reag_Dragons_heart
+FOODTYPE	= 80 t_meat_raw,t_gem
+DESIRES		= i_gold
+AVERSIONS	= r_water,r_civilization
+TEVENTS		= e_shame_dragon
+
+CATEGORY	= Monsters
+SUBSECTION	= Dragons and Drakes
+DESCRIPTION	= Shame Dragon
+
+ON = @Create
+	NPC		= brain_dragon
+	COLOR		= 0799
+	TAG.OVERRIDE.REGEN_0=5
+	TAG.OVERRIDE.REGEN_1=5
+	TAG.OVERRIDE.REGEN_2=5
+	TAG.OVERRIDE.REGENVAL_0=8
+	TAG.OVERRIDE.REGENVAL_1=8
+	TAG.OVERRIDE.REGENVAL_2=8
+	FAME=10000
+	KARMA=-10000
+	STR=590
+	MAXHITS=32500
+	DEX=400
+	INT=1000
+	MAXMANA=5000
+	TACTICS=130.0
+	WRESTLING=130.0
+	EVALUATINGINTEL=120.0
+	MagicResistance=150.0
+  
+ON=@Death
+serv.log Shame Dragon killed by <src.name> <src.account>
+   y_region_loot_death
+   y_region_loot_calculator
+   loot_DRAGON
+   loot_dragonrares_Med
+addlootrandom ,5,10, 1, random_MERC
+   loot_BALRON
+   addlootitem ,loot_newrares_hard,1
+   addlootrandom ,15,30,1,random_rare_3  
+   addlootrandom ,2,2, 1, random_UPPER_MERC
+   loot_BALRON
+   addlootitem ,loot_newrares_hard,1
+   addlootrandom ,15,30,1,random_rare_3  
+   addlootrandom ,2,2, 1, random_UPPER_MERC
+   loot_BALRON
+   addlootitem ,loot_newrares_hard,1
+   addlootrandom ,15,30,1,random_rare_3  
+   addlootrandom ,2,2, 1, random_UPPER_MERC
+   loot_BALRON
+   addlootitem ,loot_newrares_hard,1
+   addlootrandom ,15,30,1,random_rare_3  
+   addlootrandom ,2,2, 1, random_UPPER_MERC
+   loot_BALRON
+   addlootitem ,loot_newrares_hard,1
+   addlootrandom ,15,30,1,random_rare_3  
+   addlootrandom ,2,2, 1, random_UPPER_MERC
+      loot_BALRON
+   addlootitem ,loot_newrares_hard,1
+   addlootrandom ,15,30,1,random_rare_3  
+   addlootrandom ,2,2, 1, random_UPPER_MERC
+   loot_BALRON
+   addlootitem ,loot_newrares_hard,1
+   addlootrandom ,15,30,1,random_rare_3  
+   addlootrandom ,2,2, 1, random_UPPER_MERC
+      loot_BALRON
+   addlootitem ,loot_newrares_hard,1
+   addlootrandom ,15,30,1,random_rare_3  
+   addlootrandom ,2,8, 1, random_userorskill
+   loot_BALRON
+   addlootitem ,loot_newrares_hard,1
+   addlootrandom ,15,30,1,random_rare_3  
+   addlootrandom ,2,8, 1, random_userorskill
+      loot_BALRON
+   addlootitem ,loot_newrares_hard,1
+   addlootrandom ,15,30,1,random_rare_3  
+   addlootrandom ,2,8, 1, random_userorskill
+    addlootrandom ,1,2, 1, random_userorskill
+   loot_BALRON
+   addlootitem ,loot_newrares_hard,1
+   addlootitem ,i_fig_treefellow,1
+   addlootrandom ,15,30,1,random_rare_3  
+   addlootrandom ,2,2, 1, random_UPPER_MERC
+
+IF (0<var.shamespawn.4>)
+TRY uid.<var.shamespawn.4>.remove
+ENDIF
+
+SERV.NEWITEM=i_shame_moongate
+NEW.P=5737,49,5
+NEW.MOREP=4307,984
+new.name @020 Exit from Shame
+new.color 00020
+NEW.ATTR=ATTR_DECAY|ATTR_MOVE_NEVER|ATTR_CAN_DECAY
+NEW.TIMER=600
+
+[eof]

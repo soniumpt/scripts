@@ -1,0 +1,616 @@
+//********************************************************************//
+//                             E_ALL_NPC                              //
+//********************************************************************//
+//12-10-05 - Raist - Added a line to log what npc gets killed and by who hope this will help track down crashes
+//08-27-06 - Wren - Added Call Guards Event to restrict when npcs can call guards on O/C
+// 18/08/18 - Wigifer - Added f_central_loot call to e_all_npc.
+// 23/08/18 - Wigifer - Replaced e_all_npc @HIT and @HITMISS to use the new system in j_MAIN_combat.scp.
+
+[ITEMDEF b_shove_stamnuker]
+ID=01f29
+NAME=Boo's Shove Timer
+TYPE=t_eq_script
+
+ON=@EQUIP
+   // Disabled this check because it mainly triggers when stepping on npcs. The timer check should be enough to guess abuse.
+   //IF !(<CONT.ISNPC>)
+   //IF (<cont.stamina> < <cont.dex>)
+	//	serv.log :STAMINA: <cont.account> <cont.name> <cont.uid> Shoving when stamina is lower than dex. <cont.stamina> stamina and <cont.dex> dex
+   //endif
+   //ENDIF
+   TIMER = 1
+   MORE1 = 5
+   
+
+ON=@TIMER
+    IF !(<CONT.ISNPC>)
+    IF (<eval <more1>> > 100)
+	    serv.log :STAMINA TEST: <cont.account> <cont.name> <cont.uid> Shoving more than possible? <cont.stamina> stamina and <cont.dex> dex. Must have at least 200!
+	    serv.allclients f_to_staff125a :TEST: <cont.name> <cont.uid> shoving the same as someone with at least 200 stamina. <cont.stamina> stamina and <cont.dex> dex.
+	endif
+	ENDIF
+    CONT.STAMINA = <eval ( <CONT.STAMINA> - <more1>)>
+    REMOVE
+	RETURN 1
+    
+
+[EVENTS e_all_npc]
+ON=@CallGuards
+   IF ( <SRC.ISORDER> && !<SRC.ISMURDERER> && !<SRC.ISKARMAEVIL> )
+      IF (<LOOP_FIGHTERS_GUARDS <SRC.UID>> = 0)
+         RETURN 1
+      ENDIF
+   ELSEIF ( <SRC.ISCHAOS> && !<SRC.ISMURDERER> && !<SRC.ISKARMAEVIL> )
+      IF (<LOOP_FIGHTERS_GUARDS <SRC.UID>> = 0)
+         RETURN 1
+      ENDIF
+   ENDIF
+   RETURN 0
+   
+ON=@Death
+   F_CENTRAL_LOOT
+   IF ( <region_ilshenar>)
+   	 f_ilshenar_death
+   ENDIF
+   f_convert_to_harmedby
+
+// Paragons here —> Making it the long way, easier to edit and visualize. :)
+
+// IF (RAND(100) < 3)
+//  IF !(STRMATCH(*Shame*,<REGION.NAME>))
+//   IF !(<FLAGS>&STATF_PET)
+//    IF (((<FLAGS>&statf_spawned) && (!(<ISEVENT.e_paragon>))) || (<ARGN1>))
+//     IF (<NPC> == brain_monster) || (<NPC> == brain_dragon) || (<NPC> == brain_undead)
+//      IF !(<FLAGS>&STATF_CONJURED)
+//       IF !(STRMATCH(*PvP Realm 1*,<REGION.NAME>))
+//	IF !(STRMATCH(*PvP Realm 2*,<REGION.NAME>))
+//	 IF !(STRMATCH(*Trammel*,<REGION.NAME>))
+//	  IF !(STRMATCH(*Newbie Dungeon*,<REGION.NAME>))
+//	   IF !(STRMATCH(*Acid Dungeon [Boss Room]*,<REGION.NAME>))
+//	    IF !(STRMATCH(*Deceit*,<REGION.NAME>))
+//	F_CREATE_PARAGON125a
+//	RETURN 1 
+// ENDIF
+//  ENDIF
+  //ENDIF
+    //ENDIF
+     //ENDIF
+      //ENDIF
+      // ENDIF
+	//ENDIF
+	 //ENDIF
+	  //ENDIF
+	   //ENDIF
+	    //ENDIF
+
+ON=@DeathCorpse
+   argo.tag.corpsefame=<fame>
+   
+ON=@PersonalSpace
+
+if ( <ISHIDDEN> )
+	ARGN1=0
+	return 0
+elseif  ( <ISINVIS> )
+	ARGN1=0
+	return 0
+elseif  ( <SRC.ISGM> )
+	ARGN1=0
+	return 0
+elseif ((<BASEID>=C_HORSE_GRAY_DONATOR)||(<BASEID>=C_HORSE_BROWN_LT_DONATOR)||(<BASEID>=C_armor_steed_DONATOR)||(<BASEID>=C_HORSE_BROWN_DK_DONATOR)||(<BASEID>=C_HORSE_TAN_DONATOR)||(<BASEID>=C_LLAMA_DONATOR)||(<BASEID>=C_OSTARD_FOREST_DONATOR)||(<BASEID>=C_OSTARD_DESERT_DONATOR)||(<BASEID>=C_OSTARD_ZOSTRICH_DONATOR)) 
+	ARGN1=0
+	return 0
+endif
+
+if !(<SRC.FINDID.b_shove_stamnuker.UID>)
+   SERV.NEWITEM b_shove_stamnuker
+   ARGN1 = 0
+   NEW.EQUIP <SRC.UID>
+   src.sysmessage You shove <name> out of the way
+   RETURN 0
+ELSE
+	IF (<eval ( <SRC.STAMINA> - <SRC.FINDID(b_shove_stamnuker).more1>)> > <eval (<SRC.STAMINA>/2)>) 
+	   ARGN1 = 0
+	   SRC.FINDID(b_shove_stamnuker).TIMER = 1
+	   SRC.FINDID(b_shove_stamnuker).MORE = <eval (<SRC.FINDID(b_shove_stamnuker).MORE> + (<eval <SRC.STAMINA>/20>))> 
+	   src.sysmessage You shove <name> out of the way
+	   RETURN 0
+   ELSE
+   	src.sysmessage You dont have enough energy to push <name> out of the way
+   	RETURN 1
+   ENDIF
+endif
+
+
+//IF ( <SRC.TAG.STAMBACKUP> > 5 )
+//           ARGN1 = 0
+//	   src.sysmessage You shove <name> out of the way2
+//	   SRC.TAG.STAMBACKUP=<eval ( <SRC.TAG.STAMBACKUP> - 5)>
+//	   SRC.STAMINA = <SRC.TAG.STAMBACKUP>
+//	   SRC.TAG.STAMBACKUP
+//	   RETURN 0
+//
+//ELSE
+// 	   src.sysmessage You dont have enough energy to push <name> out of the way
+// 	   SRC.STAMINA = <SRC.TAG.STAMBACKUP>
+//	   SRC.TAG.STAMBACKUP
+//           return 1
+//ENDIF
+//RETURN 0
+
+
+ON = @ItemEquip
+   f_armour_effect_update 0
+
+ON = @ItemUnEquip
+   f_armour_effect_update <ACT.UID>
+
+
+ON = @Click
+//   FIXNPCSTATS
+   if ( strmatch( "Lord Blackthorn*", "<SRC.REGION.NAME>" ) )
+	IF (<SRC.ISPLAYER>)
+		KARMA = -100
+		EVENTS +e_turnevil
+	ENDIF
+   ENDIF
+   if !( 0<TAG.UPDATED_ARMOUR> )
+      f_armour_effect_update 0
+      TAG.UPDATED_ARMOUR	= 1
+   endif
+ 
+   if ( (<FLAGS> & statf_pet) && (<NPC> != brain_vendor) )
+     if ( (<SRC.ANIMALLORE> >= 1000) || <SRC.ISGM> )
+        MESSAGE [<memoryfindtype( memory_ipet ).name>'s]
+     elseif ( <FLAGS> & statf_conjured )
+        MESSAGE [summoned]
+     else
+        MESSAGE [controlled]
+     endif
+   endif
+
+  if (<FAME> >= 9500
+     FAME=9499
+  endif
+
+// fix for spellcasters always casting - alternate between casting and not casting
+ON = @SpellCast
+//  SRC.FIXNPCSTATS
+  if ( <ISDRAGON> )
+    dorand 2 
+      SRC.MANA	= <SRC.INT> 
+      SRC.MANA	= 0 
+    enddo
+  else
+    dorand 2
+      SRC.MANA	= <SRC.INT> 
+      SRC.MANA	= 0 
+    enddo
+  endif
+ 
+ON = @SpellEffect
+//   FIXNPCSTATS
+   IF ( <argn1>==7 )
+      SERV.LOG NPC <SRC.UID>:<SRC.NAME> successfully bypassed the Reactive Armor scripts until now...
+      RETURN 1
+   ENDIF
+ 
+   VAR.ARGN	= <argn1>
+   VAR.ARGN2	= <argn2>
+   return <f_spell_effect>
+
+ON = @GetHit
+//   SRC.FLAGS=<SRC.FLAGS>&~statf_reactive
+//   FIXNPCSTATS   
+   if ( <SRC.UID> == <UID> )
+      return 0
+   endif
+   IF ( <region_ilshenar>)
+   	IF (<SRC.REGION.GUARDED>)
+	   go <home>
+	ENDIF
+   ENDIF
+   // hurt the master fakedly
+   if ( 0 ) // ( !<SRC.NPC> && (<FLAGS> & statf_pet) )
+      if ( <memoryfindtype( memory_ipet ).LINK> != <SRC.UID> )
+         LOCAL.THIS_ACT	= <ACT>
+         ACT		= <memoryfindtype( memory_ipet ).link>
+         LOCAL.HITS	= <ACT.HITS>
+         LOCAL.FLAGS	= <ACT.FLAGS>
+         ACT.DAMAGE 1
+         ACT.FLAGS	= <LOCAL.FLAGS>
+         ACT.HITS	= <LOCAL.HITS>
+         ACT	= <LOCAL.THIS_ACT>
+      endif
+   endif 
+
+ON=@HITMISS
+//   SRC.FIXNPCSTATS
+   f_combat_trytohit <SRC>
+   RETURN 1
+   
+ON=@HIT
+//   SRC.FIXNPCSTATS   
+   f_combat_trytohit <SRC>
+   RETURN 1
+
+ON = @NPCSeeNewPlayer
+   if ( strmatch( "Lord Blackthorn*", "<SRC.REGION.NAME>" ) )
+	IF (<SRC.ISPLAYER>)
+		KARMA = -100
+		EVENTS +e_turnevil
+	ENDIF
+   ENDIF
+   SRC.EVENTS -e_fame_karma_gain
+   if ( <MEMORY> & ( MEMORY_IRRITATEDBY | MEMORY_HARMEDBY ) )
+      HITS	= <HITS>+1
+      DAMAGE 1, 0, <SRC.UID>
+      return 1
+   endif
+   return 1
+
+ON = @NPCRefuseItem
+  if ( <NPC> == brain_vendor )
+     SAY Thank you, but I cannot accept that. Buy me something, if you must.
+     return 1
+  endif
+  RETURN 1
+  
+// change weapons as needed
+ON=@FightSwing_unused
+   if ( <SRC.DISTANCE> > 2 )
+      if ( <findtype(t_bow).uid> )
+         findtype(t_bow).CONT	= <UID>
+      endif
+      return 0
+   endif
+   
+   if ( <findtype(t_shield).uid> )
+     findtype(t_shield).CONT	= <UID>
+   endif 
+
+   if ( 0 )
+   elseif ( <findtype(t_weapon_sword).uid> )
+     findtype(t_weapon_sword).CONT	= <UID>
+   elseif ( <findtype(t_weapon_mace_sharp).uid> )
+     findtype(t_weapon_mace_sharp).CONT	= <UID>
+   elseif ( <findtype(t_weapon_mace_smith).uid> )
+     findtype(t_weapon_mace_smith).CONT	= <UID>
+   elseif ( <findtype(t_weapon_fence).uid> )
+     findtype(t_weapon_fence).CONT	= <UID>
+   endif 
+
+ON=@ReceiveItem
+IF (<ISMYPET> && (STRMATCH(*<ARGO.TYPE>*,<FOODTYPE>)) )
+	IF (<FOOD> <= 90)
+		emote eat the <ARGO.name>
+		FOOD = <FOOD> + 1
+		ARGO.REMOVE
+		RETURN 1
+	ELSE
+		EMOTE looks full
+		RETURN 1
+	ENDIF	
+ENDIF
+
+IF ( !(STRMATCH(*<ARGO.TYPE>*,<FOODTYPE>)) )
+ If ((<BODY> = c_llama) || (<BODY> = c_ostard_zostrich) || (<BODY> = c_ostard_desert) || (<BODY> = c_ostard_forest) || (<BODY> = c_horse_tan) || (<BODY> = c_horse_gray) || (<BODY> = c_horse_brown_lt) || (<BODY> = c_horse_brown_dk)) 
+  RETURN 1
+  ENDIF
+ENDIF  
+   If ((<STR> < 250) && (<ARGO.TYPE> = t_food_poisoned) && ((<BODY> = c_llama) || (<BODY> = c_ostard_zostrich) || (<BODY> = c_ostard_desert) || (<BODY> = c_ostard_forest) || (<BODY> = c_horse_tan) || (<BODY> = c_horse_gray) || (<BODY> = c_horse_brown_lt) || (<BODY> = c_horse_brown_dk) || (<BODY> = c_horse_pack) || (<BODY> = c_llama_pack)) )
+      SRC.ACT = <ARGO.UID>
+      SRC.ACT.REMOVE
+
+      If (!<RESTEST 1 i_poison_food2>)
+         SERV.NEWITEM i_poison_food2
+         NEW.CONT = <UID>
+      EndIf
+   Else
+      SRC.ACT = <ARGO.UID>
+      SRC.ACT.CONT = <SRC.UID>
+      SRC.SYSMESSAGE You put the <ARGO.NAME> in your pack.
+   EndIf
+//[FUNCTION FIXNPCSTATS]
+//   IF !<NPC>
+//      RETURN 1  //This function should not be called by Player Chars
+//   ENDIF
+//   
+//   IF (<STR> <= 0)
+//      STR = <OSTR>
+//   ENDIF
+//   
+//   IF (<DEX> <= 0)
+//      DEX = <ODEX>
+//   ENDIF
+//   
+//   IF (<INT> <= 0)
+//      INT = <OINT>  
+//   ENDIF
+//
+//   RETURN 1
+   
+   
+
+//********************************************************************//
+//                               SCREECH                              //
+//********************************************************************//
+[FUNCTION try_screech_one]
+  if ( <DISTANCE> > 10 )
+     return 0
+  endif
+  SYSMESSAGE The screech of the Harpy hurts you.
+  VAR.DAM	= <eval( { 3 10 } )>
+  if ( <HITS> < <VAR.DAM> )
+     HITS	= 0
+  else
+     HITS	= <eval (<hits> - <var.DAM>)>
+  endif
+
+  
+[FUNCTION try_screech]
+  if ( (<HITS> > ((<STR>*3)/4)) || rand(8) )
+     return 0
+  endif
+  EMOTE screech
+  REGION.ALLCLIENTS try_screech_one
+
+
+[EVENTS e_npc_harpy]
+ON = @HitTry
+  try_screech
+ON = @GetHit
+  try_screech
+
+
+
+//********************************************************************//
+//                               FRENZY                               //
+//********************************************************************//
+[FUNCTION try_frenzy]
+  if ( <HITS> > ((<STR>*3)/4) )
+     if ( 0<TAG.ORIG_DEX> )
+        COLOR		= 0
+	DEX		= <TAG.ORIG_DEX>
+	TAG.ORIG_DEX	=
+     endif
+     return 0
+  endif
+  if ( (<COLOR> == 091) || rand(2) )
+     return 0
+  endif
+  COLOR		= 091
+  TAG.ORIG_DEX	= <DEX>
+  DEX		= (<DEX> * 3)
+  TACTICS	= (<TACTICS> + 30.0)
+  EMOTE going berserk
+
+
+[EVENTS e_npc_frenzy]
+ON = @HitTry
+  try_frenzy
+ON = @GetHit
+  try_frenzy
+ON = @Death
+  COLOR	=
+
+
+
+//********************************************************************//
+//                               DISPEL                               //
+//********************************************************************//
+[FUNCTION try_dispel]
+if (!(<SRC.FLAGS> & statf_conjured) || (<SRC.BASEID> == c_undead_dragon))
+return 0
+endif
+
+if ( rand(100) > 30 ) 
+return 1
+endif
+
+   SAY An Ort
+   IF ( <SRC.findid.i_rune_magic_reflection> )
+      SRC.CONSUME i_rune_magic_reflection
+      SRC.EFFECT 3, i_fx_glow, 6, 15, 1
+      return 0
+   endif
+
+   dispel_all
+   SRC.REMOVE
+   RETURN 1
+
+
+[EVENTS e_dispeller]
+ON = @HitTry
+   return <try_dispel>
+
+
+[FUNCTION dispel_all]
+FORCHARS 12
+IF (<UID>!=<SRC>)
+EFFECT 3, i_fx_glow_spike, 1, 12, 0, 0487
+SPELLEFFECT S_MASS_DISPEL ,2000,<uid>
+ENDIF
+ENDFOR
+
+
+
+//********************************************************************//
+//                               DRAGON                               //
+//********************************************************************//
+[EVENTS e_npc_dragon]
+ON = @Hit
+   IF !(<SRC.ACT.BASEID>=m_kell_control)
+      IF ( <SRC.ACT.ICON> == 020D6 )
+         IF ( <EVAL RAND(3)> = 1 )
+            VAR.FORGIVER = <UID>
+            SRC.FOR_MEMORY f_peace
+            VAR.FORGIVER = <SRC.UID>
+            FOR_MEMORY f_peace
+            RETURN 1
+         ELSE
+            ARGN1=<EVAL (<ARGN1>/4)>
+         ENDIF
+      ENDIF   
+   ENDIF
+   
+ON = @GetHit
+   IF ( <SRC.ICON> == 020D6 )
+         VAR.FORGIVER = <SRC.UID>
+         FOR_MEMORY f_peace
+   ENDIF
+
+ON = @HitTry
+   return <try_dispel>
+
+ON = @PersonalSpace
+  if ( (<FLAGS> & statf_pet) || <SRC.ISGM> || <SRC.NPC> || <region.guarded> )
+     return 1
+  endif
+  if ( (<FLAGS> & statf_freeze) && !<SRC.NPC> )	// stepped on by a player
+     findlayer(LAYER_SPELL_Paralyze).remove
+  endif
+  IF !( <ACT> == 04fffffff )
+     if ( (<FLAGS> & statf_war) && !<ACT.NPC> )	// already fighting a player
+        return 1
+     endif
+  ENDIF
+  ATTACK
+  return 1
+
+ON = @NPCSeeNewPlayer
+  if ( (<FLAGS> & statf_pet) || <SRC.ISGM> || <SRC.NPC> || <region.guarded> )
+     return 1
+  endif
+  IF !( <ACT> == 04fffffff )
+     if ( (<FLAGS> & statf_war) && !<ACT.NPC> )	// already fighting a player
+        return 1
+     endif
+  ENDIF
+  ATTACK
+  return 1
+
+ON = @SpellEffect
+  if ( (<argn1> == 20) || (<argn1> == 39) )
+     emote resist your spell
+     return 1
+  endif
+
+
+//********************************************************************//
+//                               DAEMON                               //
+//********************************************************************//
+[EVENTS e_npc_daemon]
+ON = @HitTry
+   return <try_dispel>
+
+ON = @PersonalSpace
+  if ( (<FLAGS> & statf_pet) || <SRC.ISGM> || <SRC.NPC> || <region.guarded> )
+     return 1
+  endif
+  if ( (<FLAGS> & statf_freeze) && !<SRC.NPC> )	// stepped on by a player
+     findlayer(LAYER_SPELL_Paralyze).remove
+  endif
+  IF !( <ACT> == 04fffffff )
+     if ( (<FLAGS> & statf_war) && !<ACT.NPC> )	// already fighting a player
+        return 1
+     endif
+  ENDIF
+  ATTACK
+  return 1
+
+ON = @NPCSeeNewPlayer
+  if ( (<FLAGS> & statf_pet) || <SRC.ISGM> || <SRC.NPC> || <region.guarded> )
+     return 1
+  endif
+  IF !( <ACT> == 04fffffff )
+     if ( (<FLAGS> & statf_war) && !<ACT.NPC> )	// already fighting a player
+        return 1
+     endif
+  ENDIF
+  ATTACK
+  return 1
+
+
+ON = @SpellEffect
+  if ( (<argn1> == 20) || (<argn1> == 39) )
+     emote resist your spell
+     return 1
+  endif
+
+
+
+//********************************************************************//
+//                             TELEPORTER                             //
+//********************************************************************//
+[EVENTS e_teleporter]
+ON = @PersonalSpace
+  if ( (<FLAGS> & statf_pet) || <SRC.ISGM> || <SRC.NPC> || <region.guarded> )
+     return 1
+  endif
+  if ( (<FLAGS> & statf_freeze) && !<SRC.NPC> )	// stepped on by a player
+     findlayer(LAYER_SPELL_Paralyze).remove
+  endif
+  
+  IF !( <ACT> == 04fffffff )
+     if ( (<FLAGS> & statf_war) && !<ACT.NPC> )	// already fighting a player
+        return 1
+     endif
+  ENDIF
+  ATTACK
+  return 1
+
+ON = @NPCSeeNewPlayer
+  if ( (<FLAGS> & statf_pet) || <SRC.ISGM> || <SRC.NPC> || <region.guarded> )
+     return 1
+  endif
+  if ( <SRC.UID> == <ACT.UID> )
+  elseif ( (<FLAGS> & statf_war) && (<ACT.UID> != <SRC.UID>) )	// already fighting another player
+     return 1
+  endif
+
+  if ( rand(2) )
+     findlayer(layer_spell_paralyze).remove
+     P	= <SRC.P>
+     SRC.UPDATE
+  endif
+
+  ATTACK
+  return 1
+
+
+
+//********************************************************************//
+//                             AGGRESSIVE                             //
+//********************************************************************//
+[EVENTS e_aggressive]
+ON = @PersonalSpace
+  if ( (<FLAGS> & statf_pet) || <SRC.ISGM> || <SRC.NPC> || <region.guarded> )
+     return 1
+  endif
+  if ( (<FLAGS> & statf_freeze) && !<SRC.NPC> )	// stepped on by a player
+     findlayer(LAYER_SPELL_Paralyze).remove
+  endif
+  IF !( <ACT> == 04fffffff )
+     if ( (<FLAGS> & statf_war) && !<ACT.NPC> )	// already fighting a player
+        return 1
+     endif
+  ENDIF
+  ATTACK
+  return 1
+
+ON = @NPCSeeNewPlayer
+  if ( (<FLAGS> & statf_pet) || <SRC.ISGM> || <SRC.NPC> || <region.guarded> )
+     return 1
+  endif
+  IF !( <ACT> == 04fffffff )
+     if ( (<FLAGS> & statf_war) && !<ACT.NPC> )	// already fighting a player
+        return 1
+     endif
+  ENDIF
+  ATTACK
+  return 1
+
+
+
+[EOF]

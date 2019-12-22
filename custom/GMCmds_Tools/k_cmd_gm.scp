@@ -1,0 +1,6109 @@
+//July 19 '05 - Wren - Moved CDrop, clearitems, clearcontitems, clearcharbanks, and clearcharpacks from my folder and modded a little
+//July 18 '05 - Wren - Cleaned up and Tuned up functions, Added Comments.
+
+[PLEVEL 2]
+Y
+SPIRIT
+EQUIPHALO
+UNEQUIPHALO
+AFKTEST
+SETPOS
+EDGE0
+EDGE1
+GOSHRINE
+CYCLE
+CDROP
+MUTE
+comment
+afkinfoc
+msg
+openpack
+staff
+info
+punish
+stone
+remove
+
+
+[PLEVEL 3]
+LISTCASH
+
+[FUNCTION afkinfo]
+DIALOG d_afkinfo
+
+[FUNCTION afkinfoc]
+SRC.NEWITEM afkinfoc
+SRC.ACT.EQUIP
+RETURN 1
+
+
+[ItemDef afkinfoc]
+id=i_memory
+Name=CDrop Memory
+type=t_eq_script
+
+ON=@Create
+   TIMER=30
+
+ON=@Equip
+   TARGET Target the player.
+   RETURN 1
+   
+ON=@Targon_Item
+   CONT.MESSAGE epic fail
+   REMOVE
+   RETURN 1
+
+ON=@Targon_Char
+   SERV.LOG <cont.account><cont.name> is getting info on <src.targ.name> <src.targ.uid> <src.targ.account>
+   STAFFLOG <cont.account><cont.name> is getting info on <src.targ.name> <src.targ.uid> <src.targ.account>
+   IF (<SRC.TARG.account.plevel> < <CONT.ACCOUNT.PLEVEL>)
+   SRC.TARG.AFKINFO
+   ENDIF
+   REMOVE
+   RETURN 1
+
+ON=@Timer
+   CONT.MESSAGE Nothing dropped within 30 seconds
+   REMOVE
+   RETURN 1
+
+[function openpack]
+SRC.NEWITEM playerpackopen
+SRC.ACT.EQUIP
+RETURN 1
+
+[ItemDef playerpackopen]
+id=i_memory
+Name=CDrop Memory
+type=t_eq_script
+
+ON=@Create
+   TIMER=30
+
+ON=@Equip
+   TARGET Target the player.
+   RETURN 1
+   
+ON=@Targon_Item
+   CONT.MESSAGE epic fail
+   REMOVE
+   RETURN 1
+
+ON=@Targon_Char
+   SERV.LOG <cont.account><cont.name> is opening <src.targ.name> <src.targ.uid> <src.targ.account>
+   STAFFLOG <cont.account><cont.name> is opening <src.targ.name> <src.targ.uid> <src.targ.account>
+   IF (<SRC.TARG.account.plevel> < <CONT.ACCOUNT.PLEVEL>)
+   SRC.TARG.PACK
+   ENDIF
+   REMOVE
+   RETURN 1
+
+ON=@Timer
+   CONT.MESSAGE Nothing dropped within 30 seconds
+   REMOVE
+   RETURN 1
+
+[function vendorextraopen]
+SRC.NEWITEM vendorextraopen
+SRC.ACT.EQUIP
+RETURN 1
+
+[ItemDef vendorextraopen]
+id=i_memory
+Name=CDrop Memory
+type=t_eq_script
+
+ON=@Create
+   TIMER=30
+
+ON=@Equip
+   TARGET Target the vendor.
+   RETURN 1
+   
+ON=@Targon_Item
+   CONT.MESSAGE epic fail
+   REMOVE
+   RETURN 1
+
+ON=@Targon_Char
+   SERV.LOG <cont.account><cont.name> is editting <src.targ.name> <src.targ.uid>
+   STAFFLOG <cont.account><cont.name> is editting <src.targ.name> <src.targ.uid>
+   SRC.TARG.FINDLAYER(layer_vendor_extra).OPEN
+   REMOVE
+   RETURN 1
+
+ON=@Timer
+   CONT.MESSAGE Nothing dropped within 30 seconds
+   REMOVE
+   RETURN 1
+
+
+//Dangerous functions...commented out until specifically needed...needs testing...wasn't functioning 100%
+//clearitems
+//clearcontitems
+//clearcharbanks
+//clearcharpacks
+
+
+[PLEVEL 5]
+NKROGUE
+NKCHAR
+NKOBJ
+NKVEND
+NKSPAWNS
+NKSPAWNED
+NKCOINS
+LOCKALL
+LISTSKILL
+JAIL
+FORGIVE
+
+
+[FUNCTION PASSRESET]
+IF (<SRC.ACCOUNT.PLEVEL> > 3)
+	VAR.NEWPASS = <eval rand(99999)>
+	SRC.SYSMESSAGE <ARGS> Plevel is <SERV.ACCOUNT.<ARGS>.PLEVEL> Setting pass to <VAR.NEWPASS>
+	serv.log <SERV.ACCOUNT.<ARGS>.PLEVEL> <SRC.NAME> (Account <SRC.ACCOUNT>) is changing a password on account - <args> new pass is <VAR.NEWPASS>
+   IF (<SERV.ACCOUNT.<ARGS>.PLEVEL> == 1)
+   serv.log <SRC.NAME> (Account <SRC.ACCOUNT>) is changing a password on account - <args> new pass is <VAR.NEWPASS>
+   SRC.SYSMESSAGE Account <SERV.ACCOUNT.<args>>
+   SERV.ACCOUNT.<args>.password <VAR.NEWPASS>
+   SRC.SYSMESSAGE SUCCESSFULLY SET PASS TO <SERV.ACCOUNT.<args>.password>
+   RETURN 1
+   ENDIF
+ENDIF
+
+
+
+
+
+//********************************************************************//
+//                               SETPOS                               //
+//       SETS COORDINATES TO FUNCTION CALLER'S CURRENT POSITION       //
+//               (SEEMS TO ONLY WORK IN FORMAT .XSETPOS)              //
+//********************************************************************//
+[FUNCTION SETPOS]
+   P	= <SRC.P>
+
+
+
+//********************************************************************//
+//                             UNEQUIPHALO                            //
+//              REMOVES LIGHT SOURCE FROM FUNCTION CALLER             //
+//********************************************************************//
+[FUNCTION UNEQUIPHALO]
+   if !( <RESTEST i_light_source> )
+      SYSMESSAGE You have no halo equiped.
+      return 1
+   endif
+   CONSUME i_light_source
+   SYSMESSAGE Halo removed.
+
+
+
+//********************************************************************//
+//                               SPIRIT                               //
+//                     TOGGLES SPIRIT SPEAK ON/OFF                    //
+//********************************************************************//
+[FUNCTION SPIRIT]
+if ( <FLAGS> & statf_spiritspeak )
+   FLAGS	= (<FLAGS> & ~statf_spiritspeak)
+   SYSMESSAGE Spirit speak disabled.
+else
+   FLAGS	= (<FLAGS> | statf_spiritspeak)
+   SYSMESSAGE Spirit speak enabled.
+endif
+
+
+
+//********************************************************************//
+//                           EDGE0 / EDGE1                            //
+//              TAKES YOU TO TOP / BTM CORNERS OF THE MAP             //
+//********************************************************************//
+[FUNCTION edge0]
+GO 1, 1, 0
+
+[FUNCTION edge1]
+GO 6143, 4095, 50
+
+
+
+//********************************************************************//
+//                               FIXPAD                               //
+//             SETS MARKPAD FLAGS TO NO BUILD AND GUARDED             //
+//********************************************************************//
+[FUNCTION fixpad]
+   if !( (<src.uid.<src.region.uid>.baseid> == i_multi_markpad) || (<src.uid.<src.region.uid>.baseid> == i_multi_markpad2) )
+      SYSMESSAGE Not in a markpad.
+      return 0
+   endif
+   ACT	= <src.region.uid>
+   ACT.REGIONFLAGS	= region_flag_nobuilding | region_flag_guarded
+   SYSMESSAGE Region flags set to nobuilding and guarded.
+
+
+
+//********************************************************************//
+//                               LISTCASH                             //
+//             LISTS THE CASH IN LOGGED IN CLIENTS' BANKS             //
+//********************************************************************//
+[FUNCTION listcash]
+IF !(<ARGS>)
+   ARGS=0
+ENDIF
+serv.allclients listcash_ <args>
+
+[FUNCTION LISTCASH_]
+if (<BANKBALANCE> >= <args>)
+   src.sysmessage <Name>:: <bankbalance>
+endif
+
+//********************************************************************//
+//                              LISTCHEQUE                            //
+//     LISTS THE CHEQUE VALUES TOTAL IN LOGGED IN CLIENTS' BANKS      //
+//********************************************************************//
+[FUNCTION listcheque]
+serv.allclients listcheque_ <args>
+
+[FUNCTION LISTCHEQUE_]
+
+[FUNCTION factionpoints]
+src.sysmessage Order has <eval <var.order_points>> points
+src.sysmessage Chaos has <eval <var.chaos_points>> points
+
+[FUNCTION res]
+src.sysmessage Fire <eval <SRC.TAG.ARM.EFFECT.RES_FIRE>>
+src.sysmessage Cold <eval <SRC.TAG.ARM.EFFECT.RES_COLD>>
+src.sysmessage Energy <eval <SRC.TAG.ARM.EFFECT.RES_ENERGY>>
+src.sysmessage Acid <eval <SRC.TAG.ARM.EFFECT.RES_ACID>>
+
+
+//********************************************************************//
+//                               LISTSKILL                            //
+//             LISTS THE BEST SKILL OF THE LOGGED IN CLIENTS          //
+//********************************************************************//
+[FUNCTION listskill]
+serv.allclients listskill_ <args>
+
+[FUNCTION LISTskill_]
+if ( <<skillbest>> >= <args> )
+   src.sysmessage @52 <Name>:Skill Total:<skilltotal>
+   src.sysmessage @30 Best:<serv.skill.<skillbest>.key>=<<skillbest>> 
+endif
+
+
+
+//********************************************************************//
+//                               NKROGUE                              //
+//                     NUKES SPAWNS WITH NO MASTER                    //
+//********************************************************************//
+[FUNCTION NKROGUE]
+  VAR.COUNT = 0
+  NUKECHAR NKROGUE_
+
+[FUNCTION NKROGUE_]
+  if ( (<NPC> == brain_animal) && (<FLAGS> & statf_spawned) && !(<FLAGS> & statf_pet) )
+    VAR.COUNT = <eval (<VAR.COUNT> + 1))>
+    REMOVE
+  endif
+
+
+
+//********************************************************************//
+//                               NKSPAWNS                             //
+//                         NUKE ALL CHAR SPAWNS                       //
+//********************************************************************//
+[FUNCTION NKSPAWNS]
+  NUKE NKSPAWNS_
+
+[FUNCTION NKSPAWNS_]
+  if ( (<baseid> == i_worldgem_bit) && (<TYPE>==t_spawn_char) )
+    TIMER = { 1 3 }
+    RETURN 0
+  endif  
+
+
+
+//********************************************************************//
+//                              NKSPAWNED                             //
+//                           NUKE ALL SPAWNED                         //
+//********************************************************************//
+[FUNCTION NKSPAWNED]
+  NUKECHAR NKSPAWNED_
+  
+[FUNCTION NKSPAWENED_]
+  if ( <FLAGS> & statf_spawned )
+    REMOVE
+  endif
+
+
+
+//********************************************************************//
+//                                NKVEND                              //
+//                          NUKES ALL VENDORS                         //
+//********************************************************************//
+[FUNCTION NKVEND]
+  NUKECHAR NKVEND_
+
+[FUNCTION NKVEND_]
+  if ( <NPC> == brain_vendor )
+    REMOVE
+  endif
+
+
+
+//********************************************************************//
+//                                NKCHAR                              //
+// NUKES SPECIFIED NPC(IF NOT A PET).  IF NO ID SPECIFIED, NUKES ALL  //
+//********************************************************************//
+[FUNCTION NKCHAR]
+  NUKECHAR NKCHAR_ <args>
+
+[FUNCTION NKCHAR_]
+  if ( (<FLAGS> & statf_pet) || !<NPC> )
+    return 0
+  endif
+
+  if ( !strcmp( "<args>", "" ) || (<id> == <args>) )
+    REMOVE
+  endif
+
+
+
+//********************************************************************//
+//                               NKCOINS                              //
+//          NUKE ALL STATIC COINS IN AN AREA (I.E. BAD TILE)          //
+//********************************************************************//
+[FUNCTION NKCOINS]
+  NUKE NKCOINS_
+
+[FUNCTION NKCOINS_]
+  if ( (<baseid> == i_gold) && (<ATTR> & attr_move_never) )
+    REMOVE
+  endif
+
+
+
+//********************************************************************//
+//                                 NKOBJ                              //
+//                   NUKE ALL OBJECTS WITH A SPECIFIC ID              //
+//********************************************************************//
+[FUNCTION NKOBJ]
+  NUKE NKOBJ_ <args>
+
+[FUNCTION NKOBJ_]
+  if ( <baseid> == <args> )
+    REMOVE
+    RETURN 0
+  endif
+
+
+
+//********************************************************************//
+//                               LOCKALL                              //
+//                       LOCK ALL OBJECT IN AN AREA                   //
+//********************************************************************//
+[FUNCTION LOCKALL]
+  NUKE LOCKALL_
+
+[FUNCTION LOCKALL_]
+  IF ( <ATTR> & ( attr_decay | attr_can_decay ) )
+     RETURN 0
+  ENDIF
+
+  ATTR	= <ATTR> | attr_move_never
+
+
+
+//********************************************************************//
+//                               GOSHRINE                             //
+//********************************************************************//
+[FUNCTION GOSHRINE]
+   SRC.MENU M_GOSHRINE
+
+[MENU M_GOSHRINE]
+Where would you like to go?
+0 Shrine of Compassion
+go 1856 876 0
+0 Shrine of Honesty
+go 4216 563 36
+0 Shrine of Honor
+go 1729 3527 3
+0 Shrine of Humility
+go 4274 3699 0
+0 Shrine of Justice
+go 1301 632 16
+0 Shrine of Sacrifice
+go 3354 287 4
+0 Shrine of Spirituality
+go 1600 2490 10
+0 Shrine of Valor
+go 2495 3931 0
+
+
+
+
+//********************************************************************//
+//                                  CYCLE                             //
+//********************************************************************//
+
+[FUNCTION cycleinit]
+  SRC.TAG.GOCLI_CYCLE	= 0
+  SRC.TAG.CYCLE		=
+
+[FUNCTION cycle]
+  ctag.admin_numplayers=0
+  SERV.ALLCLIENTS admin_getplayers
+  
+  if ( 0<SRC.TAG.GOCLI_CYCLE> == 0 )
+     SRC.cycleinit
+  elseif ( <SRC.TAG.GOCLI_CYCLE> == <EVAL <CTAG0.ADMIN_NUMPLAYERS>> )
+     SRC.cycleinit
+  endif
+
+  IF !( <SERV.CLIENT.<SRC.TAG.GOCLI_CYCLE>.UID>=<SRC.UID> )
+  	IF ( <SERV.CLIENT.<SRC.TAG.GOCLI_CYCLE>.ACCOUNT.PLEVEL> >= 6)
+  		SRC.TAG.GOCLI_CYCLE	= <eval (<SRC.TAG.GOCLI_CYCLE> + 1)>
+  	ENDIF
+     		SERV.LOG <SRC.NAME>[<SRC.ACCOUNT>] cycles to <SERV.CLIENT.<SRC.TAG.GOCLI_CYCLE>.NAME>[<SERV.CLIENT.<SRC.TAG.GOCLI_CYCLE>.ACCOUNT>][<SERV.CLIENT.<SRC.TAG.GOCLI_CYCLE>.P>]
+     		GOCLI			= <SRC.TAG.GOCLI_CYCLE>
+  ENDIF
+  SRC.TAG.GOCLI_CYCLE	= <eval (<SRC.TAG.GOCLI_CYCLE> + 1)>
+
+
+  if ( <SRC.TAG.GOCLI_CYCLE> >= <EVAL <CTAG0.ADMIN_NUMPLAYERS>> )
+     SRC.cycleinit
+     return 0
+  endif
+
+
+
+//********************************************************************//
+//                               STAFF CHAT                           //
+//********************************************************************//
+[FUNCTION y]
+serv.allclients f_to_staff125a <args>
+
+
+[FUNCTION f_to_staff125a]
+   if ( <ACCOUNT.PLEVEL> >= 2)
+      SYSMESSAGE @0b72 [ <SRC.NAME> ]: <args>
+   endif
+   
+
+[FUNCTION rtalk]
+region.allclients sysmessageua 90 0 0 0 <args>
+
+
+[FUNCTION afktest]
+f_to_afkcheck
+
+[FUNCTION f_to_afkcheck]
+IF (<FINDID.m_afk_permit.UID>)
+   SRC.SYSMESSAGE This person is legitimately AFK for <EVAL <FINDID.m_afk_permit.TIMER> / 60> minutes.
+ELSE
+   SAYUA 06 0 0 0 AFK CHECK PLEASE RESPOND
+ENDIF
+return 1
+
+
+
+//********************************************************************//
+//                                  CDROP                             //
+//     ADDED IN CASE COUNSELORS GET SOMETHING STUCK IN THEIR PACK     //
+//********************************************************************//
+
+[FUNCTION CDrop]
+SRC.NEWITEM M_CDrop
+SRC.ACT.EQUIP
+RETURN 1
+
+[ItemDef M_CDrop]
+id=i_memory
+Name=CDrop Memory
+type=t_eq_script
+
+ON=@Create
+   TIMER=30
+
+ON=@Equip
+   TARGET Target the item you would like to drop.
+   RETURN 1
+   
+ON=@Targon_Item
+   SERV.LOG <cont.account><cont.name> is dropping <src.targ.name> <src.targ.uid>
+   SRC.TARG.DROP
+   REMOVE
+   RETURN 1
+
+ON=@Targon_Char
+   RETURN 1
+
+ON=@Timer
+   CONT.MESSAGE Nothing dropped within 30 seconds
+   REMOVE
+   RETURN 1
+
+
+//********************************************************************//
+//                               CLEARITEMS                           //
+//             DELETE X <ARGN> TILES AWAY FROM FUNCTION CALLER        //
+//********************************************************************//
+[FUNCTION clearitems]
+obj=<uid>
+foritems 10000
+   if (<baseid>==i_dagger_copper) 
+         remove
+   endif
+endfor
+RETURN 1
+
+
+//********************************************************************//
+//                            CLEARCONTITEMS                          //
+//     DELETE X FROM PACKS <ARGN> TILES AWAY FROM FUNCTION CALLER     //
+//********************************************************************//
+[FUNCTION clearcontitems]
+obj=<uid>
+foritems 10000
+   if (<type>=t_container)
+      for <fcount>
+         forcont <uid> 1
+            if (<baseid>==i_dagger_copper) 
+                          
+                  src.bounce <UID>
+                  serv.log removing <UID>
+                  REMOVE
+              
+            endif
+         endfor
+      endfor
+   endif
+endfor
+RETURN 1
+
+//********************************************************************//
+//                            CLEARCHARPACKS                          //
+//DELETE X FROM PACKS OF CHARS <ARGN> TILES AWAY FROM FUNCTION CALLER //
+//********************************************************************//
+[FUNCTION clearcharpacks]
+obj=<uid>
+forchars 10000
+   if (!<NPC> && !<ISGM>)
+      serv.log <NAME>
+      for <fcount>
+         forcont <findlayer(21).uid> 10
+            if (<baseid>==i_dagger_copper)
+     	           
+                  src.bounce <UID>
+                  serv.log moving <UID>
+                  remove
+            endif
+         endfor
+      endfor
+   endif
+ endfor
+
+
+//********************************************************************//
+//                            CLEARCHARBANKS                          //
+//DELETE X FROM BANKS OF CHARS <ARGN> TILES AWAY FROM FUNCTION CALLER //
+//********************************************************************//
+[FUNCTION clearcharbanks]
+obj=<uid>
+forchars 10000
+   if (!<NPC> && !<ISGM>)
+      serv.log <NAME>
+      for <fcount>
+         forcont <findlayer(29).uid> 10
+            if (<baseid>==i_dagger_copper)
+     	            
+                  src.bounce <UID>
+                  serv.log moving <UID>
+                  REMOVE
+               
+            endif
+         endfor
+      endfor
+   endif
+ endfor
+
+
+[FUNCTION bootest]
+forchars 0
+if (<isnpc>)
+src.sysmessage <name>
+endif
+endif
+ 
+[FUNCTION findillegalarmor]
+IF (<isempty <ARGS>>)
+	SRC.SYSMESSAGE You must set some function.
+ELSE
+	FORINSTANCES i_armor_plate			
+		IF (STRMATCH(*<NAME>*, <ARGS>))
+			SRC.SYSMESSAGE UID: <UID>			
+			LOCAL.itemsfound = 
+		ENDIF
+	ENDFOR
+	SRC.SYSMESSAGE Find Name Complete.
+ENDIF
+
+[FUNCTION findchecks]
+	FORINSTANCES i_check			
+		//IF (<CONT.BRAIN> > 0)
+			serv.log <CONT.NAME> <uid> <AMOUNT>
+		//ENDIF
+	ENDFOR
+	SRC.SYSMESSAGE Find Check Complete.
+	
+[FUNCTION findtix]
+	FORINSTANCES i_pvptoken			
+		//IF (<CONT.BRAIN> > 0)
+			serv.log <CONT.NAME> <UID> <AMOUNT>
+		//ENDIF
+	ENDFOR
+	SRC.SYSMESSAGE Find Check Complete.
+ 
+[FUNCTION boodelete]
+IF (<isempty <ARGS>>)
+	SRC.SYSMESSAGE You must set some function.
+ELSE
+	LOCAL.itemsdeleted = 0
+	FORINSTANCES <ARGS>
+		REMOVE
+		LOCAL.itemsdeleted += 1
+	ENDFOR
+	IF (<SRC.ISGM> )
+	SRC.SYSMESSAGE Success. Deleted <eval <LOCAL.itemsdeleted>> <ARGS>
+	ENDIF
+ENDIF
+
+[FUNCTION set12on]
+IF (<isempty <ARGS>>)
+	SRC.SYSMESSAGE You must set some function.
+ELSE
+	LOCAL.timersset = 0
+	FORINSTANCES <ARGS>
+		TIMER=5
+		LOCAL.timersset += 1
+	ENDFOR
+	IF (<SRC.ISGM> )
+	SRC.SYSMESSAGE Success. Set timers on <eval <LOCAL.timersset>> <ARGS>
+	ENDIF
+ENDIF
+
+[FUNCTION nukeboats]
+FORINSTANCES 04000
+REMOVE
+ENDFOR
+
+[FUNCTION nukewood]
+FORINSTANCES i_shield_round_<args>
+REMOVE
+ENDFOR
+FORINSTANCES i_shield_kite_<args>
+REMOVE
+ENDFOR
+FORINSTANCES i_bow_<args>
+REMOVE
+ENDFOR
+FORINSTANCES i_crossbow_<args>
+REMOVE
+ENDFOR
+FORINSTANCES i_crossbow_heavy_<args>
+REMOVE
+ENDFOR
+FORINSTANCES i_staff_black_<args>
+REMOVE
+ENDFOR
+FORINSTANCES i_staff_quarter_<args>
+REMOVE
+ENDFOR
+FORINSTANCES i_staff_gnarled_<args>
+REMOVE
+ENDFOR
+FORINSTANCES i_shepherds_crook_<args>
+REMOVE
+ENDFOR
+FORINSTANCES i_club_<args>
+REMOVE
+ENDFOR
+SRC.SYSMESSAGE SUCCESS
+
+[FUNCTION deletear]
+
+FORINSTANCES i_axe_battle_<args>
+REMOVE
+ENDFOR
+FORINSTANCES i_mace_<args>
+REMOVE
+ENDFOR
+FORINSTANCES i_axe_<args>
+REMOVE
+ENDFOR
+FORINSTANCES i_axe_double_<args>
+REMOVE
+ENDFOR
+FORINSTANCES i_cutlass_<args>
+REMOVE
+ENDFOR
+FORINSTANCES i_halberd_<args>
+REMOVE
+ENDFOR
+FORINSTANCES i_katana_<args>
+REMOVE
+ENDFOR
+FORINSTANCES i_sword_broad_<args>
+REMOVE
+ENDFOR
+FORINSTANCES i_sword_long_<args>
+REMOVE
+ENDFOR
+FORINSTANCES i_sword_long_b_<args>
+REMOVE
+ENDFOR
+FORINSTANCES i_sword_great_<args>
+REMOVE
+ENDFOR
+FORINSTANCES i_scimitar_<args>
+REMOVE
+ENDFOR
+FORINSTANCES i_axe_two_hand_<args>
+REMOVE
+ENDFOR
+FORINSTANCES i_axe_war_<args>
+REMOVE
+ENDFOR
+FORINSTANCES i_bardiche_<args>
+REMOVE
+ENDFOR
+FORINSTANCES i_spear_short_<args>
+REMOVE
+ENDFOR
+FORINSTANCES i_spear_<args>
+REMOVE
+ENDFOR
+FORINSTANCES i_war_fork_<args>
+REMOVE
+ENDFOR
+FORINSTANCES i_hammer_pick_<args>
+REMOVE
+ENDFOR
+
+FORINSTANCES i_mace_war_<args>
+REMOVE
+ENDFOR
+
+FORINSTANCES i_maul_<args>
+REMOVE
+ENDFOR
+
+FORINSTANCES i_hammer_war_<args>
+REMOVE
+ENDFOR
+
+FORINSTANCES i_dagger_<args>
+REMOVE
+ENDFOR
+
+FORINSTANCES i_kryss_<args>
+REMOVE
+ENDFOR
+
+FORINSTANCES i_platemail_leggings_<args>
+REMOVE
+ENDFOR
+
+FORINSTANCES i_chainmail_leggings_<args>
+REMOVE
+ENDFOR
+
+FORINSTANCES i_ringmail_leggings_<args>
+REMOVE
+ENDFOR
+
+FORINSTANCES i_platemail_arms_<args>
+REMOVE
+ENDFOR
+
+FORINSTANCES i_ringmail_gloves_<args>
+REMOVE
+ENDFOR
+
+FORINSTANCES i_platemail_gloves_<args>
+REMOVE
+ENDFOR
+
+FORINSTANCES i_shield_round_<args>
+REMOVE
+ENDFOR
+
+FORINSTANCES i_shield_buckler_<args>
+REMOVE
+ENDFOR
+
+FORINSTANCES i_shield_kite_<args>
+REMOVE
+ENDFOR
+
+FORINSTANCES i_shield_heater_<args>
+REMOVE
+ENDFOR
+
+FORINSTANCES i_shield_round_small_<args>
+REMOVE
+ENDFOR
+
+FORINSTANCES i_chainmail_coif_<args>
+REMOVE
+ENDFOR
+
+FORINSTANCES i_helm_closed_<args>
+REMOVE
+ENDFOR
+
+FORINSTANCES i_helm_open_<args>
+REMOVE
+ENDFOR
+
+FORINSTANCES i_helm_nose_<args>
+REMOVE
+ENDFOR
+
+FORINSTANCES i_bascinet_<args>
+REMOVE
+ENDFOR
+
+FORINSTANCES i_platemail_helm_<args>
+REMOVE
+ENDFOR
+
+FORINSTANCES i_platemail_chest_<args>
+REMOVE
+ENDFOR
+
+FORINSTANCES i_chainmail_tunic_<args>
+REMOVE
+ENDFOR
+
+FORINSTANCES i_ringmail_tunic_<args>
+REMOVE
+ENDFOR
+
+FORINSTANCES i_platemail_gorget_<args>
+REMOVE
+ENDFOR
+SRC.SYSMESSAGE SUCCESS
+return 1
+
+
+[PLEVEL 4]
+playermsg
+
+[FUNCTION comment]
+DIALOG d_comment_tweak_2
+
+[FUNCTION msg]
+TARGETF msg_tgt 
+SRC.SYSMESSAGE Which player to you wish to send the message to?
+
+[FUNCTION msg_tgt]
+ctag.msg_txt_to=<argo.uid>
+IF (<UID.<ARGO.UID>.FINDID.m_afk_permit.UID>)
+   DIALOG msg_txt_legal
+ELSE
+   DIALOG msg_txt
+ENDIF
+
+[DIALOG msg_txt] 
+200,200 
+resizepic 0 0 3600 330 300 
+page 0 
+dtext 20 20 1152 Enter your message for <uid.<ctag.msg_txt_to>.name>
+gumppictiled 40 52 250 180 3004 
+dtextentry  40 52 250 180 0 0
+button 120 260 249 248 1 0 1 //okay 
+button 210 260 243 241 1 0 2 //cancel 
+
+[DIALOG msg_txt button] 
+ON=0
+src.sysmessage <ctag.msg_txt_to>
+src.ctag.msg_txt_to=
+ctag.receiver=
+SRC.SYSMESSAGE Function cancelled
+RETURN 1
+
+on=1 
+TRYSRC <ctag.msg_txt_to> src.tag.msg=<argtxt[0]>
+TRYSRC <ctag.msg_txt_to> src.tag.sender=<uid>
+TRYSRC <ctag.msg_txt_to> src.tag.pending=1
+TRYSRC <ctag.msg_txt_to> dialog d_message_display
+	SRC.SYSMESSAGE @07a1 Message sent!
+TRYSRC <ctag.msg_txt_to> 
+	RETURN 1 
+src.ctag.msg_txt_to=
+
+ON=2
+src.sysmessage <ctag.msg_txt_to>
+src.ctag.msg_txt_to=
+ctag.receiver=
+SRC.SYSMESSAGE Function cancelled
+RETURN 1
+
+[DIALOG msg_txt_legal] 
+200,200 
+resizepic 0 0 3600 330 300 
+page 0 
+dtext 20 20 0845 Warning:
+dtext 72 20 1152 <uid.<ctag.msg_txt_to>.name> is legally afk!
+gumppictiled 40 52 250 180 3004 
+dtextentry  40 52 250 180 0 0
+button 120 260 249 248 1 0 1 //okay 
+button 210 260 243 241 1 0 2 //cancel 
+
+[DIALOG msg_txt_legal button] 
+ON=0
+src.sysmessage <ctag.msg_txt_to>
+src.ctag.msg_txt_to=
+ctag.receiver=
+SRC.SYSMESSAGE Function cancelled
+RETURN 1
+
+on=1 
+TRYSRC <ctag.msg_txt_to> src.tag.msg=<argtxt[0]>
+TRYSRC <ctag.msg_txt_to> src.tag.sender=<uid>
+TRYSRC <ctag.msg_txt_to> src.tag.pending=1
+TRYSRC <ctag.msg_txt_to> dialog d_message_display
+	SRC.SYSMESSAGE @07a1 Message sent!
+TRYSRC <ctag.msg_txt_to> 
+	RETURN 1 
+src.ctag.msg_txt_to=
+
+ON=2
+src.sysmessage <ctag.msg_txt_to>
+src.ctag.msg_txt_to=
+ctag.receiver=
+SRC.SYSMESSAGE Function cancelled
+RETURN 1
+
+[DIALOG d_message_display]
+200,200
+NOCLOSE
+resizepic 0 0 2620 350 300
+CHECKERTRANS 0 0 505 301
+dtext 20 15 1152 <serv.name> Staff Message
+dtext 10 40 1152 Msg From: <uid.<src.tag.sender>.name>
+dtext 10 80 1152 Msg To: <src.name>
+dhtmlgump 50 110 250 120 1 1 <src.tag.msg>
+button 50 255 4005 4006 1 0 1
+dtext 100 255 1152 OK
+serv.log MESSAGE: <uid.<src.tag.sender>.account><uid.<src.tag.sender>.name> sent <src.name> this message :<src.tag.msg>
+IF (<SRC.FINDID.m_afk_permit.UID>)
+serv.log MESSAGE: Note that <src.name> was legally afk!
+ENDIF
+
+[DIALOG d_message_display BUTTON]
+ON=1
+TRY uid.<src.tag.sender>.sysmessage <src.name> has read your message
+serv.log MESSAGE :<src.name> has read <uid.<src.tag.sender>.name>'s message
+tag.msg=
+tag.sender=
+tag.pending=
+RETURN 0
+
+//********************************************************************//
+//                               FINDSPAWN                            //
+//FINDS A SELECTED CREATURE SPAWN BASED ON MENU AND OUTPUTS THE COORDS//
+//********************************************************************//
+
+[FUNCTION findspawn]
+MENU m_findspawn
+
+[MENU m_findspawn]
+Select steed list
+
+ON = 0 Basic Horses
+   LOCAL.COUNT = 0
+   FILE.MODE.CREATE=1
+   IF (<FILE.INUSE>)
+      SRC.SYSMESSAGE File in use! File name is <FILE.FILEPATH>!
+      RETURN 1
+   ELSEIF !(<FILE.OPEN c:\Burstfire UO\polls\steeds1.txt>)
+      SRC.SYSMESSAGE File cannot open!
+      RETURN 1
+   ENDIF
+   SERV.LOG Server is being PAUSED for Steed Checks by <SRC.ACCOUNT.NAME>:<SRC.NAME>
+   SERV.B Server is being PAUSED for Steed Checks
+   
+   // Dark Brown Horses
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Dark Brown Horses
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_horse_brown_dk"))
+         FILE.WRITELINE UID: <UID> - Steed: Dark Brown Horse - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Dark Brown Horses Found!
+      FILE.WRITELINE No Dark Brown Horses found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Dark Brown Horse:Dark Brown Horses> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+   // Light Brown Horses
+   
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Light Brown Horses
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_horse_brown_lt"))
+         FILE.WRITELINE UID: <UID> - Steed: Light Brown Horse - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Light Brown Horses Found!
+      FILE.WRITELINE No Light Brown Horses found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Light Brown Horse:Light Brown Horses> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+   // Gray Horses
+   
+   FILE.WRITELINE ~~~~~~~~~~~
+   FILE.WRITELINE Gray Horses
+   FILE.WRITELINE ~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_horse_gray"))
+         FILE.WRITELINE UID: <UID> - Steed: Gray Horse - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Gray Horses Found!
+      FILE.WRITELINE No Gray Horses found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Gray Horse:Gray Horses> found.
+   ENDIF
+   LOCAL.COUNT=0   
+
+   // Tan Horse
+
+   FILE.WRITELINE ~~~~~~~~~
+   FILE.WRITELINE Tan Horse
+   FILE.WRITELINE ~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_horse_tan"))
+         FILE.WRITELINE UID: <UID> - Steed: Tan Horse - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Tan Horses Found!
+      FILE.WRITELINE No Tan Horses found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Tan Horse:Tan Horses> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+   SERV.LOG Steed Checks Complete!
+   SERV.B Steed Checks Complete!
+   FILE.CLOSE
+   RETURN 1
+
+
+
+
+ON = 0 Llamas, Orns, Ostards, Zostrichs
+   LOCAL.COUNT = 0
+   FILE.MODE.CREATE=1
+   IF (<FILE.INUSE>)
+      SRC.SYSMESSAGE File in use! File name is <FILE.FILEPATH>!
+      RETURN 1
+   ELSEIF !(<FILE.OPEN c:\Burstfire UO\polls\steeds2.txt>)
+      SRC.SYSMESSAGE File cannot open!
+      RETURN 1
+   ENDIF
+   SERV.LOG Server is being PAUSED for Steed Checks by <SRC.ACCOUNT.NAME>:<SRC.NAME>
+   SERV.B Server is being PAUSED for Steed Checks
+   
+   // Llamas
+
+   FILE.WRITELINE ~~~~~~
+   FILE.WRITELINE Llamas
+   FILE.WRITELINE ~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_llama"))
+         FILE.WRITELINE UID: <UID> - Steed: Llama - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Llamas Found!
+      FILE.WRITELINE No Llamas found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Llama:Llamas> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+   // Oclocks
+   
+   FILE.WRITELINE ~~~~~~~
+   FILE.WRITELINE Oclocks
+   FILE.WRITELINE ~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_ostard_desert"))
+         FILE.WRITELINE UID: <UID> - Steed: Oclock - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Oclocks Found!
+      FILE.WRITELINE No Oclocks found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Oclock:Oclocks> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+   // Orns
+   
+   FILE.WRITELINE ~~~~
+   FILE.WRITELINE Orns
+   FILE.WRITELINE ~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_ostard_forest"))
+         FILE.WRITELINE UID: <UID> - Steed: Orn - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Orns Found!
+      FILE.WRITELINE No Orns found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Orn:Orns> found.
+   ENDIF
+   LOCAL.COUNT=0   
+
+   // Zostrichs
+
+   FILE.WRITELINE ~~~~~~~~~
+   FILE.WRITELINE Zostrichs
+   FILE.WRITELINE ~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_ostard_zostrich"))
+         FILE.WRITELINE UID: <UID> - Steed: Zostrich - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Zostrichs Found!
+      FILE.WRITELINE No Zostrichs found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Zostrich:Zostrichs> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+   SERV.LOG Steed Checks Complete!
+   SERV.B Steed Checks Complete!
+   FILE.CLOSE
+   RETURN 1
+
+
+ON = 0 Basic Mustangs
+   LOCAL.COUNT = 0
+   FILE.MODE.CREATE=1
+   IF (<FILE.INUSE>)
+      SRC.SYSMESSAGE File in use! File name is <FILE.FILEPATH>!
+      RETURN 1
+   ELSEIF !(<FILE.OPEN c:\Burstfire UO\polls\steeds3.txt>)
+      SRC.SYSMESSAGE File cannot open!
+      RETURN 1
+   ENDIF
+   SERV.LOG Server is being PAUSED for Steed Checks by <SRC.ACCOUNT.NAME>:<SRC.NAME>
+   SERV.B Server is being PAUSED for Steed Checks
+   
+   // Black Mustang
+
+   FILE.WRITELINE ~~~~~~~~~~~~~
+   FILE.WRITELINE Black Mustang
+   FILE.WRITELINE ~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_a_mustang_black"))
+         FILE.WRITELINE UID: <UID> - Steed: Black Mustang - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Black Mustangs Found!
+      FILE.WRITELINE No Black Mustangs found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Black Mustang:Black Mustangs> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+   
+   // Chocolate Mustang
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Chocolate Mustang
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_a_mustang_chocolate"))
+         FILE.WRITELINE UID: <UID> - Steed: Chocolate Mustang - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Chocolate Mustangs Found!
+      FILE.WRITELINE No Chocolate Mustangs found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Chocolate Mustang:Chocolate Mustangs> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+   
+   // Crimson Mustang
+   
+      FILE.WRITELINE ~~~~~~~~~~~~~~~
+      FILE.WRITELINE Crimson Mustang
+      FILE.WRITELINE ~~~~~~~~~~~~~~~
+      FORINSTANCES i_worldgem_bit
+         IF (!STRCMPI("<MORE1>","c_a_mustang_crimson"))
+            FILE.WRITELINE UID: <UID> - Steed: Crimson Mustang - Location: <P>
+            LOCAL.COUNT += 1
+         ENDIF
+      ENDFOR
+      IF (<LOCAL.COUNT>=0)
+         SRC.SYSMESSAGE No Crimson Mustangs Found!
+         FILE.WRITELINE No Crimson Mustangs found!
+      ELSE
+         SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Crimson Mustang:Crimson Mustangs> found.
+      ENDIF
+      LOCAL.COUNT=0
+      
+   // Grey Mustang
+   
+      FILE.WRITELINE ~~~~~~~~~~~~
+      FILE.WRITELINE Grey Mustang
+      FILE.WRITELINE ~~~~~~~~~~~~
+      FORINSTANCES i_worldgem_bit
+         IF (!STRCMPI("<MORE1>","c_a_mustang_grey"))
+            FILE.WRITELINE UID: <UID> - Steed: Grey Mustang - Location: <P>
+            LOCAL.COUNT += 1
+         ENDIF
+      ENDFOR
+      IF (<LOCAL.COUNT>=0)
+         SRC.SYSMESSAGE No Grey Mustangs Found!
+         FILE.WRITELINE No Grey Mustangs found!
+      ELSE
+         SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Grey Mustang:Grey Mustangs> found.
+      ENDIF
+      LOCAL.COUNT=0
+      
+   // Pamamino Mustang
+   
+      FILE.WRITELINE ~~~~~~~~~~~~~~~~
+      FILE.WRITELINE Pamamino Mustang
+      FILE.WRITELINE ~~~~~~~~~~~~~~~~
+      FORINSTANCES i_worldgem_bit
+         IF (!STRCMPI("<MORE1>","c_a_mustang_pamamino"))
+            FILE.WRITELINE UID: <UID> - Steed: Pamamino Mustang - Location: <P>
+            LOCAL.COUNT += 1
+         ENDIF
+      ENDFOR
+      IF (<LOCAL.COUNT>=0)
+         SRC.SYSMESSAGE No Pamamino Mustangs Found!
+         FILE.WRITELINE No Pamamino Mustangs found!
+      ELSE
+         SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Pamamino Mustang:Pamamino Mustangs> found.
+      ENDIF
+      LOCAL.COUNT=0
+      
+   // Red Roan Mustang
+   
+      FILE.WRITELINE ~~~~~~~~~~~~~~~~
+      FILE.WRITELINE Red Roan Mustang
+      FILE.WRITELINE ~~~~~~~~~~~~~~~~
+      FORINSTANCES i_worldgem_bit
+         IF (!STRCMPI("<MORE1>","c_a_mustang_redroan"))
+            FILE.WRITELINE UID: <UID> - Steed: Red Roan Mustang - Location: <P>
+            LOCAL.COUNT += 1
+         ENDIF
+      ENDFOR
+      IF (<LOCAL.COUNT>=0)
+         SRC.SYSMESSAGE No Red Roan Mustangs Found!
+         FILE.WRITELINE No Red Roan Mustangs found!
+      ELSE
+         SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Red Roan Mustang:Red Roan Mustangs> found.
+      ENDIF
+      LOCAL.COUNT=0
+      
+   // Roan Mustang
+   
+      FILE.WRITELINE ~~~~~~~~~~~~
+      FILE.WRITELINE Roan Mustang
+      FILE.WRITELINE ~~~~~~~~~~~~
+      FORINSTANCES i_worldgem_bit
+         IF (!STRCMPI("<MORE1>","c_a_mustang_roan"))
+            FILE.WRITELINE UID: <UID> - Steed: Roan Mustang - Location: <P>
+            LOCAL.COUNT += 1
+         ENDIF
+      ENDFOR
+      IF (<LOCAL.COUNT>=0)
+         SRC.SYSMESSAGE No Roan Mustangs Found!
+         FILE.WRITELINE No Roan Mustangs found!
+      ELSE
+         SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Roan Mustang:Roan Mustangs> found.
+      ENDIF
+      LOCAL.COUNT=0
+      
+   // Sky Mustang
+   
+      FILE.WRITELINE ~~~~~~~~~~~
+      FILE.WRITELINE Sky Mustang
+      FILE.WRITELINE ~~~~~~~~~~~
+      FORINSTANCES i_worldgem_bit
+         IF (!STRCMPI("<MORE1>","c_a_mustang_sky"))
+            FILE.WRITELINE UID: <UID> - Steed: Sky Mustang - Location: <P>
+            LOCAL.COUNT += 1
+         ENDIF
+      ENDFOR
+      IF (<LOCAL.COUNT>=0)
+         SRC.SYSMESSAGE No Sky Mustangs Found!
+         FILE.WRITELINE No Sky Mustangs found!
+      ELSE
+         SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Sky Mustang:Sky Mustangs> found.
+      ENDIF
+      LOCAL.COUNT=0
+      
+   // Sky Gray Mustang
+   
+      FILE.WRITELINE ~~~~~~~~~~~~~~~~
+      FILE.WRITELINE Sky Gray Mustang
+      FILE.WRITELINE ~~~~~~~~~~~~~~~~
+      FORINSTANCES i_worldgem_bit
+         IF (!STRCMPI("<MORE1>","c_a_mustang_skygray"))
+            FILE.WRITELINE UID: <UID> - Steed: Sky Gray Mustang - Location: <P>
+            LOCAL.COUNT += 1
+         ENDIF
+      ENDFOR
+      IF (<LOCAL.COUNT>=0)
+         SRC.SYSMESSAGE No Sky Gray Mustangs Found!
+         FILE.WRITELINE No Sky Gray Mustangs found!
+      ELSE
+         SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Sky Gray Mustang:Sky Gray Mustangs> found.
+      ENDIF
+      LOCAL.COUNT=0
+      
+   // Wimmimate Mustang
+   
+      FILE.WRITELINE ~~~~~~~~~~~~~~~~~
+      FILE.WRITELINE Wimmimate Mustang
+      FILE.WRITELINE ~~~~~~~~~~~~~~~~~
+      FORINSTANCES i_worldgem_bit
+         IF (!STRCMPI("<MORE1>","c_a_mustang_wimmimate"))
+            FILE.WRITELINE UID: <UID> - Steed: Wimmimate Mustang - Location: <P>
+            LOCAL.COUNT += 1
+         ENDIF
+      ENDFOR
+      IF (<LOCAL.COUNT>=0)
+         SRC.SYSMESSAGE No Wimmimate Mustangs Found!
+         FILE.WRITELINE No Wimmimate Mustangs found!
+      ELSE
+         SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Wimmimate Mustang:Wimmimate Mustangs> found.
+      ENDIF
+      LOCAL.COUNT=0
+      
+      
+   SERV.LOG Steed Checks Complete!
+   SERV.B Steed Checks Complete!
+   FILE.CLOSE
+   RETURN 1
+
+
+
+ON = 0 Basic Llamas
+   LOCAL.COUNT = 0
+   FILE.MODE.CREATE=1
+   IF (<FILE.INUSE>)
+      SRC.SYSMESSAGE File in use! File name is <FILE.FILEPATH>!
+      RETURN 1
+   ELSEIF !(<FILE.OPEN c:\Burstfire UO\polls\steeds4.txt>)
+      SRC.SYSMESSAGE File cannot open!
+      RETURN 1
+   ENDIF
+   SERV.LOG Server is being PAUSED for Steed Checks by <SRC.ACCOUNT.NAME>:<SRC.NAME>
+   SERV.B Server is being PAUSED for Steed Checks
+   
+   // Black Llama
+
+   FILE.WRITELINE ~~~~~~~~~~~
+   FILE.WRITELINE Black Llama
+   FILE.WRITELINE ~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_llama_black"))
+         FILE.WRITELINE UID: <UID> - Steed: Black Llama - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Black Llamas Found!
+      FILE.WRITELINE No Black Llamas found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Black Llama:Black Llamas> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+   
+   // Chocolate Llama
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~
+   FILE.WRITELINE Chocolate Llama
+   FILE.WRITELINE ~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_llama_chocolate"))
+         FILE.WRITELINE UID: <UID> - Steed: Chocolate Llama - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Chocolate Llamas Found!
+      FILE.WRITELINE No Chocolate Llamas found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Chocolate Llama:Chocolate Llamas> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+   
+   // Crimson Llama
+   
+      FILE.WRITELINE ~~~~~~~~~~~~~
+      FILE.WRITELINE Crimson Llama
+      FILE.WRITELINE ~~~~~~~~~~~~~
+      FORINSTANCES i_worldgem_bit
+         IF (!STRCMPI("<MORE1>","c_llama_crimson"))
+            FILE.WRITELINE UID: <UID> - Steed: Crimson Llama - Location: <P>
+            LOCAL.COUNT += 1
+         ENDIF
+      ENDFOR
+      IF (<LOCAL.COUNT>=0)
+         SRC.SYSMESSAGE No Crimson Llamas Found!
+         FILE.WRITELINE No Crimson Llamas found!
+      ELSE
+         SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Crimson Llama:Crimson Llamas> found.
+      ENDIF
+      LOCAL.COUNT=0
+      
+   // Grey Llama
+   
+      FILE.WRITELINE ~~~~~~~~~~
+      FILE.WRITELINE Grey Llama
+      FILE.WRITELINE ~~~~~~~~~~
+      FORINSTANCES i_worldgem_bit
+         IF (!STRCMPI("<MORE1>","c_llama_grey"))
+            FILE.WRITELINE UID: <UID> - Steed: Grey Llama - Location: <P>
+            LOCAL.COUNT += 1
+         ENDIF
+      ENDFOR
+      IF (<LOCAL.COUNT>=0)
+         SRC.SYSMESSAGE No Grey Llamas Found!
+         FILE.WRITELINE No Grey Llamas found!
+      ELSE
+         SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Grey Llama:Grey Llamas> found.
+      ENDIF
+      LOCAL.COUNT=0
+      
+   // Pamamino Llama
+   
+      FILE.WRITELINE ~~~~~~~~~~~~~~
+      FILE.WRITELINE Pamamino Llama
+      FILE.WRITELINE ~~~~~~~~~~~~~~
+      FORINSTANCES i_worldgem_bit
+         IF (!STRCMPI("<MORE1>","c_llama_panamino"))
+            FILE.WRITELINE UID: <UID> - Steed: Pamamino Llama - Location: <P>
+            LOCAL.COUNT += 1
+         ENDIF
+      ENDFOR
+      IF (<LOCAL.COUNT>=0)
+         SRC.SYSMESSAGE No Pamamino Llamas Found!
+         FILE.WRITELINE No Pamamino Llamas found!
+      ELSE
+         SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Pamamino Llama:Pamamino Llamas> found.
+      ENDIF
+      LOCAL.COUNT=0
+      
+   // Red Roan Llama
+   
+      FILE.WRITELINE ~~~~~~~~~~~~~~
+      FILE.WRITELINE Red Roan Llama
+      FILE.WRITELINE ~~~~~~~~~~~~~~
+      FORINSTANCES i_worldgem_bit
+         IF (!STRCMPI("<MORE1>","c_llama_redroan"))
+            FILE.WRITELINE UID: <UID> - Steed: Red Roan Llama - Location: <P>
+            LOCAL.COUNT += 1
+         ENDIF
+      ENDFOR
+      IF (<LOCAL.COUNT>=0)
+         SRC.SYSMESSAGE No Red Roan Llamas Found!
+         FILE.WRITELINE No Red Roan Llamas found!
+      ELSE
+         SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Red Roan Llama:Red Roan Llamas> found.
+      ENDIF
+      LOCAL.COUNT=0
+      
+   // Roan Llama
+   
+      FILE.WRITELINE ~~~~~~~~~~
+      FILE.WRITELINE Roan Llama
+      FILE.WRITELINE ~~~~~~~~~~
+      FORINSTANCES i_worldgem_bit
+         IF (!STRCMPI("<MORE1>","c_llama_roan"))
+            FILE.WRITELINE UID: <UID> - Steed: Roan Llama - Location: <P>
+            LOCAL.COUNT += 1
+         ENDIF
+      ENDFOR
+      IF (<LOCAL.COUNT>=0)
+         SRC.SYSMESSAGE No Roan Llamas Found!
+         FILE.WRITELINE No Roan Llamas found!
+      ELSE
+         SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Roan Llama:Roan Llamas> found.
+      ENDIF
+      LOCAL.COUNT=0
+      
+   // Sky Gray Llama
+   
+      FILE.WRITELINE ~~~~~~~~~~~~~~
+      FILE.WRITELINE Sky Gray Llama
+      FILE.WRITELINE ~~~~~~~~~~~~~~
+      FORINSTANCES i_worldgem_bit
+         IF (!STRCMPI("<MORE1>","c_llama_skygrey"))
+            FILE.WRITELINE UID: <UID> - Steed: Sky Gray Llama - Location: <P>
+            LOCAL.COUNT += 1
+         ENDIF
+      ENDFOR
+      IF (<LOCAL.COUNT>=0)
+         SRC.SYSMESSAGE No Sky Gray Llamas Found!
+         FILE.WRITELINE No Sky Gray Llamas found!
+      ELSE
+         SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Sky Gray Llama:Sky Gray Llamas> found.
+      ENDIF
+      LOCAL.COUNT=0
+
+   // Sky Blue Llama
+   
+      FILE.WRITELINE ~~~~~~~~~~~~~~
+      FILE.WRITELINE Sky Blue Llama
+      FILE.WRITELINE ~~~~~~~~~~~~~~
+      FORINSTANCES i_worldgem_bit
+         IF (!STRCMPI("<MORE1>","c_llama_skyblue"))
+            FILE.WRITELINE UID: <UID> - Steed: Sky Blue Llama - Location: <P>
+            LOCAL.COUNT += 1
+         ENDIF
+      ENDFOR
+      IF (<LOCAL.COUNT>=0)
+         SRC.SYSMESSAGE No Sky Blue Llamas Found!
+         FILE.WRITELINE No Sky Blue Llamas found!
+      ELSE
+         SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Sky Blue Llama:Sky Blue Llamas> found.
+      ENDIF
+      LOCAL.COUNT=0
+      
+   // Wimmimate Llama
+   
+      FILE.WRITELINE ~~~~~~~~~~~~~~~
+      FILE.WRITELINE Wimmimate Llama
+      FILE.WRITELINE ~~~~~~~~~~~~~~~
+      FORINSTANCES i_worldgem_bit
+         IF (!STRCMPI("<MORE1>","c_llama_winnimate"))
+            FILE.WRITELINE UID: <UID> - Steed: Wimmimate Llama - Location: <P>
+            LOCAL.COUNT += 1
+         ENDIF
+      ENDFOR
+      IF (<LOCAL.COUNT>=0)
+         SRC.SYSMESSAGE No Wimmimate Llamas Found!
+         FILE.WRITELINE No Wimmimate Llamas found!
+      ELSE
+         SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Wimmimate Llama:Wimmimate Llamas> found.
+      ENDIF
+      LOCAL.COUNT=0
+      
+      
+   SERV.LOG Steed Checks Complete!
+   SERV.B Steed Checks Complete!
+   FILE.CLOSE
+   RETURN 1
+
+
+
+ON = 0 Ethereal Mounts
+   LOCAL.COUNT = 0
+   FILE.MODE.CREATE=1
+   IF (<FILE.INUSE>)
+      SRC.SYSMESSAGE File in use! File name is <FILE.FILEPATH>!
+      RETURN 1
+   ELSEIF !(<FILE.OPEN c:\Burstfire UO\polls\steeds5.txt>)
+      SRC.SYSMESSAGE File cannot open!
+      RETURN 1
+   ENDIF
+   SERV.LOG Server is being PAUSED for Steed Checks by <SRC.ACCOUNT.NAME>:<SRC.NAME>
+   SERV.B Server is being PAUSED for Steed Checks
+   
+   // Ethereal Llamas
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~
+   FILE.WRITELINE Ethereal Llamas
+   FILE.WRITELINE ~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_ethereal_llama"))
+         FILE.WRITELINE UID: <UID> - Steed: Ethereal Llama - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Ethereal Llamas Found!
+      FILE.WRITELINE No Ethereal Llamas found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Ethereal Llama:Ethereal Llamas> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+   // Ethereal Horses
+   
+   FILE.WRITELINE ~~~~~~~~~~~~~~~
+   FILE.WRITELINE Ethereal Horses
+   FILE.WRITELINE ~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_ethereal_horse"))
+         FILE.WRITELINE UID: <UID> - Steed: Ethereal Horse - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Ethereal Horses Found!
+      FILE.WRITELINE No Ethereal Horses found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Ethereal Horse:Ethereal Horses> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+   // Ethereal Orns
+   
+   FILE.WRITELINE ~~~~~~~~~~~~~
+   FILE.WRITELINE Ethereal Orns
+   FILE.WRITELINE ~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_ethereal_orn"))
+         FILE.WRITELINE UID: <UID> - Steed: Ethereal Orn - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Ethereal Orns Found!
+      FILE.WRITELINE No Ethereal Orns found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Ethereal Orn:Ethereal Orns> found.
+   ENDIF
+   LOCAL.COUNT=0   
+
+   // Ethereal Zostrichs
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Ethereal Zostrichs
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_ethereal_Zostrich"))
+         FILE.WRITELINE UID: <UID> - Steed: Ethereal Zostrich - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Ethereal Zostrichs Found!
+      FILE.WRITELINE No Ethereal Zostrichs found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Ethereal Zostrich:Ethereal Zostrichs> found.
+   ENDIF
+   LOCAL.COUNT=0
+
+   SERV.LOG Steed Checks Complete!
+   SERV.B Steed Checks Complete!
+   FILE.CLOSE
+   RETURN 1
+   
+
+ON = 0 Angelic Mounts
+   LOCAL.COUNT = 0
+   FILE.MODE.CREATE=1
+   IF (<FILE.INUSE>)
+      SRC.SYSMESSAGE File in use! File name is <FILE.FILEPATH>!
+      RETURN 1
+   ELSEIF !(<FILE.OPEN c:\Burstfire UO\polls\steeds6.txt>)
+      SRC.SYSMESSAGE File cannot open!
+      RETURN 1
+   ENDIF
+   SERV.LOG Server is being PAUSED for Steed Checks by <SRC.ACCOUNT.NAME>:<SRC.NAME>
+   SERV.B Server is being PAUSED for Steed Checks
+   
+   // Angelic Llamas
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~
+   FILE.WRITELINE Angelic Llamas
+   FILE.WRITELINE ~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_llama_angelic"))
+         FILE.WRITELINE UID: <UID> - Steed: Angelic Llama - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Angelic Llamas Found!
+      FILE.WRITELINE No Angelic Llamas found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Angelic Llama:Angelic Llamas> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+   // Angelic Oclocks
+   
+   FILE.WRITELINE ~~~~~~~~~~~~~~~
+   FILE.WRITELINE Angelic Oclocks
+   FILE.WRITELINE ~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_angelic_oclock"))
+         FILE.WRITELINE UID: <UID> - Steed: Angelic Oclock - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Angelic Oclocks Found!
+      FILE.WRITELINE No Angelic Oclocks found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Angelic Oclock:Angelic Oclocks> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+   // Angelic Orns
+   
+   FILE.WRITELINE ~~~~~~~~~~~~
+   FILE.WRITELINE Angelic Orns
+   FILE.WRITELINE ~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_angelic_orn"))
+         FILE.WRITELINE UID: <UID> - Steed: Angelic Orn - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Angelic Orns Found!
+      FILE.WRITELINE No Angelic Orns found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Angelic Orn:Angelic Orns> found.
+   ENDIF
+   LOCAL.COUNT=0   
+
+   // Angelic Zostrichs
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Angelic Zostrichs
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_angelic_Zostrich"))
+         FILE.WRITELINE UID: <UID> - Steed: Angelic Zostrich - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Angelic Zostrichs Found!
+      FILE.WRITELINE No Angelic Zostrichs found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Angelic Zostrich:Angelic Zostrichs> found.
+   ENDIF
+   LOCAL.COUNT=0
+
+   // Holy Steeds
+
+   FILE.WRITELINE ~~~~~~~~~~~
+   FILE.WRITELINE Holy Steeds
+   FILE.WRITELINE ~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_horse_hk"))
+         FILE.WRITELINE UID: <UID> - Steed: Holy Steed (Type 1) - Location: <P>
+         LOCAL.COUNT += 1
+      ELSEIF (!STRCMPI("<MORE1>","c_holy_steed"))
+         FILE.WRITELINE UID: <UID> - Steed: Holy Steed (Type 2) - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Holy Steeds Found!
+      FILE.WRITELINE No Holy Steeds found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Holy Steed:Holy Steeds> found.
+   ENDIF
+   LOCAL.COUNT=0
+
+
+   SERV.LOG Steed Checks Complete!
+   SERV.B Steed Checks Complete!
+   FILE.CLOSE
+   RETURN 1   
+
+
+ON = 0 Darkonian and Terathane Mounts
+   LOCAL.COUNT = 0
+   FILE.MODE.CREATE=1
+   IF (<FILE.INUSE>)
+      SRC.SYSMESSAGE File in use! File name is <FILE.FILEPATH>!
+      RETURN 1
+   ELSEIF !(<FILE.OPEN c:\Burstfire UO\polls\steeds7.txt>)
+      SRC.SYSMESSAGE File cannot open!
+      RETURN 1
+   ENDIF
+   SERV.LOG Server is being PAUSED for Steed Checks by <SRC.ACCOUNT.NAME>:<SRC.NAME>
+   SERV.B Server is being PAUSED for Steed Checks
+   
+   // Darkonian Horse
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~
+   FILE.WRITELINE Darkonian Horse
+   FILE.WRITELINE ~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_horse_darkonian"))
+         FILE.WRITELINE UID: <UID> - Steed: Darkonian Horse - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Darkonian Horse Found!
+      FILE.WRITELINE No Darkonian Horse found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Darkonian Horse:Darkonian Horses> found.
+   ENDIF
+   LOCAL.COUNT=0   
+ 
+   // Darkonian Zostrichs
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Darkonian Zostrichs
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_dark_zost"))
+         FILE.WRITELINE UID: <UID> - Steed: Darkonian Zostrich - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Darkonian Zostrichs Found!
+      FILE.WRITELINE No Darkonian Zostrichs found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Darkonian Zostrich:Darkonian Zostrichs> found.
+   ENDIF
+   LOCAL.COUNT=0  
+   
+   // Terathane Zostrichs
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Terathane Zostrichs
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_terathane_zost"))
+         FILE.WRITELINE UID: <UID> - Steed: Terathane Zostrich - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Terathane Zostrichs Found!
+      FILE.WRITELINE No Terathane Zostrichs found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Terathane Zostrich:Terathane Zostrichs> found.
+   ENDIF
+   LOCAL.COUNT=0     
+ 
+   SERV.LOG Steed Checks Complete!
+   SERV.B Steed Checks Complete!
+   FILE.CLOSE
+   RETURN 1
+
+
+
+ON = 0 Moon Mounts
+   LOCAL.COUNT = 0
+   FILE.MODE.CREATE=1
+   IF (<FILE.INUSE>)
+      SRC.SYSMESSAGE File in use! File name is <FILE.FILEPATH>!
+      RETURN 1
+   ELSEIF !(<FILE.OPEN c:\Burstfire UO\polls\steeds8.txt>)
+      SRC.SYSMESSAGE File cannot open!
+      RETURN 1
+   ENDIF
+   SERV.LOG Server is being PAUSED for Steed Checks by <SRC.ACCOUNT.NAME>:<SRC.NAME>
+   SERV.B Server is being PAUSED for Steed Checks
+   
+   // Llama Of The Moon
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Llama Of The Moon
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_llama_of_the_moon"))
+         FILE.WRITELINE UID: <UID> - Steed: Llama Of The Moon - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Llama Of The Moon Found!
+      FILE.WRITELINE No Llama Of The Moon found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Llama Of The Moon:Llama Of The Moons> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+   // Oclock Of The Moon
+   
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Oclock Of The Moon
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_oclock_of_the_moon"))
+         FILE.WRITELINE UID: <UID> - Steed: Oclock Of The Moon - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Oclock Of The Moon Found!
+      FILE.WRITELINE No Oclock Of The Moon found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Oclock Of The Moon:Oclock Of The Moons> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+   // Orn Of The Moon
+   
+   FILE.WRITELINE ~~~~~~~~~~~~~~~
+   FILE.WRITELINE Orn Of The Moon
+   FILE.WRITELINE ~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_orn_of_the_moon"))
+         FILE.WRITELINE UID: <UID> - Steed: Orn Of The Moon - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Orn Of The Moon Found!
+      FILE.WRITELINE No Orn Of The Moon found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Orn Of The Moon:Orn Of The Moons> found.
+   ENDIF
+   LOCAL.COUNT=0   
+
+   // Zostrich Of The Moon
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Zostrich Of The Moon
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_zostrich_of_the_moon"))
+         FILE.WRITELINE UID: <UID> - Steed: Zostrich Of The Moon - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Zostrich Of The Moon Found!
+      FILE.WRITELINE No Zostrich Of The Moon found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Zostrich Of The Moon:Zostrich Of The Moons> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+   SERV.LOG Steed Checks Complete!
+   SERV.B Steed Checks Complete!
+   FILE.CLOSE
+   RETURN 1
+
+
+ON = 0 Jungle and Ice Mounts
+   LOCAL.COUNT = 0
+   FILE.MODE.CREATE=1
+   IF (<FILE.INUSE>)
+      SRC.SYSMESSAGE File in use! File name is <FILE.FILEPATH>!
+      RETURN 1
+   ELSEIF !(<FILE.OPEN c:\Burstfire UO\polls\steeds9.txt>)
+      SRC.SYSMESSAGE File cannot open!
+      RETURN 1
+   ENDIF
+   SERV.LOG Server is being PAUSED for Steed Checks by <SRC.ACCOUNT.NAME>:<SRC.NAME>
+   SERV.B Server is being PAUSED for Steed Checks
+   
+   // Jungle Steed
+
+   FILE.WRITELINE ~~~~~~~~~~~~
+   FILE.WRITELINE Jungle Steed
+   FILE.WRITELINE ~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_jungle_steed"))
+         FILE.WRITELINE UID: <UID> - Steed: Jungle Steed - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Jungle Steed Found!
+      FILE.WRITELINE No Jungle Steed found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Jungle Steed:Jungle Steeds> found.
+   ENDIF
+   LOCAL.COUNT=0   
+ 
+   // Jungle Orns
+
+   FILE.WRITELINE ~~~~~~~~~~~
+   FILE.WRITELINE Jungle Orns
+   FILE.WRITELINE ~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_jungle_orn"))
+         FILE.WRITELINE UID: <UID> - Steed: Jungle Orn - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Jungle Orns Found!
+      FILE.WRITELINE No Jungle Orns found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Jungle Orn:Jungle Orns> found.
+   ENDIF
+   LOCAL.COUNT=0  
+   
+   // Ice Horses
+
+   FILE.WRITELINE ~~~~~~~~~~
+   FILE.WRITELINE Ice Horses
+   FILE.WRITELINE ~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_ice_horse"))
+         FILE.WRITELINE UID: <UID> - Steed: Ice Horse - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Ice Horses Found!
+      FILE.WRITELINE No Ice Horses found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Ice Horse:Ice Horses> found.
+   ENDIF
+   LOCAL.COUNT=0      
+
+   // Ice Zostrichs
+
+   FILE.WRITELINE ~~~~~~~~~~~~~
+   FILE.WRITELINE Ice Zostrichs
+   FILE.WRITELINE ~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_ice_zostrich"))
+         FILE.WRITELINE UID: <UID> - Steed: Ice Zostrich - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Ice Zostrichs Found!
+      FILE.WRITELINE No Ice Zostrichs found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Ice Zostrich:Ice Zostrichs> found.
+   ENDIF
+   LOCAL.COUNT=0  
+ 
+   SERV.LOG Steed Checks Complete!
+   SERV.B Steed Checks Complete!
+   FILE.CLOSE
+   RETURN 1
+
+
+
+ON = 0 All Other Horses
+   LOCAL.COUNT = 0
+   FILE.MODE.CREATE=1
+   IF (<FILE.INUSE>)
+      SRC.SYSMESSAGE File in use! File name is <FILE.FILEPATH>!
+      RETURN 1
+   ELSEIF !(<FILE.OPEN c:\Burstfire UO\polls\steeds10.txt>)
+      SRC.SYSMESSAGE File cannot open!
+      RETURN 1
+   ENDIF
+   SERV.LOG Server is being PAUSED for Steed Checks by <SRC.ACCOUNT.NAME>:<SRC.NAME>
+   SERV.B Server is being PAUSED for Steed Checks
+   
+   // Fire Steed
+
+   FILE.WRITELINE ~~~~~~~~~~
+   FILE.WRITELINE Fire Steed
+   FILE.WRITELINE ~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_fire_steed"))
+         FILE.WRITELINE UID: <UID> - Steed: Fire Steed - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Fire Steed Found!
+      FILE.WRITELINE No Fire Steed found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Fire Steed:Fire Steeds> found.
+   ENDIF
+   LOCAL.COUNT=0  
+
+   // Moon Steed
+
+   FILE.WRITELINE ~~~~~~~~~~
+   FILE.WRITELINE Moon Steed
+   FILE.WRITELINE ~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_moon_steed"))
+         FILE.WRITELINE UID: <UID> - Steed: Moon Steed - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Moon Steed Found!
+      FILE.WRITELINE No Moon Steed found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Moon Steed:Moon Steeds> found.
+   ENDIF
+   LOCAL.COUNT=0  
+
+   // Nightmare (Type 1)
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Nightmare (Type 1)
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_nightmare"))
+         FILE.WRITELINE UID: <UID> - Steed: Nightmare (Type 1) - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Nightmare (Type 1) Found!
+      FILE.WRITELINE No Nightmare (Type 1) found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Nightmare (Type 1):Nightmare (Type 1)s> found.
+   ENDIF
+   LOCAL.COUNT=0  
+   
+   // Nightmare (Type 2)
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Nightmare (Type 2)
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_horse_nightmare"))
+         FILE.WRITELINE UID: <UID> - Steed: Nightmare (Type 2) - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Nightmare (Type 2) Found!
+      FILE.WRITELINE No Nightmare (Type 2) found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Nightmare (Type 2):Nightmare (Type 2)s> found.
+   ENDIF
+   LOCAL.COUNT=0  
+   
+   // Steed of Sand
+
+   FILE.WRITELINE ~~~~~~~~~~~~~
+   FILE.WRITELINE Steed of Sand
+   FILE.WRITELINE ~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_steed_sand"))
+         FILE.WRITELINE UID: <UID> - Steed: Steed of Sand - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Steed of Sand Found!
+      FILE.WRITELINE No Steed of Sand found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Steed of Sand:Steed of Sands> found.
+   ENDIF
+   LOCAL.COUNT=0  
+   
+   // Undead Horse (Classic)
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Undead Horse (Classic)
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_undead_horse"))
+         FILE.WRITELINE UID: <UID> - Steed: Undead Horse (Classic) - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Undead Horse (Classic) Found!
+      FILE.WRITELINE No Undead Horse (Classic) found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Undead Horse (Classic):Undead Horse (Classic)s> found.
+   ENDIF
+   LOCAL.COUNT=0  
+   
+   // Unicorn (Classic)
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Unicorn (Classic)
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_unicorn"))
+         FILE.WRITELINE UID: <UID> - Steed: Unicorn (Classic) - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Unicorn (Classic) Found!
+      FILE.WRITELINE No Unicorn (Classic) found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Unicorn (Classic):Unicorn (Classic)s> found.
+   ENDIF
+   LOCAL.COUNT=0  
+   
+   // War Horse
+
+   FILE.WRITELINE ~~~~~~~~~
+   FILE.WRITELINE War Horse
+   FILE.WRITELINE ~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_war_horse"))
+         FILE.WRITELINE UID: <UID> - Steed: War Horse - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No War Horse Found!
+      FILE.WRITELINE No War Horse found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? War Horse:War Horses> found.
+   ENDIF
+   LOCAL.COUNT=0  
+   
+   // Experimental Steed
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Experimental Steed
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_experimental_steed"))
+         FILE.WRITELINE UID: <UID> - Steed: Experimental Steed - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Experimental Steed Found!
+      FILE.WRITELINE No Experimental Steed found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Experimental Steed:Experimental Steeds> found.
+   ENDIF
+   LOCAL.COUNT=0     
+
+   // Warped Mustang
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~
+   FILE.WRITELINE Warped Mustang
+   FILE.WRITELINE ~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_mustang_warped"))
+         FILE.WRITELINE UID: <UID> - Steed: Warped Mustang - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Warped Mustang Found!
+      FILE.WRITELINE No Warped Mustang found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Warped Mustang:Warped Mustangs> found.
+   ENDIF
+   LOCAL.COUNT=0 
+   
+   // Order War Horse
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~
+   FILE.WRITELINE Order War Horse
+   FILE.WRITELINE ~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_war_horse_order"))
+         FILE.WRITELINE UID: <UID> - Steed: Order War Horse - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Order War Horse Found!
+      FILE.WRITELINE No Order War Horse found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Order War Horse:Order War Horses> found.
+   ENDIF
+   LOCAL.COUNT=0 
+   
+   // Chaos War Horse
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~
+   FILE.WRITELINE Chaos War Horse
+   FILE.WRITELINE ~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_war_horse_chaos"))
+         FILE.WRITELINE UID: <UID> - Steed: Chaos War Horse - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Chaos War Horse Found!
+      FILE.WRITELINE No Chaos War Horse found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Chaos War Horse:Chaos War Horses> found.
+   ENDIF
+   LOCAL.COUNT=0 
+
+   FILE.WRITELINE ~~~~~~
+   FILE.WRITELINE Shadow
+   FILE.WRITELINE ~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_horse_shadow"))
+         FILE.WRITELINE UID: <UID> - Steed: Shadow (Horse) - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Unicorn (Classic) Found!
+      FILE.WRITELINE No Unicorn (Classic) found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Unicorn (Classic):Unicorn (Classic)s> found.
+   ENDIF
+   LOCAL.COUNT=0 
+   
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Steed of the Sun
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_horse_sun"))
+         FILE.WRITELINE UID: <UID> - Steed: Steed of the Sun - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Unicorn (Classic) Found!
+      FILE.WRITELINE No Unicorn (Classic) found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Unicorn (Classic):Unicorn (Classic)s> found.
+   ENDIF
+   LOCAL.COUNT=0
+ 
+   SERV.LOG Steed Checks Complete!
+   SERV.B Steed Checks Complete!
+   FILE.CLOSE
+   RETURN 1
+
+
+
+ON = 0 All Other Oclocks, Orns, and Zostriches
+   LOCAL.COUNT = 0
+   FILE.MODE.CREATE=1
+   IF (<FILE.INUSE>)
+      SRC.SYSMESSAGE File in use! File name is <FILE.FILEPATH>!
+      RETURN 1
+   ELSEIF !(<FILE.OPEN c:\Burstfire UO\polls\steeds11.txt>)
+      SRC.SYSMESSAGE File cannot open!
+      RETURN 1
+   ENDIF
+   SERV.LOG Server is being PAUSED for Steed Checks by <SRC.ACCOUNT.NAME>:<SRC.NAME>
+   SERV.B Server is being PAUSED for Steed Checks
+   
+   // Death Steed
+
+   FILE.WRITELINE ~~~~~~~~~~
+   FILE.WRITELINE Death Steed
+   FILE.WRITELINE ~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_Death_zostrich"))
+         FILE.WRITELINE UID: <UID> - Steed: Death Steed - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Death Steed Found!
+      FILE.WRITELINE No Death Steed found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Death Steed:Death Steeds> found.
+   ENDIF
+   LOCAL.COUNT=0  
+
+   // Lava Zost
+
+   FILE.WRITELINE ~~~~~~~~~~
+   FILE.WRITELINE Lava Zost
+   FILE.WRITELINE ~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_lava_zostrich"))
+         FILE.WRITELINE UID: <UID> - Steed: Lava Zost - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Lava Zost Found!
+      FILE.WRITELINE No Lava Zost found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Lava Zost:Lava Zosts> found.
+   ENDIF
+   LOCAL.COUNT=0
+
+   // Void Zost
+
+   FILE.WRITELINE ~~~~~~~~~~
+   FILE.WRITELINE Void Zost
+   FILE.WRITELINE ~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_void_zostrich"))
+         FILE.WRITELINE UID: <UID> - Steed: Void Zost - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Void Zost Found!
+      FILE.WRITELINE No Void Zost found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Void Zost:Void Zosts> found.
+   ENDIF
+   LOCAL.COUNT=0
+ 
+   SERV.LOG Steed Checks Complete!
+   SERV.B Steed Checks Complete!
+   FILE.CLOSE
+   RETURN 1
+
+
+
+
+
+ON = 0 Lord Blackthornes Revenge Steeds
+   LOCAL.COUNT = 0
+   FILE.MODE.CREATE=1
+   IF (<FILE.INUSE>)
+      SRC.SYSMESSAGE File in use! File name is <FILE.FILEPATH>!
+      RETURN 1
+   ELSEIF !(<FILE.OPEN c:\Burstfire UO\polls\steeds12.txt>)
+      SRC.SYSMESSAGE File cannot open!
+      RETURN 1
+   ENDIF
+   SERV.LOG Server is being PAUSED for Steed Checks by <SRC.ACCOUNT.NAME>:<SRC.NAME>
+   SERV.B Server is being PAUSED for Steed Checks
+   
+   // Unicorn (LBR)
+
+   FILE.WRITELINE ~~~~~~~~~~
+   FILE.WRITELINE Unicorn (LBR)
+   FILE.WRITELINE ~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_m_unicorn"))
+         FILE.WRITELINE UID: <UID> - Steed: Unicorn (LBR) - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Unicorn (LBR) Found!
+      FILE.WRITELINE No Unicorn (LBR) found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Unicorn (LBR):Unicorns (LBR)> found.
+   ENDIF
+   LOCAL.COUNT=0  
+
+   // Armoured Swamp Dragon
+
+   FILE.WRITELINE ~~~~~~~~~~
+   FILE.WRITELINE Armoured Swamp Dragon
+   FILE.WRITELINE ~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_armored_swamp_dragon"))
+         FILE.WRITELINE UID: <UID> - Steed: Armoured Swamp Dragon - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Armoured Swamp Dragon Found!
+      FILE.WRITELINE No Armoured Swamp Dragon found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Armoured Swamp Dragon:Armoured Swamp Dragons> found.
+   ENDIF
+   LOCAL.COUNT=0 
+
+   // Giant Beetle
+
+   FILE.WRITELINE ~~~~~~~~~~
+   FILE.WRITELINE Giant Beetle
+   FILE.WRITELINE ~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_giant_beetle"))
+         FILE.WRITELINE UID: <UID> - Steed: Giant Beetle - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Giant Beetle Found!
+      FILE.WRITELINE No Giant Beetle found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Giant Beetle:Giant Beetles> found.
+   ENDIF
+   LOCAL.COUNT=0 
+
+   // Ridgeback
+
+   FILE.WRITELINE ~~~~~~~~~
+   FILE.WRITELINE Ridgeback
+   FILE.WRITELINE ~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_ridgeback"))
+         FILE.WRITELINE UID: <UID> - Steed: Ridgeback - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Ridgeback Found!
+      FILE.WRITELINE No Ridgeback found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Ridgeback:Ridgebacks> found.
+   ENDIF
+   LOCAL.COUNT=0 
+   
+   // Savage Ridgeback
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Savage Ridgeback
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_savage_ridgeback"))
+         FILE.WRITELINE UID: <UID> - Steed: Savage Ridgeback - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Savage Ridgeback Found!
+      FILE.WRITELINE No Savage Ridgeback found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Savage Ridgeback:Savage Ridgebacks> found.
+   ENDIF
+   LOCAL.COUNT=0    
+
+   // Skeletal Mount
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~
+   FILE.WRITELINE Skeletal Mount
+   FILE.WRITELINE ~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_skeletal_mount"))
+         FILE.WRITELINE UID: <UID> - Steed: Skeletal Mount - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Skeletal Mount Found!
+      FILE.WRITELINE No Skeletal Mount found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Skeletal Mount:Skeletal Mounts> found.
+   ENDIF
+   LOCAL.COUNT=0 
+
+   // Swamp Dragon
+
+   FILE.WRITELINE ~~~~~~~~~~~~
+   FILE.WRITELINE Swamp Dragon
+   FILE.WRITELINE ~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_swamp_dragon"))
+         FILE.WRITELINE UID: <UID> - Steed: Swamp Dragon - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Swamp Dragon Found!
+      FILE.WRITELINE No Swamp Dragon found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Swamp Dragon:Swamp Dragons> found.
+   ENDIF
+   LOCAL.COUNT=0 
+
+   SERV.LOG Steed Checks Complete!
+   SERV.B Steed Checks Complete!
+   FILE.CLOSE
+   RETURN 1
+
+
+
+ON = 0 Samurai Empire Steeds
+   LOCAL.COUNT = 0
+   FILE.MODE.CREATE=1
+   IF (<FILE.INUSE>)
+      SRC.SYSMESSAGE File in use! File name is <FILE.FILEPATH>!
+      RETURN 1
+   ELSEIF !(<FILE.OPEN c:\Burstfire UO\polls\steeds13.txt>)
+      SRC.SYSMESSAGE File cannot open!
+      RETURN 1
+   ENDIF
+   SERV.LOG Server is being PAUSED for Steed Checks by <SRC.ACCOUNT.NAME>:<SRC.NAME>
+   SERV.B Server is being PAUSED for Steed Checks
+   
+   // Kirin
+
+   FILE.WRITELINE ~~~~~
+   FILE.WRITELINE Kirin
+   FILE.WRITELINE ~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_Kirin"))
+         FILE.WRITELINE UID: <UID> - Steed: Kirin - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Kirin Found!
+      FILE.WRITELINE No Kirin found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Kirin:Kirins> found.
+   ENDIF
+   LOCAL.COUNT=0 
+
+   // Hiryu
+
+   FILE.WRITELINE ~~~~~
+   FILE.WRITELINE Hiryu
+   FILE.WRITELINE ~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_Hiryu"))
+         FILE.WRITELINE UID: <UID> - Steed: Hiryu - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Hiryu Found!
+      FILE.WRITELINE No Hiryu found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Hiryu:Hiryus> found.
+   ENDIF
+   LOCAL.COUNT=0 
+
+   SERV.LOG Steed Checks Complete!
+   SERV.B Steed Checks Complete!
+   FILE.CLOSE
+   RETURN 1
+
+
+
+ON = 0 Mondain's Legacy Steeds
+   LOCAL.COUNT = 0
+   FILE.MODE.CREATE=1
+   IF (<FILE.INUSE>)
+      SRC.SYSMESSAGE File in use! File name is <FILE.FILEPATH>!
+      RETURN 1
+   ELSEIF !(<FILE.OPEN c:\Burstfire UO\polls\steeds14.txt>)
+      SRC.SYSMESSAGE File cannot open!
+      RETURN 1
+   ENDIF
+   SERV.LOG Server is being PAUSED for Steed Checks by <SRC.ACCOUNT.NAME>:<SRC.NAME>
+   SERV.B Server is being PAUSED for Steed Checks
+   
+   // Armoured Steed
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~
+   FILE.WRITELINE Armoured Steed
+   FILE.WRITELINE ~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_m_armor_steed"))
+         FILE.WRITELINE UID: <UID> - Steed: Armoured Steed - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Armoured Steed Found!
+      FILE.WRITELINE No Armoured Steed found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Armoured Steed:Armoured Steeds> found.
+   ENDIF
+   LOCAL.COUNT=0 
+
+   // Cu Sidhe
+
+   FILE.WRITELINE ~~~~~~~~
+   FILE.WRITELINE Cu Sidhe
+   FILE.WRITELINE ~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_cu_sidhe"))
+         FILE.WRITELINE UID: <UID> - Steed: Cu Sidhe - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Cu Sidhe Found!
+      FILE.WRITELINE No Cu Sidhe found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Cu Sidhe:Cu Sidhes> found.
+   ENDIF
+   LOCAL.COUNT=0 
+   
+   // Reptalon
+
+   FILE.WRITELINE ~~~~~~~~
+   FILE.WRITELINE Reptalon
+   FILE.WRITELINE ~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_m_eptalon"))
+         FILE.WRITELINE UID: <UID> - Steed: Reptalon - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Reptalon Found!
+      FILE.WRITELINE No Reptalon found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Reptalon:Reptalons> found.
+   ENDIF
+   LOCAL.COUNT=0    
+
+   SERV.LOG Steed Checks Complete!
+   SERV.B Steed Checks Complete!
+   FILE.CLOSE
+   RETURN 1
+
+
+
+
+
+//-----------------------------------------
+//-----------------------------------------
+//-----------------------------------------
+//-----------------CHUNK 1-----------------
+//-----------------------------------------
+//-----------------------------------------
+//-----------------------------------------
+
+
+
+
+ON = 0 List All (Individual Files As Above)
+   LOCAL.COUNT = 0
+   FILE.MODE.CREATE=1
+   IF (<FILE.INUSE>)
+      SRC.SYSMESSAGE File in use! File name is <FILE.FILEPATH>!
+         ELSEIF !(<FILE.OPEN c:\Burstfire UO\polls\steeds1.txt>)
+      SRC.SYSMESSAGE File cannot open!
+         ENDIF
+   SERV.LOG Server is being PAUSED for Steed Checks by <SRC.ACCOUNT.NAME>:<SRC.NAME>
+   SERV.B Server is being PAUSED for Steed Checks
+   
+   // Dark Brown Horses
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Dark Brown Horses
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_horse_brown_dk"))
+         FILE.WRITELINE UID: <UID> - Steed: Dark Brown Horse - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Dark Brown Horses Found!
+      FILE.WRITELINE No Dark Brown Horses found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Dark Brown Horse:Dark Brown Horses> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+   // Light Brown Horses
+   
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Light Brown Horses
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_horse_brown_lt"))
+         FILE.WRITELINE UID: <UID> - Steed: Light Brown Horse - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Light Brown Horses Found!
+      FILE.WRITELINE No Light Brown Horses found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Light Brown Horse:Light Brown Horses> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+   // Gray Horses
+   
+   FILE.WRITELINE ~~~~~~~~~~~
+   FILE.WRITELINE Gray Horses
+   FILE.WRITELINE ~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_horse_gray"))
+         FILE.WRITELINE UID: <UID> - Steed: Gray Horse - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Gray Horses Found!
+      FILE.WRITELINE No Gray Horses found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Gray Horse:Gray Horses> found.
+   ENDIF
+   LOCAL.COUNT=0   
+
+   // Tan Horse
+
+   FILE.WRITELINE ~~~~~~~~~
+   FILE.WRITELINE Tan Horse
+   FILE.WRITELINE ~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_horse_tan"))
+         FILE.WRITELINE UID: <UID> - Steed: Tan Horse - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Tan Horses Found!
+      FILE.WRITELINE No Tan Horses found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Tan Horse:Tan Horses> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+
+   FILE.CLOSE
+   
+   LOCAL.COUNT = 0
+   FILE.MODE.CREATE=1
+   IF (<FILE.INUSE>)
+      SRC.SYSMESSAGE File in use! File name is <FILE.FILEPATH>!
+         ELSEIF !(<FILE.OPEN c:\Burstfire UO\polls\steeds2.txt>)
+      SRC.SYSMESSAGE File cannot open!
+         ENDIF
+   
+   
+   // Llamas
+
+   FILE.WRITELINE ~~~~~~
+   FILE.WRITELINE Llamas
+   FILE.WRITELINE ~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_llama"))
+         FILE.WRITELINE UID: <UID> - Steed: Llama - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Llamas Found!
+      FILE.WRITELINE No Llamas found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Llama:Llamas> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+   // Oclocks
+   
+   FILE.WRITELINE ~~~~~~~
+   FILE.WRITELINE Oclocks
+   FILE.WRITELINE ~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_ostard_desert"))
+         FILE.WRITELINE UID: <UID> - Steed: Oclock - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Oclocks Found!
+      FILE.WRITELINE No Oclocks found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Oclock:Oclocks> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+   // Orns
+   
+   FILE.WRITELINE ~~~~
+   FILE.WRITELINE Orns
+   FILE.WRITELINE ~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_ostard_forest"))
+         FILE.WRITELINE UID: <UID> - Steed: Orn - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Orns Found!
+      FILE.WRITELINE No Orns found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Orn:Orns> found.
+   ENDIF
+   LOCAL.COUNT=0   
+
+   // Zostrichs
+
+   FILE.WRITELINE ~~~~~~~~~
+   FILE.WRITELINE Zostrichs
+   FILE.WRITELINE ~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_ostard_zostrich"))
+         FILE.WRITELINE UID: <UID> - Steed: Zostrich - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Zostrichs Found!
+      FILE.WRITELINE No Zostrichs found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Zostrich:Zostrichs> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+
+   FILE.CLOSE
+   
+
+
+   LOCAL.COUNT = 0
+   FILE.MODE.CREATE=1
+   IF (<FILE.INUSE>)
+      SRC.SYSMESSAGE File in use! File name is <FILE.FILEPATH>!
+         ELSEIF !(<FILE.OPEN c:\Burstfire UO\polls\steeds3.txt>)
+      SRC.SYSMESSAGE File cannot open!
+         ENDIF
+   
+   
+   // Black Mustang
+
+   FILE.WRITELINE ~~~~~~~~~~~~~
+   FILE.WRITELINE Black Mustang
+   FILE.WRITELINE ~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_a_mustang_black"))
+         FILE.WRITELINE UID: <UID> - Steed: Black Mustang - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Black Mustangs Found!
+      FILE.WRITELINE No Black Mustangs found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Black Mustang:Black Mustangs> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+   
+   // Chocolate Mustang
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Chocolate Mustang
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_a_mustang_chocolate"))
+         FILE.WRITELINE UID: <UID> - Steed: Chocolate Mustang - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Chocolate Mustangs Found!
+      FILE.WRITELINE No Chocolate Mustangs found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Chocolate Mustang:Chocolate Mustangs> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+   
+   // Crimson Mustang
+   
+      FILE.WRITELINE ~~~~~~~~~~~~~~~
+      FILE.WRITELINE Crimson Mustang
+      FILE.WRITELINE ~~~~~~~~~~~~~~~
+      FORINSTANCES i_worldgem_bit
+         IF (!STRCMPI("<MORE1>","c_a_mustang_crimson"))
+            FILE.WRITELINE UID: <UID> - Steed: Crimson Mustang - Location: <P>
+            LOCAL.COUNT += 1
+         ENDIF
+      ENDFOR
+      IF (<LOCAL.COUNT>=0)
+         SRC.SYSMESSAGE No Crimson Mustangs Found!
+         FILE.WRITELINE No Crimson Mustangs found!
+      ELSE
+         SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Crimson Mustang:Crimson Mustangs> found.
+      ENDIF
+      LOCAL.COUNT=0
+      
+   // Grey Mustang
+   
+      FILE.WRITELINE ~~~~~~~~~~~~
+      FILE.WRITELINE Grey Mustang
+      FILE.WRITELINE ~~~~~~~~~~~~
+      FORINSTANCES i_worldgem_bit
+         IF (!STRCMPI("<MORE1>","c_a_mustang_grey"))
+            FILE.WRITELINE UID: <UID> - Steed: Grey Mustang - Location: <P>
+            LOCAL.COUNT += 1
+         ENDIF
+      ENDFOR
+      IF (<LOCAL.COUNT>=0)
+         SRC.SYSMESSAGE No Grey Mustangs Found!
+         FILE.WRITELINE No Grey Mustangs found!
+      ELSE
+         SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Grey Mustang:Grey Mustangs> found.
+      ENDIF
+      LOCAL.COUNT=0
+      
+   // Pamamino Mustang
+   
+      FILE.WRITELINE ~~~~~~~~~~~~~~~~
+      FILE.WRITELINE Pamamino Mustang
+      FILE.WRITELINE ~~~~~~~~~~~~~~~~
+      FORINSTANCES i_worldgem_bit
+         IF (!STRCMPI("<MORE1>","c_a_mustang_pamamino"))
+            FILE.WRITELINE UID: <UID> - Steed: Pamamino Mustang - Location: <P>
+            LOCAL.COUNT += 1
+         ENDIF
+      ENDFOR
+      IF (<LOCAL.COUNT>=0)
+         SRC.SYSMESSAGE No Pamamino Mustangs Found!
+         FILE.WRITELINE No Pamamino Mustangs found!
+      ELSE
+         SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Pamamino Mustang:Pamamino Mustangs> found.
+      ENDIF
+      LOCAL.COUNT=0
+      
+   // Red Roan Mustang
+   
+      FILE.WRITELINE ~~~~~~~~~~~~~~~~
+      FILE.WRITELINE Red Roan Mustang
+      FILE.WRITELINE ~~~~~~~~~~~~~~~~
+      FORINSTANCES i_worldgem_bit
+         IF (!STRCMPI("<MORE1>","c_a_mustang_redroan"))
+            FILE.WRITELINE UID: <UID> - Steed: Red Roan Mustang - Location: <P>
+            LOCAL.COUNT += 1
+         ENDIF
+      ENDFOR
+      IF (<LOCAL.COUNT>=0)
+         SRC.SYSMESSAGE No Red Roan Mustangs Found!
+         FILE.WRITELINE No Red Roan Mustangs found!
+      ELSE
+         SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Red Roan Mustang:Red Roan Mustangs> found.
+      ENDIF
+      LOCAL.COUNT=0
+      
+   // Roan Mustang
+   
+      FILE.WRITELINE ~~~~~~~~~~~~
+      FILE.WRITELINE Roan Mustang
+      FILE.WRITELINE ~~~~~~~~~~~~
+      FORINSTANCES i_worldgem_bit
+         IF (!STRCMPI("<MORE1>","c_a_mustang_roan"))
+            FILE.WRITELINE UID: <UID> - Steed: Roan Mustang - Location: <P>
+            LOCAL.COUNT += 1
+         ENDIF
+      ENDFOR
+      IF (<LOCAL.COUNT>=0)
+         SRC.SYSMESSAGE No Roan Mustangs Found!
+         FILE.WRITELINE No Roan Mustangs found!
+      ELSE
+         SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Roan Mustang:Roan Mustangs> found.
+      ENDIF
+      LOCAL.COUNT=0
+      
+   // Sky Mustang
+   
+      FILE.WRITELINE ~~~~~~~~~~~
+      FILE.WRITELINE Sky Mustang
+      FILE.WRITELINE ~~~~~~~~~~~
+      FORINSTANCES i_worldgem_bit
+         IF (!STRCMPI("<MORE1>","c_a_mustang_sky"))
+            FILE.WRITELINE UID: <UID> - Steed: Sky Mustang - Location: <P>
+            LOCAL.COUNT += 1
+         ENDIF
+      ENDFOR
+      IF (<LOCAL.COUNT>=0)
+         SRC.SYSMESSAGE No Sky Mustangs Found!
+         FILE.WRITELINE No Sky Mustangs found!
+      ELSE
+         SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Sky Mustang:Sky Mustangs> found.
+      ENDIF
+      LOCAL.COUNT=0
+      
+   // Sky Gray Mustang
+   
+      FILE.WRITELINE ~~~~~~~~~~~~~~~~
+      FILE.WRITELINE Sky Gray Mustang
+      FILE.WRITELINE ~~~~~~~~~~~~~~~~
+      FORINSTANCES i_worldgem_bit
+         IF (!STRCMPI("<MORE1>","c_a_mustang_skygray"))
+            FILE.WRITELINE UID: <UID> - Steed: Sky Gray Mustang - Location: <P>
+            LOCAL.COUNT += 1
+         ENDIF
+      ENDFOR
+      IF (<LOCAL.COUNT>=0)
+         SRC.SYSMESSAGE No Sky Gray Mustangs Found!
+         FILE.WRITELINE No Sky Gray Mustangs found!
+      ELSE
+         SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Sky Gray Mustang:Sky Gray Mustangs> found.
+      ENDIF
+      LOCAL.COUNT=0
+      
+   // Wimmimate Mustang
+   
+      FILE.WRITELINE ~~~~~~~~~~~~~~~~~
+      FILE.WRITELINE Wimmimate Mustang
+      FILE.WRITELINE ~~~~~~~~~~~~~~~~~
+      FORINSTANCES i_worldgem_bit
+         IF (!STRCMPI("<MORE1>","c_a_mustang_wimmimate"))
+            FILE.WRITELINE UID: <UID> - Steed: Wimmimate Mustang - Location: <P>
+            LOCAL.COUNT += 1
+         ENDIF
+      ENDFOR
+      IF (<LOCAL.COUNT>=0)
+         SRC.SYSMESSAGE No Wimmimate Mustangs Found!
+         FILE.WRITELINE No Wimmimate Mustangs found!
+      ELSE
+         SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Wimmimate Mustang:Wimmimate Mustangs> found.
+      ENDIF
+      LOCAL.COUNT=0
+      
+      
+
+   FILE.CLOSE
+   
+
+
+   LOCAL.COUNT = 0
+   FILE.MODE.CREATE=1
+   IF (<FILE.INUSE>)
+      SRC.SYSMESSAGE File in use! File name is <FILE.FILEPATH>!
+         ELSEIF !(<FILE.OPEN c:\Burstfire UO\polls\steeds4.txt>)
+      SRC.SYSMESSAGE File cannot open!
+         ENDIF
+   
+   
+   // Black Llama
+
+   FILE.WRITELINE ~~~~~~~~~~~
+   FILE.WRITELINE Black Llama
+   FILE.WRITELINE ~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_llama_black"))
+         FILE.WRITELINE UID: <UID> - Steed: Black Llama - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Black Llamas Found!
+      FILE.WRITELINE No Black Llamas found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Black Llama:Black Llamas> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+   
+   // Chocolate Llama
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~
+   FILE.WRITELINE Chocolate Llama
+   FILE.WRITELINE ~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_llama_chocolate"))
+         FILE.WRITELINE UID: <UID> - Steed: Chocolate Llama - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Chocolate Llamas Found!
+      FILE.WRITELINE No Chocolate Llamas found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Chocolate Llama:Chocolate Llamas> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+   
+   // Crimson Llama
+   
+      FILE.WRITELINE ~~~~~~~~~~~~~
+      FILE.WRITELINE Crimson Llama
+      FILE.WRITELINE ~~~~~~~~~~~~~
+      FORINSTANCES i_worldgem_bit
+         IF (!STRCMPI("<MORE1>","c_llama_crimson"))
+            FILE.WRITELINE UID: <UID> - Steed: Crimson Llama - Location: <P>
+            LOCAL.COUNT += 1
+         ENDIF
+      ENDFOR
+      IF (<LOCAL.COUNT>=0)
+         SRC.SYSMESSAGE No Crimson Llamas Found!
+         FILE.WRITELINE No Crimson Llamas found!
+      ELSE
+         SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Crimson Llama:Crimson Llamas> found.
+      ENDIF
+      LOCAL.COUNT=0
+      
+   // Grey Llama
+   
+      FILE.WRITELINE ~~~~~~~~~~
+      FILE.WRITELINE Grey Llama
+      FILE.WRITELINE ~~~~~~~~~~
+      FORINSTANCES i_worldgem_bit
+         IF (!STRCMPI("<MORE1>","c_llama_grey"))
+            FILE.WRITELINE UID: <UID> - Steed: Grey Llama - Location: <P>
+            LOCAL.COUNT += 1
+         ENDIF
+      ENDFOR
+      IF (<LOCAL.COUNT>=0)
+         SRC.SYSMESSAGE No Grey Llamas Found!
+         FILE.WRITELINE No Grey Llamas found!
+      ELSE
+         SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Grey Llama:Grey Llamas> found.
+      ENDIF
+      LOCAL.COUNT=0
+      
+   // Pamamino Llama
+   
+      FILE.WRITELINE ~~~~~~~~~~~~~~
+      FILE.WRITELINE Pamamino Llama
+      FILE.WRITELINE ~~~~~~~~~~~~~~
+      FORINSTANCES i_worldgem_bit
+         IF (!STRCMPI("<MORE1>","c_llama_panamino"))
+            FILE.WRITELINE UID: <UID> - Steed: Pamamino Llama - Location: <P>
+            LOCAL.COUNT += 1
+         ENDIF
+      ENDFOR
+      IF (<LOCAL.COUNT>=0)
+         SRC.SYSMESSAGE No Pamamino Llamas Found!
+         FILE.WRITELINE No Pamamino Llamas found!
+      ELSE
+         SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Pamamino Llama:Pamamino Llamas> found.
+      ENDIF
+      LOCAL.COUNT=0
+      
+   // Red Roan Llama
+   
+      FILE.WRITELINE ~~~~~~~~~~~~~~
+      FILE.WRITELINE Red Roan Llama
+      FILE.WRITELINE ~~~~~~~~~~~~~~
+      FORINSTANCES i_worldgem_bit
+         IF (!STRCMPI("<MORE1>","c_llama_redroan"))
+            FILE.WRITELINE UID: <UID> - Steed: Red Roan Llama - Location: <P>
+            LOCAL.COUNT += 1
+         ENDIF
+      ENDFOR
+      IF (<LOCAL.COUNT>=0)
+         SRC.SYSMESSAGE No Red Roan Llamas Found!
+         FILE.WRITELINE No Red Roan Llamas found!
+      ELSE
+         SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Red Roan Llama:Red Roan Llamas> found.
+      ENDIF
+      LOCAL.COUNT=0
+      
+   // Roan Llama
+   
+      FILE.WRITELINE ~~~~~~~~~~
+      FILE.WRITELINE Roan Llama
+      FILE.WRITELINE ~~~~~~~~~~
+      FORINSTANCES i_worldgem_bit
+         IF (!STRCMPI("<MORE1>","c_llama_roan"))
+            FILE.WRITELINE UID: <UID> - Steed: Roan Llama - Location: <P>
+            LOCAL.COUNT += 1
+         ENDIF
+      ENDFOR
+      IF (<LOCAL.COUNT>=0)
+         SRC.SYSMESSAGE No Roan Llamas Found!
+         FILE.WRITELINE No Roan Llamas found!
+      ELSE
+         SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Roan Llama:Roan Llamas> found.
+      ENDIF
+      LOCAL.COUNT=0
+      
+   // Sky Gray Llama
+   
+      FILE.WRITELINE ~~~~~~~~~~~~~~
+      FILE.WRITELINE Sky Gray Llama
+      FILE.WRITELINE ~~~~~~~~~~~~~~
+      FORINSTANCES i_worldgem_bit
+         IF (!STRCMPI("<MORE1>","c_llama_skygrey"))
+            FILE.WRITELINE UID: <UID> - Steed: Sky Gray Llama - Location: <P>
+            LOCAL.COUNT += 1
+         ENDIF
+      ENDFOR
+      IF (<LOCAL.COUNT>=0)
+         SRC.SYSMESSAGE No Sky Gray Llamas Found!
+         FILE.WRITELINE No Sky Gray Llamas found!
+      ELSE
+         SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Sky Gray Llama:Sky Gray Llamas> found.
+      ENDIF
+      LOCAL.COUNT=0
+
+   // Sky Blue Llama
+   
+      FILE.WRITELINE ~~~~~~~~~~~~~~
+      FILE.WRITELINE Sky Blue Llama
+      FILE.WRITELINE ~~~~~~~~~~~~~~
+      FORINSTANCES i_worldgem_bit
+         IF (!STRCMPI("<MORE1>","c_llama_skyblue"))
+            FILE.WRITELINE UID: <UID> - Steed: Sky Blue Llama - Location: <P>
+            LOCAL.COUNT += 1
+         ENDIF
+      ENDFOR
+      IF (<LOCAL.COUNT>=0)
+         SRC.SYSMESSAGE No Sky Blue Llamas Found!
+         FILE.WRITELINE No Sky Blue Llamas found!
+      ELSE
+         SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Sky Blue Llama:Sky Blue Llamas> found.
+      ENDIF
+      LOCAL.COUNT=0
+      
+   // Wimmimate Llama
+   
+      FILE.WRITELINE ~~~~~~~~~~~~~~~
+      FILE.WRITELINE Wimmimate Llama
+      FILE.WRITELINE ~~~~~~~~~~~~~~~
+      FORINSTANCES i_worldgem_bit
+         IF (!STRCMPI("<MORE1>","c_llama_winnimate"))
+            FILE.WRITELINE UID: <UID> - Steed: Wimmimate Llama - Location: <P>
+            LOCAL.COUNT += 1
+         ENDIF
+      ENDFOR
+      IF (<LOCAL.COUNT>=0)
+         SRC.SYSMESSAGE No Wimmimate Llamas Found!
+         FILE.WRITELINE No Wimmimate Llamas found!
+      ELSE
+         SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Wimmimate Llama:Wimmimate Llamas> found.
+      ENDIF
+      LOCAL.COUNT=0
+      
+      
+
+   FILE.CLOSE
+   
+
+
+   LOCAL.COUNT = 0
+   FILE.MODE.CREATE=1
+   IF (<FILE.INUSE>)
+      SRC.SYSMESSAGE File in use! File name is <FILE.FILEPATH>!
+         ELSEIF !(<FILE.OPEN c:\Burstfire UO\polls\steeds5.txt>)
+      SRC.SYSMESSAGE File cannot open!
+         ENDIF
+   
+   
+   // Ethereal Llamas
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~
+   FILE.WRITELINE Ethereal Llamas
+   FILE.WRITELINE ~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_ethereal_llama"))
+         FILE.WRITELINE UID: <UID> - Steed: Ethereal Llama - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Ethereal Llamas Found!
+      FILE.WRITELINE No Ethereal Llamas found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Ethereal Llama:Ethereal Llamas> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+   // Ethereal Horses
+   
+   FILE.WRITELINE ~~~~~~~~~~~~~~~
+   FILE.WRITELINE Ethereal Horses
+   FILE.WRITELINE ~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_ethereal_horse"))
+         FILE.WRITELINE UID: <UID> - Steed: Ethereal Horse - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Ethereal Horses Found!
+      FILE.WRITELINE No Ethereal Horses found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Ethereal Horse:Ethereal Horses> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+   // Ethereal Orns
+   
+   FILE.WRITELINE ~~~~~~~~~~~~~
+   FILE.WRITELINE Ethereal Orns
+   FILE.WRITELINE ~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_ethereal_orn"))
+         FILE.WRITELINE UID: <UID> - Steed: Ethereal Orn - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Ethereal Orns Found!
+      FILE.WRITELINE No Ethereal Orns found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Ethereal Orn:Ethereal Orns> found.
+   ENDIF
+   LOCAL.COUNT=0   
+
+   // Ethereal Zostrichs
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Ethereal Zostrichs
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_ethereal_Zostrich"))
+         FILE.WRITELINE UID: <UID> - Steed: Ethereal Zostrich - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Ethereal Zostrichs Found!
+      FILE.WRITELINE No Ethereal Zostrichs found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Ethereal Zostrich:Ethereal Zostrichs> found.
+   ENDIF
+   LOCAL.COUNT=0
+
+
+   FILE.CLOSE
+      
+
+   LOCAL.COUNT = 0
+   FILE.MODE.CREATE=1
+   IF (<FILE.INUSE>)
+      SRC.SYSMESSAGE File in use! File name is <FILE.FILEPATH>!
+         ELSEIF !(<FILE.OPEN c:\Burstfire UO\polls\steeds6.txt>)
+      SRC.SYSMESSAGE File cannot open!
+         ENDIF
+   
+   
+   // Angelic Llamas
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~
+   FILE.WRITELINE Angelic Llamas
+   FILE.WRITELINE ~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_llama_angelic"))
+         FILE.WRITELINE UID: <UID> - Steed: Angelic Llama - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Angelic Llamas Found!
+      FILE.WRITELINE No Angelic Llamas found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Angelic Llama:Angelic Llamas> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+   // Angelic Oclocks
+   
+   FILE.WRITELINE ~~~~~~~~~~~~~~~
+   FILE.WRITELINE Angelic Oclocks
+   FILE.WRITELINE ~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_angelic_oclock"))
+         FILE.WRITELINE UID: <UID> - Steed: Angelic Oclock - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Angelic Oclocks Found!
+      FILE.WRITELINE No Angelic Oclocks found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Angelic Oclock:Angelic Oclocks> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+   // Angelic Orns
+   
+   FILE.WRITELINE ~~~~~~~~~~~~
+   FILE.WRITELINE Angelic Orns
+   FILE.WRITELINE ~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_angelic_orn"))
+         FILE.WRITELINE UID: <UID> - Steed: Angelic Orn - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Angelic Orns Found!
+      FILE.WRITELINE No Angelic Orns found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Angelic Orn:Angelic Orns> found.
+   ENDIF
+   LOCAL.COUNT=0   
+
+   // Angelic Zostrichs
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Angelic Zostrichs
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_angelic_Zostrich"))
+         FILE.WRITELINE UID: <UID> - Steed: Angelic Zostrich - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Angelic Zostrichs Found!
+      FILE.WRITELINE No Angelic Zostrichs found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Angelic Zostrich:Angelic Zostrichs> found.
+   ENDIF
+   LOCAL.COUNT=0
+
+
+   // Holy Steeds
+
+   FILE.WRITELINE ~~~~~~~~~~~
+   FILE.WRITELINE Holy Steeds
+   FILE.WRITELINE ~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_horse_hk"))
+         FILE.WRITELINE UID: <UID> - Steed: Holy Steed (Type 1) - Location: <P>
+         LOCAL.COUNT += 1
+      ELSEIF (!STRCMPI("<MORE1>","c_holy_steed"))
+         FILE.WRITELINE UID: <UID> - Steed: Holy Steed (Type 2) - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Holy Steeds Found!
+      FILE.WRITELINE No Holy Steeds found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Holy Steed:Holy Steeds> found.
+   ENDIF
+   LOCAL.COUNT=0
+
+   FILE.CLOSE
+
+
+   LOCAL.COUNT = 0
+   FILE.MODE.CREATE=1
+   IF (<FILE.INUSE>)
+      SRC.SYSMESSAGE File in use! File name is <FILE.FILEPATH>!
+   ELSEIF !(<FILE.OPEN c:\Burstfire UO\polls\steeds7.txt>)
+      SRC.SYSMESSAGE File cannot open!
+   ENDIF
+   
+   
+   // Darkonian Horse
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~
+   FILE.WRITELINE Darkonian Horse
+   FILE.WRITELINE ~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_horse_darkonian"))
+         FILE.WRITELINE UID: <UID> - Steed: Darkonian Horse - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Darkonian Horse Found!
+      FILE.WRITELINE No Darkonian Horse found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Darkonian Horse:Darkonian Horses> found.
+   ENDIF
+   LOCAL.COUNT=0   
+ 
+   // Darkonian Zostrichs
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Darkonian Zostrichs
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_dark_zost"))
+         FILE.WRITELINE UID: <UID> - Steed: Darkonian Zostrich - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Darkonian Zostrichs Found!
+      FILE.WRITELINE No Darkonian Zostrichs found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Darkonian Zostrich:Darkonian Zostrichs> found.
+   ENDIF
+   LOCAL.COUNT=0  
+   
+   // Terathane Zostrichs
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Terathane Zostrichs
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_terathane_zost"))
+         FILE.WRITELINE UID: <UID> - Steed: Terathane Zostrich - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Terathane Zostrichs Found!
+      FILE.WRITELINE No Terathane Zostrichs found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Terathane Zostrich:Terathane Zostrichs> found.
+   ENDIF
+   LOCAL.COUNT=0     
+ 
+
+   FILE.CLOSE
+   
+
+
+   LOCAL.COUNT = 0
+   FILE.MODE.CREATE=1
+   IF (<FILE.INUSE>)
+      SRC.SYSMESSAGE File in use! File name is <FILE.FILEPATH>!
+         ELSEIF !(<FILE.OPEN c:\Burstfire UO\polls\steeds8.txt>)
+      SRC.SYSMESSAGE File cannot open!
+         ENDIF
+   
+   
+   // Llama Of The Moon
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Llama Of The Moon
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_llama_of_the_moon"))
+         FILE.WRITELINE UID: <UID> - Steed: Llama Of The Moon - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Llama Of The Moon Found!
+      FILE.WRITELINE No Llama Of The Moon found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Llama Of The Moon:Llama Of The Moons> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+   // Oclock Of The Moon
+   
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Oclock Of The Moon
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_oclock_of_the_moon"))
+         FILE.WRITELINE UID: <UID> - Steed: Oclock Of The Moon - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Oclock Of The Moon Found!
+      FILE.WRITELINE No Oclock Of The Moon found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Oclock Of The Moon:Oclock Of The Moons> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+   // Orn Of The Moon
+   
+   FILE.WRITELINE ~~~~~~~~~~~~~~~
+   FILE.WRITELINE Orn Of The Moon
+   FILE.WRITELINE ~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_orn_of_the_moon"))
+         FILE.WRITELINE UID: <UID> - Steed: Orn Of The Moon - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Orn Of The Moon Found!
+      FILE.WRITELINE No Orn Of The Moon found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Orn Of The Moon:Orn Of The Moons> found.
+   ENDIF
+   LOCAL.COUNT=0   
+
+   // Zostrich Of The Moon
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Zostrich Of The Moon
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_zostrich_of_the_moon"))
+         FILE.WRITELINE UID: <UID> - Steed: Zostrich Of The Moon - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Zostrich Of The Moon Found!
+      FILE.WRITELINE No Zostrich Of The Moon found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Zostrich Of The Moon:Zostrich Of The Moons> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+
+   FILE.CLOSE
+   
+
+   LOCAL.COUNT = 0
+   FILE.MODE.CREATE=1
+   IF (<FILE.INUSE>)
+      SRC.SYSMESSAGE File in use! File name is <FILE.FILEPATH>!
+         ELSEIF !(<FILE.OPEN c:\Burstfire UO\polls\steeds9.txt>)
+      SRC.SYSMESSAGE File cannot open!
+         ENDIF
+   
+   
+   // Jungle Steed
+
+   FILE.WRITELINE ~~~~~~~~~~~~
+   FILE.WRITELINE Jungle Steed
+   FILE.WRITELINE ~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_jungle_steed"))
+         FILE.WRITELINE UID: <UID> - Steed: Jungle Steed - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Jungle Steed Found!
+      FILE.WRITELINE No Jungle Steed found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Jungle Steed:Jungle Steeds> found.
+   ENDIF
+   LOCAL.COUNT=0   
+ 
+   // Jungle Orns
+
+   FILE.WRITELINE ~~~~~~~~~~~
+   FILE.WRITELINE Jungle Orns
+   FILE.WRITELINE ~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_jungle_orn"))
+         FILE.WRITELINE UID: <UID> - Steed: Jungle Orn - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Jungle Orns Found!
+      FILE.WRITELINE No Jungle Orns found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Jungle Orn:Jungle Orns> found.
+   ENDIF
+   LOCAL.COUNT=0  
+   
+   // Ice Horses
+
+   FILE.WRITELINE ~~~~~~~~~~
+   FILE.WRITELINE Ice Horses
+   FILE.WRITELINE ~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_ice_horse"))
+         FILE.WRITELINE UID: <UID> - Steed: Ice Horse - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Ice Horses Found!
+      FILE.WRITELINE No Ice Horses found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Ice Horse:Ice Horses> found.
+   ENDIF
+   LOCAL.COUNT=0      
+
+   // Ice Zostrichs
+
+   FILE.WRITELINE ~~~~~~~~~~~~~
+   FILE.WRITELINE Ice Zostrichs
+   FILE.WRITELINE ~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_ice_zostrich"))
+         FILE.WRITELINE UID: <UID> - Steed: Ice Zostrich - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Ice Zostrichs Found!
+      FILE.WRITELINE No Ice Zostrichs found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Ice Zostrich:Ice Zostrichs> found.
+   ENDIF
+   LOCAL.COUNT=0  
+ 
+
+   FILE.CLOSE
+   
+
+
+   LOCAL.COUNT = 0
+   FILE.MODE.CREATE=1
+   IF (<FILE.INUSE>)
+      SRC.SYSMESSAGE File in use! File name is <FILE.FILEPATH>!
+         ELSEIF !(<FILE.OPEN c:\Burstfire UO\polls\steeds10.txt>)
+      SRC.SYSMESSAGE File cannot open!
+         ENDIF
+   
+   
+   // Fire Steed
+
+   FILE.WRITELINE ~~~~~~~~~~
+   FILE.WRITELINE Fire Steed
+   FILE.WRITELINE ~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_fire_steed"))
+         FILE.WRITELINE UID: <UID> - Steed: Fire Steed - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Fire Steed Found!
+      FILE.WRITELINE No Fire Steed found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Fire Steed:Fire Steeds> found.
+   ENDIF
+   LOCAL.COUNT=0  
+
+   // Moon Steed
+
+   FILE.WRITELINE ~~~~~~~~~~
+   FILE.WRITELINE Moon Steed
+   FILE.WRITELINE ~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_moon_steed"))
+         FILE.WRITELINE UID: <UID> - Steed: Moon Steed - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Moon Steed Found!
+      FILE.WRITELINE No Moon Steed found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Moon Steed:Moon Steeds> found.
+   ENDIF
+   LOCAL.COUNT=0  
+
+   // Nightmare (Type 1)
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Nightmare (Type 1)
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_nightmare"))
+         FILE.WRITELINE UID: <UID> - Steed: Nightmare (Type 1) - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Nightmare (Type 1) Found!
+      FILE.WRITELINE No Nightmare (Type 1) found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Nightmare (Type 1):Nightmare (Type 1)s> found.
+   ENDIF
+   LOCAL.COUNT=0  
+   
+   // Nightmare (Type 2)
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Nightmare (Type 2)
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_horse_nightmare"))
+         FILE.WRITELINE UID: <UID> - Steed: Nightmare (Type 2) - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Nightmare (Type 2) Found!
+      FILE.WRITELINE No Nightmare (Type 2) found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Nightmare (Type 2):Nightmare (Type 2)s> found.
+   ENDIF
+   LOCAL.COUNT=0  
+   
+   // Steed of Sand
+
+   FILE.WRITELINE ~~~~~~~~~~~~~
+   FILE.WRITELINE Steed of Sand
+   FILE.WRITELINE ~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_steed_sand"))
+         FILE.WRITELINE UID: <UID> - Steed: Steed of Sand - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Steed of Sand Found!
+      FILE.WRITELINE No Steed of Sand found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Steed of Sand:Steed of Sands> found.
+   ENDIF
+   LOCAL.COUNT=0  
+   
+   // Undead Horse (Classic)
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Undead Horse (Classic)
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_undead_horse"))
+         FILE.WRITELINE UID: <UID> - Steed: Undead Horse (Classic) - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Undead Horse (Classic) Found!
+      FILE.WRITELINE No Undead Horse (Classic) found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Undead Horse (Classic):Undead Horse (Classic)s> found.
+   ENDIF
+   LOCAL.COUNT=0  
+   
+   // Unicorn (Classic)
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Unicorn (Classic)
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_unicorn"))
+         FILE.WRITELINE UID: <UID> - Steed: Unicorn (Classic) - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Unicorn (Classic) Found!
+      FILE.WRITELINE No Unicorn (Classic) found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Unicorn (Classic):Unicorn (Classic)s> found.
+   ENDIF
+   LOCAL.COUNT=0  
+   
+   // War Horse
+
+   FILE.WRITELINE ~~~~~~~~~
+   FILE.WRITELINE War Horse
+   FILE.WRITELINE ~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_war_horse"))
+         FILE.WRITELINE UID: <UID> - Steed: War Horse - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No War Horse Found!
+      FILE.WRITELINE No War Horse found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? War Horse:War Horses> found.
+   ENDIF
+   LOCAL.COUNT=0  
+   
+   // Experimental Steed
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Experimental Steed
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_experimental_steed"))
+         FILE.WRITELINE UID: <UID> - Steed: Experimental Steed - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Experimental Steed Found!
+      FILE.WRITELINE No Experimental Steed found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Experimental Steed:Experimental Steeds> found.
+   ENDIF
+   LOCAL.COUNT=0     
+
+   // Warped Mustang
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~
+   FILE.WRITELINE Warped Mustang
+   FILE.WRITELINE ~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_mustang_warped"))
+         FILE.WRITELINE UID: <UID> - Steed: Warped Mustang - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Warped Mustang Found!
+      FILE.WRITELINE No Warped Mustang found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Warped Mustang:Warped Mustangs> found.
+   ENDIF
+   LOCAL.COUNT=0 
+   
+   // Order War Horse
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~
+   FILE.WRITELINE Order War Horse
+   FILE.WRITELINE ~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_war_horse_order"))
+         FILE.WRITELINE UID: <UID> - Steed: Order War Horse - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Order War Horse Found!
+      FILE.WRITELINE No Order War Horse found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Order War Horse:Order War Horses> found.
+   ENDIF
+   LOCAL.COUNT=0 
+   
+   // Chaos War Horse
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~
+   FILE.WRITELINE Chaos War Horse
+   FILE.WRITELINE ~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_war_horse_chaos"))
+         FILE.WRITELINE UID: <UID> - Steed: Chaos War Horse - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Chaos War Horse Found!
+      FILE.WRITELINE No Chaos War Horse found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Chaos War Horse:Chaos War Horses> found.
+   ENDIF
+   LOCAL.COUNT=0 
+
+   // Shadow
+
+   FILE.WRITELINE ~~~~~~
+   FILE.WRITELINE Shadow
+   FILE.WRITELINE ~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_horse_shadow"))
+         FILE.WRITELINE UID: <UID> - Steed: Shadow (Horse) - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Unicorn (Classic) Found!
+      FILE.WRITELINE No Unicorn (Classic) found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Unicorn (Classic):Unicorn (Classic)s> found.
+   ENDIF
+   LOCAL.COUNT=0 
+   
+   // Steed of the Sun
+   
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Steed of the Sun
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_horse_sun"))
+         FILE.WRITELINE UID: <UID> - Steed: Steed of the Sun - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Unicorn (Classic) Found!
+      FILE.WRITELINE No Unicorn (Classic) found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Unicorn (Classic):Unicorn (Classic)s> found.
+   ENDIF
+   LOCAL.COUNT=0 
+
+   FILE.CLOSE
+   
+
+
+   LOCAL.COUNT = 0
+   FILE.MODE.CREATE=1
+   IF (<FILE.INUSE>)
+      SRC.SYSMESSAGE File in use! File name is <FILE.FILEPATH>!
+         ELSEIF !(<FILE.OPEN c:\Burstfire UO\polls\steeds11.txt>)
+      SRC.SYSMESSAGE File cannot open!
+         ENDIF
+   
+   
+   // Death Steed
+
+   FILE.WRITELINE ~~~~~~~~~~
+   FILE.WRITELINE Death Steed
+   FILE.WRITELINE ~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_Death_zostrich"))
+         FILE.WRITELINE UID: <UID> - Steed: Death Steed - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Death Steed Found!
+      FILE.WRITELINE No Death Steed found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Death Steed:Death Steeds> found.
+   ENDIF
+   LOCAL.COUNT=0  
+
+   // Lava Zost
+
+   FILE.WRITELINE ~~~~~~~~~~
+   FILE.WRITELINE Lava Zost
+   FILE.WRITELINE ~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_lava_zostrich"))
+         FILE.WRITELINE UID: <UID> - Steed: Lava Zost - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Lava Zost Found!
+      FILE.WRITELINE No Lava Zost found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Lava Zost:Lava Zosts> found.
+   ENDIF
+   LOCAL.COUNT=0
+
+   // Void Zost
+
+   FILE.WRITELINE ~~~~~~~~~~
+   FILE.WRITELINE Void Zost
+   FILE.WRITELINE ~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_void_zostrich"))
+         FILE.WRITELINE UID: <UID> - Steed: Void Zost - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Void Zost Found!
+      FILE.WRITELINE No Void Zost found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Void Zost:Void Zosts> found.
+   ENDIF
+   LOCAL.COUNT=0
+ 
+
+   FILE.CLOSE
+   
+
+
+
+
+   LOCAL.COUNT = 0
+   FILE.MODE.CREATE=1
+   IF (<FILE.INUSE>)
+      SRC.SYSMESSAGE File in use! File name is <FILE.FILEPATH>!
+         ELSEIF !(<FILE.OPEN c:\Burstfire UO\polls\steeds12.txt>)
+      SRC.SYSMESSAGE File cannot open!
+         ENDIF
+   
+   
+   // Unicorn (LBR)
+
+   FILE.WRITELINE ~~~~~~~~~~
+   FILE.WRITELINE Unicorn (LBR)
+   FILE.WRITELINE ~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_m_unicorn"))
+         FILE.WRITELINE UID: <UID> - Steed: Unicorn (LBR) - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Unicorn (LBR) Found!
+      FILE.WRITELINE No Unicorn (LBR) found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Unicorn (LBR):Unicorns (LBR)> found.
+   ENDIF
+   LOCAL.COUNT=0  
+
+   // Armoured Swamp Dragon
+
+   FILE.WRITELINE ~~~~~~~~~~
+   FILE.WRITELINE Armoured Swamp Dragon
+   FILE.WRITELINE ~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_armored_swamp_dragon"))
+         FILE.WRITELINE UID: <UID> - Steed: Armoured Swamp Dragon - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Armoured Swamp Dragon Found!
+      FILE.WRITELINE No Armoured Swamp Dragon found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Armoured Swamp Dragon:Armoured Swamp Dragons> found.
+   ENDIF
+   LOCAL.COUNT=0 
+
+   // Giant Beetle
+
+   FILE.WRITELINE ~~~~~~~~~~
+   FILE.WRITELINE Giant Beetle
+   FILE.WRITELINE ~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_giant_beetle"))
+         FILE.WRITELINE UID: <UID> - Steed: Giant Beetle - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Giant Beetle Found!
+      FILE.WRITELINE No Giant Beetle found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Giant Beetle:Giant Beetles> found.
+   ENDIF
+   LOCAL.COUNT=0 
+
+   // Ridgeback
+
+   FILE.WRITELINE ~~~~~~~~~
+   FILE.WRITELINE Ridgeback
+   FILE.WRITELINE ~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_ridgeback"))
+         FILE.WRITELINE UID: <UID> - Steed: Ridgeback - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Ridgeback Found!
+      FILE.WRITELINE No Ridgeback found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Ridgeback:Ridgebacks> found.
+   ENDIF
+   LOCAL.COUNT=0 
+   
+   // Savage Ridgeback
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Savage Ridgeback
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_savage_ridgeback"))
+         FILE.WRITELINE UID: <UID> - Steed: Savage Ridgeback - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Savage Ridgeback Found!
+      FILE.WRITELINE No Savage Ridgeback found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Savage Ridgeback:Savage Ridgebacks> found.
+   ENDIF
+   LOCAL.COUNT=0    
+
+   // Skeletal Mount
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~
+   FILE.WRITELINE Skeletal Mount
+   FILE.WRITELINE ~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_skeletal_mount"))
+         FILE.WRITELINE UID: <UID> - Steed: Skeletal Mount - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Skeletal Mount Found!
+      FILE.WRITELINE No Skeletal Mount found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Skeletal Mount:Skeletal Mounts> found.
+   ENDIF
+   LOCAL.COUNT=0 
+
+   // Swamp Dragon
+
+   FILE.WRITELINE ~~~~~~~~~~~~
+   FILE.WRITELINE Swamp Dragon
+   FILE.WRITELINE ~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_swamp_dragon"))
+         FILE.WRITELINE UID: <UID> - Steed: Swamp Dragon - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Swamp Dragon Found!
+      FILE.WRITELINE No Swamp Dragon found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Swamp Dragon:Swamp Dragons> found.
+   ENDIF
+   LOCAL.COUNT=0 
+
+
+   FILE.CLOSE
+   
+
+
+   LOCAL.COUNT = 0
+   FILE.MODE.CREATE=1
+   IF (<FILE.INUSE>)
+      SRC.SYSMESSAGE File in use! File name is <FILE.FILEPATH>!
+         ELSEIF !(<FILE.OPEN c:\Burstfire UO\polls\steeds13.txt>)
+      SRC.SYSMESSAGE File cannot open!
+         ENDIF
+   
+   
+   // Kirin
+
+   FILE.WRITELINE ~~~~~
+   FILE.WRITELINE Kirin
+   FILE.WRITELINE ~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_Kirin"))
+         FILE.WRITELINE UID: <UID> - Steed: Kirin - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Kirin Found!
+      FILE.WRITELINE No Kirin found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Kirin:Kirins> found.
+   ENDIF
+   LOCAL.COUNT=0 
+
+   // Hiryu
+
+   FILE.WRITELINE ~~~~~
+   FILE.WRITELINE Hiryu
+   FILE.WRITELINE ~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_Hiryu"))
+         FILE.WRITELINE UID: <UID> - Steed: Hiryu - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Hiryu Found!
+      FILE.WRITELINE No Hiryu found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Hiryu:Hiryus> found.
+   ENDIF
+   LOCAL.COUNT=0 
+
+
+   FILE.CLOSE
+   
+
+
+   LOCAL.COUNT = 0
+   FILE.MODE.CREATE=1
+   IF (<FILE.INUSE>)
+      SRC.SYSMESSAGE File in use! File name is <FILE.FILEPATH>!
+         ELSEIF !(<FILE.OPEN c:\Burstfire UO\polls\steeds14.txt>)
+      SRC.SYSMESSAGE File cannot open!
+         ENDIF
+   
+   
+   // Armoured Steed
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~
+   FILE.WRITELINE Armoured Steed
+   FILE.WRITELINE ~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_m_armor_steed"))
+         FILE.WRITELINE UID: <UID> - Steed: Armoured Steed - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Armoured Steed Found!
+      FILE.WRITELINE No Armoured Steed found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Armoured Steed:Armoured Steeds> found.
+   ENDIF
+   LOCAL.COUNT=0 
+
+   // Cu Sidhe
+
+   FILE.WRITELINE ~~~~~~~~
+   FILE.WRITELINE Cu Sidhe
+   FILE.WRITELINE ~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_cu_sidhe"))
+         FILE.WRITELINE UID: <UID> - Steed: Cu Sidhe - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Cu Sidhe Found!
+      FILE.WRITELINE No Cu Sidhe found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Cu Sidhe:Cu Sidhes> found.
+   ENDIF
+   LOCAL.COUNT=0 
+   
+   // Reptalon
+
+   FILE.WRITELINE ~~~~~~~~
+   FILE.WRITELINE Reptalon
+   FILE.WRITELINE ~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_m_eptalon"))
+         FILE.WRITELINE UID: <UID> - Steed: Reptalon - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Reptalon Found!
+      FILE.WRITELINE No Reptalon found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Reptalon:Reptalons> found.
+   ENDIF
+   LOCAL.COUNT=0    
+
+   SERV.LOG Steed Checks Complete!
+   SERV.B Steed Checks Complete!
+   FILE.CLOSE
+   RETURN 1
+
+
+
+   
+//-----------------------------------------
+//-----------------------------------------
+//-----------------------------------------
+//-----------------CHUNK 2-----------------
+//-----------------------------------------
+//-----------------------------------------
+//-----------------------------------------
+
+ON = 0 List All (One Large File)
+   LOCAL.COUNT = 0
+   FILE.MODE.CREATE=1
+   IF (<FILE.INUSE>)
+      SRC.SYSMESSAGE File in use! File name is <FILE.FILEPATH>!
+         ELSEIF !(<FILE.OPEN c:\Burstfire UO\polls\steedsall.txt>)
+      SRC.SYSMESSAGE File cannot open!
+         ENDIF
+   SERV.LOG Server is being PAUSED for Steed Checks by <SRC.ACCOUNT.NAME>:<SRC.NAME>
+   SERV.B Server is being PAUSED for Steed Checks
+   
+   // Dark Brown Horses
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Dark Brown Horses
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_horse_brown_dk"))
+         FILE.WRITELINE UID: <UID> - Steed: Dark Brown Horse - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Dark Brown Horses Found!
+      FILE.WRITELINE No Dark Brown Horses found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Dark Brown Horse:Dark Brown Horses> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+   // Light Brown Horses
+   
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Light Brown Horses
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_horse_brown_lt"))
+         FILE.WRITELINE UID: <UID> - Steed: Light Brown Horse - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Light Brown Horses Found!
+      FILE.WRITELINE No Light Brown Horses found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Light Brown Horse:Light Brown Horses> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+   // Gray Horses
+   
+   FILE.WRITELINE ~~~~~~~~~~~
+   FILE.WRITELINE Gray Horses
+   FILE.WRITELINE ~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_horse_gray"))
+         FILE.WRITELINE UID: <UID> - Steed: Gray Horse - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Gray Horses Found!
+      FILE.WRITELINE No Gray Horses found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Gray Horse:Gray Horses> found.
+   ENDIF
+   LOCAL.COUNT=0   
+
+   // Tan Horse
+
+   FILE.WRITELINE ~~~~~~~~~
+   FILE.WRITELINE Tan Horse
+   FILE.WRITELINE ~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_horse_tan"))
+         FILE.WRITELINE UID: <UID> - Steed: Tan Horse - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Tan Horses Found!
+      FILE.WRITELINE No Tan Horses found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Tan Horse:Tan Horses> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+   // Llamas
+
+   FILE.WRITELINE ~~~~~~
+   FILE.WRITELINE Llamas
+   FILE.WRITELINE ~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_llama"))
+         FILE.WRITELINE UID: <UID> - Steed: Llama - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Llamas Found!
+      FILE.WRITELINE No Llamas found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Llama:Llamas> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+   // Oclocks
+   
+   FILE.WRITELINE ~~~~~~~
+   FILE.WRITELINE Oclocks
+   FILE.WRITELINE ~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_ostard_desert"))
+         FILE.WRITELINE UID: <UID> - Steed: Oclock - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Oclocks Found!
+      FILE.WRITELINE No Oclocks found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Oclock:Oclocks> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+   // Orns
+   
+   FILE.WRITELINE ~~~~
+   FILE.WRITELINE Orns
+   FILE.WRITELINE ~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_ostard_forest"))
+         FILE.WRITELINE UID: <UID> - Steed: Orn - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Orns Found!
+      FILE.WRITELINE No Orns found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Orn:Orns> found.
+   ENDIF
+   LOCAL.COUNT=0   
+
+   // Zostrichs
+
+   FILE.WRITELINE ~~~~~~~~~
+   FILE.WRITELINE Zostrichs
+   FILE.WRITELINE ~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_ostard_zostrich"))
+         FILE.WRITELINE UID: <UID> - Steed: Zostrich - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Zostrichs Found!
+      FILE.WRITELINE No Zostrichs found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Zostrich:Zostrichs> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+  // Black Mustang
+
+   FILE.WRITELINE ~~~~~~~~~~~~~
+   FILE.WRITELINE Black Mustang
+   FILE.WRITELINE ~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_a_mustang_black"))
+         FILE.WRITELINE UID: <UID> - Steed: Black Mustang - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Black Mustangs Found!
+      FILE.WRITELINE No Black Mustangs found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Black Mustang:Black Mustangs> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+   
+   // Chocolate Mustang
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Chocolate Mustang
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_a_mustang_chocolate"))
+         FILE.WRITELINE UID: <UID> - Steed: Chocolate Mustang - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Chocolate Mustangs Found!
+      FILE.WRITELINE No Chocolate Mustangs found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Chocolate Mustang:Chocolate Mustangs> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+   
+   // Crimson Mustang
+   
+      FILE.WRITELINE ~~~~~~~~~~~~~~~
+      FILE.WRITELINE Crimson Mustang
+      FILE.WRITELINE ~~~~~~~~~~~~~~~
+      FORINSTANCES i_worldgem_bit
+         IF (!STRCMPI("<MORE1>","c_a_mustang_crimson"))
+            FILE.WRITELINE UID: <UID> - Steed: Crimson Mustang - Location: <P>
+            LOCAL.COUNT += 1
+         ENDIF
+      ENDFOR
+      IF (<LOCAL.COUNT>=0)
+         SRC.SYSMESSAGE No Crimson Mustangs Found!
+         FILE.WRITELINE No Crimson Mustangs found!
+      ELSE
+         SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Crimson Mustang:Crimson Mustangs> found.
+      ENDIF
+      LOCAL.COUNT=0
+      
+   // Grey Mustang
+   
+      FILE.WRITELINE ~~~~~~~~~~~~
+      FILE.WRITELINE Grey Mustang
+      FILE.WRITELINE ~~~~~~~~~~~~
+      FORINSTANCES i_worldgem_bit
+         IF (!STRCMPI("<MORE1>","c_a_mustang_grey"))
+            FILE.WRITELINE UID: <UID> - Steed: Grey Mustang - Location: <P>
+            LOCAL.COUNT += 1
+         ENDIF
+      ENDFOR
+      IF (<LOCAL.COUNT>=0)
+         SRC.SYSMESSAGE No Grey Mustangs Found!
+         FILE.WRITELINE No Grey Mustangs found!
+      ELSE
+         SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Grey Mustang:Grey Mustangs> found.
+      ENDIF
+      LOCAL.COUNT=0
+      
+   // Pamamino Mustang
+   
+      FILE.WRITELINE ~~~~~~~~~~~~~~~~
+      FILE.WRITELINE Pamamino Mustang
+      FILE.WRITELINE ~~~~~~~~~~~~~~~~
+      FORINSTANCES i_worldgem_bit
+         IF (!STRCMPI("<MORE1>","c_a_mustang_pamamino"))
+            FILE.WRITELINE UID: <UID> - Steed: Pamamino Mustang - Location: <P>
+            LOCAL.COUNT += 1
+         ENDIF
+      ENDFOR
+      IF (<LOCAL.COUNT>=0)
+         SRC.SYSMESSAGE No Pamamino Mustangs Found!
+         FILE.WRITELINE No Pamamino Mustangs found!
+      ELSE
+         SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Pamamino Mustang:Pamamino Mustangs> found.
+      ENDIF
+      LOCAL.COUNT=0
+      
+   // Red Roan Mustang
+   
+      FILE.WRITELINE ~~~~~~~~~~~~~~~~
+      FILE.WRITELINE Red Roan Mustang
+      FILE.WRITELINE ~~~~~~~~~~~~~~~~
+      FORINSTANCES i_worldgem_bit
+         IF (!STRCMPI("<MORE1>","c_a_mustang_redroan"))
+            FILE.WRITELINE UID: <UID> - Steed: Red Roan Mustang - Location: <P>
+            LOCAL.COUNT += 1
+         ENDIF
+      ENDFOR
+      IF (<LOCAL.COUNT>=0)
+         SRC.SYSMESSAGE No Red Roan Mustangs Found!
+         FILE.WRITELINE No Red Roan Mustangs found!
+      ELSE
+         SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Red Roan Mustang:Red Roan Mustangs> found.
+      ENDIF
+      LOCAL.COUNT=0
+      
+   // Roan Mustang
+   
+      FILE.WRITELINE ~~~~~~~~~~~~
+      FILE.WRITELINE Roan Mustang
+      FILE.WRITELINE ~~~~~~~~~~~~
+      FORINSTANCES i_worldgem_bit
+         IF (!STRCMPI("<MORE1>","c_a_mustang_roan"))
+            FILE.WRITELINE UID: <UID> - Steed: Roan Mustang - Location: <P>
+            LOCAL.COUNT += 1
+         ENDIF
+      ENDFOR
+      IF (<LOCAL.COUNT>=0)
+         SRC.SYSMESSAGE No Roan Mustangs Found!
+         FILE.WRITELINE No Roan Mustangs found!
+      ELSE
+         SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Roan Mustang:Roan Mustangs> found.
+      ENDIF
+      LOCAL.COUNT=0
+      
+   // Sky Mustang
+   
+      FILE.WRITELINE ~~~~~~~~~~~
+      FILE.WRITELINE Sky Mustang
+      FILE.WRITELINE ~~~~~~~~~~~
+      FORINSTANCES i_worldgem_bit
+         IF (!STRCMPI("<MORE1>","c_a_mustang_sky"))
+            FILE.WRITELINE UID: <UID> - Steed: Sky Mustang - Location: <P>
+            LOCAL.COUNT += 1
+         ENDIF
+      ENDFOR
+      IF (<LOCAL.COUNT>=0)
+         SRC.SYSMESSAGE No Sky Mustangs Found!
+         FILE.WRITELINE No Sky Mustangs found!
+      ELSE
+         SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Sky Mustang:Sky Mustangs> found.
+      ENDIF
+      LOCAL.COUNT=0
+      
+   // Sky Gray Mustang
+   
+      FILE.WRITELINE ~~~~~~~~~~~~~~~~
+      FILE.WRITELINE Sky Gray Mustang
+      FILE.WRITELINE ~~~~~~~~~~~~~~~~
+      FORINSTANCES i_worldgem_bit
+         IF (!STRCMPI("<MORE1>","c_a_mustang_skygray"))
+            FILE.WRITELINE UID: <UID> - Steed: Sky Gray Mustang - Location: <P>
+            LOCAL.COUNT += 1
+         ENDIF
+      ENDFOR
+      IF (<LOCAL.COUNT>=0)
+         SRC.SYSMESSAGE No Sky Gray Mustangs Found!
+         FILE.WRITELINE No Sky Gray Mustangs found!
+      ELSE
+         SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Sky Gray Mustang:Sky Gray Mustangs> found.
+      ENDIF
+      LOCAL.COUNT=0
+      
+   // Wimmimate Mustang
+   
+      FILE.WRITELINE ~~~~~~~~~~~~~~~~~
+      FILE.WRITELINE Wimmimate Mustang
+      FILE.WRITELINE ~~~~~~~~~~~~~~~~~
+      FORINSTANCES i_worldgem_bit
+         IF (!STRCMPI("<MORE1>","c_a_mustang_wimmimate"))
+            FILE.WRITELINE UID: <UID> - Steed: Wimmimate Mustang - Location: <P>
+            LOCAL.COUNT += 1
+         ENDIF
+      ENDFOR
+      IF (<LOCAL.COUNT>=0)
+         SRC.SYSMESSAGE No Wimmimate Mustangs Found!
+         FILE.WRITELINE No Wimmimate Mustangs found!
+      ELSE
+         SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Wimmimate Mustang:Wimmimate Mustangs> found.
+      ENDIF
+      LOCAL.COUNT=0
+      
+      
+   // Black Llama
+
+   FILE.WRITELINE ~~~~~~~~~~~
+   FILE.WRITELINE Black Llama
+   FILE.WRITELINE ~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_llama_black"))
+         FILE.WRITELINE UID: <UID> - Steed: Black Llama - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Black Llamas Found!
+      FILE.WRITELINE No Black Llamas found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Black Llama:Black Llamas> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+   
+   // Chocolate Llama
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~
+   FILE.WRITELINE Chocolate Llama
+   FILE.WRITELINE ~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_llama_chocolate"))
+         FILE.WRITELINE UID: <UID> - Steed: Chocolate Llama - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Chocolate Llamas Found!
+      FILE.WRITELINE No Chocolate Llamas found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Chocolate Llama:Chocolate Llamas> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+   
+   // Crimson Llama
+   
+      FILE.WRITELINE ~~~~~~~~~~~~~
+      FILE.WRITELINE Crimson Llama
+      FILE.WRITELINE ~~~~~~~~~~~~~
+      FORINSTANCES i_worldgem_bit
+         IF (!STRCMPI("<MORE1>","c_llama_crimson"))
+            FILE.WRITELINE UID: <UID> - Steed: Crimson Llama - Location: <P>
+            LOCAL.COUNT += 1
+         ENDIF
+      ENDFOR
+      IF (<LOCAL.COUNT>=0)
+         SRC.SYSMESSAGE No Crimson Llamas Found!
+         FILE.WRITELINE No Crimson Llamas found!
+      ELSE
+         SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Crimson Llama:Crimson Llamas> found.
+      ENDIF
+      LOCAL.COUNT=0
+      
+   // Grey Llama
+   
+      FILE.WRITELINE ~~~~~~~~~~
+      FILE.WRITELINE Grey Llama
+      FILE.WRITELINE ~~~~~~~~~~
+      FORINSTANCES i_worldgem_bit
+         IF (!STRCMPI("<MORE1>","c_llama_grey"))
+            FILE.WRITELINE UID: <UID> - Steed: Grey Llama - Location: <P>
+            LOCAL.COUNT += 1
+         ENDIF
+      ENDFOR
+      IF (<LOCAL.COUNT>=0)
+         SRC.SYSMESSAGE No Grey Llamas Found!
+         FILE.WRITELINE No Grey Llamas found!
+      ELSE
+         SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Grey Llama:Grey Llamas> found.
+      ENDIF
+      LOCAL.COUNT=0
+      
+   // Pamamino Llama
+   
+      FILE.WRITELINE ~~~~~~~~~~~~~~
+      FILE.WRITELINE Pamamino Llama
+      FILE.WRITELINE ~~~~~~~~~~~~~~
+      FORINSTANCES i_worldgem_bit
+         IF (!STRCMPI("<MORE1>","c_llama_panamino"))
+            FILE.WRITELINE UID: <UID> - Steed: Pamamino Llama - Location: <P>
+            LOCAL.COUNT += 1
+         ENDIF
+      ENDFOR
+      IF (<LOCAL.COUNT>=0)
+         SRC.SYSMESSAGE No Pamamino Llamas Found!
+         FILE.WRITELINE No Pamamino Llamas found!
+      ELSE
+         SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Pamamino Llama:Pamamino Llamas> found.
+      ENDIF
+      LOCAL.COUNT=0
+      
+   // Red Roan Llama
+   
+      FILE.WRITELINE ~~~~~~~~~~~~~~
+      FILE.WRITELINE Red Roan Llama
+      FILE.WRITELINE ~~~~~~~~~~~~~~
+      FORINSTANCES i_worldgem_bit
+         IF (!STRCMPI("<MORE1>","c_llama_redroan"))
+            FILE.WRITELINE UID: <UID> - Steed: Red Roan Llama - Location: <P>
+            LOCAL.COUNT += 1
+         ENDIF
+      ENDFOR
+      IF (<LOCAL.COUNT>=0)
+         SRC.SYSMESSAGE No Red Roan Llamas Found!
+         FILE.WRITELINE No Red Roan Llamas found!
+      ELSE
+         SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Red Roan Llama:Red Roan Llamas> found.
+      ENDIF
+      LOCAL.COUNT=0
+      
+   // Roan Llama
+   
+      FILE.WRITELINE ~~~~~~~~~~
+      FILE.WRITELINE Roan Llama
+      FILE.WRITELINE ~~~~~~~~~~
+      FORINSTANCES i_worldgem_bit
+         IF (!STRCMPI("<MORE1>","c_llama_roan"))
+            FILE.WRITELINE UID: <UID> - Steed: Roan Llama - Location: <P>
+            LOCAL.COUNT += 1
+         ENDIF
+      ENDFOR
+      IF (<LOCAL.COUNT>=0)
+         SRC.SYSMESSAGE No Roan Llamas Found!
+         FILE.WRITELINE No Roan Llamas found!
+      ELSE
+         SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Roan Llama:Roan Llamas> found.
+      ENDIF
+      LOCAL.COUNT=0
+      
+   // Sky Gray Llama
+   
+      FILE.WRITELINE ~~~~~~~~~~~~~~
+      FILE.WRITELINE Sky Gray Llama
+      FILE.WRITELINE ~~~~~~~~~~~~~~
+      FORINSTANCES i_worldgem_bit
+         IF (!STRCMPI("<MORE1>","c_llama_skygrey"))
+            FILE.WRITELINE UID: <UID> - Steed: Sky Gray Llama - Location: <P>
+            LOCAL.COUNT += 1
+         ENDIF
+      ENDFOR
+      IF (<LOCAL.COUNT>=0)
+         SRC.SYSMESSAGE No Sky Gray Llamas Found!
+         FILE.WRITELINE No Sky Gray Llamas found!
+      ELSE
+         SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Sky Gray Llama:Sky Gray Llamas> found.
+      ENDIF
+      LOCAL.COUNT=0
+
+   // Sky Blue Llama
+   
+      FILE.WRITELINE ~~~~~~~~~~~~~~
+      FILE.WRITELINE Sky Blue Llama
+      FILE.WRITELINE ~~~~~~~~~~~~~~
+      FORINSTANCES i_worldgem_bit
+         IF (!STRCMPI("<MORE1>","c_llama_skyblue"))
+            FILE.WRITELINE UID: <UID> - Steed: Sky Blue Llama - Location: <P>
+            LOCAL.COUNT += 1
+         ENDIF
+      ENDFOR
+      IF (<LOCAL.COUNT>=0)
+         SRC.SYSMESSAGE No Sky Blue Llamas Found!
+         FILE.WRITELINE No Sky Blue Llamas found!
+      ELSE
+         SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Sky Blue Llama:Sky Blue Llamas> found.
+      ENDIF
+      LOCAL.COUNT=0
+      
+   // Wimmimate Llama
+   
+      FILE.WRITELINE ~~~~~~~~~~~~~~~
+      FILE.WRITELINE Wimmimate Llama
+      FILE.WRITELINE ~~~~~~~~~~~~~~~
+      FORINSTANCES i_worldgem_bit
+         IF (!STRCMPI("<MORE1>","c_llama_winnimate"))
+            FILE.WRITELINE UID: <UID> - Steed: Wimmimate Llama - Location: <P>
+            LOCAL.COUNT += 1
+         ENDIF
+      ENDFOR
+      IF (<LOCAL.COUNT>=0)
+         SRC.SYSMESSAGE No Wimmimate Llamas Found!
+         FILE.WRITELINE No Wimmimate Llamas found!
+      ELSE
+         SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Wimmimate Llama:Wimmimate Llamas> found.
+      ENDIF
+      LOCAL.COUNT=0
+      
+      
+   // Ethereal Llamas
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~
+   FILE.WRITELINE Ethereal Llamas
+   FILE.WRITELINE ~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_ethereal_llama"))
+         FILE.WRITELINE UID: <UID> - Steed: Ethereal Llama - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Ethereal Llamas Found!
+      FILE.WRITELINE No Ethereal Llamas found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Ethereal Llama:Ethereal Llamas> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+   // Ethereal Horses
+   
+   FILE.WRITELINE ~~~~~~~~~~~~~~~
+   FILE.WRITELINE Ethereal Horses
+   FILE.WRITELINE ~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_ethereal_horse"))
+         FILE.WRITELINE UID: <UID> - Steed: Ethereal Horse - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Ethereal Horses Found!
+      FILE.WRITELINE No Ethereal Horses found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Ethereal Horse:Ethereal Horses> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+   // Ethereal Orns
+   
+   FILE.WRITELINE ~~~~~~~~~~~~~
+   FILE.WRITELINE Ethereal Orns
+   FILE.WRITELINE ~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_ethereal_orn"))
+         FILE.WRITELINE UID: <UID> - Steed: Ethereal Orn - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Ethereal Orns Found!
+      FILE.WRITELINE No Ethereal Orns found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Ethereal Orn:Ethereal Orns> found.
+   ENDIF
+   LOCAL.COUNT=0   
+
+   // Ethereal Zostrichs
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Ethereal Zostrichs
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_ethereal_Zostrich"))
+         FILE.WRITELINE UID: <UID> - Steed: Ethereal Zostrich - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Ethereal Zostrichs Found!
+      FILE.WRITELINE No Ethereal Zostrichs found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Ethereal Zostrich:Ethereal Zostrichs> found.
+   ENDIF
+   LOCAL.COUNT=0
+
+   // Angelic Llamas
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~
+   FILE.WRITELINE Angelic Llamas
+   FILE.WRITELINE ~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_llama_angelic"))
+         FILE.WRITELINE UID: <UID> - Steed: Angelic Llama - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Angelic Llamas Found!
+      FILE.WRITELINE No Angelic Llamas found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Angelic Llama:Angelic Llamas> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+   // Angelic Oclocks
+   
+   FILE.WRITELINE ~~~~~~~~~~~~~~~
+   FILE.WRITELINE Angelic Oclocks
+   FILE.WRITELINE ~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_angelic_oclock"))
+         FILE.WRITELINE UID: <UID> - Steed: Angelic Oclock - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Angelic Oclocks Found!
+      FILE.WRITELINE No Angelic Oclocks found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Angelic Oclock:Angelic Oclocks> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+   // Angelic Orns
+   
+   FILE.WRITELINE ~~~~~~~~~~~~
+   FILE.WRITELINE Angelic Orns
+   FILE.WRITELINE ~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_angelic_orn"))
+         FILE.WRITELINE UID: <UID> - Steed: Angelic Orn - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Angelic Orns Found!
+      FILE.WRITELINE No Angelic Orns found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Angelic Orn:Angelic Orns> found.
+   ENDIF
+   LOCAL.COUNT=0   
+
+   // Angelic Zostrichs
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Angelic Zostrichs
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_angelic_Zostrich"))
+         FILE.WRITELINE UID: <UID> - Steed: Angelic Zostrich - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Angelic Zostrichs Found!
+      FILE.WRITELINE No Angelic Zostrichs found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Angelic Zostrich:Angelic Zostrichs> found.
+   ENDIF
+   LOCAL.COUNT=0
+
+   // Holy Steeds
+
+   FILE.WRITELINE ~~~~~~~~~~~
+   FILE.WRITELINE Holy Steeds
+   FILE.WRITELINE ~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_horse_hk"))
+         FILE.WRITELINE UID: <UID> - Steed: Holy Steed (Type 1) - Location: <P>
+         LOCAL.COUNT += 1
+      ELSEIF (!STRCMPI("<MORE1>","c_holy_steed"))
+         FILE.WRITELINE UID: <UID> - Steed: Holy Steed (Type 2) - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Holy Steeds Found!
+      FILE.WRITELINE No Holy Steeds found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Holy Steed:Holy Steeds> found.
+   ENDIF
+   LOCAL.COUNT=0
+
+
+   // Darkonian Horse
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~
+   FILE.WRITELINE Darkonian Horse
+   FILE.WRITELINE ~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_horse_darkonian"))
+         FILE.WRITELINE UID: <UID> - Steed: Darkonian Horse - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Darkonian Horse Found!
+      FILE.WRITELINE No Darkonian Horse found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Darkonian Horse:Darkonian Horses> found.
+   ENDIF
+   LOCAL.COUNT=0   
+ 
+   // Darkonian Zostrichs
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Darkonian Zostrichs
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_dark_zost"))
+         FILE.WRITELINE UID: <UID> - Steed: Darkonian Zostrich - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Darkonian Zostrichs Found!
+      FILE.WRITELINE No Darkonian Zostrichs found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Darkonian Zostrich:Darkonian Zostrichs> found.
+   ENDIF
+   LOCAL.COUNT=0  
+   
+   // Terathane Zostrichs
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Terathane Zostrichs
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_terathane_zost"))
+         FILE.WRITELINE UID: <UID> - Steed: Terathane Zostrich - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Terathane Zostrichs Found!
+      FILE.WRITELINE No Terathane Zostrichs found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Terathane Zostrich:Terathane Zostrichs> found.
+   ENDIF
+   LOCAL.COUNT=0     
+ 
+   // Llama Of The Moon
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Llama Of The Moon
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_llama_of_the_moon"))
+         FILE.WRITELINE UID: <UID> - Steed: Llama Of The Moon - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Llama Of The Moon Found!
+      FILE.WRITELINE No Llama Of The Moon found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Llama Of The Moon:Llama Of The Moons> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+   // Oclock Of The Moon
+   
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Oclock Of The Moon
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_oclock_of_the_moon"))
+         FILE.WRITELINE UID: <UID> - Steed: Oclock Of The Moon - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Oclock Of The Moon Found!
+      FILE.WRITELINE No Oclock Of The Moon found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Oclock Of The Moon:Oclock Of The Moons> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+   // Orn Of The Moon
+   
+   FILE.WRITELINE ~~~~~~~~~~~~~~~
+   FILE.WRITELINE Orn Of The Moon
+   FILE.WRITELINE ~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_orn_of_the_moon"))
+         FILE.WRITELINE UID: <UID> - Steed: Orn Of The Moon - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Orn Of The Moon Found!
+      FILE.WRITELINE No Orn Of The Moon found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Orn Of The Moon:Orn Of The Moons> found.
+   ENDIF
+   LOCAL.COUNT=0   
+
+   // Zostrich Of The Moon
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Zostrich Of The Moon
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_zostrich_of_the_moon"))
+         FILE.WRITELINE UID: <UID> - Steed: Zostrich Of The Moon - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Zostrich Of The Moon Found!
+      FILE.WRITELINE No Zostrich Of The Moon found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Zostrich Of The Moon:Zostrich Of The Moons> found.
+   ENDIF
+   LOCAL.COUNT=0
+   
+   // Jungle Steed
+
+   FILE.WRITELINE ~~~~~~~~~~~~
+   FILE.WRITELINE Jungle Steed
+   FILE.WRITELINE ~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_jungle_steed"))
+         FILE.WRITELINE UID: <UID> - Steed: Jungle Steed - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Jungle Steed Found!
+      FILE.WRITELINE No Jungle Steed found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Jungle Steed:Jungle Steeds> found.
+   ENDIF
+   LOCAL.COUNT=0   
+ 
+   // Jungle Orns
+
+   FILE.WRITELINE ~~~~~~~~~~~
+   FILE.WRITELINE Jungle Orns
+   FILE.WRITELINE ~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_jungle_orn"))
+         FILE.WRITELINE UID: <UID> - Steed: Jungle Orn - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Jungle Orns Found!
+      FILE.WRITELINE No Jungle Orns found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Jungle Orn:Jungle Orns> found.
+   ENDIF
+   LOCAL.COUNT=0  
+   
+   // Ice Horses
+
+   FILE.WRITELINE ~~~~~~~~~~
+   FILE.WRITELINE Ice Horses
+   FILE.WRITELINE ~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_ice_horse"))
+         FILE.WRITELINE UID: <UID> - Steed: Ice Horse - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Ice Horses Found!
+      FILE.WRITELINE No Ice Horses found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Ice Horse:Ice Horses> found.
+   ENDIF
+   LOCAL.COUNT=0      
+
+   // Ice Zostrichs
+
+   FILE.WRITELINE ~~~~~~~~~~~~~
+   FILE.WRITELINE Ice Zostrichs
+   FILE.WRITELINE ~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_ice_zostrich"))
+         FILE.WRITELINE UID: <UID> - Steed: Ice Zostrich - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Ice Zostrichs Found!
+      FILE.WRITELINE No Ice Zostrichs found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Ice Zostrich:Ice Zostrichs> found.
+   ENDIF
+   LOCAL.COUNT=0  
+ 
+   // Fire Steed
+
+   FILE.WRITELINE ~~~~~~~~~~
+   FILE.WRITELINE Fire Steed
+   FILE.WRITELINE ~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_fire_steed"))
+         FILE.WRITELINE UID: <UID> - Steed: Fire Steed - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Fire Steed Found!
+      FILE.WRITELINE No Fire Steed found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Fire Steed:Fire Steeds> found.
+   ENDIF
+   LOCAL.COUNT=0  
+
+   // Moon Steed
+
+   FILE.WRITELINE ~~~~~~~~~~
+   FILE.WRITELINE Moon Steed
+   FILE.WRITELINE ~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_moon_steed"))
+         FILE.WRITELINE UID: <UID> - Steed: Moon Steed - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Moon Steed Found!
+      FILE.WRITELINE No Moon Steed found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Moon Steed:Moon Steeds> found.
+   ENDIF
+   LOCAL.COUNT=0  
+
+   // Nightmare (Type 1)
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Nightmare (Type 1)
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_nightmare"))
+         FILE.WRITELINE UID: <UID> - Steed: Nightmare (Type 1) - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Nightmare (Type 1) Found!
+      FILE.WRITELINE No Nightmare (Type 1) found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Nightmare (Type 1):Nightmare (Type 1)s> found.
+   ENDIF
+   LOCAL.COUNT=0  
+   
+   // Nightmare (Type 2)
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Nightmare (Type 2)
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_horse_nightmare"))
+         FILE.WRITELINE UID: <UID> - Steed: Nightmare (Type 2) - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Nightmare (Type 2) Found!
+      FILE.WRITELINE No Nightmare (Type 2) found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Nightmare (Type 2):Nightmare (Type 2)s> found.
+   ENDIF
+   LOCAL.COUNT=0  
+   
+   // Steed of Sand
+
+   FILE.WRITELINE ~~~~~~~~~~~~~
+   FILE.WRITELINE Steed of Sand
+   FILE.WRITELINE ~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_steed_sand"))
+         FILE.WRITELINE UID: <UID> - Steed: Steed of Sand - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Steed of Sand Found!
+      FILE.WRITELINE No Steed of Sand found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Steed of Sand:Steed of Sands> found.
+   ENDIF
+   LOCAL.COUNT=0  
+   
+   // Undead Horse (Classic)
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Undead Horse (Classic)
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_undead_horse"))
+         FILE.WRITELINE UID: <UID> - Steed: Undead Horse (Classic) - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Undead Horse (Classic) Found!
+      FILE.WRITELINE No Undead Horse (Classic) found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Undead Horse (Classic):Undead Horse (Classic)s> found.
+   ENDIF
+   LOCAL.COUNT=0  
+   
+   // Unicorn (Classic)
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Unicorn (Classic)
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_unicorn"))
+         FILE.WRITELINE UID: <UID> - Steed: Unicorn (Classic) - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Unicorn (Classic) Found!
+      FILE.WRITELINE No Unicorn (Classic) found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Unicorn (Classic):Unicorn (Classic)s> found.
+   ENDIF
+   LOCAL.COUNT=0  
+   
+   // War Horse
+
+   FILE.WRITELINE ~~~~~~~~~
+   FILE.WRITELINE War Horse
+   FILE.WRITELINE ~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_war_horse"))
+         FILE.WRITELINE UID: <UID> - Steed: War Horse - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No War Horse Found!
+      FILE.WRITELINE No War Horse found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? War Horse:War Horses> found.
+   ENDIF
+   LOCAL.COUNT=0  
+   
+   // Experimental Steed
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Experimental Steed
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_experimental_steed"))
+         FILE.WRITELINE UID: <UID> - Steed: Experimental Steed - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Experimental Steed Found!
+      FILE.WRITELINE No Experimental Steed found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Experimental Steed:Experimental Steeds> found.
+   ENDIF
+   LOCAL.COUNT=0     
+
+   // Warped Mustang
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~
+   FILE.WRITELINE Warped Mustang
+   FILE.WRITELINE ~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_mustang_warped"))
+         FILE.WRITELINE UID: <UID> - Steed: Warped Mustang - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Warped Mustang Found!
+      FILE.WRITELINE No Warped Mustang found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Warped Mustang:Warped Mustangs> found.
+   ENDIF
+   LOCAL.COUNT=0 
+   
+   // Order War Horse
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~
+   FILE.WRITELINE Order War Horse
+   FILE.WRITELINE ~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_war_horse_order"))
+         FILE.WRITELINE UID: <UID> - Steed: Order War Horse - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Order War Horse Found!
+      FILE.WRITELINE No Order War Horse found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Order War Horse:Order War Horses> found.
+   ENDIF
+   LOCAL.COUNT=0 
+   
+   // Chaos War Horse
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~
+   FILE.WRITELINE Chaos War Horse
+   FILE.WRITELINE ~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_war_horse_chaos"))
+         FILE.WRITELINE UID: <UID> - Steed: Chaos War Horse - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Chaos War Horse Found!
+      FILE.WRITELINE No Chaos War Horse found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Chaos War Horse:Chaos War Horses> found.
+   ENDIF
+   LOCAL.COUNT=0 
+
+   FILE.WRITELINE ~~~~~~
+   FILE.WRITELINE Shadow
+   FILE.WRITELINE ~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_horse_shadow"))
+         FILE.WRITELINE UID: <UID> - Steed: Shadow (Horse) - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Unicorn (Classic) Found!
+      FILE.WRITELINE No Unicorn (Classic) found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Unicorn (Classic):Unicorn (Classic)s> found.
+   ENDIF
+   LOCAL.COUNT=0 
+   
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Steed of the Sun
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_horse_sun"))
+         FILE.WRITELINE UID: <UID> - Steed: Steed of the Sun - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Unicorn (Classic) Found!
+      FILE.WRITELINE No Unicorn (Classic) found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Unicorn (Classic):Unicorn (Classic)s> found.
+   ENDIF
+   LOCAL.COUNT=0
+ 
+   // Death Steed
+
+   FILE.WRITELINE ~~~~~~~~~~
+   FILE.WRITELINE Death Steed
+   FILE.WRITELINE ~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_Death_zostrich"))
+         FILE.WRITELINE UID: <UID> - Steed: Death Steed - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Death Steed Found!
+      FILE.WRITELINE No Death Steed found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Death Steed:Death Steeds> found.
+   ENDIF
+   LOCAL.COUNT=0  
+
+   // Lava Zost
+
+   FILE.WRITELINE ~~~~~~~~~~
+   FILE.WRITELINE Lava Zost
+   FILE.WRITELINE ~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_lava_zostrich"))
+         FILE.WRITELINE UID: <UID> - Steed: Lava Zost - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Lava Zost Found!
+      FILE.WRITELINE No Lava Zost found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Lava Zost:Lava Zosts> found.
+   ENDIF
+   LOCAL.COUNT=0
+
+   // Void Zost
+
+   FILE.WRITELINE ~~~~~~~~~~
+   FILE.WRITELINE Void Zost
+   FILE.WRITELINE ~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_void_zostrich"))
+         FILE.WRITELINE UID: <UID> - Steed: Void Zost - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Void Zost Found!
+      FILE.WRITELINE No Void Zost found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Void Zost:Void Zosts> found.
+   ENDIF
+   LOCAL.COUNT=0
+ 
+   // Unicorn (LBR)
+
+   FILE.WRITELINE ~~~~~~~~~~
+   FILE.WRITELINE Unicorn (LBR)
+   FILE.WRITELINE ~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_m_unicorn"))
+         FILE.WRITELINE UID: <UID> - Steed: Unicorn (LBR) - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Unicorn (LBR) Found!
+      FILE.WRITELINE No Unicorn (LBR) found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Unicorn (LBR):Unicorns (LBR)> found.
+   ENDIF
+   LOCAL.COUNT=0  
+
+   // Armoured Swamp Dragon
+
+   FILE.WRITELINE ~~~~~~~~~~
+   FILE.WRITELINE Armoured Swamp Dragon
+   FILE.WRITELINE ~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_armored_swamp_dragon"))
+         FILE.WRITELINE UID: <UID> - Steed: Armoured Swamp Dragon - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Armoured Swamp Dragon Found!
+      FILE.WRITELINE No Armoured Swamp Dragon found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Armoured Swamp Dragon:Armoured Swamp Dragons> found.
+   ENDIF
+   LOCAL.COUNT=0 
+
+   // Giant Beetle
+
+   FILE.WRITELINE ~~~~~~~~~~
+   FILE.WRITELINE Giant Beetle
+   FILE.WRITELINE ~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_giant_beetle"))
+         FILE.WRITELINE UID: <UID> - Steed: Giant Beetle - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Giant Beetle Found!
+      FILE.WRITELINE No Giant Beetle found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Giant Beetle:Giant Beetles> found.
+   ENDIF
+   LOCAL.COUNT=0 
+
+   // Ridgeback
+
+   FILE.WRITELINE ~~~~~~~~~
+   FILE.WRITELINE Ridgeback
+   FILE.WRITELINE ~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_ridgeback"))
+         FILE.WRITELINE UID: <UID> - Steed: Ridgeback - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Ridgeback Found!
+      FILE.WRITELINE No Ridgeback found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Ridgeback:Ridgebacks> found.
+   ENDIF
+   LOCAL.COUNT=0 
+   
+   // Savage Ridgeback
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~
+   FILE.WRITELINE Savage Ridgeback
+   FILE.WRITELINE ~~~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_savage_ridgeback"))
+         FILE.WRITELINE UID: <UID> - Steed: Savage Ridgeback - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Savage Ridgeback Found!
+      FILE.WRITELINE No Savage Ridgeback found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Savage Ridgeback:Savage Ridgebacks> found.
+   ENDIF
+   LOCAL.COUNT=0    
+
+   // Skeletal Mount
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~
+   FILE.WRITELINE Skeletal Mount
+   FILE.WRITELINE ~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_skeletal_mount"))
+         FILE.WRITELINE UID: <UID> - Steed: Skeletal Mount - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Skeletal Mount Found!
+      FILE.WRITELINE No Skeletal Mount found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Skeletal Mount:Skeletal Mounts> found.
+   ENDIF
+   LOCAL.COUNT=0 
+
+   // Swamp Dragon
+
+   FILE.WRITELINE ~~~~~~~~~~~~
+   FILE.WRITELINE Swamp Dragon
+   FILE.WRITELINE ~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_swamp_dragon"))
+         FILE.WRITELINE UID: <UID> - Steed: Swamp Dragon - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Swamp Dragon Found!
+      FILE.WRITELINE No Swamp Dragon found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Swamp Dragon:Swamp Dragons> found.
+   ENDIF
+   LOCAL.COUNT=0 
+
+   // Kirin
+
+   FILE.WRITELINE ~~~~~
+   FILE.WRITELINE Kirin
+   FILE.WRITELINE ~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_Kirin"))
+         FILE.WRITELINE UID: <UID> - Steed: Kirin - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Kirin Found!
+      FILE.WRITELINE No Kirin found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Kirin:Kirins> found.
+   ENDIF
+   LOCAL.COUNT=0 
+
+   // Hiryu
+
+   FILE.WRITELINE ~~~~~
+   FILE.WRITELINE Hiryu
+   FILE.WRITELINE ~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_Hiryu"))
+         FILE.WRITELINE UID: <UID> - Steed: Hiryu - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Hiryu Found!
+      FILE.WRITELINE No Hiryu found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Hiryu:Hiryus> found.
+   ENDIF
+   LOCAL.COUNT=0 
+
+   // Armoured Steed
+
+   FILE.WRITELINE ~~~~~~~~~~~~~~
+   FILE.WRITELINE Armoured Steed
+   FILE.WRITELINE ~~~~~~~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_m_armor_steed"))
+         FILE.WRITELINE UID: <UID> - Steed: Armoured Steed - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Armoured Steed Found!
+      FILE.WRITELINE No Armoured Steed found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Armoured Steed:Armoured Steeds> found.
+   ENDIF
+   LOCAL.COUNT=0 
+
+   // Cu Sidhe
+
+   FILE.WRITELINE ~~~~~~~~
+   FILE.WRITELINE Cu Sidhe
+   FILE.WRITELINE ~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_cu_sidhe"))
+         FILE.WRITELINE UID: <UID> - Steed: Cu Sidhe - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Cu Sidhe Found!
+      FILE.WRITELINE No Cu Sidhe found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Cu Sidhe:Cu Sidhes> found.
+   ENDIF
+   LOCAL.COUNT=0 
+   
+   // Reptalon
+
+   FILE.WRITELINE ~~~~~~~~
+   FILE.WRITELINE Reptalon
+   FILE.WRITELINE ~~~~~~~~
+   FORINSTANCES i_worldgem_bit
+      IF (!STRCMPI("<MORE1>","c_m_eptalon"))
+         FILE.WRITELINE UID: <UID> - Steed: Reptalon - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Reptalon Found!
+      FILE.WRITELINE No Reptalon found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Reptalon:Reptalons> found.
+   ENDIF
+   LOCAL.COUNT=0    
+
+   SERV.LOG Steed Checks Complete!
+   SERV.B Steed Checks Complete!
+   FILE.CLOSE
+   RETURN 1
+   
+
+ON = 0 Steed Spawner Stones
+   LOCAL.COUNT = 0
+   FILE.MODE.CREATE=1
+   IF (<FILE.INUSE>)
+      SRC.SYSMESSAGE File in use! File name is <FILE.FILEPATH>!
+      RETURN 1
+   ELSEIF !(<FILE.OPEN c:\Burstfire UO\polls\steedspawner.txt>)
+      SRC.SYSMESSAGE File cannot open!
+      RETURN 1
+   ENDIF
+   SERV.LOG Server is being PAUSED for Steed Checks by <SRC.ACCOUNT.NAME>:<SRC.NAME>
+   SERV.B Server is being PAUSED for Steed Checks
+
+   FILE.WRITELINE ~~~~~~~
+   FILE.WRITELINE Spawner
+   FILE.WRITELINE ~~~~~~~
+   FORINSTANCES i_random_spawner_steed
+      IF (!STRCMPI("<TIMER>","-1"))
+         FILE.WRITELINE UID: <UID> - Steed Spawner OFF - Location: <P>
+         LOCAL.COUNT += 1
+      ELSE
+         FILE.WRITELINE UID: <UID> - Steed Spawner ON - Location: <P>
+         LOCAL.COUNT += 1
+      ENDIF
+   ENDFOR
+   IF (<LOCAL.COUNT>=0)
+      SRC.SYSMESSAGE No Reptalon Found!
+      FILE.WRITELINE No Reptalon found!
+   ELSE
+      SRC.SYSMESSAGE <dLOCAL.COUNT> <QVAL (<LOCAL.COUNT> == 1)? Reptalon:Reptalons> found.
+   ENDIF
+   LOCAL.COUNT=0    
+
+   SERV.LOG Steed Checks Complete!
+   SERV.B Steed Checks Complete!
+   FILE.CLOSE
+   RETURN 1   
+   
+[function staff]
+IF	( <src.tag.staff_title> ==0 )
+	SYSMESSAGE=@07a1 Staff title turned On
+	src.tag.staff_title=1
+	events +e_zoragath_staff_title
+ELSE
+	SYSMESSAGE=@07a1 Staff title turned Off
+	src.tag.staff_title=0
+	events -e_zoragath_staff_title
+ENDIF
+
+[function boostats]
+src.sysmessage Beggars Have earnt <eval(<VAR.BEGGARTOTAL>)> gp
+
+
+
+[events e_zoragath_staff_title]
+on=@click
+IF	(<account.plevel><2)
+	EVENTS -e_zoragath_staff_title
+	RETURN 0
+
+ELIF (<account.plevel>==2)
+	message="@0b4e Counsellor <name>"
+	message=@0b4e <SERV.NAME> Staff
+
+ELIF (<account.plevel>==3)
+	message="@07a1 Seer <name>"
+
+ELIF (<account.plevel>==4)
+	message="@086b Game Master <name>"
+	message=@086b <SERV.NAME> Staff
+
+ELIF (<account.plevel>==5)
+	message="@09f3 Head GM <name>"
+	message=@09f3 <SERV.NAME> Staff
+	
+ELIF (<account.plevel>==6)
+	message="@07a1 Admin <name>"
+	message=@07a1 <SERV.NAME> Staff
+
+ELIF (<account.plevel>==7)
+	message="@07a1 Owner <name>" // Change to Owner if wanted
+	message=@07a1 <SERV.NAME> Staff
+
+ENDIF	
+RETURN 1
+
+[function pvpstats25a]
+serv.log db query
+//DB.QUERY "SELECT `pname`, `kills` FROM `stats` ORDER BY `kills` DESC LIMIT 1"
+//IF (0<DB.ROW.NUMROWS>)
+//    FOR CURRENTROW 0 <eval <DB.ROW.NUMROWS>-1>
+//    IF (0<DB.ROW.<eval <LOCAL.CURRENTROW>>.total>==0)
+//    SRC.SYSMESSAGE The current top Pvper is <DB.ROW.<eval <LOCAL.CURRENTROW>>.pname> with <eval <DB.ROW.<eval <LOCAL.CURRENTROW>>.kills>> kills.
+//    ELSE 
+//    SRC.SYSMESSAGE WTF KILLS ERROR LOL
+//    ENDIF
+//    END
+//ENDIF
+//serv.log db query
+//DB.QUERY "SELECT `pname`, `deaths` FROM `stats` ORDER BY `deaths` DESC LIMIT 1"
+//IF (0<DB.ROW.NUMROWS>)
+//    FOR CURRENTROW 0 <eval <DB.ROW.NUMROWS>-1>
+//    IF (0<DB.ROW.<eval <LOCAL.CURRENTROW>>.total>==0)
+//    SRC.SYSMESSAGE The current worst Pvper is <DB.ROW.<eval <LOCAL.CURRENTROW>>.pname> with <eval <DB.ROW.<eval <LOCAL.CURRENTROW>>.deaths>> deaths.
+//    ELSE 
+//    SRC.SYSMESSAGE WTF DEATHS ERROR LOL 
+//    ENDIF
+//    END
+//ENDIF
+//RETURN 1
+
+
+[FUNCTION despawn_world]
+local.i=0
+forchars 9999
+   ref1 = <MemoryFindType.memory_ispawned.link>
+   if (<ref1>)
+      if (<ref1.type> == t_spawn_char)
+		 ref1.remove
+         remove
+         local.i += 1
+      endif
+   endif
+endfor
+sysmessage @00a24 Total spawns removed: <dlocal.i>
+
+
+[FUNCTION respawnnpcs]
+local.i=0
+FORCHARS 9000
+	LOCAL.AMISPAWNED	= <MEMORYFINDTYPE.memory_ispawned.LINK>
+	IF (<LOCAL.AMISPAWNED> && (<FLAGS> ~statf_invul) )
+		UID.<LOCAL.AMISPAWNED>.TIMER = (<UID.<LOCAL.AMISPAWNED>.MOREX> * 60)		
+        REMOVE
+		 local.i += 1
+	ENDIF
+ENDFOR
+serv.announce Total spawns respawned: <dlocal.i>
+
+
+[FUNCTION wipeaccounts]
+local.i=0
+FOR 845
+	IF (STRCMP(<SERV.ACCOUNT.<local.i>.NAME>, ray_staff) == 0)
+		local.i += 1
+	ELSEIF (STRCMP(<SERV.ACCOUNT.<local.i>.NAME>, arkos_staff) == 0)
+		local.i += 1
+	ELSEIF (STRCMP (<SERV.ACCOUNT.<local.i>.NAME>, pink_staff) == 0)
+		local.i += 1
+	ELSEIF (STRCMP (<SERV.ACCOUNT.<local.i>.NAME>, starbuck_staff) == 0)
+		local.i += 1
+	ELSE
+		serv.account <SERV.ACCOUNT.<local.i>.NAME> delete
+	ENDIF
+ENDFOR
+
+
+
+[EOF]
