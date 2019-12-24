@@ -6,6 +6,7 @@
 //25-09-04 - Wren    - Made cure poison take gm healing and gm poisoning
 //10-09-04 - Wren    - Added some more cure poison stuff
 //16-09-05 - Raist   - Corrected a bug that allowed players to heal golems with bandies
+//24-12-19 - Ray     - Trying to fix healing rolls.
 
 // Healing with bandages:
 // Below 50%, it takes 3 seconds to heal others, 4 seconds to heal yourself.
@@ -85,8 +86,8 @@ ON=@Timer
       CONT.consume 5 i_bandage
       CONT.consume 5 i_bandage_bloody   
    ENDIF
-   f_skillsuccess_rollskill 17
-   f_skillsuccess_rollstat 17
+   CONT.f_skillsuccess_rollskill 17
+   CONT.f_skillsuccess_rollstat 17
    
    CONT.HITS = <eval(<CONT.HITS> - <LOCAL.HITS>)>      
 
@@ -162,8 +163,8 @@ ON=@Timer
       remove
       return 1
    ENDIF
-   f_skillsuccess_rollskill 17
-   f_skillsuccess_rollstat 17
+   CONT.f_skillsuccess_rollskill 17
+   CONT.f_skillsuccess_rollstat 17
    
    IF ( RAND(1000) > <eval ( (1900 + <LOCAL.HEALING>)/3 )> ) 
       CONT.EMOTE fail to apply the bandages on <LINK.NAME>
