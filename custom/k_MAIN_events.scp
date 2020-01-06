@@ -57,6 +57,7 @@
 // 23/11/2019 - Wigifer - Updated another instance of "<eval (<SRC.TAG0.TOTALCONNECTTIME> + <TIME> - <SRC.TAG0.LASTCONNECTTIME>)>" to use <SERV.TIME>
 // 25/11/2019 - Wigifer - Updated all remaining <TIME> to <SERV.TIME>
 // 24/12/2019 - Ray - @HitTry was giving Archery issues. What is this ammo selection for anyway?
+// 06/12/2019 - Ray - Add a fix to item decaying inside houses.
 
  
 ///
@@ -68,7 +69,14 @@ name = Focus timer
 type = t_eq_script
 layer = 30
 
+///
+// 56d house item decaying fix.
+// A very simple function to remove the DECAY properties.
+///
 
+[FUNCTION f_fix_decay]
+ATTR &= ~attr_decay
+TIMER=-1
   
 ///
 /// Fame & Karma System
@@ -2199,6 +2207,13 @@ endif
 
 
 ON=@ItemDropon_Ground
+
+// 56d House item decaying fix.
+// Had to be done through TIMERF because @ItemDropon_Ground happens before sphere set the decay ATTR and TIMER.
+
+IF (<ACT.UID.<ACT.REGION.UID>.TYPE>==t_multi)
+ACT.TIMERF 1,f_fix_decay
+ENDIF
  
 IF !((<WEIGHT> + <ACT.WEIGHT>) > <MAXWEIGHT>)
 IF ((<ACTION> == ID(SKILL_FISHING)) || (<ACTION> == SKILL_FISHING))
