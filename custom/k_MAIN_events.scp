@@ -58,7 +58,7 @@
 // 25/11/2019 - Wigifer - Updated all remaining <TIME> to <SERV.TIME>
 // 24/12/2019 - Ray - @HitTry was giving Archery issues. What is this ammo selection for anyway?
 // 06/12/2019 - Ray - Add a fix to item decaying inside houses.
-
+// 17/01/2020 - Added "f_fix_decay" cancel on @ItemPickup_Ground - Thanks PinkPanther! :)
  
 ///
 /// Login memory item\transporter
@@ -2160,7 +2160,15 @@ ON=@ItemClick
 //   VAR.TOOLTIP=
 //   MESSAGE_EFFECT_CLITOOLTIP
 
-//ON = @ItemPickup_Ground - Commented out April 03 2006 all items not locked shall be lootable.
+ON=@ItemPickup_Ground
+
+// 56d decay function stop if the item is picked up.
+
+IF (<ACT.ISTIMERF.f_fix_decay>)
+ACT.TIMERF stop, f_fix_decay
+ENDIF
+
+// Commented out April 03 2006 all items not locked shall be lootable.
 
    //VAR.BASEID	= <SRC.ACT.BASEID>
    //SRC.ACT	= <SRC.ACT.REGION.UID>
@@ -2212,7 +2220,7 @@ ON=@ItemDropon_Ground
 // Had to be done through TIMERF because @ItemDropon_Ground happens before sphere set the decay ATTR and TIMER.
 
 IF (<ACT.UID.<ACT.REGION.UID>.TYPE>==t_multi)
-ACT.TIMERF 1,f_fix_decay
+ACT.TIMERF 2,f_fix_decay
 ENDIF
  
 IF !((<WEIGHT> + <ACT.WEIGHT>) > <MAXWEIGHT>)

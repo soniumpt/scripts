@@ -6,6 +6,7 @@
 //Aug 21 '04 - Wren - Changed door to check for auction status
 // 21/11/2005 - Raist - Added stuff for bb
 // 25/08/2018 - Ray - Changed line 887 to work on 56d. --- I think that particular line isn't needed since there is a @Targon_Char check. Maybe I missed something.
+// 17/01/2020 - Added 56d decay fix when locking.
 
 //
 // GUILD STONES
@@ -892,6 +893,8 @@ ON = @Targon_Item
                       SRC.SYSMESSAGE You lock down <SRC.TARG.NAME>.
                       SRC.TARG.ATTR	= (<SRC.TARG.ATTR> | attr_move_never )
                       SRC.TARG.LINK	= <LINK.UID>
+					  SRC.TARG.ATTR &= ~attr_decay				// 56d fix.
+					  SRC.TARG.TIMER = -1
                       SRC.TARG.NUDGEUP
                       SRC.TARG.NUDGEDOWN
                     ENDIF
