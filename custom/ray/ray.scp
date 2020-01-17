@@ -2913,8 +2913,24 @@ Any ideas? See you soon.
 /////////Spawning - Delete///////////////
 ////////////////////////////////////////
 
-[DEFNAME expansion]
-expansion
+[FUNCTION F_SPAWNER]
+if (<serv.deflist.chardef.findelem <argv[0]>> != -1) //THANKS TO BEN
+//if (<serv.deflist.chardef.findelem <argv[0]>> == -1)
+SERV.LOG <argv[0]>,<ARGV[1]>,<ARGV[2]>,<ARGV[3]>
+else
+SERV.NEWITEM=i_worldgem_bit
+	NEW.MORE=<ARGV[0]>
+		NEW.P=<ARGV[1]>,<ARGV[2]>,<ARGV[3]>
+			NEW.AMOUNT=<ARGV[4]>
+				NEW.MOREX=<ARGV[5]> //minimum spawn time
+				NEW.MOREY=<ARGV[6]> //maximum spawn time
+				NEW.MOREZ=<ARGV[7]> //distance creature will wander from home
+			NEW.ATTR=0B0
+			new.type=T_SPAWN_CHAR
+		NEW.TIMER=1
+		UPDATE
+endif
+
 
 [DEFNAME WORLD_SPAWNER]
 alchemist	{c_alchemist 1 c_alchemist_f 1}
